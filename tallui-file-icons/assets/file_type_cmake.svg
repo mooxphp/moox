@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1" viewBox="0 0 16 16">
+ <defs>
+  <style>.i-color {
+        fill: #000;
+        fill-rule: evenodd;
+      }</style>
+ </defs>
+ <path id="file_type_cmake.svg" class="i-color" d="m8.1113 1.5-6.5898 13.18-0.021484 0.019531h0.013672l0.0019531-0.003907 3.7432-3.4533 3.0029-4.7889 1.9981 6.0257-5.001-1.2368-3.7452 3.4571h13.199l-6.6016-13.199z"/>
+</svg>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html class="h-full bg-gray-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clifford: '#da373d',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+    }
+  </style>
+
+</head>
+<body class="h-full">
+
+  <img class="absolute inset-0 h-full w-full object-cover" src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" alt="">
+
+  <div class="relative m-20">
+    <h4 class="sr-only">Status</h4>
+    <p class="text-sm font-medium text-gray-900">Migrating MySQL database...</p>
+    <div class="mt-6" aria-hidden="true">
+      <div class="bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-2 bg-indigo-600 rounded-full" style="width: 37.5%"></div>
+      </div>
+      <div class="hidden sm:grid grid-cols-4 text-sm font-medium text-gray-600 mt-6">
+        <div class="text-indigo-600">Copying files</div>
+        <div class="text-center text-indigo-600">Migrating database</div>
+        <div class="text-center">Compiling assets</div>
+        <div class="text-right">Installation complete</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative m-20">
+    You don't have to wait for the installer to finish. We can send a notification to mail@tallui.io including this information:
+    <br><br>
+    Please keep this data:
+    <br><br>
+    Frontend URL:
+    <br>
+    Backend URL:
+    <br>
+    Login:
+    <br>
+    Password:
+    <br><br>
+    Yes, please notify me ...
+  </div>
+
+
+</body>
+</html>
