@@ -4,6 +4,10 @@ The themes manager allows you to load and manage themes, create and manage child
 
 
 
+Inspired by https://github.com/qirolab/laravel-themer and Filament Admin, see https://laravel-news.com/laravel-themer-package-add-multi-theme-support-for-laravel-application.
+
+
+
 W-I-P
 
 
