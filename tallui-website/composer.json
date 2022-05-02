@@ -4,12 +4,22 @@
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../tallui-package-builder"
+        }
+    ],
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.2",
         "laravel/sanctum": "^2.14.1",
-        "laravel/tinker": "^2.7"
+        "laravel/tinker": "^2.7",
+        "laravel/vapor-cli": "^1.36",
+        "laravel/vapor-core": "^2.21",
+        "laravel/vapor-ui": "^1.5",
+        "usetall/tallui-package-builder": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
