@@ -43,6 +43,20 @@ There is some other stuff here
 
 ## Installation
 
+https://github.com/usetall/tallui.git
+
+
+
+Probably required at first-install:
+
+```shell
+cd storage/
+mkdir -p framework/{sessions,views,cache}
+chmod -R 775 framework
+```
+
+## Installation (tbd)
+
 Simple packages like components can ship their own configurations and assets. They don't depend on Core or any other package, but you have to care for the main dependencies, means the TALL-Stack.
 
 **TALL**UI itself depends on on Laravel Jetstream.
