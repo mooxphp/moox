@@ -55,7 +55,8 @@ There is a lot of data out there and every time we start a new project we start 
 
 ### Currencies
 
-- https://en.wikipedia.org/wiki/List_of_circulating_currencies
+
+
 - https://www.countries-ofthe-world.com/world-time-zones.html (CC) (Alle)
 
 ### Continents, Regions, Territories
