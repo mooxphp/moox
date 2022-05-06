@@ -58,6 +58,7 @@ There is a lot of data out there and every time we start a new project we start 
 
 
 - https://www.countries-ofthe-world.com/world-time-zones.html (CC) (Alle)
+- [Währungsrechner | Devisenkurse | OANDA](https://www.oanda.com/currency-converter/de/?from=EUR&to=USD&amount=1) (CC)
 
 ### Continents, Regions, Territories
 
