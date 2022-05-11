@@ -117,3 +117,21 @@ To fit the menu to our needs, there is an overview of all menu positions we set 
 - Documentation 9000
 
 You can override that in the config. But if you want to use some of our packages, it would be much better to use a free range between and build your own 2-level menus there. That's why we left plenty of space.
+
+## Alternatives and Inspiration
+
+There are a lot of Admin Panels, CRUD Generators and UI Kits out there. Our selection mostly depend on the TALL-Stack.
+
+- [TALL Frontent Preset](https://github.com/laravel-frontend-presets/tall) - Offizielles UI preset.
+- [Laravel Breeze](https://laravel.com/docs/9.x/starter-kits) - Offizielles Starter Kit mit Auth.
+- [Laravel Jetstream](https://jetstream.laravel.com/) - Offizielles Starter Kit mit Auth, Register, 2-FA etc.
+- [Blade UIkit](https://blade-ui-kit.com/) – Components für den TALL-Stack, maintained von den Laravel Entwicklern.
+- [WireUI](https://livewire-wireui.com/) - Components von Blade UI mit Livewire.
+- [Filament](https://filamentphp.com/) - TALL stack UI und CRUD Generator.
+- [Quick Admin Panel](https://quickadminpanel.com/) - Admin und CRUD Generator, TALL-Version verfügbar, $100/year.
+- [Laravel Nova](https://nova.laravel.com/) - Offizielle Lösung mit Vue.js, kostet einmalig $199
+- [Voyager](https://voyager.devdojo.com/) - Admin + CRUD Generator von Devdojo
+- [Craftable](https://getcraftable.com/) - Freemium CRUD Generator and Admin.
+- [Lean Admin](https://lean-admin.dev/) - TALL-stack basierendes Adminpanel, coming soon, nicht kostenfrei, [sneak peek](https://laravel-news.com/lean-admin-sneak-peek).
+
+Siehe auch [Awesome Tall Stack](https://github.com/livewire/awesome-tall-stack) (Livewire Datatables, Views etc.)
