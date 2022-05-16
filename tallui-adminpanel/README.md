@@ -78,45 +78,53 @@ class BookingServiceProvider extends ExtensionServiceProvider
 
 To fit the menu to our needs, there is an overview of all menu positions we set in our own application.
 
-- Dashboard 1000
-- Pages 2000
-- Blog 3000
-  - Posts 3010
-  - Categories 3020
-  - Tags 3030
-  - Comments 3040
-- Shop 4000
-  - Dashboard 4010
-  - Products 4020
-  - Categories 4030
-  - Tags 4040
-  - Customers 4050
-  - Orders 4060
-- Bookings 4100
-  - Dashboard 4110
-  - Properties 4120
-  - Customers 4130
-  - Reservations 4140
-- Admin 5000
-  - Users 5010
-  - Permissions 5020
-  - Packages 5030
-  - Themes 5040
-  - Components 5050
-  - Blocks 5060
-- Tools 6000
-  - Scheduler 6040
-  - Backup 6050
-  - Import / Export 6070
-- System 7000
-  - Status 7010
-  - Updates 7020
-  - Configuration 7050
-  - Routes 7070
-  - Logs 7090
-- Documentation 9000
+- Dashboard 100
+- Pages 200
+- News 300
+  - Dashboard 300
+  - Articles 301
+  - Categories 302
+  - Tags 303
+  - Comments 304
+- Shop 310
+  - Dashboard 310
+  - Products 311
+  - Categories 312
+  - Tags 313
+  - Customers 314
+  - Orders 315
+  - Ratings 316
+- Bookings 320
+  - Dashboard 320
+  - Properties 321
+  - Bookings 322
+  - Guests 323
+  - Ratings 324
+- Tools 600
+  - Scheduler 610
+  - Backup 620
+  - Im- & Export 630
+  - Newsletter 640
+  - API-Manager 650
+  - Redirects 660
+  - SEO Toolbox 670
+  - 
+- System 700
+  - Status 701
+  - Updates 702
+  - Configuration 705
+  - Users 710
+  - Permissions 711
+  - Packages 720
+  - Routing 730
+  - Logs 780
+  - Vapor 790
+- Help 900
+  - User manual 901
+  - Admin handbook 902
+  - Developer docs 903
 
-You can override that in the config. But if you want to use some of our packages, it would be much better to use a free range between and build your own 2-level menus there. That's why we left plenty of space.
+You can override that in the config. But if you want to use some of our packages, it would be much better to use the free range between 400 and 500 build your own 2-level menus there. That's why we left plenty of space.
 
 ## Alternatives and Inspiration
 
