@@ -97,9 +97,10 @@ To fit the menu to our needs, there is an overview of all menu positions we set 
 - Bookings 320
   - Dashboard 320
   - Properties 321
-  - Bookings 322
-  - Guests 323
-  - Ratings 324
+  - Categories 322
+  - Bookings 323
+  - Guests 324
+  - Ratings 325
 - Tools 600
   - Scheduler 610
   - Backup 620
@@ -108,13 +109,21 @@ To fit the menu to our needs, there is an overview of all menu positions we set 
   - API-Manager 650
   - Redirects 660
   - SEO Toolbox 670
-  - 
+- Users
+  - Dashboard
+  - Users
+  - Groups
+  - Roles
+  - Permissions
+  - Teams
+  - Activity
+  - Security
 - System 700
   - Status 701
   - Updates 702
   - Configuration 705
-  - Users 710
-  - Permissions 711
+  /- Users 710
+  /- Permissions 711
   - Packages 720
   - Routing 730
   - Logs 780
@@ -123,6 +132,19 @@ To fit the menu to our needs, there is an overview of all menu positions we set 
   - User manual 901
   - Admin handbook 902
   - Developer docs 903
+
+## Basic Scaffolding
+
+- Users, Permission - extend
+- Pages
+- Contents
+- Articles
+- Categories
+- Tags
+- Comments
+- Products
+- ...
+
 
 You can override that in the config. But if you want to use some of our packages, it would be much better to use the free range between 400 and 500 build your own 2-level menus there. That's why we left plenty of space.
 
