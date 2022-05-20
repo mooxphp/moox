@@ -7,7 +7,10 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../tallui-package-builder"
+            "url": "../tallui-package-builder",
+            "options": {
+                "symlink": false
+            }
         }
     ],
     "require": {
@@ -19,7 +22,7 @@
         "laravel/vapor-cli": "^1.36",
         "laravel/vapor-core": "^2.21",
         "laravel/vapor-ui": "^1.5",
-        "usetall/tallui-package-builder": "dev-main"
+        "usetall/tallui-package-builder": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
