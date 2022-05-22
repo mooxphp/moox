@@ -5,12 +5,10 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "repositories": [
+
         {
-            "type": "path",
-            "url": "../tallui-package-builder",
-            "options": {
-                "symlink": false
-            }
+            "type": "vcs",
+            "url": "https://github.com/usetall/tallui-core"
         }
     ],
     "require": {
@@ -22,7 +20,7 @@
         "laravel/vapor-cli": "^1.36",
         "laravel/vapor-core": "^2.21",
         "laravel/vapor-ui": "^1.5",
-        "usetall/tallui-package-builder": "*"
+        "usetall/tallui-core": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
