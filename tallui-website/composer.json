@@ -20,6 +20,7 @@
         "laravel/vapor-cli": "^1.36",
         "laravel/vapor-core": "^2.21",
         "laravel/vapor-ui": "^1.5",
+        "livewire/livewire": "^2.5",
         "usetall/tallui-core": "dev-main"
     },
     "require-dev": {
