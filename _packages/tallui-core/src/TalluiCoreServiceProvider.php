@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Usetall\TalluiCore;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
 use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Usetall\TalluiCore\Commands\TalluiCoreCommand;
-use Usetall\TalluiCore\Components\Livewire\FirstLivewireComponent;
+use Usetall\TalluiCore\Components\BladeComponent;
+use Usetall\TalluiCore\Components\LivewireComponent;
 
 class TalluiCoreServiceProvider extends PackageServiceProvider
 {
@@ -27,25 +29,13 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
 
     public function boot()
     {
-
-        $this->loadViewsFrom(__DIR__.'/views/', 'tallui-core');
-
-
-
-        //Blade::component(FirstBladeComponent::class,'first-blade-component' );
-
-
-
         $this->bootBladeComponents();
         $this->bootLivewireComponents();
-        $this->bootDirectives();
+        //$this->bootDirectives();
     }
 
     private function bootBladeComponents(): void
     {
-
-
-
         $this->callAfterResolving(BladeCompiler::class, function (BladeCompiler $blade) {
             $prefix = config('tallui-core.prefix', '');
             //$assets = config('tallui-core.assets', []);
@@ -67,7 +57,7 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         }
 
         $prefix = config('tallui-core.prefix', '');
-        $assets = config('tallui-core.assets', []);
+        //$assets = config('tallui-core.assets', []);
 
         /** @var LivewireComponent $component */
         foreach (config('tallui-core.livewire', []) as $alias => $component) {
