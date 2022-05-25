@@ -25,7 +25,7 @@
         <div>
             Test components here ...
 
-            <?php // @livewire('first-livewire-component') ?>
+            @livewire('first-livewire-component')
 
             <x-first-blade-component>
 

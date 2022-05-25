@@ -60,7 +60,6 @@ return [
     |
     */
 
-    /*
     'assets' => [
 
         'example' => [
@@ -69,6 +68,5 @@ return [
         ],
 
     ],
-    */
 
 ];

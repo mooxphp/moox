@@ -29,23 +29,29 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
 
     public function boot()
     {
+        $this->bootResources();
         $this->bootBladeComponents();
         $this->bootLivewireComponents();
-        //$this->bootDirectives();
+        $this->bootDirectives();
+    }
+
+    private function bootResources(): void
+    {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'tallui-core');
     }
 
     private function bootBladeComponents(): void
     {
         $this->callAfterResolving(BladeCompiler::class, function (BladeCompiler $blade) {
             $prefix = config('tallui-core.prefix', '');
-            //$assets = config('tallui-core.assets', []);
+            $assets = config('tallui-core.assets', []);
 
             /** @var BladeComponent $component */
 
             foreach (config('tallui-core.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
-                //$this->registerAssets($component, $assets);
+                $this->registerAssets($component, $assets);
             }
         });
     }
@@ -57,19 +63,19 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         }
 
         $prefix = config('tallui-core.prefix', '');
-        //$assets = config('tallui-core.assets', []);
+        $assets = config('tallui-core.assets', []);
 
         /** @var LivewireComponent $component */
+
         foreach (config('tallui-core.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
             Livewire::component($alias, $component);
 
-            //$this->registerAssets($component, $assets);
+            $this->registerAssets($component, $assets);
         }
     }
 
-    /*
     private function registerAssets($component, array $assets): void
     {
         foreach ($component::assets() as $asset) {
@@ -78,17 +84,16 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             collect($files)->filter(function (string $file) {
                 return Str::endsWith($file, '.css');
             })->each(function (string $style) {
-                Usetall\TalluiCore::addStyle($style);
+                TalluiCore::addStyle($style);
             });
 
             collect($files)->filter(function (string $file) {
                 return Str::endsWith($file, '.js');
             })->each(function (string $script) {
-                Usetall\TalluiCore::addScript($script);
+                TalluiCore::addScript($script);
             });
         }
     }
-    */
 
     private function bootDirectives(): void
     {
