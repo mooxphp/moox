@@ -7,8 +7,8 @@
     "repositories": [
 
         {
-            "type": "vcs",
-            "url": "https://github.com/usetall/tallui-core"
+            "type": "path",
+            "url": "./_packages/tallui-core"
         }
     ],
     "require": {

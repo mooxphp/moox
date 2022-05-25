@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "62049435b8654f3e7841df809f5ad780",
+    "content-hash": "b4ee03ae9489bfce71aff1974fc39378",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.222.17",
+            "version": "3.222.19",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "dfcaf44f64be4f844b44515f31d9f6d9293244a4"
+                "reference": "22fcdfcc7ed0f267512aa5c38bc00c12eaed51b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/dfcaf44f64be4f844b44515f31d9f6d9293244a4",
-                "reference": "dfcaf44f64be4f844b44515f31d9f6d9293244a4",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/22fcdfcc7ed0f267512aa5c38bc00c12eaed51b6",
+                "reference": "22fcdfcc7ed0f267512aa5c38bc00c12eaed51b6",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.222.17"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.222.19"
             },
-            "time": "2022-05-20T18:23:52+00:00"
+            "time": "2022-05-24T18:16:51+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -1385,16 +1385,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v9.13.0",
+            "version": "v9.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "87b6cc8bc41d1cf85c7c1401cddde8570a3b95bb"
+                "reference": "5356f15d008c1b23088ccf21a5fb4aa2f87af034"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/87b6cc8bc41d1cf85c7c1401cddde8570a3b95bb",
-                "reference": "87b6cc8bc41d1cf85c7c1401cddde8570a3b95bb",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/5356f15d008c1b23088ccf21a5fb4aa2f87af034",
+                "reference": "5356f15d008c1b23088ccf21a5fb4aa2f87af034",
                 "shasum": ""
             },
             "require": {
@@ -1560,20 +1560,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-05-17T14:07:43+00:00"
+            "time": "2022-05-24T14:03:46+00:00"
         },
         {
             "name": "laravel/jetstream",
-            "version": "v2.8.1",
+            "version": "v2.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/jetstream.git",
-                "reference": "50ca355fa7cff5a851bbc0fa6addaa0010493c8d"
+                "reference": "10a7914447c24f8ac9c6565c41f9f10711807401"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/jetstream/zipball/50ca355fa7cff5a851bbc0fa6addaa0010493c8d",
-                "reference": "50ca355fa7cff5a851bbc0fa6addaa0010493c8d",
+                "url": "https://api.github.com/repos/laravel/jetstream/zipball/10a7914447c24f8ac9c6565c41f9f10711807401",
+                "reference": "10a7914447c24f8ac9c6565c41f9f10711807401",
                 "shasum": ""
             },
             "require": {
@@ -1626,7 +1626,7 @@
                 "issues": "https://github.com/laravel/jetstream/issues",
                 "source": "https://github.com/laravel/jetstream"
             },
-            "time": "2022-05-13T14:06:46+00:00"
+            "time": "2022-05-24T13:49:23+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -1822,16 +1822,16 @@
         },
         {
             "name": "laravel/vapor-cli",
-            "version": "v1.38.0",
+            "version": "v1.39.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/vapor-cli.git",
-                "reference": "6c32c56f1e12f3a05f1b214b61bb2b3f35056408"
+                "reference": "f1e33625d25ded9428dec238933bd330f3c52ac3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/vapor-cli/zipball/6c32c56f1e12f3a05f1b214b61bb2b3f35056408",
-                "reference": "6c32c56f1e12f3a05f1b214b61bb2b3f35056408",
+                "url": "https://api.github.com/repos/laravel/vapor-cli/zipball/f1e33625d25ded9428dec238933bd330f3c52ac3",
+                "reference": "f1e33625d25ded9428dec238933bd330f3c52ac3",
                 "shasum": ""
             },
             "require": {
@@ -1884,9 +1884,9 @@
                 "vapor"
             ],
             "support": {
-                "source": "https://github.com/laravel/vapor-cli/tree/v1.38.0"
+                "source": "https://github.com/laravel/vapor-cli/tree/v1.39.0"
             },
-            "time": "2022-05-13T08:31:22+00:00"
+            "time": "2022-05-23T08:25:55+00:00"
         },
         {
             "name": "laravel/vapor-core",
@@ -6408,20 +6408,19 @@
         {
             "name": "usetall/tallui-core",
             "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/usetall/tallui-core.git",
-                "reference": "b6b77f9a5dc350597da49b7fa6873b7bb3537031"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/usetall/tallui-core/zipball/b6b77f9a5dc350597da49b7fa6873b7bb3537031",
-                "reference": "b6b77f9a5dc350597da49b7fa6873b7bb3537031",
-                "shasum": ""
+                "type": "path",
+                "url": "./_packages/tallui-core",
+                "reference": "2e7a1dd75c1b1aa13375b4828c92c23817fb04f4"
             },
             "require": {
+                "ext-json": "*",
                 "illuminate/contracts": "^9.0",
+                "illuminate/filesystem": "^9.0",
+                "illuminate/support": "^9.0",
+                "illuminate/view": "^9.0",
                 "laravel/jetstream": "^2.0",
+                "nesbot/carbon": "^2.38",
                 "php": "^8.1",
                 "spatie/laravel-package-tools": "^1.9.2"
             },
@@ -6437,7 +6436,6 @@
                 "phpunit/phpunit": "^9.5",
                 "spatie/laravel-ray": "^1.26"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -6476,8 +6474,8 @@
             ],
             "authors": [
                 {
-                    "name": "TALLUI",
-                    "email": "dev@tallui.io",
+                    "name": "TallUI",
+                    "email": "devs@tallui.io",
                     "role": "Developer"
                 }
             ],
@@ -6493,11 +6491,9 @@
                 "tallui-core",
                 "usetall"
             ],
-            "support": {
-                "source": "https://github.com/usetall/tallui-core/tree/main",
-                "issues": "https://github.com/usetall/tallui-core/issues"
-            },
-            "time": "2022-05-21T21:01:02+00:00"
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "vlucas/phpdotenv",
@@ -7027,16 +7023,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.14.6",
+            "version": "v1.14.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "f00f3a8f83e71436d473cda7700ae7b4b68d26cc"
+                "reference": "c049316f9bcb02598607307f18b514b66202b639"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/f00f3a8f83e71436d473cda7700ae7b4b68d26cc",
-                "reference": "f00f3a8f83e71436d473cda7700ae7b4b68d26cc",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/c049316f9bcb02598607307f18b514b66202b639",
+                "reference": "c049316f9bcb02598607307f18b514b66202b639",
                 "shasum": ""
             },
             "require": {
@@ -7083,7 +7079,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2022-05-18T15:56:59+00:00"
+            "time": "2022-05-21T17:14:14+00:00"
         },
         {
             "name": "mockery/mockery",

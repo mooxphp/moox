@@ -1,0 +1,81 @@
+{
+    "name": "usetall/tallui-core",
+    "description": "This is my package tallui-core",
+    "keywords": [
+        "usetall",
+        "laravel",
+        "tallui-core",
+        "tall-stack",
+        "tailwindcss",
+        "alpinejs",
+        "livewire",
+        "admin"
+    ],
+    "homepage": "https://github.com/usetall/tallui-core",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "TallUI",
+            "email": "devs@tallui.io",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "spatie/laravel-package-tools": "^1.9.2",
+        "illuminate/contracts": "^9.0",
+        "illuminate/filesystem": "^9.0",
+        "illuminate/support": "^9.0",
+        "illuminate/view": "^9.0",
+        "nesbot/carbon": "^2.38",
+        "laravel/jetstream": "^2.0"
+    },
+    "require-dev": {
+        "nunomaduro/collision": "^6.0",
+        "nunomaduro/larastan": "^2.0.1",
+        "orchestra/testbench": "^7.0",
+        "pestphp/pest": "^1.21",
+        "pestphp/pest-plugin-laravel": "^1.1",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "spatie/laravel-ray": "^1.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "Usetall\\TalluiCore\\": "src",
+            "Usetall\\TalluiCore\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Usetall\\TalluiCore\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Usetall\\TalluiCore\\TalluiCoreServiceProvider"
+            ],
+            "aliases": {
+                "TalluiCore": "Usetall\\TalluiCore\\Facades\\TalluiCore"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
