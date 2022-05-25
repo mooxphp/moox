@@ -16,6 +16,10 @@ class FirstLivewireComponent extends LivewireComponent
 
     public function render(): View
     {
-        return view('livewire.first-livewire-component');
+
+        dd("Puke!");
+
+
+        return view('/var/www/html/_packages/tallui-core/resources/views/components/livewire/first-livewire-component.blade.php');
     }
 }

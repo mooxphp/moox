@@ -16,6 +16,10 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-core::components.blade.first-blade-component');
+
+        dd("Puke in der Blade Component!");
+
+
+        //return view('tallui-core::components.blade.first-blade-component');
     }
 }
