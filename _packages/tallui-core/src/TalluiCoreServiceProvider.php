@@ -98,11 +98,11 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
     private function bootDirectives(): void
     {
         Blade::directive('talluiCoreStyles', function (string $expression) {
-            return "<?php echo Usetall\TalluiCore\\Usetall\TalluiCore::outputStyles($expression); ?>";
+            return "<?php echo Usetall\\TalluiCore\\TalluiCore::outputStyles($expression); ?>";
         });
 
         Blade::directive('talluiCoreScripts', function (string $expression) {
-            return "<?php echo Usetall\TalluiCore\\Usetall\TalluiCore::outputScripts($expression); ?>";
+            return "<?php echo Usetall\\TalluiCore\\TalluiCore::outputScripts($expression); ?>";
         });
     }
 

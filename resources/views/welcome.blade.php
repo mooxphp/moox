@@ -19,6 +19,8 @@
                 font-family: 'Nunito', sans-serif;
             }
         </style>
+
+    @talluiCoreStyles
     </head>
     <body class="antialiased">
 
@@ -27,7 +29,7 @@
 
             @livewire('first-livewire-component')
 
-            <x-first-blade-component>
+            <!-- x-first-blade-component -->
 
         </div>
 
@@ -139,5 +141,6 @@
                 </div>
             </div>
         </div>
+    @talluiCoreScripts
     </body>
 </html>
