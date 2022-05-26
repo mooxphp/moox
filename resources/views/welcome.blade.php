@@ -29,7 +29,7 @@
 
             @livewire('first-livewire-component')
 
-            <!-- x-first-blade-component -->
+            <x-first-blade-component>
 
         </div>
 

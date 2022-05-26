@@ -27,7 +27,7 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             ->hasCommand(TalluiCoreCommand::class);
     }
 
-    public function boot()
+    public function boot(): void
     {
         $this->bootResources();
         $this->bootBladeComponents();
