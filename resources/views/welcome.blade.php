@@ -20,16 +20,16 @@
             }
         </style>
 
-    @talluiCoreStyles
+<?php // @talluiCoreStyles ?>
     </head>
     <body class="antialiased">
 
         <div>
             Test components here ...
 
-            @livewire('first-livewire-component')
+            <?php // @livewire('first-livewire-component') ?>
 
-            <x-first-blade-component>
+            <!-- x-label -->
 
         </div>
 
@@ -141,6 +141,6 @@
                 </div>
             </div>
         </div>
-    @talluiCoreScripts
+        <?php // @talluiCoreScripts ?>
     </body>
 </html>

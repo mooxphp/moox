@@ -1,6 +1,6 @@
 <?php
 
-use Usetall\TalluiCore\Components;
+use TallUiCore\Components;
 
 return [
 
@@ -10,13 +10,39 @@ return [
     |--------------------------------------------------------------------------
     |
     | Below you reference all components that should be loaded for your app.
-    | By default all components from tallui-core are loaded in. You can
+    | By default all components from Blade UI Kit are loaded in. You can
     | disable or overwrite any component class or alias that you want.
     |
     */
 
     'components' => [
-        'first-blade-component' => Components\Blade\FirstBladeComponent::class,
+        'alert' => Components\Alerts\Alert::class,
+        'avatar' => Components\Support\Avatar::class,
+        'carbon' => Components\DateTime\Carbon::class,
+        'checkbox' => Components\Forms\Inputs\Checkbox::class,
+        'color-picker' => Components\Forms\Inputs\ColorPicker::class,
+        'countdown' => Components\DateTime\Countdown::class,
+        'cron' => Components\Support\Cron::class,
+        'dropdown' => Components\Navigation\Dropdown::class,
+        'easy-mde' => Components\Editors\EasyMDE::class,
+        'email' => Components\Forms\Inputs\Email::class,
+        'error' => Components\Forms\Error::class,
+        'flat-pickr' => Components\Forms\Inputs\FlatPickr::class,
+        'form' => Components\Forms\Form::class,
+        'form-button' => Components\Buttons\FormButton::class,
+        'html' => Components\Layouts\Html::class,
+        'input' => Components\Forms\Inputs\Input::class,
+        'label' => Components\Forms\Label::class,
+        'logout' => Components\Buttons\Logout::class,
+        'mapbox' => Components\Maps\Mapbox::class,
+        'markdown' => Components\Markdown\Markdown::class,
+        'password' => Components\Forms\Inputs\Password::class,
+        'pikaday' => Components\Forms\Inputs\Pikaday::class,
+        'social-meta' => Components\Layouts\SocialMeta::class,
+        'textarea' => Components\Forms\Inputs\Textarea::class,
+        'toc' => Components\Markdown\ToC::class,
+        'trix' => Components\Editors\Trix::class,
+        'unsplash' => Components\Support\Unsplash::class,
     ],
 
     /*
@@ -25,12 +51,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | Below you reference all the Livewire components that should be loaded
-    | for your app. By default all components from tallui-core are loaded in.
+    | for your app. By default all components from Blade UI Kit are loaded in.
     |
     */
 
     'livewire' => [
-        'first-livewire-component' => Components\Livewire\FirstLivewireComponent::class,
+        //
     ],
 
     /*
@@ -38,13 +64,13 @@ return [
     | Components Prefix
     |--------------------------------------------------------------------------
     |
-    | This value will set a prefix for all tallui-core components.
+    | This value will set a prefix for all Blade UI Kit components.
     | By default it's empty. This is useful if you want to avoid
-    | collision with or otherwise overwrite core components.
+    | collision with components from other libraries.
     |
-    | If set with "tui", for example, you can reference components like:
+    | If set with "buk", for example, you can reference components like:
     |
-    | <x-tui-alert />
+    | <x-buk-easy-mde />
     |
     */
 
@@ -52,19 +78,52 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Asset Libraries
+    | Third Party Asset Libraries
     |--------------------------------------------------------------------------
     |
-    | Components can require these asset files through their static `$assets`
-    | property.
+    | These settings hold reference to all third party libraries and their
+    | asset files served through a CDN. Individual components can require
+    | these asset files through their static `$assets` property.
     |
     */
 
     'assets' => [
 
-        'example' => [
-            'https://unpkg.com/example/dist/example.min.css',
-            'https://unpkg.com/example/dist/example.min.js',
+        'alpine' => 'https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.3.5/dist/alpine.min.js',
+
+        'easy-mde' => [
+            'https://unpkg.com/easymde/dist/easymde.min.css',
+            'https://unpkg.com/easymde/dist/easymde.min.js',
+        ],
+
+        'flat-pickr' => [
+            'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
+            'https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.js',
+        ],
+
+        'mapbox' => [
+            'https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css',
+            'https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js',
+        ],
+
+        'moment' => [
+            'https://cdn.jsdelivr.net/npm/moment@2.26.0/moment.min.js',
+            'https://cdn.jsdelivr.net/npm/moment-timezone@0.5.31/builds/moment-timezone-with-data.min.js',
+        ],
+
+        'pickr' => [
+            'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css',
+            'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js',
+        ],
+
+        'pikaday' => [
+            'https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css',
+            'https://cdn.jsdelivr.net/npm/pikaday/pikaday.js',
+        ],
+
+        'trix' => [
+            'https://unpkg.com/trix@1.2.3/dist/trix.css',
+            'https://unpkg.com/trix@1.2.3/dist/trix.js',
         ],
 
     ],
