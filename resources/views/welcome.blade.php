@@ -27,6 +27,11 @@
         <div>
             Test components here ...
 
+            <x-alert class="alert alert-success"/>
+
+            <x-label for="bla"/>
+            <x-input name="bla"/>
+
             <?php // @livewire('first-livewire-component') ?>
 
             <!-- x-label -->

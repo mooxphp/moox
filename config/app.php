@@ -185,7 +185,7 @@ return [
         /*
          * Package Service Providers...
          */
-        Usetall\TalluiCore\TalluiCoreServiceProvider::class,
+        TalluiCore\TalluiCoreServiceProvider::class,
 
         /*
          * Application Service Providers...
