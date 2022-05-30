@@ -22,9 +22,6 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-
-        dd("Puke in FirstBladeComponent!");
-
         return view('tallui-core::components.blade.first-blade-component');
     }
 }
