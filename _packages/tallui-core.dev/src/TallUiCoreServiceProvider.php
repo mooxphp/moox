@@ -2,29 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiCore;
+namespace TallUiCore;
 
+use TallUiCore\Components\BladeComponent;
+use TallUiCore\Components\LivewireComponent;
+use TallUiCore\Console\PublishCommand;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
 use Livewire\Livewire;
-use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Usetall\TalluiCore\Commands\TalluiCoreCommand;
-use Usetall\TalluiCore\Components\BladeComponent;
-use Usetall\TalluiCore\Components\LivewireComponent;
 
-class TalluiCoreServiceProvider extends PackageServiceProvider
+final class TallUiCoreServiceProvider extends ServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function register(): void
     {
-        $package
-            ->name('tallui-core')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasTranslations()
-            ->hasMigration('create_tallui-core_table')
-            ->hasCommand(TalluiCoreCommand::class);
+        $this->mergeConfigFrom(__DIR__.'/../config/tallui-core.php', 'tallui-core');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                PublishCommand::class,
+            ]);
+        }
     }
 
     public function boot(): void
@@ -33,6 +32,7 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         $this->bootBladeComponents();
         $this->bootLivewireComponents();
         $this->bootDirectives();
+        $this->bootPublishing();
     }
 
     private function bootResources(): void
@@ -47,7 +47,6 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             $assets = config('tallui-core.assets', []);
 
             /** @var BladeComponent $component */
-
             foreach (config('tallui-core.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
@@ -58,6 +57,7 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
 
     private function bootLivewireComponents(): void
     {
+        // Skip if Livewire isn't installed.
         if (! class_exists(Livewire::class)) {
             return;
         }
@@ -66,7 +66,6 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         $assets = config('tallui-core.assets', []);
 
         /** @var LivewireComponent $component */
-
         foreach (config('tallui-core.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
@@ -84,26 +83,38 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             collect($files)->filter(function (string $file) {
                 return Str::endsWith($file, '.css');
             })->each(function (string $style) {
-                TalluiCore::addStyle($style);
+                TallUiCore::addStyle($style);
             });
 
             collect($files)->filter(function (string $file) {
                 return Str::endsWith($file, '.js');
             })->each(function (string $script) {
-                TalluiCore::addScript($script);
+                TallUiCore::addScript($script);
             });
         }
     }
 
     private function bootDirectives(): void
     {
-        Blade::directive('talluiCoreStyles', function (string $expression) {
-            return "<?php echo Usetall\\TalluiCore\\TalluiCore::outputStyles($expression); ?>";
+        Blade::directive('tuiStyles', function (string $expression) {
+            return "<?php echo TallUiCore\\TallUiCore::outputStyles($expression); ?>";
         });
 
-        Blade::directive('talluiCoreScripts', function (string $expression) {
-            return "<?php echo Usetall\\TalluiCore\\TalluiCore::outputScripts($expression); ?>";
+        Blade::directive('tuiScripts', function (string $expression) {
+            return "<?php echo TallUiCore\\TallUiCore::outputScripts($expression); ?>";
         });
     }
 
+    private function bootPublishing(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/tallui-core.php' => $this->app->configPath('tallui-core.php'),
+            ], 'tallui-core-config');
+
+            $this->publishes([
+                __DIR__.'/../resources/views' => $this->app->resourcePath('views/vendor/tallui-core'),
+            ], 'tallui-core-views');
+        }
+    }
 }

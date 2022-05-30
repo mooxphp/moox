@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiCore;
+namespace TallUiCore;
 
-final class TalluiCore
+final class TallUiCore
 {
     /** @var array */
     private static $styles = [];

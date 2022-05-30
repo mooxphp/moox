@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TallUiCore\Components;
+namespace Usetall\TalluiCore\Components;
 
 use Illuminate\View\Component as IlluminateComponent;
 
