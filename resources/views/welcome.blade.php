@@ -20,21 +20,25 @@
             }
         </style>
 
-<?php // @talluiCoreStyles ?>
+<?php //  ?>
+@talluiCoreStyles
     </head>
     <body class="antialiased">
 
         <div>
             Test components here ...
 
-            <x-alert class="alert alert-success"/>
+            <!-- x-alert class="alert alert-success"/ -->
 
-            <x-label for="bla"/>
-            <x-input name="bla"/>
+            <!-- x-label for="bla"/ -->
+            <!-- x-input name="bla"/ -->
 
-            <?php // @livewire('first-livewire-component') ?>
+            <?php // ?>
+            @livewire('first-livewire-component')
 
             <!-- x-label -->
+
+            <x-first-blade-component />
 
         </div>
 
@@ -146,6 +150,7 @@
                 </div>
             </div>
         </div>
-        <?php // @talluiCoreScripts ?>
+        <?php //  ?>
+        @talluiCoreScripts
     </body>
 </html>

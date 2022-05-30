@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiCore\Components;
+namespace TallUiCore\Components;
 
-use Livewire\Component;
+use Illuminate\View\Component as IlluminateComponent;
 
-abstract class LivewireComponent extends Component
+abstract class BladeComponent extends IlluminateComponent
 {
     /** @var array */
     protected static $assets = [];

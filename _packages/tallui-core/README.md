@@ -1,36 +1,65 @@
-<p align="center">
-    <img src="https://github.com/tallui-core/art/blob/main/socialcard.png" width="1280" title="Social Card Blade UI Kit">
-</p>
+# TALLUI Core
 
-# Blade UI Kit
+The Core package serves all global resources and requires all packages needed by **TALL**UI.
 
-<a href="https://github.com/usetall/tallui-core/actions?query=workflow%3ATests">
-    <img src="https://github.com/usetall/tallui-core/workflows/Tests/badge.svg" alt="Tests">
-</a>
-<a href="https://github.styleci.io/repos/263720853">
-    <img src="https://github.styleci.io/repos/263720853/shield?style=flat" alt="Code Style">
-</a>
-<a href="https://packagist.org/packages/usetall/tallui-core">
-    <img src="https://img.shields.io/packagist/v/usetall/tallui-core" alt="Latest Stable Version">
-</a>
-<a href="https://packagist.org/packages/usetall/tallui-core">
-    <img src="https://img.shields.io/packagist/dt/usetall/tallui-core" alt="Total Downloads">
-</a>
+## Configuration
 
-Blade UI Kit is a set of renderless components to utilise in your Laravel Blade views. In all essence, it's a collection of useful utilities, connecting the dots between different parts of [the TALL stack](https://tallstack.dev). It was made for [Blade](https://laravel.com/docs/blade), Laravel's powerful templating engine.
+One of the main parts of **TALL**UI Core is the configuration that is shared to all packages that depend on the Core.
 
-## Official Documentation
+Besides using Tailwind CSS, you are able to use the **TALL**UI Designer API, that inherits colors from Core up to every component. You can set that configuration in Core or in any **TALL**UI package that ships components, templates or themes.
 
-Documentation for Blade UI Kit can be found on its [website](https://tallui-core.com/docs).
+The Global Styling Configuration is also available in the page configuration of **TALL**UI Pages, means it can also be inherited to all child-pages.
 
-## Changelog
+### Global Styling
 
-Check out the [CHANGELOG](CHANGELOG.md) in this repository for all the recent changes.
+There are global colors and style options that may be used by all components, templates and themes.
 
-## Maintainers
+- material-icons
+  - default-style: solid / outline
+- icon-sizes
+  - xs =
+  - sm =
+  - md =
+  - lg =
+  - xl =
+- colors
+  - primary
+  - ...
 
-Blade UI Kit is developed and maintained by [Dries Vints](https://driesvints.com).
+## Dependencies
 
-## License
+- Laravel Jetstream - brings the TALL-Stack as well as some standardized features for authentication, registration, users and profiles.
 
-Blade UI Kit is open-sourced software licensed under [the MIT license](LICENSE.md).
+
+
+
+
+## Style Layers
+
+
+
+- Component = Base Styles
+  - Theme = Colors, Roundings  ===== https://laravel.com/docs/9.x/blade#including-subviews
+  - Template = Placements
+    - Global Styling
+
+
+
+Fiddle
+
+ist :class = override und class= append?
+
+```php
+<x-input :class="$theme['input']" />
+```
+
+kann da auch eine function rein?
+
+ @props
+
+```php
+$theme = [
+	'form' => 
+];
+```
+
