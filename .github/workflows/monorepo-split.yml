@@ -1,0 +1,40 @@
+name: 'Packages Split'
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - '*'
+
+env:
+    GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+
+jobs:
+    packages_split:
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                package:
+                    -
+                        local_path: 'tallui-web-components'
+                        split_repository: 'tallui-web-components'
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -
+                if: "!startsWith(github.ref, 'refs/tags/')"
+                uses: "symplify/monorepo-split-github-action@2.1"
+                with:
+                    tag: ${GITHUB_REF#refs/tags/}
+
+                    package_directory: '_components/${{ matrix.package.local_path }}'
+
+                    repository_organization: 'usetall'
+                    repository_name: '${{ matrix.package.split_repository }}'
+
+                    user_name: "adrolli"
+                    user_email: "alf@alf-drollinger.com"
