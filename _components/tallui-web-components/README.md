@@ -71,7 +71,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 This package is based on Package TalluiWebComponents Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
 
-- [TallUI](https://github.com/usetall)
+- [TallUI Developers](https://github.com/usetall)
 - [TALLUI Devs](https://github.com/orgs/usetall/people)
 - [Freek Van der Herten](https://github.com/freekmurze)
 - [All Contributors](../../contributors)

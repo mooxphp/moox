@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiWebComponents\Components\Blade;
 
-use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 class FirstBladeComponent extends Component
 {
@@ -14,7 +14,7 @@ class FirstBladeComponent extends Component
     /** @var string|null */
     public string $first_var = "";
 
-    public function mount(): Void
+    public function mount(): void
     {
         // mount
     }

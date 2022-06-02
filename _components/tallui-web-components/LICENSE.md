@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) usetall <dev@tallui.io>
+Copyright (c) usetall <devs@tallui.io>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
