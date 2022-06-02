@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiCore;
+namespace Usetall\TalluiWebComponents;
 
 final class TalluiWebComponents
 {

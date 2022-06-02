@@ -15,7 +15,7 @@ class FirstBladeComponent extends BladeComponent
     /** @var string|null */
     public string $first_var = "";
 
-    public function mount()
+    public function mount(): void
     {
         // mount
     }

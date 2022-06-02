@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Usetall\TalluiWebComponents\Components\Livewire;
 
 use Illuminate\Contracts\View\View;
+use Usetall\TalluiWebComponents\Components\LivewireComponent;
 
-class FirstLivewireComponent extends Component
+class FirstLivewireComponent extends LivewireComponent
 {
     /** @var array */
     protected static $assets = ['example'];

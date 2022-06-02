@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Usetall\TalluiWebComponents\Components\Blade;
 
 use Illuminate\Contracts\View\View;
+use Usetall\TalluiWebComponents\Components\BladeComponent;
 
-class FirstBladeComponent extends Component
+class FirstBladeComponent extends BladeComponent
 {
     /** @var array */
     protected static $assets = ['example'];
