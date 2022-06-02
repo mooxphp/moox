@@ -111,6 +111,10 @@ and run the migrations
 php artisan migrate
 ```
 
+## Github Workflows
+
+- Split Action - https://github.com/marketplace/actions/monorepo-split
+
 ## Objects
 
 - Blocks
