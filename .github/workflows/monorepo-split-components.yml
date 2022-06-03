@@ -1,4 +1,4 @@
-name: 'Packages Split'
+name: 'Split Components'
 
 on:
     push:
