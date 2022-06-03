@@ -1,0 +1,79 @@
+{
+    "name": "usetall/tallui-form-components",
+    "description": "This is my package tallui-form-components",
+    "keywords": [
+        "usetall",
+        "laravel",
+        "tallui-form-components",
+        "tall-stack",
+        "tailwindcss",
+        "alpinejs",
+        "livewire",
+        "admin"
+    ],
+    "homepage": "https://github.com/usetall/tallui-form-components",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "TallUI Developers",
+            "email": "devs@tallui.io",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "spatie/laravel-package-tools": "^1.9.2",
+        "illuminate/contracts": "^9.0",
+        "illuminate/filesystem": "^9.0",
+        "illuminate/support": "^9.0",
+        "illuminate/view": "^9.0",
+        "nesbot/carbon": "^2.38",
+        "laravel/jetstream": "^2.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "nunomaduro/collision": "^6.0",
+        "nunomaduro/larastan": "^2.0.1",
+        "orchestra/testbench": "^7.0",
+        "pestphp/pest": "^1.21",
+        "pestphp/pest-plugin-laravel": "^1.1",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "spatie/laravel-ray": "^1.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "Usetall\\TalluiFormComponents\\": "src",
+            "Usetall\\TalluiFormComponents\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Usetall\\TalluiFormComponents\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Usetall\\TalluiFormComponents\\TalluiFormComponentsServiceProvider"
+            ],
+            "aliases": {
+                "TalluiFormComponents": "Usetall\\TalluiFormComponents\\Facades\\TalluiFormComponents"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

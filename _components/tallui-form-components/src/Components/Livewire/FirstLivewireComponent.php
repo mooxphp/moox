@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiWebComponents\Components\Blade;
+namespace Usetall\TalluiFormComponents\Components\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Usetall\TalluiWebComponents\Components\BladeComponent;
+use Usetall\TalluiFormComponents\Components\LivewireComponent;
 
-class FirstBladeComponent extends BladeComponent
+class FirstLivewireComponent extends LivewireComponent
 {
     /** @var array */
     protected static $assets = ['example'];
@@ -22,6 +22,6 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-web-components::components.blade.first-blade-component');
+        return view('tallui-form-components::components.livewire.first-livewire-component');
     }
 }
