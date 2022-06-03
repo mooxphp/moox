@@ -1,0 +1,38 @@
+name: 'Packages Split'
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - '*'
+
+env:
+    GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+
+jobs:
+    packages_split:
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                package:
+                  - tallui-core
+
+        steps:
+            -   uses: actions/checkout@v2
+
+            -
+                if: "!startsWith(github.ref, 'refs/tags/')"
+                uses: "symplify/monorepo-split-github-action@2.1"
+                with:
+                    tag: ${GITHUB_REF#refs/tags/}
+
+                    package_directory: '_packages/${{ matrix.package.local_path }}'
+
+                    repository_organization: 'usetall'
+                    repository_name: '${{ matrix.package.split_repository }}'
+
+                    user_name: "tallui-bot"
+                    user_email: "bot@tallui.io"

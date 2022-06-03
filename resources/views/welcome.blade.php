@@ -21,7 +21,7 @@
         </style>
 
 <?php //  ?>
-@talluiCoreStyles
+@TalluiFormComponentsStyles
     </head>
     <body class="antialiased">
 
@@ -151,6 +151,6 @@
             </div>
         </div>
         <?php //  ?>
-        @talluiCoreScripts
+        @TalluiFormComponentsScripts
     </body>
 </html>

@@ -18,10 +18,8 @@ jobs:
             fail-fast: false
             matrix:
                 package:
-                    -
-                        local_path: 'tallui-web-components'
-                        split_repository: 'tallui-web-components'
-
+                  - tallui-web-components
+                  - tallui-form-components
         steps:
             -   uses: actions/checkout@v2
 

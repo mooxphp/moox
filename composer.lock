@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fbddfec58ee84243a63954b493a754c3",
+    "content-hash": "0a91c6961d49345cf1f9d32f80d94bb3",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -6418,12 +6418,12 @@
             "time": "2021-12-08T09:12:39+00:00"
         },
         {
-            "name": "usetall/tallui-web-components",
+            "name": "usetall/tallui-form-components",
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "./_components/tallui-web-components",
-                "reference": "6c8afd2024d7e60de0a3af899bc9252467113e50"
+                "url": "./_components/tallui-form-components",
+                "reference": "c072e2c96751825e39ef724adbe8c3fa2c5fa2b3"
             },
             "require": {
                 "ext-json": "*",
@@ -6453,22 +6453,22 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Usetall\\TalluiWebComponents\\TalluiWebComponentsServiceProvider"
+                        "Usetall\\TalluiFormComponents\\TalluiFormComponentsServiceProvider"
                     ],
                     "aliases": {
-                        "TalluiWebComponents": "Usetall\\TalluiWebComponents\\Facades\\TalluiWebComponents"
+                        "TalluiFormComponents": "Usetall\\TalluiFormComponents\\Facades\\TalluiFormComponents"
                     }
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Usetall\\TalluiWebComponents\\": "src",
-                    "Usetall\\TalluiWebComponents\\Database\\Factories\\": "database/factories"
+                    "Usetall\\TalluiFormComponents\\": "src",
+                    "Usetall\\TalluiFormComponents\\Database\\Factories\\": "database/factories"
                 }
             },
             "autoload-dev": {
                 "psr-4": {
-                    "Usetall\\TalluiWebComponents\\Tests\\": "tests"
+                    "Usetall\\TalluiFormComponents\\Tests\\": "tests"
                 }
             },
             "scripts": {
@@ -6495,8 +6495,8 @@
                     "role": "Developer"
                 }
             ],
-            "description": "This is my package tallui-web-components",
-            "homepage": "https://github.com/usetall/tallui-web-components",
+            "description": "This is my package tallui-form-components",
+            "homepage": "https://github.com/usetall/tallui-form-components",
             "keywords": [
                 "admin",
                 "alpinejs",
@@ -6504,7 +6504,7 @@
                 "livewire",
                 "tailwindcss",
                 "tall-stack",
-                "tallui-web-components",
+                "tallui-form-components",
                 "usetall"
             ],
             "transport-options": {
@@ -9388,7 +9388,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "usetall/tallui-web-components": 20
+        "usetall/tallui-form-components": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

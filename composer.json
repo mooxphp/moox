@@ -7,7 +7,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./_components/tallui-web-components"
+            "url": "./_components/tallui-form-components"
         }
     ],
     "require": {
@@ -20,7 +20,7 @@
         "laravel/vapor-core": "^2.21",
         "laravel/vapor-ui": "^1.5",
         "livewire/livewire": "^2.5",
-        "usetall/tallui-web-components": "dev-main"
+        "usetall/tallui-form-components": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
