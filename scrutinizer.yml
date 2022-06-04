@@ -52,19 +52,19 @@ build:
                         use_website_config: true
                     - js-scrutinizer-run
 
-        coverage:
+        #coverage:
             #services:
                 #mysql: 5.7
-            tests:
-                before:
-                  - command: 'cp .env.example .env'
+            #tests:
+                #before:
+                  #- command: 'cp .env.example .env'
                   #- command: "mysql -e 'create database scrutinizer;'"
-                override:
-                  - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
-                    coverage:
-                      file: build/logs/clover.xml
-                      format: clover
-        tests: true
+                #override:
+                  #- command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
+                    #coverage:
+                      #file: build/logs/clover.xml
+                      #format: clover
+        #tests: true
 
 filter:
     paths:
