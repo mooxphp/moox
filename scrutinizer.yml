@@ -59,7 +59,6 @@ build:
                       file: build/logs/clover.xml
                       format: clover
         tests: true
-    nodes:
 filter:
     paths:
         - 'app/*'
