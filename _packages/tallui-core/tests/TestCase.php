@@ -28,11 +28,6 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        $app['config']->set('view.paths', [
-            __DIR__.'/../views',
-            resource_path('views'),
-        ]);
-
         $migration = include __DIR__.'/../database/migrations/create_tallui-core_table.php.stub';
         $migration->up();
     }

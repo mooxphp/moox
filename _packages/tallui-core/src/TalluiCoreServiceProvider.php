@@ -105,5 +105,4 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             return "<?php echo Usetall\\TalluiCore\\TalluiCore::outputScripts($expression); ?>";
         });
     }
-
 }
