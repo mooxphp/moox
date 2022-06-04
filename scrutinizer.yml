@@ -1,70 +1,70 @@
-build:
-    image: default-bionic
-    environment:
-        php: 8.1.2
-        #mysql: '5.7'
-        node: '12'
-        hosts:
-            laravel.dev: '127.0.0.1'
-        variables:
-            APP_KEY: 'base64:OYl4Bk9ekouOUIRXyeTD0FVi+cJ9D+HMyDJBgSBSUuI='
-            APP_ENV: 'testing'
-            APP_URL: 'http://laravel.dev'
-            API_HOST: 'laravel.dev'
-            DB_HOST: '127.0.0.1'
-            DB_DATABASE: 'scrutinizer'
-            DB_USERNAME: 'root'
-            DB_PASSWORD: ''
-            MAIL_DRIVER: 'log'
+# build:
+#     image: default-bionic
+#     environment:
+#         php: 8.1.2
+#         #mysql: '5.7'
+#         node: '12'
+#         hosts:
+#             laravel.dev: '127.0.0.1'
+#         variables:
+#             APP_KEY: 'base64:OYl4Bk9ekouOUIRXyeTD0FVi+cJ9D+HMyDJBgSBSUuI='
+#             APP_ENV: 'testing'
+#             APP_URL: 'http://laravel.dev'
+#             API_HOST: 'laravel.dev'
+#             DB_HOST: '127.0.0.1'
+#             DB_DATABASE: 'scrutinizer'
+#             DB_USERNAME: 'root'
+#             DB_PASSWORD: ''
+#             MAIL_DRIVER: 'log'
 
-    cache:
-        directories:
-            - node_modules
-            - vendor/
-            - ~/.composer/cache/
+#     cache:
+#         directories:
+#             - node_modules
+#             - vendor/
+#             - ~/.composer/cache/
 
-    #dependencies:
-        #before:
-          #- 'mysql -u root -e "CREATE DATABASE scrutinizer"'
+#     dependencies:
+#         before:
+#           - 'mysql -u root -e "CREATE DATABASE scrutinizer"'
 
-    tests:
-        before:
-            - chmod -R 777 storage
-            - chmod -R 777 bootstrap/cache
-            - npm run production
-        override:
-            -
-                command: vendor/bin/phpunit --coverage-clover=laravel-test-examples-coverage
-                coverage:
-                    file: laravel-test-examples-coverage
-                    format: clover
+#     tests:
+#         before:
+#             - chmod -R 777 storage
+#             - chmod -R 777 bootstrap/cache
+#             - npm run production
+#         override:
+#             -
+#                 command: vendor/bin/phpunit --coverage-clover=laravel-test-examples-coverage
+#                 coverage:
+#                     file: laravel-test-examples-coverage
+#                     format: clover
 
-    nodes:
-        analysis:
-            project_setup:
-                override:
-                    - 'true'
-            tests:
-                override:
-                    - php-scrutinizer-run
-                    -
-                        command: phpcs-run
-                        use_website_config: true
-                    - js-scrutinizer-run
+#     nodes:
+#         analysis:
+#             project_setup:
+#                 override:
+#                     - 'true'
+#             tests:
+#                 override:
+#                     - php-scrutinizer-run
+#                     -
+#                         command: phpcs-run
+#                         use_website_config: true
+#                     - js-scrutinizer-run
 
-        #coverage:
-            #services:
-                #mysql: 5.7
-            #tests:
-                #before:
-                  #- command: 'cp .env.example .env'
-                  #- command: "mysql -e 'create database scrutinizer;'"
-                #override:
-                  #- command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
-                    #coverage:
-                      #file: build/logs/clover.xml
-                      #format: clover
-        #tests: true
+#         coverage:
+#             services:
+#                 mysql: 5.7
+#             tests:
+#                 before:
+#                   - command: 'cp .env.example .env'
+#                   - command: "mysql -e 'create database scrutinizer;'"
+#                 override:
+#                   - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
+#                     coverage:
+#                       file: build/logs/clover.xml
+#                       format: clover
+#         tests: true
 
 filter:
     paths:
