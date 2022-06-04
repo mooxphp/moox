@@ -7,7 +7,6 @@ namespace Usetall\TalluiCore;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
-use Livewire\Component;
 use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;

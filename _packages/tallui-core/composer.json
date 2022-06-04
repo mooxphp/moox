@@ -29,10 +29,10 @@
         "illuminate/support": "^9.0",
         "illuminate/view": "^9.0",
         "nesbot/carbon": "^2.38",
-        "livewire/livewire": "^2.0",
         "laravel/jetstream": "^2.0"
     },
     "require-dev": {
+        "livewire/livewire": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.8",
         "nunomaduro/collision": "^6.0",
         "nunomaduro/larastan": "^2.0.1",
