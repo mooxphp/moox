@@ -1,0 +1,71 @@
+build:
+    image: default-bionic
+    environment:
+        php:
+            version: 8.1.6
+        mysql: '8.0'
+        node: '18'
+        hosts:
+            laravel.dev: '127.0.0.1'
+        variables:
+            APP_KEY: 'base64:OYl4Bk9ekouOUIRXyeTD0FVi+cJ9D+HMyDJBgSBSUuI='
+            APP_ENV: 'testing'
+            APP_URL: 'http://laravel.dev'
+            API_HOST: 'laravel.dev'
+            DB_HOST: '127.0.0.1'
+            DB_DATABASE: 'scrutinizer'
+            DB_USERNAME: 'root'
+            DB_PASSWORD: ''
+            MAIL_DRIVER: 'log'
+    cache:
+        directories:
+            - node_modules
+            - vendor/
+            - ~/.composer/cache/
+    dependencies:
+        before:
+            - mysql -uroot -e 'CREATE DATABASE scrutinizer'
+    tests:
+        before:
+            - chmod -R 777 storage
+            - chmod -R 777 bootstrap/cache
+            - npm run production
+        override:
+            -
+                command: vendor/bin/phpunit --coverage-clover=laravel-test-examples-coverage
+                coverage:
+                    file: laravel-test-examples-coverage
+                    format: clover
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    - js-scrutinizer-run
+        coverage:
+            tests:
+                before:
+                  - command: 'cp .env.example .env'
+                  - command: "mysql -e 'create database scrutinizer;'"
+
+                override:
+                  - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
+                    coverage:
+                      file: build/logs/clover.xml   # <- Set this to where we find the coverage data.
+                                                  #    The path is relative to the current directory.
+                      format: clover
+checks:
+    php:
+        remove_extra_empty_lines: true
+        remove_php_closing_tag: true
+        remove_trailing_whitespace: true
+        fix_use_statements:
+            remove_unused: true
+            preserve_multiple: false
+            preserve_blanklines: true
+            order_alphabetically: true
+        #fix_php_opening_tag: true
+        fix_linefeed: true
+        fix_line_ending: true
+        fix_identation_4spaces: true
+        #fix_doc_comments: true
