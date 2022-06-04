@@ -48,7 +48,6 @@ build:
             tests:
                 before:
                   - command: 'cp .env.example .env'
-                  - command: "mysql -e 'create database scrutinizer;'"
 
                 override:
                   - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
