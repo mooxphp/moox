@@ -7,7 +7,7 @@ namespace Usetall\TalluiCore\Components\Livewire;
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiCore\Components\LivewireComponent;
 
-class FirstLivewireComponent extends LivewireComponent
+class CoreLivewire extends LivewireComponent
 {
     /** @var string|null */
     public string $first_var = "";
