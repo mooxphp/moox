@@ -45,10 +45,12 @@ build:
                         use_website_config: true
                     - js-scrutinizer-run
         coverage:
+            services:
+                mysql: 5.7
             tests:
                 before:
                   - command: 'cp .env.example .env'
-
+                  - command: "mysql -e 'create database scrutinizer;'"
                 override:
                   - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
                     coverage:
