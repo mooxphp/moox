@@ -1,7 +1,7 @@
-# build:
-#     image: default-bionic
-#     environment:
-#         php: 8.1.2
+build:
+    image: default-bionic
+    environment:
+        php: 8.1.2
 #         #mysql: '5.7'
 #         node: '12'
 #         hosts:
@@ -39,18 +39,18 @@
 #                     file: laravel-test-examples-coverage
 #                     format: clover
 
-#     nodes:
-#         analysis:
-#             project_setup:
-#                 override:
-#                     - 'true'
-#             tests:
-#                 override:
-#                     - php-scrutinizer-run
-#                     -
-#                         command: phpcs-run
-#                         use_website_config: true
-#                     - js-scrutinizer-run
+    nodes:
+        analysis:
+            project_setup:
+                override:
+                    - 'true'
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    -
+                        command: phpcs-run
+                        use_website_config: true
+                    - js-scrutinizer-run
 
 #         coverage:
 #             services:
@@ -64,8 +64,8 @@
 #                     coverage:
 #                       file: build/logs/clover.xml
 #                       format: clover
-#         tests: true
 
+        tests: true
 filter:
     paths:
         - 'app/*'
