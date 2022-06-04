@@ -9,9 +9,6 @@ use Usetall\TalluiCore\Components\BladeComponent;
 
 class FirstBladeComponent extends BladeComponent
 {
-    /** @var array */
-    protected static $assets = ['example'];
-
     /** @var string|null */
     public string $first_var = "";
 
@@ -22,6 +19,6 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-core::components.blade.first-blade-component');
+        return view('tallui-core::components.blade.core-component');
     }
 }

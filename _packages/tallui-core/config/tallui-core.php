@@ -16,7 +16,7 @@ return [
     */
 
     'components' => [
-        'first-blade-component' => Components\Blade\FirstBladeComponent::class,
+        'core-component' => Components\Blade\CoreComponent::class,
     ],
 
     /*
@@ -30,7 +30,7 @@ return [
     */
 
     'livewire' => [
-        'first-livewire-component' => Components\Livewire\FirstLivewireComponent::class,
+        'core-livewire' => Components\Livewire\CoreLivewire::class,
     ],
 
     /*
@@ -62,10 +62,10 @@ return [
 
     'assets' => [
 
-        'example' => [
-            'https://unpkg.com/example/dist/example.min.css',
-            'https://unpkg.com/example/dist/example.min.js',
-        ],
+        // 'example' => [
+        //     'https://unpkg.com/example/dist/example.min.css',
+        //     'https://unpkg.com/example/dist/example.min.js',
+        // ],
 
     ],
 

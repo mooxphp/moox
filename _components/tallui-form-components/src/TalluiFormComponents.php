@@ -7,10 +7,10 @@ namespace Usetall\TalluiFormComponents;
 final class TalluiFormComponents
 {
     /** @var array */
-    private static $styles = [];
+    protected static $styles = [];
 
     /** @var array */
-    private static $scripts = [];
+    protected static $scripts = [];
 
     public static function addStyle(string $style): void
     {
