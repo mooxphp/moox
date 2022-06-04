@@ -21,6 +21,9 @@ build:
             - node_modules
             - vendor/
             - ~/.composer/cache/
+    #dependencies:
+        #before:
+          #- 'mysql -u root -e "CREATE DATABASE scrutinizer"'
     tests:
         before:
             - chmod -R 777 storage
@@ -50,7 +53,7 @@ build:
             tests:
                 before:
                   - command: 'cp .env.example .env'
-                  - command: "mysql -e 'create database scrutinizer;'"
+                  #- command: "mysql -e 'create database scrutinizer;'"
                 override:
                   - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
                     coverage:
@@ -79,6 +82,112 @@ checks:
         fix_line_ending: true
         fix_identation_4spaces: true
         fix_doc_comments: true
+        verify_property_names: true
+        verify_argument_usable_as_reference: true
+        verify_access_scope_valid: true
+        variable_existence: true
+        useless_calls: true
+        use_statement_alias_conflict: true
+        fix_doc_comments: false
+        avoid_corrupting_byteorder_marks: true
+        unused_variables: true
+        argument_type_checks: true
+        assignment_of_null_return: true
+        avoid_aliased_php_functions: true
+        avoid_closing_tag: true
+        avoid_conflicting_incrementers: true
+        avoid_duplicate_types: true
+        avoid_entity_manager_injection: true
+        avoid_fixme_comments: true
+        avoid_length_functions_in_loops: true
+        avoid_multiple_statements_on_same_line: true
+        avoid_perl_style_comments: true
+        avoid_superglobals: true
+        avoid_todo_comments: true
+        avoid_usage_of_logical_operators: true
+        avoid_useless_overridden_methods: true
+        blank_line_after_namespace_declaration: true
+        catch_class_exists: true
+        classes_in_camel_caps: true
+        closure_use_modifiable: true
+        closure_use_not_conflicting: true
+        code_rating: true
+        deadlock_detection_in_loops: true
+        deprecated_code_usage: true
+        duplication: true
+        encourage_shallow_comparison: true
+        encourage_single_quotes: true
+        foreach_traversable: true
+        foreach_usable_as_reference: true
+        function_in_camel_caps: true
+        instanceof_class_exists: true
+        line_length:
+            max_length: '120'
+        method_calls_on_non_object: true
+        missing_arguments: true
+        more_specific_types_in_doc_comments: true
+        newline_at_end_of_file: true
+        no_commented_out_code: true
+        no_debug_code: true
+        no_duplicate_arguments: true
+        no_empty_statements: true
+        no_error_suppression: true
+        no_eval: true
+        no_exit: true
+        no_global_keyword: true
+        no_goto: true
+        no_long_variable_names:
+            maximum: '20'
+        no_non_implemented_abstract_methods: true
+        no_property_on_interface: true
+        no_short_method_names:
+            minimum: '0'
+        no_short_open_tag: true
+        no_short_variable_names:
+            minimum: '0'
+        no_trailing_whitespace: true
+        no_trait_type_hints: true
+        no_underscore_prefix_in_methods: true
+        no_underscore_prefix_in_properties: true
+        no_unnecessary_final_modifier: true
+        no_unnecessary_if: true
+        non_commented_empty_catch_block: true
+        one_class_per_file: true
+        overriding_private_members: true
+        parameter_non_unique: true
+        parse_doc_comments: true
+        optional_parameters_at_the_end: true
+        param_doc_comment_if_not_inferrable: true
+        parameter_doc_comments: true
+        parameters_in_camelcaps: true
+        php5_style_constructor: true
+        precedence_in_conditions: true
+        precedence_mistakes: true
+        prefer_while_loop_over_for_loop: true
+        properties_in_camelcaps: true
+        property_assignments: true
+        psr2_class_declaration: true
+        psr2_switch_declaration: true
+        require_php_tag_first: true
+        require_scope_for_methods: true
+        require_scope_for_properties: true
+        return_doc_comment_if_not_inferrable: true
+        return_doc_comments: true
+        security_vulnerabilities: true
+        side_effects_or_types: true
+        simplify_boolean_return: true
+        single_namespace_per_use: true
+        sql_injection_vulnerabilities: true
+        symfony_request_injection: true
+        switch_fallthrough_commented: true
+        too_many_arguments: true
+        unreachable_code: true
+        unused_methods: true
+        unused_parameters: true
+        unused_properties: true
+        uppercase_constants: true
+        use_self_instead_of_fqcn: true
     javascript: true
+
 coding_style:
     php: {  }
