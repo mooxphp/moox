@@ -65,7 +65,7 @@ build:
 #                       file: build/logs/clover.xml
 #                       format: clover
 
-        tests: true
+#        tests: true
 filter:
     paths:
         - 'app/*'
@@ -307,7 +307,7 @@ tools:
                 method_call_validity: true
                 too_many_arguments:   true
                 missing_argument:     true
-                argument_type_checks: lenient # Allowed Values: "disabled", "lenient", "strict"
+                argument_type_checks: lenient
             check_debug_code:
                 enabled:              true
             check_property_assignments:
@@ -361,8 +361,6 @@ tools:
                 enabled:              false
             reflection_checks:
                 enabled:              true
-
-            # Checks Common Precedence Mistakes
             precedence_checks:
                 enabled:              true
                 assignment_in_condition:  true
