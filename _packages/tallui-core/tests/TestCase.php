@@ -5,7 +5,6 @@ namespace Usetall\TalluiCore\Tests;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Usetall\TalluiCore\TalluiCoreServiceProvider;
-use Livewire\Livewire;
 
 class TestCase extends Orchestra
 {
@@ -18,12 +17,6 @@ class TestCase extends Orchestra
         );
     }
 
-    protected function getPackageProviders($app)
-    {
-        return [
-            TalluiCoreServiceProvider::class,
-        ];
-    }
 
     public function getEnvironmentSetUp($app)
     {
