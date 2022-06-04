@@ -2,7 +2,7 @@ build:
     image: default-bionic
     environment:
         php: 8.1.2
-        mysql: '5.7'
+        #mysql: '5.7'
         node: '12'
         hosts:
             laravel.dev: '127.0.0.1'
@@ -53,8 +53,8 @@ build:
                     - js-scrutinizer-run
 
         coverage:
-            services:
-                mysql: 5.7
+            #services:
+                #mysql: 5.7
             tests:
                 before:
                   - command: 'cp .env.example .env'
