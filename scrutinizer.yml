@@ -3,7 +3,7 @@ build:
     environment:
         php: 8.1.2
         mysql: '5.7'
-        node: '11'
+        node: '12'
         hosts:
             laravel.dev: '127.0.0.1'
         variables:
