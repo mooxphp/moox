@@ -23,7 +23,7 @@ build:
             - ~/.composer/cache/
     dependencies:
         before:
-            - mysql -uroot -e 'CREATE DATABASE scrutinizer'
+          - 'mysql -u root -e "CREATE DATABASE scrutinizer"'
     tests:
         before:
             - chmod -R 777 storage
