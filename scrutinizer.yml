@@ -16,14 +16,17 @@ build:
             DB_USERNAME: 'root'
             DB_PASSWORD: ''
             MAIL_DRIVER: 'log'
+
     cache:
         directories:
             - node_modules
             - vendor/
             - ~/.composer/cache/
+
     #dependencies:
         #before:
           #- 'mysql -u root -e "CREATE DATABASE scrutinizer"'
+
     tests:
         before:
             - chmod -R 777 storage
@@ -35,6 +38,7 @@ build:
                 coverage:
                     file: laravel-test-examples-coverage
                     format: clover
+
     nodes:
         analysis:
             project_setup:
@@ -47,6 +51,7 @@ build:
                         command: phpcs-run
                         use_website_config: true
                     - js-scrutinizer-run
+
         coverage:
             services:
                 mysql: 5.7
@@ -60,13 +65,19 @@ build:
                       file: build/logs/clover.xml
                       format: clover
         tests: true
+
 filter:
     paths:
         - 'app/*'
-    excluded_paths:
-        - 'app/views/*'
-        - 'app/config/*'
-        - 'app/database/*'
+    #excluded_paths:
+        #- 'app/views/*'
+        #- 'app/config/*'
+        #- 'app/database/*'
+        #- 'build/*'
+        #- 'resources/*'
+        #- 'tests/*'
+        #- 'vendor/*'
+
 checks:
     php:
         remove_extra_empty_lines: true
@@ -81,14 +92,13 @@ checks:
         fix_linefeed: true
         fix_line_ending: true
         fix_identation_4spaces: true
-        fix_doc_comments: true
+        fix_doc_comments: false
         verify_property_names: true
         verify_argument_usable_as_reference: true
         verify_access_scope_valid: true
         variable_existence: true
         useless_calls: true
         use_statement_alias_conflict: true
-        fix_doc_comments: false
         avoid_corrupting_byteorder_marks: true
         unused_variables: true
         argument_type_checks: true
@@ -188,6 +198,196 @@ checks:
         uppercase_constants: true
         use_self_instead_of_fqcn: true
     javascript: true
+
+tools:
+
+    # PHP Code Similarity Analyzer (https://scrutinizer-ci.com/docs/tools/php/code-similarity-analyzer/)
+    php_sim:
+        min_mass: 30 # Defaults to 16
+
+
+    # SensioLabs Security Checker (https://scrutinizer-ci.com/docs/tools/php/security-advisory-checker/)
+    sensiolabs_security_checker:
+        enabled:              true
+
+
+    # PHP Code Sniffer (https://scrutinizer-ci.com/docs/tools/php/code-sniffer/)
+    php_code_sniffer:
+        enabled:              true
+        config:
+            standard:         PSR2
+        filter:
+            excluded_paths:
+                - 'build/*'
+                - 'resources/*'
+                - 'tests/*'
+                - 'vendor/*'
+
+
+    # PHP Copy/Paste Detector
+    php_cpd:
+        enabled:              true
+        excluded_dirs:
+            - 'build'
+            - 'resources'
+            - 'tests'
+            - 'vendor'
+
+
+    # Analyzes the size and structure of a PHP project.
+    php_loc:
+        enabled:              true
+        excluded_dirs:
+            - 'build'
+            - 'resources'
+            - 'tests'
+            - 'vendor'
+
+
+    # PHP Mess Detector
+    php_mess_detector:
+        enabled:              true
+        config:
+            rulesets:
+                - codesize
+                - unusedcode
+                - naming
+                - design
+                - controversial
+        filter:
+            excluded_paths:
+                - 'build/*'
+                - 'tests/*'
+                - 'resources/*'
+                - 'vendor/*'
+
+
+    # PHP PDepend (https://scrutinizer-ci.com/docs/tools/php/pdepend/)
+    php_pdepend:
+        enabled:              true
+        excluded_dirs:
+            - 'build'
+            - 'resources'
+            - 'tests'
+            - 'vendor'
+
+
+    # PHP Analyzer (https://scrutinizer-ci.com/docs/tools/php/php-analyzer/)
+    php_analyzer:
+        enabled:              true
+        config:
+            parameter_reference_check:
+                enabled:              true
+            checkstyle:
+                enabled:              true
+                no_trailing_whitespace:  true
+                naming:
+                    enabled:              true
+                    local_variable:       ^[a-z][a-zA-Z0-9]*$
+                    abstract_class_name:  ^Abstract|Factory$
+                    utility_class_name:   Utils?$
+                    constant_name:        ^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)*$
+                    property_name:        ^[a-z][a-zA-Z0-9]*$
+                    method_name:          ^(?:[a-z]|__)[a-zA-Z0-9]*$
+                    parameter_name:       ^[a-z][a-zA-Z0-9]*$
+                    interface_name:       ^[A-Z][a-zA-Z0-9]*Interface$
+                    type_name:            ^[A-Z][a-zA-Z0-9]*$
+                    exception_name:       ^[A-Z][a-zA-Z0-9]*Exception$
+                    isser_method_name:    ^(?:is|has|should|may|supports)
+            unreachable_code:
+                enabled:              true
+            check_access_control:
+                enabled:              true
+            typo_checks:
+                enabled:              true
+            check_variables:
+                enabled:              true
+            check_calls:
+                enabled:              true
+                method_call_validity: true
+                too_many_arguments:   true
+                missing_argument:     true
+                argument_type_checks: lenient # Allowed Values: "disabled", "lenient", "strict"
+            check_debug_code:
+                enabled:              true
+            check_property_assignments:
+                enabled:              true
+            method_contract_checks:
+                enabled:              true
+                verify_interface_like_constraints:  true
+                verify_documented_constraints:  true
+                verify_parent_constraints:  true
+            check_request_data_usage:
+                enabled:              true
+            suspicious_code:
+                enabled:              true
+                overriding_parameter:  false
+                overriding_closure_use:  true
+                parameter_closure_use_conflict:  true
+                parameter_multiple_times:  true
+                non_existent_class_in_instanceof_check:  true
+                non_existent_class_in_catch_clause:  true
+                assignment_of_null_return:  true
+                non_commented_switch_fallthrough:  true
+                non_commented_empty_catch_block:  true
+                overriding_private_members:  true
+                use_statement_alias_conflict:  true
+                precedence_in_condition_assignment:  true
+            dead_assignments:
+                enabled:              true
+            deadlock_detection:
+                enabled:              true
+            verify_php_doc_comments:
+                enabled:              true
+                parsable:             true
+                traits_are_not_type_hinted:  true
+                parameters:           true
+                return:               true
+                suggest_more_specific_types:  true
+                ask_for_return_if_not_inferrable:  true
+                ask_for_param_type_annotation:  ~
+            loops_must_use_braces:
+                enabled:              true
+            check_usage_context:
+                enabled:              true
+                foreach:
+                    value_as_reference:   true
+                    traversable:          true
+                missing_argument:     ~
+                argument_type_checks:  ~
+            simplify_boolean_return:
+                enabled:              true
+            phpunit_checks:
+                enabled:              false
+            reflection_checks:
+                enabled:              true
+
+            # Checks Common Precedence Mistakes
+            precedence_checks:
+                enabled:              true
+                assignment_in_condition:  true
+                comparison_of_bit_result:  true
+            basic_semantic_checks:
+                enabled:              true
+                property_on_interface:  true
+                missing_abstract_methods:  true
+            unused_code:
+                enabled:              true
+                methods:              true
+                parameters:           true
+            deprecation_checks:
+                enabled:              true
+            useless_function_calls:
+                enabled:              true
+            metrics_lack_of_cohesion_methods:
+                enabled:              true
+            metrics_coupling:
+                enabled:              true
+                stable_code:
+                    namespace_prefixes:   []
+                    classes:              []
+            symfony_request_injection:
+                enabled:              true
 
 coding_style:
     php: {  }
