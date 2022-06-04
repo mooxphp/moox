@@ -1,10 +1,9 @@
 build:
     image: default-bionic
     environment:
-        php:
-            version: 8.1.6
+        php: 8.1.2
         mysql: '5.7'
-        node: '18'
+        node: '11'
         hosts:
             laravel.dev: '127.0.0.1'
         variables:
@@ -38,9 +37,15 @@ build:
                     format: clover
     nodes:
         analysis:
+            project_setup:
+                override:
+                    - 'true'
             tests:
                 override:
                     - php-scrutinizer-run
+                    -
+                        command: phpcs-run
+                        use_website_config: true
                     - js-scrutinizer-run
         coverage:
             tests:
@@ -51,9 +56,17 @@ build:
                 override:
                   - command: './vendor/bin/phpunit --coverage-clover=build/logs/clover.xml'
                     coverage:
-                      file: build/logs/clover.xml   # <- Set this to where we find the coverage data.
-                                                  #    The path is relative to the current directory.
+                      file: build/logs/clover.xml
                       format: clover
+        tests: true
+    nodes:
+filter:
+    paths:
+        - 'app/*'
+    excluded_paths:
+        - 'app/views/*'
+        - 'app/config/*'
+        - 'app/database/*'
 checks:
     php:
         remove_extra_empty_lines: true
@@ -64,8 +77,11 @@ checks:
             preserve_multiple: false
             preserve_blanklines: true
             order_alphabetically: true
-        #fix_php_opening_tag: true
+        fix_php_opening_tag: true
         fix_linefeed: true
         fix_line_ending: true
         fix_identation_4spaces: true
-        #fix_doc_comments: true
+        fix_doc_comments: true
+    javascript: true
+coding_style:
+    php: {  }
