@@ -3,7 +3,7 @@ build:
     environment:
         php:
             version: 8.1.6
-        mysql: '8.0'
+        mysql: '5.7'
         node: '18'
         hosts:
             laravel.dev: '127.0.0.1'
@@ -69,3 +69,35 @@ checks:
         fix_line_ending: true
         fix_identation_4spaces: true
         #fix_doc_comments: true
+
+
+
+build:
+    image: default-bionic
+    environment:
+        php: 8.1.2
+    nodes:
+        analysis:
+            project_setup:
+                override:
+                    - 'true'
+            tests:
+                override:
+                    - php-scrutinizer-run
+                    -
+                        command: phpcs-run
+                        use_website_config: true
+                    - js-scrutinizer-run
+        tests: true
+filter:
+    paths:
+        - 'app/*'
+    excluded_paths:
+        - 'app/views/*'
+        - 'app/config/*'
+        - 'app/database/*'
+checks:
+    php: true
+    javascript: true
+coding_style:
+    php: {  }
