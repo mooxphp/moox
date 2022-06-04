@@ -21,9 +21,6 @@ build:
             - node_modules
             - vendor/
             - ~/.composer/cache/
-    dependencies:
-        before:
-          - 'mysql -u root -e "CREATE DATABASE scrutinizer"'
     tests:
         before:
             - chmod -R 777 storage
