@@ -16,6 +16,7 @@ return [
 
     'components' => [
         'input' => Components\Inputs\Input::class,
+        'form' => Components\Forms\Form::class,
     ],
 
     /*
@@ -29,7 +30,7 @@ return [
     */
 
     'livewire' => [
-        'form' => Components\Forms\Form::class,
+        //'form' => Components\Forms\Form::class,
     ],
 
     /*

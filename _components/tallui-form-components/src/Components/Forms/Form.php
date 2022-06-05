@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiFormComponents\Components\Forms;
 
-use Usetall\TalluiFormComponents\Components\LivewireComponent;
+use Usetall\TalluiFormComponents\Components\BladeComponent;
 use Illuminate\Contracts\View\View;
 
-class Form extends LivewireComponent
+class Form extends BladeComponent
 {
     /** @var string|null */
     public $action;
 
     /** @var string */
     public $method;
-
-    /** @var string */
-    public $attributes;
 
     /** @var bool */
     public $hasFiles;

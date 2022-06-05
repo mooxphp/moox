@@ -2,5 +2,5 @@
     @csrf
     @method($method)
 
-    @yield('content')
+    {{ $slot }}
 </form>
