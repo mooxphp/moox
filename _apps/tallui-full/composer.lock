@@ -5562,12 +5562,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/usetall/tallui-core.git",
-                "reference": "d251d1bc4a1a30cfdb6512c0006348ce37060483"
+                "reference": "0a964efb4e51d50bedb252e3f3855ef17a197007"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/usetall/tallui-core/zipball/d251d1bc4a1a30cfdb6512c0006348ce37060483",
-                "reference": "d251d1bc4a1a30cfdb6512c0006348ce37060483",
+                "url": "https://api.github.com/repos/usetall/tallui-core/zipball/0a964efb4e51d50bedb252e3f3855ef17a197007",
+                "reference": "0a964efb4e51d50bedb252e3f3855ef17a197007",
                 "shasum": ""
             },
             "require": {
@@ -5653,7 +5653,7 @@
             "support": {
                 "source": "https://github.com/usetall/tallui-core/tree/main"
             },
-            "time": "2022-06-04T01:14:42+00:00"
+            "time": "2022-06-04T23:55:16+00:00"
         },
         {
             "name": "usetall/tallui-web-components",
@@ -5661,12 +5661,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/usetall/tallui-web-components.git",
-                "reference": "8b1ea02d04c5e7f5df9bbf3a1b64bd907da93de0"
+                "reference": "1f1ba71ad051f1e216d40a6df1d2210ea3984c9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/usetall/tallui-web-components/zipball/8b1ea02d04c5e7f5df9bbf3a1b64bd907da93de0",
-                "reference": "8b1ea02d04c5e7f5df9bbf3a1b64bd907da93de0",
+                "url": "https://api.github.com/repos/usetall/tallui-web-components/zipball/1f1ba71ad051f1e216d40a6df1d2210ea3984c9a",
+                "reference": "1f1ba71ad051f1e216d40a6df1d2210ea3984c9a",
                 "shasum": ""
             },
             "require": {
@@ -5756,7 +5756,7 @@
                 "source": "https://github.com/usetall/tallui-web-components/tree/main",
                 "issues": "https://github.com/usetall/tallui-web-components/issues"
             },
-            "time": "2022-06-04T01:07:35+00:00"
+            "time": "2022-06-04T23:45:28+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
