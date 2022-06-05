@@ -12,6 +12,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/usetall/tallui-web-components"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/usetall/tallui-form-components"
         }
     ],
     "require": {
@@ -22,7 +26,8 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",
         "usetall/tallui-core": "dev-main",
-        "usetall/tallui-web-components": "dev-main"
+        "usetall/tallui-web-components": "dev-main",
+        "usetall/tallui-form-components": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

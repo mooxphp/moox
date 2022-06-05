@@ -7,10 +7,10 @@ namespace VendorName\Skeleton;
 final class Skeleton
 {
     /** @var array */
-    private static $styles = [];
+    protected static $styles = [];
 
     /** @var array */
-    private static $scripts = [];
+    protected static $scripts = [];
 
     public static function addStyle(string $style): void
     {
