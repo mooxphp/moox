@@ -15,7 +15,7 @@ return [
     */
 
     'components' => [
-        'first-blade-component' => Components\Blade\FirstBladeComponent::class,
+        'input' => Components\Inputs\Input::class,
     ],
 
     /*
@@ -29,7 +29,7 @@ return [
     */
 
     'livewire' => [
-        'first-livewire-component' => Components\Livewire\FirstLivewireComponent::class,
+        'form' => Components\Forms\Form::class,
     ],
 
     /*

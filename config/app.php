@@ -185,9 +185,7 @@ return [
         /*
          * Package Service Providers...
          */
-        //Usetall\TalluiCore\TalluiCoreServiceProvider::class,
-        //Usetall\TalluiWebComponents\TalluiWebComponentsServiceProvider::class,
-        Usetall\TalluiFormComponents\TalluiFormComponentsServiceProvider::class,
+
 
         /*
          * Application Service Providers...

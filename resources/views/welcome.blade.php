@@ -43,6 +43,11 @@
             @livewire('core-livewire')
 
             <x-core-component />
+
+            <livewire:form attributes="text-blue-500">
+                <x-input name="bla" />
+                <input type="text" name="bla">
+            </livewire:form>
         </div>
 
         <div class="relative flex justify-center min-h-screen py-4 bg-gray-100 items-top dark:bg-gray-900 sm:items-center sm:pt-0">
