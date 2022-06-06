@@ -24,5 +24,4 @@ class FirstBladeComponent extends BladeComponent
     {
         return view(':builder::components.blade.first-blade-component');
     }
-
 }
