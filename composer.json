@@ -16,6 +16,10 @@
         {
             "type": "path",
             "url": "./_components/tallui-form-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-app-components"
         }
     ],
     "require": {
@@ -29,7 +33,8 @@
         "laravel/vapor-ui": "^1.5",
         "usetall/tallui-core": "dev-main",
         "usetall/tallui-web-components": "dev-main",
-        "usetall/tallui-form-components": "dev-main"
+        "usetall/tallui-form-components": "dev-main",
+        "usetall/tallui-app-components": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

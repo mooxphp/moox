@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b19bd71a9ee7ba83cf1f2a9c3878ec1b",
+    "content-hash": "6b07bfa8d0178775437d0f71c4f30501",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5557,6 +5557,109 @@
             "time": "2021-12-08T09:12:39+00:00"
         },
         {
+            "name": "usetall/tallui-app-components",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/usetall/tallui-app-components.git",
+                "reference": "d320edfa76a31deb401f3ed7939ae2f42b769b58"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/usetall/tallui-app-components/zipball/d320edfa76a31deb401f3ed7939ae2f42b769b58",
+                "reference": "d320edfa76a31deb401f3ed7939ae2f42b769b58",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^9.0",
+                "illuminate/filesystem": "^9.0",
+                "illuminate/support": "^9.0",
+                "illuminate/view": "^9.0",
+                "laravel/jetstream": "^2.0",
+                "livewire/livewire": "^2.0",
+                "nesbot/carbon": "^2.38",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.8",
+                "nunomaduro/collision": "^6.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^7.0",
+                "pestphp/pest": "^1.21",
+                "pestphp/pest-plugin-laravel": "^1.1",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^9.5",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\TalluiAppComponents\\TalluiAppComponentsServiceProvider"
+                    ],
+                    "aliases": {
+                        "TalluiAppComponents": "Usetall\\TalluiAppComponents\\Facades\\TalluiAppComponents"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\TalluiAppComponents\\": "src",
+                    "Usetall\\TalluiAppComponents\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Usetall\\TalluiAppComponents\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "TallUI Developers",
+                    "email": "devs@tallui.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is my package tallui-app-components",
+            "homepage": "https://github.com/usetall/tallui-app-components",
+            "keywords": [
+                "admin",
+                "alpinejs",
+                "laravel",
+                "livewire",
+                "tailwindcss",
+                "tall-stack",
+                "tallui-app-components",
+                "usetall"
+            ],
+            "support": {
+                "source": "https://github.com/usetall/tallui-app-components/tree/main"
+            },
+            "time": "2022-06-06T14:07:06+00:00"
+        },
+        {
             "name": "usetall/tallui-core",
             "version": "dev-main",
             "source": {
@@ -5755,8 +5858,7 @@
                 "usetall"
             ],
             "support": {
-                "source": "https://github.com/usetall/tallui-form-components/tree/main",
-                "issues": "https://github.com/usetall/tallui-form-components/issues"
+                "source": "https://github.com/usetall/tallui-form-components/tree/main"
             },
             "time": "2022-06-04T23:45:24+00:00"
         },
@@ -5858,8 +5960,7 @@
                 "usetall"
             ],
             "support": {
-                "source": "https://github.com/usetall/tallui-web-components/tree/main",
-                "issues": "https://github.com/usetall/tallui-web-components/issues"
+                "source": "https://github.com/usetall/tallui-web-components/tree/main"
             },
             "time": "2022-06-04T23:45:28+00:00"
         },
@@ -8742,7 +8843,8 @@
     "stability-flags": {
         "usetall/tallui-core": 20,
         "usetall/tallui-web-components": 20,
-        "usetall/tallui-form-components": 20
+        "usetall/tallui-form-components": 20,
+        "usetall/tallui-app-components": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
