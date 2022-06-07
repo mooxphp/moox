@@ -727,6 +727,31 @@ tui-release.json
 
 
 
+maybe it is better to do notes in Markdown
+
+tui-release-notes.md
+
+```markdown
+# Release Notes
+
+These are example release notes, please enter notable changes here:
+
+![Dashboard](idontknowwhere/dashboard.png)
+
+- First change, Github Issue #23
+- Second change, Git Commit-Hash
+- Third change, made by @adrolli
+- Forth change, linked (here)[https://tallui.io]
+```
+
+Then read them (copy them like json), use them as bodyfile
+
+Afterwards delete them, and replace them with the above template
+
+Insert a check, if the template was edited. If not, cancel the release
+
+
+
 ## Releases:
 
 There are two ways to craft a new release:
@@ -815,6 +840,8 @@ jobs:
 ## Builder:
 
 - Builder does not register sp, why? Seems to work
+- Fix problem with asset loading, mix error, see https://blade-ui-kit.com/docs/0.x/installation (Production) ... test with blade-ui-kit, when unsure if it works mixing 3rd party assets. 
+- How to include all assets as original sources? Better than 3rd party CDN?
 - Add languages for translation to builder
 - Banner static or https://banners.beyondco.de/
 - Remove most of dependencies, add livewire to dev-deps
@@ -822,7 +849,7 @@ jobs:
 - Improve Readme
 - Add docs and tests for components
 - Improve Configure
-  - Theme, Components or Package?
+  - Theme, Components or Package? Strip everything you don't need
   - TallUI Ascii Art, like https://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=TALLUI
 
 
@@ -848,9 +875,9 @@ Icons
 
 - Move asset logic to core: 
   core should be able to load and mix all assets, own assets as well as assets of all registered packages with own assets. Asset loading should be done as follows:
-  - Mix all global assets to core.css and core.js
-  - Mix all theme-specific assets to theme.css and theme.js
-  - Load or mix and merge all component-specific assets to page.css and page.js
+  - Mix all global assets to core.css and core.js - core does only tall-stack, no own assets
+  - Mix all theme-specific assets to theme.css and theme.js - theme depends on own tailwind-conf?
+  - Load (or mix and merge) all component-specific assets (to page.css and page.js)
 - Move loading logic to core
   - Core (as well as a backup class for loading components without core) should be able to load ...
     - Backend Modules
