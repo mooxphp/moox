@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiFormComponents\Components\Inputs;
 
-use Usetall\TalluiFormComponents\Components\BladeComponent;
 use Illuminate\Contracts\View\View;
+use Usetall\TalluiFormComponents\Components\BladeComponent;
 
 class Input extends BladeComponent
 {
