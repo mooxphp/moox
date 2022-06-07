@@ -20,6 +20,7 @@ jobs:
                 package:
                   - tallui-web-components
                   - tallui-form-components
+                  - tallui-app-components
         steps:
             -   uses: actions/checkout@v2
 
