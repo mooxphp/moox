@@ -33,5 +33,6 @@ jobs:
                     repository_organization: 'usetall'
                     repository_name: '${{ matrix.package }}'
 
-                    user_name: "adrolli"
-                    user_email: "alf@alf-drollinger.com"
+                    user_name: "tallui-bot"
+                    user_email: "bot@tallui.io"
+
