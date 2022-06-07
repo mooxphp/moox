@@ -589,6 +589,7 @@ php artisan make:livewire components.livewire-component --test
 
 ## Monorepo:
 
+- Should do CS Fixing!
 - Craft a new version
   - create version files in each package (and builder)
   - read version https://github.com/marketplace/actions/read-file or better https://github.com/marketplace/actions/get-json-property

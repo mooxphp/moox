@@ -9,5 +9,8 @@
 	],
 	"Apps": [
 		"tallui-full"
-	]
+	],
+    "Icons": [
+        "tallui-web-icons"
+    ]
 }
