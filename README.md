@@ -576,3 +576,339 @@ Packages
 - Socialite
 - Search
 
+# Todo
+
+
+
+```
+php artisan make:livewire components.livewire-component --test
+
+```
+
+
+
+## Monorepo:
+
+- Craft a new version
+  - create version files in each package (and builder)
+  - read version https://github.com/marketplace/actions/read-file or better https://github.com/marketplace/actions/get-json-property
+  - craft version https://github.com/marketplace/actions/create-release
+
+release.yml - package
+
+```yaml
+name: Release
+
+on:
+  push:
+    paths:
+      - 'tui-release.json'
+    
+jobs:
+	build:
+		runs-on: ubuntu-latest
+		steps: 
+          - name: Checkout code
+            uses: actions/checkout@v3
+            with:
+              ref: ${{ github.head_ref }}
+          - name: Read version from JSON file
+          	id: read_version
+          	uses: notiz-dev/github-action-json-property@release
+          	with:
+          		path: 'tui-release.json'
+        		prop_path: 'Release.Version'
+          - name: Read release title from JSON file
+          	id: read_title
+          	uses: notiz-dev/github-action-json-property@release
+          	with:
+          		path: 'tui-release.json'
+        		prop_path: 'Release.Title'					
+          - name: Read release notes from JSON file
+          	id: read_notes
+          	uses: notiz-dev/github-action-json-property@release
+          	with:
+          		path: 'tui-release.json'
+        		prop_path: 'Release.Notes'
+          - name: Create the release
+          	id: create_release
+        	uses: ncipollo/release-action@v1
+      		with:
+				tag: ${{steps.read_version.outputs.prop}}
+				name: ${{steps.read_title.outputs.prop}}
+				body: ${{steps.read_notes.outputs.prop}}
+                token: ${{ secrets.GITHUB_TOKEN }}
+
+            # TODO body = output a line for each prop[value]
+            # TODO run: echo ${{steps.read-version.outputs.prop}}
+```
+
+releases.yml - root
+
+```yaml
+ name: Releases
+
+on:
+  push:
+    paths:
+      - 'tui-release.json'
+    
+jobs:
+	build:
+		runs-on: ubuntu-latest
+		steps: 
+            - name: Checkout code
+              uses: actions/checkout@v3
+              with:
+              ref: ${{ github.head_ref }}
+            - name: Read version from JSON file
+              id: read_packages
+              uses: notiz-dev/github-action-json-property@release
+              with:
+              path: 'tui-release-matrix.json'
+              prop_path: 'Packages'
+
+			# TODO should be a foreach ... needs a matrix made from json
+			# see https://github.com/JoshuaTheMiller/conditional-build-matrix
+			
+            - name: copy files
+              id: copy_files
+              uses: canastro/copy-file-action@master
+              with:
+                source: "tui-release.json"
+                target: "prop-path/package/tui-release.json"
+                
+            # TODO needs the matrix too, should also matrix over folders
+			- name: split repos
+              id: split_repos
+              if: "!startsWith(github.ref, 'refs/tags/')"
+              uses: "symplify/monorepo-split-github-action@2.1"
+              with:
+                tag: ${GITHUB_REF#refs/tags/}
+
+                package_directory: '_apps/${{ matrix.package }}'
+
+                repository_organization: 'usetall'
+                repository_name: '${{ matrix.package }}'
+
+                user_name: "adrolli"
+                user_email: "alf@alf-drollinger.com"
+                
+            - name: Create the release
+              id: create_release
+              uses: ncipollo/release-action@v1
+              with:
+              tag: ${{steps.read_version.outputs.prop}}
+              name: ${{steps.read_title.outputs.prop}}
+              body: ${{steps.read_notes.outputs.prop}}
+              token: ${{ secrets.GITHUB_TOKEN }}
+
+            # TODO body = output a line for each prop[value]
+            # TODO run: echo ${{steps.read-version.outputs.prop}}
+                
+```
+
+
+
+tui-release.json
+
+```json
+{
+	"Release": {
+		"Version": "0.0.1",
+		"Title": "Test Release",
+		"Notes": [
+			"- Minor changes",
+			"- See commits"
+		]
+	}
+}
+```
+
+
+
+## Releases:
+
+There are two ways to craft a new release:
+
+- Craft a minor release (0.1.19 -> 0.1.20) to a single package
+  - Edit the release.json file in one of the packages
+  - The Github Action will craft a new release for this package
+  - The Github Action will edit the version 
+- Craft a major release (0.1.0 -> 0.2.0) to all packages
+  - Edit the release.json file in project root
+  - The Github Action will update all release-files according to release matrix
+  - The Github Action will craft a new release for the tallui-monorepo
+  - All packages will be released accordingly
+
+tui-release-matrix.json
+
+```json
+{
+	"Packages": [
+		"tallui-core"
+	],
+	"Components": [
+		"tallui-web-components",
+		"tallui-app-components",
+		"tallui-form-components"
+	],
+	"Apps": [
+		"tallui-full"
+	]
+}
+```
+
+Can also invoke the split
+
+```yaml
+name: 'Split Components'
+
+on:
+    push:
+        branches:
+            - main
+        tags:
+            - '*'
+
+env:
+    GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+
+jobs:
+    packages_split:
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                package:
+                  - tallui-full
+        steps:
+            -   uses: actions/checkout@v2
+
+            -
+                if: "!startsWith(github.ref, 'refs/tags/')"
+                uses: "symplify/monorepo-split-github-action@2.1"
+                with:
+                    tag: ${GITHUB_REF#refs/tags/}
+
+                    package_directory: '_apps/${{ matrix.package }}'
+
+                    repository_organization: 'usetall'
+                    repository_name: '${{ matrix.package }}'
+
+                    user_name: "adrolli"
+                    user_email: "alf@alf-drollinger.com"
+
+```
+
+
+
+
+
+
+
+- Read with https://github.com/GrahamCampbell/Laravel-Markdown or write php, too (more efficient, otherwise in next step you need versions of all deps too)
+
+
+
+## Builder:
+
+- Builder does not register sp, why? Seems to work
+- Add languages for translation to builder
+- Banner static or https://banners.beyondco.de/
+- Remove most of dependencies, add livewire to dev-deps
+- Fix testing problems
+- Improve Readme
+- Add docs and tests for components
+- Improve Configure
+  - Theme, Components or Package?
+  - TallUI Ascii Art, like https://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=TALLUI
+
+
+
+## Form Components:
+
+- Create form components from blade-ui, change everything to livewire, if possible, see
+  -  https://forum.laravel-livewire.com/t/is-there-a-way-to-use-blades-attribute-forwarding-in-livewire-components/1138/5
+  - https://laravel-livewire.com/screencasts/nesting
+  - https://laracasts.com/series/livewire-basics/episodes/3
+
+Admin Dashboard
+
+- file:///C:/Users/alfdr/GitHub/tallui/_packages/tallui-adminpanel/dashboard.html -> Dashboard
+
+Icons
+
+- Fork https://github.com/blade-ui-kit/blade-icons-template to icon-builder
+- Add Scaffold Command wiring the package
+- Create all iconsets
+
+## Core:
+
+- Move asset logic to core: 
+  core should be able to load and mix all assets, own assets as well as assets of all registered packages with own assets. Asset loading should be done as follows:
+  - Mix all global assets to core.css and core.js
+  - Mix all theme-specific assets to theme.css and theme.js
+  - Load or mix and merge all component-specific assets to page.css and page.js
+- Move loading logic to core
+  - Core (as well as a backup class for loading components without core) should be able to load ...
+    - Backend Modules
+      - route
+      - view
+      - menu (own class)
+    - Editor Blocks
+      - Backend Component, to be invented
+
+- extend PackageServiceProvider in core
+  - hasModule(TalluiCoreModule::class)
+  - hasWidget('tallui-core_widget')
+  - hasBlock('tallui-core_block')
+  - hasAdminTheme('tallui-core_admin_theme')
+  - hasTheme('tallui-core_website_theme');
+  - hasAssets?
+  - use https://github.com/tonysm/tailwindcss-laravel
+
+
+
+## Editor
+
+
+- TEST https://github.com/VanOns/laraberg
+
+
+
+
+
+## Fresh installation (docs)
+
+curl -s https://laravel.build/example-app | bash
+
+Add TallUI VCS-Repositories and Dependencies to composer.json, soon to be available on Packagist
+
+php artisan jetstream:install livewire
+
+npm install && npm run dev
+
+vendor/bin/sail up -d
+
+vendor/bin/sail shell
+
+php artisan migrate
+
+
+
+
+
+## Testing:
+
+- Scrutinizer
+- https://github.com/laracasts/cypress
+- https://docs.cypress.io/guides/overview/why-cypress#What-you-ll-learn
+
+Helper scripts:
+
+- Update PHP: Scrutinizer, Composer, ...
+
+
+
