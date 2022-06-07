@@ -716,11 +716,8 @@ tui-release.json
 {
 	"Release": {
 		"Version": "0.0.1",
-		"Title": "Test Release",
-		"Notes": [
-			"- Minor changes",
-			"- See commits"
-		]
+        "Prerelease": true,
+		"Title": "Test Release"
 	}
 }
 ```
@@ -729,7 +726,7 @@ tui-release.json
 
 maybe it is better to do notes in Markdown
 
-tui-release-notes.md
+tui-release-notes.md // tui-release-notes-template.md
 
 ```markdown
 # Release Notes

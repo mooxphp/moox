@@ -1,0 +1,13 @@
+{
+	"Packages": [
+		"tallui-core"
+	],
+	"Components": [
+		"tallui-web-components",
+		"tallui-app-components",
+		"tallui-form-components"
+	],
+	"Apps": [
+		"tallui-full"
+	]
+}
