@@ -1,4 +1,4 @@
-name: 'Split Others'
+name: 'Split Icons'
 
 on:
     push:
@@ -18,7 +18,7 @@ jobs:
             fail-fast: false
             matrix:
                 package:
-                  - tallui-package-builder
+                  - tallui-web-icons
         steps:
             -   uses: actions/checkout@v2
 
@@ -28,7 +28,7 @@ jobs:
                 with:
                     tag: ${GITHUB_REF#refs/tags/}
 
-                    package_directory: '_others/${{ matrix.package }}'
+                    package_directory: '_icons/${{ matrix.package }}'
 
                     repository_organization: 'usetall'
                     repository_name: '${{ matrix.package }}'

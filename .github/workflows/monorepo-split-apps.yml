@@ -1,4 +1,4 @@
-name: 'Split Components'
+name: 'Split Apps'
 
 on:
     push:
