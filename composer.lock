@@ -6881,7 +6881,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
-                "reference": "628489bddc7ac7e2b64e1b51cdf03a15160a0ba1"
+                "reference": "6c8afd2024d7e60de0a3af899bc9252467113e50"
             },
             "require": {
                 "ext-json": "*",
