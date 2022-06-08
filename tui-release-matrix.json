@@ -5,7 +5,9 @@
 	"Components": [
 		"tallui-web-components",
 		"tallui-app-components",
-		"tallui-form-components"
+		"tallui-form-components",
+        "tallui-special-components",
+        "tallui-dev-components"
 	],
 	"Apps": [
 		"tallui-full"

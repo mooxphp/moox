@@ -21,7 +21,16 @@
         </style>
 
 <?php //  ?>
-@TalluiFormComponentsStyles
+
+        <!-- Styles -->
+        <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
+        @livewireStyles
+        @TalluiCoreStyle
+        @TalluiWebComponentsStyle
+        @TalluiFormComponentsStyle
+        @TalluiAppComponentsStyle
+
     </head>
     <body class="antialiased">
 
@@ -46,9 +55,7 @@
 
             <x-icon-acc class="w-6 h-6 text-gray-500"/>
 
-            <x-form>
-                <x-input name="bla" />
-            </x-form>
+
         </div>
 
         <div class="relative flex justify-center min-h-screen py-4 bg-gray-100 items-top dark:bg-gray-900 sm:items-center sm:pt-0">
@@ -160,6 +167,14 @@
             </div>
         </div>
         <?php //  ?>
+
+
+        @livewireScripts
+
+        @TalluiCoreScripts
         @TalluiFormComponentsScripts
+        @TalluiWebComponentsScripts
+        @TalluiAppComponentsScripts
+
     </body>
 </html>

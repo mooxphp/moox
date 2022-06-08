@@ -21,6 +21,7 @@ jobs:
                   - tallui-web-components
                   - tallui-form-components
                   - tallui-app-components
+                  - tallui-dev-components
         steps:
             -   uses: actions/checkout@v2
 
