@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiWebIcons;
 
+use BladeUI\Icons\Components\Icon;
+use BladeUI\Icons\Console;
 use BladeUI\Icons\Factory;
-use Illuminate\Contracts\Container\Container;
+use BladeUI\Icons\IconsManifest;
+use Illuminate\Contracts\Filesystem\Factory as FilesystemFactory;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 final class TalluiWebIconsServiceProvider extends ServiceProvider
@@ -13,12 +20,16 @@ final class TalluiWebIconsServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->registerConfig();
+        $this->registerFactory();
+        $this->registerManifest();
+    }
 
-        $this->callAfterResolving(Factory::class, function (Factory $factory, Container $container) {
-            $config = $container->make('config')->get('tallui-web-icons', []);
-
-            $factory->add('webicons', array_merge(['path' => __DIR__.'/../resources/svg/black'], $config));
-        });
+    public function boot(): void
+    {
+        $this->bootCommands();
+        $this->bootDirectives();
+        $this->bootIconComponent();
+        $this->bootPublishing();
     }
 
     private function registerConfig(): void
@@ -26,16 +37,83 @@ final class TalluiWebIconsServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/tallui-web-icons.php', 'tallui-web-icons');
     }
 
-    public function boot(): void
+    private function registerFactory(): void
+    {
+        $this->app->singleton(Factory::class, function (Application $app) {
+            $config = $app->make('config')->get('tallui-web-icons', []);
+
+            $factory = new Factory(
+                new Filesystem(),
+                $app->make(IconsManifest::class),
+                $app->make(FilesystemFactory::class),
+                $config,
+            );
+
+            foreach ($config['sets'] ?? [] as $set => $options) {
+                if (! isset($options['disk']) || ! $options['disk']) {
+                    $paths = $options['paths'] ?? $options['path'] ?? [];
+
+                    $options['paths'] = array_map(
+                        fn ($path) => $app->basePath($path),
+                        (array) $paths,
+                    );
+                }
+
+                $factory->add($set, $options);
+            }
+
+            return $factory;
+        });
+
+        $this->callAfterResolving(ViewFactory::class, function ($view, Application $app) {
+            $app->make(Factory::class)->registerComponents();
+        });
+    }
+
+    private function registerManifest(): void
+    {
+        $this->app->singleton(IconsManifest::class, function (Application $app) {
+            return new IconsManifest(
+                new Filesystem(),
+                $this->manifestPath(),
+                $app->make(FilesystemFactory::class),
+            );
+        });
+    }
+
+    private function manifestPath(): string
+    {
+        return $this->app->bootstrapPath('cache/tallui-web-icons.php');
+    }
+
+    private function bootCommands(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Console\CacheCommand::class,
+                Console\ClearCommand::class,
+            ]);
+        }
+    }
+
+    private function bootDirectives(): void
+    {
+        Blade::directive('svg', fn ($expression) => "<?php echo e(svg($expression)); ?>");
+    }
+
+    private function bootIconComponent(): void
+    {
+        if ($name = config('tallui-web-icons.components.default')) {
+            Blade::component($name, Icon::class);
+        }
+    }
+
+    private function bootPublishing(): void
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../resources/svg' => public_path('vendor/tallui-web-icons'),
-            ], 'tallui-web-icons');
-
-            $this->publishes([
                 __DIR__.'/../config/tallui-web-icons.php' => $this->app->configPath('tallui-web-icons.php'),
-            ], 'tallui-web-icons-config');
+            ], 'tallui-web-icons');
         }
     }
 }
