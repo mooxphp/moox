@@ -44,6 +44,8 @@
 
             <x-core-component />
 
+            <x-icon-acc class="w-6 h-6 text-gray-500"/>
+
             <x-form>
                 <x-input name="bla" />
             </x-form>

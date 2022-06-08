@@ -679,6 +679,8 @@ jobs:
                 source: "tui-release.json"
                 target: "prop-path/package/tui-release.json"
                 
+            # TODO - name: push changes
+                
             # TODO needs the matrix too, should also matrix over folders
 			- name: split repos
               id: split_repos
@@ -692,8 +694,8 @@ jobs:
                 repository_organization: 'usetall'
                 repository_name: '${{ matrix.package }}'
 
-                user_name: "adrolli"
-                user_email: "alf@alf-drollinger.com"
+                user_name: "tallui-bot"
+                user_email: "bot@tallui.io"
                 
             - name: Create the release
               id: create_release
@@ -837,6 +839,7 @@ jobs:
 
 ## Builder:
 
+- Builder has own release files but how to build the release files again...?
 - Builder does not register sp, why? Seems to work
 - Fix problem with asset loading, mix error, see https://blade-ui-kit.com/docs/0.x/installation (Production) ... test with blade-ui-kit, when unsure if it works mixing 3rd party assets. 
 - How to include all assets as original sources? Better than 3rd party CDN?
