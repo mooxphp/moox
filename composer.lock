@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48d6d1bebe64c996cb17c15fbc5d3ebd",
+    "content-hash": "271d473c3489fa4c7ff5222341a1010d",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.224.4",
+            "version": "3.224.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "8c8a713b8c1e1a20f66a801f9d2cd7fd80d8d3f8"
+                "reference": "00719404b6a7f29d7fb183211dfbef7f7f22a0c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/8c8a713b8c1e1a20f66a801f9d2cd7fd80d8d3f8",
-                "reference": "8c8a713b8c1e1a20f66a801f9d2cd7fd80d8d3f8",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/00719404b6a7f29d7fb183211dfbef7f7f22a0c0",
+                "reference": "00719404b6a7f29d7fb183211dfbef7f7f22a0c0",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.224.4"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.224.5"
             },
-            "time": "2022-06-06T18:32:10+00:00"
+            "time": "2022-06-07T18:15:41+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -200,6 +200,87 @@
                 "source": "https://github.com/Bacon/BaconQrCode/tree/2.0.7"
             },
             "time": "2022-03-14T02:02:36+00:00"
+        },
+        {
+            "name": "blade-ui-kit/blade-icons",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blade-ui-kit/blade-icons.git",
+                "reference": "57a7c41e1e79e38aed029d3e6ae690b04344c99e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blade-ui-kit/blade-icons/zipball/57a7c41e1e79e38aed029d3e6ae690b04344c99e",
+                "reference": "57a7c41e1e79e38aed029d3e6ae690b04344c99e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "^8.0|^9.0",
+                "illuminate/filesystem": "^8.0|^9.0",
+                "illuminate/support": "^8.0|^9.0",
+                "illuminate/view": "^8.0|^9.0",
+                "php": "^7.4|^8.0",
+                "symfony/console": "^5.3|^6.0",
+                "symfony/finder": "^5.3|^6.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.3",
+                "orchestra/testbench": "^6.0|^7.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "bin": [
+                "bin/blade-icons-generate"
+            ],
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BladeUI\\Icons\\BladeIconsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "BladeUI\\Icons\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dries Vints",
+                    "homepage": "https://driesvints.com"
+                }
+            ],
+            "description": "A package to easily make use of icons in your Laravel Blade views.",
+            "homepage": "https://github.com/blade-ui-kit/blade-icons",
+            "keywords": [
+                "blade",
+                "icons",
+                "laravel",
+                "svg"
+            ],
+            "support": {
+                "issues": "https://github.com/blade-ui-kit/blade-icons/issues",
+                "source": "https://github.com/blade-ui-kit/blade-icons"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/caneco",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/driesvints",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-05-11T12:38:11+00:00"
         },
         {
             "name": "brick/math",
@@ -1385,16 +1466,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v9.16.0",
+            "version": "v9.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "dbad869e737542734c48d36d4cb87ee90455c4b8"
+                "reference": "091e287678ac723c591509ca6374e4ded4a99b1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/dbad869e737542734c48d36d4cb87ee90455c4b8",
-                "reference": "dbad869e737542734c48d36d4cb87ee90455c4b8",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/091e287678ac723c591509ca6374e4ded4a99b1c",
+                "reference": "091e287678ac723c591509ca6374e4ded4a99b1c",
                 "shasum": ""
             },
             "require": {
@@ -1560,20 +1641,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2022-06-02T18:13:11+00:00"
+            "time": "2022-06-07T15:09:32+00:00"
         },
         {
             "name": "laravel/jetstream",
-            "version": "v2.8.3",
+            "version": "v2.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/jetstream.git",
-                "reference": "a643cbbc6fad2101ad6f3dbea5f9213b69bfaf44"
+                "reference": "fae6651963e92cbf532ead945b632420cb9bd861"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/jetstream/zipball/a643cbbc6fad2101ad6f3dbea5f9213b69bfaf44",
-                "reference": "a643cbbc6fad2101ad6f3dbea5f9213b69bfaf44",
+                "url": "https://api.github.com/repos/laravel/jetstream/zipball/fae6651963e92cbf532ead945b632420cb9bd861",
+                "reference": "fae6651963e92cbf532ead945b632420cb9bd861",
                 "shasum": ""
             },
             "require": {
@@ -1626,7 +1707,7 @@
                 "issues": "https://github.com/laravel/jetstream/issues",
                 "source": "https://github.com/laravel/jetstream"
             },
-            "time": "2022-05-30T13:18:11+00:00"
+            "time": "2022-06-01T13:43:04+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -2026,16 +2107,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.3.2",
+            "version": "2.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "6eddb90a9e4a1a8c5773226068fcfb48cb36812a"
+                "reference": "0da1dca5781dd3cfddbe328224d9a7a62571addc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/6eddb90a9e4a1a8c5773226068fcfb48cb36812a",
-                "reference": "6eddb90a9e4a1a8c5773226068fcfb48cb36812a",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/0da1dca5781dd3cfddbe328224d9a7a62571addc",
+                "reference": "0da1dca5781dd3cfddbe328224d9a7a62571addc",
                 "shasum": ""
             },
             "require": {
@@ -2128,7 +2209,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-03T14:07:39+00:00"
+            "time": "2022-06-07T21:28:26+00:00"
         },
         {
             "name": "league/config",
@@ -6794,6 +6875,64 @@
             }
         },
         {
+            "name": "usetall/tallui-web-icons",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./_icons/tallui-web-icons",
+                "reference": "80a78deae62a1f7d65a1e9c156a852b69373dedf"
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.1",
+                "illuminate/support": "^9.0",
+                "php": "^7.4|^8.1"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\TalluiWebIcons\\TalluiWebIconsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\TalluiWebIcons\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "TallUI Developers",
+                    "email": "devs@tallui.io"
+                }
+            ],
+            "description": "A package with different styles of social icons, file icons and brand icons.",
+            "homepage": "https://github.com/usetall/tallui-web-icons",
+            "keywords": [
+                "Blade",
+                "Brand-Icons",
+                "File-Icons",
+                "Laravel",
+                "Social-Icons",
+                "TallUI"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "vlucas/phpdotenv",
             "version": "v5.4.1",
             "source": {
@@ -7321,16 +7460,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.14.8",
+            "version": "v1.14.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "04b425968c6a76940bddd2cfa40bf9e9ce78eee8"
+                "reference": "8435763e7735f6eff15b03df014cea1217fc826e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/04b425968c6a76940bddd2cfa40bf9e9ce78eee8",
-                "reference": "04b425968c6a76940bddd2cfa40bf9e9ce78eee8",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/8435763e7735f6eff15b03df014cea1217fc826e",
+                "reference": "8435763e7735f6eff15b03df014cea1217fc826e",
                 "shasum": ""
             },
             "require": {
@@ -7377,7 +7516,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2022-05-31T14:48:21+00:00"
+            "time": "2022-06-06T14:28:04+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -9528,16 +9667,16 @@
         },
         {
             "name": "spatie/laravel-ignition",
-            "version": "1.2.3",
+            "version": "1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-ignition.git",
-                "reference": "51e5daaa7e43c154fe57f1ddfbba862f9fe57646"
+                "reference": "b90026ba26fe6589101dc5cd6527846290560aea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-ignition/zipball/51e5daaa7e43c154fe57f1ddfbba862f9fe57646",
-                "reference": "51e5daaa7e43c154fe57f1ddfbba862f9fe57646",
+                "url": "https://api.github.com/repos/spatie/laravel-ignition/zipball/b90026ba26fe6589101dc5cd6527846290560aea",
+                "reference": "b90026ba26fe6589101dc5cd6527846290560aea",
                 "shasum": ""
             },
             "require": {
@@ -9614,7 +9753,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-05-05T15:53:24+00:00"
+            "time": "2022-06-08T07:07:57+00:00"
         },
         {
             "name": "theseer/tokenizer",
@@ -9673,7 +9812,8 @@
         "usetall/tallui-core": 20,
         "usetall/tallui-web-components": 20,
         "usetall/tallui-form-components": 20,
-        "usetall/tallui-app-components": 20
+        "usetall/tallui-app-components": 20,
+        "usetall/tallui-web-icons": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

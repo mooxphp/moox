@@ -1,18 +1,19 @@
 {
-    "name": "blade-organization/blade-heroicons",
-    "description": "A package to easily make use of Heroicons in your Laravel Blade views.",
-    "keywords": ["Blade", "Heroicons", "Laravel"],
-    "homepage": "https://github.com/blade-organization/blade-heroicons",
+    "name": "usetall/tallui-web-icons",
+    "description": "A package with different styles of social icons, file icons and brand icons.",
+    "keywords": ["Blade", "TallUI", "Laravel", "Social-Icons", "File-Icons", "Brand-Icons"],
+    "homepage": "https://github.com/usetall/tallui-web-icons",
     "license": "MIT",
     "authors": [
         {
-            "name": "Blade Developer"
+            "name": "TallUI Developers",
+            "email": "devs@tallui.io"
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^7.4|^8.0|^8.1",
         "blade-ui-kit/blade-icons": "^1.1",
-        "illuminate/support": "^8.0"
+        "illuminate/support": "^8.0|^9.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.0",
@@ -20,7 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BladeUI\\Heroicons\\": "src"
+            "Usetall\\TalluiWebIcons\\": "src"
         }
     },
     "autoload-dev": {
@@ -31,7 +32,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BladeUI\\Heroicons\\BladeHeroiconsServiceProvider"
+                "Usetall\\TalluiWebIcons\\TalluiWebIconsServiceProvider"
             ]
         }
     },
