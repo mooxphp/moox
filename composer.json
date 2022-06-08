@@ -23,6 +23,10 @@
         },
         {
             "type": "path",
+            "url": "./_components/tallui-dev-components"
+        },
+        {
+            "type": "path",
             "url": "./_icons/tallui-web-icons"
         }
     ],
@@ -39,6 +43,7 @@
         "usetall/tallui-web-components": "dev-main",
         "usetall/tallui-form-components": "dev-main",
         "usetall/tallui-app-components": "dev-main",
+        "usetall/tallui-dev-components": "dev-main",
         "usetall/tallui-web-icons": "dev-main"
     },
     "require-dev": {

@@ -53,6 +53,11 @@
 
             <x-core-component />
 
+            <x-first-dev-component />
+
+            @livewire('second-dev-component')
+
+
             <x-icon-acc class="w-6 h-6 text-gray-500"/>
 
 

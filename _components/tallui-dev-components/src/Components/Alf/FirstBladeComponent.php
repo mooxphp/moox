@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiDevComponents\Components\Blade;
+namespace Usetall\TalluiDevComponents\Components\Alf;
 
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiDevComponents\Components\BladeComponent;
@@ -22,6 +22,6 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-dev-components::components.blade.first-blade-component');
+        return view('tallui-dev-components::components.alf.first-blade-component');
     }
 }

@@ -6,7 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/usetall/tallui-dev-components.svg?style=flat-square)](https://packagist.org/packages/usetall/tallui-dev-components)
 
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+This is our package for components development.
 
 ## Installation
 

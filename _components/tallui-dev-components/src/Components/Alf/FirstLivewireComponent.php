@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiDevComponents\Components\Livewire;
+namespace Usetall\TalluiDevComponents\Components\Alf;
 
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiDevComponents\Components\LivewireComponent;
@@ -22,6 +22,6 @@ class FirstLivewireComponent extends LivewireComponent
 
     public function render(): View
     {
-        return view('tallui-dev-components::components.livewire.first-livewire-component');
+        return view('tallui-dev-components::components.alf.first-livewire-component');
     }
 }
