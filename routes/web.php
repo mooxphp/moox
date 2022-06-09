@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return view('welcome'); })->name('home');
 Route::view('/blade-icons', 'blade-icons.index')->name('blade-icons');
+Route::view('/icons', 'blade-icons.collection')->name('blade-collection');
 Route::get('/blade-icons/{icon}', ShowIconController::class)->name('blade-icon');
 
 Route::middleware([
