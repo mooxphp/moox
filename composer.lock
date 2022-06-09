@@ -58,16 +58,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.224.5",
+            "version": "3.225.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "00719404b6a7f29d7fb183211dfbef7f7f22a0c0"
+                "reference": "5a5f99a528d741820a77f0fc19c54ac7eca72d80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/00719404b6a7f29d7fb183211dfbef7f7f22a0c0",
-                "reference": "00719404b6a7f29d7fb183211dfbef7f7f22a0c0",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5a5f99a528d741820a77f0fc19c54ac7eca72d80",
+                "reference": "5a5f99a528d741820a77f0fc19c54ac7eca72d80",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.224.5"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.225.0"
             },
-            "time": "2022-06-07T18:15:41+00:00"
+            "time": "2022-06-08T19:56:56+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -1103,16 +1103,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "c94a94f120803a18554c1805ef2e539f8285f9a2"
+                "reference": "a119247127ff95789a2d95c347cd74721fbedaa4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/c94a94f120803a18554c1805ef2e539f8285f9a2",
-                "reference": "c94a94f120803a18554c1805ef2e539f8285f9a2",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/a119247127ff95789a2d95c347cd74721fbedaa4",
+                "reference": "a119247127ff95789a2d95c347cd74721fbedaa4",
                 "shasum": ""
             },
             "require": {
@@ -1198,7 +1198,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.2.1"
+                "source": "https://github.com/guzzle/psr7/tree/2.2.2"
             },
             "funding": [
                 {
@@ -1214,7 +1214,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-20T21:55:58+00:00"
+            "time": "2022-06-08T19:55:23+00:00"
         },
         {
             "name": "hollodotme/fast-cgi-client",
@@ -7555,16 +7555,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.14.9",
+            "version": "v1.14.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "8435763e7735f6eff15b03df014cea1217fc826e"
+                "reference": "0ea5d683af4d189071efcdb9e83946c10dab82c3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/8435763e7735f6eff15b03df014cea1217fc826e",
-                "reference": "8435763e7735f6eff15b03df014cea1217fc826e",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/0ea5d683af4d189071efcdb9e83946c10dab82c3",
+                "reference": "0ea5d683af4d189071efcdb9e83946c10dab82c3",
                 "shasum": ""
             },
             "require": {
@@ -7611,7 +7611,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2022-06-06T14:28:04+00:00"
+            "time": "2022-06-09T07:10:28+00:00"
         },
         {
             "name": "mockery/mockery",
