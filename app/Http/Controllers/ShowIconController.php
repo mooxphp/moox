@@ -40,7 +40,7 @@ final class ShowIconController
 
                     if (basename($file, ".svg") != "." and basename($file, ".svg") != "..") {
                         print_r($fileinfo->getFilename() . '-' . basename($file, ".svg") . '<br>');
-                        if ($this->doesIconAlreadyExists($fileinfo->getFilename() . '-' . basename($file, ".svg"))) {
+                        if ($this->doesIconAlreadyExist($fileinfo->getFilename() . '-' . basename($file, ".svg"))) {
                             echo 'Insert<br>';
                             Icon::insert(
                                 [
@@ -61,7 +61,7 @@ final class ShowIconController
         }
     }
 
-    public function doesIconAlreadyExists(string $filename): bool
+    public function doesIconAlreadyExist(string $filename): bool
     {
 
         $icon = Icon::where('name', $filename)->get()->first();

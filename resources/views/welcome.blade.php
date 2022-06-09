@@ -61,8 +61,9 @@
             <x-icon-acc class="w-6 h-6 text-gray-500"/>
             <x-bright-ae class="w-6 h-6"/>
             <x-circle-paypal class="w-6 h-6"/>
-            <x-cartoon-dropbox class="w-6 h-6"/>
-            <x-heroicon-o-adjustments/>
+
+            <x-cartoon-dropbox class="w-24 h-24"/>
+
 
 
 
