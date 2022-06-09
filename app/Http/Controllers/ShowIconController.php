@@ -38,16 +38,16 @@ final class ShowIconController
 
                     if (basename($file, ".svg") != "." and basename($file, ".svg") != "..") {
                         print_r($fileinfo->getFilename() . '-' . basename($file, ".svg") . '<br>');
-                        // Icon::insert(
-                        //     [
-                        //         'icon_set_id' => $iconsset,
-                        //         'name' => $fileinfo->getFilename() . '-' . basename($file, ".svg"),
-                        //         'keywords' => '{"keewords": 30, "car": null, "name": "John"}',
-                        //         'outlined' => 0
+                        Icon::insert(
+                            [
+                                'icon_set_id' => $iconsset,
+                                'name' => $fileinfo->getFilename() . '-' . basename($file, ".svg"),
+                                'keywords' => '{"keewords": 30, "car": null, "name": "John"}',
+                                'outlined' => 0
 
-                        //     ]
+                            ]
 
-                        // );
+                        );
                     }
 
                 }
