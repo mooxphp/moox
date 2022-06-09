@@ -16,6 +16,7 @@ return [
 
     'components' => [
         'first-dev-component' => Components\Alf\FirstBladeComponent::class,
+        'markdown' => Components\Alf\Markdown::class,
     ],
 
     /*
