@@ -65,6 +65,7 @@
             <x-heroicon-o-adjustments/>
 
 
+
         </div>
 
         <div class="relative flex justify-center min-h-screen py-4 bg-gray-100 items-top dark:bg-gray-900 sm:items-center sm:pt-0">
