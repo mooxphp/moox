@@ -102,3 +102,110 @@ Blade Heroicons is developed and maintained by Blade Developer.
 ## License
 
 Blade Heroicons is open-sourced software licensed under [the MIT license](LICENSE.md).
+
+
+
+## Todo
+
+
+
+
+
+- tallui-material-icons
+  - default (aka outlined)
+    - outlined
+      - default
+      - grad200
+      - gradN25
+      - wght100
+        - grad200
+        - gradN25
+      - wght200
+        - grad200
+        - gradN25
+      - wght300
+        - grad200
+        - gradN25
+      - wght500
+        - grad200
+        - gradN25
+      - wght600
+        - grad200
+        - gradN25
+      - wght700
+        - grad200
+        - gradN25
+    - fill
+      - grad200 (wght400, grad0)
+      - gradN25 (whgt400, grad0)
+      - wght100
+        - grad200
+        - gradN25
+      - wght200
+        - grad200
+        - gradN25
+      - wght300
+        - grad200
+        - gradN25
+      - wght500
+        - grad200
+        - gradN25
+      - wght600
+        - grad200
+        - gradN25
+      - wght700
+        - grad200
+        - gradN25
+  - rounded
+  - sharp
+
+
+
+
+
+
+
+2500 Symbols und 504 (42 Möglichkeiten x 4 x 3)
+
+2 * 7 * 3 (* 4)
+
+###
+
+Icons:
+
+Icons 24px 10726
+
+Icons 20px 3333
+
+https://github.com/Templarian/MaterialDesign/tree/master/svg 5990 icons
+
+
+
+https://icon-sets.iconify.design/ - da sind sie ja, unsere drei Pakete
+
+
+
+
+
+- Sind icons und symbols etwa gleich viele? Nö, Icons sind etwa 10.000, Symbols etwa 2.500
+- Wir vermischen Google und Community Icons nicht, weil
+  - Man sie aus verschiedenen Gründen (z. B. Lizenz) auseinander halten können sollte
+  - Die Möglichkeiten bzw. Varianten unterschiedlich sind
+- Deshalb wäre es besser, zwei Packages - oder mehr - zu machen
+  - tallui-material-symbols
+  - tallui-material-icons
+  - tallui-material-community-icons
+  - tallui-material-home-icons +++
+
+
+
+- Alles in ein Paket (Achtung: Grooossss)
+- Dann müssen aber die Varianten weitestgehend identisch sein
+- Symbols + Community = Schrott
+
+
+
+## Aufgaben bzw. Ideen
+
+- Wir wissen die Herkunft bei **https://materialdesignicons.com/** nicht, so auch nicht die Lizenz ... googeln nach anderen Paketen, Plattformen bzw. überlegen wir der Templarian die gefunden hat.
+- Community Iconsets, die Du findest ;-), festhalten
