@@ -13,7 +13,7 @@ class Calendar extends LivewireComponent
     /** @var array */
     protected static $assets = ['example'];
 
-    public $day;
+
     public $month;
     public $year;
 
@@ -31,11 +31,13 @@ class Calendar extends LivewireComponent
     public $body;
 
 
+    public $visible;
+
     public function days()
     {
         $this->monthname = $this->getMonthName($this->month);
         $this->buildOneMonth();
-        $this->events = DB::table('events')->get();
+        // $this->events = DB::table('events')->get();
     }
 
 
@@ -182,6 +184,10 @@ class Calendar extends LivewireComponent
             'body' => $this->body
         ]);
 
+    }
+
+    public function setModalVisible():void
+    {
     }
 
 

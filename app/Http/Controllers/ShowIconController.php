@@ -17,6 +17,7 @@ final class ShowIconController
         ]);
     }
 
+
     public function collection()
     {
 

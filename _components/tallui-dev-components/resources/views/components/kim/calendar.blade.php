@@ -1,6 +1,11 @@
-<div>
+<div class="mt-20">
 
-    <h2 class="text-lg font-semibold text-gray-900">Upcoming meetings</h2>
+    @if ($visible)
+        <x-modal>
+
+        </x-modal>
+    @endif
+    {{-- <h2 class="text-lg font-semibold text-gray-900">Upcoming meetings</h2> --}}
     <div class="lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div class="mt-10 ml-10 mr-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
 
@@ -44,13 +49,12 @@
                 <div>S</div>
                 <div>S</div>
             </div>
-            <div
-                class="grid grid-cols-7 gap-px mt-2 text-sm bg-gray-200 rounded-lg shadow isolate ring-1 ring-gray-200">
+            <div class="grid grid-cols-7 gap-px mt-2 text-sm bg-gray-200 shadow isolate ring-1 ring-gray-200">
 
 
 
                 @foreach ($onemonth as $day)
-                    @if (isset($events))
+                    {{-- @if (isset($events))
                         @foreach ($events as $event)
                             @if (substr($day, 8, 10) == $event->event_start)
                                 <button type="button"
@@ -61,18 +65,12 @@
                                 @continue(2)
                             @endif
                         @endforeach
-                    @endif
+                    @endif --}}
                     @if (substr($day, 0, 3) == 'pre')
-                        <button type="button"
-                            class="rounded-tl-lg bg-gray-50 py-1.5 text-gray-400 hover:bg-gray-100 focus:z-10">
-                            <!--
-                            Always include: "mx-auto flex h-7 w-7 items-center justify-center rounded-full"
-                            Is selected and is today, include: "bg-indigo-600"
-                            Is selected and is not today, include: "bg-gray-900"
-                            -->
-                            <time datetime="{{ substr($day, 8, 11) }}"
-                                class="flex items-center justify-center mx-auto rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
-                        </button>
+                                <button wire:click='setModalVisible'
+                                    class=" w-full bg-gray-50 py-1.5 text-gray-400 hover:bg-gray-100 focus:z-10">
+                                    <time datetime="{{ substr($day, 8, 11) }}"
+                                        class="flex items-center justify-center mx-auto rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
                     @elseif(substr($day, 8, 10) == substr($today, 0, 10))
                         <button type="button" class="bg-white py-1.5 text-gray-900 hover:bg-gray-100 focus:z-10">
                             <time datetime="{{ substr($day, 8, 11) }}"
@@ -90,7 +88,7 @@
 
             </div>
 
-            <!-- modal div -->
+            {{-- <!-- modal div -->
             <div class="" x-data="{ open: false }">
                 <!-- Button (blue), duh! -->
                 <button
@@ -159,12 +157,12 @@
 
 
 
-        </div>
+        </div> --}}
 
 
-        <ol class="mt-10 text-sm leading-6 divide-y divide-gray-100 sm:mx-10 lg:col-span-7 xl:col-span-8">
+            <ol class="mt-10 text-sm leading-6 divide-y divide-gray-100 sm:mx-10 lg:col-span-7 xl:col-span-8">
 
-            @if (isset($events))
+                {{-- @if (isset($events))
                 @foreach ($events as $event)
                     <li class="relative flex py-6 space-x-6 xl:static">
                         <div class="flex-auto">
@@ -255,11 +253,11 @@
 
                     <!-- More meetings... -->
                 @endforeach
-            @endif
+            @endif --}}
 
-        </ol>
+            </ol>
+        </div>
+
+
+
     </div>
-
-
-
-</div>

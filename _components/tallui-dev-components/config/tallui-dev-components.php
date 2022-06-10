@@ -1,4 +1,6 @@
 <?php
+
+use Illuminate\View\Component;
 use Usetall\TalluiDevComponents\Components;
 
 return [
@@ -17,6 +19,8 @@ return [
     'components' => [
         'first-dev-component' => Components\Alf\FirstBladeComponent::class,
         'markdown' => Components\Alf\Markdown::class,
+        'modal' => Components\Kim\Modal::class,
+
     ],
 
     /*
@@ -31,6 +35,9 @@ return [
 
     'livewire' => [
         'second-dev-component' => Components\Alf\FirstLivewireComponent::class,
+        'calendar' => Components\Kim\Calendar::class,
+
+
     ],
 
     /*
@@ -65,6 +72,7 @@ return [
         'example' => [
             'https://unpkg.com/example/dist/example.min.css',
             'https://unpkg.com/example/dist/example.min.js',
+            'https://unpkg.com/alpinejs@3.10.2/dist/cdn.min.js',
         ],
 
     ],
