@@ -27,10 +27,11 @@
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 
         @livewireStyles
-        @TalluiCoreStyle
-        @TalluiWebComponentsStyle
-        @TalluiFormComponentsStyle
-        @TalluiAppComponentsStyle
+        @TalluiCoreStyles
+        @TalluiAppComponentsStyles
+        @TalluiWebComponentsStyles
+        @TalluiFormComponentsStyles
+        @TalluiDevComponentsStyles
 
     </head>
     <body class="antialiased">
@@ -195,11 +196,11 @@
 
 
         @livewireScripts
-
         @TalluiCoreScripts
+        @TalluiAppComponentsScripts
         @TalluiFormComponentsScripts
         @TalluiWebComponentsScripts
-        @TalluiAppComponentsScripts
+        @TalluiDevComponentsScripts
 
     </body>
 </html>
