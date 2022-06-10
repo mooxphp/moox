@@ -16,6 +16,8 @@ final class IconSet extends Model
 
     protected $guarded = [];
 
+
+
     protected array $rows = [
         [
             'id' => 1,
@@ -41,6 +43,24 @@ final class IconSet extends Model
             'ignore_rule' => null,
             'outline_rule' => null,
         ],
+        [
+            'id' => 4,
+            'name' => 'bright',
+            'repository' => 'https://github.com/usetall/tallui-web-icons.git',
+            'composer' => 'usetall/tallui-web-icons',
+            'ignore_rule' => null,
+            'outline_rule' => null,
+        ],
+        [
+            'id' => 5,
+            'name' => 'bw',
+            'repository' => 'https://github.com/usetall/tallui-web-icons.git',
+            'composer' => 'usetall/tallui-web-icons',
+            'ignore_rule' => null,
+            'outline_rule' => null,
+        ],
+
+
         // [
         //     'id' => 3,
         //     'name' => 'bootstrap-icons',
