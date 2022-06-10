@@ -18,6 +18,7 @@ Route::get('/', function () { return view('welcome'); })->name('home');
 Route::view('/blade-icons', 'blade-icons.index')->name('blade-icons');
 Route::get('/blade-icons/{icon}', ShowIconController::class)->name('blade-icon');
 
+
 Route::get('/collection', [ShowIconController::class, 'collection']);
 
 

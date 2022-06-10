@@ -17,6 +17,7 @@ final class ShowIconController
         ]);
     }
 
+
     public function collection()
     {
 
@@ -60,6 +61,8 @@ final class ShowIconController
             }
         }
     }
+
+
 
     public function doesIconAlreadyExists(string $filename): bool
     {
