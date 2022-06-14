@@ -1,10 +1,5 @@
 <div class="mt-20">
 
-    @if ($visible)
-        <x-modal>
-
-        </x-modal>
-    @endif
     {{-- <h2 class="text-lg font-semibold text-gray-900">Upcoming meetings</h2> --}}
     <div class="lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div class="mt-10 ml-10 mr-10 text-center lg:col-start-8 lg:col-end-13 lg:row-start-1 lg:mt-9 xl:col-start-9">
@@ -49,8 +44,8 @@
                 <div>S</div>
                 <div>S</div>
             </div>
-            <div class="grid grid-cols-7 gap-px mt-2 text-sm bg-gray-200 shadow isolate ring-1 ring-gray-200">
-
+            <div x-data="{ open: false, date: null }"
+                class="grid grid-cols-7 gap-px mt-2 text-sm bg-gray-200 shadow isolate ring-1 ring-gray-200">
 
 
                 @foreach ($onemonth as $day)
@@ -67,28 +62,96 @@
                         @endforeach
                     @endif --}}
                     @if (substr($day, 0, 3) == 'pre')
-                                <button wire:click='setModalVisible'
-                                    class=" w-full bg-gray-50 py-1.5 text-gray-400 hover:bg-gray-100 focus:z-10">
-                                    <time datetime="{{ substr($day, 8, 11) }}"
-                                        class="flex items-center justify-center mx-auto rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
-                    @elseif(substr($day, 8, 10) == substr($today, 0, 10))
-                        <button type="button" class="bg-white py-1.5 text-gray-900 hover:bg-gray-100 focus:z-10">
-                            <time datetime="{{ substr($day, 8, 11) }}"
-                                class="flex items-center justify-center mx-auto font-semibold text-white bg-gray-900 rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
-                        </button>
-                    @else
-                        <button type="button" class="bg-white py-1.5 text-gray-900 hover:bg-gray-100 focus:z-10">
+                        <button x-on:click="open=true, date='{{ substr($day, 8, 11) }}'"
+                            class=" w-full bg-gray-50 py-1.5 text-gray-400 hover:bg-gray-100 focus:z-10">
                             <time datetime="{{ substr($day, 8, 11) }}"
                                 class="flex items-center justify-center mx-auto rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
-                        </button>
+                        @elseif(substr($day, 8, 10) == substr($today, 0, 10))
+                            <button x-on:click="open=true, date='{{ substr($day, 8, 11) }}'" type="button"
+                                class="bg-white py-1.5 text-gray-900 hover:bg-gray-100 focus:z-10">
+                                <time datetime="{{ substr($day, 8, 11) }}"
+                                    class="flex items-center justify-center mx-auto font-semibold text-white bg-gray-900 rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
+                            </button>
+                        @else
+                            <button x-on:click="open=true, date='{{ substr($day, 8, 11) }}'" type="button"
+                                class="bg-white py-1.5 text-gray-900 hover:bg-gray-100 focus:z-10">
+                                <time datetime="{{ substr($day, 8, 11) }}"
+                                    class="flex items-center justify-center mx-auto rounded-full h-7 w-7">{{ substr($day, 16, 2) }}</time>
+                            </button>
                     @endif
                 @endforeach
 
+                <div x-show="open" x-on:click.outside="open = false"
+                    x-transition:enter="transition ease-out duration-100 transform"
+                    x-transition:enter-start="opacity-0 scale-30" x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75 transform"
+                    x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                    class="absolute top-0 left-0 flex items-center justify-center w-full h-full bg-gray-500"
+                    style="background-color: rgba(0,0,0,.5);">
+                    <!-- A basic modal dialog with title, body and one button to close -->
+                    <div class="">
+                        <div class="h-auto p-4 px-6 mx-2 text-left bg-white rounded shadow-xl md:max-w-xl md:p-6 lg:p-8 md:mx-0"
+                            @click.away="open = false">
 
+                            <form wire:submit.prevent='addEvent' class="">
+                                <div class="">
+                                    <label class="block mb-2 text-sm font-bold text-gray-700" for="subject">
+                                        Subject
+                                    </label>
+                                    <input
+                                        class="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                        id="subject" type="text" placeholder="Subject" wire:model="subject">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block mb-2 text-sm font-bold text-gray-700" for="startEvent">
+                                        Start Event:
+                                    </label>
+                                    <input
+                                        class="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                        id="startEvent" type="date" wire:model="startEvent">
+                                    <label class="block mb-2 text-sm font-bold text-gray-700" for="endEvent">
+                                        End Event:
+                                    </label>
+                                    <input
+                                        class="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                        id="endEvent" type="date" placeholder="" wire:model="endEvent">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block mb-2 text-sm font-bold text-gray-700">Body:
+                                    </label>
+                                    <textarea type="text"
+                                        class="w-full px-3 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                                        name="eventBody" rows="3" wire:model="body"></textarea>
+                                </div>
+                                <div class="mt-5 sm:mt-6">
+                                    <span class="flex w-full rounded-md shadow-sm">
+                                        <button @click="open = false"
+                                            class="inline-flex justify-center w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-700">
+                                            Create
+                                        </button>
+                                    </span>
 
+                                </div>
+                            </form>
+                            <div class="">
+                                <span class="flex w-full rounded-md ">
+                                    <button @click="open = false"
+                                        class="inline-flex justify-center w-full px-4 py-2 text-black hover:text-gray-400">
+                                        Cancle
+                                    </button>
+                                </span>
+
+                            </div>
+
+                            <!-- One big close button.  --->
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {{-- <!-- modal div -->
+        </div>
+
+        {{-- <!-- modal div -->
             <div class="" x-data="{ open: false }">
                 <!-- Button (blue), duh! -->
                 <button
@@ -160,9 +223,9 @@
         </div> --}}
 
 
-            <ol class="mt-10 text-sm leading-6 divide-y divide-gray-100 sm:mx-10 lg:col-span-7 xl:col-span-8">
+        <ol class="mt-10 text-sm leading-6 divide-y divide-gray-100 sm:mx-10 lg:col-span-7 xl:col-span-8">
 
-                {{-- @if (isset($events))
+            {{-- @if (isset($events))
                 @foreach ($events as $event)
                     <li class="relative flex py-6 space-x-6 xl:static">
                         <div class="flex-auto">
@@ -255,9 +318,9 @@
                 @endforeach
             @endif --}}
 
-            </ol>
-        </div>
-
-
-
+        </ol>
     </div>
+
+
+
+</div>
