@@ -11,6 +11,8 @@ use Usetall\TalluiAppComponents\Components\BladeComponent;
 class Modal extends BladeComponent
 {
 
+
+
     /** @var array */
     protected static $assets = ['example'];
     /**
