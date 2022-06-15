@@ -209,3 +209,20 @@ https://icon-sets.iconify.design/ - da sind sie ja, unsere drei Pakete
 
 - Wir wissen die Herkunft bei **https://materialdesignicons.com/** nicht, so auch nicht die Lizenz ... googeln nach anderen Paketen, Plattformen bzw. überlegen wir der Templarian die gefunden hat.
 - Community Iconsets, die Du findest ;-), festhalten
+
+## Wir machen es so ...
+
+- **tallui-flag-icons** - besteht aus 4 Sets, umschaltbar (d. h. 100% identische Inhalte in den Sets, keine Symlinks sondern Kopien)
+    - Set: circle
+    - Set: original
+    - Set: rectangular
+    - Set: square
+
+- **tallui-web-icons** - entfällt, wird in 4 Pakete verteilt:
+- **tallui-social-icons**
+- **tallui-file-icons**
+- **tallui-commerce-icons**
+- **tallui-brand-icons**
+
+
+- **tallui-material-icons**
