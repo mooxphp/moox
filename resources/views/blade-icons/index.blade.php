@@ -1,7 +1,7 @@
 <x-layout>
 
-
-    <div class="ml-auto mr-auto">
+    <button  class="text-sm mx-36 " type="button"> <a href="edit-sets">Edit Sets</a></button>
+    <div class="mt-24 ml-auto mr-auto">
     <div class="px-4 mx-auto mt-8 max-w-screen-2xl sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto text-center">
             <x-h3>
