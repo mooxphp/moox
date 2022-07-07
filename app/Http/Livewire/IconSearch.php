@@ -70,18 +70,17 @@ final class IconSearch extends Component
         ->withSet($this->set)
         ->get();
 
-        $q= $this->search;
-        $hint = new Collection();
-        $q = strtolower($q);
-        $len=strlen($q);
+        $search= $this->search;
+        $ressult = new Collection();
+        $search = strtolower($search);
+        $len=strlen($search);
         foreach($allicons as $icon) {
-            $substring=substr(substr($icon->name, strpos($icon->name, "-") + 1), 0, $len);
-          if (stristr($q, $substring)) {
-              $hint->add($icon);
-
+            $substring= substr($icon->name, strpos($icon->name, "-") + 1);
+            if(stristr($search, substr($substring, 0, $len))) {
+            $ressult->add($icon);
           }
         }
-       return $hint;
+       return $ressult;
     }
 
 }
