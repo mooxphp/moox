@@ -55,7 +55,7 @@ final class IconSearch extends Component
                 ->take(80)
                 ->get();
          }
-         return $this->searched();
+         return $this->searching();
     }
 
     protected function shouldShowRandomIcons(): bool
@@ -63,7 +63,7 @@ final class IconSearch extends Component
         return empty(trim($this->search));
     }
 
-    protected function searched(): Collection
+    protected function searching(): Collection
     {
         $allicons =
         Icon::query()
