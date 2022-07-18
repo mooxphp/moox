@@ -23,28 +23,13 @@
                 <input
                     class="block w-full p-4 text-xl border-0 rounded-lg"
                     autocapitalize="off"
-                    autocomplete="off"
+                    autocomplete="on"
                     autocorrect="off"
                     spellcheck="false"
                     type="text"
                     placeholder="Search all {{ number_format($total) }} Blade icons ..."
                     wire:model.debounce.400ms="search"
                 >
-                <div class="absolute inset-y-0 right-0 flex items-center justify-center mr-5">
-                    <div wire:loading>
-                        {{-- x-icon-refresh class="inline w-6 h-6 fill-current text-scarlet-600 animate-spin"/ --}}
-                    </div>
-
-                    <div wire:loading.remove>
-                        <button wire:click="resetSearch">
-                            @if ($search)
-                                {{-- x-icon-close class="inline w-6 h-6 text-gray-500 transition duration-300 ease-in-out fill-current hover:text-scarlet-500"/ --}}
-                            @else
-                                {{-- <x-icon-refresh class="inline w-6 h-6 transition duration-300 ease-in-out fill-current text-scarlet-600 hover:text-scarlet-500"/> --}}
-                            @endif
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -68,3 +53,5 @@
         </div>
     </div>
 </div>
+
+

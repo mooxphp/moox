@@ -9,6 +9,9 @@ use App\Models\IconSet;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
+use PhpParser\Node\Expr\Cast\String_;
+
+use function JmesPath\search;
 
 final class IconSearch extends Component
 {
@@ -34,6 +37,8 @@ final class IconSearch extends Component
 
     public function render(): View
     {
+
+
         return view('livewire.icon-search', [
             'total' => Icon::query()->withSet($this->set)->count(),
             'icons' => $this->icons(),
@@ -43,22 +48,39 @@ final class IconSearch extends Component
 
     protected function icons(): Collection
     {
-        if ($this->shouldShowRandomIcons()) {
+     if ($this->shouldShowRandomIcons()) {
             return Icon::query()
                 ->withSet($this->set)
                 ->inRandomOrder()
                 ->take(80)
                 ->get();
-        }
-
-        return Icon::search($this->search)
-            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
-            ->take(500)
-            ->get();
+         }
+         return $this->searching();
     }
 
     protected function shouldShowRandomIcons(): bool
     {
         return empty(trim($this->search));
     }
+
+    protected function searching(): Collection
+    {
+        $allicons =
+        Icon::query()
+        ->withSet($this->set)
+        ->get();
+
+        $search= $this->search;
+        $ressult = new Collection();
+        $search = strtolower($search);
+        $len=strlen($search);
+        foreach($allicons as $icon) {
+            $substring= substr($icon->name, strpos($icon->name, "-") + 1);
+            if(stristr($search, substr($substring, 0, $len))) {
+            $ressult->add($icon);
+          }
+        }
+       return $ressult;
+    }
+
 }
