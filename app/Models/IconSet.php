@@ -16,8 +16,6 @@ final class IconSet extends Model
 
     protected $guarded = [];
 
-
-
     protected array $rows = [
         [
             'id' => 1,
@@ -26,14 +24,6 @@ final class IconSet extends Model
             'composer' => 'blade-ui-kit/blade-heroicons',
             'ignore_rule' => '/^(?:o|s)-/',
             'outline_rule' => '/^o-/',
-        ],
-        [
-            'id' => 2,
-            'name' => 'zondicons',
-            'repository' => 'https://github.com/blade-ui-kit/blade-zondicons',
-            'composer' => 'blade-ui-kit/blade-zondicons',
-            'ignore_rule' => null,
-            'outline_rule' => null,
         ],
         [
             'id' => 3,
