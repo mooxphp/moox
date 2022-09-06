@@ -35,15 +35,31 @@ Und jetzt die Idee mit der Demo-Komponente:
 - Mehraufwand bei der Pflege.
   - Hält sich in Grenzen. Das Code-Snippet hat man ohnehin, weil man seine Komponente mal testen muss. Der Link ist auch schnell gemacht.
 
-## Code-Beispiel
+## Conceptual code
 
 Ungetestete Idee ...
 
 ```php
-// first get the markdown
-fread ...
+// first get the markdown file
+...
+$md = fread($handle, filesize($filename));
+...
     
-// then separate MD from Components
-explode ... 
+// then split into parts
+$md_array = explode("[Component]: #", $md)
+    
+// then separade md from components
+foreach ($md_array as $block) {
+    if (str_starts_with($block, '**Component demo**')) {
+		$component_array = explode("```", $block);
+        // -> send the component code to component renderer
+        component_renderer($block[1]);
+	} else {
+        // -> send to markdown renderer
+    }
+}
+
 ```
+
+
 
