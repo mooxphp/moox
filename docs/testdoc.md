@@ -54,7 +54,7 @@ foreach ($md_array as $block) {
 		$component_array = explode("```", $block);
         // -> send the component code to component renderer
         component_renderer($block[1]);
-	} else {
+    } else {
         // -> send to markdown renderer
     }
 }
