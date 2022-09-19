@@ -152,11 +152,11 @@ You can override that in the config. But if you want to use some of our packages
 
 There are a lot of Admin Panels, CRUD Generators and UI Kits out there. Our selection mostly depend on the TALL-Stack.
 
-- [TALL Frontent Preset](https://github.com/laravel-frontend-presets/tall) - Offizielles UI preset.
-- [Laravel Breeze](https://laravel.com/docs/9.x/starter-kits) - Offizielles Starter Kit mit Auth.
-- [Laravel Jetstream](https://jetstream.laravel.com/) - Offizielles Starter Kit mit Auth, Register, 2-FA etc.
-- [Blade UIkit](https://blade-ui-kit.com/) – Components für den TALL-Stack, maintained von den Laravel Entwicklern.
-- [WireUI](https://livewire-wireui.com/) - Components von Blade UI mit Livewire.
+- [TALL Frontent Preset](https://github.com/laravel-frontend-presets/tall) - Official UI preset.
+- [Laravel Breeze](https://laravel.com/docs/9.x/starter-kits) - Official Starter Kit with Auth.
+- [Laravel Jetstream](https://jetstream.laravel.com/) - Official Starter Kit with Auth, Register, 2-FA
+- [Blade UIkit](https://blade-ui-kit.com/) – Components for the TALL-Stack, maintained from the Laravel devs
+- [WireUI](https://livewire-wireui.com/) - Components with Livewire.
 - [Filament](https://filamentphp.com/) - TALL stack UI und CRUD Generator.
 - [Quick Admin Panel](https://quickadminpanel.com/) - Admin und CRUD Generator, TALL-Version verfügbar, $100/year.
 - [Laravel Nova](https://nova.laravel.com/) - Offizielle Lösung mit Vue.js, kostet einmalig $199

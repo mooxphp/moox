@@ -1,0 +1,25 @@
+// Plain
+
+                             _    _   ___
+ __ __|   \     |      |    | |  | | |_ _|
+    |    _ \    |      |    | |  | |  | |
+    |   ___ \   |      |    | |  | |  | |
+   _| _/    _\ _____| _____| \____/  |___|
+
+
+// PHP and JS Comment
+
+
+/*                              _    _   ___
+ *  __ __|   \     |      |    | |  | | |_ _|
+ *     |    _ \    |      |    | |  | |  | |
+ *     |   ___ \   |      |    | |  | |  | |
+ *    _| _/    _\ _____| _____| \____/  |___|
+ *
+ *  TallUI Admin Panel Vite app
+ *  @see https://tallui.io/admin-panel-vite
+ *
+ */
+
+
+// Credits: generated with https://ascii.today/
