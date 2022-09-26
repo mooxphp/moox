@@ -31,7 +31,7 @@ build:
 #         before:
 #             - chmod -R 777 storage
 #             - chmod -R 777 bootstrap/cache
-#             - npm run production
+#             - npm run build
 #         override:
 #             -
 #                 command: vendor/bin/phpunit --coverage-clover=laravel-test-examples-coverage
