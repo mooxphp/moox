@@ -15,9 +15,9 @@
     <meta name="msapplication-TileColor" content="#b91d47">
     <meta name="theme-color" content="#ffffff">
 
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    @vite('resources/js/app.js')
 
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    @vite('resources/css/app.css')
 
     {{ $head ?? '' }}
 
