@@ -1,5 +1,4 @@
 <?php
-use App\Http\Controllers\ShowIconController;
 use Illuminate\Support\Facades\Route;
 
 /*

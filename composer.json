@@ -4,6 +4,32 @@
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./_packages/tallui-core"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-web-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-form-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-app-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-dev-components"
+        },
+        {
+            "type": "path",
+            "url": "./_icons/tallui-web-icons"
+        }
+    ],
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
