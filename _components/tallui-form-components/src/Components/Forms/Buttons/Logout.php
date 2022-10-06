@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace BladeUIKit\Components\Buttons;
+namespace Usetall\TalluiFormComponents\Components\Forms\Buttons;
 
 
-use Livewire\Component;
+use Usetall\TalluiFormComponents\Components\BladeComponent;
 use Illuminate\Contracts\View\View;
 
-class Logout extends Component
+class Logout extends BladeComponent
 {
     /** @var string */
     public $action;
@@ -20,6 +20,6 @@ class Logout extends Component
 
     public function render(): View
     {
-        return view('components.buttons.logout');
+        return view('tallui-form-components::components.forms.buttons.logout');
     }
 }
