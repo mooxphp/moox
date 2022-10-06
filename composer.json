@@ -37,7 +37,11 @@
         "laravel/jetstream": "^2.12",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "livewire/livewire": "^2.5"
+        "livewire/livewire": "^2.5",
+        "usetall/tallui-core": "dev-main",
+        "usetall/tallui-form-components": "dev-main",
+        "usetall/tallui-web-components": "dev-main",
+        "usetall/tallui-web-icons": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
