@@ -1,11 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace App\View\Components;
+namespace Usetall\TalluiFormComponents\Components\Forms\Buttons;
 
-use Illuminate\View\Component;
-
-class Button extends Component
+use Usetall\TalluiFormComponents\Components\BladeComponent;
+class Button extends BladeComponent
 {
      /** @var string */
      public $name;
@@ -34,6 +33,6 @@ class Button extends Component
      */
     public function render()
     {
-        return view('components.button');
+        return view('tallui-form-components::components.forms.buttons.button');
     }
 }

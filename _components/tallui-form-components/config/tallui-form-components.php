@@ -17,6 +17,9 @@ return [
     'components' => [
         'input' => Components\Inputs\Input::class,
         'form' => Components\Forms\Form::class,
+        'button' => Components\Forms\Buttons\Button::class,
+        'logout' => Components\Forms\Buttons\Logout::class,
+        'form-button' => Components\Forms\Buttons\FormButton::class,
     ],
 
     /*

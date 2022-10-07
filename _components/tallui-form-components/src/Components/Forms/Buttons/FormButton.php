@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace BladeUIKit\Components\Buttons;
+namespace Usetall\TalluiFormComponents\Components\Forms\Buttons;
 
-use Livewire\Component;
+use Usetall\TalluiFormComponents\Components\BladeComponent;
 use Illuminate\Contracts\View\View;
 
-class FormButton extends Component
+class FormButton extends BladeComponent
 {
     /** @var string|null */
     public $action;
@@ -23,6 +23,6 @@ class FormButton extends Component
 
     public function render(): View
     {
-        return view('buttons.form-button');
+        return view('tallui-form-components::components.forms.buttons.form-button');
     }
 }
