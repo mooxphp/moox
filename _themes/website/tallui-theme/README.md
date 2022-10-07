@@ -51,3 +51,26 @@ Changing or adding CSS/JS means we need to rebuild. Two ways
 
 - As long there's no graphical interfaces, it is the developers part to do such changes and 'npm run build'
 - When there's is a GUI (Designer) for that, we need to rebuild the assets in the package
+
+Oh, see:
+
+- https://github.com/qirolab/laravel-themer
+- https://github.com/igaster/laravel-theme
+
+Both with middleware.
+
+## What is a theme?
+
+A Laravel package? containing
+
+- Configuration
+    Laravel? config
+        - Theme inheritance
+    Vite config
+    PostCSS config
+    Tailwind config
+- Assets, optional
+- Components, optional
+- Views, optional
+- Layouts (Page layouts)
+
