@@ -20,7 +20,7 @@ jobs:
                 package:
                   - tallui-web-icons
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: actions/checkout@v3
 
             -
                 if: "!startsWith(github.ref, 'refs/tags/')"
