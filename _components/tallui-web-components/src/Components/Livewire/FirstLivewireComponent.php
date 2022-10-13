@@ -13,7 +13,7 @@ class FirstLivewireComponent extends LivewireComponent
     protected static $assets = ['example'];
 
     /** @var string|null */
-    public string $first_var = "";
+    public string $first_var = '';
 
     public function mount(): void
     {

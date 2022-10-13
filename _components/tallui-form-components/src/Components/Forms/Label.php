@@ -7,13 +7,13 @@ use Illuminate\View\Component;
 
 class Label extends Component
 {
-     /** @var string */
-     public $for;
+    /** @var string */
+    public $for;
 
-     public function __construct(string $for)
-     {
-         $this->for = $for;
-     }
+    public function __construct(string $for)
+    {
+        $this->for = $for;
+    }
 
     /**
      * Get the view / contents that represent the component.
@@ -27,7 +27,6 @@ class Label extends Component
 
     public function fallback(): string
     {
-
         return Str::ucfirst(str_replace('_', ' ', $this->for));
     }
 }
