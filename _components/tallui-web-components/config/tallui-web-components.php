@@ -1,4 +1,5 @@
 <?php
+
 use Usetall\TalluiWebComponents\Components;
 
 return [

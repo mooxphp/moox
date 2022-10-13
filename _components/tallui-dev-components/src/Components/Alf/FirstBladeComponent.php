@@ -13,7 +13,7 @@ class FirstBladeComponent extends BladeComponent
     protected static $assets = ['example'];
 
     /** @var string|null */
-    public string $first_var = "";
+    public string $first_var = '';
 
     public function mount(): void
     {

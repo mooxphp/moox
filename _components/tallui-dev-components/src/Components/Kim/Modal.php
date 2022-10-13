@@ -6,15 +6,11 @@ namespace Usetall\TalluiDevComponents\Components\Kim;
 
 use Usetall\TalluiAppComponents\Components\BladeComponent;
 
-
-
 class Modal extends BladeComponent
 {
-
-
-
     /** @var array */
     protected static $assets = ['example'];
+
     /**
      * Create a new component instance.
      *
@@ -24,7 +20,6 @@ class Modal extends BladeComponent
     {
         //
     }
-
 
     public function render()
     {

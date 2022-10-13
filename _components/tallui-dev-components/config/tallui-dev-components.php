@@ -37,7 +37,6 @@ return [
         'second-dev-component' => Components\Alf\FirstLivewireComponent::class,
         'calendar' => Components\Kim\Calendar::class,
 
-
     ],
 
     /*

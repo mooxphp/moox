@@ -13,23 +13,27 @@ class Calendar extends LivewireComponent
     /** @var array */
     protected static $assets = ['example'];
 
-
     public $month;
+
     public $year;
 
     //stuff view need
 
     public $today;
+
     public $monthname;
+
     public $onemonth;
 
     public $events;
 
     public $subject;
-    public $startEvent;
-    public $endEvent;
-    public $body;
 
+    public $startEvent;
+
+    public $endEvent;
+
+    public $body;
 
     public $visible;
 
@@ -39,7 +43,6 @@ class Calendar extends LivewireComponent
         $this->buildOneMonth();
         // $this->events = DB::table('events')->get();
     }
-
 
     public function buildOneMonth()
     {
@@ -54,7 +57,6 @@ class Calendar extends LivewireComponent
         foreach ($days as $day) {
             $this->onemonth[] = $day;
         }
-
     }
 
     public function getDaysCurrentMonth($month)
@@ -62,11 +64,11 @@ class Calendar extends LivewireComponent
         $daysinmonth = $this->getDaysinMonth($month);
         for ($count = 1; $count <= $daysinmonth; $count++) {
             $date = $this->createDate($month, $this->year, $count);
-            $days[$count] = 'cur ' . $date->shortEnglishDayOfWeek . ' ' . $date;
+            $days[$count] = 'cur '.$date->shortEnglishDayOfWeek.' '.$date;
         }
+
         return $days;
     }
-
 
     public function getDaysPreviousetMonth($month)
     {
@@ -75,14 +77,13 @@ class Calendar extends LivewireComponent
         $getpreviousemonthdays = $this->getDaysinMonth($month - 1);
         for ($count = ($getpreviousemonthdays - $dayspreviouse) + 1; $count <= $getpreviousemonthdays; $count++) {
             $date = $this->createDate($month - 1, $this->year, $count);
-            $predays[$count] = 'pre ' . $date->shortEnglishDayOfWeek  . ' ' . $date;
+            $predays[$count] = 'pre '.$date->shortEnglishDayOfWeek.' '.$date;
         }
 
         if (isset($predays)) {
             return $predays;
         }
     }
-
 
     public function getDaysFromPreviouseMonth($name)
     {
@@ -110,31 +111,32 @@ class Calendar extends LivewireComponent
                 $dayspreviouse = 6;
                 break;
         }
+
         return $dayspreviouse;
     }
 
     public function getDaysinMonth($month)
     {
         $date = $this->createDate($month, $this->year, 1);
+
         return $date->daysInMonth;
     }
 
     public function createDate($month, $year, $day)
     {
-        $date = Carbon::createFromFormat('m/d/Y', $month . '/' . $day . '/' . $year);
+        $date = Carbon::createFromFormat('m/d/Y', $month.'/'.$day.'/'.$year);
+
         return $date;
     }
 
     public function getMonthName($month)
     {
         $date = $this->createDate($month, $this->year, 1);
+
         return $date->englishMonth;
     }
 
-
-
     //click Functions
-
 
     public function previouseMonth()
     {
@@ -147,25 +149,21 @@ class Calendar extends LivewireComponent
         $this->days();
     }
 
-
-
     public function nextMonth()
     {
+        if ($this->month != 12) {
+            $this->month++;
+        } else {
+            $this->month = 1;
+            $this->year++;
+        }
 
-            if($this->month!=12){
-                $this->month++;
-                }
-                else{
-                    $this->month = 1;
-                    $this->year++;
-                }
-
-            $this->days($this->month);
+        $this->days($this->month);
     }
 
     public function today()
     {
-        if (!isset($this->today)) {
+        if (! isset($this->today)) {
             $this->today = Carbon::now();
         }
 
@@ -174,30 +172,29 @@ class Calendar extends LivewireComponent
         $this->year = $this->today->year;
     }
 
-    public function addEvent(){
+    public function addEvent()
+    {
         DB::table('events')->insert([
             'subject' => $this->subject,
             'event_start' => $this->startEvent,
             'event_end' => $this->endEvent,
-            'time_start' => substr ($this->startEvent, 11,5),
-            'time_end' => substr ($this->endEvent, 11,5),
-            'body' => $this->body
+            'time_start' => substr($this->startEvent, 11, 5),
+            'time_end' => substr($this->endEvent, 11, 5),
+            'body' => $this->body,
         ]);
-
     }
 
     public function setModalVisible():void
     {
     }
 
-
-
     public function render()
     {
-        if(!isset($this->today)){
+        if (! isset($this->today)) {
             $this->today();
         }
         $this->days();
+
         return view('tallui-dev-components::components.kim.calendar');
     }
 }
