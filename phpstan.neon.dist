@@ -10,8 +10,8 @@ parameters:
         - resources
         - routes
         - tests
-        - _components
     tmpDir: build/phpstan
+    checkOctaneCompatibility: true
     checkModelProperties: true
     checkMissingIterableValueType: false
 
