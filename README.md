@@ -28,3 +28,4 @@ rm -Rf vendor/usetall
 
 - Do `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
 - Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
+- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors

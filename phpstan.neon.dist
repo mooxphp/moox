@@ -5,6 +5,8 @@ parameters:
     level: 0
     paths:
         - _components
-        - config
-        - database
+        - _data
+        - _icons
+        - _packages
+        - _themes
     tmpDir: build/phpstan
