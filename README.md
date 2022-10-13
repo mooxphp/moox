@@ -23,3 +23,7 @@ php artisan sail:install
 // Remove broken symlinks if needed
 rm -Rf vendor/usetall
 ```
+
+## Test
+
+Don't forget to `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
