@@ -2,14 +2,13 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 4
+    level: 5
     paths:
         - app
         - config
         - database
         - resources
         - routes
-        - tests
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
