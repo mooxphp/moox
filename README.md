@@ -4,6 +4,9 @@ Dev App
 // Use the default environment for sail
 cp .env.example .env
 
+// Build
+composer install
+
 // Run Sail
 ./vendor/bin/sail up
 
