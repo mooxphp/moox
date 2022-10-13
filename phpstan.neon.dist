@@ -4,7 +4,7 @@ includes:
 parameters:
     level: 4
     paths:
-        - app
+        - _components
         - config
         - database
     tmpDir: build/phpstan
