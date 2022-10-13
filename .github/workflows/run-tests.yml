@@ -8,6 +8,9 @@ on:
 
 jobs:
   test:
+    env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
