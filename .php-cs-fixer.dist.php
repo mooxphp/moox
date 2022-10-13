@@ -10,10 +10,6 @@ https://backpackforlaravel.com/articles/tutorials/how-to-automatically-apply-the
 
  **/
 
-$globalComposerPath = str_replace("bin/php-cs-fixer", 'autoload.php',$_SERVER['PHP_SELF']);
-
-require $globalComposerPath;
-
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
