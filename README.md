@@ -1,4 +1,6 @@
-Dev App
+# TallUI Monorepo
+
+This is just a dev app, tested with Laravel Sail and Laragon.
 
 ```
 // Use the default environment for sail
