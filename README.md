@@ -26,4 +26,5 @@ rm -Rf vendor/usetall
 
 ## Test
 
-Don't forget to `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
+- Do `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
+- Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
