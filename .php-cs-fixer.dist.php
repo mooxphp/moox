@@ -21,7 +21,7 @@ $finder = Finder::create()
         __DIR__.'/resources',
         __DIR__.'/routes',
         __DIR__.'/tests',
-        __DIR__.'/vendor/usetall',
+        __DIR__.'/_components',
     ])
     ->name('*.php')
     ->notName('*.blade.php')
