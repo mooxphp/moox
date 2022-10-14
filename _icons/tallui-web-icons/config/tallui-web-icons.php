@@ -214,8 +214,6 @@ return [
             'prefix' => 'symbols',
         ],
 
-
-
     ],
 
     /*
@@ -298,5 +296,3 @@ return [
     ],
 
 ];
-
-

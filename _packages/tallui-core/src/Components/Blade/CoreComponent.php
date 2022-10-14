@@ -10,7 +10,7 @@ use Usetall\TalluiCore\Components\BladeComponent;
 class CoreComponent extends BladeComponent
 {
     /** @var string|null */
-    public string $first_var = "";
+    public string $first_var = '';
 
     public function mount(): void
     {
