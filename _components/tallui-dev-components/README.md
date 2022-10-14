@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/usetall/tallui-dev-components.svg?style=flat-square)](https://packagist.org/packages/usetall/tallui-dev-components)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/usetall/tallui-dev-components/run-tests?label=tests)](https://github.com/usetall/tallui-dev-components/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/usetall/tallui-dev-components/Check%20&%20fix%20styling?label=code%20style)](https://github.com/usetall/tallui-dev-components/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/:vendor_slug/:package_slug/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/usetall/tallui-dev-components.svg?style=flat-square)](https://packagist.org/packages/usetall/tallui-dev-components)
 
 
@@ -61,7 +61,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 

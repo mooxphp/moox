@@ -55,19 +55,21 @@ Now clone your package as a subrepo into _custom and edit composer.json to your 
 }
 ```
 
-As with composer you can require multiple packages.
+As with composer, you can require multiple packages.
 
 
 ## Development
 
-- Do `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
+- Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
 - Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
-- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
+- Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
+- Use https://github.com/usetall/tallui-package-builder to create your own packages
+- Please see [CONTRIBUTING](CONTRIBUTING.md) for details. 
 
 
 ## Todo
 
-- Concept for _custom: maybe https://stackoverflow.com/questions/46580522/composer-install-from-two-composer-json-file
+- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 - PHP CS Fixer from app to packages and builder
 - Fix dev_components
 - Update all packages and builder from Spatie

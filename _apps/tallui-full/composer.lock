@@ -5583,7 +5583,7 @@
                 "spatie/laravel-package-tools": "^1.9.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.8",
+                "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^6.0",
                 "nunomaduro/larastan": "^2.0.1",
                 "orchestra/testbench": "^7.0",
@@ -5686,7 +5686,7 @@
                 "spatie/laravel-package-tools": "^1.9.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.8",
+                "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^6.0",
                 "nunomaduro/larastan": "^2.0.1",
                 "orchestra/testbench": "^7.0",
@@ -5786,7 +5786,7 @@
                 "spatie/laravel-package-tools": "^1.9.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.8",
+                "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^6.0",
                 "nunomaduro/larastan": "^2.0.1",
                 "orchestra/testbench": "^7.0",
@@ -5888,7 +5888,7 @@
                 "spatie/laravel-package-tools": "^1.9.2"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.8",
+                "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^6.0",
                 "nunomaduro/larastan": "^2.0.1",
                 "orchestra/testbench": "^7.0",
