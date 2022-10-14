@@ -10,7 +10,7 @@ use Usetall\TalluiCore\Components\LivewireComponent;
 class CoreLivewire extends LivewireComponent
 {
     /** @var string|null */
-    public string $first_var = "";
+    public string $first_var = '';
 
     public function mount(): void
     {

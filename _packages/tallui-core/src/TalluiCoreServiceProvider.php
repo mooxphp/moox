@@ -47,7 +47,6 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             $assets = config('tallui-core.assets', []);
 
             /** @var BladeComponent $component */
-
             foreach (config('tallui-core.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
@@ -66,7 +65,6 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         $assets = config('tallui-core.assets', []);
 
         /** @var LivewireComponent $component */
-
         foreach (config('tallui-core.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
