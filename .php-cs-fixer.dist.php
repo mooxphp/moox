@@ -15,13 +15,18 @@ use PhpCsFixer\Finder;
 
 $finder = Finder::create()
     ->in([
+        __DIR__.'/_apps',
+        __DIR__.'/_components',
+        __DIR__.'/_data',
+        __DIR__.'/_icons',
+        __DIR__.'/_packages',
+        __DIR__.'/_themes',
         __DIR__.'/app',
         __DIR__.'/config',
         __DIR__.'/database',
         __DIR__.'/resources',
         __DIR__.'/routes',
         __DIR__.'/tests',
-        __DIR__.'/_components',
     ])
     ->name('*.php')
     ->notName('*.blade.php')
