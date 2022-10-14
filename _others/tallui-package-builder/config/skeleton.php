@@ -1,4 +1,5 @@
 <?php
+
 use VendorName\Skeleton\Components;
 
 return [
