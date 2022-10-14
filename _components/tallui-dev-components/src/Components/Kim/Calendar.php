@@ -184,7 +184,7 @@ class Calendar extends LivewireComponent
         ]);
     }
 
-    public function setModalVisible():void
+    public function setModalVisible(): void
     {
     }
 

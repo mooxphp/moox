@@ -31,7 +31,7 @@ class Modal extends BladeComponent
      *
      * @return void
      */
-    public function turnModalVisible():void
+    public function turnModalVisible(): void
     {
         echo 'Hello';
     }
