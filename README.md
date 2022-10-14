@@ -2,27 +2,60 @@
 
 This is just a dev app, tested with Laravel Sail and Laragon.
 
-```
-// Use the default environment for sail
+```bash
+# Use the default environment for sail
 cp .env.example .env
 
-// Build
+# Build
 composer install
 
-// Run Sail
+# Run Sail
 ./vendor/bin/sail up
 
-// Run Vite (in Ubuntu, not in Sail container)
+# Run Vite (in Ubuntu, not in Sail container)
 npm install
 npm run dev
 
-// Rebuild the sail config if needed
+# Rebuild the sail config if needed
 ./vendor/bin/sail down --rmi all -v
 php artisan sail:install
 
-// Remove broken symlinks if needed
+# Remove broken symlinks if needed
 rm -Rf vendor/usetall
 ```
+
+## Custom
+
+You can require custom packages without overwriting the main composer.json:
+
+```bash
+cd _custom
+cp composer.json-example composer.json
+```
+
+Now clone your package as a subrepo into _custom and edit composer.json to your needs:
+
+```json
+{
+    "name": "usetall/tallui-custom",
+    "description": "The TallUI Monorepo - a merged Composer.json for custom packages.",
+    "keywords": ["framework", "laravel", "package", "custom", "composer", "monorepo"],
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./_custom/package"
+        }
+    ],
+    "require": {
+        "custom/package": "dev-main"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
+```
+
+As usual with composer, you can require multiple packages.
 
 
 ## Test

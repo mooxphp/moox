@@ -1,0 +1,17 @@
+{
+    "name": "usetall/tallui-custom",
+    "description": "The TallUI Monorepo - a merged Composer.json for custom packages.",
+    "keywords": ["framework", "laravel", "package", "custom", "composer", "monorepo"],
+    "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "./_custom/package"
+        }
+    ],
+    "require": {
+        "custom/package": "dev-main"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

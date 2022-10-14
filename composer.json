@@ -1,8 +1,17 @@
 {
-    "name": "laravel/laravel",
+    "name": "usetall/tallui",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "The TallUI Monorepo - a Laravel App for the TALL-Stack.",
+    "keywords": [
+        "framework",
+        "laravel",
+        "package",
+        "admin",
+        "dashboard",
+        "components",
+        "tall-stack",
+        "livewire",
+        "tailwindcss"],
     "license": "MIT",
     "repositories": [
         {
@@ -41,7 +50,8 @@
         "usetall/tallui-core": "dev-main",
         "usetall/tallui-form-components": "dev-main",
         "usetall/tallui-web-components": "dev-main",
-        "usetall/tallui-web-icons": "dev-main"
+        "usetall/tallui-web-icons": "dev-main",
+        "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -91,6 +101,19 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "merge-plugin": {
+            "include": [
+                "_custom/composer.json"
+            ],
+            "recurse": true,
+            "replace": false,
+            "ignore-duplicates": false,
+            "merge-dev": true,
+            "merge-extra": false,
+            "merge-extra-deep": false,
+            "merge-replace": true,
+            "merge-scripts": false
         }
     },
     "config": {
@@ -99,7 +122,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "wikimedia/composer-merge-plugin": true
         }
     },
     "minimum-stability": "dev",
