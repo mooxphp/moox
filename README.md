@@ -70,9 +70,7 @@ As with composer, you can require multiple packages.
 ## Todo
 
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
-- PHP CS Fixer from app to packages and builder
 - Fix dev_components
-- Update all packages and builder from Spatie
 - Fix all packages workflows
 - Scaffold all current packages
 - Get all packages running in composer
