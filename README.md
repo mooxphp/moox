@@ -1,9 +1,9 @@
 # TallUI Monorepo
 
-This is just a dev app, tested with Laravel Sail and Laragon.
+This is the TallUI Monorepo containing all packages and the Laravel dev app for instant development with Laravel Sail or Laragon.
 
 ```bash
-# Use the default environment for sail
+# Use the prepared environment
 cp .env.example .env
 
 # Build
@@ -55,10 +55,10 @@ Now clone your package as a subrepo into _custom and edit composer.json to your 
 }
 ```
 
-As usual with composer, you can require multiple packages.
+As with composer you can require multiple packages.
 
 
-## Test
+## Development
 
 - Do `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
 - Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
