@@ -24,6 +24,7 @@ php artisan sail:install
 rm -Rf vendor/usetall
 ```
 
+
 ## Test
 
 - Do `npm run build` when committing changes, because automated tests on GitHub needs a vite-manifest.
@@ -31,9 +32,9 @@ rm -Rf vendor/usetall
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 
 
-
 ## Todo
 
+- Concept for _custom: maybe https://stackoverflow.com/questions/46580522/composer-install-from-two-composer-json-file
 - PHP CS Fixer from app to packages and builder
 - Fix dev_components
 - Update all packages and builder from Spatie
