@@ -70,8 +70,10 @@ As with composer, you can require multiple packages.
 ## Todo
 
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
-- Fix dev_components
-- Fix all packages workflows
+- Fix workflows of all packages
+- Fix dev-components
 - Scaffold all current packages
 - Get all packages running in composer
+- Exclude all packages from main composer file and move them to custom will allow own configuration.
 - Wire the full-app with composer
+- Start with Dashboard and Tailwind conf
