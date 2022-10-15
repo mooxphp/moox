@@ -37,7 +37,7 @@ rm -Rf vendor/usetall
 
 ## Custom
 
-As you might develop with a custom set of TallUI packages or include your own packages with the dev app, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
+As you might want to develop with a custom set of TallUI packages or require your own packages, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
 
 ```bash
 cd _custom
@@ -46,7 +46,7 @@ cp composer.json-example composer.json
 
 To customize the set of TallUI packages, simply delete the packages from the require-section, you don't want to load, ```composer update``` afterwards.
 
-If you want to include custom packages you can clone one or more packages as subrepos into _custom and add them to  composer.json like so:
+If you want to include custom packages you can clone one or more packages as subrepos into _custom and add them to _custom/composer.json like so:
 
 ```json
     "repositories": [
@@ -58,8 +58,6 @@ If you want to include custom packages you can clone one or more packages as sub
     "require": {
         "custom/package": "dev-main"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
 ```
 
 
