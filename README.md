@@ -49,13 +49,13 @@ If you want to include custom packages you can clone your package as a subrepo i
 ```json
     "repositories": [
         {
-			... path repos of all TallUI packages, add your package path ...    
+			/* paths to your selection of TallUI packages, then your package path */    
             "type": "path",
             "url": "./_custom/package"
         }
     ],
     "require": {
-        ... require all TallUI packages, then your own ...
+        /* require selected TallUI packages, then your own */
         "custom/package": "dev-main"
     },
     "minimum-stability": "dev",
