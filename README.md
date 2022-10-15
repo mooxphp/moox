@@ -72,8 +72,14 @@ As with composer, you can require multiple packages.
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 - Fix workflows of all packages
 - Fix dev-components
-- Scaffold all current packages
+- Scaffold all current packages like admin, users, backup ...
 - Get all packages running in composer
-- Exclude all packages from main composer file and move them to custom will allow own configuration.
+- Exclude all packages from main composer file and move them to custom will allow own configuration, remember to adjust README
+- Move all Tests to dev or test branch
+- Re-enable branch protection on main
+- Move Scrutinizer to dev test branch
+- Branching now: feature -> dev -> test? -> main, dont forget README
 - Wire the full-app with composer
 - Start with Dashboard and Tailwind conf
+- Create Coming Soon page
+- Deploy it on Vapor, Cloudways and Shared Hosting
