@@ -1,6 +1,12 @@
 name: Fix PHP code style issues
 
-on: [push]
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
 
 jobs:
   php-code-styling:

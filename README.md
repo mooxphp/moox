@@ -67,7 +67,20 @@ If you want to include custom packages you can clone one or more packages as sub
 - Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
 - Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
 - Use https://github.com/usetall/tallui-package-builder to create your own packages
-- Please see [CONTRIBUTING](CONTRIBUTING.md) for details. 
+- Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+
+### Branching
+
+- ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed live
+- ```test``` is the branch for final testing, deployed on staging, can be merged to main
+- ```dev``` active development with code fixing, can be merged to test
+- ```feature-...``` refer to an issue, can be merged to dev
+
+- Re-enable branch protection on main
+- Move Scrutinizer to dev test branch
+- Branching feature -> dev -> test -> main
+- Delete scrutinizer branch
 
 
 ## Todo
@@ -76,10 +89,6 @@ If you want to include custom packages you can clone one or more packages as sub
 - Fix workflows of all packages
 - Fix dev-components
 - Scaffold all current packages like admin, users, backup ...
-- Move all Tests to dev or test branch
-- Re-enable branch protection on main
-- Move Scrutinizer to dev test branch
-- Branching now: feature -> dev -> test? -> main, dont forget README
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
 - Create Coming Soon page
 - Get all packages running in composer
