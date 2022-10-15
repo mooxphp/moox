@@ -5,7 +5,23 @@ This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
 
-All packages (components, icon packages, themes etc.) are automatically updated to their own read-only repos when merging to main.
+Following packages in _components, _data, _icons, _others, _packages and _themes) are automatically updated to their own read-only repos when merging to main.
+
+- TallUI Full App
+- TallUI App Components
+- TallUI Dev Components
+- TallUI Form Components
+- TallUI Web Components
+- TallUI Web Icons
+- TallUI Core
+- TallUI Package Builder
+
+Add a new package:
+
+- Create a new package from TallUI Package Builder template
+- Copy contents into one of the subfolder of the monorepo
+- Add the package to the monorepo-split-action that fits the folder
+- Add the package to _custom/composer.json-example and composer-tests.json
 
 
 ## Installation
