@@ -77,11 +77,6 @@ If you want to include custom packages you can clone one or more packages as sub
 - ```dev``` active development with code fixing, can be merged to test
 - ```feature-...``` refer to an issue, can be merged to dev
 
-- Re-enable branch protection on main
-- Move Scrutinizer to dev test branch
-- Branching feature -> dev -> test -> main
-- Delete scrutinizer branch
-
 
 ## Todo
 
@@ -96,7 +91,6 @@ If you want to include custom packages you can clone one or more packages as sub
 - Deploy it on Vapor, Cloudways and Shared Hosting
 - Save the icons, docs and other stuff
 - Finish icons, develop dashboard, users, backup, components
-
 
 
 ## Ideas
