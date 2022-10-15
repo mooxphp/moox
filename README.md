@@ -80,6 +80,21 @@ As with composer, you can require multiple packages.
 - Move Scrutinizer to dev test branch
 - Branching now: feature -> dev -> test? -> main, dont forget README
 - Wire the full-app with composer
-- Start with Dashboard and Tailwind conf
+- Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
 - Create Coming Soon page
 - Deploy it on Vapor, Cloudways and Shared Hosting
+- Save the icons, docs and other stuff
+- Finish icons
+- Develop dashboard, users, backup, components
+
+
+## Ideas
+
+Blade / Livewire-Components
+class=“ your_class“ => append attributes to default styles or theme styles
+:class=”your_class” => overwrite all default styles and theme styles
+
+See:
+https://laracasts.com/discuss/channels/livewire/scoped-css-in-livewire-component
+https://laravel.com/docs/9.x/blade#passing-data-to-components
+https://laravel-livewire.com/docs/2.x/properties
