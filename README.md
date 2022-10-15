@@ -73,9 +73,9 @@ If you want to include custom packages you can clone one or more packages as sub
 ### Branching
 
 - ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed live
-- ```test``` is the branch for final testing, deployed on staging, can be merged to main
-- ```dev``` active development with code fixing, can be merged to test
-- ```feature-...``` refer to an issue, can be merged to dev
+- ```test``` is the branch for tests and Scrutinizer, deployed on staging, merged to main
+- ```dev``` active development with tests and code fixing, merged to test
+- ```feature/...``` prefix all other dev-branches, merge to dev
 
 
 ## Todo
