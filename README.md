@@ -73,19 +73,18 @@ As with composer, you can require multiple packages.
 - Fix workflows of all packages
 - Fix dev-components
 - Scaffold all current packages like admin, users, backup ...
-- Get all packages running in composer
-- Exclude all packages from main composer file and move them to custom will allow own configuration, remember to adjust README
+- Exclude all packages from main composer and move them to custom will allow own configuration, remember to adjust README
 - Move all Tests to dev or test branch
 - Re-enable branch protection on main
 - Move Scrutinizer to dev test branch
 - Branching now: feature -> dev -> test? -> main, dont forget README
-- Wire the full-app with composer
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
 - Create Coming Soon page
+- Get all packages running in composer
+- Wire the full-app with composer
 - Deploy it on Vapor, Cloudways and Shared Hosting
 - Save the icons, docs and other stuff
-- Finish icons
-- Develop dashboard, users, backup, components
+- Finish icons, develop dashboard, users, backup, components
 
 
 ## Ideas
