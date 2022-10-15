@@ -1,8 +1,17 @@
 # TallUI Monorepo
 
-This is the TallUI Monorepo containing all packages and the Laravel dev app for instant development with Laravel Sail or Laragon.
+This is the TallUI Monorepo containing all packages and the Laravel dev app.
+
+Packages are automatically tested when committing to the dev branch and updated to their own read-only repos when merging to main.
+
+## Installation
+
+The Laravel dev app is made for instant development with Laravel Sail or Laragon. 
 
 ```bash
+# Use the prepared composer.json
+cp _custom/composer.json-example _custom/composer.json
+
 # Use the prepared environment
 cp .env.example .env
 
@@ -26,28 +35,27 @@ rm -Rf vendor/usetall
 
 ## Custom
 
-You can require custom packages without overwriting the main composer.json:
+As you might develop with a custom set of TallUI packages or include your own packages with the dev app, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
 
 ```bash
 cd _custom
 cp composer.json-example composer.json
 ```
 
-Now clone your package as a subrepo into _custom and edit composer.json to your needs:
+To customize the set of TallUI packages, simply delete the packages from the require-section, you don't want to load, ```composer update``` afterwards.
+
+If you want to include custom packages you can clone your package as a subrepo into _custom and edit composer.json to your needs:
 
 ```json
-{
-    "name": "usetall/tallui-custom",
-    "description": "The TallUI Monorepo - a merged Composer.json for custom packages.",
-    "keywords": ["framework", "laravel", "package", "custom", "composer", "monorepo"],
-    "license": "MIT",
     "repositories": [
         {
+			... path repos of all TallUI packages, add your package path ...    
             "type": "path",
             "url": "./_custom/package"
         }
     ],
     "require": {
+        ... require all TallUI packages, then your own ...
         "custom/package": "dev-main"
     },
     "minimum-stability": "dev",
@@ -73,7 +81,6 @@ As with composer, you can require multiple packages.
 - Fix workflows of all packages
 - Fix dev-components
 - Scaffold all current packages like admin, users, backup ...
-- Exclude all packages from main composer and move them to custom will allow own configuration, remember to adjust README
 - Move all Tests to dev or test branch
 - Re-enable branch protection on main
 - Move Scrutinizer to dev test branch

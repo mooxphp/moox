@@ -27,10 +27,6 @@
         {
             "type": "path",
             "url": "./_icons/tallui-web-icons"
-        },
-        {
-            "type": "path",
-            "url": "./_custom/package"
         }
     ],
     "require": {
@@ -38,8 +34,7 @@
         "usetall/tallui-core": "dev-main",
         "usetall/tallui-form-components": "dev-main",
         "usetall/tallui-web-components": "dev-main",
-        "usetall/tallui-web-icons": "dev-main",
-        "custom/package": "dev-main"
+        "usetall/tallui-web-icons": "dev-main"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
