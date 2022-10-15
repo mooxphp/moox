@@ -33,6 +33,8 @@ php artisan sail:install
 rm -Rf vendor/usetall
 ```
 
+
+
 ## Custom
 
 As you might develop with a custom set of TallUI packages or include your own packages with the dev app, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
@@ -44,18 +46,16 @@ cp composer.json-example composer.json
 
 To customize the set of TallUI packages, simply delete the packages from the require-section, you don't want to load, ```composer update``` afterwards.
 
-If you want to include custom packages you can clone your package as a subrepo into _custom and edit composer.json to your needs:
+If you want to include custom packages you can clone one or more packages as subrepos into _custom and add them to  composer.json like so:
 
 ```json
     "repositories": [
         {
-			/* paths to your selection of TallUI packages, then your package path */    
             "type": "path",
             "url": "./_custom/package"
         }
     ],
     "require": {
-        /* require selected TallUI packages, then your own */
         "custom/package": "dev-main"
     },
     "minimum-stability": "dev",
@@ -63,7 +63,6 @@ If you want to include custom packages you can clone your package as a subrepo i
 }
 ```
 
-As with composer, you can require multiple packages.
 
 
 ## Development
@@ -73,6 +72,7 @@ As with composer, you can require multiple packages.
 - Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
 - Use https://github.com/usetall/tallui-package-builder to create your own packages
 - Please see [CONTRIBUTING](CONTRIBUTING.md) for details. 
+
 
 
 ## Todo
@@ -92,6 +92,7 @@ As with composer, you can require multiple packages.
 - Deploy it on Vapor, Cloudways and Shared Hosting
 - Save the icons, docs and other stuff
 - Finish icons, develop dashboard, users, backup, components
+
 
 
 ## Ideas
