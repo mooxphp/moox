@@ -4,6 +4,7 @@ This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 Packages are automatically tested when committing to the dev branch and updated to their own read-only repos when merging to main.
 
+
 ## Installation
 
 The Laravel dev app is made for instant development with Laravel Sail or Laragon. 
@@ -34,7 +35,6 @@ rm -Rf vendor/usetall
 ```
 
 
-
 ## Custom
 
 As you might develop with a custom set of TallUI packages or include your own packages with the dev app, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
@@ -60,9 +60,7 @@ If you want to include custom packages you can clone one or more packages as sub
     },
     "minimum-stability": "dev",
     "prefer-stable": true
-}
 ```
-
 
 
 ## Development
@@ -72,7 +70,6 @@ If you want to include custom packages you can clone one or more packages as sub
 - Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
 - Use https://github.com/usetall/tallui-package-builder to create your own packages
 - Please see [CONTRIBUTING](CONTRIBUTING.md) for details. 
-
 
 
 ## Todo
