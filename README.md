@@ -5,20 +5,7 @@ This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
 
-Following packages are automatically updated to their own read-only repos when merging to main.
-
-| Package                   | Type          | State                 | Release       |
-| --------------------------| ------------- | --------------------- | ------------- |
-| TallUI App Components     | Components    | Active development    | No release    |
-| TallUI Dev Components     | Components    | Active development    | No release    |
-| TallUI Form Components    | Components    | Active development    | No release    |
-| TallUI Web Components     | Components    | Active development    | No release    |
-| TallUI Web Icons          | Icons         | Active development    | No release    |
-| TallUI Admin Panel        | Packages      | Active development    | No release    |
-| TallUI Core               | Packages      | Active development    | No release    |
-| TallUI Themes             | Packages      | Active development    | No release    |
-| TallUI Admin Theme        | Themes        | Active development    | No release    |
-| TallUI Website Theme      | Themes        | Active development    | No release    |
+All packages (components, icon packages, themes etc.) are automatically updated to their own read-only repos when merging to main.
 
 
 ## Installation
