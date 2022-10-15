@@ -20,10 +20,11 @@ filter:
         - '_components/*'
         - '_data'
         - '_icons'
+        - '_others'
         - '_packages'
         - '_themes'
     excluded_paths:
-        - '_components/tallui-dev-components/*'
+        - '_others/tallui-art/*'
 checks:
     php: true
     javascript: true
