@@ -47,10 +47,10 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",
         "laravel/jetstream": "^2.12",
-        "usetall/tallui-core": "dev-dev",
-        "usetall/tallui-form-components": "dev-dev",
-        "usetall/tallui-web-components": "dev-dev",
-        "usetall/tallui-web-icons": "dev-dev"
+        "usetall/tallui-core": "*",
+        "usetall/tallui-form-components": "*",
+        "usetall/tallui-web-components": "*",
+        "usetall/tallui-web-icons": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
