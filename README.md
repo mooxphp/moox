@@ -83,14 +83,13 @@ If you want to include custom packages you can clone one or more packages as sub
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 - Fix workflows of all packages
 - Fix dev-components
-- Scaffold all current packages like admin, users, backup ...
+- Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
 - Create Coming Soon page
 - Get all packages running in composer
 - Wire the full-app with composer
 - Deploy it on Vapor, Cloudways and Shared Hosting
 - Save the icons, docs and other stuff
-- Finish icons, develop dashboard, users, backup, components
 
 
 ## Ideas
