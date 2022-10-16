@@ -5,13 +5,13 @@ build:
     nodes:
         analysis:
             project_setup:
-                override:
-                    - 'true'
-            tests:
                 before:
                     - 'rm composer.json'
                     - 'mv composer-tests.json composer.json'
                     - 'composer update'
+                override:
+                    - 'true'
+            tests:
                 override:
                     - php-scrutinizer-run
                     -
