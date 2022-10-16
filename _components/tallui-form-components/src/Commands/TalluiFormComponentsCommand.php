@@ -8,7 +8,7 @@ class TalluiFormComponentsCommand extends Command
 {
     public $signature = 'tallui-form-components';
 
-    public $description = 'My command';
+    public $description = 'The form components demo command';
 
     public function handle(): int
     {
