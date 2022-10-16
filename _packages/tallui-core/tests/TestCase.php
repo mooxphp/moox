@@ -4,7 +4,7 @@ namespace Usetall\TalluiCore\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Livewire\Livewire;
+use Usetall\TalluiCore\Components\Livewire\CoreLivewire;
 use Usetall\TalluiCore\TalluiCoreServiceProvider;
 
 class TestCase extends Orchestra
