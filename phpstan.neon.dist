@@ -9,4 +9,5 @@ parameters:
         - _icons
         - _packages
         - _themes
+        - _others
     tmpDir: build/phpstan

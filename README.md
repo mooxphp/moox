@@ -101,6 +101,7 @@ If you want to include custom packages you can clone one or more packages as sub
 
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 - Fix workflows of all packages
+    - Fixed tallui-form-components
 - Fix dev-components
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
