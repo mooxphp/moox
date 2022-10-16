@@ -36,6 +36,13 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
+        $app['config']->set('view.paths', [
+            __DIR__.'/../views',
+            resource_path('views'),
+        ]);
+
+        $app['config']->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
+
         config()->set('database.default', 'testing');
 
         $migration = include __DIR__.'/../database/migrations/create_tallui_core_table.php.stub';
