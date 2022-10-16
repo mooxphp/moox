@@ -3,13 +3,12 @@
 namespace Usetall\TalluiCore\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Livewire\Livewire;
-use Livewire\Component;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Usetall\TalluiCore\TalluiCoreServiceProvider;
 
 class TestCase extends Orchestra
 {
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -17,6 +16,13 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Usetall\\TalluiCore\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
+
+        $this->registerLivewireComponents();
+    }
+
+    protected function registerLivewireComponents()
+    {
+        Livewire::component('core-livewire', CoreLivewire::class);
     }
 
     protected function getPackageProviders($app)
