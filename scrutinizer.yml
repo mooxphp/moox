@@ -7,7 +7,7 @@ build:
             project_setup:
                 before:
                     - 'rm composer.json'
-                    - 'mv composer-tests.json composer.json'
+                    - 'cp composer-tests.json composer.json'
                     - 'composer update'
                 override:
                     - 'true'
