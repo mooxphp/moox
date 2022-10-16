@@ -20,7 +20,7 @@ class Input extends Component
     /** @var string */
     public $value;
 
-    public function __construct(string $name, string $id = null, string $type = null)
+    public function __construct(string $name, string $id = null, string $type = null, string $value)
     {
         $this->name = $name;
         $this->id = $id ?? $name;
