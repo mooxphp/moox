@@ -33,7 +33,7 @@ class Input extends Component
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
-    public function render()
+    public function render() : View
     {
         return view('components.input');
     }
