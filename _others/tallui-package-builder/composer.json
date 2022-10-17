@@ -28,9 +28,8 @@
         "illuminate/filesystem": "^9.0",
         "illuminate/support": "^9.0",
         "illuminate/view": "^9.0",
-        "nesbot/carbon": "^2.38",
         "livewire/livewire": "^2.0",
-        "laravel/jetstream": "^2.0"
+        "nesbot/carbon": "^2.38"
     },
     "require-dev": {
         "laravel/pint": "^1.0",

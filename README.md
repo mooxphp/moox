@@ -99,10 +99,14 @@ If you want to include custom packages you can clone one or more packages as sub
 
 ## Todo
 
-- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 - Fix workflows of all packages
-    - Fixed tallui-form-components
-- Fix dev-components
+    - Fixed tallui-form-components - currently working on Level 4, Set to Level 7
+    - Fix TestCase in tallui-core 
+    - @param object problem see https://github.com/phpstan/phpstan/issues/2147
+    - Fix dev-components
+- Update builder accordingly
+- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
+- https://img.shields.io/badge/PHPStan-level%208-brightgreen ... readme like phpstan? ... use banner (see form-components)
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
 - Create Coming Soon page
