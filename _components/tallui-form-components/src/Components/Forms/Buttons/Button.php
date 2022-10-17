@@ -31,7 +31,7 @@ class Button extends BladeComponent
     /**
      * Get the view / contents that represent the component.
      *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
+     * @return \Illuminate\Contracts\View\View|\Closure|view-string
      */
     public function render()
     {
