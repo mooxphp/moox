@@ -11,4 +11,3 @@ parameters:
         - _themes
         - _others
     tmpDir: build/phpstan
-    errorFormat: raw
