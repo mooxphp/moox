@@ -3,20 +3,17 @@
 namespace Usetall\TalluiCore\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-
 // Without Livwire the test runs but ...
 
 use Livewire\Livewire;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Usetall\TalluiCore\Components\Livewire\CoreLivewire;
-
 // We also load Livewire here, and of course want to test it
 
 use Usetall\TalluiCore\TalluiCoreServiceProvider;
 
 class TestCase extends Orchestra
 {
-
     protected function setUp(): void
     {
         parent::setUp();
