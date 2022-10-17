@@ -33,7 +33,7 @@ class Button extends BladeComponent
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
-    public function render() : View
+    public function render(): View
     {
         return view('tallui-form-components::components.forms.buttons.button');
     }

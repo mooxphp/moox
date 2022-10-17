@@ -20,7 +20,7 @@ class Label extends Component
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
-    public function render() : View
+    public function render(): View
     {
         return view('components.label');
     }

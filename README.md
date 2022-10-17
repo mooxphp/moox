@@ -97,6 +97,20 @@ If you want to include custom packages you can clone one or more packages as sub
 - ```feature/...``` prefix all other dev-branches, merge to dev
 
 
+## Testing
+
+The Monorepo as well as all packages are heavily tested by [PHPStan](https://phpstan.org/) also using [Larastan](https://github.com/nunomaduro/larastan), by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer), by [Pest](https://pestphp.com/) and last but not least we use [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture. 
+
+Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
+
+- Use phpstan before committing to the main repo: ```./vendor/bin/phpstan analyse```
+- You can do that in every package path, too: ```../../vendor/bin/phpstan analyse```
+- Run the Pest tests before committing to the repo: ```./vendor/bin/pest```
+- Testing single packages is probably much faster: ```../../vendor/bin/pest```
+- Check your code style by running ```./vendor/bin/pint```
+- You guess it, in any package use ```../../vendor/bin/pint```
+
+
 ## Todo
 
 - Fix workflows of all packages
