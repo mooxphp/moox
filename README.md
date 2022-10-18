@@ -1,3 +1,7 @@
+[![Pest Tests](https://img.shields.io/github/workflow/status/usetall/tallui/run-tests?label=tests)](https://github.com/usetall/tallui-web-components/actions?query=workflow%3Arun-tests+branch%3Amain) [![PHP Code Style](https://img.shields.io/github/workflow/status/usetall/tallui/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/usetall/tallui/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain) ![PHPStan Level](https://img.shields.io/badge/PHPStan-level%205-green) ![Scrutinizer code quality)](https://img.shields.io/scrutinizer/quality/g/usetall/tallui/test)
+
+
+
 # TallUI Monorepo
 
 This is the TallUI Monorepo containing all packages and the Laravel dev app.
@@ -51,7 +55,8 @@ npm run dev
 ./vendor/bin/sail down --rmi all -v
 php artisan sail:install
 
-# Remove broken symlinks if needed
+# Remove broken symlinks 
+# switching from Laragon to Sail for example
 rm -Rf vendor/usetall
 ```
 
@@ -101,7 +106,12 @@ If you want to include custom packages you can clone one or more packages as sub
 
 ## Testing
 
-The Monorepo with all packages is tested by [PHPStan](https://phpstan.org/) using [Larastan](https://github.com/nunomaduro/larastan), by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer), by [Pest](https://pestphp.com/) and last but not least we use [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture. 
+The Monorepo with all packages is tested
+
+- by [PHPStan](https://phpstan.org/) (Level 5) using [Larastan](https://github.com/nunomaduro/larastan)
+- by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer)
+- by [Pest](https://pestphp.com/) 
+- by [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture
 
 Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
 
@@ -112,18 +122,11 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 ## Todo
 
-- Fix workflows of all packages to Level 8 - 116 errors
-    - PHPStan tallui-web-components - Level 8 excl tests
-    - PHPStan tallui-form-components - Level 8 excl tests
-    - PHPStan tallui-app-components - Level 8 excl tests
-    - PHPStan tallui-dev-components - Level 8 excl tests
-    - PHPStan tallui-web-icons - no phpstan, rebuild package
-    - PHPStan tallui-core - Level 8 excl tests
-    - PHPStan tallui-package-builder - Level 8 (2 errors bc of views, tests?)
-    - PHPStan installer etc.  - 
-    - Fix TestCase in tallui-core
-- https://img.shields.io/badge/PHPStan-level%208-brightgreen ... readme like phpstan? ... use banner (see form-components)
+- Fix TestCase in tallui-core
+- Ich liebe meinen kleinen süßen Keks :-)
 - Scrutinizer shield?
+
+
 - Scaffold website-package to output all components
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Usetall\TalluiFormComponents\Tests;
 
 use Illuminate\Testing\Assert as PHPUnit;
+use Illuminate\Testing\Constraints\SeeInOrder;
 use Illuminate\View\View;
 
 class ViewTest

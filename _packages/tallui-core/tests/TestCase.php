@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 use Livewire\Livewire;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Usetall\TalluiCore\Components\Livewire\CoreLivewire;
+//use Usetall\TalluiCore\Components\Livewire\CoreLivewire;
 // We also load Livewire here, and of course want to test it
 
 use Usetall\TalluiCore\TalluiCoreServiceProvider;
@@ -29,7 +29,7 @@ class TestCase extends Orchestra
 
     protected function registerLivewireComponents()
     {
-        Livewire::component('core-livewire', CoreLivewire::class);
+        // Livewire::component('core-livewire', CoreLivewire::class);
     }
 
     protected function getPackageProviders($app)
