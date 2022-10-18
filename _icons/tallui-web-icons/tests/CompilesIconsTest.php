@@ -7,6 +7,7 @@ namespace Tests;
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
 use Orchestra\Testbench\TestCase;
+use Usetall\TalluiWebIcons\TalluiWebIconsServiceProvider;
 
 class CompilesIconsTest extends TestCase
 {
@@ -57,7 +58,7 @@ class CompilesIconsTest extends TestCase
     {
         return [
             BladeIconsServiceProvider::class,
-            BladeHeroiconsServiceProvider::class,
+            TalluiWebIconsServiceProvider::class,
         ];
     }
 }

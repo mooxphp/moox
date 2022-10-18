@@ -13,6 +13,13 @@
  * */
 session_start();
 
+//PHPStan Quickfix
+$gradient = "";
+$background = "";
+$opacity = "";
+$caption = "";
+$textcolor = "";
+
 /* Settings */
 
 $base_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'];
@@ -1319,11 +1326,11 @@ $lastStep = end($steps);
 
 /* Templates */
 
-$stepHead = '<div class="min-h-full flex">
-<div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-  <div class="mx-auto w-full max-w-sm lg:w-96">
+$stepHead = '<div class="flex min-h-full">
+<div class="flex flex-col justify-center flex-1 px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+  <div class="w-full max-w-sm mx-auto lg:w-96">
     <div class="flex">
-      <img class="h-12 w-auto mt-4 mr-2" src="logo.svg" alt="TALLUI">
+      <img class="w-auto h-12 mt-4 mr-2" src="logo.svg" alt="TALLUI">
         <div>
             <h2 class="mt-6 text-3xl text-gray-700">TALL<b>UI</b> Installer</h2>
             <p class="mt-2 text-sm text-gray-600">
@@ -1338,7 +1345,7 @@ $stepHead = '<div class="min-h-full flex">
       <div class="mt-6">
         <form action="'.$plain_url.'?step='.$next_step.'" method="POST" class="space-y-6">';
 
-$stepFoot = '<div><button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">Continue</button></div></form></div></div></div></div>';
+$stepFoot = '<div><button type="submit" class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">Continue</button></div></form></div></div></div></div>';
 
 ?>
 
@@ -1425,19 +1432,19 @@ foreach ($steps as $step) {
 
                     if ($fieldtype == 'text' or $fieldtype == 'password' or $fieldtype == 'email') {
                         echo '<div><label for="'.$fieldname.'" class="block text-sm font-medium text-gray-700"> '.$fieldtitle.' </label><div class="mt-1">
-                      <input value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="'.$fieldtype.'" placeholder="'.$fieldplaceholder.'"'.$fieldrequired.' class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+                      <input value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="'.$fieldtype.'" placeholder="'.$fieldplaceholder.'"'.$fieldrequired.' class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
                       </div></div>';
                     }
 
                     if ($fieldtype == 'checkbox') {
-                        echo '<div class="mt-1 flex gap-2">
+                        echo '<div class="flex gap-2 mt-1">
                       <input value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="'.$fieldtype.'" placeholder="'.$fieldplaceholder.'"'.$fieldrequired.' class="appearance-none block border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 text-cyan-600 sm:text-sm mt-0.5">
                       <label for="'.$fieldname.'" class="block text-sm font-medium text-gray-700"> '.$fieldtitle.' </label></div>';
                     }
 
                     if ($fieldtype == 'select') {
                         echo '<div><label for="'.$fieldname.'" class="block text-sm font-medium text-gray-700"> '.$fieldtitle.' </label><div class="mt-1">
-                      <select value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="select" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">';
+                      <select value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="select" class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">';
 
                         foreach ($fieldcontents as $fieldcontent) {
                             echo '<option value="3">'.$fieldcontent.'</option>';
@@ -1449,7 +1456,7 @@ foreach ($steps as $step) {
 
                     if ($fieldtype == 'multi') {
                         echo '<div><label for="'.$fieldname.'" class="block text-sm font-medium text-gray-700"> '.$fieldtitle.' </label><div class="mt-1">
-                      <select value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="select" multiple class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">';
+                      <select value="'.$session_fieldvalue.'" id="'.$fieldname.'" name="'.$fieldname.'" type="select" multiple class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">';
 
                         foreach ($fieldcontents as $fieldcontent) {
                             echo '<option selected value="3">'.$fieldcontent[1].'</option>';
@@ -1581,12 +1588,12 @@ $checkafter = [
 ?>
 
 
-<div class="hidden lg:block relative w-0 flex-1">
+<div class="relative flex-1 hidden w-0 lg:block">
 <div class="z-20 absolute h-full w-full bg-gradient-to-r <?php echo $gradient ?>"></div>
 <img class="z-10 absolute inset-0 h-full w-full object-cover opacity-<?php echo  $opacity  ?>" src="<?php echo $background  ?>" alt="">
 <div class="z-40 absolute bottom-0 right-0 p-3 <?php echo $textcolor ?>" id="image-caption"><?php echo $caption ?></div>
 
-<div class="z-30 h-full flex items-center ml-20">
+<div class="z-30 flex items-center h-full ml-20">
 
 <nav aria-label="Progress">
   <ol role="list" class="overflow-hidden">
@@ -1605,8 +1612,8 @@ $checkafter = [
                 echo '
                 <div class="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-cyan-600" aria-hidden="true"></div>
                 <a href="'.$plain_url.'?step='.$val['0'].'" class="relative flex items-start group">
-                  <span class="h-9 flex items-center">
-                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-cyan-600 rounded-full group-hover:bg-cyan-800">
+                  <span class="flex items-center h-9">
+                    <span class="relative z-10 flex items-center justify-center w-8 h-8 rounded-full bg-cyan-600 group-hover:bg-cyan-800">
                       <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                       </svg>';
@@ -1614,22 +1621,22 @@ $checkafter = [
                 echo '
                 <div class="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true"></div>
                 <a href="#" class="relative flex items-start group" aria-current="step">
-                  <span class="h-9 flex items-center" aria-hidden="true">
-                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-cyan-600 rounded-full">
+                  <span class="flex items-center h-9" aria-hidden="true">
+                    <span class="relative z-10 flex items-center justify-center w-8 h-8 bg-white border-2 rounded-full border-cyan-600">
                       <span class="h-2.5 w-2.5 bg-cyan-600 rounded-full"></span>';
             } else {
                 echo '
                 <div class="-ml-px absolute mt-0.5 top-4 left-4 w-0.5 h-full bg-gray-300" aria-hidden="true"></div>
                 <a href="#" class="relative flex items-start group">
-                  <span class="h-9 flex items-center" aria-hidden="true">
-                    <span class="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-300 rounded-full group-hover:border-gray-400">
+                  <span class="flex items-center h-9" aria-hidden="true">
+                    <span class="relative z-10 flex items-center justify-center w-8 h-8 bg-white border-2 border-gray-300 rounded-full group-hover:border-gray-400">
                       <span class="h-2.5 w-2.5 bg-transparent rounded-full group-hover:bg-gray-300"></span>';
             }
 
             echo '
                   </span>
                 </span>
-                <span class="ml-4 min-w-0 flex flex-col">
+                <span class="flex flex-col min-w-0 ml-4">
                   <span class="text-xs font-semibold tracking-wide uppercase">'.$val['1'].'</span>
                   <span class="text-sm text-gray-500">'.$val['2'].'</span>
                 </span>
