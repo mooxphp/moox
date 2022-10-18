@@ -15,6 +15,6 @@ class Email extends Input
 
     public function render(): View
     {
-        return view('tallui-form-components::components.forms.inputs.email');
+        return view('tallui-form-components::components.inputs.email');
     }
 }

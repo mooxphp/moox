@@ -46,7 +46,6 @@ class SkeletonServiceProvider extends PackageServiceProvider
             $prefix = config(':builder.prefix', '');
             $assets = config(':builder.assets', []);
 
-            /** @var BladeComponent $component */
             foreach (config(':builder.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
@@ -64,7 +63,6 @@ class SkeletonServiceProvider extends PackageServiceProvider
         $prefix = config(':builder.prefix', '');
         $assets = config(':builder.assets', []);
 
-        /** @var LivewireComponent $component */
         foreach (config(':builder.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 

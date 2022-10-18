@@ -16,12 +16,14 @@ Following packages in _components, _data, _icons, _others, _packages and _themes
 - TallUI Core
 - TallUI Package Builder
 
-Add a new package:
+### Add a new package:
 
 - Create a new package from TallUI Package Builder template
-- Copy contents into one of the subfolder of the monorepo
+- Copy contents into one of the _subfolder of the monorepo
 - Add the package to the monorepo-split-action that fits the folder
 - Add the package to _custom/composer.json-example and composer-tests.json
+- Add the package to the list of packages above
+- Add the package to _app/***/composer.json, if the package is stable
 
 
 ## Installation
@@ -97,23 +99,41 @@ If you want to include custom packages you can clone one or more packages as sub
 - ```feature/...``` prefix all other dev-branches, merge to dev
 
 
+## Testing
+
+The Monorepo with all packages is tested by [PHPStan](https://phpstan.org/) using [Larastan](https://github.com/nunomaduro/larastan), by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer), by [Pest](https://pestphp.com/) and last but not least we use [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture. 
+
+Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
+
+- Use PHPStan before committing: ```./vendor/bin/phpstan analyse```, from a package: ```../../vendor/bin/phpstan analyse```
+- Run Pest before committing: ```./vendor/bin/pest```, from a package: ```../../vendor/bin/pest```
+- Run Pint before commiting: ```./vendor/bin/pint```, you guess it: ```../../vendor/bin/pint```
+
+
 ## Todo
 
-- Fix workflows of all packages
-    - Fixed tallui-form-components - currently working on Level 4, full project is set to Level 5
-    - Fix TestCase in tallui-core 
-    - @param object problem see https://github.com/phpstan/phpstan/issues/2147
-    - Fix dev-components
-- Update builder accordingly
-- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
+- Fix workflows of all packages to Level 8 - 116 errors
+    - PHPStan tallui-web-components - Level 8 excl tests
+    - PHPStan tallui-form-components - Level 8 excl tests
+    - PHPStan tallui-app-components - Level 8 excl tests
+    - PHPStan tallui-dev-components - Level 8 excl tests
+    - PHPStan tallui-web-icons - no phpstan, rebuild package
+    - PHPStan tallui-core - Level 8 excl tests
+    - PHPStan tallui-package-builder - Level 8 (2 errors bc of views, tests?)
+    - PHPStan installer etc.  - 
+    - Fix TestCase in tallui-core
 - https://img.shields.io/badge/PHPStan-level%208-brightgreen ... readme like phpstan? ... use banner (see form-components)
+- Scrutinizer shield?
+- Scaffold website-package to output all components
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
 - Create Coming Soon page
 - Get all packages running in composer
 - Wire the full-app with composer
+- Rebuild icons-package with Workflows, add to builder?
 - Deploy it on Vapor, Cloudways and Shared Hosting
-- Save the icons, docs and other stuff
+- Save the icons, dev-components, docs and other stuff
+- Do private things in Satis: https://github.com/composer/satis, https://alexvanderbist.com/2021/setting-up-and-securing-a-private-composer-repository/
 
 
 ## Ideas

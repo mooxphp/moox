@@ -16,11 +16,17 @@ return [
     */
 
     'components' => [
-        'input' => Components\Inputs\Input::class,
-        'form' => Components\Forms\Form::class,
         'button' => Components\Forms\Buttons\Button::class,
-        'logout' => Components\Forms\Buttons\Logout::class,
         'form-button' => Components\Forms\Buttons\FormButton::class,
+        'logout' => Components\Forms\Buttons\Logout::class,
+        'alert' => Components\Forms\Alert::class,
+        'form' => Components\Forms\Form::class,
+        'label' => Components\Forms\Label::class,
+        'checkbox' => Components\Inputs\Checkbox::class,
+        'email' => Components\Inputs\Email::class,
+        'input' => Components\Inputs\Input::class,
+        'password' => Components\Inputs\Password::class,
+        'textarea' => Components\Inputs\Textarea::class,
     ],
 
     /*

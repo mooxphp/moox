@@ -1,28 +1,26 @@
 <?php
 
-namespace App\View\Components;
+declare(strict_types=1);
+
+namespace Usetall\TalluiFormComponents\Components\Forms;
 
 use Illuminate\Support\Str;
-use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
-class Label extends Component
+use Usetall\TalluiFormComponents\Components\BladeComponent;
+
+class Label extends BladeComponent
 {
-    /** @var string */
-    public $for;
+    public string $for;
 
     public function __construct(string $for)
     {
         $this->for = $for;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
-    public function render()
+    public function render(): View
     {
-        return view('components.label');
+        return view('tallui-form-components::components.forms.label');
     }
 
     public function fallback(): string

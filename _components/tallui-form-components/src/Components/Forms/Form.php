@@ -9,14 +9,11 @@ use Usetall\TalluiFormComponents\Components\BladeComponent;
 
 class Form extends BladeComponent
 {
-    /** @var string|null */
-    public $action;
+    public string|null $action;
 
-    /** @var string */
-    public $method;
+    public string $method;
 
-    /** @var bool */
-    public $hasFiles;
+    public bool $hasFiles;
 
     public function __construct(string $action = null, string $method = 'POST', bool $hasFiles = false)
     {

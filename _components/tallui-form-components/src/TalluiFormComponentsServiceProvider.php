@@ -27,7 +27,7 @@ class TalluiFormComponentsServiceProvider extends PackageServiceProvider
             ->hasCommand(TalluiFormComponentsCommand::class);
     }
 
-    public function boot()
+    public function boot(): void
     {
         $this->bootResources();
         $this->bootBladeComponents();
@@ -46,7 +46,6 @@ class TalluiFormComponentsServiceProvider extends PackageServiceProvider
             $prefix = config('tallui-form-components.prefix', '');
             $assets = config('tallui-form-components.assets', []);
 
-            /** @var BladeComponent $component */
             foreach (config('tallui-form-components.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
@@ -64,7 +63,6 @@ class TalluiFormComponentsServiceProvider extends PackageServiceProvider
         $prefix = config('tallui-form-components.prefix', '');
         $assets = config('tallui-form-components.assets', []);
 
-        /** @var LivewireComponent $component */
         foreach (config('tallui-form-components.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
@@ -74,7 +72,7 @@ class TalluiFormComponentsServiceProvider extends PackageServiceProvider
         }
     }
 
-    private function registerAssets($component, array $assets): void
+    private function registerAssets(string $component, array $assets): void
     {
         foreach ($component::assets() as $asset) {
             $files = (array) ($assets[$asset] ?? []);

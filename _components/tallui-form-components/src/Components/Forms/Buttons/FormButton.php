@@ -9,11 +9,9 @@ use Usetall\TalluiFormComponents\Components\BladeComponent;
 
 class FormButton extends BladeComponent
 {
-    /** @var string|null */
-    public $action;
+    public string|null $action;
 
-    /** @var string */
-    public $method;
+    public string $method;
 
     public function __construct(string $action = null, string $method = 'POST')
     {

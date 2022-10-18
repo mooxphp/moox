@@ -9,8 +9,7 @@ use Usetall\TalluiFormComponents\Components\BladeComponent;
 
 class Logout extends BladeComponent
 {
-    /** @var string */
-    public $action;
+    public string $action;
 
     public function __construct(string $action = null)
     {

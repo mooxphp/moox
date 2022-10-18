@@ -2,7 +2,7 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 5
+    level: 8
     paths:
         - _components
         - _data
@@ -10,4 +10,12 @@ parameters:
         - _packages
         - _themes
         - _others
+    excludePaths:
+        - '_components/*/build/*'
+        - '_data/*/build/*'
+        - '_icons/*/build/*'
+        - '_packages/*/build/*'
+        - '_themes/admin/*/build/*'
+        - '_themes/website/*/build/*'
+        - '_others/*/build/*'
     tmpDir: build/phpstan

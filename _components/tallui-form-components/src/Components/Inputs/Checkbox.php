@@ -8,8 +8,7 @@ use Illuminate\Contracts\View\View;
 
 class Checkbox extends Input
 {
-    /** @var bool */
-    public $checked;
+    public bool $checked;
 
     public function __construct(string $name, string $id = null, bool $checked = false, ?string $value = '')
     {
@@ -20,6 +19,6 @@ class Checkbox extends Input
 
     public function render(): View
     {
-        return view('tallui-form-components::components.forms.inputs.checkbox');
+        return view('tallui-form-components::components.inputs.checkbox');
     }
 }

@@ -9,10 +9,8 @@ use VendorName\Skeleton\Components\LivewireComponent;
 
 class FirstLivewireComponent extends LivewireComponent
 {
-    /** @var array */
     protected static $assets = ['example'];
 
-    /** @var string|null */
     public string $first_var = '';
 
     public function mount(): void
