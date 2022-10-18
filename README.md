@@ -112,16 +112,18 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 ## Todo
 
-- Fix workflows of all packages to Level 8
-    - PHPStan tallui-web-components - Level 8
-    - PHPStan tallui-form-components - Level 8
-    - PHPStan tallui-app-components - Level 8
-    - PHPStan tallui-dev-components - Level 8
+- Fix workflows of all packages to Level 8 - 116 errors
+    - PHPStan tallui-web-components - Level 8 excl tests
+    - PHPStan tallui-form-components - Level 8 excl tests
+    - PHPStan tallui-app-components - Level 8 excl tests
+    - PHPStan tallui-dev-components - Level 8 excl tests
     - PHPStan tallui-web-icons - no phpstan, rebuild package
-    - PHPStan tallui-core - Level 8
-    - PHPStan tallui-package-builder - Level 8 (or exclude?)
+    - PHPStan tallui-core - Level 8 excl tests
+    - PHPStan tallui-package-builder - Level 8 (2 errors bc of views, tests?)
+    - PHPStan installer etc.  - 
     - Fix TestCase in tallui-core
 - https://img.shields.io/badge/PHPStan-level%208-brightgreen ... readme like phpstan? ... use banner (see form-components)
+- Scrutinizer shield?
 - Scaffold website-package to output all components
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
@@ -131,6 +133,7 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 - Rebuild icons-package with Workflows, add to builder?
 - Deploy it on Vapor, Cloudways and Shared Hosting
 - Save the icons, dev-components, docs and other stuff
+- Do private things in Satis: https://github.com/composer/satis, https://alexvanderbist.com/2021/setting-up-and-securing-a-private-composer-repository/
 
 
 ## Ideas
