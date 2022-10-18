@@ -14,11 +14,11 @@
 session_start();
 
 //PHPStan Quickfix
-$gradient = "";
-$background = "";
-$opacity = "";
-$caption = "";
-$textcolor = "";
+$gradient = '';
+$background = '';
+$opacity = '';
+$caption = '';
+$textcolor = '';
 
 /* Settings */
 
