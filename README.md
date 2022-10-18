@@ -103,12 +103,9 @@ The Monorepo as well as all packages are heavily tested by [PHPStan](https://php
 
 Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
 
-- Use PHPStan before committing: ```./vendor/bin/phpstan analyse```
-- From a single package use: ```../../vendor/bin/phpstan analyse```
-- Run Pest before committing: ```./vendor/bin/pest```
-- From a single package use: ```../../vendor/bin/pest```
-- Run Pint before commiting: ```./vendor/bin/pint```
-- You guess it: ```../../vendor/bin/pint```
+- Use PHPStan before committing: ```./vendor/bin/phpstan analyse```, from a package: ```../../vendor/bin/phpstan analyse```
+- Run Pest before committing: ```./vendor/bin/pest```, from a package: ```../../vendor/bin/pest```
+- Run Pint before commiting: ```./vendor/bin/pint```, you guess it: ```../../vendor/bin/pint```
 
 
 ## Todo
