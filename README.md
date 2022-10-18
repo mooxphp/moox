@@ -99,7 +99,7 @@ If you want to include custom packages you can clone one or more packages as sub
 
 ## Testing
 
-The Monorepo as well as all packages are heavily tested by [PHPStan](https://phpstan.org/) also using [Larastan](https://github.com/nunomaduro/larastan), by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer), by [Pest](https://pestphp.com/) and last but not least we use [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture. 
+The Monorepo with all packages is tested by [PHPStan](https://phpstan.org/) using [Larastan](https://github.com/nunomaduro/larastan), by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer), by [Pest](https://pestphp.com/) and last but not least we use [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture. 
 
 Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
 
@@ -110,14 +110,11 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 ## Todo
 
-- Fix workflows of all packages
+- Fix workflows of all packages to Level 8
     - PHPStan tallui-web-components - Level 8
     - PHPStan tallui-package-builder - Level 8
-    - PHPStan tallui-form-components - Level 4, but many bugs present like wrong views
+    - PHPStan tallui-form-components - Level 4, but many bugs present like wrong views, currently Level 5
     - Fix TestCase in tallui-core
-    - Fix dev-components
-- Update builder accordingly
-- Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors
 - https://img.shields.io/badge/PHPStan-level%208-brightgreen ... readme like phpstan? ... use banner (see form-components)
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
