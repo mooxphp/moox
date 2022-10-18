@@ -16,7 +16,7 @@ return [
     */
 
     'components' => [
-        'core-component' => Components\Blade\CoreComponent::class,
+        //'core-component' => Components\Blade\CoreComponent::class,
     ],
 
     /*
@@ -30,7 +30,7 @@ return [
     */
 
     'livewire' => [
-        'core-livewire' => Components\Livewire\CoreLivewire::class,
+        //'core-livewire' => Components\Livewire\CoreLivewire::class,
     ],
 
     /*

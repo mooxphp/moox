@@ -15,6 +15,6 @@ class Password extends Input
 
     public function render(): View
     {
-        return view('tallui-form-components::components.forms.inputs.password');
+        return view('tallui-form-components::components.inputs.password');
     }
 }

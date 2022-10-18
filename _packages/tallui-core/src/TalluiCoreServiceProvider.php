@@ -46,7 +46,6 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
             $prefix = config('tallui-core.prefix', '');
             $assets = config('tallui-core.assets', []);
 
-            /** @var BladeComponent $component */
             foreach (config('tallui-core.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
@@ -64,7 +63,6 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         $prefix = config('tallui-core.prefix', '');
         $assets = config('tallui-core.assets', []);
 
-        /** @var LivewireComponent $component */
         foreach (config('tallui-core.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
@@ -74,7 +72,7 @@ class TalluiCoreServiceProvider extends PackageServiceProvider
         }
     }
 
-    private function registerAssets($component, array $assets): void
+    private function registerAssets(string $component, array $assets): void
     {
         foreach ($component::assets() as $asset) {
             $files = (array) ($assets[$asset] ?? []);

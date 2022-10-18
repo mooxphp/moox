@@ -1,28 +1,21 @@
 <?php
 
-namespace App\View\Components;
+declare(strict_types=1);
 
-use Illuminate\View\Component;
+namespace Usetall\TalluiFormComponents\Components\Forms;
 
-class Alert extends Component
+use Illuminate\Contracts\View\View;
+use Usetall\TalluiFormComponents\Components\BladeComponent;
+
+class Alert extends BladeComponent
 {
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         //
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
-    public function render()
+    public function render(): View
     {
-        return view('components.alert');
+        return view('tallui-form-components::components.forms.alert');
     }
 }

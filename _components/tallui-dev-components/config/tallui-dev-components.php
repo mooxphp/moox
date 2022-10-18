@@ -17,10 +17,7 @@ return [
     */
 
     'components' => [
-        'first-dev-component' => Components\Alf\FirstBladeComponent::class,
-        'markdown' => Components\Alf\Markdown::class,
-        'modal' => Components\Kim\Modal::class,
-
+        //'first-dev-component' => Components\Alf\FirstBladeComponent::class,
     ],
 
     /*
@@ -34,9 +31,7 @@ return [
     */
 
     'livewire' => [
-        'second-dev-component' => Components\Alf\FirstLivewireComponent::class,
-        'calendar' => Components\Kim\Calendar::class,
-
+        //'second-dev-component' => Components\Alf\FirstLivewireComponent::class,
     ],
 
     /*

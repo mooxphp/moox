@@ -9,17 +9,13 @@ use Usetall\TalluiFormComponents\Components\BladeComponent;
 
 class Input extends BladeComponent
 {
-    /** @var string */
-    public $name;
+    public string $name;
 
-    /** @var string */
-    public $id;
+    public string $id;
 
-    /** @var string */
-    public $type;
+    public string $type;
 
-    /** @var string */
-    public $value;
+    public string $value;
 
     public function __construct(string $name, string $id = null, string $type = 'text', ?string $value = '')
     {
