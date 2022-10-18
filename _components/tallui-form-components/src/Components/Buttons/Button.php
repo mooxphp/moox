@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiFormComponents\Components\Forms\Buttons;
+namespace Usetall\TalluiFormComponents\Components\Buttons;
 
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiFormComponents\Components\BladeComponent;
@@ -27,6 +27,6 @@ class Button extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-form-components::components.forms.buttons.button');
+        return view('tallui-form-components::components.buttons.button');
     }
 }

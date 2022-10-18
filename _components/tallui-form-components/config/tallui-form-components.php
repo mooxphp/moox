@@ -16,9 +16,9 @@ return [
     */
 
     'components' => [
-        'button' => Components\Forms\Buttons\Button::class,
-        'form-button' => Components\Forms\Buttons\FormButton::class,
-        'logout' => Components\Forms\Buttons\Logout::class,
+        'button' => Components\Buttons\Button::class,
+        'form-button' => Components\Buttons\FormButton::class,
+        'logout' => Components\Buttons\Logout::class,
         'alert' => Components\Forms\Alert::class,
         'form' => Components\Forms\Form::class,
         'label' => Components\Forms\Label::class,

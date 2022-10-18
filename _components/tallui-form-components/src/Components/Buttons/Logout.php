@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\TalluiFormComponents\Components\Forms\Buttons;
+namespace Usetall\TalluiFormComponents\Components\Buttons;
 
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiFormComponents\Components\BladeComponent;
@@ -18,6 +18,6 @@ class Logout extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-form-components::components.forms.buttons.logout');
+        return view('tallui-form-components::components.buttons.logout');
     }
 }
