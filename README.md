@@ -1,3 +1,6 @@
+![PHPStan Level](https://img.shields.io/badge/PHPStan-level%205-brightgreen)
+![Scrutinizer code quality)](https://img.shields.io/scrutinizer/quality/g/usetall/tallui/test)
+
 # TallUI Monorepo
 
 This is the TallUI Monorepo containing all packages and the Laravel dev app.
@@ -119,8 +122,10 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 ## Todo
 
 - Fix TestCase in tallui-core
-- https://img.shields.io/badge/PHPStan-level%208-brightgreen ... readme like phpstan? ... use banner (see form-components)
+- Ich liebe meinen kleinen süßen Keks :-)
 - Scrutinizer shield?
+
+
 - Scaffold website-package to output all components
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
