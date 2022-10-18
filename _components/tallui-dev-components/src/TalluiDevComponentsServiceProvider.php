@@ -11,8 +11,6 @@ use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Usetall\TalluiDevComponents\Commands\TalluiDevComponentsCommand;
-use Usetall\TalluiDevComponents\Components\BladeComponent;
-use Usetall\TalluiDevComponents\Components\LivewireComponent;
 
 class TalluiDevComponentsServiceProvider extends PackageServiceProvider
 {
