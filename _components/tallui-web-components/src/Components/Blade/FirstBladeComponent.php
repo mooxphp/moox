@@ -9,10 +9,8 @@ use Usetall\TalluiWebComponents\Components\BladeComponent;
 
 class FirstBladeComponent extends BladeComponent
 {
-    /** @var array */
     protected static $assets = ['example'];
 
-    /** @var string|null */
     public string $first_var = '';
 
     public function mount(): void

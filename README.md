@@ -103,20 +103,21 @@ The Monorepo as well as all packages are heavily tested by [PHPStan](https://php
 
 Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
 
-- Use phpstan before committing to the main repo: ```./vendor/bin/phpstan analyse```
-- You can do that in every package path, too: ```../../vendor/bin/phpstan analyse```
-- Run the Pest tests before committing to the repo: ```./vendor/bin/pest```
-- Testing single packages is probably much faster: ```../../vendor/bin/pest```
-- Check your code style by running ```./vendor/bin/pint```
-- You guess it, in any package use ```../../vendor/bin/pint```
+- Use PHPStan before committing: ```./vendor/bin/phpstan analyse```
+- From a single package use: ```../../vendor/bin/phpstan analyse```
+- Run Pest before committing: ```./vendor/bin/pest```
+- From a single package use: ```../../vendor/bin/pest```
+- Run Pint before commiting: ```./vendor/bin/pint```
+- You guess it: ```../../vendor/bin/pint```
 
 
 ## Todo
 
 - Fix workflows of all packages
-    - Fixed tallui-form-components - currently working on Level 4, full project is set to Level 5
-    - Fix TestCase in tallui-core 
-    - @param object problem see https://github.com/phpstan/phpstan/issues/2147
+    - PHPStan tallui-web-components - Level 8
+    - PHPStan tallui-package-builder - Level 8
+    - PHPStan tallui-form-components - Level 4, but many bugs present like wrong views
+    - Fix TestCase in tallui-core
     - Fix dev-components
 - Update builder accordingly
 - Check Larastan and https://phpstan.org/user-guide/baseline to get rid of errors

@@ -16,3 +16,4 @@ yarn-error.log
 /_custom/**/
 /_custom/composer.json
 /composer.lock
+build/phpstan
