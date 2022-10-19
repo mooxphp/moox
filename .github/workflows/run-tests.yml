@@ -41,7 +41,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
-          coverage: none
+          coverage: pcov
 
       - name: Setup problem matchers
         run: |
@@ -52,9 +52,6 @@ jobs:
         run: |
           mv composer-tests.json composer.json
           composer update
-
-      - name: Install PCOV
-        run: pecl install pcov
 
       - name: List Installed Dependencies
         run: composer show -D
