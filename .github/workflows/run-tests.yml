@@ -50,16 +50,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          git clone https://github.com/krakjoe/pcov.git
-          cd pcov
-          phpize
-          ./configure --enable-pcov
-          make
-          make test
-          make install
-          rm composer.json
           mv composer-tests.json composer.json
           composer update
+
+      - name: Install PCOV
+        run: pecl install pcov
 
       - name: List Installed Dependencies
         run: composer show -D
