@@ -50,6 +50,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          git clone https://github.com/krakjoe/pcov.git
+          cd pcov
+          phpize
+          ./configure --enable-pcov
+          make
+          make test
+          make install
           rm composer.json
           mv composer-tests.json composer.json
           composer update
@@ -58,4 +65,4 @@ jobs:
         run: composer show -D
 
       - name: Execute tests
-        run: vendor/bin/pest
+        run: vendor/bin/pest --coverage
