@@ -1,6 +1,10 @@
-![TallUI Components - Blade and Livewire Components for Laravel and the TALL-Stack.](banner.jpg)
+------
 
+<p align="center">
+    <img src="banner.jpg" width="600" alt="TallUI Banner">
+</p>
 
+------
 
 # TallUI Components
 
