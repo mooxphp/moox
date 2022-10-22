@@ -1,14 +1,16 @@
 <p align="center">
-    <img src="tallui-logo.svg" width="100" alt="TallUI">
+    <img src="tallui-logo.svg" width="100" alt="TallUI Logo">
+    <br><br>
+    <img src="tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
 
 
 
 # TallUI Art
 
-These are the creative assets:
+These are the creative assets of TallUI:
 
-- Design - some Design Components
+- Design - some design components in the mix
 - Logo - yep, you guess it
 
 
