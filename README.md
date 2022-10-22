@@ -121,7 +121,15 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 ## Todo
 
 - Fix TestCase in tallui-core
-- Ich liebe meinen kleinen süßen Keks :-)
+- Use Pest main with all packages + coverage + min:75%
+  - https://dev.to/robertobutti/add-test-coverage-badge-for-php-and-pest-in-your-github-repository-37mo - easy but not enough, how to calc coverage over a bunch of test?
+  - https://pestphp.com/docs/coverage
+  - use test-directory, see https://github.com/pestphp/pest/pull/283
+  - or run tests with testbench like inside the packages
+  - use https://pestphp.com/docs/plugins/laravel and https://pestphp.com/docs/plugins/livewire
+  - maybe use https://github.com/danielpalme/ReportGenerator-GitHub-Action as Coverage UI oder codecov.io
+  - or use Scrutinizer ... fixing the DB problem before
+
 - Scrutinizer shield?
 
 
@@ -147,3 +155,5 @@ See:
 https://laracasts.com/discuss/channels/livewire/scoped-css-in-livewire-component
 https://laravel.com/docs/9.x/blade#passing-data-to-components
 https://laravel-livewire.com/docs/2.x/properties
+
+Check https://tailwindcss.com/blog/tailwindcss-v3-2?utm_source=newsletter&utm_medium=email&utm_campaign=tailwind_v32_release_open_graph_image_generation_and_nextjs_conf_is_coming&utm_term=2022-10-20#multiple-config-files-in-one-project-using-config
