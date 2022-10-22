@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 25.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="TallUI" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 72 72" enable-background="new 0 0 72 72" xml:space="preserve">
-<g id="Octagon_1_">
-	<path fill="#C4C2C3" stroke="#000000" stroke-width="0.5" d="M14.3,15.5c0.2-0.5,0.6-0.9,1.1-1.1l19.7-8.2c0.5-0.2,1.1-0.2,1.6,0
-		l19.7,8.2c0.5,0.2,0.9,0.6,1.1,1.1l8.2,19.7c0.2,0.5,0.2,1.1,0,1.6l-8.2,19.7c-0.2,0.5-0.6,0.9-1.1,1.1l-19.7,8.2
-		c-0.5,0.2-1.1,0.2-1.6,0l-19.7-8.2c-0.5-0.2-0.9-0.6-1.1-1.1L6.1,36.8c-0.2-0.5-0.2-1.1,0-1.6L14.3,15.5z"/>
+<!-- Generator: Adobe Illustrator 27.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 130.5 150" style="enable-background:new 0 0 130.5 150;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);stroke:#297EA6;}
+	.st1{fill:none;stroke:#297EA6;stroke-width:2;}
+	.st2{fill:#297EA6;}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="96.3463" y1="129.1725" x2="34.0744" y2="21.3144">
+	<stop  offset="2.077838e-07" style="stop-color:#3E81B1;stop-opacity:0.4"/>
+	<stop  offset="1" style="stop-color:#004850;stop-opacity:0.1"/>
+</linearGradient>
+<polygon class="st0" points="127.5,111.2 65.2,147.1 2.9,111.2 2.9,39.3 65.2,3.4 127.5,39.3 "/>
+<g transform="translate(439 265)">
+	<path class="st1" d="M-373.7-262.1l62.4,36v72.1l-62.4,36l-62.4-36V-226L-373.7-262.1z"/>
 </g>
-<g>
-	<defs>
-		<polygon id="path2050" points="31.7,85.5 31.7,14.1 16.5,14.1 36,-10.8 55.5,14.1 40.3,14.1 40.3,85.5 		"/>
-	</defs>
-	<clipPath id="path2050_1_">
-		<use xlink:href="#path2050"  overflow="visible"/>
-	</clipPath>
-	<g id="Octagon" clip-path="url(#path2050_1_)">
-		<path stroke="#000000" stroke-width="2" d="M15.2,16.3c0.2-0.5,0.6-0.9,1.1-1.1l19-7.9c0.5-0.2,1-0.2,1.5,0l19,7.9
-			c0.5,0.2,0.9,0.6,1.1,1.1l7.9,19c0.2,0.5,0.2,1,0,1.5l-7.9,19c-0.2,0.5-0.6,0.9-1.1,1.1l-19,7.9c-0.5,0.2-1,0.2-1.5,0l-19-7.9
-			c-0.5-0.2-0.9-0.6-1.1-1.1l-7.9-19c-0.2-0.5-0.2-1,0-1.5L15.2,16.3z"/>
-	</g>
-</g>
+<polygon class="st2" points="74.7,141.7 65.3,147.1 56,141.7 56,9.3 74.7,9.3 "/>
+<polygon class="st2" points="73.3,17.3 2.9,58 2.9,39 65.2,3.4 "/>
+<polygon class="st2" points="57.1,17.3 127.5,58 127.5,39 65.2,3.4 "/>
 </svg>

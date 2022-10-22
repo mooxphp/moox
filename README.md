@@ -132,6 +132,13 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 - Scrutinizer shield?
 
+- Care for translations (add to all packages / builder?)
+  - https://laravel.com/docs/9.x/localization
+  - https://laravel-news.com/laravel-lang-translations
+  - https://blog.quickadminpanel.com/10-best-laravel-packages-for-multi-language-translations/
+  - https://hosted.weblate.org/projects/tallui/ + https://libretranslate.com/
+
+
 
 - Scaffold website-package to output all components
 - Scaffold admin-package

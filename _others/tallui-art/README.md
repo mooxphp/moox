@@ -1,16 +1,29 @@
-# TALLUI Art W-I-P
+<p align="center">
+    <img src="tallui-logo.svg" width="100" alt="TallUI">
+</p>
 
-These are the creative assets for [**TALL**UI](https://tallui.io).
+
+
+# TallUI Art
+
+These are the creative assets:
+
+- Design - some Design Components
+- Logo - yep, you guess it
 
 
 
-## Idea
+## Tasks
 
-Use as content for a contribute-video
+- Split Design into Components
 
-```
-gource --hide filenames --seconds-per-day 1 --bloom-multiplier 1.2 --bloom-intensity 0.1
-```
+- Create a style guide with that
+
+  
+
+## Ideas
+
+- Use as content for a contribute-video: ` gource --hide filenames --seconds-per-day 1 --bloom-multiplier 1.2 --bloom-intensity 0.1`
 
 
 
