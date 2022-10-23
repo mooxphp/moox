@@ -93,7 +93,7 @@ cd _custom
 cp composer.json-example composer.json
 ```
 
-To customize the set of TallUI packages, simply delete the packages from the require-section, you don't want to load, ```composer update``` afterwards.
+To customize the set of TallUI packages, simply delete the packages you don't want to load from the require-section, ```composer update``` afterwards.
 
 If you want to include custom packages you can clone one or more packages as subrepos into _custom and add them to _custom/composer.json like so:
 
