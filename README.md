@@ -29,24 +29,27 @@ This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
 
-Following packages in _components, _data, _icons, _others, _packages and _themes) are automatically updated to their own read-only repos when merging to main.
+TallUI packages are categorized in 
 
-- TallUI Full App
-- TallUI App Components
-- TallUI Dev Components
-- TallUI Form Components
-- TallUI Web Components
-- TallUI Web Icons
-- TallUI Core
-- TallUI Package Builder
+- [_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
+- [_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
+- [_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
+- [_modules](./_modules/README.md) - Laravel packages serving a backend module für TallUI Admin Panel
+- [_others](./_others/README.md) - Other Laravel packages or assisting repos like TallUI Package Builder
+- [_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
+- [_themes](./_themes/README.md)/[admin](./_themes/admin/README.md) - Themes for the TallUI Admin Panel
+- [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
+
+All packages are automatically updated to their own read-only repos when merging to main.
+
 
 ### Add a new package:
 
 - Create a new package from TallUI Package Builder template
 - Copy contents into one of the _subfolder of the monorepo
-- Add the package to the monorepo-split-action that fits the folder
+- Add the package to the appropriate monorepo-split-action
 - Add the package to _custom/composer.json-example and composer-tests.json
-- Add the package to the list of packages above
+- Add the package to the README.md in the appropriate _subfolder
 - Add the package to _app/***/composer.json, if the package is stable
 
 
