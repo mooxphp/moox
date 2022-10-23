@@ -17,7 +17,7 @@
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
         <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
     </a>
-    <a href="https://github.com/usetall/tallui/LICENSE.md">
+    <a href="https://github.com/usetall/tallui/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/usetall/tallui">
     </a>
 </p>
