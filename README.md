@@ -3,14 +3,24 @@
     <br><br>
     <img src="_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
- 
-
-
-
-
-[![Pest Tests](https://img.shields.io/github/workflow/status/usetall/tallui/run-tests?label=Pest)](https://github.com/usetall/tallui-web-components/actions?query=workflow%3Arun-tests+branch%3Amain) [![PHP Code Style](https://img.shields.io/github/workflow/status/usetall/tallui/Fix%20PHP%20code%20style%20issues?label=Pint)](https://github.com/usetall/tallui/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain) [![PHPStan Level 5](https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?label=PHPStan)](https://github.com/usetall/tallui/actions?query=workflow%3A"PHPStan"+branch%3Amain) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/usetall/tallui/?branch=main)
-
-
+<br>
+<p align="center">
+    <a href="https://github.com/usetall/tallui/actions/workflows/run-tests.yml">
+        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/run-tests?label=PestPHP">
+    </a>
+    <a href="https://github.com/usetall/tallui/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain">
+        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Fix%20PHP%20code%20style%20issues?label=Laravel Pint">
+    </a>
+    <a href="https://github.com/usetall/tallui/actions?query=workflow%3A"PHPStan"+branch%3Amain">
+        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?label=PHPStan">
+    </a>
+    <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
+        <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
+    </a>
+    <a href="https://github.com/usetall/tallui/LICENSE.md">
+        <img alt="License" src="https://img.shields.io/github/license/usetall/tallui">
+    </a>
+</p>
 
 # TallUI Monorepo
 
