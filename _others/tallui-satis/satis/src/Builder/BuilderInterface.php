@@ -20,7 +20,7 @@ interface BuilderInterface
     /**
      * Dumps the given packages.
      *
-     * @param PackageInterface[] $packages List of packages to dump
+     * @param  PackageInterface[]  $packages List of packages to dump
      */
     public function dump(array $packages);
 }

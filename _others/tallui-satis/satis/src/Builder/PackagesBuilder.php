@@ -24,10 +24,13 @@ class PackagesBuilder extends Builder
 {
     /** @var string packages.json file name. */
     private $filename;
+
     /** @var string included json filename template */
     private $includeFileName;
+
     /** @var array */
     private $writtenIncludeJsons = [];
+
     /** @var bool */
     private $minify;
 
@@ -35,13 +38,13 @@ class PackagesBuilder extends Builder
     {
         parent::__construct($output, $outputDir, $config, $skipErrors);
 
-        $this->filename = $this->outputDir . '/packages.json';
+        $this->filename = $this->outputDir.'/packages.json';
         $this->includeFileName = $config['include-filename'] ?? 'include/all$%hash%.json';
         $this->minify = $minify;
     }
 
     /**
-     * @param PackageInterface[] $packages List of packages to dump
+     * @param  PackageInterface[]  $packages List of packages to dump
      */
     public function dump(array $packages): void
     {
@@ -55,8 +58,8 @@ class PackagesBuilder extends Builder
         $repo = ['packages' => []];
         if (isset($this->config['providers']) && $this->config['providers']) {
             $providersUrl = 'p/%package%$%hash%.json';
-            if (!empty($this->config['homepage'])) {
-                $repo['providers-url'] = parse_url(rtrim($this->config['homepage'], '/'), PHP_URL_PATH) . '/' . $providersUrl;
+            if (! empty($this->config['homepage'])) {
+                $repo['providers-url'] = parse_url(rtrim($this->config['homepage'], '/'), PHP_URL_PATH).'/'.$providersUrl;
             } else {
                 $repo['providers-url'] = $providersUrl;
             }
@@ -85,13 +88,13 @@ class PackagesBuilder extends Builder
 
         // Composer 2.0 format
         $metadataUrl = 'p2/%package%.json';
-        if (!empty($this->config['homepage'])) {
-            $repo['metadata-url'] = parse_url(rtrim($this->config['homepage'], '/'), PHP_URL_PATH) . '/' . $metadataUrl;
+        if (! empty($this->config['homepage'])) {
+            $repo['metadata-url'] = parse_url(rtrim($this->config['homepage'], '/'), PHP_URL_PATH).'/'.$metadataUrl;
         } else {
             $repo['metadata-url'] = $metadataUrl;
         }
 
-        if (!empty($this->config['available-package-patterns'])) {
+        if (! empty($this->config['available-package-patterns'])) {
             $repo['available-package-patterns'] = $this->config['available-package-patterns'];
         } else {
             $repo['available-packages'] = array_keys($packagesByName);
@@ -131,7 +134,7 @@ class PackagesBuilder extends Builder
         $replacements = [];
         foreach ($packages as $packageName => $packageConfig) {
             foreach ($packageConfig as $versionConfig) {
-                if (!empty($versionConfig['replace']) && array_key_exists($replaced, $versionConfig['replace'])) {
+                if (! empty($versionConfig['replace']) && array_key_exists($replaced, $versionConfig['replace'])) {
                     $replacements[$packageName] = $packageConfig;
                     break;
                 }
@@ -146,28 +149,28 @@ class PackagesBuilder extends Builder
         $this->output->writeln('<info>Pruning include directories</info>');
         $paths = [];
         while ($this->writtenIncludeJsons) {
-            list($hash, $includesUrl) = array_shift($this->writtenIncludeJsons);
-            $path = $this->outputDir . '/' . ltrim($includesUrl, '/');
+            [$hash, $includesUrl] = array_shift($this->writtenIncludeJsons);
+            $path = $this->outputDir.'/'.ltrim($includesUrl, '/');
             $dirname = dirname($path);
             $basename = basename($path);
             if (false !== strpos($dirname, '%hash%')) {
                 throw new \RuntimeException('Refusing to prune when %hash% is in dirname');
             }
-            $pattern = '#^' . str_replace('%hash%', '([0-9a-zA-Z]{' . strlen($hash) . '})', preg_quote($basename, '#')) . '$#';
+            $pattern = '#^'.str_replace('%hash%', '([0-9a-zA-Z]{'.strlen($hash).'})', preg_quote($basename, '#')).'$#';
             $paths[$dirname][] = [$pattern, $hash];
         }
         $pruneFiles = [];
         foreach ($paths as $dirname => $entries) {
             foreach (new \DirectoryIterator($dirname) as $file) {
                 foreach ($entries as $entry) {
-                    list($pattern, $hash) = $entry;
+                    [$pattern, $hash] = $entry;
                     if (preg_match($pattern, $file->getFilename(), $matches) && $matches[1] !== $hash) {
                         $group = sprintf(
                             '%s/%s',
                             basename($dirname),
                             preg_replace('/\$.*$/', '', $file->getFilename())
                         );
-                        if (!array_key_exists($group, $pruneFiles)) {
+                        if (! array_key_exists($group, $pruneFiles)) {
                             $pruneFiles[$group] = [];
                         }
                         // Mark file for pruning.
@@ -204,7 +207,7 @@ class PackagesBuilder extends Builder
     private function dumpPackageIncludeJson(array $packages, string $includesUrl, string $hashAlgorithm = 'sha1'): array
     {
         $filename = str_replace('%hash%', 'prep', $includesUrl);
-        $path = $tmpPath = $this->outputDir . '/' . ltrim($filename, '/');
+        $path = $tmpPath = $this->outputDir.'/'.ltrim($filename, '/');
 
         $repoJson = new JsonFile($path);
         $options = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
@@ -212,13 +215,13 @@ class PackagesBuilder extends Builder
             $options |= JSON_PRETTY_PRINT;
         }
 
-        $contents = $repoJson->encode(['packages' => $packages], $options) . "\n";
+        $contents = $repoJson->encode(['packages' => $packages], $options)."\n";
         $hash = hash($hashAlgorithm, $contents);
 
         if (false !== strpos($includesUrl, '%hash%')) {
             $this->writtenIncludeJsons[] = [$hash, $includesUrl];
             $filename = str_replace('%hash%', $hash, $includesUrl);
-            if (file_exists($path = $this->outputDir . '/' . ltrim($filename, '/'))) {
+            if (file_exists($path = $this->outputDir.'/'.ltrim($filename, '/'))) {
                 // When the file exists, we don't need to override it as we assume,
                 // the contents satisfy the hash
                 $path = null;
@@ -247,12 +250,12 @@ class PackagesBuilder extends Builder
         }
 
         $dir = dirname($path);
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             if (file_exists($dir)) {
-                throw new \UnexpectedValueException($dir . ' exists and is not a directory.');
+                throw new \UnexpectedValueException($dir.' exists and is not a directory.');
             }
-            if (!@mkdir($dir, 0777, true)) {
-                throw new \UnexpectedValueException($dir . ' does not exist and could not be created.');
+            if (! @mkdir($dir, 0777, true)) {
+                throw new \UnexpectedValueException($dir.' does not exist and could not be created.');
             }
         }
 
@@ -264,6 +267,7 @@ class PackagesBuilder extends Builder
             } catch (\Exception $e) {
                 if ($retries) {
                     usleep(500000);
+
                     continue;
                 }
 
@@ -273,7 +277,7 @@ class PackagesBuilder extends Builder
     }
 
     /**
-     * @param array $repo Repository information
+     * @param  array  $repo Repository information
      */
     private function dumpPackagesJson(array $repo): void
     {

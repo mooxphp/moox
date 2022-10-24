@@ -19,7 +19,6 @@ use Composer\Factory;
 use Composer\Package\Archiver\ArchiveManager;
 use Composer\Package\CompletePackage;
 use Composer\Package\CompletePackageInterface;
-use Composer\Package\PackageInterface;
 use Composer\Util\Filesystem;
 use Composer\Util\SyncHelper;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -30,6 +29,7 @@ class ArchiveBuilder extends Builder
 {
     /** @var Composer A Composer instance. */
     private $composer;
+
     /** @var InputInterface */
     private $input;
 
@@ -59,8 +59,8 @@ class ArchiveBuilder extends Builder
             $packageCount = 0;
 
             foreach ($packages as $package) {
-                if (!$helper->isSkippable($package)) {
-                    ++$packageCount;
+                if (! $helper->isSkippable($package)) {
+                    $packageCount++;
                 }
             }
 
@@ -80,7 +80,7 @@ class ArchiveBuilder extends Builder
                 $progressBar->setMessage($package->getName(), 'packageName');
                 $progressBar->setMessage($package->getPrettyVersion(), 'packageVersion');
 
-                if (!$hasStarted) {
+                if (! $hasStarted) {
                     $progressBar->start();
                     $hasStarted = true;
                 } else {
@@ -128,7 +128,7 @@ class ArchiveBuilder extends Builder
                     $this->output->setVerbosity($verbosity);
                 }
 
-                if (!$this->skipErrors) {
+                if (! $this->skipErrors) {
                     throw $exception;
                 }
                 $this->output->writeln(sprintf("<error>Skipping Exception '%s'.</error>", $exception->getMessage()));
@@ -180,22 +180,22 @@ class ArchiveBuilder extends Builder
             $packageName = $archiveManager->getPackageFilename($package);
         }
 
-        $path = $targetDir . '/' . $packageName . '.' . $format;
+        $path = $targetDir.'/'.$packageName.'.'.$format;
         if (file_exists($path)) {
             return $path;
         }
 
-        if (!$rearchive && in_array($distType = $package->getDistType(), ['tar', 'zip'], true)) {
+        if (! $rearchive && in_array($distType = $package->getDistType(), ['tar', 'zip'], true)) {
             if ($overrideDistType) {
                 $packageName = $archiveManager->getPackageFilename($package);
             }
 
-            $path = $targetDir . '/' . $packageName . '.' . $distType;
+            $path = $targetDir.'/'.$packageName.'.'.$distType;
             if (file_exists($path)) {
                 return $path;
             }
 
-            $downloadDir = sys_get_temp_dir() . '/composer_archiver' . uniqid();
+            $downloadDir = sys_get_temp_dir().'/composer_archiver'.uniqid();
             $filesystem->ensureDirectoryExists($downloadDir);
             $downloader = $downloadManager->getDownloader('file');
             $downloadPromise = $downloader->download($package, $downloadDir);
@@ -210,7 +210,7 @@ class ArchiveBuilder extends Builder
         }
 
         if ($overrideDistType) {
-            $path = $targetDir . '/' . $packageName . '.' . $format;
+            $path = $targetDir.'/'.$packageName.'.'.$format;
             $downloaded = $archiveManager->archive($package, $format, $targetDir, null, $ignoreFilters);
             $filesystem->rename($downloaded, $path);
 

@@ -135,8 +135,8 @@ class BuildCommand extends BaseCommand
             $config = JsonFile::parseJson($contents, $configFile);
         } else {
             $file = new JsonFile($configFile);
-            if (!$file->exists()) {
-                $output->writeln('<error>File not found: ' . $configFile . '</error>');
+            if (! $file->exists()) {
+                $output->writeln('<error>File not found: '.$configFile.'</error>');
 
                 return 1;
             }
@@ -149,17 +149,17 @@ class BuildCommand extends BaseCommand
             foreach ($e->getErrors() as $error) {
                 $output->writeln(sprintf('<error>%s</error>', $error));
             }
-            if (!$skipErrors) {
+            if (! $skipErrors) {
                 throw $e;
             }
             $output->writeln(sprintf('<warning>%s: %s</warning>', get_class($e), $e->getMessage()));
         } catch (ParsingException $e) {
-            if (!$skipErrors) {
+            if (! $skipErrors) {
                 throw $e;
             }
             $output->writeln(sprintf('<warning>%s: %s</warning>', get_class($e), $e->getMessage()));
         } catch (UnexpectedValueException $e) {
-            if (!$skipErrors) {
+            if (! $skipErrors) {
                 throw $e;
             }
             $output->writeln(sprintf('<warning>%s: %s</warning>', get_class($e), $e->getMessage()));
@@ -172,12 +172,12 @@ class BuildCommand extends BaseCommand
         // disable packagist by default
         unset(Config::$defaultRepositories['packagist'], Config::$defaultRepositories['packagist.org']);
 
-        if (!$outputDir = $input->getArgument('output-dir')) {
+        if (! $outputDir = $input->getArgument('output-dir')) {
             $outputDir = $config['output-dir'] ?? null;
         }
 
         if (null === $outputDir) {
-            throw new \InvalidArgumentException('The output dir must be specified as second argument or be configured inside ' . $input->getArgument('file'));
+            throw new \InvalidArgumentException('The output dir must be specified as second argument or be configured inside '.$input->getArgument('file'));
         }
 
         if ($homepage = getenv('SATIS_HOMEPAGE')) {
@@ -245,8 +245,8 @@ class BuildCommand extends BaseCommand
         $packagesBuilder = new PackagesBuilder($output, $outputDir, $config, $skipErrors, $minify);
         $packagesBuilder->dump($packages);
 
-        if ($htmlView = !$input->getOption('no-html-output')) {
-            $htmlView = !isset($config['output-html']) || $config['output-html'];
+        if ($htmlView = ! $input->getOption('no-html-output')) {
+            $htmlView = ! isset($config['output-html']) || $config['output-html'];
         }
 
         if ($htmlView) {
@@ -266,7 +266,7 @@ class BuildCommand extends BaseCommand
         $config->merge(['config' => ['home' => $this->getComposerHome()]]);
 
         // load global auth file
-        $file = new JsonFile($config->get('home') . '/auth.json');
+        $file = new JsonFile($config->get('home').'/auth.json');
         if ($file->exists()) {
             $config->merge(['config' => $file->read()]);
         }
@@ -278,17 +278,17 @@ class BuildCommand extends BaseCommand
     private function getComposerHome(): string
     {
         $home = getenv('COMPOSER_HOME');
-        if (!$home) {
+        if (! $home) {
             if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-                if (!getenv('APPDATA')) {
+                if (! getenv('APPDATA')) {
                     throw new \RuntimeException('The APPDATA or COMPOSER_HOME environment variable must be set for composer to run correctly');
                 }
-                $home = strtr(getenv('APPDATA'), '\\', '/') . '/Composer';
+                $home = strtr(getenv('APPDATA'), '\\', '/').'/Composer';
             } else {
-                if (!getenv('HOME')) {
+                if (! getenv('HOME')) {
                     throw new \RuntimeException('The HOME or COMPOSER_HOME environment variable must be set for composer to run correctly');
                 }
-                $home = rtrim(getenv('HOME'), '/') . '/.composer';
+                $home = rtrim(getenv('HOME'), '/').'/.composer';
             }
         }
 
@@ -308,20 +308,20 @@ class BuildCommand extends BaseCommand
         $result = $parser->lint($content);
         if (null === $result) {
             if (defined('JSON_ERROR_UTF8') && JSON_ERROR_UTF8 === json_last_error()) {
-                throw new UnexpectedValueException('"' . $configFile . '" is not UTF-8, could not parse as JSON');
+                throw new UnexpectedValueException('"'.$configFile.'" is not UTF-8, could not parse as JSON');
             }
 
             $data = json_decode($content);
 
-            $schemaFile = __DIR__ . '/../../../res/satis-schema.json';
+            $schemaFile = __DIR__.'/../../../res/satis-schema.json';
             $schema = json_decode(file_get_contents($schemaFile));
             $validator = new Validator();
             $validator->check($data, $schema);
 
-            if (!$validator->isValid()) {
+            if (! $validator->isValid()) {
                 $errors = [];
                 foreach ((array) $validator->getErrors() as $error) {
-                    $errors[] = ($error['property'] ? $error['property'] . ' : ' : '') . $error['message'];
+                    $errors[] = ($error['property'] ? $error['property'].' : ' : '').$error['message'];
                 }
 
                 throw new JsonValidationException('The json config file does not match the expected JSON schema', $errors);
@@ -330,6 +330,6 @@ class BuildCommand extends BaseCommand
             return true;
         }
 
-        throw new ParsingException('"' . $configFile . '" does not contain valid JSON' . "\n" . $result->getMessage(), $result->getDetails());
+        throw new ParsingException('"'.$configFile.'" does not contain valid JSON'."\n".$result->getMessage(), $result->getDetails());
     }
 }

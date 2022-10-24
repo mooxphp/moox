@@ -14,12 +14,9 @@ declare(strict_types=1);
 namespace Composer\Satis\Plugin;
 
 use Composer\Composer;
-use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\Capable;
-use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
-use Composer\Plugin\PreFileDownloadEvent;
 
 /**
  * Composer Satis Plugin
@@ -27,6 +24,7 @@ use Composer\Plugin\PreFileDownloadEvent;
 class SatisPlugin implements PluginInterface, Capable
 {
     protected Composer $composer;
+
     protected IOInterface $io;
 
     public function activate(Composer $composer, IOInterface $io)

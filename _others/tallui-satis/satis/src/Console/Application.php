@@ -19,7 +19,6 @@ use Composer\Factory;
 use Composer\IO\ConsoleIO;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
-use Composer\Satis\Console\Command;
 use Composer\Satis\Satis;
 use Composer\Util\ErrorHandler;
 use Composer\Util\Platform;
@@ -31,6 +30,7 @@ class Application extends ComposerApplication
 {
     /** @var IOInterface */
     protected $io;
+
     /** @var Composer|null */
     protected $composer;
 
