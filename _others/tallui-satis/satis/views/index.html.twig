@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" type="image/png" href="{{ source('assets/img/favicon.png')|data_uri(mime="image/png") }}">
+
+    <title>{{ name|default('Composer repository') }}</title>
+
+    <style type="text/css">
+        {% include 'build/style.css' %}
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <header class="mt-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="{{ url }}">
+                <h1>{{ name|default('Composer repository') }}</h1>
+            </a>
+            <span class="badge bg-light text-dark m-1" title="{{ "now"|date(constant('\DateTime::COOKIE')) }}">
+                Last updated: <br class="d-md-none"> <time datetime="{{ "now"|date(constant('\DateTime::RFC3339')) }}">{{ "now"|date('l, d M Y H:i:s T') }}</time>
+            </span>
+        </div>
+
+        {% if description %}
+            <p class="lead">{{ description|raw }}</p>
+        {% endif %}
+    </header>
+
+    <form class="my-3">
+        <div class="input-group">
+            <label for="search" class="visually-hidden">Filter packages</label>
+            <input type="search"
+                id="search"
+                class="form-control"
+                placeholder="Filter packages"
+                autocomplete="off"
+                autofocus>
+            <select class="form-select filter-field">
+                <option value="all" selected disabled hidden>Filter by..</option>
+                <option value="all">All fields</option>
+                <optgroup label="Specific field...">
+                    <option value="name">Name</option>
+                    {% for fieldName, label in fieldsToToggle %}
+                    <option value="{{ fieldName }}">{{ label }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+            <div class="input-group-append">
+                <button
+                    class="btn btn-outline-secondary d-none toggle-settings"
+                    type="button"
+                    aria-pressed="false"
+                    aria-label="Toggle settings"
+                    title="Toggle settings"
+                    data-toggle="collapse"
+                    data-target=".settings"
+                >
+                    <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" role="img">
+                        <path d="M11.998 7.66A4.339 4.339 0 007.661 12a4.342 4.342 0 004.337 4.34A4.33 4.33 0 0016.323 12a4.327 4.327 0 00-4.325-4.34zm8.697 6.833l-.782 1.883 1.395 2.739.184.362-1.933 1.933-3.173-1.498-1.883.773-.956 2.927-.122.388h-2.733l-1.183-3.303-1.883-.777-2.743 1.391-.362.181-1.933-1.932 1.497-3.174-.776-1.882-2.921-.954L0 13.425v-2.732L3.306 9.51l.775-1.88-1.39-2.745-.183-.36 1.93-1.93L7.615 4.09l1.88-.778.956-2.924.123-.388h2.732l1.183 3.307 1.879.778 2.744-1.392.365-.184 1.931 1.93-1.496 3.172.773 1.885 2.93.955.385.123v2.73l-3.305 1.189z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </form>
+    <form class="my-3 card collapse settings" aria-expanded="false">
+        <div class="card-body">
+            <div class="form-group">
+                <p class="h6">Default package &quot;filter by&quot; field:</p>
+                <div class="form-check form-check-inline">
+                    <input
+                        id="package-filter-last"
+                        class="form-check-input"
+                        type="radio"
+                        name="default-filter"
+                        value="all"
+                        checked>
+                    <label class="form-check-label" for="package-filter-last">Search in all fields</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input
+                        id="package-filter-recent"
+                        class="form-check-input"
+                        type="radio"
+                        name="default-filter"
+                        value="recent">
+                    <label class="form-check-label" for="package-filter-recent">Most recently selected field</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input
+                        id="package-filter-custom"
+                        class="form-check-input"
+                        type="radio"
+                        name="default-filter"
+                        value="custom">
+                    <label class="form-check-label" for="package-filter-custom">Use this field:</label>
+                    <select class="custom-select ml-2 default-filter-field">
+                        <option value="all" selected disabled hidden>Select field...</option>
+                        <option value="name">Name</option>
+                        {% for fieldName, label in fieldsToToggle %}
+                        <option value="{{ fieldName }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group mb-0">
+                <p class="h6">Fields to display on packages:</p>
+                <div class="form-check form-check-inline">
+                    <button
+                        id="toggle-field-all"
+                        class="btn btn-sm btn-primary"
+                        disabled>Show All</button>
+                </div>
+                {% for fieldName, label in fieldsToToggle %}
+                <div class="form-check form-check-inline">
+                    <input
+                        id="toggle-field-{{ fieldName }}"
+                        class="form-check-input toggle-field"
+                        type="checkbox"
+                        value="{{ fieldName }}"
+                        checked>
+                    <label class="form-check-label" for="toggle-field-{{ fieldName }}">{{ label }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+
+    <div id="repo-help" class="my-3">
+        <p class="small">
+            This is a private Composer repository.
+            To use it, you have to <a title="Check how to add this repository to your project" data-toggle="collapse" href="#repo-config">add this repository</a> to your <code>composer.json</code> file.
+        </p>
+
+        <div id="repo-config" class="my-3 card card-outline collapse" aria-expanded="false">
+            <div class="card-body">
+                <h5 class="card-title">Setting up this repository in your projects</h5>
+                <p>
+                    Add this <a href="https://getcomposer.org/" title="Visit getcomposer.org">Composer</a>
+                    repository to your project's <code>composer.json</code>
+                    file, then you can require these private packages just like you would with
+                    one from <a href="https://packagist.org">Packagist</a>.
+                </p>
+                <pre class="file my-3">{
+  "repositories": [{
+    "type": "composer",
+    "url": "{{ url }}"
+  }]
+}</pre>
+            <p>Click on an individual package's release version to get a snippet of code for your project's dependencies.</p>
+            <p class="small mb-0">Read more on <a href="https://getcomposer.org/doc/articles/handling-private-packages-with-satis.md">how to handle composer private packages</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="package-list">
+        {% for name, package in packages %}
+            {% include 'package.html.twig' %}
+        {% endfor %}
+    </div>
+
+    <div id="ft">
+        <p class="text-center"><small>This Composer repository is powered by <a href="https://github.com/composer/satis">Satis</a></small></p>
+    </div>
+</div>
+
+<div class="input-group copy-snippet d-none pt-3">
+    <div class="copy-snippet__tooltip tooltip bs-tooltip-bottom" role="tooltip">
+        <div class="arrow"></div>
+        <div class="tooltip-inner">Copied dependency to clipboard</div>
+    </div>
+    <label for="copy-snippet__input" class="visually-hidden">Release code snippet for composer json</label>
+    <input id="copy-snippet__input" class="copy-snippet__input form-control" type="text">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary copy-snippet__button" aria-label="Copy to clipboard" title="Copy to clipboard">
+            <svg role="img" height="24" width="22.4" viewBox="0 0 1024 896" xmlns="http://www.w3.org/2000/svg">
+                <path d="M704 896h-640v-576h640v192h64v-320c0-35-29-64-64-64h-192c0-71-57-128-128-128s-128 57-128 128h-192c-35 0-64 29-64 64v704c0 35 29 64 64 64h640c35 0 64-29 64-64v-128h-64v128z m-512-704c29 0 29 0 64 0s64-29 64-64 29-64 64-64 64 29 64 64 32 64 64 64 33 0 64 0 64 29 64 64h-512c0-39 28-64 64-64z m-64 512h128v-64h-128v64z m448-128v-128l-256 192 256 192v-128h320v-128h-320z m-448 256h192v-64h-192v64z m320-448h-320v64h320v-64z m-192 128h-128v64h128v-64z"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script type="text/javascript">
+{{ source('build/app.js') }}
+</script>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="octicon-link" viewBox="0 0 16 16">
+        <path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+    </symbol>
+</svg>
+</body>
+</html>

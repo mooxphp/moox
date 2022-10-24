@@ -1,0 +1,385 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "name": "Repository Configuration",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["name", "homepage"],
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Repository name."
+        },
+        "description": {
+            "type": "string",
+            "description": "Short Repository description."
+        },
+        "homepage": {
+            "type": "string",
+            "description": "Homepage URL for the Repository.",
+            "format": "uri"
+        },
+        "require": {
+            "type": "object",
+            "description": "This is a hash of package name (keys) and version constraints (values) that are required to run this package.",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "string",
+                "description": "A valid version constraint"
+            }
+        },
+        "archive": {
+            "type": "object",
+            "description": "Options for creating package archives for distribution.",
+            "additionalProperties": false,
+            "required": ["directory"],
+            "properties": {
+                "directory": {
+                    "type": "string",
+                    "description": "The location of the dist files."
+                },
+                "format": {
+                    "type": "string",
+                    "enum": ["zip", "tar"],
+                    "description": "Archive format.",
+                    "default": "zip"
+                },
+                "absolute-directory": {
+                    "type": "string",
+                    "description": "The absolute path of the dist files."
+                },
+                "skip-dev": {
+                    "type": "boolean",
+                    "description": "If true, will not create downloads for branches.",
+                    "default": false
+                },
+                "whitelist": {
+                    "type": "array",
+                    "description": "List of whitelisted packages.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "blacklist": {
+                    "type": "array",
+                    "description": "List of blacklisted packages.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "prefix-url": {
+                    "type": "string",
+                    "description": "Location of the downloads.",
+                    "format": "uri"
+                },
+                "checksum": {
+                    "type": "boolean",
+                    "description": "If false, will not provide the sha1 checksum for the dist files.",
+                    "default": true
+                },
+                "ignore-filters": {
+                    "type": "boolean",
+                    "description": "Ignore filters when looking for files in the package.",
+                    "default": false
+                },
+                "override-dist-type": {
+                    "type": "boolean",
+                    "description": "If true, archive format will be used to substitute dist type when generating archive file name.",
+                    "default": false
+                },
+                "rearchive": {
+                    "type": "boolean",
+                    "description": "Create new archives for packages with a tar or zip dist, defaults to true",
+                    "default": true
+                }
+            }
+        },
+        "repositories": {
+            "type": ["object", "array"],
+            "description": "A set of additional repositories where packages can be found.",
+            "additionalProperties": true
+        },
+        "repositories-dep": {
+            "type": ["object", "array"],
+            "description": "A set of additional repositories where packages for dependencies can be found.",
+            "additionalProperties": true
+        },
+        "minimum-stability": {
+            "type": "string",
+            "description": "The minimum stability the packages must have to be install-able. Possible values are: dev, alpha, beta, RC, stable.",
+            "default": "dev",
+            "enum": ["dev", "alpha", "beta", "rc", "RC", "stable"]
+        },
+        "minimum-stability-per-package": {
+            "type": "object",
+            "description": "This is a hash of package name (keys) and minimum stability (values).",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "string",
+                "description": "The minimum stability the package must have to be install-able. Possible values are: dev, alpha, beta, RC, stable. This overrides the \"minimum-stability\" global option for the specified package.",
+                "enum": ["dev", "alpha", "beta", "rc", "RC", "stable"]
+            }
+        },
+        "abandoned": {
+            "type": "object",
+            "description": "List of packages marked as abandoned for this repository, the mark can be boolean or a package name/URL pointing to a recommended alternative.",
+            "additionalProperties": {
+                "type": ["boolean", "string"],
+                "description": "A valid Package name"
+            }
+        },
+        "blacklist": {
+            "type": "object",
+            "description": "This is a hash of package name (keys) and version constraints (values) to exclude after selecting packages.",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "string",
+                "description": "A valid version constraint"
+            }
+        },
+        "include-types": {
+            "type": ["array", "null"],
+            "description": "An array of composer types. When an array is provided only packages with this type will be selected by Satis.",
+            "default": null,
+            "items": {
+                "type": "string"
+            }
+        },
+        "exclude-types": {
+            "type": ["array"],
+            "description": "An array of composer types. Any packages with a type in this array will not be selected by Satis.",
+            "default": [],
+            "items": {
+                "type": "string"
+            }
+        },
+        "require-all": {
+            "type": "boolean",
+            "description": "If true, selects all versions of all packages in the repositories defined.",
+            "default": false
+        },
+        "require-dependencies": {
+            "type": "boolean",
+            "description": "If true, resolve and add all dependencies of each required package.",
+            "default": false
+        },
+        "require-dev-dependencies": {
+            "type": "boolean",
+            "description": "If true, resolve and add all Dev dependencies of each required package.",
+            "default": false
+        },
+        "only-dependencies": {
+            "type": "boolean",
+            "description": "If true, will not require the root dependencies only their dependencies.",
+            "default": false
+        },
+        "only-best-candidates": {
+            "type": "boolean",
+            "description": "If true, will attempt to resolve a minimum number of candidates for each dependency.",
+            "default": false
+        },
+        "require-dependency-filter": {
+            "type": "boolean",
+            "description": "If false, will include all versions matching a dependency.",
+            "default": true
+        },
+        "strip-hosts": {
+            "type": ["array", "boolean"],
+            "description": "List of domains, IPs, CIDR notations, '/local' (=localnet and other reserved) or '/private' (=private IPs) to be stripped from the output. If set and non-false, local file paths are removed too.",
+            "default": false,
+            "items": {
+                "type": "string"
+            }
+        },
+        "include-filename": {
+            "type": "string",
+            "description": "Specify filename instead of default include/all$%hash%.json",
+            "default": "include/all$%hash%.json"
+        },
+        "available-package-patterns": {
+            "type": "array",
+            "description": "Composer v2 feature. List of patterns like 'vendor/*' for packages available, recommended with many packages. If not set, 'available-packages' will be set with ALL package names.",
+            "items": {
+                "type": "string"
+            }
+        },
+        "output-dir": {
+            "type": "string",
+            "description": "The directory where the static Repository is built."
+        },
+        "output-html": {
+            "type": "boolean",
+            "description": "If true, build a static web page.",
+            "default": true
+        },
+        "providers": {
+            "type": "boolean",
+            "description": "If true, dump package providers.",
+            "default": false
+        },
+        "providers-history-size": {
+            "type": "integer",
+            "description": "Optional integer to be used for keeping a number of files that would otherwise be pruned.",
+            "default": 0
+        },
+        "twig-template": {
+            "type": "string",
+            "description": "Path to a template for the static web page."
+        },
+        "config": {
+            "type": "object",
+            "description": "Composer options.",
+            "properties": {
+                "process-timeout": {
+                    "type": "integer",
+                    "description": "The timeout in seconds for process executions, defaults to 300 (5mins).",
+                    "default": 300
+                },
+                "use-include-path": {
+                    "type": "boolean",
+                    "description": "If true, the Composer autoloader will also look for classes in the PHP include path."
+                },
+                "preferred-install": {
+                    "type": "string",
+                    "description": "The install method Composer will prefer to use, defaults to auto and can be any of source, dist or auto.",
+                    "default": "auto"
+                },
+                "notify-on-install": {
+                    "type": "boolean",
+                    "description": "Composer allows repositories to define a notification URL, so that they get notified whenever a package from that repository is installed. This option allows you to disable that behaviour, defaults to true.",
+                    "default": true
+                },
+                "github-protocols": {
+                    "type": "array",
+                    "description": "A list of protocols to use for github.com clones, in priority order, defaults to [\"git\", \"https\", \"http\"].",
+                    "default": ["git", "https", "http"],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "github-oauth": {
+                    "type": "object",
+                    "description": "A hash of domain name => github API oauth tokens, typically {\"github.com\":\"<token>\"}.",
+                    "additionalProperties": true
+                },
+                "gitlab-token": {
+                    "type": "object",
+                    "description": "A hash of domain name => gitlab API tokens, typically {\"gitlab.com\":\"<token>\"}.",
+                    "additionalProperties": true
+                },
+                "http-basic": {
+                    "type": "object",
+                    "description": "A hash of domain name => {\"username\": \"...\", \"password\": \"...\"}.",
+                    "additionalProperties": true
+                },
+                "store-auths": {
+                    "type": ["string", "boolean"],
+                    "description": "What to do after prompting for authentication, one of: true (store), false (do not store) or \"prompt\" (ask every time), defaults to prompt.",
+                    "default": "prompt"
+                },
+                "platform": {
+                    "type": "object",
+                    "description": "This is a hash of package name (keys) and version (values) that will be used to mock the platform packages on this machine.",
+                    "additionalProperties": true
+                },
+                "vendor-dir": {
+                    "type": "string",
+                    "description": "The location where all packages are installed, defaults to \"vendor\".",
+                    "default": "vendor"
+                },
+                "bin-dir": {
+                    "type": "string",
+                    "description": "The location where all binaries are linked, defaults to \"vendor/bin\".",
+                    "default": "vendor/bin"
+                },
+                "cache-dir": {
+                    "type": "string",
+                    "description": "The location where all caches are located, defaults to \"~/.composer/cache\" on *nix and \"%LOCALAPPDATA%\\Composer\" on windows."
+                },
+                "cache-files-dir": {
+                    "type": "string",
+                    "description": "The location where files (zip downloads) are cached, defaults to \"{$cache-dir}/files\".",
+                    "default": "{$cache-dir}/files"
+                },
+                "cache-repo-dir": {
+                    "type": "string",
+                    "description": "The location where repo (git/hg repo clones) are cached, defaults to \"{$cache-dir}/repo\".",
+                    "default": "{$cache-dir}/repo"
+                },
+                "cache-vcs-dir": {
+                    "type": "string",
+                    "description": "The location where vcs info (git clones, github api calls, etc. when reading vcs repos) are cached, defaults to \"{$cache-dir}/vcs\".",
+                    "default": "{$cache-dir}/vcs"
+                },
+                "cache-ttl": {
+                    "type": "integer",
+                    "description": "The default cache time-to-live, defaults to 15552000 (6 months).",
+                    "default": "15552000"
+                },
+                "cache-files-ttl": {
+                    "type": "integer",
+                    "description": "The cache time-to-live for files, defaults to the value of cache-ttl."
+                },
+                "cache-files-maxsize": {
+                    "type": ["string", "integer"],
+                    "description": "The cache max size for the files cache, defaults to \"300MiB\".",
+                    "default": "300MiB"
+                },
+                "bin-compat": {
+                    "type": "string",
+                    "enum": ["auto", "full"],
+                    "description": "The compatibility of the binaries, defaults to \"auto\" (automatically guessed) and can be \"full\" (compatible with both Windows and Unix-based systems).",
+                    "default": "auto"
+                },
+                "discard-changes": {
+                    "type": ["string", "boolean"],
+                    "description": "The default style of handling dirty updates, defaults to false and can be any of true, false or \"stash\".",
+                    "default": false
+                },
+                "autoloader-suffix": {
+                    "type": "string",
+                    "description": "Optional string to be used as a suffix for the generated Composer autoloader. When null a random one will be generated."
+                },
+                "optimize-autoloader": {
+                    "type": "boolean",
+                    "description": "Always optimize when dumping the autoloader."
+                },
+                "prepend-autoloader": {
+                    "type": "boolean",
+                    "description": "If false, the composer autoloader will not be prepended to existing autoloaders, defaults to true.",
+                    "default": true
+                },
+                "classmap-authoritative": {
+                    "type": "boolean",
+                    "description": "If true, the composer autoloader will not scan the filesystem for classes that are not found in the class map, defaults to false.",
+                    "default": false
+                },
+                "github-domains": {
+                    "type": "array",
+                    "description": "A list of domains to use in github mode. This is used for GitHub Enterprise setups, defaults to [\"github.com\"].",
+                    "default": ["github.com"],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "github-expose-hostname": {
+                    "type": "boolean",
+                    "description": "Defaults to true. If set to false, the OAuth tokens created to access the github API will have a date instead of the machine hostname.",
+                    "default": true
+                }
+            }
+        },
+        "notify-batch": {
+            "type": "string",
+            "description": "a URL that will be called every time a user installs a package."
+        },
+        "_comment": {
+            "type": ["array", "string"],
+            "description": "A key to store comments in"
+        },
+        "pretty-print": {
+            "type": "boolean",
+            "description": "Defaults to true. When false, the JSON_PRETTY_PRINT option will not be used on encoding.",
+            "default": true
+        }
+    }
+}

@@ -163,15 +163,24 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 
 - Scaffold website-package to output all components
+
 - Scaffold admin-package
+
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
+
 - Create Coming Soon page
+
 - Get all packages running in composer
+
 - Wire the full-app with composer
+
 - Rebuild icons-package with Workflows, add to builder?
+
 - Deploy it on Vapor, Cloudways and Shared Hosting
+
 - Save the icons, dev-components, docs and other stuff
-- Do private things in Satis: https://github.com/composer/satis, https://alexvanderbist.com/2021/setting-up-and-securing-a-private-composer-repository/
+
+  
 
 
 ## Ideas

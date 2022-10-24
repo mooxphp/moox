@@ -1,0 +1,13 @@
+{
+    "name": "usetall/tallui-repository",
+    "homepage": "https://satis.tallui.io",
+    "output-dir": "public",
+    "repositories": [
+      { "type": "vcs", "url": "https://github.com/adrolli/test-repo" }
+    ],
+    "archive": {
+      "directory": "dist",
+      "skip-dev": false
+    },
+    "require-all": true
+  }
