@@ -58,26 +58,26 @@ class AddCommand extends BaseCommand
         $repositoryName = $input->getOption('name');
 
         if (preg_match('{^https?://}i', $configFile)) {
-            $output->writeln('<error>Unable to write to remote file ' . $configFile . '</error>');
+            $output->writeln('<error>Unable to write to remote file '.$configFile.'</error>');
 
             return 2;
         }
 
         $file = new JsonFile($configFile);
-        if (!$file->exists()) {
-            $output->writeln('<error>File not found: ' . $configFile . '</error>');
+        if (! $file->exists()) {
+            $output->writeln('<error>File not found: '.$configFile.'</error>');
 
             return 1;
         }
 
-        if (!$this->isRepositoryValid($repositoryUrl, $vcsDriver)) {
-            $output->writeln('<error>Invalid Repository URL: ' . $repositoryUrl . '</error>');
+        if (! $this->isRepositoryValid($repositoryUrl, $vcsDriver)) {
+            $output->writeln('<error>Invalid Repository URL: '.$repositoryUrl.'</error>');
 
             return 3;
         }
 
         $config = $file->read();
-        if (!isset($config['repositories']) || !is_array($config['repositories'])) {
+        if (! isset($config['repositories']) || ! is_array($config['repositories'])) {
             $config['repositories'] = [];
         }
 
@@ -97,7 +97,7 @@ class AddCommand extends BaseCommand
 
         $repositoryConfig = ['type' => $vcsDriver, 'url' => $repositoryUrl];
 
-        if (!empty($repositoryName)) {
+        if (! empty($repositoryName)) {
             $repositoryConfig['name'] = $repositoryName;
         }
 
@@ -122,12 +122,12 @@ class AddCommand extends BaseCommand
         $downloader = new HttpDownloader($io, $config);
         $repository = new VcsRepository(['url' => $repositoryUrl, 'type' => $type], $io, $config, $downloader);
 
-        if (!($driver = $repository->getDriver())) {
+        if (! ($driver = $repository->getDriver())) {
             return false;
         }
 
         $information = $driver->getComposerInformation($driver->getRootIdentifier());
 
-        return !empty($information['name']);
+        return ! empty($information['name']);
     }
 }

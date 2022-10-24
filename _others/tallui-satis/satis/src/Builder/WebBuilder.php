@@ -25,10 +25,13 @@ class WebBuilder extends Builder
 {
     /** @var RootPackageInterface Root package used to build the pages. */
     private $rootPackage;
+
     /** @var array<string, array<string, string>> List of calculated required packages. */
     private $dependencies;
+
     /** @var Environment */
     private $twig;
+
     /** @var array<string, string> The labels for the fields to toggle on the front end */
     private $fieldsToToggle = [
         'description' => 'Description',
@@ -52,7 +55,7 @@ class WebBuilder extends Builder
             $this->output->writeln('Define a "name" property in your json config to name the repository');
         }
 
-        if (!$this->rootPackage->getHomepage()) {
+        if (! $this->rootPackage->getHomepage()) {
             $this->output->writeln('Define a "homepage" property in your json config to configure the repository URL');
         }
 
@@ -70,7 +73,7 @@ class WebBuilder extends Builder
             'fieldsToToggle' => $this->fieldsToToggle,
         ]);
 
-        file_put_contents($this->outputDir . '/index.html', $content);
+        file_put_contents($this->outputDir.'/index.html', $content);
     }
 
     public function setRootPackage(RootPackageInterface $rootPackage): self
@@ -91,7 +94,7 @@ class WebBuilder extends Builder
     {
         if (null === $this->twig) {
             $twigTemplate = $this->config['twig-template'] ?? null;
-            $templateDir = $twigTemplate ? pathinfo($twigTemplate, PATHINFO_DIRNAME) : __DIR__ . '/../../views';
+            $templateDir = $twigTemplate ? pathinfo($twigTemplate, PATHINFO_DIRNAME) : __DIR__.'/../../views';
             $loader = new FilesystemLoader($templateDir);
             $options = getenv('SATIS_TWIG_DEBUG') ? ['debug' => true] : [];
 
@@ -116,8 +119,7 @@ class WebBuilder extends Builder
     /**
      * Defines the required packages.
      *
-     * @param PackageInterface[] $packages List of packages to dump
-     *
+     * @param  PackageInterface[]  $packages List of packages to dump
      * @return $this
      */
     private function setDependencies(array $packages): self
@@ -138,8 +140,7 @@ class WebBuilder extends Builder
     /**
      * Gets a list of packages grouped by name with a list of versions.
      *
-     * @param PackageInterface[] $ungroupedPackages List of packages to dump
-     *
+     * @param  PackageInterface[]  $ungroupedPackages List of packages to dump
      * @return array Grouped list of packages with versions
      */
     private function getMappedPackageList(array $ungroupedPackages): array
@@ -164,8 +165,7 @@ class WebBuilder extends Builder
     /**
      * Gets a list of packages grouped by name.
      *
-     * @param PackageInterface[] $packages List of packages to dump
-     *
+     * @param  PackageInterface[]  $packages List of packages to dump
      * @return array List of packages grouped by name
      */
     private function groupPackagesByName(array $packages): array
@@ -181,8 +181,7 @@ class WebBuilder extends Builder
     /**
      * Gets the highest version of packages.
      *
-     * @param PackageInterface[] $packages List of packages to dump
-     *
+     * @param  PackageInterface[]  $packages List of packages to dump
      * @return PackageInterface The package with the highest version
      */
     private function getHighestVersion(array $packages): ?PackageInterface
@@ -201,8 +200,7 @@ class WebBuilder extends Builder
     /**
      * Sorts by version the list of packages.
      *
-     * @param PackageInterface[] $packages List of packages to dump
-     *
+     * @param  PackageInterface[]  $packages List of packages to dump
      * @return PackageInterface[] Sorted list of packages by version
      */
     private function getDescSortedVersions(array $packages): array

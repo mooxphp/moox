@@ -19,10 +19,13 @@ abstract class Builder implements BuilderInterface
 {
     /** @var OutputInterface The output Interface. */
     protected $output;
+
     /** @var string The directory where to build. */
     protected $outputDir;
+
     /** @var array The parameters from ./satis.json. */
     protected $config;
+
     /** @var bool Skips Exceptions if true. */
     protected $skipErrors;
 

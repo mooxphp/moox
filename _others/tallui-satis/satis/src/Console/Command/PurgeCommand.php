@@ -50,8 +50,8 @@ class PurgeCommand extends BaseCommand
     {
         $configFile = $input->getArgument('file');
         $file = new JsonFile($configFile);
-        if (!$file->exists()) {
-            $output->writeln('<error>File not found: ' . $configFile . '</error>');
+        if (! $file->exists()) {
+            $output->writeln('<error>File not found: '.$configFile.'</error>');
 
             return 1;
         }
@@ -60,15 +60,15 @@ class PurgeCommand extends BaseCommand
         /*
          * Check whether archive is defined
          */
-        if (!isset($config['archive']) || !isset($config['archive']['directory'])) {
-            $output->writeln('<error>You must define "archive" parameter in your ' . $configFile . '</error>');
+        if (! isset($config['archive']) || ! isset($config['archive']['directory'])) {
+            $output->writeln('<error>You must define "archive" parameter in your '.$configFile.'</error>');
 
             return 1;
         }
 
         $outputDir = $input->getArgument('output-dir') ?? $config['output-dir'] ?? null;
         if (null === $outputDir) {
-            throw new \InvalidArgumentException('The output dir must be specified as second argument or be configured inside ' . $input->getArgument('file'));
+            throw new \InvalidArgumentException('The output dir must be specified as second argument or be configured inside '.$input->getArgument('file'));
         }
 
         $dryRun = (bool) $input->getArgument('dry-run');
@@ -88,7 +88,7 @@ class PurgeCommand extends BaseCommand
         $length = strlen($prefix);
         $needed = [];
         foreach ($packages as $package) {
-            if (!$package->getDistType()) {
+            if (! $package->getDistType()) {
                 continue;
             }
             $url = $package->getDistUrl();
@@ -102,10 +102,9 @@ class PurgeCommand extends BaseCommand
         $finder = new Finder();
         $finder
             ->files()
-            ->in($distDirectory)
-        ;
+            ->in($distDirectory);
 
-        if (!$finder->count()) {
+        if (! $finder->count()) {
             $output->writeln('<warning>No archives found.</warning>');
 
             return 0;
@@ -115,7 +114,7 @@ class PurgeCommand extends BaseCommand
         $unreferenced = [];
         foreach ($finder as $file) {
             $filename = strtr($file->getRelativePathname(), DIRECTORY_SEPARATOR, '/');
-            if (!in_array($filename, $needed)) {
+            if (! in_array($filename, $needed)) {
                 $unreferenced[] = $file;
             }
         }
@@ -127,7 +126,7 @@ class PurgeCommand extends BaseCommand
         }
 
         foreach ($unreferenced as $file) {
-            if (!$dryRun) {
+            if (! $dryRun) {
                 unlink($file->getPathname());
             }
 
@@ -137,7 +136,7 @@ class PurgeCommand extends BaseCommand
             ));
         }
 
-        if (!$dryRun) {
+        if (! $dryRun) {
             $this->removeEmptyDirectories($output, $distDirectory);
         }
 
@@ -160,7 +159,7 @@ class PurgeCommand extends BaseCommand
                 continue;
             }
 
-            $path = $dir . DIRECTORY_SEPARATOR . $child;
+            $path = $dir.DIRECTORY_SEPARATOR.$child;
 
             if (is_dir($path)
                 && $depth > 0
