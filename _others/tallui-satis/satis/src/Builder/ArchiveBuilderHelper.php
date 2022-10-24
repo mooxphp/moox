@@ -20,6 +20,7 @@ class ArchiveBuilderHelper
 {
     /** @var OutputInterface The output Interface. */
     private $output;
+
     /** @var array The 'archive' part of a configuration file. */
     private $archiveConfig;
 
@@ -59,7 +60,7 @@ class ArchiveBuilderHelper
 
         $names = $package->getNames();
 
-        if ($this->archiveConfig['whitelist'] && !$this->isOneOfNamesInList($names, $this->archiveConfig['whitelist'])) {
+        if ($this->archiveConfig['whitelist'] && ! $this->isOneOfNamesInList($names, $this->archiveConfig['whitelist'])) {
             $this->output->writeln(sprintf("<info>Skipping '%s' (is not in whitelist)</info>", $name));
 
             return true;
@@ -107,7 +108,7 @@ class ArchiveBuilderHelper
             $pattern = array_map(static function ($value): string {
                 return preg_quote($value, '/');
             }, $pattern);
-            $pattern = '/^' . implode('.*', $pattern) . '$/';
+            $pattern = '/^'.implode('.*', $pattern).'$/';
 
             $patterns[] = $pattern;
         }
