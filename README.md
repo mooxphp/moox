@@ -152,11 +152,10 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
   - use test-directory, see https://github.com/pestphp/pest/pull/283
   - or run tests with testbench like inside the packages
   - use https://pestphp.com/docs/plugins/laravel and https://pestphp.com/docs/plugins/livewire
+  - use Laravel Dusk 
+  - and/or Cypress for Browsertests (https://github.com/laracasts/cypress / https://laracasts.com/series/jeffreys-larabits/episodes/22)
   - maybe use https://github.com/danielpalme/ReportGenerator-GitHub-Action as Coverage UI oder codecov.io
   - or use Scrutinizer ... fixing the DB problem before
-
-- Scrutinizer shield?
-
 - Care for translations (add to all packages / builder?)
   - https://laravel.com/docs/9.x/localization
   - https://laravel-news.com/laravel-lang-translations
