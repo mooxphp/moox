@@ -130,12 +130,19 @@ If you want to include custom packages you can clone one or more packages as sub
 
 ## Testing
 
-The Monorepo with all packages is tested
+We test TallUI using:
 
-- by [PHPStan](https://phpstan.org/) (Level 5) using [Larastan](https://github.com/nunomaduro/larastan)
-- by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer)
-- by [Pest](https://pestphp.com/) 
-- by [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture
+- Monorepo
+  - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
+  - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
+  - [Cypress](https://www.cypress.io/)
+- Packages
+  - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
+  - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
+  - [Laravel Dusk](https://laravel.com/docs/9.x/dusk)
+  - [Pest](https://pestphp.com/)
+  - [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/)
+  - Coverage > 75%
 
 Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
 
@@ -146,8 +153,10 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 ## Todo
 
-- Fix TestCase in tallui-core
-- Use Pest main with all packages + coverage + min:75%
+- Larastan, Cypress and more testing
+  - Fix TestCase in tallui-core, phpstan in app-components and tests for livewire in app-components / web-components
+  - Use Pest main with all packages + coverage + min:75%
+  - Create test output in app, test output in app AS WELL AS test plain component in package
   - https://dev.to/robertobutti/add-test-coverage-badge-for-php-and-pest-in-your-github-repository-37mo - easy but not enough, how to calc coverage over a bunch of test?
   - https://pestphp.com/docs/coverage
   - use test-directory, see https://github.com/pestphp/pest/pull/283
@@ -156,7 +165,21 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
   - use Laravel Dusk https://laravel.com/docs/9.x/dusk
   - and/or Cypress for Browsertests (https://dashboard.cypress.io/projects/ch1wnj/runs // https://github.com/laracasts/cypress / https://laracasts.com/series/jeffreys-larabits/episodes/22)
   - maybe use https://github.com/danielpalme/ReportGenerator-GitHub-Action as Coverage UI oder codecov.io
-  - or use Scrutinizer ... fixing the DB problem before
+
+- Improve builder
+  - Finish testing by creating a set of simple tests incl. 
+    - the blade component
+    - the livewire component
+    - asset loading
+    - service provider itself?
+
+- _builder
+  - Module Builder
+  - Iconset Builder
+  - Component Builder
+  - Theme Builder
+  - Package Builder
+
 - Care for translations (add to all packages / builder?)
   - https://laravel.com/docs/9.x/localization
   - https://laravel-news.com/laravel-lang-translations
