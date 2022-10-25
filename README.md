@@ -61,13 +61,14 @@ The Laravel dev app is made for instant development with Laravel Sail or Laragon
 # Use the prepared composer.json
 cp _custom/composer.json-example _custom/composer.json
 
-# Use the prepared environment
-cp .env.example .env
+# Use the matching environment for sail or laragon
+cp .env.sail .env
+cp .env.laragon .env
 
 # Build
 composer install
 
-# Run Sail
+# Run Sail, alternatively start Laragon
 ./vendor/bin/sail up
 
 # Run Vite (in Ubuntu, not in Sail container)
