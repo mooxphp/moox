@@ -156,6 +156,11 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 ## Todo
 
 - Larastan, Cypress and more testing
+  - https://github.com/adrolli/test-repo/ (from actual builder) runs with coverage, components can be tested now
+    - https://laravel-livewire.com/screencasts/s1-writing-tests
+    - https://spatie.be/courses/testing-laravel-with-pest/testing-a-livewire-component
+    - https://github.com/livewire/livewire/blob/master/tests/Browser/TestCase.php
+    - Badges, Coverage, README
   - Fix TestCase in tallui-core, phpstan in app-components and tests for livewire in app-components / web-components
   - Use Pest main with all packages + coverage + min:75%
   - Create test output in app, test output in app AS WELL AS test plain component in package
@@ -167,21 +172,18 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
   - use Laravel Dusk https://laravel.com/docs/9.x/dusk
   - and/or Cypress for Browsertests (https://dashboard.cypress.io/projects/ch1wnj/runs // https://github.com/laracasts/cypress / https://laracasts.com/series/jeffreys-larabits/episodes/22)
   - maybe use https://github.com/danielpalme/ReportGenerator-GitHub-Action as Coverage UI oder codecov.io
-
 - Improve builder
   - Finish testing by creating a set of simple tests incl. 
     - the blade component
     - the livewire component
     - asset loading
     - service provider itself?
-
 - _builder
   - Module Builder
   - Iconset Builder
   - Component Builder
   - Theme Builder
   - Package Builder
-
 - Care for translations (add to all packages / builder?)
   - https://laravel.com/docs/9.x/localization
   - https://laravel-news.com/laravel-lang-translations
