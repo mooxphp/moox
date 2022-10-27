@@ -1,20 +1,47 @@
+# Environment
+.env
+.env.backup
+
+# Composer
+/vendor
+composer.lock
+auth.json
+
+# Node
 /node_modules
+npm-debug.log
+
+# Laravel
 /public/hot
 /public/storage
 /storage/*.key
-/vendor
-.env
-.env.backup
+
+# PHPUnit
 .phpunit.result.cache
+phpunit.xml
+
+# Yarn
+yarn-error.log
+
+# PHPStan
+build
+phpstan.neon
+
+# Testbench
+testbench.yaml
+
+# PHP CS Fixer
+.php-cs-fixer.cache
+
+# Homestead
 Homestead.json
 Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
+
+# IDEs
 /.idea
 /.vscode
+
+# TallUI Monorepo _custom feature
 /_custom/*
 !/_custom/composer.json-example
 !/_custom/README.md
-/composer.lock
-build
