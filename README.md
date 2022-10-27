@@ -35,13 +35,12 @@ TallUI packages are categorized in
 - [_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
 - [_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
 - [_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
-- [_modules](./_modules/README.md) - Laravel packages serving a backend module für TallUI Admin Panel
 - [_others](./_others/README.md) - Other Laravel packages or assisting repos like TallUI Package Builder
 - [_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
-- [_themes](./_themes/README.md)/[admin](./_themes/admin/README.md) - Themes for the TallUI Admin Panel
+- [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 - [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
-All packages are automatically updated to their own read-only repos when merging to main.
+Packages are automatically updated to their own read-only repos when pushed to [main].
 
 
 ### Add a new package:

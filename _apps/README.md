@@ -1,9 +1,8 @@
 <p align="center">
-    <img src="../../_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
+    <img src="../_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
-    <img src="../../_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+    <img src="../_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
-
 
 <br>
 
@@ -25,44 +24,11 @@
     </a>
 </p>
 
+# TallUI Apps
 
-# TallUI Full
+TallUI Apps are ready-to-run Laravel Apps for testing TallUI packages and features out of the box.
 
-This is a Laravel 9 app with all TallUI packages installed. Use it to explore TallUI, test features or to start your own project with TallUI.
+## Apps
 
-## Requirements
-
-Prior to installing Laravel 9 you need
-
-- PHP 8.1
-- Git
-- Composer
-- Node.js / NPM
-- A webserver like Apache
-- A database server like MySQL
-
-We use and recommend Laragon (Windows) or Laravel Sail (MacOS, Linux, Windows using WSL).
-
-## Installation
-
-```bash
-# clone the repo
-git clone usetall/tallui-full
-
-# Default environment suits Laragon
-# use DB_HOST=mysql for Sail
-cp .env.example .env
-
-# Build
-composer install
-
-# Run Sail (or start Laragon)
-./vendor/bin/sail up
-
-# Run Vite development  
-npm run dev
-# OR build for production
-npm run build
-```
-
-Have fun surfin' on http://localhost
+- [TallUI Full](tallui-full/README.md) - running all TallUI packages
+- [TallUI Website](tallui-website/README.md) - this will become [tallui.io](https://www.tallui.io)

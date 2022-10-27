@@ -26,9 +26,9 @@
 </p>
 
 
-# TallUI Full
+# TallUI Website
 
-This is a Laravel 9 app with all TallUI packages installed. Use it to explore TallUI, test features or to start your own project with TallUI.
+This is the TallUI Website. You can clone this repo and run it locally to see, how our website was built.
 
 ## Requirements
 
@@ -47,7 +47,7 @@ We use and recommend Laragon (Windows) or Laravel Sail (MacOS, Linux, Windows us
 
 ```bash
 # clone the repo
-git clone usetall/tallui-full
+git clone usetall/tallui-website
 
 # Default environment suits Laragon
 # use DB_HOST=mysql for Sail
@@ -66,3 +66,4 @@ npm run build
 ```
 
 Have fun surfin' on http://localhost
+
