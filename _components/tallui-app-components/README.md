@@ -84,39 +84,30 @@ php artisan vendor:publish --tag="tallui-app-components-config"
 
 Feel free to disable single components or change the version, CDN or local path for assets loaded by a component.
 
-Optionally, you can publish the components using
-
-```bash
-php artisan vendor:publish --tag="tallui-web-components-views"
-```
-
-
-
-
-
-
-
-
-
-
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="tallui-web-components-views"
-```
-
-## Usage
-
-```php
-$talluiWebComponents = new Usetall\TalluiWebComponents();
-echo $talluiWebComponents->echoPhrase('Hello, Usetall!');
-```
-
 ## Testing
+
+You can run all tests in Pest:
 
 ```bash
 composer test
+```
+
+or including test coverage:
+
+```bash
+composer test-coverage
+```
+
+as well as Laravel Pint (aka PHP CS Fixer):
+
+```bash
+composer format
+```
+
+and last but not least PHPStan:
+
+```bash
+composer analyse
 ```
 
 ## Changelog
@@ -125,21 +116,36 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+For all informations about development and contributions head over to the [TallUI Monorepo](https://github.com/usetall/tallui).
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Please report all security related issues to security@tallui.io.
 
 ## Credits
 
 This package is based on Package TalluiWebComponents Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
 
 - [TallUI Developers](https://github.com/usetall)
-- [TALLUI Devs](https://github.com/orgs/usetall/people)
-- [Freek Van der Herten](https://github.com/freekmurze)
 - [All Contributors](../../contributors)
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+
+
+## Collaborators
+
+<!-- readme: collaborators -start -->
+<!-- readme: collaborators -end -->
+
+## Contributors
+
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
+
+## Bots
+
+<!-- readme: bots -start -->
+<!-- readme: bots -end -->
