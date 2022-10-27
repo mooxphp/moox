@@ -13,7 +13,8 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
-/_custom/**/
-/_custom/composer.json
+/_custom/*
+!/_custom/composer.json-example
+!/_custom/README.md
 /composer.lock
 build
