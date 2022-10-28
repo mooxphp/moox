@@ -3,8 +3,6 @@
 namespace Usetall\TalluiWebComponents\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Livewire\Livewire;
-use Livewire\Component;
 use Orchestra\Testbench\TestCase as Orchestra;
 use Usetall\TalluiWebComponents\TalluiWebComponentsServiceProvider;
 
