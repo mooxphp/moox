@@ -1,35 +1,32 @@
 <p align="center">
-    <img src="../../_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
+    <img src="	https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
-    <img src="../../_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+    <img src="	https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
 
-
-<br>
-
-<p align="center">
+<p align="center"><br>
     <a href="https://packagist.org/packages/usetall/tallui-app-components">
-    	<img alt="Latest Version on Packagist" src="https://img.shields.io/packagist/v/usetall/tallui-app-components.svg?style=flat">
+    	<img alt="Latest Version on Packagist" src="https://img.shields.io/packagist/v/usetall/tallui-app-components.svg?color=blue&label=Packagist&style=flat-square">
     </a>
     <a href="https://packagist.org/packages/usetall/tallui-app-components">
-    	<img alt="Total Downloads" src="https://img.shields.io/packagist/dt/usetall/tallui-app-components.svg?style=flat">
+    	<img alt="Total Downloads" src="https://img.shields.io/packagist/dt/usetall/tallui-app-components.svg?color=blue&label=Downloads&style=flat-square">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/actions/workflows/run-tests.yml">
-        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/run-tests?label=PestPHP">
+        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/run-tests?color=green&label=PestPHP&style=flat-square">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain">
-        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/Fix%20PHP%20code%20style%20issues?label=Laravel Pint">
+        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/Fix%20PHP%20code%20style%20issues?color=green&label=Laravel Pint&style=flat-square">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/actions?query=workflow%3A"PHPStan"+branch%3Amain">
-        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/PHPStan?label=PHPStan">
+        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/PHPStan?color=green&label=PHPStan&style=flat-square">
     </a>
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
-        <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
+        <img alt="Scrutinizer Code Quality" src="https://img.shields.io/scrutinizer/quality/g/usetall/tallui/main?color=green&label=Code%20Quality&style=flat-square">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/blob/main/LICENSE.md">
-        <img alt="License" src="https://img.shields.io/github/license/usetall/tallui-app-components">
+        <img alt="License" src="https://img.shields.io/github/license/usetall/tallui-app-components?color=blue&label=License&style=flat-square">
     </a>
-</p>
+<br><br></p>
 
 # TallUI App Components
 
