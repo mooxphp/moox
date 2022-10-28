@@ -1,6 +1,6 @@
 ## Contributors
 
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,github-actions[bot],bots -start -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -start -->
 <table>
 <tr>
     <td align="center">
@@ -68,7 +68,7 @@
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,github-actions[bot],bots -end -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
 
 ## Learn more
 
