@@ -119,30 +119,6 @@ For all informations about development and contributions head over to the [TallU
 
 Please report all security related issues to security@tallui.io.
 
-## Credits
-
-This package is based on Package TalluiWebComponents Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
-
-- [TallUI Developers](https://github.com/usetall)
-- [All Contributors](../../contributors)
-
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
-
-
-## Collaborators
-
-<!-- readme: collaborators -start -->
-<!-- readme: collaborators -end -->
-
-## Contributors
-
-<!-- readme: contributors -start -->
-<!-- readme: contributors -end -->
-
-## Bots
-
-<!-- readme: bots -start -->
-<!-- readme: bots -end -->
