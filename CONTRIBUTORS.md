@@ -18,6 +18,13 @@
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/wp1111">
+            <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
+            <br />
+            <sub><b>wp1111</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/azizovic12">
             <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
             <br />
@@ -37,15 +44,15 @@
             <br />
             <sub><b>laravel-shift</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/FMorlock">
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
             <br />
             <sub><b>FMorlock</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/tallui-bot">
             <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
