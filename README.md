@@ -154,6 +154,8 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 ## Todo
 
+- https://github.com/usetall/tallui/blob/main/CONTRIBUTION.md
+- App Components README.md -> others + builder
 - Larastan, Cypress and more testing
   - https://github.com/adrolli/test-repo/ (from actual builder) runs with coverage, components can be tested now
     - https://laravel-livewire.com/screencasts/s1-writing-tests
