@@ -54,13 +54,6 @@
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/github-actions">
-            <img src="" width="100;" alt="github-actions"/>
-            <br />
-            <sub><b>github-actions</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/dependabot[bot]">
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
             <br />
