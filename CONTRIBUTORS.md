@@ -11,6 +11,13 @@
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/reinhold-jesse">
+            <img src="https://avatars.githubusercontent.com/u/88349887?v=4" width="100;" alt="reinhold-jesse"/>
+            <br />
+            <sub><b>reinhold-jesse</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/azizovic12">
             <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
             <br />
@@ -36,6 +43,14 @@
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
             <br />
             <sub><b>FMorlock</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/tallui-bot">
+            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
+            <br />
+            <sub><b>tallui-bot</b></sub>
         </a>
     </td>
     <td align="center">
