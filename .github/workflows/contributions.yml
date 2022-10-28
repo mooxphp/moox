@@ -10,6 +10,6 @@ jobs:
             - name: Contribute List
               uses: akhilmhdh/contributors-readme-action@v2.3.6
               with:
-                readme_path: CONTRIBUTION.md
+                readme_path: CONTRIBUTORS.md
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
