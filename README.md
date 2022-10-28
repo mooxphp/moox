@@ -286,23 +286,13 @@ Package Builder
 - Tests
 - Theme / Assets (Storage)
 
-
-
-
-
 pgkname-blade-component
-
 pgkname-livewire-component
 
 assets
-
 js mit ausgabe
-
 css mit sichbarkeit
-
 tests für komponenten + assets
-
-
 
 Unterschiede Büro / Home?!?
 What the PHPStan????? https://github.com/nunomaduro/larastan/blob/master/docs/custom-types.md
