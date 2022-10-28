@@ -1,7 +1,7 @@
 ## Contributors
 
-<!-- readme: collaborators,contributors, bots -start -->
-<!-- readme: collaborators,contributors, bots -end -->
+<!-- readme: collaborators,contributors,bots -start -->
+<!-- readme: collaborators,contributors,bots -end -->
 
 ## Learn more
 
