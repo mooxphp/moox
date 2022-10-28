@@ -1,31 +1,42 @@
 <p align="center">
-    <img src="	https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
+    <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
-    <img src="	https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
-</p>
+    <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+</p><br><br>
 
-<p align="center"><br>
+<p align="center">
     <a href="https://packagist.org/packages/usetall/tallui-app-components">
     	<img alt="Latest Version on Packagist" src="https://img.shields.io/packagist/v/usetall/tallui-app-components.svg?color=blue&label=Packagist&style=flat-square">
     </a>
     <a href="https://packagist.org/packages/usetall/tallui-app-components">
     	<img alt="Total Downloads" src="https://img.shields.io/packagist/dt/usetall/tallui-app-components.svg?color=blue&label=Downloads&style=flat-square">
     </a>
+</p>
+<p align="center">
     <a href="https://github.com/usetall/tallui-app-components/actions/workflows/run-tests.yml">
-        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/run-tests?color=green&label=PestPHP&style=flat-square">
+        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/run-tests?color=darkgreen&label=Pest&style=flat-square">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain">
-        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/Fix%20PHP%20code%20style%20issues?color=green&label=Laravel Pint&style=flat-square">
+        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/Fix%20PHP%20code%20style%20issues?color=darkgreen&label=Laravel Pint&style=flat-square">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/actions?query=workflow%3A"PHPStan"+branch%3Amain">
-        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/PHPStan?color=green&label=PHPStan&style=flat-square">
+        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui-app-components/PHPStan?color=darkgreen&label=PHPStan&style=flat-square">
     </a>
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
-        <img alt="Scrutinizer Code Quality" src="https://img.shields.io/scrutinizer/quality/g/usetall/tallui/main?color=green&label=Code%20Quality&style=flat-square">
+        <img alt="Scrutinizer Code Quality" src="https://img.shields.io/scrutinizer/quality/g/usetall/tallui/main?color=darkgreen&label=Code%20Quality&style=flat-square">
     </a>
+    <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
+        <img alt="License" src="https://img.shields.io/scrutinizer/coverage/g/usetall/tallui/main?color=darkgreen&label=Coverage&style=flat-square">
+    </a>
+</p>
+<p align="center">
     <a href="https://github.com/usetall/tallui-app-components/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/usetall/tallui-app-components?color=blue&label=License&style=flat-square">
     </a>
+    <a href="https://github.com/sponsors/adrolli">
+        <img alt="Sponsoring" src="https://img.shields.io/github/sponsors/adrolli?label=Sponsors&style=flat-square">
+    </a>
+    
 <br><br></p>
 
 # TallUI App Components
@@ -119,6 +130,77 @@ For all informations about development and contributions head over to the [TallU
 
 Please report all security related issues to security@tallui.io.
 
+## Credits
+
+This package is based on Package TalluiWebComponents Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
+
+- [TallUI Developers](https://github.com/usetall)
+- [All Contributors](../../contributors)
+
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+
+
+## Collaborators
+
+<!-- readme: collaborators -start -->
+<table>
+</table>
+<!-- readme: collaborators -end -->
+
+## Contributors
+
+<!-- readme: contributors -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/tallui-bot">
+            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
+            <br />
+            <sub><b>TallUI Bot</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/adrolli">
+            <img src="https://avatars.githubusercontent.com/u/40421928?v=4" width="100;" alt="adrolli"/>
+            <br />
+            <sub><b>Alf Drollinger</b></sub>
+        </a>
+    </td></tr>
+</table>
+<!-- readme: contributors -end -->
+
+## Bots
+
+<!-- readme: bots -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/dependabot[bot]">
+            <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
+            <br />
+            <sub><b>dependabot[bot]</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/github-actions[bot]">
+            <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
+            <br />
+            <sub><b>github-actions[bot]</b></sub>
+        </a>
+    </td></tr>
+</table>
+<!-- readme: bots -end -->
+
+## As image
+
+<a href="https://github.com/usetall/tallui-package-builder/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=usetall/tallui-package-builder" />
+</a>
+
+
+<a href="https://github.com/usetall/tallui/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=usetall/tallui" />
+</a>
