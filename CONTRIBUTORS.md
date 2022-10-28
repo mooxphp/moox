@@ -14,35 +14,35 @@
         <a href="https://github.com/adrolli">
             <img src="https://avatars.githubusercontent.com/u/40421928?v=4" width="100;" alt="adrolli"/>
             <br />
-            <sub><b>Alf Drollinger</b></sub>
+            <sub><b>adrolli</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/azizovic12">
             <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
             <br />
-            <sub><b>Aziz Gasim</b></sub>
+            <sub><b>azizovic12</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/KimSpeer">
             <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>KimSpeer</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/laravel-shift">
             <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
             <br />
-            <sub><b>Laravel Shift</b></sub>
+            <sub><b>laravel-shift</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/FMorlock">
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
             <br />
-            <sub><b>Null</b></sub>
+            <sub><b>FMorlock</b></sub>
         </a>
     </td></tr>
 </table>
