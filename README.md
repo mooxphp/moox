@@ -4,6 +4,7 @@
     <img src="_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
 <br>
+
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/run-tests.yml">
         <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/run-tests?label=PestPHP">
@@ -34,13 +35,12 @@ TallUI packages are categorized in
 - [_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
 - [_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
 - [_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
-- [_modules](./_modules/README.md) - Laravel packages serving a backend module für TallUI Admin Panel
 - [_others](./_others/README.md) - Other Laravel packages or assisting repos like TallUI Package Builder
 - [_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
-- [_themes](./_themes/README.md)/[admin](./_themes/admin/README.md) - Themes for the TallUI Admin Panel
+- [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 - [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
-All packages are automatically updated to their own read-only repos when merging to main.
+Packages are automatically updated to their own read-only repos when pushed to [main].
 
 
 ### Add a new package:
@@ -61,13 +61,14 @@ The Laravel dev app is made for instant development with Laravel Sail or Laragon
 # Use the prepared composer.json
 cp _custom/composer.json-example _custom/composer.json
 
-# Use the prepared environment
-cp .env.example .env
+# Use the matching environment for sail or laragon
+cp .env.sail .env
+cp .env.laragon .env
 
 # Build
 composer install
 
-# Run Sail
+# Run Sail, alternatively start Laragon
 ./vendor/bin/sail up
 
 # Run Vite (in Ubuntu, not in Sail container)
@@ -129,12 +130,20 @@ If you want to include custom packages you can clone one or more packages as sub
 
 ## Testing
 
-The Monorepo with all packages is tested
+We test TallUI using:
 
-- by [PHPStan](https://phpstan.org/) (Level 5) using [Larastan](https://github.com/nunomaduro/larastan)
-- by [Laravel Pint](https://laravel.com/docs/pint) (Laravel-specific PHP CS Fixer)
-- by [Pest](https://pestphp.com/) 
-- by [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/) to see code quality, tests and test coverage as a big picture
+- Monorepo
+  - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
+  - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
+  - [Cypress](https://www.cypress.io/)
+- Packages
+  - [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
+  - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
+  - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
+  - [Laravel Dusk](https://laravel.com/docs/9.x/dusk)
+  - [Pest](https://pestphp.com/)
+  - [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/)
+  - Coverage > 75%
 
 Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
 
@@ -145,18 +154,37 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
 
 ## Todo
 
-- Fix TestCase in tallui-core
-- Use Pest main with all packages + coverage + min:75%
+- https://github.com/usetall/tallui/blob/main/CONTRIBUTION.md
+- App Components README.md -> others + builder
+- Larastan, Cypress and more testing
+  - https://github.com/adrolli/test-repo/ (from actual builder) runs with coverage, components can be tested now
+    - https://laravel-livewire.com/screencasts/s1-writing-tests
+    - https://spatie.be/courses/testing-laravel-with-pest/testing-a-livewire-component
+    - https://github.com/livewire/livewire/blob/master/tests/Browser/TestCase.php
+    - Badges, Coverage, README
+  - Fix TestCase in tallui-core, phpstan in app-components and tests for livewire in app-components / web-components
+  - Use Pest main with all packages + coverage + min:75%
+  - Create test output in app, test output in app AS WELL AS test plain component in package
   - https://dev.to/robertobutti/add-test-coverage-badge-for-php-and-pest-in-your-github-repository-37mo - easy but not enough, how to calc coverage over a bunch of test?
   - https://pestphp.com/docs/coverage
   - use test-directory, see https://github.com/pestphp/pest/pull/283
   - or run tests with testbench like inside the packages
   - use https://pestphp.com/docs/plugins/laravel and https://pestphp.com/docs/plugins/livewire
+  - use Laravel Dusk https://laravel.com/docs/9.x/dusk
+  - and/or Cypress for Browsertests (https://dashboard.cypress.io/projects/ch1wnj/runs // https://github.com/laracasts/cypress / https://laracasts.com/series/jeffreys-larabits/episodes/22)
   - maybe use https://github.com/danielpalme/ReportGenerator-GitHub-Action as Coverage UI oder codecov.io
-  - or use Scrutinizer ... fixing the DB problem before
-
-- Scrutinizer shield?
-
+- Improve builder
+  - Finish testing by creating a set of simple tests incl. 
+    - the blade component
+    - the livewire component
+    - asset loading
+    - service provider itself?
+- _builder
+  - Module Builder
+  - Iconset Builder
+  - Component Builder
+  - Theme Builder
+  - Package Builder
 - Care for translations (add to all packages / builder?)
   - https://laravel.com/docs/9.x/localization
   - https://laravel-news.com/laravel-lang-translations

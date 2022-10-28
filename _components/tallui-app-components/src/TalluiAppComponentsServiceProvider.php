@@ -27,6 +27,8 @@ class TalluiAppComponentsServiceProvider extends PackageServiceProvider
 
     public function boot(): void
     {
+        PackageServiceProvider::boot();
+
         $this->bootResources();
         $this->bootBladeComponents();
         $this->bootLivewireComponents();

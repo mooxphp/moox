@@ -18,6 +18,7 @@ parameters:
         - '_themes/admin/*/build/*'
         - '_themes/website/*/build/*'
         - '_others/*/build/*'
+        - '_others/tallui-satis/*'
     ignoreErrors:
         -
             message: '#Parameter \#1 $view of function view expects view-string|null, string given.#'

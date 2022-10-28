@@ -25,8 +25,10 @@ class SkeletonServiceProvider extends PackageServiceProvider
             ->hasCommand(SkeletonCommand::class);
     }
 
-    public function boot()
+    public function boot(): void
     {
+        PackageServiceProvider::boot();
+
         $this->bootResources();
         $this->bootBladeComponents();
         $this->bootLivewireComponents();
