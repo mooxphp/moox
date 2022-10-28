@@ -62,8 +62,3 @@
     </td></tr>
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
-
-## Learn more
-
-- https://github.com/marketplace/actions/contribute-list
-- https://github.com/marketplace/actions/dynamic-readme
