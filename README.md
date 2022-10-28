@@ -299,3 +299,5 @@ What the PHPStan?????
 
 - Unterschiede Büro / Home?!?
 - https://github.com/nunomaduro/larastan/blob/master/docs/custom-types.md
+
+<!-- include templates/file-includes/parts/feedback.md -->
