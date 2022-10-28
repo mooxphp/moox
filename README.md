@@ -255,3 +255,54 @@ https://razorui.com/pricing
 https://github.com/vildanbina/livewire-wizard
 
 https://laravel-news.com/migrator-gui-migration-manager-for-laravel
+
+
+
+
+
+
+Package Builder
+
+- ServiceProvider -  YEP
+- Blade Component - YEP
+- Livewire Component
+- Custom Command
+- Views (Blade / Livewire)
+- Route
+- Model
+- Migration
+- Seeder
+- Middleware
+- Facade
+- Trait
+- Controller
+- Notification
+- Exception
+- Languages
+- Jobs
+- Config
+- Faker
+- Docs
+- Tests
+- Theme / Assets (Storage)
+
+
+
+
+
+pgkname-blade-component
+
+pgkname-livewire-component
+
+assets
+
+js mit ausgabe
+
+css mit sichbarkeit
+
+tests für komponenten + assets
+
+
+
+Unterschiede Büro / Home?!?
+What the PHPStan????? https://github.com/nunomaduro/larastan/blob/master/docs/custom-types.md

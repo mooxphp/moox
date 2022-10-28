@@ -18,6 +18,13 @@ parameters:
         - '_themes/admin/*/build/*'
         - '_themes/website/*/build/*'
         - '_others/*/build/*'
+        - '_components/*/vendor/*'
+        - '_data/*/vendor/*'
+        - '_icons/*/vendor/*'
+        - '_packages/*/vendor/*'
+        - '_themes/admin/*/vendor/*'
+        - '_themes/website/*/vendor/*'
+        - '_others/*/vendor/*'
         - '_others/tallui-satis/*'
     ignoreErrors:
         -
