@@ -46,7 +46,7 @@
         </a>
     </td></tr>
 </table>
-<!-- readme: collaborators,contributors,bots -end -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
 
 ## Learn more
 
