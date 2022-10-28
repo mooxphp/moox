@@ -1,16 +1,66 @@
 ## Collaborators
 
 <!-- readme: collaborators -start -->
+<table>
+</table>
 <!-- readme: collaborators -end -->
 
 ## Contributors
 
 <!-- readme: contributors -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/adrolli">
+            <img src="https://avatars.githubusercontent.com/u/40421928?v=4" width="100;" alt="adrolli"/>
+            <br />
+            <sub><b>Alf Drollinger</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/azizovic12">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
+            <br />
+            <sub><b>Aziz Gasim</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/KimSpeer">
+            <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/laravel-shift">
+            <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
+            <br />
+            <sub><b>Laravel Shift</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/FMorlock">
+            <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
+    </td></tr>
+</table>
 <!-- readme: contributors -end -->
 
 ## Bots
 
 <!-- readme: bots -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/dependabot[bot]">
+            <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
+            <br />
+            <sub><b>dependabot[bot]</b></sub>
+        </a>
+    </td></tr>
+</table>
 <!-- readme: bots -end -->
 
 
