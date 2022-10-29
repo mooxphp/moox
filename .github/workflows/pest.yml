@@ -1,16 +1,11 @@
-name: run-tests
+name: Pest
 
 on:
-  push:
-    branches:
-      - dev
-      - test
-      - main
-  pull_request:
-    branches:
-      - dev
-      - test
-      - main
+  workflow_run:
+    workflows:
+      - PHPStan
+    types:
+      - completed
 
 jobs:
   test:
