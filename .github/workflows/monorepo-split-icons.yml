@@ -1,9 +1,17 @@
 name: 'Split Icons'
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_run:
     workflows:
       - Pest
+      - PHPStan
+      - Pint
     types:
       - completed
 

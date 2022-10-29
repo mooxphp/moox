@@ -1,11 +1,16 @@
 name: Pest
 
 on:
-  workflow_run:
-    workflows:
-      - PHPStan
-    types:
-      - completed
+  push:
+    branches:
+      - dev
+      - test
+      - main
+  pull_request:
+    branches:
+      - dev
+      - test
+      - main
 
 jobs:
   test:
