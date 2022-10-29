@@ -14,6 +14,8 @@ jobs:
                 use_username: true
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Fetching Repository Contents
+              uses: actions/checkout@main
             - name: Add contributors to README
               uses: varunsridharan/action-dynamic-readme@main
               with:
