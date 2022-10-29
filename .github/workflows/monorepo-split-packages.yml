@@ -1,11 +1,11 @@
 name: 'Split Packages'
 
 on:
-    push:
-        branches:
-            - main
-        tags:
-            - '*'
+  workflow_run:
+    workflows:
+      - Pest
+    types:
+      - completed
 
 env:
     GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
