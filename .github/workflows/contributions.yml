@@ -14,3 +14,10 @@ jobs:
                 use_username: true
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: Add contributors to README
+        uses: varunsridharan/action-dynamic-readme@main
+        with:
+          files: |
+            README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
