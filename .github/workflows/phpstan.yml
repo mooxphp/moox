@@ -1,16 +1,11 @@
 name: PHPStan
 
 on:
-  push:
-    branches:
-      - dev
-      - test
-      - main
-  pull_request:
-    branches:
-      - dev
-      - test
-      - main
+  workflow_run:
+    workflows:
+      - Pint
+    types:
+      - completed
 
 jobs:
   phpstan:
