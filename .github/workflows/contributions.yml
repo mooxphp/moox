@@ -5,12 +5,33 @@ on: [push]
 jobs:
     contrib-readme-job:
         runs-on: ubuntu-latest
-        name: A job to automate contrib in readme
+        name: Add contributors to READMEs
         steps:
-            - name: Contribute List
+            - name: Contributors in Monorepo
               uses: akhilmhdh/contributors-readme-action@v2.3.6
               with:
-                readme_path: "CONTRIBUTORS.md"
+                readme_path: "README.md"
                 use_username: true
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Contributors in app-components
+              uses: akhilmhdh/contributors-readme-action@v2.3.6
+              with:
+                readme_path: "_components/tallui-app-components/README.md"
+                use_username: true
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            # currently not in use, as contributors-readme-action does the job
+            # see https://github.com/varunsridharan/demo-action-dynamic-readme/blob/main/.github/workflows/dynamic-template.yml
+            #- name: Fetching Repository Contents
+            #  uses: actions/checkout@main
+            #- name: Add contributors to README
+            #  uses: varunsridharan/action-dynamic-readme@main
+            #  with:
+            #    files: |
+            #      README.md
+            #      _components\tallui-app-components\README.md
+            #  env:
+            #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
