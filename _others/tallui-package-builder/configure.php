@@ -1,6 +1,16 @@
 #!/usr/bin/env php
 <?php
 
+echo '
+                            _    _   ___
+__ __|   \     |      |    | |  | | |_ _|
+   |    _ \    |      |    | |  | |  | |
+   |   ___ \   |      |    | |  | |  | |
+  _| _/    _\ _____| _____| \____/  |___|
+
+Create a thing with TallUI Package Builder
+';
+
 function ask(string $question, string $default = ''): string
 {
     $answer = readline($question.($default ? " ({$default})" : null).': ');
