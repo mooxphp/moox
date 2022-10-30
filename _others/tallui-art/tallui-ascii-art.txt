@@ -1,4 +1,4 @@
-// Plain
+// Plain ASCII
 
                              _    _   ___
  __ __|   \     |      |    | |  | | |_ _|
@@ -7,7 +7,8 @@
    _| _/    _\ _____| _____| \____/  |___|
 
 
-// PHP and JS Comment
+
+// PHP or JS Comment
 
 
 /*                              _    _   ___
@@ -16,10 +17,11 @@
  *     |   ___ \   |      |    | |  | |  | |
  *    _| _/    _\ _____| _____| \____/  |___|
  *
- *  TallUI Admin Panel Vite app
- *  @see https://tallui.io/admin-panel-vite
+ *  TallUI Package Name
+ *  https://tallui.io/package-name
  *
  */
 
 
-// Credits: generated with https://ascii.today/
+// Credits: Glenn Chappell
+// Generated with https://ascii.today/
