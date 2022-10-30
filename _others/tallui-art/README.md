@@ -12,6 +12,7 @@ These are the creative assets of TallUI:
 
 - Design - some design components in the mix
 - Logo - yep, you guess it
+- ASCII art - for use in commands and comments
 
 
 
