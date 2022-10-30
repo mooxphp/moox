@@ -21,8 +21,7 @@ $current = getcurrent($lines);
 $find = array_search($current, $lines);
 $lines = array_slice($lines, 0, $find - 1, true);
 
-$packages = [];
-$packages = find_packages($lines);
+$packages[] = find_packages($lines);
 
 if ($packages) {
     echo 'Packages:<br><ul>';
@@ -34,6 +33,8 @@ if ($packages) {
 
 function find_packages($lines)
 {
+    $packages = [];
+
     foreach ($lines as $line) {
         if (str_starts_with($line, '### ')) {
             $packages[] = trim($line, '### ');
