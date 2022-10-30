@@ -30,6 +30,8 @@
 
 This is the TallUI Website. You can clone this repo and run it locally to see, how our website was built.
 
+W-I-P - the current coming-soon website is html-only, see ../_others/tallui-coming-soon.
+
 ## Requirements
 
 Prior to installing Laravel 9 you need
@@ -67,3 +69,31 @@ npm run build
 
 Have fun surfin' on http://localhost
 
+## Todo
+
+There are URLs already published in the project:
+
+- https://tallui.io/package-builder in configure.php (builder)
+- https://tallui.io/package-name in ascii-art.txt (art)
+- https://tallui.io/docs/install in install.php and installer.php (installer)
+
+So the url-concept of the page would be:
+
+- / = home
+- /components = search for components
+- /icons = search for icons or iconsets
+- /packages = search for packages
+- /themes = search for themes
+- /package-builder = from others (without tallui_)
+- /admin-panel = any package (without tallui_)
+- /theme/theme-name = any theme (without tallui_)
+- /docs/install = the docs, install overview
+- /about = imprint, why, people, contact, support (GH discussion, issues, support pricing)
+- /blog/blogpost = yep, we should have a blog
+- /data/data-package = sth like this for data provider
+
+Admin area as well as other apps are prefixed with tui- or running on subdomain only:
+
+- demo.tallui.io
+- /tui-admin = admin
+- /tui-app = any app

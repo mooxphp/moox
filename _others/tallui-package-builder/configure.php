@@ -9,6 +9,10 @@ __ __|   \     |      |    | |  | | |_ _|
   _| _/    _\ _____| _____| \____/  |___|
 
 Create a thing with TallUI Package Builder
+
+Need help scaffolding your package?
+See https://tallui.io/package-builder
+
 ';
 
 function ask(string $question, string $default = ''): string

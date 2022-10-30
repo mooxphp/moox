@@ -5,7 +5,6 @@
 </p>
 
 
-
 # TallUI Art
 
 These are the creative assets of TallUI:
@@ -14,15 +13,15 @@ These are the creative assets of TallUI:
 - Logo - yep, you guess it
 - ASCII art - for use in commands and comments
 
+## Fonts
 
+- Logo font: Exo Soft, see https://www.myfonts.com/search?query=exo%20ndiscover
+- Web fonts: Exo 2, regular and 800, see https://google-webfonts-helper.herokuapp.com/fonts/exo-2?subsets=latin
 
 ## Tasks
 
 - Split Design into Components
-
 - Create a style guide with that
-
-  
 
 ## Ideas
 
