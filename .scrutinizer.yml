@@ -6,6 +6,7 @@ build:
         analysis:
             project_setup:
                 before:
+                    - 'cp .env.testing .env'
                     - 'rm composer.json'
                     - 'cp composer-tests.json composer.json'
                     - 'composer update'
@@ -18,7 +19,15 @@ build:
                         command: phpcs-run
                         use_website_config: true
                     - js-scrutinizer-run
-        tests: true
+        testing:
+            project_setup:
+                before:
+                    - 'cp .env.testing .env'
+                    - 'rm composer.json'
+                    - 'cp composer-tests.json composer.json'
+                    - 'composer update'
+                override:
+                    - 'true'
 filter:
     paths:
         - '_components/*'
