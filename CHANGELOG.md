@@ -2,7 +2,7 @@
 
 This is the changelog for all TallUI packages. Please note all changes here separated by package.
 
-## master @ current
+## develop @ current
 
 - No current changes, let's code
 
@@ -10,7 +10,20 @@ This is the changelog for all TallUI packages. Please note all changes here sepa
 
 ### tallui-web-components
 
+Some text:
+
 - Working at some wip-things
+
+### tallui-core
+
+- Feature XXX
+- Anything else?
+
+Some Text between.
+
+### tallui-app-components
+
+Only text here.
 
 ## v0.0.1 @ 2022-08-01
 
