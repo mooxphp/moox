@@ -21,7 +21,8 @@ $current = getcurrent($lines);
 $find = array_search($current, $lines);
 $lines = array_slice($lines, 0, $find - 1, true);
 
-$packages[] = find_packages($lines);
+$packages = [];
+$packages = find_packages($lines);
 
 if ($packages) {
     echo 'Packages:<br><ul>';
