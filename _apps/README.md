@@ -1,10 +1,8 @@
-<p align="center">
+<h1 align="center">
     <img src="../_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
     <img src="../_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
-</p>
-
-<br>
+</h1><br>
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/run-tests.yml">
@@ -22,7 +20,7 @@
     <a href="https://github.com/usetall/tallui/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/usetall/tallui">
     </a>
-</p>
+</p><br>
 
 # TallUI Apps
 
