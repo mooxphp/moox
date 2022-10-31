@@ -20,6 +20,9 @@ build:
                         use_website_config: false
                     - js-scrutinizer-run
         testing:
+            services:
+              # For available tags, see https://hub.docker.com/_/mysql/
+              mysql: 5.7
             project_setup:
                 before:
                     - 'cp .env.testing .env'
@@ -43,4 +46,3 @@ checks:
     javascript: true
 coding_style:
     php: {  }
-

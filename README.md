@@ -158,12 +158,18 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
     - app-components readme, then the rest
     - add relevant things to builder
 - Versioning
+    - http://localhost:3000/_others/tallui-monorepo-tools/changelogger.php
     - Changelog action: Read-Only repos could not be changed
     - Semver - versioning how to
     - How to craft releases with changelog?
+    - Use https://github.com/actions/create-release
     - See https://github.blog/2021-10-04-beta-github-releases-improving-release-experience/
     - See https://stefanzweifel.io/posts/2021/11/13/introducing-the-changelog-updater-action
 - https://github.com/usetall/tallui/tree/dev/_components/tallui-app-components/.github/ISSUE_TEMPLATE
+- Scrutinizer
+    - https://scrutinizer-ci.com/g/usetall/tallui/settings/build-config
+    - https://scrutinizer-ci.com/g/usetall/tallui/inspections/new
+
 - Larastan, Cypress and more testing
   - https://github.com/adrolli/test-repo/ (from actual builder) runs with coverage, components can be tested now
     - https://laravel-livewire.com/screencasts/s1-writing-tests
@@ -379,5 +385,4 @@ What the PHPStan?????
     </td></tr>
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
- 
 
