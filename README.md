@@ -180,6 +180,7 @@ Please make sure you use the same tools in VS Code, our [VS Code Extension Pack]
   - https://laravel-news.com/laravel-lang-translations
   - https://blog.quickadminpanel.com/10-best-laravel-packages-for-multi-language-translations/
   - https://hosted.weblate.org/projects/tallui/ + https://libretranslate.com/
+  - Status, like https://rob006-software.github.io/flarum-translations/
 - Scaffold website-package to output all components
 - Scaffold admin-package
 - Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
