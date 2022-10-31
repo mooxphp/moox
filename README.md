@@ -135,17 +135,14 @@ We test TallUI using:
 - Monorepo
   - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
   - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
-  - [Cypress](https://www.cypress.io/)
+  - [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/), [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui) (testing)
 - Packages
   - [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
   - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
   - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
-  - [Laravel Dusk](https://laravel.com/docs/9.x/dusk)
   - [Pest](https://pestphp.com/)
-  - [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/)
-  - Coverage > 75%
 
-Please make sure you use the same tools in VS Code, our VS Code Extension Pack covers this. Or do the checks manually like so:
+Please make sure you use the same tools in VS Code, our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) covers this. Or do the checks manually like so:
 
 - Use PHPStan before committing: ```./vendor/bin/phpstan analyse```, from a package: ```../../vendor/bin/phpstan analyse```
 - Run Pest before committing: ```./vendor/bin/pest```, from a package: ```../../vendor/bin/pest```
@@ -166,27 +163,6 @@ Please make sure you use the same tools in VS Code, our VS Code Extension Pack c
     - See https://github.blog/2021-10-04-beta-github-releases-improving-release-experience/
     - See https://stefanzweifel.io/posts/2021/11/13/introducing-the-changelog-updater-action
 - https://github.com/usetall/tallui/tree/dev/_components/tallui-app-components/.github/ISSUE_TEMPLATE
-- Scrutinizer
-    - https://scrutinizer-ci.com/g/usetall/tallui/settings/build-config
-    - https://scrutinizer-ci.com/g/usetall/tallui/inspections/new
-
-- Larastan, Cypress and more testing
-  - https://github.com/adrolli/test-repo/ (from actual builder) runs with coverage, components can be tested now
-    - https://laravel-livewire.com/screencasts/s1-writing-tests
-    - https://spatie.be/courses/testing-laravel-with-pest/testing-a-livewire-component
-    - https://github.com/livewire/livewire/blob/master/tests/Browser/TestCase.php
-    - Badges, Coverage, README
-  - Fix TestCase in tallui-core, phpstan in app-components and tests for livewire in app-components / web-components
-  - Use Pest main with all packages + coverage + min:75%
-  - Create test output in app, test output in app AS WELL AS test plain component in package
-  - https://dev.to/robertobutti/add-test-coverage-badge-for-php-and-pest-in-your-github-repository-37mo - easy but not enough, how to calc coverage over a bunch of test?
-  - https://pestphp.com/docs/coverage
-  - use test-directory, see https://github.com/pestphp/pest/pull/283
-  - or run tests with testbench like inside the packages
-  - use https://pestphp.com/docs/plugins/laravel and https://pestphp.com/docs/plugins/livewire
-  - use Laravel Dusk https://laravel.com/docs/9.x/dusk
-  - and/or Cypress for Browsertests (https://dashboard.cypress.io/projects/ch1wnj/runs // https://github.com/laracasts/cypress / https://laracasts.com/series/jeffreys-larabits/episodes/22)
-  - maybe use https://github.com/danielpalme/ReportGenerator-GitHub-Action as Coverage UI oder codecov.io
 - Improve builder
   - Finish testing by creating a set of simple tests incl. 
     - the blade component
