@@ -363,3 +363,6 @@ What the PHPStan?????
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
 
+<a href="https://hosted.weblate.org/engage/tallui/">
+<img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" />
+</a>
