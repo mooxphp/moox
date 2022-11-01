@@ -1,8 +1,8 @@
-<p align="center">
+<h1 align="center">
     <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
     <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
-</p><br><br>
+</h1><br><br>
 
 <p align="center">
     <a href="https://packagist.org/packages/usetall/tallui-app-components">
