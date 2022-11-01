@@ -3,6 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'next'     => 'Para &raquo;',
+    'next' => 'Para &raquo;',
     'previous' => '&laquo; Prapa',
 ];
