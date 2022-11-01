@@ -3,6 +3,6 @@
 declare(strict_types=1);
 
 return [
-    'next'     => 'Indiki &raquo;',
+    'next' => 'Indiki &raquo;',
     'previous' => '&laquo; Öňki',
 ];
