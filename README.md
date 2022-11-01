@@ -1,18 +1,18 @@
-<p align="center">
+<h1 align="center">
     <img src="_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
     <img src="_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
-</p>
-<br>
+    <br><br>
+</h1>
 
 <p align="center">
-    <a href="https://github.com/usetall/tallui/actions/workflows/run-tests.yml">
-        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/run-tests?label=PestPHP">
+    <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
+        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pest?label=PestPHP">
     </a>
-    <a href="https://github.com/usetall/tallui/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain">
-        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Fix%20PHP%20code%20style%20issues?label=Laravel Pint">
+    <a href="https://github.com/usetall/tallui/actions/workflows/pint.yml">
+        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pint?label=Laravel Pint">
     </a>
-    <a href="https://github.com/usetall/tallui/actions?query=workflow%3A"PHPStan"+branch%3Amain">
+    <a href="https://github.com/usetall/tallui/actions/workflows/phpstan.yml">
         <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?label=PHPStan">
     </a>
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
@@ -21,14 +21,17 @@
     <a href="https://github.com/usetall/tallui/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/usetall/tallui">
     </a>
+    <br>
+    <br>
 </p>
 
-# TallUI Monorepo
+
+## TallUI Monorepo
 
 This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 
-## Packages
+### Packages
 
 TallUI packages are categorized in 
 
@@ -40,22 +43,12 @@ TallUI packages are categorized in
 - [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 - [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
-Packages are automatically updated to their own read-only repos when pushed to [main].
+Packages are automatically updated to their own read-only repos when pushed to [main]. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
 
 
-### Add a new package:
+### Installation
 
-- Create a new package from TallUI Package Builder template
-- Copy contents into one of the _subfolder of the monorepo
-- Add the package to the appropriate monorepo-split-action
-- Add the package to _custom/composer.json-example and composer-tests.json
-- Add the package to the README.md in the appropriate _subfolder
-- Add the package to _app/***/composer.json, if the package is stable
-
-
-## Installation
-
-The Laravel dev app is made for instant development with Laravel Sail or Laragon. 
+The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Sail or Laragon. 
 
 ```bash
 # Use the prepared composer.json
@@ -85,7 +78,7 @@ rm -Rf vendor/usetall
 ```
 
 
-## Custom
+### Custom packages
 
 As you might want to develop with a custom set of TallUI packages or require your own packages, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
 
@@ -111,7 +104,7 @@ If you want to include custom packages you can clone one or more packages as sub
 ```
 
 
-## Development
+### Development
 
 - Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
 - Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
@@ -128,7 +121,7 @@ If you want to include custom packages you can clone one or more packages as sub
 - ```feature/...``` prefix all other dev-branches, merge to dev
 
 
-## Testing
+### Testing
 
 We test TallUI using:
 
@@ -142,148 +135,23 @@ We test TallUI using:
   - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
   - [Pest](https://pestphp.com/)
 
-Please make sure you use the same tools in VS Code, our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) covers this. Or do the checks manually like so:
+Please make sure you use the same tools in VS Code (our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) covers this) or do the checks manually before committing to the dev-branch:
 
-- Use PHPStan before committing: ```./vendor/bin/phpstan analyse```, from a package: ```../../vendor/bin/phpstan analyse```
-- Run Pest before committing: ```./vendor/bin/pest```, from a package: ```../../vendor/bin/pest```
-- Run Pint before commiting: ```./vendor/bin/pint```, you guess it: ```../../vendor/bin/pint```
+- PHPStan: ```composer analyse ``` or ```./vendor/bin/phpstan analyse```, for packages ```../../vendor/bin/phpstan analyse```
+- Pest: ```composer test ``` or ```./vendor/bin/pest```, for packages ```../../vendor/bin/pest```
+- Coverage: ```composer test-coverage ``` or ```./vendor/bin/pest --coverage```, for packages ```../../vendor/bin/pest --coverage```
+- Pint: ```composer format ``` or ```./vendor/bin/pint```, for packages ```../../vendor/bin/pint```
 
+### Translation
 
-## Todo
+TallUI is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./docs/translation/README.md).
 
-- Translation
-    - Finish the guides: https://hosted.weblate.org/guide/tallui/tallui-core-passwords/
-    - Finish this README and Link to translation-readme ... as well as testing ...
-    - Request Weblates free hosting with Link to http://next.tallui.io/, and information about the blog post and heco as potential customer
-    - See https://blog.quickadminpanel.com/10-best-laravel-packages-for-multi-language-translations/ for translatable and routes package
-    
-- Finish READMEs
-    - app-components readme, then the rest
-    - add relevant things to builder
-- Versioning
-    - http://localhost:3000/_others/tallui-monorepo-tools/changelogger.php
-    - Changelog action: Read-Only repos could not be changed
-    - Semver - versioning how to
-    - How to craft releases with changelog?
-    - Use https://github.com/actions/create-release
-    - See https://github.blog/2021-10-04-beta-github-releases-improving-release-experience/
-    - See https://stefanzweifel.io/posts/2021/11/13/introducing-the-changelog-updater-action
-- https://github.com/usetall/tallui/tree/dev/_components/tallui-app-components/.github/ISSUE_TEMPLATE
-- Improve builder
-  - Finish testing by creating a set of simple tests incl. 
-    - the blade component
-    - the livewire component
-    - asset loading
-    - service provider itself?
-- _builder
-  - Module Builder
-  - Iconset Builder
-  - Component Builder
-  - Theme Builder
-  - Package Builder
-- Care for translations (add to all packages / builder?)
-  - https://laravel.com/docs/9.x/localization
-  - https://laravel-news.com/laravel-lang-translations
-  - https://blog.quickadminpanel.com/10-best-laravel-packages-for-multi-language-translations/
-  - https://hosted.weblate.org/projects/tallui/ + https://libretranslate.com/
-  - Status, like https://rob006-software.github.io/flarum-translations/
-- Scaffold website-package to output all components
-- Scaffold admin-package
-- Start with Dashboard and Tailwind conf (https://tailwindcss.com/docs/theme, see Theme-docs)
-- Create Coming Soon page
-- Get all packages running in composer
-- Wire the full-app with composer
-- Rebuild icons-package with Workflows, add to builder?
-- Deploy it on Vapor, Cloudways and Shared Hosting
-- Save the icons, dev-components, docs and other stuff
+<a href="https://hosted.weblate.org/engage/tallui/">
+<img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" /></a>
 
-## Ideas
+### Contributors
 
-Blade / Livewire-Components
-class=“ your_class“ => append attributes to default styles or theme styles
-:class=”your_class” => overwrite all default styles and theme styles
-
-See:
-https://laracasts.com/discuss/channels/livewire/scoped-css-in-livewire-component
-https://laravel.com/docs/9.x/blade#passing-data-to-components
-https://laravel-livewire.com/docs/2.x/properties
-
-Check https://tailwindcss.com/blog/tailwindcss-v3-2?utm_source=newsletter&utm_medium=email&utm_campaign=tailwind_v32_release_open_graph_image_generation_and_nextjs_conf_is_coming&utm_term=2022-10-20#multiple-config-files-in-one-project-using-config
-
-- Sicherheitsfrage(n) oder z. B. Geburtsdatum - auch bei Zurücksetzen Mail
-- Anmeldelink per Mail
-- 3FA
-- Datenschutz - automatische Löschung inaktiver Konten nach XX Tagen, Mail an Kunde zuvor - Grace period (Deaktivierung)
-
-https://kutty.netlify.app/components/ - free TailwindCSS and AlpineJS Components
-
-https://flowbite.com/ - commercial, only TailwindCSS, own JS-Lib
-
-https://www.tailwindawesome.com/?price=free&technology=5
-
-https://rappasoft.com/blog/a-sneak-peak-at-livewire-tables-v2
-
-https://github.com/nunomaduro/larastan
-
-https://github.com/devicons/devicon
-
-https://github.com/miten5/larawind
-
-https://github.com/spatie/laravel-translatable
-
-https://accessible-colors.com/
-
-https://razorui.com/pricing
-
-https://github.com/vildanbina/livewire-wizard
-
-https://laravel-news.com/migrator-gui-migration-manager-for-laravel
-
-
-
-
-
-
-Package Builder
-
-- ServiceProvider -  YEP
-- Blade Component - YEP
-- Livewire Component
-- Custom Command
-- Views (Blade / Livewire)
-- Route
-- Model
-- Migration
-- Seeder
-- Middleware
-- Facade
-- Trait
-- Controller
-- Notification
-- Exception
-- Languages
-- Jobs
-- Config
-- Faker
-- Docs
-- Tests
-- Theme / Assets (Storage)
-
-todos:
-
-- rename to pgkname-blade-component
-- pgkname-livewire-component
-- assets
-    - js mit ausgabe
-    - css mit sichbarkeit
-- tests für komponenten + assets
-
-What the PHPStan?????
-
-- Unterschiede Büro / Home?!?
-- https://github.com/nunomaduro/larastan/blob/master/docs/custom-types.md
-
-## Contributors
+TallUI is made by these people.
 
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -start -->
 <table>
@@ -369,6 +237,3 @@ What the PHPStan?????
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
 
-<a href="https://hosted.weblate.org/engage/tallui/">
-<img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" />
-</a>
