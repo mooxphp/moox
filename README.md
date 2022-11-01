@@ -155,7 +155,8 @@ Please make sure you use the same tools in VS Code, our [VS Code Extension Pack]
     - Finish the guides: https://hosted.weblate.org/guide/tallui/tallui-core-passwords/
     - Finish this README and Link to translation-readme ... as well as testing ...
     - Request Weblates free hosting with Link to http://next.tallui.io/, and information about the blog post and heco as potential customer
-
+    - See https://blog.quickadminpanel.com/10-best-laravel-packages-for-multi-language-translations/ for translatable and routes package
+    
 - Finish READMEs
     - app-components readme, then the rest
     - add relevant things to builder
