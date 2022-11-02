@@ -2,8 +2,6 @@
 
 The TallUI API Manager provides an admin panel module to manage API Base URLs and credentials to access different APIs. 
 
-
-
 Usage:
 
 To use an API ...
