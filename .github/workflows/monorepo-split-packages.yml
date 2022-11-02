@@ -7,13 +7,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_run:
-    workflows:
-      - Pest
-      - PHPStan
-      - Pint
-    types:
-      - completed
 
 env:
     GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}

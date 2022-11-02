@@ -1,6 +1,12 @@
 name: Contributions
 
-on: [push]
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
 
 jobs:
     contrib-readme-job:
