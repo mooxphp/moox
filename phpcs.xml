@@ -19,4 +19,11 @@
 
     <!-- Show progression -->
     <arg value="p"/>
+
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="130"/>
+            <property name="absoluteLineLimit" value="250"/>
+        </properties>
+    </rule>
 </ruleset>
