@@ -7,19 +7,27 @@
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
-        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pest?label=PestPHP">
+        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pest?color=darkgreen&label=PestPHP">
     </a>
     <a href="https://github.com/usetall/tallui/actions/workflows/pint.yml">
-        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pint?label=Laravel Pint">
+        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pint?color=darkgreen&label=Laravel Pint">
     </a>
     <a href="https://github.com/usetall/tallui/actions/workflows/phpstan.yml">
-        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?label=PHPStan">
+        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?color=darkgreen&label=PHPStan">
+    </a>
+</p>
+<p align="center">
+    <a href="https://app.codacy.com/gh/usetall/tallui/dashboard">
+        <img src="https://app.codacy.com/project/badge/Grade/2b912412bb6e4892b52688272dec1555">
     </a>
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
         <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
     </a>
-    <a href="https://github.com/usetall/tallui/blob/main/LICENSE.md">
-        <img alt="License" src="https://img.shields.io/github/license/usetall/tallui">
+    <a href="https://hosted.weblate.org/engage/tallui/">
+        <img src="https://hosted.weblate.org/widgets/tallui/-/svg-badge.svg" alt="Translation status" />
+    </a>
+    <a href="https://github.com/usetall/tallui-app-components/blob/main/LICENSE.md">
+        <img alt="License" src="https://img.shields.io/github/license/usetall/tallui-app-components?color=blue&label=license">
     </a>
     <br>
     <br>
