@@ -17,7 +17,7 @@ We use Weblate for translation because
 - It can make suggestions based on machine translation to fill up translation gaps
 - It has full support for [PHP Strings, Laravel as well as plurals](https://docs.weblate.org/en/latest/formats.html#php)
 - It is free Open Source software
-- And they support us with a free Hosted Weblate account
+- They offer free project accounts for FOSS developers
 
 You can contribute to TallUI being a translator:
 
