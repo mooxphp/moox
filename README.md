@@ -7,13 +7,13 @@
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
-        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pest?color=darkgreen&label=PestPHP">
+        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pest?label=PestPHP">
     </a>
     <a href="https://github.com/usetall/tallui/actions/workflows/pint.yml">
-        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pint?color=darkgreen&label=Laravel Pint">
+        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pint?label=Laravel Pint">
     </a>
     <a href="https://github.com/usetall/tallui/actions/workflows/phpstan.yml">
-        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?color=darkgreen&label=PHPStan">
+        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?label=PHPStan">
     </a>
 </p>
 <p align="center">
