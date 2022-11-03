@@ -60,6 +60,7 @@ jobs:
 
   coverage:
     name: Codacy coverage-reporter
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
