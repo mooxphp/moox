@@ -1529,10 +1529,11 @@ function check_memory_limit($required_memory)
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {
+        $memory = (int) $matches[1];
         if ($matches[2] == 'M') {
-            $memory_limit = $matches[1] * 1024 * 1024;
+            $memory_limit = $memory * 1024 * 1024;
         } elseif ($matches[2] == 'K') {
-            $memory_limit = $matches[1] * 1024;
+            $memory_limit = $memory * 1024;
         }
     }
 
