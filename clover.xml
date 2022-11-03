@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1667459705">
-  <project timestamp="1667459705">
+<coverage generated="1667460022">
+  <project timestamp="1667460022">
     <file name="/home/runner/work/tallui/tallui/app/Actions/Fortify/CreateNewUser.php">
       <class name="App\Actions\Fortify\CreateNewUser" namespace="global">
         <metrics complexity="2" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="9" coveredstatements="9" elements="10" coveredelements="10"/>
