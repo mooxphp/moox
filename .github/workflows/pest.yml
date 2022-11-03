@@ -60,6 +60,8 @@ jobs:
 
   coverage:
     name: Codacy coverage-reporter
+    runs-on: ubuntu-latest
+
     steps:
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
