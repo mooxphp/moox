@@ -63,8 +63,6 @@ jobs:
         with:
           commit_message: Commit clover.xml
           file_pattern: 'clover.xml'
-          push_options: '--force'
-          skip_dirty_check: true
 
   coverage:
     name: Codacy coverage-reporter
