@@ -1,4 +1,4 @@
-name: Pest
+name: Codacy coverage
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - main
 
 jobs:
-  test:
+  coverage:
     env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
@@ -20,10 +20,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         php: [8.1]
         laravel: [9.*]
-        stability: [prefer-lowest, prefer-stable]
+        stability: [prefer-stable]
         include:
           - laravel: 9.*
             testbench: 7.*
@@ -57,3 +57,15 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
+
+      - name: Commit clover.xml
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit clover.xml
+          file_pattern: 'clover.xml'
+
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: clover.xml
