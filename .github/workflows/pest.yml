@@ -59,7 +59,9 @@ jobs:
         run: vendor/bin/pest --coverage-clover clover.xml
 
       - name: Show dir
-        run: pwd
+        run: |
+          pwd
+          ls -lah
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
