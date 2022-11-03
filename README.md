@@ -20,6 +20,9 @@
     <a href="https://app.codacy.com/gh/usetall/tallui/dashboard">
         <img src="https://app.codacy.com/project/badge/Grade/2b912412bb6e4892b52688272dec1555">
     </a>
+    <a href="https://app.codacy.com/gh/usetall/tallui/dashboard">
+        <img src="https://app.codacy.com/project/badge/Coverage/2b912412bb6e4892b52688272dec1555">
+    </a>
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
         <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
     </a>
