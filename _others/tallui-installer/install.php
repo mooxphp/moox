@@ -79,10 +79,11 @@ function check_memory_limit($required_memory)
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {
+        $memory = (int) $matches[1];
         if ($matches[2] == 'M') {
-            $memory_limit = $matches[1] * 1024 * 1024;
+            $memory_limit = $memory * 1024 * 1024;
         } elseif ($matches[2] == 'K') {
-            $memory_limit = $matches[1] * 1024;
+            $memory_limit = $memory * 1024;
         }
     }
 
@@ -103,7 +104,7 @@ echo '
 
 <img class="absolute inset-0 h-full w-full object-cover" src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" alt="">
 
-<div class="relative m-5 lg:m-20">    
+<div class="relative m-5 lg:m-20">
 
     <div class="flex">
         <img class="h-12 w-auto mt-4 mr-2" src="logo.svg" alt="TALLUI">
@@ -141,7 +142,7 @@ foreach ($prechecks as $precheck) {
 }
 
 echo '
-    </ul>  
+    </ul>
     </div>
 
     </div>
