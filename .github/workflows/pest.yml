@@ -58,6 +58,14 @@ jobs:
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
 
+      - name: Commit clover.xml
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit clover.xml
+          file_pattern: 'clover.xml'
+          push_options: '--force'
+          skip_dirty_check: true
+
   coverage:
     name: Codacy coverage-reporter
     needs: test
