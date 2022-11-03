@@ -28,7 +28,7 @@ jobs:
           - laravel: 9.*
             testbench: 7.*
 
-    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+    name: Checkout
 
     steps:
       - name: Checkout code
@@ -57,12 +57,6 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
-
-      # - name: Commit clover.xml
-      #   uses: stefanzweifel/git-auto-commit-action@v4
-      #   with:
-      #     commit_message: Commit clover.xml
-      #    file_pattern: 'clover.xml'
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
