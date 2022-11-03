@@ -59,8 +59,10 @@ jobs:
         run: vendor/bin/pest --coverage-clover clover.xml
 
   coverage:
-    name: Run codacy-coverage-reporter
-    uses: codacy/codacy-coverage-reporter-action@v1
-    with:
-      api-token: ${{ secrets.CODACY_API_TOKEN }}
-      coverage-reports: clover.xml
+    name: Codacy coverage-reporter
+    steps:
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: clover.xml
