@@ -162,7 +162,7 @@ TallUI is translated with Weblate. More information about the languages, transla
 
 ### Contributors
 
-TallUI is made by these people.
+TallUI is made by these nice people, and bots ...
 
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -start -->
 <table>
