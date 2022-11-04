@@ -6,7 +6,6 @@ build:
         analysis:
             project_setup:
                 before:
-                    - 'cp .env.testing .env'
                     - 'rm composer.json'
                     - 'cp composer-tests.json composer.json'
                     - 'composer update'
@@ -19,18 +18,7 @@ build:
                         command: phpcs-run
                         use_website_config: false
                     - js-scrutinizer-run
-        testing:
-            services:
-              # For available tags, see https://hub.docker.com/_/mysql/
-              mysql: 5.7
-            project_setup:
-                before:
-                    - 'cp .env.testing .env'
-                    - 'rm composer.json'
-                    - 'cp composer-tests.json composer.json'
-                    - 'composer update'
-                override:
-                    - 'true'
+        tests: true
 filter:
     paths:
         - '_components/*'
