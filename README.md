@@ -189,10 +189,10 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/azizovich12">
-            <img src="" width="100;" alt="azizovich12"/>
+        <a href="https://github.com/azizovic12">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
             <br />
-            <sub><b>azizovich12</b></sub>
+            <sub><b>azizovic12</b></sub>
         </a>
     </td>
     <td align="center">
@@ -210,13 +210,6 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td></tr>
 <tr>
-    <td align="center">
-        <a href="https://github.com/azizovic12">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
-            <br />
-            <sub><b>azizovic12</b></sub>
-        </a>
-    </td>
     <td align="center">
         <a href="https://github.com/KimSpeer">
             <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
@@ -251,15 +244,15 @@ TallUI is made by these nice people, and bots ...
             <br />
             <sub><b>tallui-bot</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/github-actions[bot]">
             <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
             <br />
             <sub><b>github-actions[bot]</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/dependabot[bot]">
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
