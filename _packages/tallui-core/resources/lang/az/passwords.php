@@ -1,5 +1,4 @@
 <?php
-
 return [
     'reset' => 'Şifrə yeniləndi!',
     'sent' => 'Şifrə yeniləmə adresi sizə email olaraq göndərildi!',
