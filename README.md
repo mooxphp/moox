@@ -182,6 +182,13 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/weblate">
+            <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
+            <br />
+            <sub><b>weblate</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/wp1111">
             <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
             <br />
@@ -201,15 +208,15 @@ TallUI is made by these nice people, and bots ...
             <br />
             <sub><b>KimSpeer</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/laravel-shift">
             <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
             <br />
             <sub><b>laravel-shift</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/FMorlock">
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
