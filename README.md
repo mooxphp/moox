@@ -164,7 +164,7 @@ TallUI is translated with Weblate. More information about the languages, transla
 
 TallUI is made by these nice people, and bots ...
 
-<!-- readme: adrolli,Reinhold-Jesse,KimSpeer,azizovic12,collaborators,contributors,tallui-bot,bots -start -->
+<!-- readme: adrolli,Reinhold-Jesse,kimspeer,azizovic12,collaborators,contributors,tallui-bot,bots -start -->
 <table>
 <tr>
     <td align="center">
@@ -261,5 +261,5 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,KimSpeer,azizovic12,collaborators,contributors,tallui-bot,bots -end -->
+<!-- readme: adrolli,Reinhold-Jesse,kimspeer,azizovic12,collaborators,contributors,tallui-bot,bots -end -->
 
