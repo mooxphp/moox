@@ -1,0 +1,3 @@
+files:
+  - source: _packages/tallui-core/resources/lang/en/
+    translation: _packages/tallui-core/resources/lang/%two_letters_code%/
