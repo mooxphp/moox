@@ -26,6 +26,11 @@ Route::get('/package/{packageName}', [PackageController::class, 'package']);
 Route::get('/custom', function () {
     return view('test');
 });
+Route::get('/custom', function () {
+    return view('test');
+});
+
+
 
 Route::middleware([
     'auth:sanctum',
