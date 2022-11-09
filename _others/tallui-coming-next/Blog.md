@@ -13,8 +13,8 @@ Most of the translation platforms support PHP-files, only a few support pluraliz
 
 - Weblate - see 
 - Crowdin - see 
+- Lokalise - see https://lokalise.com/blog/laravel-localization-step-by-step/
 - Phrase - see https://phrase.com/blog/posts/laravel-i18n-frontend-best-practices/
-- ...
 
 
 
