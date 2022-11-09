@@ -20,8 +20,6 @@ Route::get('/custom', function () {
     return view('test');
 });
 
-
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
