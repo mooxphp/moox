@@ -8,11 +8,14 @@ Short desc
 
 ### Features
 
-- ...
+- Developer-friendly
+- SEO optimized
+- Quality tested
+- more to come
 
 ### TallUI in raw numbers
 
-####  What's in the box?
+#### What's in the box
 
 - Laravel packages
 - Blade components
@@ -39,7 +42,7 @@ Short desc
 
 ### Contribute and sponsor
 
-
+How to contribute and help to translate...
 
 ### Thanks to
 
