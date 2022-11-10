@@ -24,10 +24,10 @@
             <directory suffix="Test.php">./_components/tallui-web-components/tests</directory>
         </testsuite>
         <testsuite name="Web-Icons-Tests">
-            <directory suffix="Test.php">./_components/tallui-web-icons/tests</directory>
+            <directory suffix="Test.php">./_icons/tallui-web-icons/tests</directory>
         </testsuite>
         <testsuite name="Core-Tests">
-            <directory suffix="Test.php">./_components/tallui-core/tests</directory>
+            <directory suffix="Test.php">./_packages/tallui-core/tests</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
