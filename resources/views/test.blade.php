@@ -16,7 +16,6 @@
     </head>
     <body>
         <div class="font-sans antialiased text-gray-900">
-            @livewire('messenger')
         </div>
         @livewireScripts
     </body>
