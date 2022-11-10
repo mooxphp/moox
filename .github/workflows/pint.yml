@@ -1,7 +1,14 @@
 name: Pint
 
 on:
-  push
+  pull_request:
+    branches:
+      - main
+      - dev
+  push:
+    branches:
+      - 'develop/**'
+      - 'feature/**'
 
 jobs:
   php-code-styling:
