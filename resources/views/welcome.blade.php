@@ -25,9 +25,6 @@
         <img class="logo" src="_others/tallui-coming-soon/logo.png">
 
          @livewire('first-livewire-component')
-        <div>
-            @livewire('messenger')
 
-        </div>
     </body>
 </html>
