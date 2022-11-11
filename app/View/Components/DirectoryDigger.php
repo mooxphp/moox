@@ -6,7 +6,6 @@ use Illuminate\View\Component;
 
 class DirectoryDigger extends Component
 {
-
     /**
      * Create a new component instance.
      *
