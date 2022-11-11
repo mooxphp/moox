@@ -4,6 +4,7 @@
         <title>TallUI is coming soon</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="png" href="{{ asset('build/assets/images/icons/tallui-logo.svg') }}">
 
 
         <!-- Fonts -->
@@ -28,7 +29,6 @@
                 <div class="flex items-center text-3xl">
                     <a class="px-4 font-normal" href="/">Home</a>
                     <a class="px-4 font-normal" href="/packages">Packages</a>
-                    <a class="px-4 font-normal" href="">About</a>
                     <a href="https://github.com/usetall/tallui">
                         <img class="px-4 " src="{{ asset('build/assets/images/icons/git.svg') }} " alt="git">
 
