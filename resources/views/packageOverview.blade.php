@@ -30,7 +30,7 @@
                     <a class="px-4 font-normal" href="/packages">Packages</a>
                     <a class="px-4 font-normal" href="">About</a>
                     <a href="https://github.com/usetall/tallui">
-                        <img class="px-4 " src="build/assets/images/icons/git.svg" alt="git">
+                        <img class="px-4 " src="{{ asset('build/assets/images/icons/git.svg') }} " alt="git">
 
                     </a>
                 </div>
