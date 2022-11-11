@@ -10,6 +10,7 @@ parameters:
         - _packages
         - _themes
         - _others
+        - app
     excludePaths:
         - '_components/*/build/*'
         - '_data/*/build/*'
