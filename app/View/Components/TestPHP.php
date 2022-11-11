@@ -16,6 +16,7 @@ class TestPHP extends Component
      public $array2 = ['testing'];
      public $array3 = array();
      public $array4 = array('some','testing');
+     public $array5 = "string";
     public function __construct()
     {
         //
