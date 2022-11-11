@@ -48,6 +48,7 @@
             </p>
         </div>
 
-@livewire('messenger') /** @phpstan-ignore-line */
+        {{-- /** @phpstan-ignore-next-line */ --}}
+@livewire('messenger')
     </body>
 </html>
