@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
-    function welcome(){
+    public function welcome()
+    {
         return view('welcome');
     }
 
-    function packagesOverview(){
-
-
+    public function packagesOverview()
+    {
         return view('packageOverview');
     }
 
-    function package($packageName){
+    public function package($packageName)
+    {
         $content = Storage::directories('');
-        return view('packageOverview',['packageName'=>$packageName]);
+
+        return view('packageOverview', ['packageName' => $packageName]);
     }
 }
