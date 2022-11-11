@@ -28,7 +28,7 @@
                 <div class="flex items-center text-3xl">
                     <a class="px-4 font-normal" href="/">Home</a>
                     <a class="px-4 font-normal" href="/packages">Packages</a>
-                    <a class="px-4 font-normal" href="">About</a>
+                    <a class="px-4 font-normal" href="">Workspace</a>
                     <a href="https://github.com/usetall/tallui">
                         <img class="px-4 " src="{{ asset('build/assets/images/icons/git.svg') }} " alt="git">
 
@@ -48,5 +48,6 @@
             </p>
         </div>
 
+            @livewire('messenger')
     </body>
 </html>

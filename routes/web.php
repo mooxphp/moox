@@ -22,9 +22,18 @@ Route::get('/', [PackageController::class, 'welcome']);
 Route::get('/packages', [PackageController::class, 'packagesOverview']);
 Route::get('/package/{packageName}', [PackageController::class, 'package']);
 
-Route::get('/custom', function () {
-    return view('test');
+Route::get('/custom/alf', function () {
+    return view('custom.custom_alf');
 });
+Route::get('/custom/kim', function () {
+    return view('custom.custom_kim');
+});
+Route::get('/custom/reinhold', function () {
+    return view('custom.custom_reinhold');
+});
+
+
+
 
 Route::middleware([
     'auth:sanctum',
