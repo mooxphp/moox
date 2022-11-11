@@ -32,9 +32,6 @@ Route::get('/custom/reinhold', function () {
     return view('custom.custom_reinhold');
 });
 
-
-
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
