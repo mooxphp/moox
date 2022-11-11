@@ -36,17 +36,14 @@
                 </div>
             </nav>
         </head>
-        <div class="flex flex-col justify-center">
-            <h1 class="m-12 font-sans text-4xl text-center">
-                The <b>UI</b> for Laravel<br>
-                and the <b>TALL</b>-Stack
-            </h1>
-
-            <p class="m-12 leading-6 text-center">
-                TallUI is currently under active development.<br>
-                Our first components will be available shortly.
-            </p>
+       <div class="flex">
+        <ul>
+            <li class="px-12 text-xl"><a href="/package/app">App</a> </li>
+            <li class="px-12 text-xl"><a href="/package/form">Form</a> </li>
+        </ul>
+        <div class="text-white">
         </div>
+       </div>
 
     </body>
 </html>
