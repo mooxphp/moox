@@ -164,7 +164,7 @@ TallUI is translated with Weblate. More information about the languages, transla
 
 TallUI is made by these nice people, and bots ...
 
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -start -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -start -->
 <table>
 <tr>
     <td align="center">
@@ -179,6 +179,13 @@ TallUI is made by these nice people, and bots ...
             <img src="https://avatars.githubusercontent.com/u/88349887?v=4" width="100;" alt="reinhold-jesse"/>
             <br />
             <sub><b>reinhold-jesse</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/weblate">
+            <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
+            <br />
+            <sub><b>weblate</b></sub>
         </a>
     </td>
     <td align="center">
@@ -201,15 +208,15 @@ TallUI is made by these nice people, and bots ...
             <br />
             <sub><b>KimSpeer</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/laravel-shift">
             <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
             <br />
             <sub><b>laravel-shift</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/FMorlock">
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
@@ -246,5 +253,4 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
-
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -end -->

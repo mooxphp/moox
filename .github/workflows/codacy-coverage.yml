@@ -3,7 +3,8 @@ name: Codacy coverage
 on:
   push:
     branches:
-      - test
+      - main
+      - dev
 
 jobs:
   coverage:
