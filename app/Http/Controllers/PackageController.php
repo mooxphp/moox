@@ -18,8 +18,7 @@ class PackageController extends Controller
     }
 
     function package($packageName){
-        $content = Storage::get('/storage/_components/tallui-dev-components/README.md');
-        dd($content);
+        $content = Storage::directories('');
         return view('packageOverview',['packageName'=>$packageName]);
     }
 }

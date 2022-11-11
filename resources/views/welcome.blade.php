@@ -32,7 +32,6 @@
                     <a href="https://github.com/usetall/tallui">
                         <img class="px-4 " src="build/assets/images/icons/git.svg" alt="git">
 
-<<<<<<< HEAD
                     </a>
                 </div>
             </nav>
@@ -49,9 +48,6 @@
             </p>
         </div>
 
-=======
-         @livewire('first-livewire-component')
 
->>>>>>> 43cc6494599c6664dfd1aba7e00af7ae29376777
     </body>
 </html>
