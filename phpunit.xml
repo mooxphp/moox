@@ -23,9 +23,9 @@
         <testsuite name="Web-Components-Tests">
             <directory suffix="Test.php">./_components/tallui-web-components/tests</directory>
         </testsuite>
-        <testsuite name="Web-Icons-Tests">
+        <!-- testsuite name="Web-Icons-Tests">
             <directory suffix="Test.php">./_icons/tallui-web-icons/tests</directory>
-        </testsuite>
+        </testsuite -->
         <testsuite name="Core-Tests">
             <directory suffix="Test.php">./_packages/tallui-core/tests</directory>
         </testsuite>
