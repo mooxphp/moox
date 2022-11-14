@@ -2,14 +2,8 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 7
+    level: 5
     paths:
-        - _components
-        - _data
-        - _icons
-        - _packages
-        - _themes
-        - _others
         - app
     excludePaths:
         - '_components/*/build/*'
