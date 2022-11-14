@@ -16,7 +16,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      * @param  array<mixed>  $input
      * @return void
      */
-    public function update(mixed $user, array $input):void
+    public function update(mixed $user, array $input): void
     {
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
@@ -46,7 +46,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      * @param  array<mixed>  $input
      * @return void
      */
-    protected function updateVerifiedUser(mixed $user, array $input):void
+    protected function updateVerifiedUser(mixed $user, array $input): void
     {
         $user->forceFill([
             'name' => $input['name'],

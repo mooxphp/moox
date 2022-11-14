@@ -72,8 +72,7 @@ class SkeletonServiceProvider extends PackageServiceProvider
         }
     }
 
-
-    /** @param array<mixed> $assets*/
+    /** @param  array<mixed>  $assets*/
     private function registerAssets(mixed $component, array $assets): void
     {
         foreach ($component::assets() as $asset) {

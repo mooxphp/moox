@@ -1525,7 +1525,7 @@ TODO
 // Are approot and webroot writeable? (between?)
 // run functions, add check memory_limit like https://stackoverflow.com/questions/10208698/checking-memory-limit-in-php
 
-function check_memory_limit(mixed $required_memory):mixed
+function check_memory_limit(mixed $required_memory): mixed
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {

@@ -11,7 +11,7 @@ trait PasswordValidationRules
      *
      * @return array<mixed>
      */
-    protected function passwordRules():array
+    protected function passwordRules(): array
     {
         return ['required', 'string', new Password, 'confirmed'];
     }

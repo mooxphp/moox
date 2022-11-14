@@ -19,7 +19,7 @@ final class Skeleton
         }
     }
 
-     /** @return array<mixed> */
+    /** @return array<mixed> */
     public static function styles(): array
     {
         return static::$styles;
@@ -43,7 +43,7 @@ final class Skeleton
         }
     }
 
-     /** @return array<mixed> */
+    /** @return array<mixed> */
     public static function scripts(): array
     {
         return static::$scripts;

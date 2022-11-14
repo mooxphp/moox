@@ -75,7 +75,7 @@ $prechecks = [
 
 <?php
 /** Prechecks */
-function check_memory_limit(mixed $required_memory):mixed
+function check_memory_limit(mixed $required_memory): mixed
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {

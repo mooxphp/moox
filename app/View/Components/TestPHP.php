@@ -18,7 +18,6 @@ class TestPHP extends Component
     /** @var array<mixed> */
     public $array4 = ['some', 'testing'];
 
-
     public function __construct()
     {
         //
@@ -29,7 +28,6 @@ class TestPHP extends Component
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
-
     public function render()
     {
         return view('components.test-p-h-p');

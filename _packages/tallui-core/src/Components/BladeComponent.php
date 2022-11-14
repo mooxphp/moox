@@ -11,7 +11,6 @@ abstract class BladeComponent extends IlluminateComponent
     /** @var array<mixed> */
     protected static $assets = [];
 
-
     /** @return array<mixed> */
     public static function assets(): array
     {
