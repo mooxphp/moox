@@ -21,7 +21,10 @@
             }
         </style>
     </head>
-    <body>
-        <x-button name="hi"></x-button>
+    <body >
+        <img class="logo" src="_others/tallui-coming-soon/logo.png">
+
+         @livewire('first-livewire-component')
+
     </body>
 </html>

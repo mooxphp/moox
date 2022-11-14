@@ -44,6 +44,7 @@
                 </x-jet-button>
             </div>
         </form>
+        @livewire('first-livewire-component')
 
     </x-jet-authentication-card>
 </x-guest-layout>
