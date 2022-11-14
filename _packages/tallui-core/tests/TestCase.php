@@ -27,7 +27,7 @@ class TestCase extends Orchestra
 
     // Taken from https://github.com/livewire/livewire/discussions/4705
 
-    protected function registerLivewireComponents()
+    protected function registerLivewireComponents(): void
     {
         // Livewire::component('core-livewire', CoreLivewire::class);
     }

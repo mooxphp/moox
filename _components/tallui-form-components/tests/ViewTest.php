@@ -55,7 +55,7 @@ class ViewTest
     /**
      * Assert that the given strings are contained in order within the view.
      *
-     * @param  array  $values
+     * @param  array<mixed>  $values
      * @param  bool  $escape
      * @return $this
      */
@@ -87,7 +87,7 @@ class ViewTest
     /**
      * Assert that the given strings are contained in order within the view text.
      *
-     * @param  array  $values
+     * @param  array<mixed>  $values
      * @param  bool  $escape
      * @return $this
      */

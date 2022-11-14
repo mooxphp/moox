@@ -73,6 +73,7 @@ function title_snake(string $subject, string $replace = '_'): string
     return str_replace(['-', '_'], $replace, $subject);
 }
 
+/** @param  array<mixed>  $replacements*/
 function replace_in_file(string $file, array $replacements): void
 {
     $contents = file_get_contents($file);
@@ -96,7 +97,8 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-function remove_composer_deps(array $names)
+/** @param  array<mixed>  $names */
+function remove_composer_deps(array $names): void
 {
     $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 
@@ -109,7 +111,7 @@ function remove_composer_deps(array $names)
     file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
-function remove_composer_script($scriptName)
+function remove_composer_script(mixed $scriptName): void
 {
     $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 
@@ -133,7 +135,7 @@ function remove_readme_paragraphs(string $file): void
     );
 }
 
-function safeUnlink(string $filename)
+function safeUnlink(string $filename): void
 {
     if (file_exists($filename) && is_file($filename)) {
         unlink($filename);
@@ -145,11 +147,13 @@ function determineSeparator(string $path): string
     return str_replace('/', DIRECTORY_SEPARATOR, $path);
 }
 
+/** @return array<mixed> */
 function replaceForWindows(): array
 {
     return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package VendorName skeleton migration_table_name vendor_name vendor_slug author@domain.com"'));
 }
 
+/** @return array<string> */
 function replaceForAllOtherOSes(): array
 {
     return explode(PHP_EOL, run('grep -E -r -l -i ":author|:vendor|:package|VendorName|skeleton|migration_table_name|vendor_name|vendor_slug|author@domain.com" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
