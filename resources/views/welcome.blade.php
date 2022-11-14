@@ -21,6 +21,7 @@
             }
         </style>
     </head>
-    <body >
+    <body>
+        <x-button name="hi"></x-button>
     </body>
 </html>

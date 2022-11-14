@@ -25,6 +25,13 @@ class Button extends BladeComponent
         $this->value = old($name, $value ?? '');
     }
 
+
+       /**
+     * Get the view / contents that represent the component.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+
     public function render(): View
     {
         return view('tallui-form-components::components.buttons.button');

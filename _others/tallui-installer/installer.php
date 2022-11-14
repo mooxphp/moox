@@ -1525,7 +1525,7 @@ TODO
 // Are approot and webroot writeable? (between?)
 // run functions, add check memory_limit like https://stackoverflow.com/questions/10208698/checking-memory-limit-in-php
 
-function check_memory_limit($required_memory)
+function check_memory_limit($required_memory):mixed
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {
@@ -1542,7 +1542,7 @@ function check_memory_limit($required_memory)
     return $memory_ok ? 1 : 0;
 }
 
-function check_mod_rewrite()
+function check_mod_rewrite():int
 {
     // https://www.webune.com/forums/testing-script-to-test-mod-rewrite.html
     // https://stackoverflow.com/questions/9021425/how-to-check-if-mod-rewrite-is-enabled-in-php
