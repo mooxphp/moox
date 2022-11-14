@@ -92,7 +92,7 @@ function check_memory_limit(mixed $required_memory):mixed
     return $memory_ok ? 1 : 0;
 }
 
-function check_mod_rewrite():int
+function check_mod_rewrite(): int
 {
     // https://www.webune.com/forums/testing-script-to-test-mod-rewrite.html
     // https://stackoverflow.com/questions/9021425/how-to-check-if-mod-rewrite-is-enabled-in-php
