@@ -4,7 +4,12 @@ includes:
 parameters:
     level: 5
     paths:
-        - app
+        - _components
+        - _data
+        - _icons
+        - _packages
+        - _themes
+        - _others
     excludePaths:
         - '_components/*/build/*'
         - '_data/*/build/*'
