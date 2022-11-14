@@ -9,6 +9,7 @@ use VendorName\Skeleton\Components\LivewireComponent;
 
 class FirstLivewireComponent extends LivewireComponent
 {
+     /** @var array<mixed> */
     protected static $assets = ['example'];
 
     public string $first_var = '';

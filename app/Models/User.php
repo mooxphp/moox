@@ -52,7 +52,7 @@ class User extends Authenticatable
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var array<mixed>
      */
     protected $appends = [
         'profile_photo_url',

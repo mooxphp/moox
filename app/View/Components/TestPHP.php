@@ -6,20 +6,18 @@ use Illuminate\View\Component;
 
 class TestPHP extends Component
 {
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
+    /** @var array<mixed> */
     public $array = [];
 
+    /** @var array<mixed> */
     public $array2 = ['testing'];
 
+    /** @var array<mixed> */
     public $array3 = [];
 
+    /** @var array<mixed> */
     public $array4 = ['some', 'testing'];
 
-    public $array5 = 'string';
 
     public function __construct()
     {
@@ -31,6 +29,7 @@ class TestPHP extends Component
      *
      * @return \Illuminate\Contracts\View\View|\Closure|string
      */
+
     public function render()
     {
         return view('components.test-p-h-p');
