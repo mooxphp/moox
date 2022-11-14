@@ -73,7 +73,7 @@ function title_snake(string $subject, string $replace = '_'): string
     return str_replace(['-', '_'], $replace, $subject);
 }
 
-/** @param array<mixed> $replacements*/
+/** @param  array<mixed>  $replacements*/
 function replace_in_file(string $file, array $replacements): void
 {
     $contents = file_get_contents($file);
@@ -97,7 +97,7 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-/** @param array<mixed> $names */
+/** @param  array<mixed>  $names */
 function remove_composer_deps(array $names)
 {
     $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
@@ -111,7 +111,7 @@ function remove_composer_deps(array $names)
     file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
-function remove_composer_script(mixed $scriptName):void
+function remove_composer_script(mixed $scriptName): void
 {
     $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
 
@@ -135,7 +135,7 @@ function remove_readme_paragraphs(string $file): void
     );
 }
 
-function safeUnlink(string $filename):void
+function safeUnlink(string $filename): void
 {
     if (file_exists($filename) && is_file($filename)) {
         unlink($filename);

@@ -75,7 +75,7 @@ $prechecks = [
 
 <?php
 /** Prechecks */
-function check_memory_limit($required_memory):mixed
+function check_memory_limit($required_memory): mixed
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {
@@ -92,7 +92,7 @@ function check_memory_limit($required_memory):mixed
     return $memory_ok ? 1 : 0;
 }
 
-function check_mod_rewrite():int
+function check_mod_rewrite(): int
 {
     // https://www.webune.com/forums/testing-script-to-test-mod-rewrite.html
     // https://stackoverflow.com/questions/9021425/how-to-check-if-mod-rewrite-is-enabled-in-php
