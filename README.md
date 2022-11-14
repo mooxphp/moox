@@ -127,10 +127,11 @@ If you want to include custom packages you can clone one or more packages as sub
 ### Branching
 
 - ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed live
-- ```test``` is the branch for tests and Scrutinizer, deployed on staging, merged to main
-- ```dev``` active development with tests and code fixing, merged to test
-- ```feature/...``` prefix all other dev-branches, merge to dev
+- ```dev``` active development with tests and code fixing, branch-protected
+- ```feature/...``` please prefix all feature-branches, merge to dev
+- ```develop/...``` please prefix all develop-branches, merge to dev
 
+For example you can use issue-based branches, prefix them with feature/ or develop/ (e.g. feature/38-welcome-view) and get automated tests and code analysis. Your final commit may be "welcome view finished Close #38" to automagically close the corresponding issue.
 
 ### Testing
 
