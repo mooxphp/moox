@@ -13,12 +13,6 @@
         "livewire",
         "tailwindcss"],
     "license": "MIT",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./_custom/calendar_package"
-        }
-    ],
     "require": {
         "php": "^8.0.2",
         "guzzlehttp/guzzle": "^7.2",
@@ -45,8 +39,7 @@
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5",
         "spatie/laravel-ignition": "^1.0",
-        "spatie/laravel-ray": "^1.26",
-        "kimspeer/calendar-package": "dev-main"
+        "spatie/laravel-ray": "^1.26"
     },
     "autoload": {
         "psr-4": {
