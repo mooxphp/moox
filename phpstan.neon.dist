@@ -2,7 +2,7 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 7
+    level: 8
     paths:
         - _components
         - _data
@@ -32,6 +32,7 @@ parameters:
             messages:
                 -   '#Parameter \#1 $view of function view expects view-string|null, string given.#'
                 -   '#^Parameter \#1 \$string of static method Illuminate\\Support\\Str\:\:of\(\) expects string, string\|false given\.$#'
+                -   '#^Cannot access property \$textContent on DOMElement\|null\.$#'
             paths:
                 - _others/tallui-package-builder/*
         -
