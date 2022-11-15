@@ -8,6 +8,7 @@ use Usetall\TalluiAppComponents\TalluiAppComponentsServiceProvider;
 
 class TestCase extends Orchestra
 {
+
     protected function setUp(): void
     {
         parent::setUp();
