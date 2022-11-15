@@ -9,6 +9,7 @@ use Usetall\TalluiWebComponents\Components\BladeComponent;
 
 class FirstBladeComponent extends BladeComponent
 {
+    /** @var array<mixed> */
     protected static $assets = ['example'];
 
     public string $first_var = '';

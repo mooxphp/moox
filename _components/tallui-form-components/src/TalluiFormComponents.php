@@ -6,10 +6,10 @@ namespace Usetall\TalluiFormComponents;
 
 final class TalluiFormComponents
 {
-    /** @var array */
+    /** @var array<mixed> */
     protected static $styles = [];
 
-    /** @var array */
+    /** @var array<mixed> */
     protected static $scripts = [];
 
     public static function addStyle(string $style): void
@@ -19,6 +19,7 @@ final class TalluiFormComponents
         }
     }
 
+    /** @return array<mixed> */
     public static function styles(): array
     {
         return static::$styles;
@@ -42,6 +43,7 @@ final class TalluiFormComponents
         }
     }
 
+    /** @return array<mixed> */
     public static function scripts(): array
     {
         return static::$scripts;
