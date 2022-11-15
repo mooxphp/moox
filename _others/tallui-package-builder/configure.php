@@ -1,6 +1,5 @@
 #!/usr/bin/env php
-<?php declare(strict_types = 1);
-
+<?php declare(strict_types=1);
 
 echo '
                             _    _   ___
@@ -77,7 +76,7 @@ function title_snake(string $subject, string $replace = '_'): string
 /** @param  array<mixed>  $replacements*/
 function replace_in_file(string $file, array $replacements): void
 {
-      $contents = (string) file_get_contents($file);
+    $contents = (string) file_get_contents($file);
 
     file_put_contents(
         $file,
@@ -114,7 +113,6 @@ function remove_composer_deps(array $names): void
 
 function remove_composer_script(mixed $scriptName): void
 {
-
     $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['scripts'] as $name => $script) {
@@ -152,7 +150,7 @@ function determineSeparator(string $path): string
 /** @return array<mixed> */
 function replaceForWindows(): array
 {
-    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string)__FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package VendorName skeleton migration_table_name vendor_name vendor_slug author@domain.com"'));
+    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string) __FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package VendorName skeleton migration_table_name vendor_name vendor_slug author@domain.com"'));
 }
 
 /** @return array<string> */
@@ -178,7 +176,7 @@ $vendorNamespace = str_replace('-', '', ucwords($vendorName));
 $vendorNamespace = ask('Vendor namespace', $vendorNamespace);
 
 $currentDirectory = getcwd();
-$folderName =  basename((string) $currentDirectory);
+$folderName = basename((string) $currentDirectory);
 
 $packageName = ask('Package name', $folderName);
 $packageSlug = slugify($packageName);
