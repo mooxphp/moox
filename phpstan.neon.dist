@@ -2,7 +2,7 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 6
+    level: 7
     paths:
         - _components
         - _data
@@ -32,4 +32,10 @@ parameters:
             message: '#Parameter \#1 $view of function view expects view-string|null, string given.#'
             paths:
                 - _others/tallui-package-builder/*
+        -
+            message: '#^Call to an undefined method Pest\\Expectation\|Pest\\Support\\Extendable\:\:toBe\(\)\.$#'
+            paths:
+                - _components/*/tests/*
+                - _packages/*/tests/*
     tmpDir: build/phpstan
+
