@@ -14,6 +14,9 @@
         <testsuite name="Form-Components-Tests">
             <directory suffix="Test.php">./_components/tallui-form-components/tests</directory>
         </testsuite>
+        <testsuite name="App-Components-Tests">
+            <directory suffix="Test.php">./_components/tallui-app-components/tests</directory>
+        </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
