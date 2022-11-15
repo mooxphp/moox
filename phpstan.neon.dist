@@ -29,20 +29,18 @@ parameters:
         - '_others/tallui-satis/*'
     ignoreErrors:
         -
-            message: '#Parameter \#1 $view of function view expects view-string|null, string given.#'
+            messages:
+                -   '#Parameter \#1 $view of function view expects view-string|null, string given.#'
+                -   '#^Parameter \#1 \$string of static method Illuminate\\Support\\Str\:\:of\(\) expects string, string\|false given\.$#'
             paths:
                 - _others/tallui-package-builder/*
         -
             messages:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
-                -   '#^Parameter \#1 \$string of static method Illuminate\\Support\\Str\:\:of\(\) expects string, string\|false given\.$#'
                 -   '#^Call to an undefined method Pest\\Expectation\|Pest\\Support\\Extendable\:\:toBe\(\)\.$#'
             paths:
                 - _components/*/tests/*
                 - _packages/*/tests/*
-                - _icons/*/tests/*
-                - _data/*/tests/*
-                - _themes/*/*/tests/*
                 - _others/*/tests/*
     tmpDir: build/phpstan
 
