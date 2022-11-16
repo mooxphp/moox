@@ -17,9 +17,9 @@ class DirectoryDigger extends Component
         $this->getPath();
     }
 
-    public function getPath(){
+    public function getPath()
+    {
         $path = (string) base_path()."\_components";
-
     }
 
     /**
