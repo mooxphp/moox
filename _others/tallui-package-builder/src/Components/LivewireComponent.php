@@ -8,8 +8,10 @@ use Livewire\Component;
 
 abstract class LivewireComponent extends Component
 {
+    /** @var array<mixed> */
     protected static $assets = [];
 
+    /** @return array<mixed> */
     public static function assets(): array
     {
         return static::$assets;

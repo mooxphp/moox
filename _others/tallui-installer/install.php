@@ -75,7 +75,7 @@ $prechecks = [
 
 <?php
 /** Prechecks */
-function check_memory_limit($required_memory)
+function check_memory_limit(mixed $required_memory): mixed
 {
     $memory_limit = ini_get('memory_limit');
     if (preg_match('/^(\d+)(.)$/', $memory_limit, $matches)) {
@@ -92,7 +92,7 @@ function check_memory_limit($required_memory)
     return $memory_ok ? 1 : 0;
 }
 
-function check_mod_rewrite()
+function check_mod_rewrite(): int
 {
     // https://www.webune.com/forums/testing-script-to-test-mod-rewrite.html
     // https://stackoverflow.com/questions/9021425/how-to-check-if-mod-rewrite-is-enabled-in-php
@@ -100,14 +100,14 @@ function check_mod_rewrite()
 }
 
 echo '
-<div class="max-w-7xl mx-auto sm:px-2 md:px-6 lg:px-8">
+<div class="mx-auto max-w-7xl sm:px-2 md:px-6 lg:px-8">
 
-<img class="absolute inset-0 h-full w-full object-cover" src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" alt="">
+<img class="absolute inset-0 object-cover w-full h-full" src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80" alt="">
 
 <div class="relative m-5 lg:m-20">
 
     <div class="flex">
-        <img class="h-12 w-auto mt-4 mr-2" src="logo.svg" alt="TALLUI">
+        <img class="w-auto h-12 mt-4 mr-2" src="logo.svg" alt="TALLUI">
         <div>
             <h2 class="mt-6 text-3xl text-gray-700">TALL<b>UI</b> Installer</h2>
             <div class="mt-2 text-gray-600 mb-7">
@@ -125,15 +125,15 @@ echo '
 foreach ($prechecks as $precheck) {
     if ($precheck[3] >= $precheck[2]) {
         echo '
-                <li class="bg-white text-gray-600 shadow overflow-hidden px-2 py-2 rounded-md md:flex md:ml-6 md:mr-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 fill-green-700 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <li class="px-2 py-2 overflow-hidden text-gray-600 bg-white rounded-md shadow md:flex md:ml-6 md:mr-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-1 fill-green-700" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg><b>'.$precheck[1].' passed</b>&nbsp;<br> '.$precheck[4].'
                 </li>';
     } else {
         echo '
-                <li class="bg-white text-gray-600 shadow overflow-hidden px-2 py-2 rounded-md md:flex md:ml-6 md:mr-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 fill-red-700 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <li class="px-2 py-2 overflow-hidden text-gray-600 bg-white rounded-md shadow md:flex md:ml-6 md:mr-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-1 fill-red-700" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                     </svg>
                     <b>'.$precheck[1].' failed!</b>&nbsp; '.$precheck[4].'
