@@ -11,7 +11,7 @@ class DeleteUser implements DeletesUsers
      *
      * @return void
      */
-    public function delete(User $user)
+    public function delete(mixed $user)
     {
         $user->deleteProfilePhoto();
         $user->tokens->each->delete();
