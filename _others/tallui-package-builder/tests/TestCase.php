@@ -72,7 +72,7 @@ class TestCase extends Orchestra
 
             //$document->loadHTML($this->lastRenderedDom);
 
-            $content = $document->getElementById($elementId)->textContent;
+            $content = $document->getElementById((string)$elementId)->textContent;
 
             return json_decode($content, true);
         });
