@@ -25,9 +25,10 @@
     <body class="bg-[#001829] bg-[url('../../public//build/assets/images/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9adc]">
         <head>
             <nav class="flex justify-between m-8">
-                <img class="m-[30px]" src="/build/assets/images/logo.png">
+                <img  src="/build/assets/images/logo.png">
                 <div class="flex items-center text-3xl">
                     <a class="px-4 font-normal" href="/">Home</a>
+                    <a class="px-4 font-normal" href="/packages">Packages</a>
                     <a href="https://github.com/usetall/tallui">
                         <img class="px-4 " src="{{ asset('build/assets/images/icons/git.svg') }} " alt="git">
 
@@ -35,16 +36,16 @@
                 </div>
             </nav>
         </head>
-        <div class="flex flex-col justify-center">
-            <h1 class="m-12 font-sans text-4xl text-center">
-                The <b>UI</b> for Laravel<br>
-                and the <b>TALL</b>-Stack
-            </h1>
-
-            <p class="m-12 text-lg leading-6 text-center">
-                TallUI is currently under active development.<br>
-                Our first components will be available shortly.
-            </p>
+       <div class="flex">
+        <ul>
+            <li class="px-12 text-xl"><a href="/package/app">App</a> </li>
+            <li class="px-12 text-xl"><a href="/package/form">Form</a> </li>
+        </ul>
+        <div class="text-white">
         </div>
+       </div>
+<div>
+    <x-directory-digger></x-directory-digger>
+</div>
     </body>
 </html>
