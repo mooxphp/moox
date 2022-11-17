@@ -1,9 +1,8 @@
 <h1 align="center">
-    <img src="_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
+    <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
-    <img src="_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
-    <br><br>
-</h1>
+    <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+</h1><br><br>
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
