@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/custom', function () {
+    return view('test');
+});
+
 Route::get('/custom/alf', function () {
     return view('custom.custom_alf');
 });
