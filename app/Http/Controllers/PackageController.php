@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class PackageController extends Controller
 {
-    function welcome(){
+    public function welcome()
+    {
         return view('welcome');
     }
 
-    function packagesOverview(){
-
-
+    public function packagesOverview()
+    {
         return view('packageOverview');
     }
 
-    function package($packageName){
+    public function package($packageName)
+    {
         $content = Storage::get('/storage/_components/tallui-dev-components/README.md');
         dd($content);
-        return view('packageOverview',['packageName'=>$packageName]);
+
+        return view('packageOverview', ['packageName' => $packageName]);
     }
 }
