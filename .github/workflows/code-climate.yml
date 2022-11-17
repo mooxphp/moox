@@ -1,0 +1,64 @@
+name: build
+on:
+  push:
+    branches:
+      - main
+      - dev
+    tags:
+      - '!*' # Do not execute on tags
+    paths:
+      - src/*
+      - test/*
+      - '*.php'
+      - '*.json'
+  pull_request:
+    paths:
+      - '!*.MD'
+jobs:
+  test:
+    env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+        APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.1]
+        laravel: [9.*]
+        stability: [prefer-stable]
+        include:
+          - laravel: 9.*
+            testbench: 7.*
+
+    name: Checkout
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
+          coverage: pcov
+
+      - name: Setup problem matchers
+        run: |
+          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Install dependencies
+        run: |
+          rm composer.json
+          mv composer-tests.json composer.json
+          composer update
+
+      - name: Coverage
+        uses: paambaati/codeclimate-action@v2.2.4
+        env:
+          CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
+        with:
+          coverageCommand: vendor/bin/pest --coverage-clover clover.xml
