@@ -14,10 +14,10 @@ class UpdateUserPassword implements UpdatesUserPasswords
      * Validate and update the user's password.
      *
      * @param  mixed  $user
-     * @param  array  $input
+     * @param  array<mixed>  $input
      * @return void
      */
-    public function update($user, array $input)
+    public function update($user, array $input): void
     {
         Validator::make($input, [
             'current_password' => ['required', 'string'],
@@ -29,7 +29,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
         })->validateWithBag('updatePassword');
 
         $user->forceFill([
-            'password' => Hash::make($input['password']),
+            'password' => Hash::make((string) $input['password']),
         ])->save();
     }
 }
