@@ -182,6 +182,20 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/kimspeer">
+            <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="kimspeer"/>
+            <br />
+            <sub><b>kimspeer</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/azizovic12">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
+            <br />
+            <sub><b>azizovic12</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/weblate">
             <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
             <br />
@@ -194,22 +208,15 @@ TallUI is made by these nice people, and bots ...
             <br />
             <sub><b>wp1111</b></sub>
         </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/azizovic12">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
-            <br />
-            <sub><b>azizovic12</b></sub>
-        </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/KimSpeer">
             <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
             <br />
             <sub><b>KimSpeer</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/laravel-shift">
             <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
@@ -244,7 +251,8 @@ TallUI is made by these nice people, and bots ...
             <br />
             <sub><b>github-actions[bot]</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/dependabot[bot]">
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
