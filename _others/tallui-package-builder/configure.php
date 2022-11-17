@@ -1,5 +1,5 @@
 #!/usr/bin/env php
-<?php
+<?php declare(strict_types=1);
 
 echo '
                             _    _   ___
@@ -60,7 +60,7 @@ function str_after(string $subject, string $search): string
 
 function slugify(string $subject): string
 {
-    return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $subject), '-'));
+    return strtolower(trim((string) preg_replace('/[^A-Za-z0-9-]+/', '-', $subject), '-'));
 }
 
 function title_case(string $subject): string
@@ -76,7 +76,7 @@ function title_snake(string $subject, string $replace = '_'): string
 /** @param  array<mixed>  $replacements*/
 function replace_in_file(string $file, array $replacements): void
 {
-    $contents = file_get_contents($file);
+    $contents = (string) file_get_contents($file);
 
     file_put_contents(
         $file,
@@ -100,7 +100,7 @@ function remove_prefix(string $prefix, string $content): string
 /** @param  array<mixed>  $names */
 function remove_composer_deps(array $names): void
 {
-    $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
+    $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['require-dev'] as $name => $version) {
         if (in_array($name, $names, true)) {
@@ -113,7 +113,7 @@ function remove_composer_deps(array $names): void
 
 function remove_composer_script(mixed $scriptName): void
 {
-    $data = json_decode(file_get_contents(__DIR__.'/composer.json'), true);
+    $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['scripts'] as $name => $script) {
         if ($scriptName === $name) {
@@ -127,7 +127,7 @@ function remove_composer_script(mixed $scriptName): void
 
 function remove_readme_paragraphs(string $file): void
 {
-    $contents = file_get_contents($file);
+    $contents = (string) file_get_contents($file);
 
     file_put_contents(
         $file,
@@ -150,7 +150,7 @@ function determineSeparator(string $path): string
 /** @return array<mixed> */
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package VendorName skeleton migration_table_name vendor_name vendor_slug author@domain.com"'));
+    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string) __FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package VendorName skeleton migration_table_name vendor_name vendor_slug author@domain.com"'));
 }
 
 /** @return array<string> */
@@ -176,7 +176,7 @@ $vendorNamespace = str_replace('-', '', ucwords($vendorName));
 $vendorNamespace = ask('Vendor namespace', $vendorNamespace);
 
 $currentDirectory = getcwd();
-$folderName = basename($currentDirectory);
+$folderName = basename((string) $currentDirectory);
 
 $packageName = ask('Package name', $folderName);
 $packageSlug = slugify($packageName);
