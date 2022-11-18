@@ -10,14 +10,8 @@
         <link href="https://fonts.bunny.net/css?family=exo-2:400,600,800" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-        <style>
-            body {
-                font-family: 'Exo 2', sans-serif;
-            }
-        </style>
     </head>
-    <body class="bg-[#001829] bg-[url('./img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9adc]">
+    <body class="bg-[#001829] bg-[url('/public/img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9bdc]">
         <head>
             <nav class="flex justify-between m-8">
                 <img  src="img/logo.png">
@@ -41,6 +35,13 @@
                 Welcome to the TallUI Monorepo.<br>
                 Have a nice dev day today!
             </p>
+
+            <div class="flex justify-center">
+                <a href="/custom/alf" class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded">ADR</a>
+                <a href="/custom/reinhold" class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded">RJE</a>
+                <a href="/custom/kim" class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded">KSP</a>
+
+            </div>
         </div>
     </body>
 </html>

@@ -13,7 +13,7 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Exo 2"', ...defaultTheme.fontFamily.sans],
+                sans: ['sans', ...defaultTheme.fontFamily.sans],
             },
         },
     },
