@@ -18,18 +18,9 @@ Route::get('/', function () {
 });
 
 Route::get('/custom', function () {
-    return view('test');
+    return view('custom.custom');
 });
 
-Route::get('/custom/alf', function () {
-    return view('custom.custom_alf');
-});
-Route::get('/custom/kim', function () {
-    return view('custom.custom_kim');
-});
-Route::get('/custom/reinhold', function () {
-    return view('custom.custom_reinhold');
-});
 
 Route::middleware([
     'auth:sanctum',

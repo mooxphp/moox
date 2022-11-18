@@ -1,21 +1,40 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html>
     <head>
+        <title>TallUI is coming soon</title>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=exo-2:400,600,800" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            body {
+                font-family: 'Exo 2', sans-serif;
+            }
+        </style>
     </head>
-    <body>
-        <div class="font-sans antialiased text-gray-900">
-            {{ $slot }}
+    <body class="bg-[#001829] bg-[url('./img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9adc]">
+        <head>
+            <nav class="flex justify-between m-8">
+                <img  src="/img/logo.png">
+                <div class="flex items-center text-3xl">
+                    <a class="px-4 text-lg" href="/">Home</a>
+                    <a class="px-4 text-lg" href="/">Packages</a>
+                    <a class="px-4 text-lg" href="/">Components</a>
+                    <a href="https://github.com/usetall/tallui">
+                        <img class="h-8 px-4" src="{{ asset('./img/octocat.png') }} " alt="git">
+                    </a>
+                </div>
+            </nav>
+        </head>
+        <div class="flex flex-col justify-center">
+
+            @yield('content')
+
         </div>
     </body>
 </html>
