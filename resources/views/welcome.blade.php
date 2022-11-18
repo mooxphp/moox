@@ -22,10 +22,11 @@
             <nav class="flex justify-between m-8">
                 <img  src="img/logo.png">
                 <div class="flex items-center text-3xl">
-                    <a class="px-4 font-normal" href="/">Home</a>
+                    <a class="px-4 text-lg" href="/">Home</a>
+                    <a class="px-4 text-lg" href="/">Packages</a>
+                    <a class="px-4 text-lg" href="/">Components</a>
                     <a href="https://github.com/usetall/tallui">
                         <img class="h-8 px-4" src="{{ asset('img/octocat.png') }} " alt="git">
-
                     </a>
                 </div>
             </nav>
@@ -37,8 +38,8 @@
             </h1>
 
             <p class="m-12 text-lg leading-6 text-center">
-                TallUI is currently under active development.<br>
-                Our first components will be available shortly.
+                Welcome to the TallUI Monorepo.<br>
+                Have a nice dev day today!
             </p>
         </div>
     </body>
