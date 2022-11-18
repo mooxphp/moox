@@ -17,8 +17,9 @@
             }
         </style>
     </head>
-    <body class="bg-[#001829] bg-[url('./img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9adc]">
+    <body class="bg-[#001829] bg-[url('/public/img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9adc]">
         <head>
+            {{base_path()}}
             <nav class="flex justify-between m-8">
                 <img  src="img/logo.png">
                 <div class="flex items-center text-3xl">
