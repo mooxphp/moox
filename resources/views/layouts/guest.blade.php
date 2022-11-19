@@ -10,31 +10,30 @@
         <link href="https://fonts.bunny.net/css?family=exo-2:400,600,800" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-        <style>
-            body {
-                font-family: 'Exo 2', sans-serif;
-            }
-        </style>
     </head>
-    <body class="bg-[#001829] bg-[url('./img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9adc]">
-        <head>
+    <body class="bg-[#001829] bg-[url('/public/img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9bdc]">
+        <header>
             <nav class="flex justify-between m-8">
-                <img  src="/img/logo.png">
+                <img  src="img/logo.png">
                 <div class="flex items-center text-3xl">
-                    <a class="px-4 text-lg" href="/">Home</a>
-                    <a class="px-4 text-lg" href="/">Packages</a>
-                    <a class="px-4 text-lg" href="/">Components</a>
-                    <a href="https://github.com/usetall/tallui">
-                        <img class="h-8 px-4" src="{{ asset('./img/octocat.png') }} " alt="git">
+                    <a class="px-4 text-lg hover:text-[#69bce2]" href="/">Home</a>
+                    <a class="px-4 text-lg hover:text-[#69bce2]" href="/packages">Packages</a>
+                    <a class="px-4 text-lg hover:text-[#69bce2]" href="/components">Components</a>
+                    <a class="px-4 text-lg hover:text-[#69bce2]" href="/custom">Custom</a>
+                    <a class="px-4 text-lg hover:text-[#69bce2]" href="/dashboard">Admin</a>
+                    <a class="has-tooltip" href="https://github.com/usetall/tallui">
+                        <img class="h-8 px-4" style="filter: drop-shadow(0px 3px 3px #0C9ADC);" src="{{ asset('img/octocat.png') }} " alt="Code on GitHub">
+                        <span class='text-xs ml-3 tooltip p-1 rounded bg-sky-900'>GitHub</span>
                     </a>
                 </div>
             </nav>
-        </head>
-        <div class="flex flex-col justify-center">
+        </header>
+
+        <div id="content" class="mb-10">
 
             @yield('content')
 
         </div>
+
     </body>
 </html>
