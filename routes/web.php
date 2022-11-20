@@ -36,9 +36,9 @@ Route::middleware([
 
 $custom_parts = explode(', ', env('TUI_CUSTOM_DEVELOPER'));
 if (is_array($custom_parts)) {
-    foreach($custom_parts as $custom_part) {
-        $custom_view = 'custom.' . $custom_part;
-        $custom_route = 'custom/' . $custom_part;
+    foreach ($custom_parts as $custom_part) {
+        $custom_view = 'custom.'.$custom_part;
+        $custom_route = 'custom/'.$custom_part;
         if (view()->exists($custom_view)) {
             Route::view($custom_route, $custom_view);
         }
@@ -47,9 +47,10 @@ if (is_array($custom_parts)) {
 
 $custom_parts = explode(', ', env('TUI_CUSTOM_PROJECTS'));
 if (is_array($custom_parts)) {
-    foreach($custom_parts as $custom_part) {
-        $tui_routes = base_path('routes/custom_' . $custom_part . '.php');
-        if(file_exists($tui_routes)) {
+    foreach ($custom_parts as $custom_part) {
+        $tui_routes = base_path('routes/custom_'.$custom_part.'.php');
+        dd($tui_routes);
+        if (file_exists($tui_routes)) {
             include $tui_routes;
             // will most probably not work here, but in serviceprovider
             // Route::prefix('admin')
@@ -57,4 +58,3 @@ if (is_array($custom_parts)) {
         }
     }
 }
-
