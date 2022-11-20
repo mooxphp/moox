@@ -11,7 +11,34 @@
         "components",
         "tall-stack",
         "livewire",
-        "tailwindcss"],
+        "tailwindcss"
+    ],
+    "repositories": [
+            {
+                "type": "path",
+                "url": "./_packages/tallui-core"
+            },
+            {
+                "type": "path",
+                "url": "./_components/tallui-web-components"
+            },
+            {
+                "type": "path",
+                "url": "./_components/tallui-form-components"
+            },
+            {
+                "type": "path",
+                "url": "./_components/tallui-app-components"
+            },
+            {
+                "type": "path",
+                "url": "./_components/tallui-dev-components"
+            },
+            {
+                "type": "path",
+                "url": "./_icons/tallui-web-icons"
+            }
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
@@ -21,7 +48,11 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",
-        "wikimedia/composer-merge-plugin": "^2.0"
+        "wikimedia/composer-merge-plugin": "^2.0",
+        "usetall/tallui-core": "*",
+        "usetall/tallui-form-components": "*",
+        "usetall/tallui-web-components": "*",
+        "usetall/tallui-web-icons": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

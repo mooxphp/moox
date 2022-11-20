@@ -4,6 +4,9 @@ APP_KEY=base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
 APP_DEBUG=true
 APP_URL=http://localhost
 
+TUI_CUSTOM_DEVELOPER="alf, kim, reinhold"
+TUI_CUSTOM_PROJECTS="heco, meinsolarstrom"
+
 LOG_CHANNEL=stack
 LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=debug

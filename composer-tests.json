@@ -11,7 +11,8 @@
         "components",
         "tall-stack",
         "livewire",
-        "tailwindcss"],
+        "tailwindcss"
+    ],
     "license": "MIT",
     "repositories": [
         {

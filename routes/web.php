@@ -1,18 +1,12 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-
 /*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| PLEASE INCLUDE ONLY ROUTES, EVERY DEVELOPER (AS WELL AS PHP-STAN)
+| CAN USE. DO NOT INCLUDE CUSTOM ROUTES HERE, USE THE CUSTOM FEATURE!
 |
 */
+
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,17 +34,29 @@ Route::middleware([
     })->name('dashboard');
 });
 
-// use .env to create custom(s) - https://laracasts.com/discuss/channels/1/return-array-from-env?
-// loop through customs to create routes
-// loop in views to create buttons
-// Conditional views, passing CI?
-
-$custom_parts = ['alf', 'kim', 'reinhold'];
-
-foreach($custom_parts as $custom_part) {
-    $custom_view = 'custom.' . $custom_part;
-    $custom_route = 'custom/' . $custom_part;
-    if (view()->exists($custom_view)) {
-        Route::view($custom_route, $custom_view);
+$custom_parts = explode(', ', env('TUI_CUSTOM_DEVELOPER'));
+if (is_array($custom_parts)) {
+    foreach($custom_parts as $custom_part) {
+        $custom_view = 'custom.' . $custom_part;
+        $custom_route = 'custom/' . $custom_part;
+        if (view()->exists($custom_view)) {
+            Route::view($custom_route, $custom_view);
+        }
     }
 }
+
+$custom_parts = explode(', ', env('TUI_CUSTOM_PROJECTS'));
+if (is_array($custom_parts)) {
+    foreach($custom_parts as $custom_part) {
+        $tui_routes = base_path('routes/custom_' . $custom_part . '.php');
+        dd($tui_routes);
+        if(file_exists($tui_routes)) {
+            include $tui_routes;
+            // will most probably not work here, but in serviceprovider
+            // Route::prefix('admin')
+            // ->group($tui_routes);
+        }
+
+    }
+}
+
