@@ -49,7 +49,6 @@ $custom_parts = explode(', ', env('TUI_CUSTOM_PROJECTS'));
 if (is_array($custom_parts)) {
     foreach($custom_parts as $custom_part) {
         $tui_routes = base_path('routes/custom_' . $custom_part . '.php');
-        dd($tui_routes);
         if(file_exists($tui_routes)) {
             include $tui_routes;
             // will most probably not work here, but in serviceprovider
