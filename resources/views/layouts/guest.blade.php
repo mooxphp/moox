@@ -11,10 +11,10 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-[#001829] bg-[url('/public/img/bg.jpg')] bg-no-repeat bg-right-top text-[#0e9bdc]">
+    <body class="bg-[#001829] bg-no-repeat bg-right-top text-[#0e9bdc]" style="background-image: url('{{ asset('img/bg.jpg') }}')">
         <header>
             <nav class="flex justify-between m-8">
-                <img  src="img/logo.png">
+                <img  src="{{ asset('img/logo.png') }}">
                 <div class="flex items-center text-3xl">
                     <a class="px-4 text-lg hover:text-[#69bce2]" href="/">Home</a>
                     <a class="px-4 text-lg hover:text-[#69bce2]" href="/packages">Packages</a>
