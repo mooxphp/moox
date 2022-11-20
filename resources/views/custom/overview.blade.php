@@ -13,7 +13,19 @@
             Have a nice dev today!
         </p>
 
-        <div class="m-5 flex justify-center">
+        <div class="flex justify-center m-5">
+
+        @if(view()->exists('custom.kim'))
+
+            <a href="custom/kim" class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded">Kim</a>
+
+        @endif
+
+        @if(view()->exists('custom.reinhold'))
+
+            <a href="custom/reinhold" class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded">Reinhold</a>
+
+        @endif
 
         @if(view()->exists('custom.alf'))
 
