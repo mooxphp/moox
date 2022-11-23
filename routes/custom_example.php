@@ -12,5 +12,5 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/yourproject', function () {
-    echo "I love coding!";
+    echo 'I love coding!';
 });
