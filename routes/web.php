@@ -34,7 +34,7 @@ Route::middleware([
     })->name('dashboard');
 });
 
-$custom_parts = explode(', ', env('TUI_CUSTOM_DEVELOPER'));
+$custom_parts = explode(', ', config('tallui.custom_views'));
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
         $custom_view = 'custom.'.$custom_part;
@@ -45,15 +45,12 @@ if (is_array($custom_parts)) {
     }
 }
 
-$custom_parts = explode(', ', env('TUI_CUSTOM_PROJECTS'));
+$custom_parts = explode(', ', config('tallui.custom_routes'));
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
         $tui_routes = base_path('routes/custom_'.$custom_part.'.php');
         if (file_exists($tui_routes)) {
             include $tui_routes;
-            // will most probably not work here, but in serviceprovider
-            // Route::prefix('admin')
-            // ->group($tui_routes);
         }
     }
 }

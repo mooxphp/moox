@@ -47,4 +47,6 @@ Homestead.yaml
 /_custom/*
 !/_custom/composer.json-example
 !/_custom/README.md
+!/_custom/publish.sh
 /routes/custom_*.php
+!/routes/custom_example.php

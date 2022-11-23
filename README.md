@@ -90,28 +90,12 @@ rm -Rf vendor/usetall
 
 ### Custom packages
 
-As you might want to develop with a custom set of TallUI packages or require your own packages, we included a second composer.json. This composer-file requires all TallUI packages and can be easily edited or extended without overwriting the main composer.json.
+Our Monorepo is prepared to be a double agent:
 
-```bash
-cd _custom
-cp composer.json-example composer.json
-```
+- Develop a private or public project
+- while contributing to the TallUI project
 
-To customize the set of TallUI packages, simply delete the packages you don't want to load from the require-section, ```composer update``` afterwards.
-
-If you want to include custom packages you can clone one or more packages as subrepos into _custom and add them to _custom/composer.json like so:
-
-```json
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./_custom/package"
-        }
-    ],
-    "require": {
-        "custom/package": "dev-main"
-    },
-```
+This is done by supporting custom packages in the development app of our Monorepo. Sounds interesting? Read on [_custom/README.md](_custom/README.md).
 
 
 ### Development
@@ -131,6 +115,7 @@ If you want to include custom packages you can clone one or more packages as sub
 - ```develop/...``` please prefix all develop-branches, merge to dev
 
 For example you can use issue-based branches, prefix them with feature/ or develop/ (e.g. feature/38-welcome-view) and get automated tests and code analysis. Your final commit may be "welcome view finished Close #38" to automagically close the corresponding issue.
+
 
 ### Testing
 
@@ -153,12 +138,14 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 - Coverage: ```composer test-coverage ``` or ```./vendor/bin/pest --coverage```, for packages ```../../vendor/bin/pest --coverage```
 - Pint: ```composer format ``` or ```./vendor/bin/pint```, for packages ```../../vendor/bin/pint```
 
+
 ### Translation
 
 TallUI is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./docs/translation/README.md).
 
 <a href="https://hosted.weblate.org/engage/tallui/">
 <img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" /></a>
+
 
 ### Contributors
 
