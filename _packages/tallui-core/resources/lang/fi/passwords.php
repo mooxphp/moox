@@ -1,4 +1,5 @@
 <?php
+
 return [
     'reset' => 'Salasanasi on palautettu!',
     'sent' => 'Palautuslinkki lähetetty sähköpostitse!',

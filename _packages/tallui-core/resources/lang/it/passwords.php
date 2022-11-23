@@ -1,4 +1,5 @@
 <?php
+
 return [
     'reset' => 'La password è stata reimpostata!',
     'sent' => 'Ti abbiamo inviato per e-mail il collegamento per la reimpostazione della password!',
