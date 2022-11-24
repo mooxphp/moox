@@ -1,3 +1,37 @@
+# Coding docs
+
+-	Declare(strict_types=1);
+-	Kein Docblock zur Typisierung von Variablen
+-	Bsp:  
+public string $first_var = '';
+protected static $assets = ['example'];
+
+
+Errors and Solutions
+Level 6
+Property
+return type has no value type specified in iterable type array.
+=> /** @var array<mixed> */ or something */
+Methode
+return type has no value type specified in iterable type array.
+=>   /** @return array<mixed> */
+has parameter with no value type specified in iterable type array.
+=>  /* @param array<mixed> $assets/
+ has no return type specified.
+=>:void, :bool, :int, :string etc.
+Function
+ has parameter with no type specified.
+=> sting, int, bool, array...
+Level 7
+Methode
+Call to an undefined method Pest\Expectation|Pest\Support\Extendable::toBeTrue().
+Parameter
+Parameter #3 $subject of function str_replace expects array|string, string|false given.
+=> (string)
+https://phpstan.org/user-guide/ignoring-errors#generate-an-ignoreerrors-entry
+=> Links to generate errors
+
+
 # Icons
 
 - https://github.com/MohmmedAshraf/blade-flags
