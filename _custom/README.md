@@ -29,9 +29,9 @@ Do a ```composer update``` afterwards.
 
 ## Custom views and routes
 
-Then you can use following environment variables to create custom views and custom routes without touching existing blade views or routes/web.php:
+Then you can use following environment variables in .env to create custom views and custom routes without touching existing blade views or routes/web.php:
 
-```
+```shell
 CUSTOM_VIEWS="one, two"
 CUSTOM_ROUTES="one, two"
 ```
