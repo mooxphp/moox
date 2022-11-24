@@ -9,7 +9,7 @@
 
             <p class="m-12 leading-6 text-center">
                 TallUI is currently under active development.<br>
-                Our first components will be available shortly.
+                Our first packages will be available shortly.
             </p>
 
 @stop
