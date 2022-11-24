@@ -10,7 +10,6 @@
         }
     ],
     "require": {
-        "laravel/jetstream": "^2.12",
         "custom/package": "dev-main"
     },
     "minimum-stability": "dev",

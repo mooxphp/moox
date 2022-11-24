@@ -71,8 +71,3 @@ to copy all
 ## Reminder
 
 Don't forget .env
-
-
-## Todo
-
-```/resources/views/custom.blade.php``` - this file automagically creates buttons for every custom view you create.
