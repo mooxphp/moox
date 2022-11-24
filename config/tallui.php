@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'custom_views' => explode(",", env('CUSTOM_VIEWS')),
+    'custom_views' => explode(',', env('CUSTOM_VIEWS')),
     'custom_routes' => env('CUSTOM_ROUTES'),
 
 ];
