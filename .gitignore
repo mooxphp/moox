@@ -41,7 +41,13 @@ Homestead.yaml
 /.idea
 /.vscode
 
-# TallUI Monorepo _custom feature
+# TallUI Custom
+/resources/views/custom/*
+!/resources/views/custom/overview.blade.php
+!/resources/views/custom/example.blade.php
 /_custom/*
 !/_custom/composer.json-example
 !/_custom/README.md
+!/_custom/publish.sh
+/routes/custom_*.php
+!/routes/custom_example.php
