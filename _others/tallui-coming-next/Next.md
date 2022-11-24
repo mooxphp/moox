@@ -1,32 +1,77 @@
+# Icons
+
+- https://github.com/MohmmedAshraf/blade-flags
+
+
+# Website contents
+
+Some ideas to get our website up and running:
+
+## Startpage
+
+Short desc
+
+### Features
+
+- Developer-friendly
+- SEO optimized
+- Quality tested
+- more to come
+
+### TallUI in raw numbers
+
+#### What's in the box
+
+- Laravel packages
+- Blade components
+- Livewire components
+- Laravel themes
+- Admin themes
+- Blade icons
+- Languages
+
+#### Development
+
+- Contributors
+- Translators
+- Commits
+- Pest tests
+- Closed issues
+- PRs merged
+
+#### Todo
+
+- Open issues
+- Planned packages
+- Open translations
+
+### Contribute and sponsor
+
+How to contribute and help to translate...
+
+### Thanks to
+
+Sponsors, Stack (and other as comma-list), Friends, Contributors
+
+
 # Auth
 
-Username or Mail
+- Username or Mail
+- Passwort
+- TOTP (Time-based One-Time-Password) / Token - 2-FA or MFA
+- Login Link / Magic Link / Passwordless Login
+- Password Quality features
+- Password expiration
+- Lock after XX tries (IP / User)
+- Oauth and auth provider
+- Risk, see https://www.onelogin.com/learn/what-is-mfa
+- Questions, Birth date ...
+- Captcha ... hmm
+- https://www.gartner.com/reviews/market/access-management
+- Certificate, see https://www.elster.de/eportal/login/softpse
+- Blacklist und Risk-Score ...
+- https://stackoverflow.blog/2022/11/16/biometric-authentication-for-web-devs/
 
-Passwort
-
-TOTP (Time-based One-Time-Password) / Token - 2-FA or MFA
-
-Login Link / Magic Link / Passwordless Login
-
-Password Quality features
-
-Password expiration
-
-Lock after XX tries (IP / User)
-
-Oauth and auth provider
-
-Risk, see https://www.onelogin.com/learn/what-is-mfa
-
-Questions, Birth date ...
-
-Captcha ... hmm
-
-https://www.gartner.com/reviews/market/access-management
-
-Certificate, see https://www.elster.de/eportal/login/softpse
-
-Blacklist und Risk-Score ...
 
 ## Trusted Devices
 
@@ -42,7 +87,28 @@ Blacklist und Risk-Score ...
 
 ## Translate your Open Source project
 
+Localization for TallUI and Laravel packages
+
 This is the starting post of our blog series about internationalization (I18n), localization (l10n) or translation of Open Source projects, specially Laravel packages. We include every part of translation issues, from building a language switcher to automatization with Git. Let's start.
+
+In Laravel there are two ways to localize packages: PHP-files or JSON-files, see https://laravel.com/docs/9.x/localization. Both have their advantages.
+
+- PHP-files is the older approach. It is therefore used in most Laravel packages and projects. You'll have to invent a string name for each translation, but you can easily avoid collisions with similar translation strings. So the PHP variant is more consistent.
+- JSON-files in Laravel are newer. As the source language string is directly used in the source code, this variant reads better. But you can't avoid collisions in similar languages. This is particularly problematic when dialects (such as German/Switzerland or Spanish/Mexico) are used.
+
+Most of the translation platforms support PHP-files, only a few support pluralization. Before deciding which way to go, I may be a good idea to decide which platform to use.
+
+- Weblate - see 
+- Crowdin - see 
+- Lokalise - see https://lokalise.com/blog/laravel-localization-step-by-step/
+- Phrase - see https://phrase.com/blog/posts/laravel-i18n-frontend-best-practices/
+
+Free for open source projects ...
+
+Tanslating a Laravel package with Crowdin
+
+Package builder includes crowdin.yml
+
 
 - Decide which languages - Europe, Most popular, Laravel core languages, WordPress languages, All languages (depends on where you are and where your target users are)
   - https://www.loc.gov/standards/iso639-2/php/langcodes-search.php to search language codes
@@ -81,4 +147,13 @@ This is the starting post of our blog series about internationalization (I18n), 
   - Depends on your needs for Internationalization or just Translation ... first one means to really divide into countries and languages ... second one means only languages ... a third one may be only countries but that is only useful, if you have a few countries in mind, otherwise you may confuse
   - Layouts and a common icon for languages or countries
   - Using the native name (endonym) or translation (exonym) - see https://en.wikipedia.org/wiki/Endonym_and_exonym and https://omniglot.com/language/names.htm
+
+
+## Code Quality for Open Source projects
+
+
+## Monorepo
+
+
+## Using package builder for your next Laravel package
 
