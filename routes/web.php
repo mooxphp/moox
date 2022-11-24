@@ -34,7 +34,7 @@ Route::middleware([
     })->name('dashboard');
 });
 
-$custom_parts = explode(', ', config('tallui.custom_views'));
+$custom_parts = config('tallui.custom_views');
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
         $custom_view = 'custom.'.$custom_part;
