@@ -1,15 +1,17 @@
 @font-face {
-    font-family: "Exo 2", sans-serif;
+    font-family: 'Exo 2';
     font-style: normal;
     font-weight: 400;
-    src: local(""), url("./fonts/exo-2-v20-latin-regular.woff") format("woff");
+    src: local('Exo 2'),
+        url('./fonts/exo-2-v20-latin-regular.woff') format('woff');
 }
 
 @font-face {
-    font-family: "Exo 2", sans-serif;
+    font-family: 'Exo 2';
     font-style: normal;
     font-weight: 800;
-    src: local(""), url("./fonts/exo-2-v20-latin-800.woff") format("woff");
+    src: local('Exo 2'),
+        url('./fonts/exo-2-v20-latin-800.woff') format('woff');
 }
 
 body {

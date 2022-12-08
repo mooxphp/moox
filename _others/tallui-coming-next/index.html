@@ -4,8 +4,10 @@
         <title>TallUI is coming soon</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
+        <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
-    <body>
+    <body x-data>
 
         <img class="logo" src="./img/logo.png" alt="The TallUI Logo">
 
@@ -51,10 +53,12 @@
                 and help from friendly companies
             </h2>
 
-            <div class="friends">
-                <a href="https://www.github.com"><img src="./img/friends/github.png" alt="Github Logo"></a>
-                <a href="https://www.codacy.com"><img src="./img/friends/codacy.svg" alt="Codacy Logo"></a>
-                <a href="https://www.weblate.org"><img src="./img/friends/weblate.png" alt="Weblate Logo"></a>
+            <div class="friends" x-data="{ shown: false }" x-intersect="shown = true">
+                <div x-show="shown" x-transition>
+                    <a href="https://www.github.com"><img src="./img/friends/github.png" alt="Github Logo"></a>
+                    <a href="https://www.codacy.com"><img src="./img/friends/codacy.svg" alt="Codacy Logo"></a>
+                    <a href="https://www.weblate.org"><img src="./img/friends/weblate.png" alt="Weblate Logo"></a>
+                </div>
             </div>
 
         </div>
