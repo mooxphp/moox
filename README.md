@@ -109,12 +109,45 @@ This is done by supporting custom packages in the development app of our Monorep
 
 ### Branching
 
-- ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed live
-- ```dev``` active development with tests and code fixing, branch-protected
-- ```feature/...``` please prefix all feature-branches, merge to dev
-- ```develop/...``` please prefix all develop-branches, merge to dev
+- ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed to dev
+- ```feature/...``` please prefix all feature-branches, create your pull requests directly to main
 
-For example you can use issue-based branches, prefix them with feature/ or develop/ (e.g. feature/38-welcome-view) and get automated tests and code analysis. Your final commit may be "welcome view finished Close #38" to automagically close the corresponding issue.
+Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-view) for automated tests and code analysis. 
+
+### Commits
+
+Your commit messages will be merged into Changelog.md, means they become part of the documentation. Please make sure, you
+
+- start with the package, e. g. "Core: feature xy ..."
+- for multiple packages "All: Update all packages ..."
+- reference an issue, linked by issue number, e. g. #138
+- indicate you are not finished work, using "w-i-p"
+- prepare auto-closing the issue by using "Close #138"
+
+valid examples
+
+- Core: Feature register assets w-i-p #123
+- All: Update all packages Close #321
+- Monorepo: Update dev app Close #22
+- Dependencies: Minor Updates
+- Package Builder: Blade and Livewire components w-i-p #23
+
+### Pull requests
+
+... more to come ...
+
+
+### Semver
+
+We use semantic versioning, written like 1.2.3 for
+
+1. Major releases
+2. Minor releases
+3. Bugfix releases
+
+### Releases
+
+Currently done manually, an automatic release feature is on the way.
 
 
 ### Testing
