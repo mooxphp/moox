@@ -134,7 +134,7 @@ valid examples
 
 ### Pull requests
 
-... more to come ...
+Create a PR to `main`.
 
 
 ### Semver
@@ -144,6 +144,7 @@ We use semantic versioning, written like 1.2.3 for
 1. Major releases
 2. Minor releases
 3. Bugfix releases
+
 
 ### Releases
 
