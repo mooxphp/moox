@@ -39,14 +39,15 @@ CUSTOM_ROUTES="one, two"
 The last step is to 
 
 ```bash
-cd /resources/views/custom/
+cd resources/views/custom/
 cp example.blade.php one.blade.php
 ```
 
 and / or
 
 ```bash
-cp /routes/custom_example.php /routes/custom_two.php
+cd routes
+cp custom_example.php custom_two.php
 ```
 
 and use them as custom views or custom routes. You may route into the gitignored subfolders of ```/resources/views/custom``` or your custom package.
