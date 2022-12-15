@@ -6,8 +6,7 @@ To develop your own packages, public or private, while contributing to TAllUI, w
 ## Custom composer.json
 
 ```bash
-cd _custom
-cp composer.json-example composer.json
+cp _custom/composer.json-example _custom/composer.json
 ```
 
 If you want to include custom packages you can clone one or more packages as subrepos into _custom and add them to _custom/composer.json like so:
@@ -39,15 +38,13 @@ CUSTOM_ROUTES="one, two"
 The last step is to 
 
 ```bash
-cd resources/views/custom/
-cp example.blade.php one.blade.php
+cp resources/views/custom/example.blade.php resources/views/custom/one.blade.php
 ```
 
 and / or
 
 ```bash
-cd routes
-cp custom_example.php custom_two.php
+cp routes/custom_example.php routes/custom_two.php
 ```
 
 and use them as custom views or custom routes. You may route into the gitignored subfolders of ```/resources/views/custom``` or your custom package.
