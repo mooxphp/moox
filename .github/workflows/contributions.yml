@@ -3,7 +3,7 @@ name: Contributions
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
     contrib-readme-job:
