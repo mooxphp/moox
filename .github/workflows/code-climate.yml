@@ -1,4 +1,4 @@
-name: build
+name: Code Climate
 on:
   push:
     branches:
