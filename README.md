@@ -6,13 +6,13 @@
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
-        <img alt="PEST Tests" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pest?label=PestPHP">
+        <img alt="PEST Tests" src="https://github.com/usetall/tallui/actions/workflows/pest.yml/badge.svg">
     </a>
     <a href="https://github.com/usetall/tallui/actions/workflows/pint.yml">
-        <img alt="Laravel PINT PHP Code Style" src="https://img.shields.io/github/workflow/status/usetall/tallui/Pint?label=Laravel Pint">
+        <img alt="Laravel PINT PHP Code Style" src="https://github.com/usetall/tallui/actions/workflows/pint.yml/badge.svg">
     </a>
     <a href="https://github.com/usetall/tallui/actions/workflows/phpstan.yml">
-        <img alt="PHPStan Level 5" src="https://img.shields.io/github/workflow/status/usetall/tallui/PHPStan?label=PHPStan">
+        <img alt="PHPStan Level 5" src="https://github.com/usetall/tallui/actions/workflows/phpstan.yml/badge.svg">
     </a>
 </p>
 <p align="center">
