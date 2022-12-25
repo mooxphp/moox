@@ -4,18 +4,16 @@ on:
   pull_request:
     branches:
       - main
-      - dev
   push:
     branches:
-      - 'develop/**'
-      - 'feature/**'
+      - "feature/**"
 
 jobs:
   test:
     env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-        APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+      DB_CONNECTION: sqlite
+      DB_DATABASE: database/database.sqlite
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true

@@ -3,23 +3,22 @@ on:
   push:
     branches:
       - main
-      - dev
     tags:
-      - '!*' # Do not execute on tags
+      - "!*" # Do not execute on tags
     paths:
       - src/*
       - test/*
-      - '*.php'
-      - '*.json'
+      - "*.php"
+      - "*.json"
   pull_request:
     paths:
-      - '!*.MD'
+      - "!*.MD"
 jobs:
   test:
     env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-        APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+      DB_CONNECTION: sqlite
+      DB_DATABASE: database/database.sqlite
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
