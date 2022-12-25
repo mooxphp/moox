@@ -6,7 +6,8 @@ on:
       - main
   push:
     branches:
-      - 'feature/**'
+      - main
+      - "feature/**"
 
 jobs:
   php-code-styling:
