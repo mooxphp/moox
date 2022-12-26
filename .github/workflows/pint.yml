@@ -26,4 +26,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           token: ${{ secrets.TALLUI_BOT_LARAVEL_PINT }}
+          push_options: --force
           commit_message: Fix styling
