@@ -1,4 +1,4 @@
-name: 'Split Icons'
+name: "Split Icons"
 
 on:
   push:
@@ -6,31 +6,29 @@ on:
       - main
 
 env:
-    GITHUB_TOKEN: ${{ secrets.SPLIT_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.BOT }}
 
 jobs:
-    packages_split:
-        runs-on: ubuntu-latest
+  packages_split:
+    runs-on: ubuntu-latest
 
-        strategy:
-            fail-fast: false
-            matrix:
-                package:
-                  - tallui-web-icons
-        steps:
-            -   uses: actions/checkout@v3
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - tallui-web-icons
+    steps:
+      - uses: actions/checkout@v3
 
-            -
-                if: "!startsWith(github.ref, 'refs/tags/')"
-                uses: "symplify/monorepo-split-github-action@2.2"
-                with:
-                    tag: ${GITHUB_REF#refs/tags/}
+      - if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: "symplify/monorepo-split-github-action@2.2"
+        with:
+          tag: ${GITHUB_REF#refs/tags/}
 
-                    package_directory: '_icons/${{ matrix.package }}'
+          package_directory: "_icons/${{ matrix.package }}"
 
-                    repository_organization: 'usetall'
-                    repository_name: '${{ matrix.package }}'
+          repository_organization: "usetall"
+          repository_name: "${{ matrix.package }}"
 
-                    user_name: "tallui-bot"
-                    user_email: "bot@tallui.io"
-
+          user_name: "tallui-bot"
+          user_email: "bot@tallui.io"

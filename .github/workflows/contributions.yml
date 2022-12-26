@@ -16,7 +16,7 @@ jobs:
           readme_path: "README.md"
           use_username: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT }}
 
       - name: Contributors in app-components
         uses: akhilmhdh/contributors-readme-action@v2.3.6
@@ -24,4 +24,4 @@ jobs:
           readme_path: "_components/tallui-app-components/README.md"
           use_username: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT }}
