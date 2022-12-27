@@ -56,5 +56,5 @@ jobs:
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
-          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          api-token: ${{ secrets.BOT }}
           coverage-reports: clover.xml
