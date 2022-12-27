@@ -23,5 +23,6 @@ jobs:
         with:
           readme_path: "_components/tallui-app-components/README.md"
           use_username: true
+          collaborators: all
         env:
           GITHUB_TOKEN: ${{ secrets.BOT }}
