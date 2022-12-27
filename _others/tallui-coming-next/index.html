@@ -4,8 +4,10 @@
         <title>TallUI is coming soon</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
+        <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
-    <body>
+    <body x-data>
 
         <img class="logo" src="./img/logo.png" alt="The TallUI Logo">
 
@@ -31,31 +33,55 @@
                 Made possible thanks to our sponsors
             </h2>
 
-            <div class="sponsors">
-                <a href="https://www.heco.de"><img src="./img/sponsors/heco.svg" alt="heco Logo"></a>
-                <a href="https://www.meinsolarstrom.de"><img src="./img/sponsors/meinsolarstrom.png" alt="meinsolarstrom Logo"></a>
+            <div class="sponsors" x-data="{ shown: false }" x-intersect.margin.-50px="shown = true">
+                <div x-show="shown" x-transition>
+                    <a href="https://www.heco.de"><img src="./img/sponsors/heco.svg" alt="heco Logo"></a>
+                    <a href="https://www.meinsolarstrom.de"><img src="./img/sponsors/meinsolarstrom.png" alt="meinsolarstrom Logo"></a>
+                </div>
             </div>
 
             <h2>
-                this awesome Open Source stack
+                the awesome TALL-Stack
             </h2>
 
-            <div class="stack">
-                <a href="https://www.tailwindcss.com"><img src="./img/stack/tailwindcss.svg" alt="TailwindCSS Logo"></a>
-                <a href="https://www.alpinejs.dev"><img src="./img/stack/alpine-js.svg" alt="AlpineJS Logo"></a>
-                <a href="https://www.laravel.com"><img src="./img/stack/laravel.svg" alt="Laravel Logo"></a>
-                <a href="https://www.laravel-livewire.com"><img src="./img/stack/laravel-livewire.svg" alt="Laravel Livewire Logo"></a>
+            <div class="stack" x-data="{ shown: false }" x-intersect.full="shown = true">
+                    <a href="https://www.tailwindcss.com"><img src="./img/stack/tailwindcss.svg" alt="TailwindCSS Logo" x-show="shown" x-transition.duration.2000ms.delay.250ms></a>
+                    <a href="https://www.alpinejs.dev"><img src="./img/stack/alpine-js.svg" alt="AlpineJS Logo" x-show="shown" x-transition.duration.2000ms.delay.500ms></a>
+                    <a href="https://www.laravel.com"><img src="./img/stack/laravel.svg" alt="Laravel Logo" x-show="shown" x-transition.duration.2000ms.delay.750ms></a>
+                    <a href="https://www.laravel-livewire.com"><img src="./img/stack/laravel-livewire.svg" alt="Laravel Livewire Logo" x-show="shown" x-transition.duration.2000ms.delay.1000ms></a>
             </div>
 
             <h2>
-                and help from friendly companies
+                a ton of other Open Source
             </h2>
 
-            <div class="friends">
-                <a href="https://www.github.com"><img src="./img/friends/github.png" alt="Github Logo"></a>
-                <a href="https://www.codacy.com"><img src="./img/friends/codacy.svg" alt="Codacy Logo"></a>
-                <a href="https://www.weblate.org"><img src="./img/friends/weblate.png" alt="Weblate Logo"></a>
+            <div class="stack" x-data="{ shown: false }" x-intersect.margin.-50px="shown = true">
+                <div x-show="shown" x-transition>
+                    <a href="https://www.tailwindcss.com"><img src="./img/stack/tailwindcss.svg" alt="TailwindCSS Logo"></a>
+                    <a href="https://www.alpinejs.dev"><img src="./img/stack/alpine-js.svg" alt="AlpineJS Logo"></a>
+                    <a href="https://www.laravel.com"><img src="./img/stack/laravel.svg" alt="Laravel Logo"></a>
+                    <a href="https://www.laravel-livewire.com"><img src="./img/stack/laravel-livewire.svg" alt="Laravel Livewire Logo"></a>
+                </div>
             </div>
+
+            <h2>
+                help from friendly companies
+            </h2>
+
+            <div class="friends" x-data="{ shown: false }" x-intersect.margin.-50px="shown = true">
+                <div x-show="shown" x-transition>
+                    <a href="https://www.github.com"><img src="./img/friends/github.png" alt="Github Logo"></a>
+                    <a href="https://www.codacy.com"><img src="./img/friends/codacy.svg" alt="Codacy Logo"></a>
+                    <a href="https://www.weblate.org"><img src="./img/friends/weblate.png" alt="Weblate Logo"></a>
+                </div>
+            </div>
+
+            <br><br>
+            <br><br>
+            <br><br>
+            <br><br>
+            <br><br>
+            <br><br>
 
         </div>
 
