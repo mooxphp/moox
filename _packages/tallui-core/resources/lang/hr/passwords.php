@@ -1,4 +1,5 @@
 <?php
+
 return [
     'reset' => 'Lozinka je postavljena!',
     'sent' => 'Poveznica za ponovono postavljanje lozinke je poslana!',
