@@ -30,7 +30,7 @@ return [
             |
             */
 
-            'path' => '/vendor/usetall/tallui-web-icons/resources/svg/black',
+            'path' => 'vendor/usetall/tallui-web-icons/resources/svg/black',
 
             /*
             |-----------------------------------------------------------------
