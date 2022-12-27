@@ -169,6 +169,13 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/janakeks">
+            <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
+            <br />
+            <sub><b>janakeks</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/wp1111">
             <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
             <br />
@@ -176,10 +183,18 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/azizovic12">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
+        <a href="https://github.com/Reinhold-Jesse">
+            <img src="https://avatars.githubusercontent.com/u/88349887?v=4" width="100;" alt="Reinhold-Jesse"/>
             <br />
-            <sub><b>azizovic12</b></sub>
+            <sub><b>Reinhold-Jesse</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/Kim-the-Diamond">
+            <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
+            <br />
+            <sub><b>Kim-the-Diamond</b></sub>
         </a>
     </td>
     <td align="center">
@@ -187,14 +202,6 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
             <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
             <br />
             <sub><b>KimSpeer</b></sub>
-        </a>
-    </td></tr>
-<tr>
-    <td align="center">
-        <a href="https://github.com/laravel-shift">
-            <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
-            <br />
-            <sub><b>laravel-shift</b></sub>
         </a>
     </td>
     <td align="center">
@@ -205,6 +212,13 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/azizovic12">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
+            <br />
+            <sub><b>azizovic12</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/tallui-bot">
             <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
             <br />
@@ -212,12 +226,13 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/janakeks">
-            <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
+        <a href="https://github.com/laravel-shift">
+            <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
             <br />
-            <sub><b>janakeks</b></sub>
+            <sub><b>laravel-shift</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/github-actions[bot]">
             <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
