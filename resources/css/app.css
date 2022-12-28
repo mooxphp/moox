@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 .tooltip {
-    @apply invisible absolute;
+    @apply absolute invisible;
 }
 
 .has-tooltip:hover .tooltip {
-    @apply visible z-50
+    @apply z-50 visible;
 }
 
 .mt-105 {
     margin-top: 10.5rem;
+}
+
+[x-cloak] {
+    display: none !important;
 }

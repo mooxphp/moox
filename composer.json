@@ -14,30 +14,34 @@
         "tailwindcss"
     ],
     "repositories": [
-            {
-                "type": "path",
-                "url": "./_packages/tallui-core"
-            },
-            {
-                "type": "path",
-                "url": "./_components/tallui-web-components"
-            },
-            {
-                "type": "path",
-                "url": "./_components/tallui-form-components"
-            },
-            {
-                "type": "path",
-                "url": "./_components/tallui-app-components"
-            },
-            {
-                "type": "path",
-                "url": "./_components/tallui-dev-components"
-            },
-            {
-                "type": "path",
-                "url": "./_icons/tallui-web-icons"
-            }
+        {
+            "type": "path",
+            "url": "./_packages/tallui-admin-panel"
+        },
+        {
+            "type": "path",
+            "url": "./_packages/tallui-core"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-web-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-form-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-app-components"
+        },
+        {
+            "type": "path",
+            "url": "./_components/tallui-dev-components"
+        },
+        {
+            "type": "path",
+            "url": "./_icons/tallui-web-icons"
+        }
     ],
     "license": "MIT",
     "require": {
@@ -49,6 +53,7 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",
         "wikimedia/composer-merge-plugin": "^2.0",
+        "usetall/tallui-admin-panel": "*",
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
         "usetall/tallui-web-components": "*",

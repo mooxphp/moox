@@ -12,6 +12,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::tui('admin');
+
 Route::get('/custom', function () {
     return view('custom.overview');
 });
