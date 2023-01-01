@@ -10,7 +10,18 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=exo-2:400,600,800" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Not for production! Do only use in dev environments -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Production -->
+    <!-- // @ vite(['resources/css/app.css', 'resources/js/app.js']) -->
+
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 </head>
 
 <body class="bg-[#001829] bg-no-repeat bg-right-top text-[#0e9bdc] h-full"
@@ -68,7 +79,6 @@
 
                     <div class="flex items-center flex-shrink-0 px-4">
                         <img class="w-auto h-8" src="{{ asset('img/logo.png') }}">
-
                     </div>
                     <div class="flex-1 h-0 mt-5 overflow-y-auto">
                         <nav class="px-2 space-y-1">
@@ -159,6 +169,10 @@
             <div class="flex flex-col flex-grow pt-5 overflow-y-auto">
                 <div class="flex items-center flex-shrink-0 px-4">
                     <img class="w-auto h-10" src="{{ asset('img/logo.png') }}">
+                    <button type="button"
+                        class="inline-flex items-center justify-center px-3 py-1 ml-3 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-cyan-800 hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 sm:w-auto">
+                        Create
+                    </button>
                 </div>
                 <div class="flex flex-col flex-1 mt-5">
                     <nav class="flex-1 px-2 pb-4 space-y-1">
@@ -237,9 +251,9 @@
             </div>
         </div>
         <div class="flex flex-col flex-1 md:pl-64">
-            <div class="sticky top-0 z-10 flex flex-shrink-0 h-16">
+            <div class="top-0 z-10 flex flex-shrink-0 h-16">
                 <button type="button"
-                    class="px-4 text-gray-500 border-r border-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500 md:hidden">
+                    class="px-4 border-r border-gray-200 text-slate-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-sky-500 md:hidden">
                     <span class="sr-only">Open sidebar</span>
                     <!-- Heroicon name: outline/bars-3-bottom-left -->
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -252,7 +266,7 @@
                     <div class="flex flex-1">
                         <form class="flex w-full md:ml-0" action="#" method="GET">
                             <label for="search-field" class="sr-only">Search</label>
-                            <div class="relative w-full text-gray-400 focus-within:text-gray-600">
+                            <div class="relative w-full text-slate-400 focus-within:text-slate-600">
                                 <div class="absolute inset-y-0 left-0 flex items-center pointer-events-none">
                                     <!-- Heroicon name: mini/magnifying-glass -->
                                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -263,14 +277,14 @@
                                     </svg>
                                 </div>
                                 <input id="search-field"
-                                    class="block w-full h-full p-3 py-2 pl-8 pr-3 text-gray-900 placeholder-gray-500 bg-transparent border-transparent focus:border-transparent focus:placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
+                                    class="block w-full h-full p-3 py-2 pl-8 pr-3 placeholder-gray-500 bg-transparent border-transparent text-slate-300 focus:border-transparent focus:placeholder-gray-400 focus:outline-none focus:ring-0 sm:text-sm"
                                     placeholder="Search" type="search" name="search">
                             </div>
                         </form>
                     </div>
                     <div class="flex items-center ml-4 md:ml-6">
                         <button type="button"
-                            class="p-1 text-gray-400 bg-white rounded-full hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
+                            class="p-1 bg-white rounded-full text-slate-400 hover:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
                             <span class="sr-only">View notifications</span>
                             <!-- Heroicon name: outline/bell -->
                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -293,7 +307,8 @@
                                 </button>
                             </div>
 
-                            <div x-show="isOpen" x-transition:enter="transition ease-out duration-100 transform"
+                            <div x-cloak x-show="isOpen"
+                                x-transition:enter="transition ease-out duration-100 transform"
                                 x-transition:enter-start="opacity-0 scale-95"
                                 x-transition:enter-end="opacity-100 scale-100"
                                 x-transition:leave="transition ease-in duration-75 transform"
@@ -304,13 +319,13 @@
                                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                     tabindex="-1">
                                     <!-- Active: "bg-gray-100", Not Active: "" -->
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                    <a href="#" class="block px-4 py-2 text-sm text-slate-700" role="menuitem"
                                         tabindex="-1" id="user-menu-item-0">Your Profile</a>
 
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                    <a href="#" class="block px-4 py-2 text-sm text-slate-700" role="menuitem"
                                         tabindex="-1" id="user-menu-item-1">Settings</a>
 
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                    <a href="#" class="block px-4 py-2 text-sm text-slate-700" role="menuitem"
                                         tabindex="-1" id="user-menu-item-2">Sign out</a>
                                 </div>
                             </div>
@@ -327,8 +342,8 @@
                     <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
                         <div class="sm:flex sm:items-center">
                             <div class="sm:flex-auto">
-                                <h1 class="text-xl font-semibold text-gray-900">Users</h1>
-                                <p class="mt-2 text-sm text-gray-700">A list of all the users in your account
+                                <h1 class="text-xl font-semibold text-slate-300">Users</h1>
+                                <p class="mt-2 text-sm text-slate-700">A list of all the users in your account
                                     including their name, title, email and role.</p>
                             </div>
                             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
@@ -342,18 +357,15 @@
                                 <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                                         <table class="min-w-full divide-y divide-gray-300">
-                                            <thead class="bg-sky-900">
+                                            <thead class="bg-sky-900/50">
                                                 <tr>
                                                     <th scope="col"
                                                         class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-sky-100 sm:pl-6">
-                                                        Name</th>
-                                                    <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-100">
                                                         <a href="#" class="inline-flex group">
-                                                            Title
-                                                            <!-- Active: "bg-gray-200 text-gray-900 group-hover:bg-gray-300", Not Active: "invisible text-gray-400 group-hover:visible group-focus:visible" -->
+                                                            Name
+                                                            <!-- Active: "bg-gray-200 text-slate-300 group-hover:bg-gray-300", Not Active: "invisible text-slate-400 group-hover:visible group-focus:visible" -->
                                                             <span
-                                                                class="flex-none ml-2 text-gray-900 bg-gray-200 rounded group-hover:bg-gray-300">
+                                                                class="flex-none ml-2 rounded bg-slate-400 text-slate-800 group-hover:bg-gray-300">
                                                                 <!-- Heroicon name: mini/chevron-down -->
                                                                 <svg class="w-5 h-5"
                                                                     xmlns="http://www.w3.org/2000/svg"
@@ -367,17 +379,36 @@
                                                         </a>
                                                     </th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-slate-100">
+                                                        <a href="#" class="inline-flex group">
+                                                            Title
+                                                            <!-- Active: "bg-gray-200 text-slate-300 group-hover:bg-gray-300", Not Active: "invisible text-slate-400 group-hover:visible group-focus:visible" -->
+                                                            <span
+                                                                class="flex-none ml-2 rounded bg-slate-400 text-slate-800 group-hover:bg-gray-300">
+                                                                <!-- Heroicon name: mini/chevron-down -->
+                                                                <svg class="w-5 h-5"
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    viewBox="0 0 20 20" fill="currentColor"
+                                                                    aria-hidden="true">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                                                        clip-rule="evenodd" />
+                                                                </svg>
+                                                            </span>
+                                                        </a>
+                                                    </th>
+                                                    <th scope="col"
+                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-slate-300">
                                                         Status</th>
                                                     <th scope="col"
-                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                                        class="px-3 py-3.5 text-left text-sm font-semibold text-slate-300">
                                                         Role</th>
                                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                                                         <span class="sr-only">Edit</span>
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="divide-y divide-gray-200 bg-sky-200">
+                                            <tbody class="divide-y divide-slate-400 bg-slate-800/50">
                                                 <tr>
                                                     <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
                                                         <div class="flex items-center">
@@ -387,22 +418,22 @@
                                                                     alt="">
                                                             </div>
                                                             <div class="ml-4">
-                                                                <div class="font-medium text-gray-900">Lindsay
+                                                                <div class="font-medium text-slate-200">Lindsay
                                                                     Walton</div>
-                                                                <div class="text-gray-500">
+                                                                <div class="text-slate-500">
                                                                     lindsay.walton@example.com</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                                        <div class="text-gray-900">Front-end Developer</div>
-                                                        <div class="text-gray-500">Optimization</div>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
                                                         <span
                                                             class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
                                                         Member</td>
                                                     <td
                                                         class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
@@ -420,22 +451,22 @@
                                                                     alt="">
                                                             </div>
                                                             <div class="ml-4">
-                                                                <div class="font-medium text-gray-900">Lindsay
+                                                                <div class="font-medium text-slate-200">Lindsay
                                                                     Walton</div>
-                                                                <div class="text-gray-500">
+                                                                <div class="text-slate-500">
                                                                     lindsay.walton@example.com</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                                        <div class="text-gray-900">Front-end Developer</div>
-                                                        <div class="text-gray-500">Optimization</div>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
                                                         <span
                                                             class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
                                                         Member</td>
                                                     <td
                                                         class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
@@ -453,22 +484,352 @@
                                                                     alt="">
                                                             </div>
                                                             <div class="ml-4">
-                                                                <div class="font-medium text-gray-900">Lindsay
+                                                                <div class="font-medium text-slate-200">Lindsay
                                                                     Walton</div>
-                                                                <div class="text-gray-500">
+                                                                <div class="text-slate-500">
                                                                     lindsay.walton@example.com</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                                        <div class="text-gray-900">Front-end Developer</div>
-                                                        <div class="text-gray-500">Optimization</div>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
                                                         <span
                                                             class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
                                                     </td>
-                                                    <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        Member</td>
+                                                    <td
+                                                        class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
+                                                        <a href="#"
+                                                            class="text-sky-600 hover:text-sky-900">Edit<span
+                                                                class="sr-only">, Lindsay Walton</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-4 pl-4 pr-3 text-sm whitespace-nowrap sm:pl-6">
+                                                        <div class="flex items-center">
+                                                            <div class="flex-shrink-0 w-10 h-10">
+                                                                <img class="w-10 h-10 rounded-full"
+                                                                    src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                                                    alt="">
+                                                            </div>
+                                                            <div class="ml-4">
+                                                                <div class="font-medium text-slate-200">Lindsay
+                                                                    Walton</div>
+                                                                <div class="text-slate-500">
+                                                                    lindsay.walton@example.com</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <div class="text-slate-300">Front-end Developer</div>
+                                                        <div class="text-slate-500">Optimization</div>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
+                                                        <span
+                                                            class="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">Active</span>
+                                                    </td>
+                                                    <td class="px-3 py-4 text-sm text-slate-500 whitespace-nowrap">
                                                         Member</td>
                                                     <td
                                                         class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
