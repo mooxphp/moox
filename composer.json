@@ -54,7 +54,6 @@
         "livewire/livewire": "^2.5",
         "wikimedia/composer-merge-plugin": "^2.0",
         "usetall/tallui-admin-panel": "*",
-        "usetall/tallui-app-components": "*",
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
         "usetall/tallui-web-components": "*",
