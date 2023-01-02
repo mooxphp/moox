@@ -1,36 +1,33 @@
 build:
-    image: default-bionic
-    environment:
-        php: 8.1.2
-    nodes:
-        analysis:
-            project_setup:
-                before:
-                    - 'rm composer.json'
-                    - 'cp composer-tests.json composer.json'
-                    - 'composer update'
-                override:
-                    - 'true'
-            tests:
-                override:
-                    - php-scrutinizer-run
-                    -
-                        command: phpcs-run
-                        use_website_config: false
-                    - js-scrutinizer-run
-        tests: true
+  image: default-bionic
+  environment:
+    php: 8.1.2
+  nodes:
+    analysis:
+      project_setup:
+        before:
+          - "composer update"
+        override:
+          - "true"
+      tests:
+        override:
+          - php-scrutinizer-run
+          - command: phpcs-run
+            use_website_config: false
+          - js-scrutinizer-run
+    tests: true
 filter:
-    paths:
-        - '_components/*'
-        - '_data'
-        - '_icons'
-        - '_others'
-        - '_packages'
-        - '_themes'
-    excluded_paths:
-        - '_others/tallui-art/*'
+  paths:
+    - "_components/*"
+    - "_data"
+    - "_icons"
+    - "_others"
+    - "_packages"
+    - "_themes"
+  excluded_paths:
+    - "_others/tallui-art/*"
 checks:
-    php: true
-    javascript: true
+  php: true
+  javascript: true
 coding_style:
-    php: {  }
+  php: {}

@@ -47,8 +47,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          rm composer.json
-          mv composer-tests.json composer.json
           composer update
 
       - name: List Installed Dependencies
