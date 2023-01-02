@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiAdminPanel;
 
-use Livewire\Livewire;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
-use Spatie\LaravelPackageTools\Package;
+use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
+use Livewire\Livewire;
+use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Usetall\TalluiAdminPanel\Commands\TalluiAdminPanelCommand;
 use Usetall\TalluiAdminPanel\Http\Controllers\AdminPanelController;
@@ -27,7 +27,7 @@ class TalluiAdminPanelServiceProvider extends PackageServiceProvider
             ->hasCommand(TalluiAdminPanelCommand::class);
     }
 
-    public function packageRegistered() : void
+    public function packageRegistered(): void
     {
         Route::macro('tui', function (string $baseUrl = 'tui') {
             Route::prefix($baseUrl)->group(function () {
