@@ -128,7 +128,7 @@ Your commit messages will be merged into Changelog.md, means they become part of
     - devops = GH and automation
     - wip = work in progress
 - followed by the shortname of the package, in []
-    - all - all or many packages were updated
+    - all - multiple packages affected
     - core
     - monorepo
     - package-builder
