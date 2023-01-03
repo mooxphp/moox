@@ -118,23 +118,40 @@ Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-vie
 
 Your commit messages will be merged into Changelog.md, means they become part of the documentation. Please make sure, you
 
-- start with the package, e. g. "Core: feature xy ..."
-- for multiple packages "All: Update all packages ..."
+- start with one of these types
+    - feat = feature
+    - bump = minor verion change
+    - fix = bugfix
+    - major = major updates
+    - lang = translation
+    - docs = documentation
+    - devops = GH and automation
+    - wip = work in progress
+- followed by the shortname of the package, in []
+    - all - all or many packages were updated
+    - core
+    - monorepo
+    - package-builder
+    - other, every package w/o tallui-prefix
 - reference an issue, linked by issue number, e. g. #138
-- indicate you are not finished work, using "w-i-p"
 - prepare auto-closing the issue by using "Close #138"
 
 valid examples
 
-- Core: Feature register assets w-i-p #123
-- All: Update all packages Close #321
-- Monorepo: Update dev app Close #22
+- wip[core]: Feature register assets w-i-p #123
+- fix[all]: Update all packages Close #321
+- feat[monorepo]: Update dev app Close #22
 - Dependencies: Minor Updates
-- Package Builder: Blade and Livewire components w-i-p #23
+- Wip[Package Builder]: Blade and Livewire components w-i-p #23
+
+Read more about [conventional commits](https://www.conventionalcommits.org/).
+
 
 ### Pull requests
 
-Create a PR to `main`.
+Create a PR to `main`. Please use the conventional commits like explained above. 
+
+We'll syntax check your PR message before merging your commmit. 
 
 
 ### Semver
@@ -145,6 +162,7 @@ We use semantic versioning, written like 1.2.3 for
 2. Minor releases
 3. Bugfix releases
 
+Visit [Semver.org](https://semver.org/) for more information.
 
 ### Releases
 
