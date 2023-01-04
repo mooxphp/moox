@@ -53,7 +53,7 @@ TallUI packages are categorized in
 - [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 - [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
-Packages are automatically updated to their own read-only repos when pushed to [main]. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
+Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
 
 
 ### Installation
@@ -142,13 +142,14 @@ Your commit messages will be merged into Changelog.md, means they become part of
 - reference an issue, linked by issue number, e. g. #138
 - prepare auto-closing the issue by using "Close #138"
 
-valid examples
 
-- wip[core]: Feature register assets w-i-p #123
-- fix[all]: Update all packages Close #321
-- feat[monorepo]: Update dev app Close #22
-- Dependencies: Minor Updates
-- Wip[Package Builder]: Blade and Livewire components w-i-p #23
+#### Valid examples
+
+- `wip[core]: Feature register assets w-i-p #123`
+- `fix[all]: Update all packages Close #321`
+- `feat[monorepo]: Update dev app Close #22`
+- `Dependencies: Minor Updates`
+- `Wip[Package Builder]: Blade and Livewire components w-i-p #23`
 
 Read more about [conventional commits](https://www.conventionalcommits.org/).
 
