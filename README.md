@@ -55,7 +55,7 @@ TallUI packages are categorized in
 - [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 - [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
-Packages are automatically updated to their own read-only repos when pushed to [main]. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
+Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
 
 
 ## Installation
@@ -116,27 +116,49 @@ This is done by supporting custom packages in the development app of our Monorep
 
 Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-view) for automated tests and code analysis. 
 
+
 ## Commits
 
 Your commit messages will be merged into Changelog.md, means they become part of the documentation. Please make sure, you
 
-- start with the package, e. g. "Core: feature xy ..."
-- for multiple packages "All: Update all packages ..."
+- start with one of these types
+    - feat = feature
+    - fix = bugfix
+    - bump = minor verion change
+    - major = major updates
+    - lang = translation
+    - docs = documentation
+    - devops = GH and automation
+    - wip = work in progress
+- followed by the shortname of the package, in []
+    - all - multiple or all packages
+    - admin-panel
+    - core
+    - package-builder
+    - form-components
+    - app-components
+    - web-components
+    - chart-components
+    - monorepo
+
 - reference an issue, linked by issue number, e. g. #138
-- indicate you are not finished work, using "w-i-p"
 - prepare auto-closing the issue by using "Close #138"
 
-valid examples
 
-- Core: Feature register assets w-i-p #123
-- All: Update all packages Close #321
-- Monorepo: Update dev app Close #22
-- Dependencies: Minor Updates
-- Package Builder: Blade and Livewire components w-i-p #23
+#### Valid examples
+
+- `wip[core]: Feature register assets w-i-p #123`
+- `fix[all]: Update all packages Close #321`
+- `feat[monorepo]: Update dev app Close #22`
+- `Dependencies: Minor Updates`
+- `Wip[Package Builder]: Blade and Livewire components w-i-p #23`
+
+Read more about [conventional commits](https://www.conventionalcommits.org/).
+
 
 ## Pull requests
 
-Create a PR to `main`.
+Create a PR to `main`. Use conventional commits like explained above. 
 
 
 ### Semver
@@ -146,6 +168,8 @@ We use semantic versioning, written like 1.2.3 for
 1. Major releases
 2. Minor releases
 3. Bugfix releases
+
+Visit [Semver.org](https://semver.org/) for more information.
 
 
 ## Releases
@@ -278,6 +302,7 @@ TallUI is made by these nice people, and bots ...
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -end -->
 
+
 ## License
 
 TallUI is free Open-Source software licensed under the [MIT License](LICENSE.md).
@@ -285,6 +310,7 @@ TallUI is free Open-Source software licensed under the [MIT License](LICENSE.md)
 Some of the projects we depend on are released under a different license. We do our best to make sure that these licenses allow private as well as commercial use and do not impose any restrictions.
 
 If you notice any problem with TallUI licensing or any dependency, please mail us at dev@tallui.io.
+
 
 ## Security
 
