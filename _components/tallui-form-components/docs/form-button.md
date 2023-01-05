@@ -22,12 +22,10 @@ This will output the following HTML:
 
 ```html
 <form method="POST" action="http://localhost/logout">
-    <input type="hidden" name="_token" value="...">
-    <input type="hidden" name="_method" value="POST">
+    <input type="hidden" name="_token" value="..." />
+    <input type="hidden" name="_method" value="POST" />
 
-    <button type="submit" class="p-4 bg-blue-400">
-        Sign Out
-    </button>
+    <button type="submit" class="p-4 bg-blue-400">Sign Out</button>
 </form>
 ```
 
@@ -38,7 +36,7 @@ All attributes set on the component are piped through on the `button` element.
 You can set a different HTTP method if you like. For example, when deleting resources:
 
 ```html
-<x-form-button 
+<x-form-button
     :action="route('post', $id)"
     method="DELETE"
     class="p-4 bg-red-500"
@@ -51,11 +49,9 @@ This will output the following HTML:
 
 ```html
 <form method="POST" action="http://localhost/posts/1">
-    <input type="hidden" name="_token" value="...">
-    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="_token" value="..." />
+    <input type="hidden" name="_method" value="DELETE" />
 
-    <button type="submit" class="p-4 bg-red-500">
-        Delete Post
-    </button>
+    <button type="submit" class="p-4 bg-red-500">Delete Post</button>
 </form>
 ```
