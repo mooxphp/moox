@@ -1,5 +1,12 @@
 <!DOCTYPE html>
-<html class="h-full">
+<html class="h-full" lang="en" x-data="{
+    darkMode: localStorage.getItem('darkMode') ||
+        localStorage.setItem('darkMode', 'system')
+}" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))"
+    x-bind:class="{
+        'dark': darkMode === 'dark' || (darkMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)')
+            .matches)
+    }">
 
 <head>
     <title>TallUI Monorepo - Dev App</title>
@@ -13,6 +20,18 @@
     <!-- Not for production! Do only use in dev environments -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            content: [
+                "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
+                "./vendor/laravel/jetstream/**/*.blade.php",
+                "./storage/framework/views/*.php",
+                "./resources/views/**/*.blade.php",
+                "./custom/**/*.blade.php",
+            ],
+        };
+    </script>
 
     <!-- Production -->
     <!-- // @ vite(['resources/css/app.css', 'resources/js/app.js']) -->
@@ -24,7 +43,7 @@
     </style>
 </head>
 
-<body class="bg-[#001829] bg-no-repeat bg-right-top text-[#0e9bdc] h-full"
+<body class="dark:bg-[#001829] bg-white bg-no-repeat bg-right-top text-[#0e9bdc] h-full"
     style="background-image: url('{{ asset('img/bg.jpg') }}')">
 
     <div>
@@ -282,6 +301,57 @@
                             </div>
                         </form>
                     </div>
+
+                    <div x-cloak class="relative inline-flex items-center gap-2 mr-2 sm:pb-2">
+
+                        <button x-on:click="darkMode = 'light'">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                x-bind:class="{ 'border-2 border-red/50': darkMode === 'light' }"
+                                class="w-6 h-6 p-1 text-gray-700 transition rounded-full cursor-pointer bg-gray-50 hover:bg-gray-200"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <span class="sr-only">light</span>
+                        </button>
+
+                        <button x-on:click="darkMode = 'dark'">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                x-bind:class="{ 'border-2 border-red/50': darkMode === 'dark' }"
+                                class="w-6 h-6 p-1 text-gray-100 transition bg-gray-700 rounded-full cursor-pointer dark:hover:bg-gray-600"
+                                viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                            </svg>
+                            <span class="sr-only">dark</span>
+                        </button>
+
+                        <button x-on:click="darkMode = 'system'">
+                            <svg xmlns="http://www.w3.org/2000/svg" x-cloak
+                                x-show="! window.matchMedia('(prefers-color-scheme: dark)').matches"
+                                x-bind:class="{ 'border-2 border-red/50': darkMode === 'system' }"
+                                class="w-6 h-6 p-1 text-gray-700 transition bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                x-show="window.matchMedia('(prefers-color-scheme: dark)').matches"
+                                x-bind:class="{ 'border-2 border-red/50': darkMode === 'system' }"
+                                class="w-6 h-6 p-1 text-gray-100 transition bg-gray-700 rounded-full cursor-pointer dark:hover:bg-gray-600"
+                                x-cloak fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="sr-only">system</span>
+                        </button>
+                    </div>
+
+
                     <div class="flex items-center ml-4 md:ml-6">
                         <button type="button"
                             class="p-1 bg-white rounded-full text-slate-400 hover:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2">
@@ -336,8 +406,9 @@
 
             <main>
                 <div class="py-4">
+
                     <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
-                        <h1 class="text-2xl font-semibold text-sky-200">Dashboard</h1>
+                        <h1 class="text-2xl font-semibold dark:text-sky-200">Dashboard</h1>
                     </div>
                     <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
                         <div class="sm:flex sm:items-center">
@@ -347,9 +418,11 @@
                                     including their name, title, email and role.</p>
                             </div>
                             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-                                <button type="button"
-                                    class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm bg-sky-800 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 sm:w-auto">Add
-                                    user</button>
+
+                                <x-form-button :action="route('logout')">
+                                    Add user
+                                </x-form-button>
+
                             </div>
                         </div>
                         <div class="flex flex-col mt-8">
