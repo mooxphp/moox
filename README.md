@@ -1,8 +1,10 @@
-<h1 align="center">
+<p align="center">
     <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
-    <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
-</h1><br><br>
+    <img src="https://github.com/usetall/tallui/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+</p><br>
+
+
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
@@ -36,12 +38,12 @@
 </p>
 
 
-## TallUI Monorepo
+# TallUI Monorepo
 
 This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 
-### Packages
+## Packages
 
 TallUI packages are categorized in 
 
@@ -56,7 +58,7 @@ TallUI packages are categorized in
 Packages are automatically updated to their own read-only repos when pushed to [main]. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
 
 
-### Installation
+## Installation
 
 The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Sail or Laragon. 
 
@@ -88,7 +90,7 @@ rm -Rf vendor/usetall
 ```
 
 
-### Custom packages
+## Custom packages
 
 Our Monorepo is prepared to be a double agent:
 
@@ -98,7 +100,7 @@ Our Monorepo is prepared to be a double agent:
 This is done by supporting custom packages in the development app of our Monorepo. Sounds interesting? Read on [_custom/README.md](_custom/README.md).
 
 
-### Development
+## Development
 
 - Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
 - Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
@@ -107,14 +109,14 @@ This is done by supporting custom packages in the development app of our Monorep
 - Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 
-### Branching
+## Branching
 
 - ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed to dev
 - ```feature/...``` please prefix all feature-branches, create your pull requests directly to main
 
 Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-view) for automated tests and code analysis. 
 
-### Commits
+## Commits
 
 Your commit messages will be merged into Changelog.md, means they become part of the documentation. Please make sure, you
 
@@ -132,7 +134,7 @@ valid examples
 - Dependencies: Minor Updates
 - Package Builder: Blade and Livewire components w-i-p #23
 
-### Pull requests
+## Pull requests
 
 Create a PR to `main`.
 
@@ -146,12 +148,12 @@ We use semantic versioning, written like 1.2.3 for
 3. Bugfix releases
 
 
-### Releases
+## Releases
 
 Currently done manually, an automatic release feature is on the way.
 
 
-### Testing
+## Testing
 
 We test TallUI using:
 
@@ -173,7 +175,7 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 - Pint: ```composer format ``` or ```./vendor/bin/pint```, for packages ```../../vendor/bin/pint```
 
 
-### Translation
+## Translation
 
 TallUI is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./docs/translation/README.md).
 
@@ -181,7 +183,7 @@ TallUI is translated with Weblate. More information about the languages, transla
 <img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" /></a>
 
 
-### Contributors
+## Contributors
 
 TallUI is made by these nice people, and bots ...
 
@@ -275,3 +277,17 @@ TallUI is made by these nice people, and bots ...
     </td></tr>
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -end -->
+
+## License
+
+TallUI is free Open-Source software licensed under the [MIT License](LICENSE.md).
+
+Some of the projects we depend on are released under a different license. We do our best to make sure that these licenses allow private as well as commercial use and do not impose any restrictions.
+
+If you notice any problem with TallUI licensing or any dependency, please mail us at dev@tallui.io.
+
+## Security
+
+As mentioned above, we use automated code checks and security audits to ensure that our code is free of security vulnerabilities.
+
+However, if you notice a security vulnerability, please do NOT create an issue for it, but send a mail to dev@tallui.io. This will give us the opportunity to close the vulnerability before others become aware of it and can cause damage.

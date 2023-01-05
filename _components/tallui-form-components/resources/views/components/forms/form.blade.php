@@ -1,19 +1,11 @@
-<form method="{{ $spoofMethod ? 'POST' : $method }}"
-      @if ($action)
-          action="{{ $action }}"
-      @endif
-
-     @if ($hasFiles)
-         enctype="multipart/form-data"
-     @endif
-
-    @if (! $spellcheck)
-        spellcheck="false"
-    @endif
-
-     {{ $attributes }}
+<form
+    method="{{ $spoofMethod ? 'POST' : $method }}"
+    @if ($action) action="{{ $action }}" @endif
+    @if ($hasFiles) enctype="multipart/form-data" @endif
+    @if (!$spellcheck) spellcheck="false" @endif
+    {{ $attributes }}
 >
-    @unless (in_array($method, ['HEAD', 'GET', 'OPTIONS'], true))
+    @unless(in_array($method, ['HEAD', 'GET', 'OPTIONS'], true))
         @csrf
     @endunless
 
