@@ -19,19 +19,33 @@
 </p>
 <p align="center">
     <a href="https://app.codacy.com/gh/usetall/tallui/dashboard">
-        <img src="https://app.codacy.com/project/badge/Grade/2b912412bb6e4892b52688272dec1555">
+        <img src="https://app.codacy.com/project/badge/Grade/2b912412bb6e4892b52688272dec1555" alt="Codacy Code Quality">
     </a>
     <a href="https://app.codacy.com/gh/usetall/tallui/dashboard">
-        <img src="https://app.codacy.com/project/badge/Coverage/2b912412bb6e4892b52688272dec1555">
+        <img src="https://app.codacy.com/project/badge/Coverage/2b912412bb6e4892b52688272dec1555" alt="Codacy Coverage">
+    </a>
+    <a href="https://codeclimate.com/github/usetall/tallui/maintainability">
+        <img src="https://api.codeclimate.com/v1/badges/1b6dae4442e751fd60b9/maintainability" alt="Code Climate Maintainability">
     </a>
     <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
         <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
     </a>
+    <a href="https://app.snyk.io/org/adrolli/project/dd7d7d2c-7a0c-4741-ab01-e3d11ea18fa0">
+        <img alt="Snyk Security" src="https://img.shields.io/snyk/vulnerabilities/github/usetall/tallui">
+    </a>
+</p>
+<p align="center">
     <a href="https://hosted.weblate.org/engage/tallui/">
         <img src="https://hosted.weblate.org/widgets/tallui/-/svg-badge.svg" alt="Translation status" />
     </a>
+    <a href="https://www.laravel.com">
+        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-9-orange?logo=Laravel&color=FF2D20">
+    </a>
     <a href="https://github.com/usetall/tallui-app-components/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/usetall/tallui-app-components?color=blue&label=license">
+    </a>
+    <a href="https://tallui.slack.com/">
+        <img alt="Slack" src="https://img.shields.io/badge/Slack-TallUI-blue?logo=slack">
     </a>
     <br>
     <br>
