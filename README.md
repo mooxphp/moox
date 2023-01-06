@@ -27,9 +27,6 @@
     <a href="https://codeclimate.com/github/usetall/tallui/maintainability">
         <img src="https://api.codeclimate.com/v1/badges/1b6dae4442e751fd60b9/maintainability" alt="Code Climate Maintainability">
     </a>
-    <a href="https://scrutinizer-ci.com/g/usetall/tallui/?branch=main">
-        <img alt="Scrutinizer Code Quality" src="https://scrutinizer-ci.com/g/usetall/tallui/badges/quality-score.png?b=main">
-    </a>
     <a href="https://app.snyk.io/org/adrolli/project/dd7d7d2c-7a0c-4741-ab01-e3d11ea18fa0">
         <img alt="Snyk Security" src="https://img.shields.io/snyk/vulnerabilities/github/usetall/tallui">
     </a>
