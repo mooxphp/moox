@@ -310,6 +310,14 @@ TallUI is made by these nice people, and bots ...
             <sub><b>dependabot[bot]</b></sub>
         </a>
     </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/renovate[bot]">
+            <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
+            <br />
+            <sub><b>renovate[bot]</b></sub>
+        </a>
+    </td></tr>
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -end -->
 
