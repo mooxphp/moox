@@ -289,17 +289,17 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/FMorlock">
-            <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
-            <br />
-            <sub><b>FMorlock</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/tallui-bot">
             <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
             <br />
             <sub><b>tallui-bot</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/FMorlock">
+            <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
+            <br />
+            <sub><b>FMorlock</b></sub>
         </a>
     </td>
     <td align="center">
