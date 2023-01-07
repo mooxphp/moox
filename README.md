@@ -222,7 +222,7 @@ TallUI is translated with Weblate. More information about the languages, transla
 
 TallUI is made by these nice people, and bots ...
 
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -start -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -start -->
 <table>
 <tr>
     <td align="center">
@@ -276,17 +276,17 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/tallui-bot">
-            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
-            <br />
-            <sub><b>tallui-bot</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/FMorlock">
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
             <br />
             <sub><b>FMorlock</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/tallui-bot">
+            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
+            <br />
+            <sub><b>tallui-bot</b></sub>
         </a>
     </td>
     <td align="center">
@@ -317,9 +317,16 @@ TallUI is made by these nice people, and bots ...
             <br />
             <sub><b>renovate[bot]</b></sub>
         </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/milotype">
+            <img src="https://avatars.githubusercontent.com/u/43657314?v=4" width="100;" alt="milotype"/>
+            <br />
+            <sub><b>milotype</b></sub>
+        </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -end -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -end -->
 
 
 ## License
