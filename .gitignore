@@ -4,12 +4,13 @@
 
 # Composer
 /vendor
-composer.lock
+# composer.lock - it's a dev platform, we want the lock-file to be in sync
 auth.json
 
-# Node
+# NPM / Node
 /node_modules
 npm-debug.log
+# package-lock.json - it's a dev platform, we want the lock-file to be in sync
 
 # Laravel
 /public/hot
