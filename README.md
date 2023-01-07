@@ -18,6 +18,20 @@
     </a>
 </p>
 <p align="center">
+    <a href="https://www.tailwindcss.com">
+        <img alt="TailwindCSS 3" src="https://img.shields.io/badge/TailwindCSS-v3-orange?logo=tailwindcss&color=06B6D4">
+    </a>
+    <a href="https://www.alpinejs.dev">
+        <img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0">
+    </a>
+    <a href="https://www.laravel.com">
+        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-v9-orange?logo=Laravel&color=FF2D20">
+    </a>
+    <a href="https://www.laravel-livewire.com">
+        <img alt="Laravel Livewire 2" src="https://img.shields.io/badge/Livewire-v2-orange?logo=livewire&color=4E56A6">
+    </a>
+</p>
+<p align="center">
     <a href="https://app.codacy.com/gh/usetall/tallui/dashboard">
         <img src="https://app.codacy.com/project/badge/Grade/2b912412bb6e4892b52688272dec1555" alt="Codacy Code Quality">
     </a>
@@ -32,11 +46,11 @@
     </a>
 </p>
 <p align="center">
+    <a href="https://renovatebot.com/">
+        <img src="https://img.shields.io/badge/renovate-enabled-brightgreen.svg" alt="Renovate" />
+    </a>
     <a href="https://hosted.weblate.org/engage/tallui/">
         <img src="https://hosted.weblate.org/widgets/tallui/-/svg-badge.svg" alt="Translation status" />
-    </a>
-    <a href="https://www.laravel.com">
-        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-9-orange?logo=Laravel&color=FF2D20">
     </a>
     <a href="https://github.com/usetall/tallui-app-components/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/usetall/tallui-app-components?color=blue&label=license">
@@ -47,7 +61,6 @@
     <br>
     <br>
 </p>
-
 
 # TallUI Monorepo
 
@@ -276,17 +289,17 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/tallui-bot">
-            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
-            <br />
-            <sub><b>tallui-bot</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/FMorlock">
             <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
             <br />
             <sub><b>FMorlock</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/tallui-bot">
+            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
+            <br />
+            <sub><b>tallui-bot</b></sub>
         </a>
     </td>
     <td align="center">
