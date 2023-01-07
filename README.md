@@ -222,7 +222,7 @@ TallUI is translated with Weblate. More information about the languages, transla
 
 TallUI is made by these nice people, and bots ...
 
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -start -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -start -->
 <table>
 <tr>
     <td align="center">
@@ -319,7 +319,7 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots -end -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -end -->
 
 
 ## License
