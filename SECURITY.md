@@ -22,6 +22,6 @@ We currently support the current version, means the ```main```-Branch and the cu
 
 ## Reporting a Vulnerability
 
-If you spot a potential vulnerability, please use GitHub's Security Report feature or send an email to dev@tallui.io.
+If you spot a potential vulnerability, please go to https://github.com/usetall/tallui/security/advisories and click on the ```Report a vulnerability```-Button or send an email to dev@tallui.io.
 
 Please do not create a GitHub issue for security vulnerabilities. This could allow potential attackers to exploit the vulnerability and cause damage before we've had a chance to patch it.
