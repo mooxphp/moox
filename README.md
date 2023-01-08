@@ -4,8 +4,6 @@
     <img src="https://github.com/usetall/tallui/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p><br>
 
-
-
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
         <img alt="PEST Tests" src="https://github.com/usetall/tallui/actions/workflows/pest.yml/badge.svg">
@@ -355,4 +353,4 @@ If you notice any problem with TallUI licensing or any dependency, please mail u
 
 As mentioned above, we use automated code checks and security audits to ensure that our code is free of security vulnerabilities.
 
-However, if you notice a security vulnerability, please do NOT create an issue for it, but send a mail to dev@tallui.io. This will give us the opportunity to close the vulnerability before others become aware of it and can cause damage.
+Read our [Security Policy](SECURITY.md) to learn more about security or report a potential vulnerability. Please DO NOT use the issue tracker for reporting security-related issues.
