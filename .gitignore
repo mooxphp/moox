@@ -25,7 +25,7 @@ phpunit.xml
 yarn-error.log
 
 # PHPStan
-build
+/build
 phpstan.neon
 
 # Testbench
