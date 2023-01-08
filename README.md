@@ -44,7 +44,7 @@
     </a>
 </p>
 <p align="center">
-    <a href="https://renovatebot.com/">
+    <a href="https://github.com/usetall/tallui/issues/94">
         <img src="https://img.shields.io/badge/renovate-enabled-brightgreen.svg" alt="Renovate" />
     </a>
     <a href="https://hosted.weblate.org/engage/tallui/">
