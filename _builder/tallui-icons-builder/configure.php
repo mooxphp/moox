@@ -19,9 +19,9 @@ See https://github.com/usetall/tallui-icons-builder
 
 function ask(string $question, string $default = ''): string
 {
-    $answer = readline($question . ($default ? " ({$default})" : null) . ': ');
+    $answer = readline($question.($default ? " ({$default})" : null).': ');
 
-    if (!$answer) {
+    if (! $answer) {
         return $default;
     }
 
@@ -30,9 +30,9 @@ function ask(string $question, string $default = ''): string
 
 function confirm(string $question, bool $default = false): bool
 {
-    $answer = ask($question . ' (' . ($default ? 'Y/n' : 'y/N') . ')');
+    $answer = ask($question.' ('.($default ? 'Y/n' : 'y/N').')');
 
-    if (!$answer) {
+    if (! $answer) {
         return $default;
     }
 
@@ -41,7 +41,7 @@ function confirm(string $question, bool $default = false): bool
 
 function writeln(string $line): void
 {
-    echo $line . PHP_EOL;
+    echo $line.PHP_EOL;
 }
 
 function run(string $command): string
@@ -102,7 +102,7 @@ function remove_prefix(string $prefix, string $content): string
 /** @param  array<mixed>  $names */
 function remove_composer_deps(array $names): void
 {
-    $data = json_decode((string) file_get_contents(__DIR__ . '/composer.json'), true);
+    $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['require-dev'] as $name => $version) {
         if (in_array($name, $names, true)) {
@@ -110,12 +110,12 @@ function remove_composer_deps(array $names): void
         }
     }
 
-    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 function remove_composer_script(mixed $scriptName): void
 {
-    $data = json_decode((string) file_get_contents(__DIR__ . '/composer.json'), true);
+    $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
 
     foreach ($data['scripts'] as $name => $script) {
         if ($scriptName === $name) {
@@ -124,7 +124,7 @@ function remove_composer_script(mixed $scriptName): void
         }
     }
 
-    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 function remove_readme_paragraphs(string $file): void
@@ -152,13 +152,13 @@ function determineSeparator(string $path): string
 /** @return array<mixed> */
 function replaceForWindows(): array
 {
-    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename((string) __FILE__) . ' | findstr /r /i /M /F:/ "tallui heroicon Heroicons tallui-heroicons"'));
+    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string) __FILE__).' | findstr /r /i /M /F:/ "tallui heroicon Heroicons tallui-heroicons"'));
 }
 
 /** @return array<string> */
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i "tallui|heroicon|Heroicons|tallui-heroicons" --exclude-dir=vendor ./* ./.github/* | grep -v ' . basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "tallui|heroicon|Heroicons|tallui-heroicons" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
 }
 
 $orgaizationName = ask('Organosation Name', 'tallui');
@@ -186,7 +186,7 @@ writeln('------');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
 
-if (!confirm('Modify files?', true)) {
+if (! confirm('Modify files?', true)) {
     exit(1);
 }
 
@@ -202,8 +202,8 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('config/tallui-heroicons.php')) => rename($file, determineSeparator('./config/' . $icons . '.php')),
-        str_contains($file, determineSeparator('src/TallUIHeroiconsServiceProvider.php')) => rename($file, determineSeparator('./src/' . $iconSetName . 'ServiceProvider.php')),
+        str_contains($file, determineSeparator('config/tallui-heroicons.php')) => rename($file, determineSeparator('./config/'.$icons.'.php')),
+        str_contains($file, determineSeparator('src/TallUIHeroiconsServiceProvider.php')) => rename($file, determineSeparator('./src/'.$iconSetName.'ServiceProvider.php')),
         str_contains($file, 'README.md') => remove_readme_paragraphs($file),
         default => [],
     };
