@@ -1,4 +1,4 @@
-name: "Split Others"
+name: "Split Builder"
 
 on:
   push:
@@ -16,6 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         package:
+          - tallui-icon-builder
           - tallui-package-builder
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +26,7 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
-          package_directory: "_others/${{ matrix.package }}"
+          package_directory: "_apps/${{ matrix.package }}"
 
           repository_organization: "usetall"
           repository_name: "${{ matrix.package }}"
