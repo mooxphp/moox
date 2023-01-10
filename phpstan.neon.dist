@@ -35,7 +35,7 @@ parameters:
                 -   '#^Parameter \#1 \$string of static method Illuminate\\Support\\Str\:\:of\(\) expects string, string\|false given\.$#'
                 -   '#^Cannot access property \$textContent on DOMElement\|null\.$#'
             paths:
-                - _others/tallui-package-builder/*
+                - _builder/tallui-package-builder/*
         -
             messages:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
@@ -43,6 +43,6 @@ parameters:
             paths:
                 - _components/*/tests/*
                 - _packages/*/tests/*
-                - _others/*/tests/*
+                - _builder/*/tests/*
     tmpDir: build/phpstan
 
