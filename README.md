@@ -69,10 +69,11 @@ This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 TallUI packages are categorized in 
 
+- [_builder](./_builder/README.md) - TallUI Skeleton packages (package builder and icon builder)
 - [_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
 - [_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
 - [_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
-- [_others](./_others/README.md) - Other Laravel packages or assisting repos like TallUI Package Builder
+- [_others](./_others/README.md) - Other Laravel packages or assisting repos like Satis
 - [_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
 - [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 - [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
