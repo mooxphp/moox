@@ -1,6 +1,6 @@
 <?php
 
-namespace Usetall\Skeleton\Database\Factories;
+namespace Usetall\TalluiPackageBuilder\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

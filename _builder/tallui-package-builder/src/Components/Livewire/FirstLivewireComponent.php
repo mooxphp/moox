@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Usetall\Skeleton\Components\Livewire;
+namespace Usetall\TalluiPackageBuilder\Components\Livewire;
 
 use Illuminate\Contracts\View\View;
-use Usetall\Skeleton\Components\LivewireComponent;
+use Usetall\TalluiPackageBuilder\Components\LivewireComponent;
 
 class FirstLivewireComponent extends LivewireComponent
 {

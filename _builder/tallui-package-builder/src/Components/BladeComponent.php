@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\Skeleton\Components;
+namespace Usetall\TalluiPackageBuilder\Components;
 
 use Illuminate\View\Component as IlluminateComponent;
 

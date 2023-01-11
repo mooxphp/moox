@@ -64,26 +64,24 @@
 
 This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
-
 ## Packages
 
-TallUI packages are categorized in 
+TallUI packages are categorized in
 
-- [_builder](./_builder/README.md) - TallUI Skeleton packages (package builder and icon builder)
-- [_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
-- [_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
-- [_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
-- [_others](./_others/README.md) - Other Laravel packages or assisting repos like Satis
-- [_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
-- [_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
-- [_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
+-   [\_builder](./_builder/README.md) - TallUI TalluiPackageBuilder packages (package builder and icon builder)
+-   [\_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
+-   [\_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
+-   [\_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
+-   [\_others](./_others/README.md) - Other Laravel packages or assisting repos like Satis
+-   [\_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
+-   [\_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
+-   [\_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
 Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
 
-
 ## Installation
 
-The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Sail or Laragon. 
+The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Sail or Laragon.
 
 ```bash
 # Use the prepared composer.json
@@ -107,82 +105,76 @@ npm run dev
 ./vendor/bin/sail down --rmi all -v
 php artisan sail:install
 
-# Remove broken symlinks 
+# Remove broken symlinks
 # switching from Laragon to Sail for example
 rm -Rf vendor/usetall
 ```
-
 
 ## Custom packages
 
 Our Monorepo is prepared to be a double agent:
 
-- Develop a private or public project
-- while contributing to the TallUI project
+-   Develop a private or public project
+-   while contributing to the TallUI project
 
-This is done by supporting custom packages in the development app of our Monorepo. Sounds interesting? Read on [_custom/README.md](_custom/README.md).
-
+This is done by supporting custom packages in the development app of our Monorepo. Sounds interesting? Read on [\_custom/README.md](_custom/README.md).
 
 ## Development
 
-- Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
-- Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
-- Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
-- Use https://github.com/usetall/tallui-package-builder to create your own packages
-- Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
+-   Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
+-   Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
+-   Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
+-   Use https://github.com/usetall/tallui-package-builder to create your own packages
+-   Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Branching
 
-- ```main``` is the current stable version, branch-protected, auto-commits to all packages, deployed to dev
-- ```feature/...``` please prefix all feature-branches, create your pull requests directly to main
+-   `main` is the current stable version, branch-protected, auto-commits to all packages, deployed to dev
+-   `feature/...` please prefix all feature-branches, create your pull requests directly to main
 
-Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-view) for automated tests and code analysis. 
-
+Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-view) for automated tests and code analysis.
 
 ## Commits
 
 Your commit messages will be merged into Changelog.md, means they become part of the documentation. Please make sure, you
 
-- start with one of these types
-    - feat = feature
-    - fix = bugfix
-    - bump = minor verion change
-    - major = major updates
-    - lang = translation
-    - docs = documentation
-    - devops = GH and automation
-    - wip = work in progress
-- followed by the shortname of the package, in []
-    - all - multiple or all packages
-    - admin-panel
-    - core
-    - package-builder
-    - form-components
-    - app-components
-    - web-components
-    - chart-components
-    - monorepo
+-   start with one of these types
+    -   feat = feature
+    -   fix = bugfix
+    -   bump = minor verion change
+    -   major = major updates
+    -   lang = translation
+    -   docs = documentation
+    -   devops = GH and automation
+    -   wip = work in progress
+-   followed by the shortname of the package, in []
 
-- reference an issue, linked by issue number, e. g. #138
-- prepare auto-closing the issue by using "Close #138"
+    -   all - multiple or all packages
+    -   admin-panel
+    -   core
+    -   package-builder
+    -   form-components
+    -   app-components
+    -   web-components
+    -   chart-components
+    -   monorepo
 
+-   reference an issue, linked by issue number, e. g. #138
+-   prepare auto-closing the issue by using "Close #138"
 
 #### Valid examples
 
-- `wip[core]: Feature register assets w-i-p #123`
-- `fix[all]: Update all packages Close #321`
-- `feat[monorepo]: Update dev app Close #22`
-- `Dependencies: Minor Updates`
-- `Wip[Package Builder]: Blade and Livewire components w-i-p #23`
+-   `wip[core]: Feature register assets w-i-p #123`
+-   `fix[all]: Update all packages Close #321`
+-   `feat[monorepo]: Update dev app Close #22`
+-   `Dependencies: Minor Updates`
+-   `Wip[Package Builder]: Blade and Livewire components w-i-p #23`
 
 Read more about [conventional commits](https://www.conventionalcommits.org/).
 
-
 ## Pull requests
 
-Create a PR to `main`. Use conventional commits like explained above. 
-
+Create a PR to `main`. Use conventional commits like explained above.
 
 ### Semver
 
@@ -194,33 +186,30 @@ We use semantic versioning, written like 1.2.3 for
 
 Visit [Semver.org](https://semver.org/) for more information.
 
-
 ## Releases
 
 Currently done manually, an automatic release feature is on the way.
-
 
 ## Testing
 
 We test TallUI using:
 
-- Monorepo
-  - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
-  - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
-  - [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/), [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui) (testing)
-- Packages
-  - [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
-  - [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
-  - [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
-  - [Pest](https://pestphp.com/)
+-   Monorepo
+    -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
+    -   [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
+    -   [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/), [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui) (testing)
+-   Packages
+    -   [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
+    -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
+    -   [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
+    -   [Pest](https://pestphp.com/)
 
 Please make sure you use the same tools in VS Code (our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) covers this) or do the checks manually before committing to the dev-branch:
 
-- PHPStan: ```composer analyse ``` or ```./vendor/bin/phpstan analyse```, for packages ```../../vendor/bin/phpstan analyse```
-- Pest: ```composer test ``` or ```./vendor/bin/pest```, for packages ```../../vendor/bin/pest```
-- Coverage: ```composer test-coverage ``` or ```./vendor/bin/pest --coverage```, for packages ```../../vendor/bin/pest --coverage```
-- Pint: ```composer format ``` or ```./vendor/bin/pint```, for packages ```../../vendor/bin/pint```
-
+-   PHPStan: `composer analyse ` or `./vendor/bin/phpstan analyse`, for packages `../../vendor/bin/phpstan analyse`
+-   Pest: `composer test ` or `./vendor/bin/pest`, for packages `../../vendor/bin/pest`
+-   Coverage: `composer test-coverage ` or `./vendor/bin/pest --coverage`, for packages `../../vendor/bin/pest --coverage`
+-   Pint: `composer format ` or `./vendor/bin/pint`, for packages `../../vendor/bin/pint`
 
 ## Translation
 
@@ -228,7 +217,6 @@ TallUI is translated with Weblate. More information about the languages, transla
 
 <a href="https://hosted.weblate.org/engage/tallui/">
 <img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" /></a>
-
 
 ## Contributors
 
@@ -340,7 +328,6 @@ TallUI is made by these nice people, and bots ...
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -end -->
 
-
 ## License
 
 TallUI is free Open-Source software licensed under the [MIT License](LICENSE.md).
@@ -348,7 +335,6 @@ TallUI is free Open-Source software licensed under the [MIT License](LICENSE.md)
 Some of the projects we depend on are released under a different license. We do our best to make sure that these licenses allow private as well as commercial use and do not impose any restrictions.
 
 If you notice any problem with TallUI licensing or any dependency, please mail us at dev@tallui.io.
-
 
 ## Security
 

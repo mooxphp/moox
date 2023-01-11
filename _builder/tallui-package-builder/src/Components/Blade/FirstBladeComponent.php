@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Usetall\Skeleton\Components\Blade;
+namespace Usetall\TalluiPackageBuilder\Components\Blade;
 
 use Illuminate\Contracts\View\View;
-use Usetall\Skeleton\Components\BladeComponent;
+use Usetall\TalluiPackageBuilder\Components\BladeComponent;
 
 class FirstBladeComponent extends BladeComponent
 {

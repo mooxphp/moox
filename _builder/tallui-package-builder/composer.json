@@ -46,16 +46,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Usetall\\Skeleton\\": "src",
-            "Usetall\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Usetall\\TalluiPackageBuilder\\": "src",
+            "Usetall\\TalluiPackageBuilder\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Usetall\\Skeleton\\Tests\\": "tests"
+            "Usetall\\TalluiPackageBuilder\\Tests\\": "tests"
         }
     },
-     "scripts": {
+    "scripts": {
         "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
@@ -72,10 +72,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Usetall\\Skeleton\\SkeletonServiceProvider"
+                "Usetall\\TalluiPackageBuilder\\TalluiPackageBuilderServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "Usetall\\Skeleton\\Facades\\Skeleton"
+                "TalluiPackageBuilder": "Usetall\\TalluiPackageBuilder\\Facades\\TalluiPackageBuilder"
             }
         }
     },

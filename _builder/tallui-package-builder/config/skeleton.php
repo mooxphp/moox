@@ -1,6 +1,6 @@
 <?php
 
-use Usetall\Skeleton\Components;
+use Usetall\TalluiPackageBuilder\Components;
 
 return [
 
