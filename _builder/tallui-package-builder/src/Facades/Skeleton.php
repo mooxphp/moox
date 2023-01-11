@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Usetall\Skeleton\Facades;
+namespace Usetall\TalluiPackageBuilder\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Usetall\Skeleton\Skeleton
+ * @see \Usetall\TalluiPackageBuilder\TalluiPackageBuilder
  */
-class Skeleton extends Facade
+class TalluiPackageBuilder extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Usetall\Skeleton\Skeleton::class;
+        return \Usetall\TalluiPackageBuilder\TalluiPackageBuilder::class;
     }
 }

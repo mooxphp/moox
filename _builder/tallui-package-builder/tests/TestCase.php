@@ -1,6 +1,6 @@
 <?php
 
-namespace Usetall\Skeleton\Tests;
+namespace Usetall\TalluiPackageBuilder\Tests;
 
 use DOMDocument;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -10,7 +10,7 @@ use Livewire\Livewire;
 use Livewire\LivewireServiceProvider;
 use Livewire\Testing\TestableLivewire;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Usetall\Skeleton\SkeletonServiceProvider;
+use Usetall\TalluiPackageBuilder\TalluiPackageBuilderServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -20,14 +20,14 @@ class TestCase extends Orchestra
 
         config()->set('app.key', '6rE9Nz59bGRbeMATftriyQjrpF7DcOQm');
 
-        View::addNamespace('test', __DIR__.'/resources/views');
+        View::addNamespace('test', __DIR__ . '/resources/views');
 
         $this
             ->registerLivewireComponents()
             ->registerLivewireTestMacros();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Adrolli\\TestRepoZwo\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Adrolli\\TestRepoZwo\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -35,7 +35,7 @@ class TestCase extends Orchestra
     {
         return [
             LivewireServiceProvider::class,
-            SkeletonServiceProvider::class,
+            TalluiPackageBuilderServiceProvider::class,
         ];
     }
 

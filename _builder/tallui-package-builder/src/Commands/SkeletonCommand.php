@@ -1,10 +1,10 @@
 <?php
 
-namespace Usetall\Skeleton\Commands;
+namespace Usetall\TalluiPackageBuilder\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class TalluiPackageBuilderCommand extends Command
 {
     public $signature = 'skeleton';
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Usetall\Skeleton;
+namespace Usetall\TalluiPackageBuilder;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Str;
@@ -10,9 +10,9 @@ use Illuminate\View\Compilers\BladeCompiler;
 use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Usetall\Skeleton\Commands\SkeletonCommand;
+use Usetall\TalluiPackageBuilder\Commands\TalluiPackageBuilderCommand;
 
-class SkeletonServiceProvider extends PackageServiceProvider
+class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -22,7 +22,7 @@ class SkeletonServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasMigration('create_skeleton_table')
-            ->hasCommand(SkeletonCommand::class);
+            ->hasCommand(TalluiPackageBuilderCommand::class);
     }
 
     public function boot(): void
@@ -37,7 +37,7 @@ class SkeletonServiceProvider extends PackageServiceProvider
 
     private function bootResources(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', ':builder');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', ':builder');
     }
 
     private function bootBladeComponents(): void
@@ -56,7 +56,7 @@ class SkeletonServiceProvider extends PackageServiceProvider
 
     private function bootLivewireComponents(): void
     {
-        if (! class_exists(Livewire::class)) {
+        if (!class_exists(Livewire::class)) {
             return;
         }
 
@@ -81,13 +81,13 @@ class SkeletonServiceProvider extends PackageServiceProvider
             collect($files)->filter(function (string $file) {
                 return Str::endsWith($file, '.css');
             })->each(function (string $style) {
-                Skeleton::addStyle($style);
+                TalluiPackageBuilder::addStyle($style);
             });
 
             collect($files)->filter(function (string $file) {
                 return Str::endsWith($file, '.js');
             })->each(function (string $script) {
-                Skeleton::addScript($script);
+                TalluiPackageBuilder::addScript($script);
             });
         }
     }
@@ -95,11 +95,11 @@ class SkeletonServiceProvider extends PackageServiceProvider
     private function bootDirectives(): void
     {
         Blade::directive('TalluiPackageBuilderStyles', function (string $expression) {
-            return "<?php echo Usetall\\Skeleton\\Skeleton::outputStyles($expression); ?>";
+            return "<?php echo Usetall\\TalluiPackageBuilder\\TalluiPackageBuilder::outputStyles($expression); ?>";
         });
 
         Blade::directive('TalluiPackageBuilderScripts', function (string $expression) {
-            return "<?php echo Usetall\\Skeleton\\Skeleton::outputScripts($expression); ?>";
+            return "<?php echo Usetall\\TalluiPackageBuilder\\TalluiPackageBuilder::outputScripts($expression); ?>";
         });
     }
 }

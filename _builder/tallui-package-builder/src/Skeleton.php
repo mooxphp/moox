@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Usetall\Skeleton;
+namespace Usetall\TalluiPackageBuilder;
 
-final class Skeleton
+final class TalluiPackageBuilder
 {
     /** @var array<mixed> */
     protected static $styles = [];
@@ -14,7 +14,7 @@ final class Skeleton
 
     public static function addStyle(string $style): void
     {
-        if (! in_array($style, static::$styles)) {
+        if (!in_array($style, static::$styles)) {
             static::$styles[] = $style;
         }
     }
@@ -27,18 +27,18 @@ final class Skeleton
 
     public static function outputStyles(bool $force = false): string
     {
-        if (! $force && static::disableScripts()) {
+        if (!$force && static::disableScripts()) {
             return '';
         }
 
         return collect(static::$styles)->map(function (string $style) {
-            return '<link href="'.$style.'" rel="stylesheet" />';
+            return '<link href="' . $style . '" rel="stylesheet" />';
         })->implode(PHP_EOL);
     }
 
     public static function addScript(string $script): void
     {
-        if (! in_array($script, static::$scripts)) {
+        if (!in_array($script, static::$scripts)) {
             static::$scripts[] = $script;
         }
     }
@@ -51,17 +51,17 @@ final class Skeleton
 
     public static function outputScripts(bool $force = false): string
     {
-        if (! $force && static::disableScripts()) {
+        if (!$force && static::disableScripts()) {
             return '';
         }
 
         return collect(static::$scripts)->map(function (string $script) {
-            return '<script src="'.$script.'"></script>';
+            return '<script src="' . $script . '"></script>';
         })->implode(PHP_EOL);
     }
 
     private static function disableScripts(): bool
     {
-        return ! config('app.debug');
+        return !config('app.debug');
     }
 }

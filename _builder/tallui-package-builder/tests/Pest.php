@@ -1,5 +1,5 @@
 <?php
 
-use Usetall\Skeleton\Tests\TestCase;
+use Usetall\TalluiPackageBuilder\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);
