@@ -229,14 +229,9 @@ foreach ($files as $file) {
         'TallUI Package Builder' => $packageName,
         'tallui-package-builder' => $packageSlug,
         'package_slug_without_prefix' => $packageSlugWithoutPrefix,
-        'Skeleton' => $className,
-        'skeleton' => $packageSlug,
         'tallui_package_builder' => title_snake($packageSlug),
         'variable' => $variableName,
         'This is the TallUI package builder' => $description,
-        'TalluiPackageBuilder' => $className,
-        'builder_slug' => $packageSlug,
-        ':builder' => $packageSlugWithoutPrefix,
     ]);
 
     match (true) {
