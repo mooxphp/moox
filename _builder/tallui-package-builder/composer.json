@@ -1,22 +1,22 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "tallui_package_builder/tallui-package-builder",
+    "description": "This is the TallUI package builder",
     "keywords": [
-        ":vendor_name",
+        "TallUI_Devs",
         "laravel",
-        ":package_slug",
+        "tallui-package-builder",
         "tall-stack",
         "tailwindcss",
         "alpinejs",
         "livewire",
         "admin"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/tallui_package_builder/tallui-package-builder",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Builder_Fullname",
+            "email": "builder@tallui.io",
             "role": "Developer"
         }
     ],
@@ -46,13 +46,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Usetall\\Skeleton\\": "src",
+            "Usetall\\Skeleton\\Database\\Factories\\": "database/factories"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests"
+            "Usetall\\Skeleton\\Tests\\": "tests"
         }
     },
      "scripts": {
@@ -72,10 +72,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Usetall\\Skeleton\\SkeletonServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "Skeleton": "Usetall\\Skeleton\\Facades\\Skeleton"
             }
         }
     },
