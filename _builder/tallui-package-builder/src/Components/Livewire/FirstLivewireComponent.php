@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton\Components\Livewire;
+namespace Usetall\Skeleton\Components\Livewire;
 
 use Illuminate\Contracts\View\View;
-use VendorName\Skeleton\Components\LivewireComponent;
+use Usetall\Skeleton\Components\LivewireComponent;
 
 class FirstLivewireComponent extends LivewireComponent
 {

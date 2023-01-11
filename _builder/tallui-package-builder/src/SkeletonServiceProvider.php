@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton;
+namespace Usetall\Skeleton;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Str;
@@ -10,7 +10,7 @@ use Illuminate\View\Compilers\BladeCompiler;
 use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use VendorName\Skeleton\Commands\SkeletonCommand;
+use Usetall\Skeleton\Commands\SkeletonCommand;
 
 class SkeletonServiceProvider extends PackageServiceProvider
 {
@@ -37,7 +37,7 @@ class SkeletonServiceProvider extends PackageServiceProvider
 
     private function bootResources(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', ':builder');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', ':builder');
     }
 
     private function bootBladeComponents(): void
@@ -56,7 +56,7 @@ class SkeletonServiceProvider extends PackageServiceProvider
 
     private function bootLivewireComponents(): void
     {
-        if (! class_exists(Livewire::class)) {
+        if (!class_exists(Livewire::class)) {
             return;
         }
 
@@ -94,12 +94,12 @@ class SkeletonServiceProvider extends PackageServiceProvider
 
     private function bootDirectives(): void
     {
-        Blade::directive(':BuilderStyles', function (string $expression) {
-            return "<?php echo VendorName\\Skeleton\\Skeleton::outputStyles($expression); ?>";
+        Blade::directive('TalluiPackageBuilderStyles', function (string $expression) {
+            return "<?php echo Usetall\\Skeleton\\Skeleton::outputStyles($expression); ?>";
         });
 
-        Blade::directive(':BuilderScripts', function (string $expression) {
-            return "<?php echo VendorName\\Skeleton\\Skeleton::outputScripts($expression); ?>";
+        Blade::directive('TalluiPackageBuilderScripts', function (string $expression) {
+            return "<?php echo Usetall\\Skeleton\\Skeleton::outputScripts($expression); ?>";
         });
     }
 }

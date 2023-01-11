@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton\Components;
+namespace Usetall\Skeleton\Components;
 
 use Illuminate\View\Component as IlluminateComponent;
 

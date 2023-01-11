@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton\Components\Blade;
+namespace Usetall\Skeleton\Components\Blade;
 
 use Illuminate\Contracts\View\View;
-use VendorName\Skeleton\Components\BladeComponent;
+use Usetall\Skeleton\Components\BladeComponent;
 
 class FirstBladeComponent extends BladeComponent
 {

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace VendorName\Skeleton\Facades;
+namespace Usetall\Skeleton\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \VendorName\Skeleton\Skeleton
+ * @see \Usetall\Skeleton\Skeleton
  */
 class Skeleton extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \VendorName\Skeleton\Skeleton::class;
+        return \Usetall\Skeleton\Skeleton::class;
     }
 }
