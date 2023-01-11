@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "881a5715a14a895c93ee5ce15fcfd202",
+    "content-hash": "c9bd5bfd8fdf34f2e26fcbdfdded5057",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5896,7 +5896,7 @@
         },
         {
             "name": "usetall/tallui-admin-panel",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
@@ -5993,7 +5993,7 @@
         },
         {
             "name": "usetall/tallui-core",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
@@ -6086,7 +6086,7 @@
         },
         {
             "name": "usetall/tallui-form-components",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-form-components",
@@ -6182,105 +6182,8 @@
             }
         },
         {
-            "name": "usetall/tallui-test-package",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "./_custom/tallui-test-package",
-                "reference": "277b6df664810f47f59dd01802a130c3b169e84b"
-            },
-            "require": {
-                "ext-json": "*",
-                "illuminate/contracts": "^9.0",
-                "illuminate/filesystem": "^9.0",
-                "illuminate/support": "^9.0",
-                "illuminate/view": "^9.0",
-                "livewire/livewire": "^2.0",
-                "nesbot/carbon": "^2.38",
-                "php": "^8.1",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0",
-                "nunomaduro/collision": "^6.0",
-                "nunomaduro/larastan": "^2.0.1",
-                "orchestra/testbench": "^7.0",
-                "pestphp/pest": "^1.21",
-                "pestphp/pest-plugin-laravel": "^1.1",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^9.5",
-                "spatie/laravel-ray": "^1.26"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Usetall\\TalluiTestPackage\\TalluiTestPackageServiceProvider"
-                    ],
-                    "aliases": {
-                        "TalluiTestPackage": "Usetall\\TalluiTestPackage\\Facades\\TalluiTestPackage"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Usetall\\TalluiTestPackage\\": "src",
-                    "Usetall\\TalluiTestPackage\\Database\\Factories\\": "database/factories"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Usetall\\TalluiTestPackage\\Tests\\": "tests"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": [
-                    "@php ./vendor/bin/testbench package:discover --ansi"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse"
-                ],
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alf Drollinger",
-                    "email": "40421928+adrolli@users.noreply.github.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package tallui-test-package",
-            "homepage": "https://github.com/usetall/tallui-test-package",
-            "keywords": [
-                "admin",
-                "alpinejs",
-                "laravel",
-                "livewire",
-                "tailwindcss",
-                "tall-stack",
-                "tallui-test-package",
-                "usetall"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
             "name": "usetall/tallui-web-components",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
@@ -6377,7 +6280,7 @@
         },
         {
             "name": "usetall/tallui-web-icons",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_icons/tallui-web-icons",
@@ -8117,16 +8020,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.9.7",
+            "version": "1.9.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "0501435cd342eac7664bd62155b1ef907fc60b6f"
+                "reference": "45411d15bf85a33b4a8ee9b75a6e82998c9adb97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0501435cd342eac7664bd62155b1ef907fc60b6f",
-                "reference": "0501435cd342eac7664bd62155b1ef907fc60b6f",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/45411d15bf85a33b4a8ee9b75a6e82998c9adb97",
+                "reference": "45411d15bf85a33b4a8ee9b75a6e82998c9adb97",
                 "shasum": ""
             },
             "require": {
@@ -8156,7 +8059,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.9.7"
+                "source": "https://github.com/phpstan/phpstan/tree/1.9.8"
             },
             "funding": [
                 {
@@ -8172,7 +8075,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-04T21:59:57+00:00"
+            "time": "2023-01-08T21:26:18+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -10689,9 +10592,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "usetall/tallui-test-package": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
