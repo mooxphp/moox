@@ -16,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - tallui-icon-builder
           - tallui-package-builder
     steps:
       - uses: actions/checkout@v3
