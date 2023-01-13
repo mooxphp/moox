@@ -6102,6 +6102,103 @@
             }
         },
         {
+            "name": "usetall/tallui-package-builder",
+            "version": "dev-feature/new-builder",
+            "dist": {
+                "type": "path",
+                "url": "./_custom/tallui-package-builder",
+                "reference": "b5d9824b1de3f5c2fffe5d6ecce21ec8bac879d6"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^9.0",
+                "illuminate/filesystem": "^9.0",
+                "illuminate/support": "^9.0",
+                "illuminate/view": "^9.0",
+                "livewire/livewire": "^2.0",
+                "nesbot/carbon": "^2.38",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.13.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^6.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^7.0",
+                "pestphp/pest": "^1.21",
+                "pestphp/pest-plugin-laravel": "^1.1",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^9.5",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\TalluiPackageBuilder\\TalluiPackageBuilderServiceProvider"
+                    ],
+                    "aliases": {
+                        "TalluiPackageBuilder": "Usetall\\TalluiPackageBuilder\\Facades\\TalluiPackageBuilder"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\TalluiPackageBuilder\\": "src",
+                    "Usetall\\TalluiPackageBuilder\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Usetall\\TalluiPackageBuilder\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Builder_Fullname",
+                    "email": "builder@tallui.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is the TallUI package builder",
+            "homepage": "https://github.com/tallui_package_builder/tallui-package-builder",
+            "keywords": [
+                "TallUI_Devs",
+                "admin",
+                "alpinejs",
+                "laravel",
+                "livewire",
+                "tailwindcss",
+                "tall-stack",
+                "tallui-package-builder"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "usetall/tallui-web-components",
             "version": "dev-feature/new-builder",
             "dist": {
