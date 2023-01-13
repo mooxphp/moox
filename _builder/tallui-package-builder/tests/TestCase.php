@@ -20,14 +20,14 @@ class TestCase extends Orchestra
 
         config()->set('app.key', '6rE9Nz59bGRbeMATftriyQjrpF7DcOQm');
 
-        View::addNamespace('test', __DIR__.'/resources/views');
+        View::addNamespace('test', __DIR__ . '/resources/views');
 
         $this
             ->registerLivewireComponents()
             ->registerLivewireTestMacros();
 
         Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'Adrolli\\TestRepoZwo\\Database\\Factories\\'.class_basename($modelName).'Factory'
+            fn (string $modelName) => 'Adrolli\\TestRepoZwo\\Database\\Factories\\' . class_basename($modelName) . 'Factory'
         );
     }
 
@@ -44,17 +44,17 @@ class TestCase extends Orchestra
         config()->set('database.default', 'testing');
 
         /*
-        $migration = include __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_tallui-package-builder_table.php.stub';
         $migration->up();
         */
     }
 
     private function registerLivewireComponents(): self
     {
-        $prefix = config(':builder.prefix', '');
-        $assets = config(':builder.assets', []);
+        $prefix = config('tallui-package-builder.prefix', '');
+        $assets = config('tallui-package-builder.assets', []);
 
-        foreach (config(':builder.livewire', []) as $alias => $component) {
+        foreach (config('tallui-package-builder.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
             Livewire::component($alias, $component);

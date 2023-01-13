@@ -9,7 +9,7 @@
 
 This repo can be used to scaffold a TallUI package. Follow these steps to get started:
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
+1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this tallui-package-builder.
 2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
 3. Have fun developing your package.
 

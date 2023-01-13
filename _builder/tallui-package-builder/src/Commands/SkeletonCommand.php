@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class TalluiPackageBuilderCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'tallui-package-builder';
 
     public $description = 'My command';
 
