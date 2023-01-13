@@ -24,7 +24,7 @@ class TestCase extends Orchestra
 
         $this
             ->registerLivewireComponents();
-            //->registerLivewireTestMacros();
+        //->registerLivewireTestMacros();
 
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Adrolli\\TestRepoZwo\\Database\\Factories\\'.class_basename($modelName).'Factory'
