@@ -17,11 +17,11 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('skeleton')
+            ->name('tallui-package-builder')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigration('create_skeleton_table')
+            ->hasMigration('create_tallui-package-builder_table')
             ->hasCommand(TalluiPackageBuilderCommand::class);
     }
 
@@ -37,16 +37,16 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 
     private function bootResources(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', ':builder');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'tallui-package-builder');
     }
 
     private function bootBladeComponents(): void
     {
         $this->callAfterResolving(BladeCompiler::class, function (BladeCompiler $blade) {
-            $prefix = config(':builder.prefix', '');
-            $assets = config(':builder.assets', []);
+            $prefix = config('tallui-package-builder.prefix', '');
+            $assets = config('tallui-package-builder.assets', []);
 
-            foreach (config(':builder.components', []) as $alias => $component) {
+            foreach (config('tallui-package-builder.components', []) as $alias => $component) {
                 $blade->component($component, $alias, $prefix);
 
                 $this->registerAssets($component, $assets);
@@ -56,14 +56,14 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 
     private function bootLivewireComponents(): void
     {
-        if (! class_exists(Livewire::class)) {
+        if (!class_exists(Livewire::class)) {
             return;
         }
 
-        $prefix = config(':builder.prefix', '');
-        $assets = config(':builder.assets', []);
+        $prefix = config('tallui-package-builder.prefix', '');
+        $assets = config('tallui-package-builder.assets', []);
 
-        foreach (config(':builder.livewire', []) as $alias => $component) {
+        foreach (config('tallui-package-builder.livewire', []) as $alias => $component) {
             $alias = $prefix ? "$prefix-$alias" : $alias;
 
             Livewire::component($alias, $component);

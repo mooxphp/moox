@@ -21,6 +21,6 @@ class FirstLivewireComponent extends LivewireComponent
 
     public function render(): View
     {
-        return view(':builder::components.livewire.first-livewire-component');
+        return view('tallui-package-builder::components.livewire.first-livewire-component');
     }
 }

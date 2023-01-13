@@ -21,6 +21,6 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-        return view(':builder::components.blade.first-blade-component');
+        return view('tallui-package-builder::components.blade.first-blade-component');
     }
 }
