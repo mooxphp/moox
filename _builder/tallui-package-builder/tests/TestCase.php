@@ -23,8 +23,8 @@ class TestCase extends Orchestra
         View::addNamespace('test', __DIR__.'/resources/views');
 
         $this
-            ->registerLivewireComponents()
-            ->registerLivewireTestMacros();
+            ->registerLivewireComponents();
+            //->registerLivewireTestMacros();
 
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Adrolli\\TestRepoZwo\\Database\\Factories\\'.class_basename($modelName).'Factory'
@@ -65,6 +65,7 @@ class TestCase extends Orchestra
         return $this;
     }
 
+    /*
     public function registerLivewireTestMacros(): self
     {
         TestableLivewire::macro('jsonContent', function (string $elementId) {
@@ -94,4 +95,5 @@ class TestCase extends Orchestra
 
         return $this;
     }
+    */
 }
