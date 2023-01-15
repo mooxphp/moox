@@ -142,23 +142,22 @@ Your commit messages will be merged into Changelog.md, means they become part of
     -   feat = feature
     -   fix = bugfix
     -   bump = minor verion change
-    -   major = major updates
     -   lang = translation
     -   docs = documentation
     -   devops = GH and automation
     -   wip = work in progress
+-   for breaking changes add "!" to any type to craft a major release
 -   followed by the shortname of the package, in []
-
     -   all - multiple or all packages
     -   admin-panel
     -   core
     -   package-builder
+    -   icons-builder
     -   form-components
     -   app-components
     -   web-components
     -   chart-components
     -   monorepo
-
 -   reference an issue, linked by issue number, e. g. #138
 -   prepare auto-closing the issue by using "Close #138"
 
@@ -167,8 +166,8 @@ Your commit messages will be merged into Changelog.md, means they become part of
 -   `wip[core]: Feature register assets w-i-p #123`
 -   `fix[all]: Update all packages Close #321`
 -   `feat[monorepo]: Update dev app Close #22`
--   `Dependencies: Minor Updates`
--   `Wip[Package Builder]: Blade and Livewire components w-i-p #23`
+-   `dependencies[all]: Minor Updates`
+-   `feat![package-builder]: This will become a major release #23`
 
 Read more about [conventional commits](https://www.conventionalcommits.org/).
 
