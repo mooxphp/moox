@@ -40,7 +40,7 @@
         },
         {
             "type": "path",
-            "url": "./_components/tallui-package-builder"
+            "url": "./_builder/tallui-package-builder"
         }
     ],
     "license": "MIT",
