@@ -7,7 +7,7 @@ namespace Usetall\TalluiPackageBuilder\Components\Blade;
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiPackageBuilder\Components\BladeComponent;
 
-class FirstBladeComponent extends BladeComponent
+class TalluiPackageBuilderBladeComponent extends BladeComponent
 {
     /** @var array<mixed> */
     protected static $assets = ['example'];
@@ -21,6 +21,6 @@ class FirstBladeComponent extends BladeComponent
 
     public function render(): View
     {
-        return view('tallui-package-builder::components.blade.first-blade-component');
+        return view('tallui-package-builder::components.blade.tallui-package-builder-blade-component');
     }
 }

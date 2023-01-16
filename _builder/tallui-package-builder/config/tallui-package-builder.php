@@ -16,7 +16,7 @@ return [
     */
 
     'components' => [
-        'first-blade-component' => Components\Blade\FirstBladeComponent::class,
+        'tallui-package-builder-blade-component' => Components\Blade\TalluiPackageBuilderBladeComponent::class,
     ],
 
     /*
@@ -30,7 +30,7 @@ return [
     */
 
     'livewire' => [
-        'first-livewire-component' => Components\Livewire\FirstLivewireComponent::class,
+        'tallui-package-builder-livewire-component' => Components\Livewire\TalluiPackageBuilderLivewireComponent::class,
     ],
 
     /*

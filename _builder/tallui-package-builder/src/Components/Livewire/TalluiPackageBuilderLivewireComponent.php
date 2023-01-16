@@ -7,7 +7,7 @@ namespace Usetall\TalluiPackageBuilder\Components\Livewire;
 use Illuminate\Contracts\View\View;
 use Usetall\TalluiPackageBuilder\Components\LivewireComponent;
 
-class FirstLivewireComponent extends LivewireComponent
+class TalluiPackageBuilderLivewireComponent extends LivewireComponent
 {
     /** @var array<mixed> */
     protected static $assets = ['example'];
@@ -21,6 +21,6 @@ class FirstLivewireComponent extends LivewireComponent
 
     public function render(): View
     {
-        return view('tallui-package-builder::components.livewire.first-livewire-component');
+        return view('tallui-package-builder::components.livewire.tallui-package-builder-livewire-component');
     }
 }
