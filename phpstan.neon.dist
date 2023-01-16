@@ -37,5 +37,11 @@ parameters:
                 - _components/*/tests/*
                 - _packages/*/tests/*
                 - _builder/*/tests/*
+        -
+            # Builder(s) are not active packages wired with Composer, if they were composered, PHPStan would not throw this error!
+            messages:
+                - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
+            paths:
+                - _builder/*
     tmpDir: build/phpstan
 
