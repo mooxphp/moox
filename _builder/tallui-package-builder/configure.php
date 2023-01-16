@@ -167,12 +167,7 @@ $authorName = ask('Author name', $gitName);
 $gitEmail = run('git config user.email');
 $authorEmail = ask('Author email', $gitEmail);
 
-$usernameGuess = explode(':', run('git config remote.origin.url'))[1];
-$usernameGuess = dirname($usernameGuess);
-$usernameGuess = basename($usernameGuess);
-$authorUsername = ask('Author username', $usernameGuess);
-
-$vendorName = ask('Vendor name', $authorUsername);
+$vendorName = ask('Vendor name', 'usetall');
 $vendorSlug = slugify($vendorName);
 $vendorNamespace = str_replace('-', '', ucwords($vendorName));
 $vendorNamespace = ask('Vendor namespace', $vendorNamespace);
@@ -196,7 +191,6 @@ $useLaravelRay = confirm('Use Ray for debugging?', true);
 $useUpdateChangelogWorkflow = confirm('Use automatic changelog updater workflow?', true);
 
 writeln('------');
-writeln("Author     : {$authorName} ({$authorUsername}, {$authorEmail})");
 writeln("Vendor     : {$vendorName} ({$vendorSlug})");
 writeln("Package    : {$packageSlug} <{$description}>");
 writeln("Namespace  : {$vendorNamespace}\\{$className}");
@@ -221,7 +215,6 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 foreach ($files as $file) {
     replace_in_file($file, [
         'Builder_Fullname' => $authorName,
-        'Builder_Username' => $authorUsername,
         'builder@tallui.io' => $authorEmail,
         'TallUI_Devs' => $vendorName,
         'tallui_package_builder' => $vendorSlug,

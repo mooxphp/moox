@@ -134,9 +134,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 This package is based on Package TalluiPackageBuilder Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
 
--   [Builder_Fullname](https://github.com/Builder_Username)
 -   [TALLUI Devs](https://github.com/orgs/usetall/people)
--   [Freek Van der Herten](https://github.com/freekmurze)
 -   [All Contributors](../../contributors)
 
 ## License
