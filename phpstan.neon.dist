@@ -13,6 +13,7 @@ parameters:
         - _others
         - app
     excludePaths:
+        - '_builder/*/build/*'
         - '_components/*/build/*'
         - '_data/*/build/*'
         - '_icons/*/build/*'
@@ -20,6 +21,7 @@ parameters:
         - '_themes/admin/*/build/*'
         - '_themes/website/*/build/*'
         - '_others/*/build/*'
+        - '_builder/*/vendor/*'
         - '_components/*/vendor/*'
         - '_data/*/vendor/*'
         - '_icons/*/vendor/*'
@@ -44,4 +46,3 @@ parameters:
             paths:
                 - _builder/*
     tmpDir: build/phpstan
-
