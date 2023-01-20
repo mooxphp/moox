@@ -1,17 +1,17 @@
 {
-    "name": "tallui-organization/tallui-heroicons",
-    "description": "tallui-description",
-    "keywords": ["Blade", "Heroicons", "Laravel"],
-    "homepage": "https://github.com/tallui-organization/tallui-heroicons",
+    "name": "tallui/testing",
+    "description": "This is my iconset test",
+    "keywords": ["Tallui", "test", "Laravel"],
+    "homepage": "https://github.com/tallui/testing",
     "license": "MIT",
     "authors": [
         {
-            "name": "TallUI Developer"
+            "name": "KimSpeer"
         }
     ],
     "require": {
         "php": "~8.1.0|~8.2.0",
-        "blade-ui-kit/blade-icons": "^1.4",
+        "tallui-ui-kit/tallui-icons": "^1.4",
         "illuminate/support": "^9.0"
     },
     "require-dev": {
@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BladeUI\\Heroicons\\": "src"
+            "TalluiUI\\test\\": "src"
         }
     },
     "autoload-dev": {
@@ -31,7 +31,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BladeUI\\Heroicons\\BladeHeroiconsServiceProvider"
+                "Tallui\\test\\TalluitestServiceProvider"
             ]
         }
     },
