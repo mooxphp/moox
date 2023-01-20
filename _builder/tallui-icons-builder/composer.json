@@ -1,7 +1,13 @@
 {
     "name": "usetall/tallui-icons-builder",
     "description": "A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.",
-    "keywords": ["TallUI", "Blade", "Icons", "Laravel", "Package"],
+    "keywords": [
+        "TallUI",
+        "Blade",
+        "Icons",
+        "Laravel",
+        "Package"
+    ],
     "homepage": "https://github.com/usetall/tallui-icons-builder",
     "license": "MIT",
     "authors": [

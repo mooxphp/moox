@@ -1,6 +1,6 @@
 {
-  "private": true,
-  "dependencies": {
-    "icons": "^1.0.0"
-  }
+    "private": true,
+    "dependencies": {
+        "webicons": "^1.0.0"
+    }
 }
