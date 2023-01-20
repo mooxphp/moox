@@ -1,0 +1,84 @@
+{
+    "name": "usetall/tallui-package-builder",
+    "description": "This is the TallUI package builder",
+    "keywords": [
+        "TallUI_Devs",
+        "laravel",
+        "tallui-package-builder",
+        "tall-stack",
+        "tailwindcss",
+        "alpinejs",
+        "livewire",
+        "admin"
+    ],
+    "homepage": "https://github.com/tallui_package_builder/tallui-package-builder",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Builder_Fullname",
+            "email": "builder@tallui.io",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "spatie/laravel-package-tools": "^1.13.0",
+        "illuminate/contracts": "^9.0",
+        "illuminate/filesystem": "^9.0",
+        "illuminate/support": "^9.0",
+        "illuminate/view": "^9.0",
+        "livewire/livewire": "^2.0",
+        "nesbot/carbon": "^2.38"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^6.0",
+        "nunomaduro/larastan": "^2.0.1",
+        "orchestra/testbench": "^7.0",
+        "pestphp/pest": "^1.21",
+        "pestphp/pest-plugin-laravel": "^1.1",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "spatie/laravel-ray": "^1.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "Usetall\\TalluiPackageBuilder\\": "src",
+            "Usetall\\TalluiPackageBuilder\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Usetall\\TalluiPackageBuilder\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Usetall\\TalluiPackageBuilder\\TalluiPackageBuilderServiceProvider"
+            ],
+            "aliases": {
+                "TalluiPackageBuilder": "Usetall\\TalluiPackageBuilder\\Facades\\TalluiPackageBuilder"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -4,6 +4,7 @@ includes:
 parameters:
     level: 8
     paths:
+        - _builder
         - _components
         - _data
         - _icons
@@ -12,6 +13,7 @@ parameters:
         - _others
         - app
     excludePaths:
+        - '_builder/*/build/*'
         - '_components/*/build/*'
         - '_data/*/build/*'
         - '_icons/*/build/*'
@@ -19,6 +21,7 @@ parameters:
         - '_themes/admin/*/build/*'
         - '_themes/website/*/build/*'
         - '_others/*/build/*'
+        - '_builder/*/vendor/*'
         - '_components/*/vendor/*'
         - '_data/*/vendor/*'
         - '_icons/*/vendor/*'
@@ -30,18 +33,16 @@ parameters:
     ignoreErrors:
         -
             messages:
-                -   '#Parameter \#1 $view of function view expects view-string|null, string given.#'
-                -   '#^Parameter \#1 \$string of static method Illuminate\\Support\\Str\:\:of\(\) expects string, string\|false given\.$#'
-                -   '#^Cannot access property \$textContent on DOMElement\|null\.$#'
-            paths:
-                - _others/tallui-package-builder/*
-        -
-            messages:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
                 -   '#^Call to an undefined method Pest\\Expectation\|Pest\\Support\\Extendable\:\:toBe\(\)\.$#'
             paths:
                 - _components/*/tests/*
                 - _packages/*/tests/*
-                - _others/*/tests/*
+                - _builder/*/tests/*
+        -
+            # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
+            messages:
+                - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
+            paths:
+                - _builder/*
     tmpDir: build/phpstan
-

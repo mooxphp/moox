@@ -37,10 +37,6 @@
         {
             "type": "path",
             "url": "./_components/tallui-dev-components"
-        },
-        {
-            "type": "path",
-            "url": "./_icons/tallui-web-icons"
         }
     ],
     "license": "MIT",
@@ -56,8 +52,7 @@
         "usetall/tallui-admin-panel": "*",
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
-        "usetall/tallui-web-components": "*",
-        "usetall/tallui-web-icons": "*"
+        "usetall/tallui-web-components": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -71,6 +66,7 @@
         "pestphp/pest-plugin-laravel": "^1.1",
         "pestphp/pest-plugin-livewire": "^1.0",
         "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^1.9",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5",
