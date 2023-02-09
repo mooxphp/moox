@@ -42,12 +42,7 @@ parameters:
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
             messages:
-                - '#^Class BladeUI\\Icons\\Factory not found\.$#'
                 - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
-                - '#^Function svg not found\.$#'
-                - '#^Parameter \$factory of anonymous function has invalid type BladeUI\\Icons\\Factory\.$#'
-                - '#^Call to method add\(\) on an unknown class BladeUI\\Icons\\Factory\.$#'
-                - '#^Class BladeUI\\Icons\\BladeIconsServiceProvider not found\.$#'
             paths:
                 - _builder/tallui-package-builder/*
         -
