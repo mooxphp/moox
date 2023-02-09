@@ -1,26 +1,26 @@
 {
-    "name": "tallui/testing",
-    "description": "This is my iconset test",
-    "keywords": ["Tallui", "test", "Laravel"],
-    "homepage": "https://github.com/tallui/testing",
+    "name": "usetall/tallui-icons-builder",
+    "description": "A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.",
+    "keywords": ["Blade", "TallUIIconsBuilder", "Laravel"],
+    "homepage": "https://github.com/usetall/tallui-icons-builder",
     "license": "MIT",
     "authors": [
         {
-            "name": "KimSpeer"
+            "name": "TallUI Devs"
         }
     ],
     "require": {
         "php": "~8.1.0|~8.2.0",
-        "tallui-ui-kit/tallui-icons": "^1.4",
-        "illuminate/support": "^9.0"
+        "blade-ui-kit/blade-icons": "^1.4",
+        "illuminate/support": "^9.0|^10.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0",
+        "orchestra/testbench": "^7.0|^8.0",
         "phpunit/phpunit": "^9.0"
     },
     "autoload": {
         "psr-4": {
-            "TalluiUI\\test\\": "src"
+            "TallUIIconsBuilder\\": "src"
         }
     },
     "autoload-dev": {
@@ -31,7 +31,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tallui\\test\\TalluitestServiceProvider"
+                "TallUIIconsBuilder\\TallUIIconsBuilderServiceProvider"
             ]
         }
     },

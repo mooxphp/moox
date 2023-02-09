@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "heroicons": "^1.0.1"
+    "icons": "^1.0.1"
   }
 }

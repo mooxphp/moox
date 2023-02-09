@@ -19,9 +19,9 @@ See https://github.com/usetall/tallui-icons-builder
 
 function ask(string $question, string $default = ''): string
 {
-    $answer = readline($question.($default ? " ({$default})" : null).': ');
+    $answer = readline($question . ($default ? " ({$default})" : null) . ': ');
 
-    if (! $answer) {
+    if (!$answer) {
         return $default;
     }
 
@@ -30,9 +30,9 @@ function ask(string $question, string $default = ''): string
 
 function confirm(string $question, bool $default = false): bool
 {
-    $answer = ask($question.' ('.($default ? 'Y/n' : 'y/N').')');
+    $answer = ask($question . ' (' . ($default ? 'Y/n' : 'y/N') . ')');
 
-    if (! $answer) {
+    if (!$answer) {
         return $default;
     }
 
@@ -41,7 +41,7 @@ function confirm(string $question, bool $default = false): bool
 
 function writeln(string $line): void
 {
-    echo $line.PHP_EOL;
+    echo $line . PHP_EOL;
 }
 
 function run(string $command): string
@@ -102,7 +102,7 @@ function remove_prefix(string $prefix, string $content): string
 /** @param  array<mixed>  $names */
 function remove_composer_deps(array $names): void
 {
-    $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
+    $data = json_decode((string) file_get_contents(__DIR__ . '/composer.json'), true);
 
     foreach ($data['require-dev'] as $name => $version) {
         if (in_array($name, $names, true)) {
@@ -110,12 +110,12 @@ function remove_composer_deps(array $names): void
         }
     }
 
-    file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 function remove_composer_script(mixed $scriptName): void
 {
-    $data = json_decode((string) file_get_contents(__DIR__.'/composer.json'), true);
+    $data = json_decode((string) file_get_contents(__DIR__ . '/composer.json'), true);
 
     foreach ($data['scripts'] as $name => $script) {
         if ($scriptName === $name) {
@@ -124,7 +124,7 @@ function remove_composer_script(mixed $scriptName): void
         }
     }
 
-    file_put_contents(__DIR__.'/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 function remove_readme_paragraphs(string $file): void
@@ -152,59 +152,75 @@ function determineSeparator(string $path): string
 /** @return array<mixed> */
 function replaceForWindows(): array
 {
-    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string) __FILE__).' | findstr /r /i /M /F:/ "tallui heroicon icons tallui-icons"'));
+    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename((string) __FILE__) . ' | findstr /r /i /M /F:/ "TallUIIconsBuilder tallui-icons-builder usetall icons tallui-icons webicons"'));
 }
 
 /** @return array<string> */
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i "tallui|heroicon|icons|tallui-icons" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "tallui|heroicon|icons|tallui-icons" --exclude-dir=vendor ./* ./.github/* | grep -v ' . basename(__FILE__)));
 }
 
-$orgaizationName = ask('Organosation Name', 'tallui');
 $gitName = run('git config user.name');
 $authorName = ask('Author name', $gitName);
 
-$repositoryName = ask('Repository name', '');
+$vendorName = ask('Vendor name', 'usetall');
+$vendorSlug = slugify($vendorName);
+$vendorNamespace = str_replace('-', '', ucwords($vendorName));
+$vendorNamespace = ask('Vendor namespace', $vendorNamespace);
 
 $currentDirectory = getcwd();
 $folderName = basename((string) $currentDirectory);
 
+$packageName = ask('Package name', $folderName);
+$packageSlug = slugify($packageName);
+$packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
+
 $iconSetName = ask('Icon set name', '');
-$icons = lcfirst($iconSetName);
+$icons = slugify(lcfirst($iconSetName));
 
-$description = ask('Package description', "This is my iconset {$iconSetName}");
+$className = title_case($packageName);
+$className = ask('Class name', $className);
+
+$prefix = ask('Prefix', $icons);
+
+$variableName = lcfirst($className);
+$description = ask('Package description', "This is my package {$packageSlug}");
 
 writeln('------');
-writeln("Author     : {$orgaizationName} ({$authorName}");
-writeln("Repository    : {$repositoryName}");
-writeln("Icon set name : {$iconSetName}");
-writeln("Current directory : {$currentDirectory}");
-writeln("Current directory : {$folderName}");
-writeln("Directory that wont link : {$folderName}");
-writeln('------');
+writeln("Author     : {$vendorSlug} ({$authorName})");
+writeln("Vendor     : {$vendorName} ({$vendorSlug})");
+writeln("Package    : {$packageSlug} <{$description}>");
+writeln("Namespace  : {$vendorNamespace}\\{$className}");
+writeln("Class name : {$className}");
+writeln("Icon set : {$iconSetName}");
+writeln("Prefix : {$prefix}");
+writeln('-----');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
 
-if (! confirm('Modify files?', true)) {
+if (!confirm('Modify files?', true)) {
     exit(1);
 }
 
 $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : replaceForAllOtherOSes());
 foreach ($files as $file) {
+    writeln($file);
+
     replace_in_file($file, [
-        'tallui-organization' => $orgaizationName,
-        'tallui-icons' => $repositoryName,
-        'tallui-description' => $description,
-        'TallUI Developer' => $authorName,
-        'icons' => $iconSetName,
-        'Icons' => ucwords($iconSetName),
+        'usetall' => $vendorName,
+        'tallui-icons-builder' => $packageName,
+        'A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.' => $description,
+        'TallUI Devs' => $authorName,
+        'TallUIIconsBuilder' => ucfirst($className),
+        'tallui-webicons' => $packageName,
+        'webicons' => $prefix,
 
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('config/tallui-icons.php')) => rename($file, determineSeparator('./config/'.$icons.'.php')),
-        str_contains($file, determineSeparator('src/TallUIIconsServiceProvider.php')) => rename($file, determineSeparator('./src/'.$iconSetName.'ServiceProvider.php')),
+        str_contains($file, determineSeparator('config/tallui-icons-builder.php')) => rename($file, determineSeparator('./config/' . $packageName . '.php')),
+        str_contains($file, determineSeparator('src/TallUIIconsBuilderServiceProvider.php')) => rename($file, determineSeparator('./src/' . ucfirst($className) . 'ServiceProvider.php')),
         str_contains($file, 'README.md') => remove_readme_paragraphs($file),
         default => [],
     };
