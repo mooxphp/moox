@@ -10,7 +10,7 @@ use Orchestra\Testbench\TestCase;
 class CompilesIconsTest extends TestCase
 {
     /** @test */
-    public function it_compiles_a_single_anonymous_component()
+    public function it_compiles_a_single_anonymous_component(): void
     {
         $result = svg('icon-o-bell')->toHtml();
 
@@ -25,7 +25,7 @@ class CompilesIconsTest extends TestCase
     }
 
     /** @test */
-    public function it_can_add_classes_to_icons()
+    public function it_can_add_classes_to_icons(): void
     {
         $result = svg('icon-o-bell', 'w-6 h-6 text-gray-500')->toHtml();
 
@@ -39,7 +39,7 @@ class CompilesIconsTest extends TestCase
     }
 
     /** @test */
-    public function it_can_add_styles_to_icons()
+    public function it_can_add_styles_to_icons(): void
     {
         $result = svg('icon-o-bell', ['style' => 'color: #555'])->toHtml();
 
@@ -52,7 +52,7 @@ class CompilesIconsTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
             TallUIIconsBuilderServiceProvider::class,
