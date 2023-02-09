@@ -20,7 +20,6 @@
             >tallui.io</a>
         </div>
     </div>
-
     <footer class="mt-105">
         <div class="flex flex-row items-center justify-center gap-3 mt-3">
 
