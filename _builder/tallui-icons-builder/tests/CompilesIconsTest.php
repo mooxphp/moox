@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use TallUIIconsBuilder\TallUIIconsBuilderServiceProvider;
 use Orchestra\Testbench\TestCase;
+use TallUIIconsBuilder\TallUIIconsBuilderServiceProvider;
 
 class CompilesIconsTest extends TestCase
 {
