@@ -18,9 +18,6 @@
                 class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded">tallui.io</a>
         </div>
     </div>
-
-    <x-webicons-test2 />
-
     <footer class="mt-105">
         <div class="flex flex-row items-center justify-center gap-3 mt-3">
 
