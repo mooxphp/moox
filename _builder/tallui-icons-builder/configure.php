@@ -213,7 +213,7 @@ foreach ($files as $file) {
         'tallui-icons-builder' => $packageName,
         'A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.' => $description,
         'TallUI Devs' => $authorName,
-        'TallUIIconsBuilder' => ucfirst($className),
+        'TalluiIconsBuilder' => ucfirst($className),
         'tallui-webicons' => $packageName,
         'webicons' => $prefix,
 
@@ -227,4 +227,4 @@ foreach ($files as $file) {
     };
 }
 
-confirm('Let this script delete itself?', false) && unlink(__FILE__);
+confirm('Let this script delete itself?', true) && unlink(__FILE__);
