@@ -1,11 +1,18 @@
-### Add a new package:
+# Builder
+
+Use
+
+-   [TallUI Package Builder](./tallui-package-builder/README.md) to create a new Package or Set of Components
+-   [TallUI Icons Builder](./tallui-icons-builder/README.md) to create a new Iconset
+
+## Add a new package to the Monorepo
 
 This is how to add a new package to develop within the TallUI Monorepo:
 
 -   Create a new package from TallUI Package Builder or Icons Builder template
 -   You may create it as public repository in the Usetall Organization
 -   Don't forget the repo's settings like linking to https://tallui.io and the [read-only]-notice
--   Copy contents into `_custom` folder and require it from there, if you need time to develop it 
+-   Copy contents into `_custom` folder and require it from there, if you need time to develop it
 
 After the initial development is finished or when a package (e.g. icons) is made in a nutshell:
 

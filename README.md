@@ -77,7 +77,7 @@ TallUI packages are categorized in
 -   [\_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
 -   [\_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
-Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./docs/builder/README.md) for more information about how to build and publish packages.
+Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./_builder/README.md) for more information about how to build and publish packages.
 
 ## Installation
 
@@ -212,7 +212,7 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 
 ## Translation
 
-TallUI is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./docs/translation/README.md).
+TallUI is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./TRANSLATE.md).
 
 <a href="https://hosted.weblate.org/engage/tallui/">
 <img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" /></a>

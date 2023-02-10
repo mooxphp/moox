@@ -1,3 +1,0 @@
-# Testing
-
-Some notes about testing coming soon...
