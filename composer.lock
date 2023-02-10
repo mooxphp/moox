@@ -5873,7 +5873,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
-                "reference": "16ab73a4d8b60fb55d6deae506887ec2ca082fa6"
+                "reference": "7cab425625f3039ce12020013fbcf87fac98574b"
             },
             "require": {
                 "ext-json": "*",
@@ -5970,7 +5970,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
-                "reference": "15a69fb9dcdb7a4502324e6962f6f956c2fe684d"
+                "reference": "34bd20c33c7cd538609ee7c7576a9fe234bf9487"
             },
             "require": {
                 "ext-json": "*",
@@ -6063,7 +6063,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-form-components",
-                "reference": "00fcbc6a18403c3dfc0d4fd82b9b81f9ca1b4c26"
+                "reference": "24e68acb129742edf99629f2f25654450d0d72f2"
             },
             "require": {
                 "ext-json": "*",
@@ -6160,7 +6160,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
-                "reference": "b96da78c59bca3fb3eb94a9e508077d79ce72e59"
+                "reference": "9bdafa8f9ac79098215542e3c1a840229ac524e7"
             },
             "require": {
                 "ext-json": "*",
