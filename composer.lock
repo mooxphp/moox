@@ -5954,7 +5954,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_custom/flags",
-                "reference": "0876b802b6acb51f2e46018b73f1eba3ef8b05f4"
+                "reference": "2d8aca2019c7e500d811941c9979614858ff6663"
             },
             "require": {
                 "blade-ui-kit/blade-icons": "^1.4",
@@ -5969,13 +5969,13 @@
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Usetall\\Flags\\FlagsServiceProvider"
+                        "Usetall\\FlagsGreen\\FlagsGreenServiceProvider"
                     ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Usetall\\Flags\\": "src"
+                    "Usetall\\FlagsGreen\\": "src"
                 }
             },
             "autoload-dev": {
