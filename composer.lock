@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0c136dfa7022c34b19b5bef32bc754d",
+    "content-hash": "847a0a2d7e1f337ba7e575a7fb00bf2f",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6139,6 +6139,60 @@
             }
         },
         {
+            "name": "usetall/tallui-flags-rounded",
+            "version": "dev-feature/new-icons-builder",
+            "dist": {
+                "type": "path",
+                "url": "./_custom/tallui-flags-rounded",
+                "reference": "5bc36144833d3c5a4853e4f64f1d72c2e758fbf3"
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.4",
+                "illuminate/support": "^9.0|^10.0",
+                "php": "~8.1.0|~8.2.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.0|^8.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "TalluiFlagsRounded\\TalluiFlagsRoundedServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TalluiFlagsRounded\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KimSpeer"
+                }
+            ],
+            "description": "TallUI flags rounded",
+            "homepage": "https://github.com/usetall/tallui-flags-rounded",
+            "keywords": [
+                "Blade",
+                "Laravel",
+                "TalluiFlagsRounded"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "usetall/tallui-form-components",
             "version": "dev-feature/new-icons-builder",
             "dist": {
@@ -6230,60 +6284,6 @@
                 "tall-stack",
                 "tallui-form-components",
                 "usetall"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "usetall/tallui-icons-builder",
-            "version": "dev-feature/new-icons-builder",
-            "dist": {
-                "type": "path",
-                "url": "./_builder/tallui-icons-builder",
-                "reference": "2627e9750bfb5427b37bc99412c53a7ce79a6fea"
-            },
-            "require": {
-                "blade-ui-kit/blade-icons": "^1.4",
-                "illuminate/support": "^9.0|^10.0",
-                "php": "~8.1.0|~8.2.0"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^7.0|^8.0",
-                "phpunit/phpunit": "^9.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "TallUIIconsBuilder\\TallUIIconsBuilderServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "TallUIIconsBuilder\\": "src"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "TallUI Devs"
-                }
-            ],
-            "description": "A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.",
-            "homepage": "https://github.com/usetall/tallui-icons-builder",
-            "keywords": [
-                "Blade",
-                "Laravel",
-                "TallUIIconsBuilder"
             ],
             "transport-options": {
                 "relative": true
