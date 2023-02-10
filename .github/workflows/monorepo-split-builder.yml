@@ -26,7 +26,7 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
-          package_directory: "_apps/${{ matrix.package }}"
+          package_directory: "_builder/${{ matrix.package }}"
 
           repository_organization: "usetall"
           repository_name: "${{ matrix.package }}"
