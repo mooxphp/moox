@@ -209,6 +209,7 @@ foreach ($files as $file) {
 
     replace_in_file($file, [
         'usetall' => $vendorName,
+        'Usetall' => ucfirst($vendorName),
         'tallui-icons-builder' => $packageName,
         'A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.' => $description,
         'TallUI Devs' => $authorName,

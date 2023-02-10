@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "TallUIIconsBuilder\\": "src"
+            "Usetall\\TalluiIconsBuilder\\": "src"
         }
     },
     "autoload-dev": {
@@ -31,7 +31,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "TallUIIconsBuilder\\TallUIIconsBuilderServiceProvider"
+                "Usetall\\TalluiIconsBuilder\\TalluiIconsBuilderServiceProvider"
             ]
         }
     },
