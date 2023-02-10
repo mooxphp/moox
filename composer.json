@@ -37,10 +37,6 @@
         {
             "type": "path",
             "url": "./_components/tallui-dev-components"
-        },
-        {
-            "type": "path",
-            "url": "./_builder/tallui-icons-builder"
         }
     ],
     "license": "MIT",
@@ -56,8 +52,7 @@
         "usetall/tallui-admin-panel": "*",
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
-        "usetall/tallui-web-components": "*",
-        "usetall/tallui-icons-builder": "*"
+        "usetall/tallui-web-components": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

@@ -6058,6 +6058,60 @@
             }
         },
         {
+            "name": "usetall/tallui-flags-rounded",
+            "version": "dev-feature/new-icons-builder",
+            "dist": {
+                "type": "path",
+                "url": "./_custom/tallui-flags-rounded",
+                "reference": "5bc36144833d3c5a4853e4f64f1d72c2e758fbf3"
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.4",
+                "illuminate/support": "^9.0|^10.0",
+                "php": "~8.1.0|~8.2.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.0|^8.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "TalluiFlagsRounded\\TalluiFlagsRoundedServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TalluiFlagsRounded\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KimSpeer"
+                }
+            ],
+            "description": "TallUI flags rounded",
+            "homepage": "https://github.com/usetall/tallui-flags-rounded",
+            "keywords": [
+                "Blade",
+                "Laravel",
+                "TalluiFlagsRounded"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "usetall/tallui-form-components",
             "version": "dev-feature/new-icons-builder",
             "dist": {
