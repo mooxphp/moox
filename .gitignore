@@ -42,6 +42,12 @@ Homestead.yaml
 /.idea
 /.vscode
 
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
 # TallUI Custom
 /resources/views/custom/*
 !/resources/views/custom/overview.blade.php
