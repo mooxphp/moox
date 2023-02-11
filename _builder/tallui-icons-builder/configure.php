@@ -213,7 +213,7 @@ foreach ($files as $file) {
         'tallui-icons-builder' => $packageName,
         'A package to easily make use of TallUIIconsBuilder in your Laravel Blade views.' => $description,
         'TallUI Devs' => $authorName,
-        'TallUIIconsBuilder' => ucfirst($className),
+        'TalluiIconsBuilder' => ucfirst($className),
         'tallui-webicons' => $packageName,
         'webicons' => $prefix,
 
@@ -221,10 +221,10 @@ foreach ($files as $file) {
 
     match (true) {
         str_contains($file, determineSeparator('config/tallui-icons-builder.php')) => rename($file, determineSeparator('./config/'.$packageName.'.php')),
-        str_contains($file, determineSeparator('src/TallUIIconsBuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.ucfirst($className).'ServiceProvider.php')),
+        str_contains($file, determineSeparator('src/TalluiIconsBuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.ucfirst($className).'ServiceProvider.php')),
         str_contains($file, 'README.md') => remove_readme_paragraphs($file),
         default => [],
     };
 }
 
-confirm('Let this script delete itself?', false) && unlink(__FILE__);
+confirm('Let this script delete itself?', true) && unlink(__FILE__);
