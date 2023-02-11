@@ -23,7 +23,7 @@ jobs:
 
       - if: "!startsWith(github.ref, 'refs/tags/')"
         
-        uses: "danharrin/monorepo-split-github-action@v2.3"
+        uses: "symplify/monorepo-split-github-action@v2.3"
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
