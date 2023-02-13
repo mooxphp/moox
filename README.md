@@ -162,7 +162,7 @@ Your commit messages will be merged into Changelog.md, means they become part of
 -   reference an issue, linked by issue number, e. g. #138
 -   prepare auto-closing the issue by using "Close #138"
 
-#### Valid examples
+### Valid examples
 
 -   `wip[core]: Feature register assets w-i-p #123`
 -   `fix[all]: Update all packages Close #321`
