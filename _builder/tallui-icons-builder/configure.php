@@ -205,8 +205,6 @@ if (! confirm('Modify files?', true)) {
 
 $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : replaceForAllOtherOSes());
 foreach ($files as $file) {
-    writeln($file);
-
     replace_in_file($file, [
         'usetall' => $vendorName,
         'Usetall' => ucfirst($vendorName),
