@@ -81,13 +81,14 @@ Packages are automatically updated to their own read-only repos when pushed to `
 
 ## Installation
 
-The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Sail or Laragon.
+The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Valet, Laravel Sail or Laragon.
 
 ```bash
 # Use the prepared composer.json
 cp _custom/composer.json-example _custom/composer.json
 
-# Use the matching environment for sail or laragon
+# Use the matching environment for Valet, Sail or Laragon
+cp .env.valet .env
 cp .env.sail .env
 cp .env.laragon .env
 
