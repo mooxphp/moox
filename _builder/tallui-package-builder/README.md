@@ -121,13 +121,6 @@ You can publish the config file with:
 php artisan vendor:publish --tag="tallui-package-builder-config"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 Optionally, you can publish the views using
 
 ```bash
