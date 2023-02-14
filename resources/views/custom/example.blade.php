@@ -17,6 +17,5 @@
             See <b>/_custom/README.md</b> for details.<br>
         </p>
     </div>
-    <x-flagsgreen-tallui />
 
 @stop
