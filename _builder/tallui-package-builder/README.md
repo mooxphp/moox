@@ -1,7 +1,9 @@
 <p align="center">
-    <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
-    <br><br>
-    <img src="https://github.com/usetall/tallui/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+    <a href="https://tallui.io" target="_blank"><img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo"></a>
+        <br><br>
+      <a href="https://tallui.io" target="_blank">
+        <img src="https://github.com/usetall/tallui/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+    </a>
 </p><br>
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
@@ -59,18 +61,15 @@
     <br>
 </p>
 
-# TallUI This is the TallUI package builder
+# TallUI Package Builder
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/tallui_package_builder/tallui-package-builder.svg?style=flat-square)](https://packagist.org/packages/tallui_package_builder/tallui-package-builder)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/tallui_package_builder/tallui-package-builder/run-tests?label=tests)](https://github.com/tallui_package_builder/tallui-package-builder/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/tallui_package_builder/tallui-package-builder/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/tallui_package_builder/tallui-package-builder/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/tallui_package_builder/tallui-package-builder.svg?style=flat-square)](https://packagist.org/packages/tallui_package_builder/tallui-package-builder)
+<!--delete-->
 
-## <!--delete-->
+----
 
 This repo can be used to scaffold a TallUI package. Follow these steps to get started:
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this tallui-package-builder.
+1. Press the "Use this template" button at the top of [this repo](https://github.com/usetall/tallui-package-builder/) to create a new repo with the contents of this tallui-package-builder.
 2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
 3. Have fun developing your package.
 
@@ -86,47 +85,16 @@ For most of the questions in configure.php, there will be an example migration, 
 -   `hasWidget` and `hasWidgets`, or call `hasWidget` multiple times
 -   `hasBlock` and `hasBlocks`, or call `hasBlock` multiple times
 
+And there are two demo components, you can call from any blade-file
+
+- `<x-package-builder-blade-component />`
+- `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
+
+They are wired in the config-file of the package. To start developing components you may rename or copy these components and (re)-wire them in your config file.
+
 We stick to the conventions made in [Spatie's Laravel Package Tools](https://github.com/spatie/laravel-package-tools). If you are unsure about the syntax, read there.
 
-## Todo:
-
-Think about how to add each of these questions, or make them default.
-
-### Questions in configure.php
-
--   Does the package include config? Y/n
--   Does the package include views? Y/n
--   Does the package include translations? Y/n
--   Does the package include migrations? Y/n
--   Does the package include commands? Y/n
--   Does the package include admin modules? Y/n
--   Does the package include admin widgets? Y/n
--   Does the package include editor blocks? Y/n
--   Does the package include an admin theme? Y/n
--   Does the package include a website theme? Y/n
--   Does the package include docs? Y/n
--   Does the package include blade components? Y/n
--   Does the package include livewire components? Y/n
-
-### Service Provider
-
--   Add the package-provider in core or packages, extend spatie and use the own package provider
--   Add a demo blade and livewire-component
--   Add languages? Which ones?
--   Scaffold! :-)
-
-### Config
-
--   Idea: use config from blade-ui-kit instead of service provider
--   Design: add theming
-
-### Docs
-
-Probably a good idea to:
-
--   How to create ... modules, ...
-
----
+----
 
 <!--/delete-->
 
@@ -153,13 +121,6 @@ You can publish the config file with:
 php artisan vendor:publish --tag="tallui-package-builder-config"
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
 Optionally, you can publish the views using
 
 ```bash
@@ -172,6 +133,13 @@ php artisan vendor:publish --tag="tallui-package-builder-views"
 $variable = new Usetall\TalluiPackageBuilder();
 echo $variable->echoPhrase('Hello, Usetall!');
 ```
+
+## Components
+
+There are two components, you can call from any blade-file
+
+- `<x-package-builder-blade-component />`
+- `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
 
 ## Testing
 
@@ -193,7 +161,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-This package is based on Package TalluiPackageBuilder Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
+This package is based on Package Skeleton Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
 
 -   [TALLUI Devs](https://github.com/orgs/usetall/people)
 -   [All Contributors](../../contributors)
