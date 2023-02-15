@@ -65,7 +65,7 @@
 
 <!--delete-->
 
-----
+---
 
 This repo can be used to scaffold a TallUI iconset. Follow these steps to get started:
 
@@ -76,7 +76,7 @@ This repo can be used to scaffold a TallUI iconset. Follow these steps to get st
 
 This package is based on [Blade UI Kit - Blade Icons](https://github.com/blade-ui-kit/blade-icons), learn more about all things Blade Icons like caching there.
 
-----
+---
 
 <!--/delete-->
 
@@ -139,12 +139,6 @@ Then use them in your views like:
 
 ```blade
 <img src="{{ asset('vendor/tallui-icons-builder/iconname.svg') }}" width="10" height="10"/>
-```
-
-## Testing
-
-```bash
-composer test
 ```
 
 ## Changelog
