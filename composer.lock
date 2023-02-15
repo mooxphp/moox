@@ -1281,16 +1281,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v9.51.0",
+            "version": "v9.52.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "b81123134349a013a738a9f7f715c6ce99d5a414"
+                "reference": "eb85cd9d72e5bfa54b4d0d9040786f26d6184a9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/b81123134349a013a738a9f7f715c6ce99d5a414",
-                "reference": "b81123134349a013a738a9f7f715c6ce99d5a414",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/eb85cd9d72e5bfa54b4d0d9040786f26d6184a9e",
+                "reference": "eb85cd9d72e5bfa54b4d0d9040786f26d6184a9e",
                 "shasum": ""
             },
             "require": {
@@ -1475,7 +1475,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-02-07T15:37:18+00:00"
+            "time": "2023-02-14T14:51:14+00:00"
         },
         {
             "name": "laravel/jetstream",
@@ -5869,11 +5869,11 @@
         },
         {
             "name": "usetall/tallui-admin-panel",
-            "version": "dev-main",
+            "version": "dev-feature/package-builder",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
-                "reference": "7cab425625f3039ce12020013fbcf87fac98574b"
+                "reference": "16ab73a4d8b60fb55d6deae506887ec2ca082fa6"
             },
             "require": {
                 "ext-json": "*",
@@ -5966,11 +5966,11 @@
         },
         {
             "name": "usetall/tallui-core",
-            "version": "dev-main",
+            "version": "dev-feature/package-builder",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
-                "reference": "34bd20c33c7cd538609ee7c7576a9fe234bf9487"
+                "reference": "15a69fb9dcdb7a4502324e6962f6f956c2fe684d"
             },
             "require": {
                 "ext-json": "*",
@@ -6059,11 +6059,11 @@
         },
         {
             "name": "usetall/tallui-form-components",
-            "version": "dev-main",
+            "version": "dev-feature/package-builder",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-form-components",
-                "reference": "24e68acb129742edf99629f2f25654450d0d72f2"
+                "reference": "00fcbc6a18403c3dfc0d4fd82b9b81f9ca1b4c26"
             },
             "require": {
                 "ext-json": "*",
@@ -6156,11 +6156,11 @@
         },
         {
             "name": "usetall/tallui-web-components",
-            "version": "dev-main",
+            "version": "dev-feature/package-builder",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
-                "reference": "9bdafa8f9ac79098215542e3c1a840229ac524e7"
+                "reference": "b96da78c59bca3fb3eb94a9e508077d79ce72e59"
             },
             "require": {
                 "ext-json": "*",
@@ -6245,6 +6245,103 @@
                 "tailwindcss",
                 "tall-stack",
                 "tallui-web-components",
+                "usetall"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "usetall/tic-tac-toe",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./_custom/tic-tac-toe",
+                "reference": "42d1604ba7965aab7b4921227157968f166801d1"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^9.0",
+                "illuminate/filesystem": "^9.0",
+                "illuminate/support": "^9.0",
+                "illuminate/view": "^9.0",
+                "livewire/livewire": "^2.0",
+                "nesbot/carbon": "^2.38",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.13.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^6.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^7.0",
+                "pestphp/pest": "^1.21",
+                "pestphp/pest-plugin-laravel": "^1.1",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^9.5",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\TicTacToe\\TicTacToeServiceProvider"
+                    ],
+                    "aliases": {
+                        "TicTacToe": "Usetall\\TicTacToe\\Facades\\TicTacToe"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\TicTacToe\\": "src",
+                    "Usetall\\TicTacToe\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Usetall\\TicTacToe\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KimSpeer",
+                    "email": "kim.speer@co-IT.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is my package tic-tac-toe",
+            "homepage": "https://github.com/usetall/tic-tac-toe",
+            "keywords": [
+                "admin",
+                "alpinejs",
+                "laravel",
+                "livewire",
+                "tailwindcss",
+                "tall-stack",
+                "tic-tac-toe",
                 "usetall"
             ],
             "transport-options": {
@@ -6784,16 +6881,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.4.1",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "80ddf23a5d97825e79bb1018eebb6f3f985d4fa8"
+                "reference": "e0a8cef58b74662f27355be9cdea0e726bbac362"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/80ddf23a5d97825e79bb1018eebb6f3f985d4fa8",
-                "reference": "80ddf23a5d97825e79bb1018eebb6f3f985d4fa8",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/e0a8cef58b74662f27355be9cdea0e726bbac362",
+                "reference": "e0a8cef58b74662f27355be9cdea0e726bbac362",
                 "shasum": ""
             },
             "require": {
@@ -6804,13 +6901,13 @@
                 "php": "^8.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.14",
-                "illuminate/view": "^9.32.0",
+                "friendsofphp/php-cs-fixer": "^3.14.4",
+                "illuminate/view": "^9.51.0",
                 "laravel-zero/framework": "^9.2.0",
                 "mockery/mockery": "^1.5.1",
-                "nunomaduro/larastan": "^2.2.0",
-                "nunomaduro/termwind": "^1.14.0",
-                "pestphp/pest": "^1.22.1"
+                "nunomaduro/larastan": "^2.4.0",
+                "nunomaduro/termwind": "^1.15.1",
+                "pestphp/pest": "^1.22.4"
             },
             "bin": [
                 "builds/pint"
@@ -6846,20 +6943,20 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2023-01-31T15:50:45+00:00"
+            "time": "2023-02-14T16:31:02+00:00"
         },
         {
             "name": "laravel/sail",
-            "version": "v1.20.1",
+            "version": "v1.20.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "4b85dbfa3dceeaf7227e3029707562fd60297e86"
+                "reference": "5ae072b182b1efbec927409e8a3ce3b1078cc42c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/4b85dbfa3dceeaf7227e3029707562fd60297e86",
-                "reference": "4b85dbfa3dceeaf7227e3029707562fd60297e86",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/5ae072b182b1efbec927409e8a3ce3b1078cc42c",
+                "reference": "5ae072b182b1efbec927409e8a3ce3b1078cc42c",
                 "shasum": ""
             },
             "require": {
@@ -6907,7 +7004,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2023-02-08T02:08:37+00:00"
+            "time": "2023-02-08T20:22:21+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -10301,16 +10398,16 @@
         },
         {
             "name": "zbateson/mail-mime-parser",
-            "version": "2.3.0",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zbateson/mail-mime-parser.git",
-                "reference": "d59e0c5eeb1442fca94bcb3b9d3c6be66318a500"
+                "reference": "20b3e48eb799537683780bc8782fbbe9bc25934a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zbateson/mail-mime-parser/zipball/d59e0c5eeb1442fca94bcb3b9d3c6be66318a500",
-                "reference": "d59e0c5eeb1442fca94bcb3b9d3c6be66318a500",
+                "url": "https://api.github.com/repos/zbateson/mail-mime-parser/zipball/20b3e48eb799537683780bc8782fbbe9bc25934a",
+                "reference": "20b3e48eb799537683780bc8782fbbe9bc25934a",
                 "shasum": ""
             },
             "require": {
@@ -10372,7 +10469,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-01-30T19:04:55+00:00"
+            "time": "2023-02-14T22:58:03+00:00"
         },
         {
             "name": "zbateson/mb-wrapper",
@@ -10509,7 +10606,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "usetall/tic-tac-toe": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
