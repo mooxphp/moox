@@ -63,7 +63,7 @@
 
 # TallUI Icons
 
-Iconset for developers. No dependency on other TallUI packages. Compatible with Blade UI Kit. Use them as you want.
+Iconsets for developers. No dependency on other TallUI packages. Compatible with Blade UI Kit. Use them as you want.
 
 ## Blade Icons
 
