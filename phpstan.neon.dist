@@ -30,14 +30,8 @@ parameters:
         - '_themes/website/*/vendor/*'
         - '_others/*/vendor/*'
         - '_others/tallui-satis/*'
-        - 'app\Actions\Fortify\CreateNewUser.php'
-        - 'app\Actions\Fortify\ResetUserPassword.php'
-        - 'app\Actions\Fortify\UpdateUserPassword.php'
-        - 'app\Models\User.php'
-        - 'app\Actions\Jetstream\CreateTeam.php'
-        - 'app\Models\Team.php'
-        - 'app\Actions\Jetstream\InviteTeamMember.php'
-        - 'app\Models\TeamInvitation.php'
+        - 'app/Actions/Fortify/*'
+        - 'app/Actions/Jetstream/*'
     ignoreErrors:
         -
             messages:
