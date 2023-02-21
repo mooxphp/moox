@@ -30,6 +30,9 @@ parameters:
         - '_themes/website/*/vendor/*'
         - '_others/*/vendor/*'
         - '_others/tallui-satis/*'
+        - 'app/Actions/Fortify/*'
+        - 'app/Actions/Jetstream/*'
+        - 'app/Models/TeamInvitation.php'
     ignoreErrors:
         -
             messages:
@@ -45,6 +48,7 @@ parameters:
                 - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
             paths:
                 - _builder/tallui-package-builder/*
+            reportUnmatched: false
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
             messages:

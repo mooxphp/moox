@@ -87,18 +87,17 @@ The Laravel dev app in the root-folder of the TallUI Monorepo is made for instan
 # Use the prepared composer.json
 cp _custom/composer.json-example _custom/composer.json
 
-# Use the matching environment for Valet, Sail or Laragon
-cp .env.valet .env
-cp .env.sail .env
-cp .env.laragon .env
+# Create a .env file and adjust to your needs
+cp .env.example .env
 
 # Build
 composer install
 
-# Run Sail, alternatively start Laragon
+# Run Sail, start Laragon or Valet
 ./vendor/bin/sail up
 
-# Run Vite (in Ubuntu, not in Sail container)
+# Run Vite
+# for Laravel Sail on Windows: do it in Ubuntu, not inside the Sail container
 npm install
 npm run dev
 
