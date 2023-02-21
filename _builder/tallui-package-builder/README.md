@@ -24,7 +24,7 @@
         <img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0">
     </a>
     <a href="https://www.laravel.com">
-        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-v9-orange?logo=Laravel&color=FF2D20">
+        <img alt="Laravel 10" src="https://img.shields.io/badge/Laravel-v10-orange?logo=Laravel&color=FF2D20">
     </a>
     <a href="https://www.laravel-livewire.com">
         <img alt="Laravel Livewire 2" src="https://img.shields.io/badge/Livewire-v2-orange?logo=livewire&color=4E56A6">
@@ -65,7 +65,7 @@
 
 <!--delete-->
 
-----
+---
 
 This repo can be used to scaffold a TallUI package. Follow these steps to get started:
 
@@ -87,14 +87,14 @@ For most of the questions in configure.php, there will be an example migration, 
 
 And there are two demo components, you can call from any blade-file
 
-- `<x-package-builder-blade-component />`
-- `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
+-   `<x-package-builder-blade-component />`
+-   `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
 
 They are wired in the config-file of the package. To start developing components you may rename or copy these components and (re)-wire them in your config file.
 
 We stick to the conventions made in [Spatie's Laravel Package Tools](https://github.com/spatie/laravel-package-tools). If you are unsure about the syntax, read there.
 
-----
+---
 
 <!--/delete-->
 
@@ -138,8 +138,8 @@ echo $variable->echoPhrase('Hello, Usetall!');
 
 There are two components, you can call from any blade-file
 
-- `<x-package-builder-blade-component />`
-- `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
+-   `<x-package-builder-blade-component />`
+-   `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
 
 ## Testing
 

@@ -61,7 +61,7 @@
             </a>
             <a href="https://www.laravel.com">
                 <img
-                    alt="Laravel 9"
+                    alt="Laravel 10"
                     src="https://img.shields.io/badge/Laravel-v9-orange?logo=Laravel&color=FF2D20"
                 >
             </a>

@@ -24,7 +24,7 @@
         <img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0">
     </a>
     <a href="https://www.laravel.com">
-        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-v9-orange?logo=Laravel&color=FF2D20">
+        <img alt="Laravel 10" src="https://img.shields.io/badge/Laravel-v10-orange?logo=Laravel&color=FF2D20">
     </a>
     <a href="https://www.laravel-livewire.com">
         <img alt="Laravel Livewire 2" src="https://img.shields.io/badge/Livewire-v2-orange?logo=livewire&color=4E56A6">
@@ -65,7 +65,7 @@
 
 This is a Laravel Blade Iconset for TALL-Stack developers. No dependency on other TallUI packages. Compatible with Blade UI Kit. Use them as you want.
 
-This Iconset is built from **Social Media | Black & White icon pack** by [Hüseyin Çakır](https://www.iconfinder.com/hsynckr), found by [Iconfinder](https://www.iconfinder.com/iconsets/social-circle-3). 
+This Iconset is built from **Social Media | Black & White icon pack** by [Hüseyin Çakır](https://www.iconfinder.com/hsynckr), found by [Iconfinder](https://www.iconfinder.com/iconsets/social-circle-3).
 
 It is a Free Icon Pack licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
 
@@ -81,8 +81,8 @@ Add your own styles or TailwindCSS Classes to individualize the icons.
 
 ## Requirements
 
--   PHP 8.1 or higher
--   Laravel 9.0 or higher
+-   PHP 8.2 or higher
+-   Laravel 10.0 or higher
 
 ## Installation
 

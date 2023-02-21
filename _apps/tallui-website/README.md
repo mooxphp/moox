@@ -4,7 +4,6 @@
     <img src="../../_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
 
-
 <br>
 
 <p align="center">
@@ -25,23 +24,22 @@
     </a>
 </p>
 
-
 # TallUI Website
 
 This is the TallUI Website. You can clone this repo and run it locally to see, how our website was built.
 
-W-I-P - the current coming-soon website is html-only, see ../_others/tallui-coming-soon.
+W-I-P - the current coming-soon website is html-only, see ../\_others/tallui-coming-soon.
 
 ## Requirements
 
-Prior to installing Laravel 9 you need
+Prior to installing Laravel 10 you need
 
-- PHP 8.1
-- Git
-- Composer
-- Node.js / NPM
-- A webserver like Apache
-- A database server like MySQL
+-   PHP 8.2
+-   Git
+-   Composer
+-   Node.js / NPM
+-   A webserver like Apache
+-   A database server like MySQL
 
 We use and recommend Laragon (Windows) or Laravel Sail (MacOS, Linux, Windows using WSL).
 
@@ -61,7 +59,7 @@ composer install
 # Run Sail (or start Laragon)
 ./vendor/bin/sail up
 
-# Run Vite development  
+# Run Vite development
 npm run dev
 # OR build for production
 npm run build
@@ -73,27 +71,27 @@ Have fun surfin' on http://localhost
 
 There are URLs already published in the project:
 
-- https://tallui.io/package-builder in configure.php (builder)
-- https://tallui.io/package-name in ascii-art.txt (art)
-- https://tallui.io/docs/install in install.php and installer.php (installer)
+-   https://tallui.io/package-builder in configure.php (builder)
+-   https://tallui.io/package-name in ascii-art.txt (art)
+-   https://tallui.io/docs/install in install.php and installer.php (installer)
 
 So the url-concept of the page would be:
 
-- / = home
-- /components = search for components
-- /icons = search for icons or iconsets
-- /packages = search for packages
-- /themes = search for themes
-- /package-builder = from others (without tallui_)
-- /admin-panel = any package (without tallui_)
-- /theme/theme-name = any theme (without tallui_)
-- /docs/install = the docs, install overview
-- /about = imprint, why, people, contact, support (GH discussion, issues, support pricing)
-- /blog/blogpost = yep, we should have a blog
-- /data/data-package = sth like this for data provider
+-   / = home
+-   /components = search for components
+-   /icons = search for icons or iconsets
+-   /packages = search for packages
+-   /themes = search for themes
+-   /package-builder = from others (without tallui\_)
+-   /admin-panel = any package (without tallui\_)
+-   /theme/theme-name = any theme (without tallui\_)
+-   /docs/install = the docs, install overview
+-   /about = imprint, why, people, contact, support (GH discussion, issues, support pricing)
+-   /blog/blogpost = yep, we should have a blog
+-   /data/data-package = sth like this for data provider
 
 Admin area as well as other apps are prefixed with tui- or running on subdomain only:
 
-- demo.tallui.io
-- /tui-admin = admin
-- /tui-app = any app
+-   demo.tallui.io
+-   /tui-admin = admin
+-   /tui-app = any app

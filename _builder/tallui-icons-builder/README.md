@@ -24,7 +24,7 @@
         <img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0">
     </a>
     <a href="https://www.laravel.com">
-        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-v9-orange?logo=Laravel&color=FF2D20">
+        <img alt="Laravel 10" src="https://img.shields.io/badge/Laravel-v10-orange?logo=Laravel&color=FF2D20">
     </a>
     <a href="https://www.laravel-livewire.com">
         <img alt="Laravel Livewire 2" src="https://img.shields.io/badge/Livewire-v2-orange?logo=livewire&color=4E56A6">
@@ -65,7 +65,7 @@
 
 <!--delete-->
 
-----
+---
 
 This repo can be used to scaffold a TallUI iconset. Follow these steps to get started:
 
@@ -76,7 +76,7 @@ This repo can be used to scaffold a TallUI iconset. Follow these steps to get st
 
 This package is based on [Blade UI Kit - Blade Icons](https://github.com/blade-ui-kit/blade-icons), learn more about all things Blade Icons like caching there.
 
-----
+---
 
 <!--/delete-->
 
@@ -84,8 +84,8 @@ This is where your description should go. Link to the original icons package, if
 
 ## Requirements
 
--   PHP 8.1 or higher
--   Laravel 9.0 or higher
+-   PHP 8.2 or higher
+-   Laravel 10.0 or higher
 
 ## Installation
 

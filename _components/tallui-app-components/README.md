@@ -47,24 +47,24 @@ TallUI App Components is a collection of Blade and Livewire components for TallU
 
 Work-in-progress. There are no components yet. Some of these will become components soon:
 
-- https://www.youtube.com/watch?v=t6S5DAo6Elo
-- https://laravel-livewire.com/screencasts/s7-intro
-- https://livewire-datatables.com/complex
-- https://tables.laravel-boilerplate.com/tailwind
-- https://github.com/mediconesystems/livewire-datatables
-- https://livewire-powergrid.com/#/
-- https://github.com/rappasoft/laravel-livewire-tables
-- https://datatables.net/
-- https://github.com/tanthammar/tall-forms
-- https://laravelviews.com/
+-   https://www.youtube.com/watch?v=t6S5DAo6Elo
+-   https://laravel-livewire.com/screencasts/s7-intro
+-   https://livewire-datatables.com/complex
+-   https://tables.laravel-boilerplate.com/tailwind
+-   https://github.com/mediconesystems/livewire-datatables
+-   https://livewire-powergrid.com/#/
+-   https://github.com/rappasoft/laravel-livewire-tables
+-   https://datatables.net/
+-   https://github.com/tanthammar/tall-forms
+-   https://laravelviews.com/
 
 ## Requirements
 
-- [PHP 8.1](https://www.php.net/)
-- [Laravel 9](https://laravel.com/)
-- [Laravel Livewire 2](https://laravel-livewire.com/)
-- [TailwindCSS v3](https://tailwindcss.com/)
-- [Alpine.js v3](https://alpinejs.dev/)
+-   [PHP 8.2](https://www.php.net/)
+-   [Laravel 10](https://laravel.com/)
+-   [Laravel Livewire 2](https://laravel-livewire.com/)
+-   [TailwindCSS v3](https://tailwindcss.com/)
+-   [Alpine.js v3](https://alpinejs.dev/)
 
 A really good starting point to have the TALL-Stack up and running right away is [Laravel Jetstream](https://jetstream.laravel.com/):
 
@@ -134,13 +134,12 @@ Please report all security related issues to security@tallui.io.
 
 This package is based on Package TalluiWebComponents Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
 
-- [TallUI Developers](https://github.com/usetall)
-- [All Contributors](../../contributors)
+-   [TallUI Developers](https://github.com/usetall)
+-   [All Contributors](../../contributors)
 
 ## License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
-
 
 ## Contributors
 
@@ -256,4 +255,3 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
     </td></tr>
 </table>
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,tallui-bot,bots -end -->
- 
