@@ -47,12 +47,12 @@
         "laravel/jetstream": "^3.0",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "livewire/livewire": "^2.5",
-        "wikimedia/composer-merge-plugin": "^2.0",
+        "livewire/livewire": "^2.11",
         "usetall/tallui-admin-panel": "*",
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
-        "usetall/tallui-web-components": "*"
+        "usetall/tallui-web-components": "*",
+        "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

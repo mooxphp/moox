@@ -17,7 +17,7 @@ class Button extends BladeComponent
 
     public string $value;
 
-    public function __construct(string $name, string $id = null, string $type = null, string $value = null)
+    public function __construct(string $name = "button", string $id = null, string $type = null, string $value = null)
     {
         $this->name = $name;
         $this->id = $id ?? $name;
