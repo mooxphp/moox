@@ -93,10 +93,11 @@ cp .env.example .env
 # Build
 composer install
 
-# Run Sail, alternatively start Laragon
+# Run Sail, start Laragon or Valet
 ./vendor/bin/sail up
 
-# Run Vite (in Ubuntu, not in Sail container)
+# Run Vite
+# for Laravel Sail on Windows: do it in Ubuntu, not inside the Sail container
 npm install
 npm run dev
 
