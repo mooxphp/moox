@@ -32,6 +32,7 @@ parameters:
         - '_others/tallui-satis/*'
         - 'app/Actions/Fortify/*'
         - 'app/Actions/Jetstream/*'
+        - 'app/Models/TeamInvitation.php'
     ignoreErrors:
         -
             messages:
