@@ -12,8 +12,7 @@ on:
 jobs:
   test:
     env:
-      DB_CONNECTION: sqlite
-      DB_DATABASE: database/database.sqlite
+      DB_CONNECTION: mysql
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ${{ matrix.os }}
     strategy:
