@@ -17,7 +17,7 @@ class Input extends BladeComponent
 
     public string $value;
 
-    public function __construct(string $name, string $id = null, string $type = 'text', ?string $value = '')
+    public function __construct(string $name = "input", string $id = null, string $type = 'text', ?string $value = '')
     {
         $this->name = $name;
         $this->id = $id ?? $name;

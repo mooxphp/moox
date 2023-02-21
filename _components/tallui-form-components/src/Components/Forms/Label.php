@@ -12,7 +12,7 @@ class Label extends BladeComponent
 {
     public string $for;
 
-    public function __construct(string $for)
+    public function __construct(string $for = "input")
     {
         $this->for = $for;
     }
