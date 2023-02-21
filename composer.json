@@ -44,7 +44,7 @@
         "php": "^8.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
-        "laravel/jetstream": "^2.12",
+        "laravel/jetstream": "^3.0",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",

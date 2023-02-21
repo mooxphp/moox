@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "847a0a2d7e1f337ba7e575a7fb00bf2f",
+    "content-hash": "27a9e90aab47065736bb8ca53243cbec",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -1479,16 +1479,16 @@
         },
         {
             "name": "laravel/jetstream",
-            "version": "v2.16.2",
+            "version": "v3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/jetstream.git",
-                "reference": "1b95df05aac85caffdbba9aeb6d22a49fc598dff"
+                "reference": "1b8db2e3506b1d3e003ea5968f508b966aec056c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/jetstream/zipball/1b95df05aac85caffdbba9aeb6d22a49fc598dff",
-                "reference": "1b95df05aac85caffdbba9aeb6d22a49fc598dff",
+                "url": "https://api.github.com/repos/laravel/jetstream/zipball/1b8db2e3506b1d3e003ea5968f508b966aec056c",
+                "reference": "1b8db2e3506b1d3e003ea5968f508b966aec056c",
                 "shasum": ""
             },
             "require": {
@@ -1512,7 +1512,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-master": "3.x-dev"
                 },
                 "laravel": {
                     "providers": [
@@ -1545,7 +1545,7 @@
                 "issues": "https://github.com/laravel/jetstream/issues",
                 "source": "https://github.com/laravel/jetstream"
             },
-            "time": "2023-02-14T19:28:38+00:00"
+            "time": "2023-02-15T14:52:33+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -5970,7 +5970,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
-                "reference": "34bd20c33c7cd538609ee7c7576a9fe234bf9487"
+                "reference": "28bf3b5f4a23df53ec772b08b8078422149b8184"
             },
             "require": {
                 "ext-json": "*",
@@ -5978,7 +5978,7 @@
                 "illuminate/filesystem": "^9.0",
                 "illuminate/support": "^9.0",
                 "illuminate/view": "^9.0",
-                "laravel/jetstream": "^2.0",
+                "laravel/jetstream": "^3.0",
                 "livewire/livewire": "^2.5",
                 "nesbot/carbon": "^2.38",
                 "php": "^8.1",
