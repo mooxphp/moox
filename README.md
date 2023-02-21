@@ -87,10 +87,8 @@ The Laravel dev app in the root-folder of the TallUI Monorepo is made for instan
 # Use the prepared composer.json
 cp _custom/composer.json-example _custom/composer.json
 
-# Use the matching environment for Valet, Sail or Laragon
-cp .env.valet .env
-cp .env.sail .env
-cp .env.laragon .env
+# Create a .env file and adjust to your needs
+cp .env.example .env
 
 # Build
 composer install
