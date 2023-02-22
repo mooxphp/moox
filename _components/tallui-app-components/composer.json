@@ -21,7 +21,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "ext-json": "*",
         "spatie/laravel-package-tools": "^1.13.0",
         "illuminate/contracts": "^10.0",
