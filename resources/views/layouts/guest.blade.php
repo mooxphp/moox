@@ -1,44 +1,80 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html>
 
 <head>
+    <title>TallUI Monorepo - Dev App</title>
     <meta charset="utf-8">
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1"
+        content="width=device-width, initial-scale=1.0"
     >
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"
+        rel="preconnect"
+        href="https://fonts.bunny.net"
     >
-
-    <!-- Styles -->
     <link
+        href="https://fonts.bunny.net/css?family=exo-2:400,600,800"
         rel="stylesheet"
-        href="{{ mix('css/app.css') }}"
-    >
+    />
 
-    <!-- Scripts -->
-    <script
-        src="{{ mix('js/app.js') }}"
-        defer
-    ></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
-    <div class="font-sans antialiased text-gray-900">
+<body
+    class="bg-[#001829] bg-no-repeat bg-right-top text-[#0e9bdc]"
+    style="background-image: url('{{ asset('img/bg.jpg') }}')"
+>
+    <header>
+        <nav class="flex justify-between m-8">
+            <img src="{{ asset('img/logo.png') }}">
+            <div class="flex items-center text-3xl">
+                <a
+                    class="px-4 text-lg hover:text-[#69bce2]"
+                    href="/"
+                >Home</a>
+                <a
+                    class="px-4 text-lg hover:text-[#69bce2]"
+                    href="/packages"
+                >Packages</a>
+                <a
+                    class="px-4 text-lg hover:text-[#69bce2]"
+                    href="/components"
+                >Components</a>
+                <a
+                    class="px-4 text-lg hover:text-[#69bce2]"
+                    href="/custom"
+                >Custom</a>
+                <a
+                    class="px-4 text-lg hover:text-[#69bce2]"
+                    href="/admin"
+                >Admin</a>
+                <a
+                    class="has-tooltip"
+                    href="https://github.com/usetall/tallui"
+                >
+                    <img
+                        class="h-8 px-4"
+                        style="filter: drop-shadow(0px 3px 3px #0C9ADC);"
+                        src="{{ asset('img/octocat.png') }} "
+                        alt="Code on GitHub"
+                    >
+                    <span class='text-xs ml-3 tooltip p-1 rounded bg-sky-900'>GitHub</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <div
+        id="content"
+        class="mb-10"
+    >
 
         @yield('content')
 
     </div>
+
 </body>
 
 </html>
