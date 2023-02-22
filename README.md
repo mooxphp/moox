@@ -200,7 +200,7 @@ We test TallUI using:
 -   Monorepo
     -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
     -   [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
-    -   [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/), [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui) (testing)
+    -   [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui)
 -   Packages
     -   [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
     -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
