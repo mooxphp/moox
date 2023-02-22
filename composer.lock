@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a9c861fd0cf0b1677c999eda67aa0ad7",
+    "content-hash": "70d82b9a6aad2ce66db9ccfaa6a6b286",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -5870,11 +5870,11 @@
         },
         {
             "name": "usetall/tallui-admin-panel",
-            "version": "dev-feature/laravel10",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
-                "reference": "401e7428571933537481860344695f81f7259622"
+                "reference": "dec533dc981be36fa594b2478040822661856ae7"
             },
             "require": {
                 "ext-json": "*",
@@ -5884,14 +5884,14 @@
                 "illuminate/view": "^10.0",
                 "livewire/livewire": "^2.0",
                 "nesbot/carbon": "^2.38",
-                "php": "^8.1",
+                "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.13.0"
             },
             "require-dev": {
                 "laravel/pint": "^1.0",
                 "nunomaduro/collision": "^6.0",
                 "nunomaduro/larastan": "^2.0.1",
-                "orchestra/testbench": "^7.0",
+                "orchestra/testbench": "^8.0",
                 "pestphp/pest": "^1.22.4",
                 "pestphp/pest-plugin-laravel": "^1.4",
                 "phpstan/extension-installer": "^1.1",
@@ -5967,11 +5967,11 @@
         },
         {
             "name": "usetall/tallui-core",
-            "version": "dev-feature/laravel10",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
-                "reference": "2558967a96d2772c2822264bd03ae543179a003a"
+                "reference": "1b2950799385ddf4f1889b68475972388dc9fd55"
             },
             "require": {
                 "ext-json": "*",
@@ -5982,7 +5982,7 @@
                 "laravel/jetstream": "^3.0",
                 "livewire/livewire": "^2.5",
                 "nesbot/carbon": "^2.38",
-                "php": "^8.1",
+                "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.13.0"
             },
             "require-dev": {
@@ -6060,11 +6060,11 @@
         },
         {
             "name": "usetall/tallui-form-components",
-            "version": "dev-feature/laravel10",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-form-components",
-                "reference": "8e9aff4cb7fbd2fb627d80ae8fdc4cdca1b8e68c"
+                "reference": "1e0488882c70ba3b6c2ff6f3e28fd2509f55b342"
             },
             "require": {
                 "ext-json": "*",
@@ -6074,7 +6074,7 @@
                 "illuminate/view": "^10.0",
                 "livewire/livewire": "^2.0",
                 "nesbot/carbon": "^2.38",
-                "php": "^8.1",
+                "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.13.0"
             },
             "require-dev": {
@@ -6157,11 +6157,11 @@
         },
         {
             "name": "usetall/tallui-web-components",
-            "version": "dev-feature/laravel10",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
-                "reference": "e1c8c2885e6134f62e75c5d988eff68e22ca0ee9"
+                "reference": "035c5c30ab765eaf272ded04075c3fd6cdbecc1d"
             },
             "require": {
                 "ext-json": "*",
@@ -6171,7 +6171,7 @@
                 "illuminate/view": "^10.0",
                 "livewire/livewire": "^2.0",
                 "nesbot/carbon": "^2.38",
-                "php": "^8.1",
+                "php": "^8.2",
                 "spatie/laravel-package-tools": "^1.13.0"
             },
             "require-dev": {
@@ -7928,16 +7928,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "71b28a67f01ac231f9a8f1ce242270bf4ec1f99c"
+                "reference": "1cd5fc530a8b68702f3733ad64294b2a39564198"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/71b28a67f01ac231f9a8f1ce242270bf4ec1f99c",
-                "reference": "71b28a67f01ac231f9a8f1ce242270bf4ec1f99c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1cd5fc530a8b68702f3733ad64294b2a39564198",
+                "reference": "1cd5fc530a8b68702f3733ad64294b2a39564198",
                 "shasum": ""
             },
             "require": {
@@ -7967,7 +7967,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.10.0"
+                "source": "https://github.com/phpstan/phpstan/tree/1.10.1"
             },
             "funding": [
                 {
@@ -7983,7 +7983,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-21T13:50:49+00:00"
+            "time": "2023-02-21T21:57:23+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -8035,16 +8035,16 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "1.3.6",
+            "version": "1.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "4b17a2352dd70f34bc80e4fb6147609598dd4617"
+                "reference": "7e43c8f77c7e419730ead01c8dc787c6bcbe0e15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/4b17a2352dd70f34bc80e4fb6147609598dd4617",
-                "reference": "4b17a2352dd70f34bc80e4fb6147609598dd4617",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/7e43c8f77c7e419730ead01c8dc787c6bcbe0e15",
+                "reference": "7e43c8f77c7e419730ead01c8dc787c6bcbe0e15",
                 "shasum": ""
             },
             "require": {
@@ -8081,9 +8081,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.3.6"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.3.7"
             },
-            "time": "2023-02-21T16:56:24+00:00"
+            "time": "2023-02-21T18:40:15+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -10509,7 +10509,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.1"
+        "php": "^8.2"
     },
     "platform-dev": [],
     "plugin-api-version": "2.3.0"
