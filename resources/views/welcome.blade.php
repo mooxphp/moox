@@ -126,8 +126,5 @@
                 >
             </a>
         </div>
-
-
-        </div>
     </footer>
 @stop
