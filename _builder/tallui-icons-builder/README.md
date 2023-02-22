@@ -141,12 +141,6 @@ Then use them in your views like:
 <img src="{{ asset('vendor/tallui-icons-builder/iconname.svg') }}" width="10" height="10"/>
 ```
 
-## Testing
-
-```bash
-composer test
-```
-
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

@@ -127,13 +127,6 @@ Optionally, you can publish the views using
 php artisan vendor:publish --tag="tallui-package-builder-views"
 ```
 
-## Usage
-
-```php
-$variable = new Usetall\TalluiPackageBuilder();
-echo $variable->echoPhrase('Hello, Usetall!');
-```
-
 ## Components
 
 There are two components, you can call from any blade-file
@@ -143,8 +136,28 @@ There are two components, you can call from any blade-file
 
 ## Testing
 
+You can run all tests in Pest:
+
 ```bash
 composer test
+```
+
+or including test coverage:
+
+```bash
+composer test-coverage
+```
+
+do auto-formatting with Laravel Pint (aka PHP CS Fixer):
+
+```bash
+composer format
+```
+
+and last but not least use PHPStan, the best static analyzer for PHP:
+
+```bash
+composer analyse
 ```
 
 ## Changelog
@@ -153,11 +166,11 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Please see [CONTRIBUTING](https://github.com/usetall/tallui/blob/main/CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+Please review [our security policy](https://github.com/usetall/tallui/security/policy) on how to report security vulnerabilities.
 
 ## Credits
 

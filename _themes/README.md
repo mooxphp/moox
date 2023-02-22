@@ -65,4 +65,4 @@
 
 Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
 
-TallUI Themes will be available soon.
+TallUI Themes will be available soon. There is [just an idea](./website/tallui-theme/README.md) on how to solve this.

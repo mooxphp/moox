@@ -1,11 +1,8 @@
-
-
 <p align="center">
     <img src="https://github.com/usetall/tallui/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
     <img src="https://github.com/usetall/tallui/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p><br>
-
 
 <p align="center">
     <a href="https://github.com/usetall/tallui/actions/workflows/pest.yml">
@@ -63,71 +60,67 @@
     <br>
 </p>
 
+# TallUI Core
 
-# **TALL**UI Core
+Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
 
-Welcome to the **TALL**UI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
-
-The Core package serves all global resources and requires all packages needed by **TALL**UI.
-
-## Configuration
-
-One of the main parts of **TALL**UI Core is the configuration that is shared to all packages that depend on the Core.
-
-Besides using Tailwind CSS, you are able to use the **TALL**UI Designer API, that inherits colors from Core up to every component. You can set that configuration in Core or in any **TALL**UI package that ships components, templates or themes.
-
-The Global Styling Configuration is also available in the page configuration of **TALL**UI Pages, means it can also be inherited to all child-pages.
-
-### Global Styling
-
-There are global colors and style options that may be used by all components, templates and themes.
-
-- material-icons
-  - default-style: solid / outline
-- icon-sizes
-  - xs =
-  - sm =
-  - md =
-  - lg =
-  - xl =
-- colors
-  - primary
-  - ...
+The Core package serves all global resources and requires all packages needed by TallUI.
 
 ## Dependencies
 
-- Laravel Jetstream - brings the TALL-Stack as well as some standardized features for authentication, registration, users and profiles.
+-   [PHP 8.2](https://php.net)
+-   [Laravel 10](https://laravel.com)
+-   [Laravel Jetstream 3](https://jetstream.laravel.com/) - prepares the [TALL-Stack](https://tallstack.dev/) as well as some standardized features for authentication, registration, users and profiles.
 
+## Configuration
 
+TallUI Core's config is currently under active development and will be documented soon. It will contain basic style settings for icons and css root variables.
 
+## Testing
 
+You can run all tests in Pest:
 
-## Style Layers
-
-
-
-- Component = Base Styles
-  - Theme = Colors, Roundings  ===== https://laravel.com/docs/9.x/blade#including-subviews
-  - Template = Placements
-    - Global Styling
-
-
-
-Fiddle
-
-ist :class = override und class= append?
-
-```php
-<x-input :class="$theme['input']" />
+```bash
+composer test
 ```
 
-kann da auch eine function rein?
+or including test coverage:
 
- @props
-
-```php
-$theme = [
-	'form' => 
-];
+```bash
+composer test-coverage
 ```
 
+do auto-formatting with Laravel Pint (aka PHP CS Fixer):
+
+```bash
+composer format
+```
+
+and last but not least use PHPStan, the best static analyzer for PHP:
+
+```bash
+composer analyse
+```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Contributing
+
+Please see [CONTRIBUTING](https://github.com/usetall/tallui/blob/main/CONTRIBUTING.md) for details.
+
+## Security Vulnerabilities
+
+Please review [our security policy](https://github.com/usetall/tallui/security/policy) on how to report security vulnerabilities.
+
+## Credits
+
+This package is based on Package Skeleton Laravel from [Spatie](https://spatie.be/products). If you are a Laravel developer, their services, products and trainings are for you. Otherwise they love post cards.
+
+-   [TALLUI Devs](https://github.com/orgs/usetall/people)
+-   [All Contributors](../../contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
