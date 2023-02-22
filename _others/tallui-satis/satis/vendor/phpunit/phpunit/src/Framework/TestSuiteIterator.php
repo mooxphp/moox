@@ -14,19 +14,18 @@ use function count;
 use RecursiveIterator;
 
 /**
+ * @template-implements RecursiveIterator<int, Test>
+ *
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
 final class TestSuiteIterator implements RecursiveIterator
 {
-    /**
-     * @var int
-     */
-    private $position = 0;
+    private int $position = 0;
 
     /**
-     * @var Test[]
+     * @psalm-var list<Test>
      */
-    private $tests;
+    private readonly array $tests;
 
     public function __construct(TestSuite $testSuite)
     {

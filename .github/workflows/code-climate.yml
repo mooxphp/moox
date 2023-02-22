@@ -10,6 +10,7 @@ on:
       - test/*
       - "*.php"
       - "*.json"
+      - ".github/workflows/code-climate.yml"
   pull_request:
     paths:
       - "!*.MD"
@@ -17,19 +18,20 @@ jobs:
   test:
     env:
       DB_CONNECTION: sqlite
-      DB_DATABASE: database/database.sqlite
+      SESSION_DRIVER: array
+      DB_DATABASE: ":memory:"
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.1]
-        laravel: [9.*]
+        php: [8.2]
+        laravel: [10.*]
         stability: [prefer-stable]
         include:
-          - laravel: 9.*
-            testbench: 7.*
+          - laravel: 10.*
+            testbench: 8.*
 
     name: Checkout
 

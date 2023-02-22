@@ -17,6 +17,7 @@ use Composer\Util\Filesystem;
 use Composer\Util\Platform;
 use Composer\Util\Silencer;
 use LogicException;
+use RuntimeException;
 use Seld\Signal\SignalHandler;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
@@ -84,10 +85,12 @@ class Application extends BaseApplication
     /** @var SignalHandler */
     private $signalHandler;
 
-    public function __construct()
+    public function __construct(string $name = 'Composer', string $version = '')
     {
         static $shutdownRegistered = false;
-
+        if ($version === '') {
+            $version = Composer::getVersion();
+        }
         if (function_exists('ini_set') && extension_loaded('xdebug')) {
             ini_set('xdebug.show_exception_trace', '0');
             ini_set('xdebug.scream', '0');
@@ -121,7 +124,7 @@ class Application extends BaseApplication
 
         $this->initialWorkingDirectory = getcwd();
 
-        parent::__construct('Composer', Composer::getVersion());
+        parent::__construct($name, $version);
     }
 
     public function __destruct()
@@ -144,7 +147,7 @@ class Application extends BaseApplication
         $this->disableScriptsByDefault = $input->hasParameterOption('--no-scripts');
 
         $stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
-        if (Platform::getEnv('COMPOSER_NO_INTERACTION') || $stdin === false || !Platform::isTty($stdin)) {
+        if (Platform::getEnv('COMPOSER_TESTS_ARE_RUNNING') !== '1' && (Platform::getEnv('COMPOSER_NO_INTERACTION') || $stdin === false || !Platform::isTty($stdin))) {
             $input->setInteractive(false);
         }
 
@@ -235,6 +238,9 @@ class Application extends BaseApplication
                 false === $commandName
                 // list command requires plugin commands to show them
                 || in_array($commandName, ['', 'list', 'help'], true)
+                // autocompletion requires plugin commands but if we are running as root without COMPOSER_ALLOW_SUPERUSER
+                // we'd rather not autocomplete plugins than abort autocompletion entirely, so we avoid loading plugins in this case
+                || ($commandName === '_complete' && !$isNonAllowedRoot)
             );
 
         if ($mayNeedPluginCommand && !$this->disablePluginsByDefault && !$this->hasPluginCommands) {
@@ -283,6 +289,7 @@ class Application extends BaseApplication
         }
 
         if ($isNonAllowedRoot && !$io->isInteractive()) {
+            $io->writeError('<error>Composer plugins have been disabled for safety in this non-interactive session. Set COMPOSER_ALLOW_SUPERUSER=1 if you want to allow plugins to run as root/super user.</error>');
             $this->disablePluginsByDefault = true;
         }
 
@@ -396,17 +403,7 @@ class Application extends BaseApplication
                     $this->renderThrowable($e, $output);
                 }
 
-                $exitCode = $e->getCode();
-                if (is_numeric($exitCode)) {
-                    $exitCode = (int) $exitCode;
-                    if (0 === $exitCode) {
-                        $exitCode = 1;
-                    }
-                } else {
-                    $exitCode = 1;
-                }
-
-                return $exitCode;
+                return max(1, $e->getCode());
             }
 
             throw $e;
@@ -444,12 +441,12 @@ class Application extends BaseApplication
             if (null !== $composer && function_exists('disk_free_space')) {
                 $config = $composer->getConfig();
 
-                $minSpaceFree = 1024 * 1024;
+                $minSpaceFree = 100 * 1024 * 1024;
                 if ((($df = disk_free_space($dir = $config->get('home'))) !== false && $df < $minSpaceFree)
                     || (($df = disk_free_space($dir = $config->get('vendor-dir'))) !== false && $df < $minSpaceFree)
                     || (($df = disk_free_space($dir = sys_get_temp_dir())) !== false && $df < $minSpaceFree)
                 ) {
-                    $io->writeError('<error>The disk hosting '.$dir.' is full, this may be the cause of the following exception</error>', true, IOInterface::QUIET);
+                    $io->writeError('<error>The disk hosting '.$dir.' has less than 100MiB of free space, this may be the cause of the following exception</error>', true, IOInterface::QUIET);
                 }
             }
         } catch (\Exception $e) {
@@ -505,6 +502,10 @@ class Application extends BaseApplication
                     throw $e;
                 }
             } catch (JsonValidationException $e) {
+                if ($required) {
+                    throw $e;
+                }
+            } catch (RuntimeException $e) {
                 if ($required) {
                     throw $e;
                 }

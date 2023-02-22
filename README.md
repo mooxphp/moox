@@ -23,7 +23,7 @@
         <img alt="AlpineJS 3" src="https://img.shields.io/badge/AlpineJS-v3-orange?logo=alpine.js&color=8BC0D0">
     </a>
     <a href="https://www.laravel.com">
-        <img alt="Laravel 9" src="https://img.shields.io/badge/Laravel-v9-orange?logo=Laravel&color=FF2D20">
+        <img alt="Laravel 10" src="https://img.shields.io/badge/Laravel-v10-orange?logo=Laravel&color=FF2D20">
     </a>
     <a href="https://www.laravel-livewire.com">
         <img alt="Laravel Livewire 2" src="https://img.shields.io/badge/Livewire-v2-orange?logo=livewire&color=4E56A6">
@@ -62,6 +62,8 @@
 
 # TallUI Monorepo
 
+Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
+
 This is the TallUI Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
@@ -75,7 +77,6 @@ TallUI packages are categorized in
 -   [\_others](./_others/README.md) - Other Laravel packages or assisting repos like Satis
 -   [\_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
 -   [\_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
--   [\_themes](./_themes/README.md)/[website](./_themes/website/README.md) - Themes for the TallUI Website
 
 Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./_builder/README.md) for more information about how to build and publish packages.
 
@@ -87,18 +88,17 @@ The Laravel dev app in the root-folder of the TallUI Monorepo is made for instan
 # Use the prepared composer.json
 cp _custom/composer.json-example _custom/composer.json
 
-# Use the matching environment for Valet, Sail or Laragon
-cp .env.valet .env
-cp .env.sail .env
-cp .env.laragon .env
+# Create a .env file and adjust to your needs
+cp .env.example .env
 
 # Build
 composer install
 
-# Run Sail, alternatively start Laragon
+# Run Sail, start Laragon or Valet
 ./vendor/bin/sail up
 
-# Run Vite (in Ubuntu, not in Sail container)
+# Run Vite
+# for Laravel Sail on Windows: do it in Ubuntu, not inside the Sail container
 npm install
 npm run dev
 
@@ -140,35 +140,38 @@ Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-vie
 Your commit messages will be merged into Changelog.md, means they become part of the documentation. Please make sure, you
 
 -   start with one of these types
-    -   feat = feature
-    -   fix = bugfix
-    -   bump = minor verion change
-    -   lang = translation
-    -   docs = documentation
-    -   devops = GH and automation
-    -   wip = work in progress
+    -   Bump = minor version change, major if used as Bump!
+    -   Clean = deleting old stuff or unused code
+    -   Deps = changing dependencies
+    -   Devops = GH and automation
+    -   Docs = documentation
+    -   Feat = feature
+    -   Fix = bugfix
+    -   Lang = translation
+    -   Tests = writing tests
+    -   Wip = work in progress
 -   for breaking changes add "!" to any type to craft a major release
 -   followed by the shortname of the package, in []
-    -   all - multiple or all packages
-    -   admin-panel
-    -   core
-    -   package-builder
-    -   icons-builder
-    -   form-components
-    -   app-components
-    -   web-components
-    -   chart-components
-    -   monorepo
+    -   All - multiple or all packages
+    -   AdminPanel
+    -   Core
+    -   PackageBuilder
+    -   IconsBuilder
+    -   AppComponents
+    -   ChartComponents
+    -   FormComponents
+    -   WebComponents
+    -   Monorepo
 -   reference an issue, linked by issue number, e. g. #138
 -   prepare auto-closing the issue by using "Close #138"
 
 ### Valid examples
 
--   `wip[core]: Feature register assets w-i-p #123`
--   `fix[all]: Update all packages Close #321`
--   `feat[monorepo]: Update dev app Close #22`
--   `dependencies[all]: Minor Updates`
--   `feat![package-builder]: This will become a major release #23`
+-   `Wip[Core]: Feature register assets w-i-p #123`
+-   `Fix[All]: Update all packages Close #321`
+-   `Feat[Monorepo]: Update dev app Close #22`
+-   `Bump![ChartComponents]: Major Updates`
+-   `Feat![PackageBuilder]: This will become a major release #23`
 
 Read more about [conventional commits](https://www.conventionalcommits.org/).
 
@@ -197,7 +200,7 @@ We test TallUI using:
 -   Monorepo
     -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
     -   [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
-    -   [Scrutinizer](https://scrutinizer-ci.com/g/usetall/tallui/), [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui) (testing)
+    -   [Codacy](https://app.codacy.com/gh/usetall/tallui/) and [Code climate](https://codeclimate.com/github/usetall/tallui)
 -   Packages
     -   [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
     -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5

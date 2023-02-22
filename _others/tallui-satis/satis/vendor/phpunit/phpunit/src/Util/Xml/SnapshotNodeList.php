@@ -18,13 +18,15 @@ use IteratorAggregate;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
+ *
+ * @template-implements IteratorAggregate<int, DOMNode>
  */
 final class SnapshotNodeList implements Countable, IteratorAggregate
 {
     /**
-     * @var DOMNode[]
+     * @psalm-var list<DOMNode>
      */
-    private $nodes = [];
+    private array $nodes = [];
 
     public static function fromNodeList(DOMNodeList $list): self
     {

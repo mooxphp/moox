@@ -4,8 +4,6 @@
     <img src="../../_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p>
 
-
-
 <br>
 
 <p align="center">
@@ -26,25 +24,23 @@
     </a>
 </p>
 
-
-
 # TallUI Chart Components
 
-TallUI Chart Components is a collection of Blade and Livewire components for TallUI made with [Apache ECharts](https://echarts.apache.org/), a  first-class charting library licensed under Apache License. You can use all of our components without further requirements for development of your own Laravel app or package.
+TallUI Chart Components is a collection of Blade and Livewire components for TallUI made with [Apache ECharts](https://echarts.apache.org/), a first-class charting library licensed under Apache License. You can use all of our components without further requirements for development of your own Laravel app or package.
 
 ## Components
 
 Work-in-progress. There are no components yet ...
 
-- W-I-P!
+-   W-I-P!
 
 ## Requirements
 
-- [PHP 8.1](https://www.php.net/)
-- [Laravel 9](https://laravel.com/)
-- [Laravel Livewire 2](https://laravel-livewire.com/)
-- [TailwindCSS v3](https://tailwindcss.com/)
-- [Alpine.js v3](https://alpinejs.dev/)
+-   [PHP 8.1](https://www.php.net/)
+-   [Laravel 10](https://laravel.com/)
+-   [Laravel Livewire 2](https://laravel-livewire.com/)
+-   [TailwindCSS v3](https://tailwindcss.com/)
+-   [Alpine.js v3](https://alpinejs.dev/)
 
 A really good starting point to have the TALL-Stack up and running right away is [Laravel Jetstream](https://jetstream.laravel.com/):
 

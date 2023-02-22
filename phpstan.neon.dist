@@ -30,11 +30,13 @@ parameters:
         - '_themes/website/*/vendor/*'
         - '_others/*/vendor/*'
         - '_others/tallui-satis/*'
+        - 'app/Actions/Fortify/*'
+        - 'app/Actions/Jetstream/*'
+        - 'app/Models/TeamInvitation.php'
     ignoreErrors:
         -
             messages:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
-                -   '#^Call to an undefined method Pest\\Expectation\|Pest\\Support\\Extendable\:\:toBe\(\)\.$#'
             paths:
                 - _components/*/tests/*
                 - _packages/*/tests/*
@@ -45,6 +47,7 @@ parameters:
                 - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
             paths:
                 - _builder/tallui-package-builder/*
+            reportUnmatched: false
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
             messages:

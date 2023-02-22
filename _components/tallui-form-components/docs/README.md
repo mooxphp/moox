@@ -82,7 +82,7 @@ Because it makes fun.
 
 If you use the components as part of **TALL**UI, the only requirement is **TALL**UI Core. If you want to use it solely, you can use Laravel Jetstream or require the TALL-Stack, means
 
--   PHP 8.1
+-   PHP 8.2
 -   [Laravel](https://laravel.com/) 9
 -   [Laravel Livewire](https://laravel-livewire.com/) 2
 -   [Alpine.js](https://alpinejs.dev/) 3

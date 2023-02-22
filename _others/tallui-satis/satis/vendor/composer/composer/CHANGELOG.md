@@ -1,3 +1,65 @@
+### [2.5.4] 2023-02-15
+
+  * Fixed extra.plugin-optional support in PluginInstaller when doing pre-install checks (#11318)
+
+### [2.5.3] 2023-02-10
+
+  * Added extra.plugin-optional support for allow auto-disabling unknown plugins which are not critical when running non-interactive (#11315)
+
+### [2.5.2] 2023-02-04
+
+  * Added warning when `require` auto-selects a feature branch as that is probably not desired (#11270)
+  * Fixed `self.version` requirements reporting lock file integrity errors when changing branches (#11283)
+  * Fixed `require` regression which broke the --fixed flag (#11247)
+  * Fixed security audit reports loading when exclude/only filter rules are used on a repository (#11281)
+  * Fixed autoloading regression on PHP 5.6 (#11285)
+  * Fixed archive command including an existing archive into itself if run repeatedly (#11239)
+  * Fixed dev package prompt in `require` not appearing in some conditions (#11287)
+
+### [2.5.1] 2022-12-22
+
+  * Fixed ClassLoader regression which made it fail if serialized (e.g. within PHPUnit process isolation) (#11237)
+  * Fixed preg type error in svn version guessing (#11231)
+
+### [2.5.0] 2022-12-20
+
+  * BC Warning: To prevent abuse of our includeFile() function it is now gone, it was not part of the official API but may still cause issues if some code incorrectly relied on it (#11015)
+  * Improved version guessing of `require` command to use the dependency resolution result instead of using the latest available version (except if you run with --no-update) (#11160)
+  * Improved version selection in `archive` command (#11230)
+  * Added autocompletion of config option names in the `config` command (#11130)
+  * Added support for writing [custom commands as Command classes](https://getcomposer.org/doc/articles/scripts.md#writing-custom-commands) (#11151)
+  * Added hard failure when installing from a lock file which does not satisfy the composer.json requirements (#11195)
+  * Added warning when the outdated command rejects a new package due to unmet platform requirements (#11113)
+  * Added support for `bump` command to bump `>=x` to `>=installed-version` (#11179)
+  * Added `--download-only` flag to `install` command to only download and prime the cache with the package archives (#11041)
+  * Added autoconfiguration of `github-domains`/`gitlab-domains` when GitHub/GitLab credentials are configured for a custom domain (#11062)
+  * Added hard failure (throw) if COMPOSER_AUTH is present and malformed JSON (#11085)
+  * Added interactive prompt to `run-script` and `exec` commands if run without any argument (#11157)
+  * Added interactive prompt where to store credentials when a project-local auth.json exists (#11188)
+  * Fixed full disk warning to be shown when less than 100MiB is available (#11190)
+  * Fixed cache keys to allow `_` to avoid conflicts between package names like `a-b` and `a_b` (#11229)
+  * Fixed docker compatibility by making paths more portable even if the project is installed at `/` (#11169)
+
+### [2.4.4] 2022-10-27
+
+  * Added extra debug output when a zip extraction fails while on GitHub Actions (#11148)
+  * Fixed cache write failures when the cache dir gets removed during a composer run (#11076)
+  * Fixed 2.4.3 regression in loading Composer on SMB/network shares (#11077)
+  * Fixed `--dry-run` flag missing from `bump` command (#11047)
+  * Fixed `status` command reporting differences when the source ref is a tag (#11155)
+  * Fixed outdated command outputting legend on stdout instead of stderr
+  * Fixed URL sanitizer to handle new GitHub personal access tokens format (#11137)
+
+### [2.4.3] 2022-10-14
+
+  * BC Break: The json format of `audit` command now has `reportedAt` as an RFC3339 string instead of an object which was a mistake (#11120)
+  * Fixed json format of `audit` command which was missing affectedVersions (#11120)
+  * Fixed plugin commands not being loaded during bash completions (#11074)
+  * Fixed parsing of inline aliases within complex constraints with `||` or `,` (#11086)
+  * Fixed min-php version check in autoload.php to avoid crashing sites running on PHP 5.5 or below silently with a 200 (#11091)
+  * Fixed JsonFile reading files without checking if they are readable first (#11077)
+  * Fixed `require` command with `--dry-run` failing when requiring a package requiring stability flag extraction (#11112)
+
 ### [2.4.2] 2022-09-14
 
   * Fixed bash completion hanging when running as root without `COMPOSER_ALLOW_SUPERUSER` set (#11024)
@@ -1528,7 +1590,7 @@
 ### [1.0.0-alpha6] - 2012-10-23
 
   * Schema: Added ability to pass additional options to repositories (i.e. ssh keys/client certificates to secure private repos)
-  * Schema: Added a new `~` operator that should be preferred over `>=`, see https://getcomposer.org/doc/01-basic-usage.md#package-versions
+  * Schema: Added a new `~` operator that should be preferred over `>=`, see https://getcomposer.org/doc/01-basic-usage.md#package-version-constraints
   * Schema: Version constraints `<x.y` are assumed to be `<x.y-dev` unless specified as `<x.y-stable` to reduce confusion
   * Added `config` command to edit/list config values, including --global switch for system config
   * Added OAuth token support for the GitHub API
@@ -1637,6 +1699,13 @@
 
   * Initial release
 
+[2.5.4]: https://github.com/composer/composer/compare/2.5.3...2.5.4
+[2.5.3]: https://github.com/composer/composer/compare/2.5.2...2.5.3
+[2.5.2]: https://github.com/composer/composer/compare/2.5.1...2.5.2
+[2.5.1]: https://github.com/composer/composer/compare/2.5.0...2.5.1
+[2.5.0]: https://github.com/composer/composer/compare/2.4.4...2.5.0
+[2.4.4]: https://github.com/composer/composer/compare/2.4.3...2.4.4
+[2.4.3]: https://github.com/composer/composer/compare/2.4.2...2.4.3
 [2.4.2]: https://github.com/composer/composer/compare/2.4.1...2.4.2
 [2.4.1]: https://github.com/composer/composer/compare/2.4.0...2.4.1
 [2.4.0]: https://github.com/composer/composer/compare/2.4.0-RC1...2.4.0

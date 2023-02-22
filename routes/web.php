@@ -18,7 +18,7 @@ Route::get('/custom', function () {
     return view('custom.overview');
 });
 
-Route::get('packages', function () {
+Route::get('/packages', function () {
     return view('packages.overview');
 });
 

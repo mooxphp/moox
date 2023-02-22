@@ -131,7 +131,7 @@ class ZipDownloader extends ArchiveDownloader
         if (!$warned7ZipLinux && !Platform::isWindows() && in_array($executable, ['7z', '7zz'], true)) {
             $warned7ZipLinux = true;
             if (0 === $this->process->execute($executable, $output)) {
-                if (Preg::isMatch('{^\s*7-Zip(?: \[64\])? ([0-9.]+)}', $output, $match) && version_compare($match[1], '21.01', '<')) {
+                if (Preg::isMatchStrictGroups('{^\s*7-Zip(?: \[64\])? ([0-9.]+)}', $output, $match) && version_compare($match[1], '21.01', '<')) {
                     $this->io->writeError('    <warning>Unzipping using '.$executable.' '.$match[1].' may result in incorrect file permissions. Install '.$executable.' 21.01+ or unzip to ensure you get correct permissions.</warning>');
                 }
             }
@@ -151,6 +151,19 @@ class ZipDownloader extends ArchiveDownloader
                 $io->writeError('    <warning>'.$processError->getMessage().'</warning>');
                 $io->writeError('    The archive may contain identical file names with different capitalization (which fails on case insensitive filesystems)');
                 $io->writeError('    Unzip with '.$executable.' command failed, falling back to ZipArchive class');
+
+                // additional debug data to try to figure out GH actions issues https://github.com/composer/composer/issues/11148
+                if (Platform::getEnv('GITHUB_ACTIONS') !== false && Platform::getEnv('COMPOSER_TESTS_ARE_RUNNING') === false) {
+                    $io->writeError('    <warning>Additional debug info, please report to https://github.com/composer/composer/issues/11148 if you see this:</warning>');
+                    $io->writeError('File size: '.@filesize($file));
+                    $io->writeError('File SHA1: '.hash_file('sha1', $file));
+                    $io->writeError('First 100 bytes (hex): '.bin2hex(substr((string) file_get_contents($file), 0, 100)));
+                    $io->writeError('Last 100 bytes (hex): '.bin2hex(substr((string) file_get_contents($file), -100)));
+                    if (strlen((string) $package->getDistUrl()) > 0) {
+                        $io->writeError('Origin URL: '.$this->processUrl($package, (string) $package->getDistUrl()));
+                        $io->writeError('Response Headers: '.json_encode(FileDownloader::$responseHeaders[$package->getName()] ?? []));
+                    }
+                }
             }
 
             return $this->extractWithZipArchive($package, $file, $path);

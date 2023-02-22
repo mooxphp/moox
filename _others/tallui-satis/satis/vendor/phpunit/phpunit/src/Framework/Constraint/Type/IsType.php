@@ -93,7 +93,7 @@ final class IsType extends Constraint
     public const TYPE_ITERABLE = 'iterable';
 
     /**
-     * @var array<string,bool>
+     * @psalm-var array<string,bool>
      */
     private const KNOWN_TYPES = [
         'array'             => true,
@@ -114,11 +114,7 @@ final class IsType extends Constraint
         'callable'          => true,
         'iterable'          => true,
     ];
-
-    /**
-     * @var string
-     */
-    private $type;
+    private readonly string $type;
 
     /**
      * @throws \PHPUnit\Framework\Exception
@@ -152,10 +148,8 @@ final class IsType extends Constraint
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
-     *
-     * @param mixed $other value or object to evaluate
      */
-    protected function matches($other): bool
+    protected function matches(mixed $other): bool
     {
         switch ($this->type) {
             case 'numeric':

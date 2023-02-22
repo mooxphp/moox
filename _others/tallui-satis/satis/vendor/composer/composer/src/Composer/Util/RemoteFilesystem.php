@@ -38,7 +38,7 @@ class RemoteFilesystem
     private $bytesMax;
     /** @var string */
     private $originUrl;
-    /** @var string */
+    /** @var non-empty-string */
     private $fileUrl;
     /** @var ?string */
     private $fileName;
@@ -52,7 +52,7 @@ class RemoteFilesystem
     private $options = [];
     /** @var bool */
     private $disableTls = false;
-    /** @var string[] */
+    /** @var list<string> */
     private $lastHeaders;
     /** @var bool */
     private $storeAuth = false;
@@ -98,7 +98,7 @@ class RemoteFilesystem
      * Copy the remote file in local.
      *
      * @param string  $originUrl The origin URL
-     * @param string  $fileUrl   The file URL
+     * @param non-empty-string $fileUrl   The file URL
      * @param string  $fileName  the local filename
      * @param bool    $progress  Display the progression
      * @param mixed[] $options   Additional context options
@@ -114,7 +114,7 @@ class RemoteFilesystem
      * Get the content.
      *
      * @param string  $originUrl The origin URL
-     * @param string  $fileUrl   The file URL
+     * @param non-empty-string $fileUrl   The file URL
      * @param bool    $progress  Display the progression
      * @param mixed[] $options   Additional context options
      *
@@ -159,7 +159,7 @@ class RemoteFilesystem
     /**
      * Returns the headers of the last request
      *
-     * @return string[]
+     * @return list<string>
      */
     public function getLastHeaders()
     {
@@ -206,7 +206,7 @@ class RemoteFilesystem
      * Get file content or copy action.
      *
      * @param string  $originUrl         The origin URL
-     * @param string  $fileUrl           The file URL
+     * @param non-empty-string $fileUrl  The file URL
      * @param mixed[] $additionalOptions context options
      * @param string  $fileName          the local filename
      * @param bool    $progress          Display the progression
