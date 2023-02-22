@@ -61,8 +61,8 @@
     <br>
 </p>
 
-# TallUI Full
+# TallUI Others
 
 Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
 
-The TallUI Full App will be available soon.
+An overview to all other things residing in this directory will come soon.

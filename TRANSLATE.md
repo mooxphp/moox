@@ -1,6 +1,6 @@
 # Translation
 
-TallUI is translated in 79 languages:
+TallUI is translated in 81 languages:
 
 <a href="https://hosted.weblate.org/engage/tallui/">
 <img src="https://hosted.weblate.org/widgets/tallui/-/multi-auto.svg" alt="Translation status" />
