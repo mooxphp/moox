@@ -10,6 +10,7 @@ on:
       - test/*
       - "*.php"
       - "*.json"
+      - ".github/workflows/code-climate.yml"
   pull_request:
     paths:
       - "!*.MD"
