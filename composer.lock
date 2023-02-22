@@ -5874,7 +5874,7 @@
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
-                "reference": "5363c091ea8277699e4b15e950c281233228693c"
+                "reference": "2deeba18b945e12abf3a90515d52852131189cc5"
             },
             "require": {
                 "ext-json": "*",
@@ -5897,7 +5897,7 @@
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan-deprecation-rules": "^1.0",
                 "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^9.5",
+                "phpunit/phpunit": "^10.0",
                 "spatie/laravel-ray": "^1.26"
             },
             "type": "library",
