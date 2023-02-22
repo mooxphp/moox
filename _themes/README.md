@@ -61,8 +61,8 @@
     <br>
 </p>
 
-# TallUI Data
+# TallUI Themes
 
 Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
 
-TallUI Data packages are coming soon.
+TallUI Themes will be available soon.
