@@ -2,6 +2,73 @@
 
 All notable changes are documented in this file using the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
+## [10.0.0] - 2023-02-03
+
+### Added
+
+* [#556](https://github.com/sebastianbergmann/php-code-coverage/issues/556): Make colors in HTML report configurable
+* The path to `custom.css` for the HTML report can now be configured
+
+### Changed
+
+* [#856](https://github.com/sebastianbergmann/php-code-coverage/issues/856): Do not include (and execute) uncovered files
+
+### Removed
+
+* The deprecated methods `SebastianBergmann\CodeCoverage\Driver::forLineCoverage()` and `SebastianBergmann\CodeCoverage\Driver::forLineAndPathCoverage()` have been removed
+* This component is no longer supported on PHP 7.3, PHP 7.4 and PHP 8.0
+* This component no longer supports PHPDBG
+* This component no longer supports Xdebug 2
+
+## [9.2.24] - 2023-01-26
+
+### Changed
+
+* [#970](https://github.com/sebastianbergmann/php-code-coverage/issues/970): CSS and JavaScript assets are now referenced using `?v=%s` URLs in the HTML report to avoid cache issues
+
+## [9.2.23] - 2022-12-28
+
+### Fixed
+
+* [#971](https://github.com/sebastianbergmann/php-code-coverage/issues/971): PHP report does not handle serialized code coverage data larger than 2 GB
+* [#974](https://github.com/sebastianbergmann/php-code-coverage/issues/974): Executable line analysis fails for declarations with enumerations and unions
+
+## [9.2.22] - 2022-12-18
+
+### Fixed
+
+* [#969](https://github.com/sebastianbergmann/php-code-coverage/pull/969): Fixed identifying line with `throw` as executable
+
+## [9.2.21] - 2022-12-14
+
+### Changed
+
+* [#964](https://github.com/sebastianbergmann/php-code-coverage/pull/964): Changed how executable lines are identified
+
+## [9.2.20] - 2022-12-13
+
+### Fixed
+
+* [#960](https://github.com/sebastianbergmann/php-code-coverage/issues/960): New body font-size is way too big
+
+## [9.2.19] - 2022-11-18
+
+### Fixed
+
+* [#949](https://github.com/sebastianbergmann/php-code-coverage/pull/949): Various issues related to identifying executable lines
+
+### Changed
+
+* Tweaked CSS for HTML report
+* Updated bundled CSS/JavaScript components used for HTML report: Bootstrap 4.6.2 and jQuery 3.6.1
+
+## [9.2.18] - 2022-10-27
+
+### Fixed
+
+* [#935](https://github.com/sebastianbergmann/php-code-coverage/pull/935): Cobertura package name attribute is always empty
+* [#946](https://github.com/sebastianbergmann/php-code-coverage/issues/946): `return` with multiline constant expression must only contain the last line
+
 ## [9.2.17] - 2022-08-30
 
 ### Changed
@@ -154,7 +221,7 @@ All notable changes are documented in this file using the [Keep a CHANGELOG](htt
 
 ### Fixed
 
-* [#810](https://github.com/sebastianbergmann/php-code-coverage/issues/810): `SebastianBergmann\CodeCoverage\Driver\Driver::forLineCoverage()` and `SebastianBergmann\CodeCoverage\Driver\Driver::forLineAndPathCoverage()` are marked as internal
+* [#810](https://github.com/sebastianbergmann/php-code-coverage/issues/810): `SebastianBergmann\CodeCoverage\Driver\Driver::forLineCoverage()` and `SebastianBergmann\CodeCoverage\Driver\Driver::forLineAndPathCoverage()` are marked as internal 
 
 ### Removed
 
@@ -415,6 +482,15 @@ All notable changes are documented in this file using the [Keep a CHANGELOG](htt
 
 * This component is no longer supported on PHP 7.1
 
+[10.0.0]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.24...10.0.0
+[9.2.24]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.23...9.2.24
+[9.2.24]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.23...9.2.24
+[9.2.23]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.22...9.2.23
+[9.2.22]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.21...9.2.22
+[9.2.21]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.20...9.2.21
+[9.2.20]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.19...9.2.20
+[9.2.19]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.18...9.2.19
+[9.2.18]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.17...9.2.18
 [9.2.17]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.16...9.2.17
 [9.2.16]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.15...9.2.16
 [9.2.15]: https://github.com/sebastianbergmann/php-code-coverage/compare/9.2.14...9.2.15

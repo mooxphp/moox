@@ -12,6 +12,7 @@ namespace PHPUnit\Util;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 
 /**
@@ -19,6 +20,30 @@ use ReflectionMethod;
  */
 final class Reflection
 {
+    /**
+     * @psalm-param class-string $className
+     * @psalm-param non-empty-string $methodName
+     *
+     * @psalm-return array{file: string, line: int}
+     */
+    public static function sourceLocationFor(string $className, string $methodName): array
+    {
+        try {
+            $reflector = new ReflectionMethod($className, $methodName);
+
+            $file = $reflector->getFileName();
+            $line = $reflector->getStartLine();
+        } catch (ReflectionException) {
+            $file = 'unknown';
+            $line = 0;
+        }
+
+        return [
+            'file' => $file,
+            'line' => $line,
+        ];
+    }
+
     /**
      * @psalm-return list<ReflectionMethod>
      */
@@ -42,11 +67,7 @@ final class Reflection
     {
         $methods = [];
 
-        // PHP <7.3.5 throw error when null is passed
-        // to ReflectionClass::getMethods() when strict_types is enabled.
-        $classMethods = $filter === null ? $class->getMethods() : $class->getMethods($filter);
-
-        foreach ($classMethods as $method) {
+        foreach ($class->getMethods($filter) as $method) {
             if ($method->getDeclaringClass()->getName() === TestCase::class) {
                 continue;
             }

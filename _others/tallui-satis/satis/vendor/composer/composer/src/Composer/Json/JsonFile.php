@@ -13,6 +13,7 @@
 namespace Composer\Json;
 
 use Composer\Pcre\Preg;
+use Composer\Util\Filesystem;
 use JsonSchema\Validator;
 use Seld\JsonLint\JsonParser;
 use Seld\JsonLint\ParsingException;
@@ -93,6 +94,9 @@ class JsonFile
             if ($this->httpDownloader) {
                 $json = $this->httpDownloader->get($this->path)->getBody();
             } else {
+                if (!Filesystem::isReadable($this->path)) {
+                    throw new \RuntimeException('The file "'.$this->path.'" is not readable.');
+                }
                 if ($this->io && $this->io->isDebug()) {
                     $realpathInfo = '';
                     $realpath = realpath($this->path);
@@ -190,6 +194,9 @@ class JsonFile
      */
     public function validateSchema(int $schema = self::STRICT_SCHEMA, ?string $schemaFile = null): bool
     {
+        if (!Filesystem::isReadable($this->path)) {
+            throw new \RuntimeException('The file "'.$this->path.'" is not readable.');
+        }
         $content = file_get_contents($this->path);
         $data = json_decode($content);
 

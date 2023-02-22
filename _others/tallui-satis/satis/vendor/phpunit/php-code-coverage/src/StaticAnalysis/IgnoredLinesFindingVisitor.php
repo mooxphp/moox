@@ -9,10 +9,10 @@
  */
 namespace SebastianBergmann\CodeCoverage\StaticAnalysis;
 
-use function array_merge;
-use function range;
-use function strpos;
+use function assert;
+use function str_contains;
 use PhpParser\Node;
+use PhpParser\Node\Attribute;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
@@ -26,19 +26,11 @@ use PhpParser\NodeVisitorAbstract;
 final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
 {
     /**
-     * @psalm-var list<int>
+     * @psalm-var array<int>
      */
-    private $ignoredLines = [];
-
-    /**
-     * @var bool
-     */
-    private $useAnnotationsForIgnoringCode;
-
-    /**
-     * @var bool
-     */
-    private $ignoreDeprecated;
+    private array $ignoredLines = [];
+    private readonly bool $useAnnotationsForIgnoringCode;
+    private readonly bool $ignoreDeprecated;
 
     public function __construct(bool $useAnnotationsForIgnoringCode, bool $ignoreDeprecated)
     {
@@ -52,7 +44,8 @@ final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
             !$node instanceof Trait_ &&
             !$node instanceof Interface_ &&
             !$node instanceof ClassMethod &&
-            !$node instanceof Function_) {
+            !$node instanceof Function_ &&
+            !$node instanceof Attribute) {
             return;
         }
 
@@ -60,11 +53,16 @@ final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
             return;
         }
 
-        // Workaround for https://bugs.xdebug.org/view.php?id=1798
         if ($node instanceof Class_ ||
             $node instanceof Trait_ ||
-            $node instanceof Interface_) {
+            $node instanceof Interface_ ||
+            $node instanceof Attribute) {
             $this->ignoredLines[] = $node->getStartLine();
+
+            assert($node->name !== null);
+
+            // Workaround for https://github.com/nikic/PHP-Parser/issues/886
+            $this->ignoredLines[] = $node->name->getStartLine();
         }
 
         if (!$this->useAnnotationsForIgnoringCode) {
@@ -75,32 +73,47 @@ final class IgnoredLinesFindingVisitor extends NodeVisitorAbstract
             return;
         }
 
+        if ($node instanceof Attribute &&
+            $node->name->toString() === 'PHPUnit\Framework\Attributes\CodeCoverageIgnore') {
+            $attributeGroup = $node->getAttribute('parent');
+            $attributedNode = $attributeGroup->getAttribute('parent');
+
+            for ($line = $attributedNode->getStartLine(); $line <= $attributedNode->getEndLine(); $line++) {
+                $this->ignoredLines[] = $line;
+            }
+
+            return;
+        }
+
+        $this->processDocComment($node);
+    }
+
+    /**
+     * @psalm-return array<int>
+     */
+    public function ignoredLines(): array
+    {
+        return $this->ignoredLines;
+    }
+
+    private function processDocComment(Node $node): void
+    {
         $docComment = $node->getDocComment();
 
         if ($docComment === null) {
             return;
         }
 
-        if (strpos($docComment->getText(), '@codeCoverageIgnore') !== false) {
-            $this->ignoredLines = array_merge(
-                $this->ignoredLines,
-                range($node->getStartLine(), $node->getEndLine())
-            );
+        if (str_contains($docComment->getText(), '@codeCoverageIgnore')) {
+            for ($line = $node->getStartLine(); $line <= $node->getEndLine(); $line++) {
+                $this->ignoredLines[] = $line;
+            }
         }
 
-        if ($this->ignoreDeprecated && strpos($docComment->getText(), '@deprecated') !== false) {
-            $this->ignoredLines = array_merge(
-                $this->ignoredLines,
-                range($node->getStartLine(), $node->getEndLine())
-            );
+        if ($this->ignoreDeprecated && str_contains($docComment->getText(), '@deprecated')) {
+            for ($line = $node->getStartLine(); $line <= $node->getEndLine(); $line++) {
+                $this->ignoredLines[] = $line;
+            }
         }
-    }
-
-    /**
-     * @psalm-return list<int>
-     */
-    public function ignoredLines(): array
-    {
-        return $this->ignoredLines;
     }
 }

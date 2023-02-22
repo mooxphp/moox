@@ -41,7 +41,7 @@ abstract class BaseDependencyCommand extends BaseCommand
     protected const OPTION_RECURSIVE = 'recursive';
     protected const OPTION_TREE = 'tree';
 
-    /** @var ?string[] */
+    /** @var string[] */
     protected $colors;
 
     /**
@@ -89,11 +89,8 @@ abstract class BaseDependencyCommand extends BaseCommand
         $installedRepo = new InstalledRepository($repos);
 
         // Parse package name and constraint
-        [$needle, $textConstraint] = array_pad(
-            explode(':', $input->getArgument(self::ARGUMENT_PACKAGE)),
-            2,
-            $input->hasArgument(self::ARGUMENT_CONSTRAINT) ? $input->getArgument(self::ARGUMENT_CONSTRAINT) : '*'
-        );
+        $needle = $input->getArgument(self::ARGUMENT_PACKAGE);
+        $textConstraint = $input->hasArgument(self::ARGUMENT_CONSTRAINT) ? $input->getArgument(self::ARGUMENT_CONSTRAINT) : '*';
 
         // Find packages that are or provide the requested package first
         $packages = $installedRepo->findPackagesWithReplacersAndProviders($needle);
@@ -107,6 +104,8 @@ abstract class BaseDependencyCommand extends BaseCommand
             $defaultRepos = new CompositeRepository(RepositoryFactory::defaultRepos($this->getIO(), $composer->getConfig(), $composer->getRepositoryManager()));
             if ($match = $defaultRepos->findPackage($needle, $textConstraint)) {
                 $installedRepo->addRepository(new InstalledArrayRepository([clone $match]));
+            } else {
+                $this->getIO()->writeError('<error>Package "'.$needle.'" could not be found with constraint "'.$textConstraint.'", results below will most likely be incomplete.</error>');
             }
         }
 

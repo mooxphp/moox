@@ -64,6 +64,15 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
      * @internal
      */
     public static $downloadMetadata = [];
+    /**
+     * Collects response headers when running on GH Actions
+     *
+     * @see https://github.com/composer/composer/issues/11148
+     * @var array<string, array<string>>
+     * @private
+     * @internal
+     */
+    public static $responseHeaders = [];
 
     /**
      * @var array<string, string> Map of package name to cache key
@@ -123,7 +132,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
 
         $retries = 3;
         $distUrls = $package->getDistUrls();
-        /** @var array<array{base: string, processed: string, cacheKey: string}> $urls */
+        /** @var non-empty-array<array{base: non-empty-string, processed: non-empty-string, cacheKey: string}> $urls */
         $urls = [];
         foreach ($distUrls as $index => $url) {
             $processedUrl = $this->processUrl($package, $url);
@@ -151,7 +160,6 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
         $accept = null;
         $reject = null;
         $download = function () use ($io, $output, $httpDownloader, $cache, $cacheKeyGenerator, $eventDispatcher, $package, $fileName, &$urls, &$accept, &$reject) {
-            /** @var array{base: string, processed: string, cacheKey: string} $url */
             $url = reset($urls);
             $index = key($urls);
 
@@ -222,6 +230,10 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
             $url = reset($urls);
             $cacheKey = $url['cacheKey'];
             FileDownloader::$downloadMetadata[$package->getName()] = @filesize($fileName) ?: $response->getHeader('Content-Length') ?: '?';
+
+            if (Platform::getEnv('GITHUB_ACTIONS') !== false && Platform::getEnv('COMPOSER_TESTS_ARE_RUNNING') === false) {
+                FileDownloader::$responseHeaders[$package->getName()] = $response->getHeaders();
+            }
 
             if ($cache && !$cache->isReadOnly()) {
                 $this->lastCacheWrites[$package->getName()] = $cacheKey;
@@ -308,9 +320,10 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
         }
 
         $dirsToCleanUp = [
+            $path,
+            $this->config->get('vendor-dir').'/'.explode('/', $package->getPrettyName())[0],
             $this->config->get('vendor-dir').'/composer/',
             $this->config->get('vendor-dir'),
-            $path,
         ];
 
         if (isset($this->additionalCleanupPaths[$package->getName()])) {
@@ -435,9 +448,9 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
      * Process the download url
      *
      * @param  PackageInterface  $package package the url is coming from
-     * @param  string            $url     download url
+     * @param  non-empty-string  $url     download url
      * @throws \RuntimeException If any problem with the url
-     * @return string            url
+     * @return non-empty-string  url
      */
     protected function processUrl(PackageInterface $package, string $url): string
     {
