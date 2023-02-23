@@ -1823,16 +1823,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.3.8",
+            "version": "2.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "c493585c130544c4e91d2e0e131e6d35cb0cbc47"
+                "reference": "c1e114f74e518daca2729ea8c4bf1167038fa4b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/c493585c130544c4e91d2e0e131e6d35cb0cbc47",
-                "reference": "c493585c130544c4e91d2e0e131e6d35cb0cbc47",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/c1e114f74e518daca2729ea8c4bf1167038fa4b5",
+                "reference": "c1e114f74e518daca2729ea8c4bf1167038fa4b5",
                 "shasum": ""
             },
             "require": {
@@ -1925,7 +1925,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-10T16:02:17+00:00"
+            "time": "2023-02-15T14:07:24+00:00"
         },
         {
             "name": "league/config",
@@ -5949,8 +5949,64 @@
             "time": "2023-01-03T09:29:04+00:00"
         },
         {
+            "name": "usetall/nom",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./_custom/nom",
+                "reference": "b055338ece377293de0b9bd099ce7779493f4f05"
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.4",
+                "illuminate/support": "^9.0|^10.0",
+                "php": "~8.1.0|~8.2.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^7.0|^8.0",
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\Nom\\NomServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\Nom\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KimSpeer"
+                }
+            ],
+            "description": "This is my package nom",
+            "homepage": "https://github.com/usetall/nom",
+            "keywords": [
+                "Blade",
+                "Icons",
+                "Laravel",
+                "Package",
+                "TallUI"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "usetall/tallui-admin-panel",
-            "version": "dev-feature/package-builder",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
@@ -6047,7 +6103,7 @@
         },
         {
             "name": "usetall/tallui-core",
-            "version": "dev-feature/package-builder",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
@@ -6140,7 +6196,7 @@
         },
         {
             "name": "usetall/tallui-form-components",
-            "version": "dev-feature/package-builder",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-form-components",
@@ -6237,7 +6293,7 @@
         },
         {
             "name": "usetall/tallui-web-components",
-            "version": "dev-feature/package-builder",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
@@ -6327,62 +6383,6 @@
                 "tall-stack",
                 "tallui-web-components",
                 "usetall"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "usetall/tic-tac-toe",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "./_custom/tic-tac-toe",
-                "reference": "268bce14cc242dcc007afb3f8b86a9ea89bf1595"
-            },
-            "require": {
-                "blade-ui-kit/blade-icons": "^1.4",
-                "illuminate/support": "^9.0|^10.0",
-                "php": "~8.1.0|~8.2.0"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^7.0|^8.0",
-                "phpunit/phpunit": "^9.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Usetall\\TicTacToe\\TicTacToeServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Usetall\\TicTacToe\\": "src"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "KimSpeer"
-                }
-            ],
-            "description": "This is my package tic-tac-toe",
-            "homepage": "https://github.com/usetall/tic-tac-toe",
-            "keywords": [
-                "Blade",
-                "Icons",
-                "Laravel",
-                "Package",
-                "TallUI"
             ],
             "transport-options": {
                 "relative": true
@@ -10647,7 +10647,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "usetall/tic-tac-toe": 20
+        "usetall/nom": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
