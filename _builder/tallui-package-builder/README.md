@@ -131,8 +131,8 @@ php artisan vendor:publish --tag="tallui-package-builder-views"
 
 There are two components, you can call from any blade-file
 
--   `<x-package-builder-blade-component />`
--   `<livewire:package-builder-livewire-component />` or `@livewire('package-builder-livewire-component')`
+-   `<x-tallui-package-builder-blade-component />`
+-   `<livewire:tallui-package-builder-livewire-component />` or `@livewire('tallui-package-builder-livewire-component')`
 
 ## Testing
 
