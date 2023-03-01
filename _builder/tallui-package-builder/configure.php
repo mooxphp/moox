@@ -220,7 +220,6 @@ foreach ($files as $file) {
         'create_tallui_package_builder_table' => 'create_' . title_snake($packageSlugWithoutPrefix) . '_table.php.stub',
         'tallui_package_builder' => $vendorSlug,
         'Usetall' => $vendorNamespace,
-        'usetall' => $vendorSlug,
         'TallUI Package Builder' => $packageName,
         'tallui-package-builder' => $packageSlug,
         'package_slug_without_prefix' => $packageSlugWithoutPrefix,
