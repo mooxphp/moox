@@ -152,13 +152,13 @@ function determineSeparator(string $path): string
 /** @return array<mixed> */
 function replaceForWindows(): array
 {
-    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string) __FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package Usetall tallui-package-builder tallui_package_builder tallui_package_builder_migration vendor_name vendor_slug builder@tallui.io TallUI Package Builder"'));
+    return (array) preg_split('/\\r\\n|\\r|\\n/', run((string) 'dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename((string) __FILE__).' | findstr /r /i /M /F:/ ":author :vendor :package Usetall tallui-package-builder tallui_package_builder tallui_package_builder_table vendor_name vendor_slug builder@tallui.io TallUI Package Builder package-builder-blade-component package-builder-livewire-component"'));
 }
 
 /** @return array<string> */
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i ":author|:vendor|:package|Usetall|tallui-package-builder|tallui_package_builder|tallui_package_builder_migration|vendor_name|vendor_slug|builder@tallui.io|TallUI Package Builder" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i ":author|:vendor|:package|Usetall|tallui-package-builder|tallui_package_builder|tallui_package_builder_table|vendor_name|vendor_slug|builder@tallui.io|TallUI Package Builderpackage-builder-blade-component|package-builder-livewire-component" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
 }
 
 $gitName = run('git config user.name');
@@ -217,13 +217,15 @@ foreach ($files as $file) {
         'Builder_Fullname' => $authorName,
         'builder@tallui.io' => $authorEmail,
         'TallUI_Devs' => $vendorName,
+        'create_tallui_package_builder_table' => 'create_'.title_snake($packageSlugWithoutPrefix).'_table.php.stub',
+        'package-builder-livewire-component' => $packageSlug.'-livewire-component.php',
+        'package-builder-blade-component' => $packageSlug.'-blade-component.php',
         'tallui_package_builder' => $vendorSlug,
         'Usetall' => $vendorNamespace,
         'TallUI Package Builder' => $packageName,
         'tallui-package-builder' => $packageSlug,
         'package_slug_without_prefix' => $packageSlugWithoutPrefix,
         'TalluiPackageBuilder' => $className,
-        'tallui_package_builder_migration' => title_snake($packageSlug),
         'variable' => $variableName,
         'This is the TallUI package builder' => $description,
     ]);

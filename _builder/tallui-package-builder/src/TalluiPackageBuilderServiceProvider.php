@@ -21,7 +21,7 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigration('create_tallui-package-builder_table')
+            ->hasMigration('create_tallui_package_builder_table')
             ->hasCommand(TalluiPackageBuilderCommand::class);
     }
 
