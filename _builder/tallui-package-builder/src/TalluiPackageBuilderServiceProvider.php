@@ -37,7 +37,7 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 
     private function bootResources(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'tallui-package-builder');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'tallui-package-builder');
     }
 
     private function bootBladeComponents(): void
@@ -56,7 +56,7 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 
     private function bootLivewireComponents(): void
     {
-        if (! class_exists(Livewire::class)) {
+        if (!class_exists(Livewire::class)) {
             return;
         }
 
