@@ -21,7 +21,7 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigration('create_tallui-package-builder_table')
+            ->hasMigration('create_tallui_package_builder_table')
             ->hasCommand(TalluiPackageBuilderCommand::class);
     }
 
@@ -37,7 +37,7 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 
     private function bootResources(): void
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'tallui-package-builder');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'tallui-package-builder');
     }
 
     private function bootBladeComponents(): void
@@ -56,7 +56,7 @@ class TalluiPackageBuilderServiceProvider extends PackageServiceProvider
 
     private function bootLivewireComponents(): void
     {
-        if (! class_exists(Livewire::class)) {
+        if (!class_exists(Livewire::class)) {
             return;
         }
 
