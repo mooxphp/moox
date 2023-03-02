@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b01405fd2e68deeb190d78b4e4049bb",
+    "content-hash": "e10529dbf4021d44135601f9c11920a1",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6269,11 +6269,11 @@
         },
         {
             "name": "usetall/tallui-flags-round",
-            "version": "dev-main",
+            "version": "dev-feat/icons-search",
             "dist": {
                 "type": "path",
                 "url": "./_icons/tallui-flags-round",
-                "reference": "5db2a857c48c6df27c17d0bd7c37776c40ea04bc"
+                "reference": "9d2472c6e83b7a55858942642e80c5ebefbd09f2"
             },
             "require": {
                 "blade-ui-kit/blade-icons": "^1.4",
@@ -6425,7 +6425,7 @@
             "version": "dev-feat/icons-search",
             "dist": {
                 "type": "path",
-                "url": "./_custom/tallui-icons-search",
+                "url": "./_components/tallui-icons-search",
                 "reference": "4505c820f13252255163aea30ab0d0b80ffc6b2f"
             },
             "require": {

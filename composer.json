@@ -40,6 +40,10 @@
         },
         {
             "type": "path",
+            "url": "./_components/tallui-icons-search"
+        },
+        {
+            "type": "path",
             "url": "./_icons/tallui-flags-round"
         }
     ],
@@ -56,6 +60,7 @@
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
         "usetall/tallui-web-components": "*",
+        "usetall/tallui-icons-search": "*",
         "usetall/tallui-flags-round":"*",
         "wikimedia/composer-merge-plugin": "^2.0"
     },
