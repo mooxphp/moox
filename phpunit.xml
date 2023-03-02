@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< Updated upstream
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
@@ -24,25 +25,51 @@
             <directory suffix="Test.php">./_components/tallui-web-components/tests</directory>
         </testsuite>
         <!-- testsuite name="Web-Icons-Tests">
+=======
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" bootstrap="vendor/autoload.php" colors="true" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="Unit">
+      <directory suffix="Test.php">./tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Feature">
+      <directory suffix="Test.php">./tests/Feature</directory>
+    </testsuite>
+    <testsuite name="App-Components-Tests">
+      <directory suffix="Test.php">./_components/tallui-app-components/tests</directory>
+    </testsuite>
+    <testsuite name="Dev-Components-Tests">
+      <directory suffix="Test.php">./_components/tallui-dev-components/tests</directory>
+    </testsuite>
+    <testsuite name="Form-Components-Tests">
+      <directory suffix="Test.php">./_components/tallui-form-components/tests</directory>
+    </testsuite>
+    <testsuite name="Web-Components-Tests">
+      <directory suffix="Test.php">./_components/tallui-web-components/tests</directory>
+    </testsuite>
+    <testsuite name="Icons-Search-Tests">
+      <directory suffix="Test.php">./_components/tallui-icons-search/tests</directory>
+    </testsuite>
+    <!-- testsuite name="Web-Icons-Tests">
+>>>>>>> Stashed changes
             <directory suffix="Test.php">./_icons/tallui-web-icons/tests</directory>
         </testsuite -->
-        <testsuite name="Core-Tests">
-            <directory suffix="Test.php">./_packages/tallui-core/tests</directory>
-        </testsuite>
-    </testsuites>
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">./app</directory>
-        </include>
-    </coverage>
-    <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="DB_DATABASE" value="testing"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="TELESCOPE_ENABLED" value="false"/>
-    </php>
+    <testsuite name="Core-Tests">
+      <directory suffix="Test.php">./_packages/tallui-core/tests</directory>
+    </testsuite>
+  </testsuites>
+  <coverage>
+    <include>
+      <directory suffix=".php">./app</directory>
+    </include>
+  </coverage>
+  <php>
+    <env name="APP_ENV" value="testing"/>
+    <env name="BCRYPT_ROUNDS" value="4"/>
+    <env name="CACHE_DRIVER" value="array"/>
+    <env name="DB_DATABASE" value="testing"/>
+    <env name="MAIL_MAILER" value="array"/>
+    <env name="QUEUE_CONNECTION" value="sync"/>
+    <env name="SESSION_DRIVER" value="array"/>
+    <env name="TELESCOPE_ENABLED" value="false"/>
+  </php>
 </phpunit>
