@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Scout\Searchable;
 
+/**
+ * @property array<string> $keywords
+ */
 final class Icon extends Model
 {
     use Searchable;
@@ -21,6 +24,7 @@ final class Icon extends Model
     protected $casts = [
         'keywords' => 'array',
     ];
+
 
     public function set(): BelongsTo
     {
@@ -34,6 +38,7 @@ final class Icon extends Model
             ->where('id', '!=', $icon->id);
     }
 
+    /** @return array<array> */
     public function toSearchableArray()
     {
         return $this->only('id', 'icon_set_id', 'keywords');
@@ -41,7 +46,7 @@ final class Icon extends Model
 
     public function scopeWithSet(Builder $query, string $set): Builder
     {
-        return $query->when(! empty($set), fn ($query) => $query->where('icon_set_id', $set));
+        return $query->when(!empty($set), fn ($query) => $query->where('icon_set_id', $set));
     }
 
     public function getRouteKeyName(): string
