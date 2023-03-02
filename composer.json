@@ -37,6 +37,10 @@
         {
             "type": "path",
             "url": "./_components/tallui-dev-components"
+        },
+        {
+            "type": "path",
+            "url": "./_icons/tallui-flags-round"
         }
     ],
     "license": "MIT",
@@ -52,6 +56,7 @@
         "usetall/tallui-core": "*",
         "usetall/tallui-form-components": "*",
         "usetall/tallui-web-components": "*",
+        "usetall/tallui-flags-round":"*",
         "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
