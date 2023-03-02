@@ -13,10 +13,14 @@ use Usetall\TalluiIconsSearch\Models\IconSet;
 
 class TalluiIconsSearch extends LivewireComponent
 {
+    /** @var string $search */
+
     public string $search = '';
 
+    /** @var string $set */
     public string $set = '';
 
+    /** @var mixed $queryString */
     protected $queryString = [
         'search' => ['except' => ''],
         'set' => ['except' => ''],
@@ -24,8 +28,8 @@ class TalluiIconsSearch extends LivewireComponent
 
     public function mount(): void
     {
-        $this->search = (string) request()->query('search', $this->search);
-        $this->set = (string) request()->query('set', $this->set);
+        $this->search =  request()->query('search', $this->search);
+        $this->set =  request()->query('set', $this->set);
     }
 
     public function resetSearch(): void
@@ -44,7 +48,7 @@ class TalluiIconsSearch extends LivewireComponent
         }
 
         return Icon::search($this->search)
-            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
+            ->when(!empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
             ->take(500)
             ->get();
     }
@@ -61,42 +65,5 @@ class TalluiIconsSearch extends LivewireComponent
             'icons' => $this->icons(),
             'sets' => IconSet::orderBy('name')->get(),
         ]);
-    }
-
-    public function collection()
-    {
-        $iconsset = 2;
-
-        var_dump('click');
-
-        $dir = new DirectoryIterator(base_path().'./_icons/tallui-flags-round/resources/svg');
-        foreach ($dir as $fileinfo) {
-            if ($fileinfo->isDir() && ! $fileinfo->isDot() && $iconsset <= 5) {
-                echo '<h2>'.$fileinfo->getFilename().'</h2>'.'<br>';
-                $dir = base_path().'./_icons/tallui-flags-round/resources/svg'.$fileinfo->getFilename();
-                $files = scandir($dir);
-
-                foreach ($files as $file) {
-                    if (basename($file, '.svg') != '.' and basename($file, '.svg') != '..') {
-                        print_r($fileinfo->getFilename().'-'.basename($file, '.svg').'<br>');
-                        // if ($this->doesIconAlreadyExists($fileinfo->getFilename() . '-' . basename($file, ".svg"))) {
-                        //     echo 'Insert<br>';
-                        //     Icon::insert(
-                        //         [
-                        //             'icon_set_id' => $iconsset,
-                        //             'name' => $fileinfo->getFilename() . '-' . basename($file, ".svg"),
-                        //             'keywords' => '{"keewords": 30}',
-                        //             'outlined' => 0
-
-                        //         ]
-
-                        //     );
-                        // }
-                    }
-                }
-
-                $iconsset++;
-            }
-        }
     }
 }

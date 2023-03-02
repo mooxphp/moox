@@ -51,7 +51,7 @@ class TalluiIconsSearchCommand extends Command
             });
         });
 
-        $this->info('Successfully imported '.IconSet::count().' icon sets!');
+        $this->info('Successfully imported ' . IconSet::count() . ' icon sets!');
 
         return 0;
     }
@@ -65,7 +65,7 @@ class TalluiIconsSearchCommand extends Command
                 foreach ($icons as $icon) {
                     Icon::create([
                         'icon_set_id' => $iconSet->id,
-                        'name' => $set['prefix'].'-'.$icon,
+                        'name' => $set['prefix'] . '-' . $icon,
                         'outlined' => $this->isOutlined($icon, $iconSet->outline_rule),
                         'keywords' => $this->keywords($icon, $iconSet->ignore_rule),
                     ]);
@@ -74,6 +74,7 @@ class TalluiIconsSearchCommand extends Command
         });
     }
 
+    /** @return array<mixed> */
     private function keywords(string $string, ?string $rule): array
     {
         return Str::of($string)->when($rule !== null, function (Stringable $string) use ($rule) {
