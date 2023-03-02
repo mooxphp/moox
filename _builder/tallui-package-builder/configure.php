@@ -218,8 +218,6 @@ foreach ($files as $file) {
         'builder@tallui.io' => $authorEmail,
         'TallUI_Devs' => $vendorName,
         'create_tallui_package_builder_table' => 'create_'.title_snake($packageSlugWithoutPrefix).'_table.php.stub',
-        'package-builder-livewire-component' => $packageSlug.'-livewire-component.php',
-        'package-builder-blade-component' => $packageSlug.'-blade-component.php',
         'tallui_package_builder' => $vendorSlug,
         'Usetall' => $vendorNamespace,
         'TallUI Package Builder' => $packageName,
