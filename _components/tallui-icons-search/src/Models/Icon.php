@@ -37,15 +37,15 @@ final class Icon extends Model
             ->where('id', '!=', $icon->id);
     }
 
-    /** @return array<array> */
-    public function toSearchableArray()
+    /** @return array<mixed> */
+    public function toSearchableArray(): array
     {
         return $this->only('id', 'icon_set_id', 'keywords');
     }
 
     public function scopeWithSet(Builder $query, string $set): Builder
     {
-        return $query->when(! empty($set), fn ($query) => $query->where('icon_set_id', $set));
+        return $query->when(!empty($set), fn ($query) => $query->where('icon_set_id', $set));
     }
 
     public function getRouteKeyName(): string
