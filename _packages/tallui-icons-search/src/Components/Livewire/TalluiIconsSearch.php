@@ -24,8 +24,6 @@ class TalluiIconsSearch extends LivewireComponent
 
     public function mount(): void
     {
-        $this->search = request()->query('search', $this->search);
-        $this->set = request()->query('set', $this->set);
     }
 
     public function resetSearch(): void
