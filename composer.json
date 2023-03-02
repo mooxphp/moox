@@ -40,7 +40,7 @@
         },
         {
             "type": "path",
-            "url": "./_components/tallui-icons-search"
+            "url": "./_packages/tallui-icons-search"
         },
         {
             "type": "path",

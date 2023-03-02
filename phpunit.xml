@@ -26,9 +26,6 @@
         <testsuite name="Icons-Search-Tests">
             <directory suffix="Test.php">./_components/tallui-icons-search/tests</directory>
         </testsuite>
-        <!-- testsuite name="Web-Icons-Tests">
-            <directory suffix="Test.php">./_icons/tallui-web-icons/tests</directory>
-        </testsuite -->
         <testsuite name="Core-Tests">
             <directory suffix="Test.php">./_packages/tallui-core/tests</directory>
         </testsuite>
