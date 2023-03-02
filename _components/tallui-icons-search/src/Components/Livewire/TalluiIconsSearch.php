@@ -24,8 +24,11 @@ class TalluiIconsSearch extends LivewireComponent
 
     public function mount(): void
     {
-        $this->search = (string) request()->query('search', $this->search);
-        $this->set = (string) request()->query('set', $this->set);
+        if (is_string(request()->query('search', $this->search))) {
+            $this->search = request()->query('search', $this->search);
+        } else if (is_string(request()->query('set', $this->set))) {
+            $this->set = request()->query('set', $this->set);
+        }
     }
 
     public function resetSearch(): void
@@ -44,7 +47,7 @@ class TalluiIconsSearch extends LivewireComponent
         }
 
         return Icon::search($this->search)
-            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
+            ->when(!empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
             ->take(500)
             ->get();
     }
