@@ -25,9 +25,9 @@ class TalluiIconsSearch extends LivewireComponent
     public function mount(): void
     {
         if (is_string(request()->query('search', $this->search))) {
-            $this->search = (string)request()->query('search', $this->search);
-        } else if (is_string(request()->query('set', $this->set))) {
-            $this->set = (string) request()->query('set', $this->set);
+            $this->search = request()->query('search', $this->search);
+        } elseif (is_string(request()->query('set', $this->set))) {
+            $this->set = request()->query('set', $this->set);
         }
     }
 
