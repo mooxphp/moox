@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiIconsSearch\Components\Livewire;
 
-use DirectoryIterator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Usetall\TalluiIconsSearch\Components\LivewireComponent;
@@ -45,7 +44,7 @@ class TalluiIconsSearch extends LivewireComponent
         }
 
         return Icon::search($this->search)
-            ->when(!empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
+            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
             ->take(500)
             ->get();
     }
