@@ -45,7 +45,7 @@ final class Icon extends Model
 
     public function scopeWithSet(Builder $query, string $set): Builder
     {
-        return $query->when(!empty($set), fn ($query) => $query->where('icon_set_id', $set));
+        return $query->when(! empty($set), fn ($query) => $query->where('icon_set_id', $set));
     }
 
     public function getRouteKeyName(): string

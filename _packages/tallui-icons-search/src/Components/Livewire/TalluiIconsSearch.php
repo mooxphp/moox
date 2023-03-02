@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Usetall\TalluiIconsSearch\Components\Livewire;
 
-use DirectoryIterator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Usetall\TalluiIconsSearch\Components\LivewireComponent;
@@ -13,14 +12,11 @@ use Usetall\TalluiIconsSearch\Models\IconSet;
 
 class TalluiIconsSearch extends LivewireComponent
 {
-    /** @var string $search */
-
     public string $search = '';
 
-    /** @var string $set */
     public string $set = '';
 
-    /** @var mixed $queryString */
+    /** @var mixed */
     protected $queryString = [
         'search' => ['except' => ''],
         'set' => ['except' => ''],
@@ -28,8 +24,8 @@ class TalluiIconsSearch extends LivewireComponent
 
     public function mount(): void
     {
-        $this->search =  request()->query('search', $this->search);
-        $this->set =  request()->query('set', $this->set);
+        $this->search = request()->query('search', $this->search);
+        $this->set = request()->query('set', $this->set);
     }
 
     public function resetSearch(): void
@@ -48,7 +44,7 @@ class TalluiIconsSearch extends LivewireComponent
         }
 
         return Icon::search($this->search)
-            ->when(!empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
+            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
             ->take(500)
             ->get();
     }
