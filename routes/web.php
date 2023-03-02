@@ -25,6 +25,9 @@ Route::get('/packages', function () {
 Route::get('/components', function () {
     return view('components.overview');
 });
+Route::get('/icons', function () {
+    return view('icons.overview');
+});
 
 Route::middleware([
     'auth:sanctum',
@@ -39,8 +42,8 @@ Route::middleware([
 $custom_parts = config('tallui.custom_views');
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
-        $custom_view = 'custom.'.$custom_part;
-        $custom_route = 'custom/'.$custom_part;
+        $custom_view = 'custom.' . $custom_part;
+        $custom_route = 'custom/' . $custom_part;
         if (view()->exists($custom_view)) {
             Route::view($custom_route, $custom_view);
         }
@@ -50,7 +53,7 @@ if (is_array($custom_parts)) {
 $custom_parts = explode(', ', config('tallui.custom_routes'));
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
-        $tui_routes = base_path('routes/custom_'.$custom_part.'.php');
+        $tui_routes = base_path('routes/custom_' . $custom_part . '.php');
         if (file_exists($tui_routes)) {
             include $tui_routes;
         }
