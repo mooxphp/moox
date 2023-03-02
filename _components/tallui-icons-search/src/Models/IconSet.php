@@ -21,7 +21,7 @@ class IconSet extends Model
 
     protected $guarded = [];
 
-    /** @var array<mixed> $rows */
+    /** @var array<mixed> */
     protected array $rows = [
         [
             'id' => 1,
