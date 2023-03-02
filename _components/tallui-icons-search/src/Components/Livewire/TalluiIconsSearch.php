@@ -45,7 +45,7 @@ class TalluiIconsSearch extends LivewireComponent
         }
 
         return Icon::search($this->search)
-            ->when(!empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
+            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
             ->take(500)
             ->get();
     }
@@ -70,16 +70,16 @@ class TalluiIconsSearch extends LivewireComponent
 
         var_dump('click');
 
-        $dir = new DirectoryIterator(base_path() . './_icons/tallui-flags-round/resources/svg');
+        $dir = new DirectoryIterator(base_path().'./_icons/tallui-flags-round/resources/svg');
         foreach ($dir as $fileinfo) {
-            if ($fileinfo->isDir() && !$fileinfo->isDot() && $iconsset <= 5) {
-                echo '<h2>' . $fileinfo->getFilename() . '</h2>' . '<br>';
-                $dir = base_path() . './_icons/tallui-flags-round/resources/svg' . $fileinfo->getFilename();
+            if ($fileinfo->isDir() && ! $fileinfo->isDot() && $iconsset <= 5) {
+                echo '<h2>'.$fileinfo->getFilename().'</h2>'.'<br>';
+                $dir = base_path().'./_icons/tallui-flags-round/resources/svg'.$fileinfo->getFilename();
                 $files = scandir($dir);
 
                 foreach ($files as $file) {
                     if (basename($file, '.svg') != '.' and basename($file, '.svg') != '..') {
-                        print_r($fileinfo->getFilename() . '-' . basename($file, '.svg') . '<br>');
+                        print_r($fileinfo->getFilename().'-'.basename($file, '.svg').'<br>');
                         // if ($this->doesIconAlreadyExists($fileinfo->getFilename() . '-' . basename($file, ".svg"))) {
                         //     echo 'Insert<br>';
                         //     Icon::insert(
