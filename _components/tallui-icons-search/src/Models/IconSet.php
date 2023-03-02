@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Sushi\Sushi;
 
+/**
+ * @property string $name
+ * @property string $ignore_rule
+ * @property string $outline_rule
+ */
 class IconSet extends Model
 {
     use Sushi;

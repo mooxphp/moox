@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Usetall\TalluiIconsSearch\Components;
 
 return [

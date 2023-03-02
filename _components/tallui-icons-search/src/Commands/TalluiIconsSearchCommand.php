@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Usetall\TalluiIconsSearch\Commands;
 
 use BladeUI\Icons\Factory;
@@ -18,8 +20,10 @@ class TalluiIconsSearchCommand extends Command
 
     protected $description = 'Import all icons from every icon set into the database.';
 
+    /** @var array<mixed> */
     private array $sets;
 
+    /** @var array<mixed> */
     private array $icons;
 
     public function handle(Factory $factory, IconsManifest $manifest): int
@@ -47,7 +51,7 @@ class TalluiIconsSearchCommand extends Command
             });
         });
 
-        $this->info('Successfully imported '.IconSet::count().' icon sets!');
+        $this->info('Successfully imported ' . IconSet::count() . ' icon sets!');
 
         return 0;
     }
@@ -61,7 +65,7 @@ class TalluiIconsSearchCommand extends Command
                 foreach ($icons as $icon) {
                     Icon::create([
                         'icon_set_id' => $iconSet->id,
-                        'name' => $set['prefix'].'-'.$icon,
+                        'name' => $set['prefix'] . '-' . $icon,
                         'outlined' => $this->isOutlined($icon, $iconSet->outline_rule),
                         'keywords' => $this->keywords($icon, $iconSet->ignore_rule),
                     ]);
