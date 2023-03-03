@@ -1417,16 +1417,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v10.1.5",
+            "version": "v10.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "57850ab537cf0554b5b616215079c761b98168c8"
+                "reference": "3799f7f3118d57dc5d3dfaabde69a912fff65a7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/57850ab537cf0554b5b616215079c761b98168c8",
-                "reference": "57850ab537cf0554b5b616215079c761b98168c8",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/3799f7f3118d57dc5d3dfaabde69a912fff65a7e",
+                "reference": "3799f7f3118d57dc5d3dfaabde69a912fff65a7e",
                 "shasum": ""
             },
             "require": {
@@ -1613,20 +1613,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2023-02-24T09:57:13+00:00"
+            "time": "2023-03-02T14:55:50+00:00"
         },
         {
             "name": "laravel/jetstream",
-            "version": "v3.0.1",
+            "version": "v3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/jetstream.git",
-                "reference": "1b8db2e3506b1d3e003ea5968f508b966aec056c"
+                "reference": "2af8f166436bf73c946f7187055d2df317d3e981"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/jetstream/zipball/1b8db2e3506b1d3e003ea5968f508b966aec056c",
-                "reference": "1b8db2e3506b1d3e003ea5968f508b966aec056c",
+                "url": "https://api.github.com/repos/laravel/jetstream/zipball/2af8f166436bf73c946f7187055d2df317d3e981",
+                "reference": "2af8f166436bf73c946f7187055d2df317d3e981",
                 "shasum": ""
             },
             "require": {
@@ -1643,8 +1643,10 @@
             "require-dev": {
                 "inertiajs/inertia-laravel": "^0.6.5",
                 "laravel/sanctum": "^3.0",
+                "livewire/livewire": "^2.12",
                 "mockery/mockery": "^1.0",
                 "orchestra/testbench": "^7.0|^8.0",
+                "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^9.3"
             },
             "type": "library",
@@ -1683,7 +1685,7 @@
                 "issues": "https://github.com/laravel/jetstream/issues",
                 "source": "https://github.com/laravel/jetstream"
             },
-            "time": "2023-02-15T14:52:33+00:00"
+            "time": "2023-03-01T19:31:53+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -7146,16 +7148,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.21.0",
+            "version": "v1.21.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "758a914fc4da41f3f6ca5522c85902181b228bd1"
+                "reference": "fd8d04bc546457b504aa2b3c2d541840551f836f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/758a914fc4da41f3f6ca5522c85902181b228bd1",
-                "reference": "758a914fc4da41f3f6ca5522c85902181b228bd1",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/fd8d04bc546457b504aa2b3c2d541840551f836f",
+                "reference": "fd8d04bc546457b504aa2b3c2d541840551f836f",
                 "shasum": ""
             },
             "require": {
@@ -7164,6 +7166,10 @@
                 "illuminate/support": "^8.0|^9.0|^10.0",
                 "php": "^7.3|^8.0",
                 "symfony/yaml": "^6.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^6.0|^7.0|^8.0",
+                "phpstan/phpstan": "^1.10"
             },
             "bin": [
                 "bin/sail"
@@ -7203,7 +7209,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2023-02-16T19:16:27+00:00"
+            "time": "2023-03-01T23:07:57+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -7338,34 +7344,35 @@
         },
         {
             "name": "nunomaduro/collision",
-            "version": "v7.0.5",
+            "version": "v7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/collision.git",
-                "reference": "5c654ee5fa187cf2f4cb226d773582ec6d402a55"
+                "reference": "2b97fed4950cf0ff148c18b853975ec8ea135e90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/collision/zipball/5c654ee5fa187cf2f4cb226d773582ec6d402a55",
-                "reference": "5c654ee5fa187cf2f4cb226d773582ec6d402a55",
+                "url": "https://api.github.com/repos/nunomaduro/collision/zipball/2b97fed4950cf0ff148c18b853975ec8ea135e90",
+                "reference": "2b97fed4950cf0ff148c18b853975ec8ea135e90",
                 "shasum": ""
             },
             "require": {
                 "filp/whoops": "^2.14.6",
                 "nunomaduro/termwind": "^1.15.1",
                 "php": "^8.1.0",
-                "symfony/console": "^6.2.5"
+                "symfony/console": "^6.2.7"
             },
             "require-dev": {
-                "laravel/framework": "^10.0.3",
-                "laravel/pint": "^1.5.0",
-                "laravel/sail": "^1.20.2",
+                "brianium/paratest": "^7.1.0",
+                "laravel/framework": "^10.2.0",
+                "laravel/pint": "^1.6.0",
+                "laravel/sail": "^1.21.1",
                 "laravel/sanctum": "^3.2.1",
-                "laravel/tinker": "^2.8.0",
+                "laravel/tinker": "^2.8.1",
                 "nunomaduro/larastan": "^2.4.1",
-                "orchestra/testbench-core": "^8.0.1",
+                "orchestra/testbench-core": "^8.0.3",
                 "pestphp/pest": "^2.0.0",
-                "phpunit/phpunit": "^10.0.9",
+                "phpunit/phpunit": "^10.0.14",
                 "sebastian/environment": "^6.0.0",
                 "spatie/laravel-ignition": "^2.0.0"
             },
@@ -7426,7 +7433,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-02-19T16:25:13+00:00"
+            "time": "2023-03-03T10:00:22+00:00"
         },
         {
             "name": "nunomaduro/larastan",
@@ -7526,22 +7533,22 @@
         },
         {
             "name": "orchestra/testbench",
-            "version": "v8.0.4",
+            "version": "v8.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench.git",
-                "reference": "2709a4ed984e1c9d3224510dbbd31b5c8763abd9"
+                "reference": "edce42b8551e6a4a8d80befb34456ca80e5ffd63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench/zipball/2709a4ed984e1c9d3224510dbbd31b5c8763abd9",
-                "reference": "2709a4ed984e1c9d3224510dbbd31b5c8763abd9",
+                "url": "https://api.github.com/repos/orchestral/testbench/zipball/edce42b8551e6a4a8d80befb34456ca80e5ffd63",
+                "reference": "edce42b8551e6a4a8d80befb34456ca80e5ffd63",
                 "shasum": ""
             },
             "require": {
                 "composer-runtime-api": "^2.2",
                 "fakerphp/faker": "^1.21",
-                "laravel/framework": ">=10.1.5 <10.2.0",
+                "laravel/framework": ">=10.1.5 <10.3.0",
                 "mockery/mockery": "^1.5.1",
                 "orchestra/testbench-core": ">=8.0.2 <8.1.0",
                 "php": "^8.1",
@@ -7575,9 +7582,9 @@
             ],
             "support": {
                 "issues": "https://github.com/orchestral/testbench/issues",
-                "source": "https://github.com/orchestral/testbench/tree/v8.0.4"
+                "source": "https://github.com/orchestral/testbench/tree/v8.0.5"
             },
-            "time": "2023-02-24T10:25:11+00:00"
+            "time": "2023-03-02T15:08:18+00:00"
         },
         {
             "name": "orchestra/testbench-core",
@@ -7672,26 +7679,26 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "3af60b874ef2c1433b282496f124a0f65f3cc135"
+                "reference": "b6b8a72a6a01f09ac91ec780315d4ff96244f971"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/3af60b874ef2c1433b282496f124a0f65f3cc135",
-                "reference": "3af60b874ef2c1433b282496f124a0f65f3cc135",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/b6b8a72a6a01f09ac91ec780315d4ff96244f971",
+                "reference": "b6b8a72a6a01f09ac91ec780315d4ff96244f971",
                 "shasum": ""
             },
             "require": {
-                "nunomaduro/collision": "^7.0.5",
+                "nunomaduro/collision": "^7.1.0",
                 "nunomaduro/termwind": "^1.15.1",
                 "pestphp/pest-plugin": "^2.0.0",
                 "php": "^8.1.0",
-                "phpunit/phpunit": "^10.0.13"
+                "phpunit/phpunit": "^10.0.14"
             },
             "conflict": {
                 "brianium/paratest": "<7.0.6"
             },
             "require-dev": {
-                "brianium/paratest": "^7.0.6",
+                "brianium/paratest": "^7.1.0",
                 "pestphp/pest-dev-tools": "^2.4.0",
                 "pestphp/pest-plugin-arch": "^2.0.0",
                 "symfony/process": "^6.2.7"
@@ -7775,7 +7782,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-02-28T14:47:49+00:00"
+            "time": "2023-03-03T10:23:56+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
