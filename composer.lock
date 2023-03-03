@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "198ad82ef25b59b4c6380284e6f316e8",
+    "content-hash": "0a7963f44711234d403463a2aec6a565",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6361,6 +6361,62 @@
                 "tall-stack",
                 "tallui-core",
                 "usetall"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
+            "name": "usetall/tallui-flags-circle",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "./_icons/tallui-flags-circle",
+                "reference": "0ef5feed13fb787d28555e6014c7e3553d771b4e"
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.4",
+                "illuminate/support": "^10.0",
+                "php": "~8.1.0|~8.2.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0",
+                "phpunit/phpunit": "^10.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\TalluiFlagsCircle\\TalluiFlagsCircleServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\TalluiFlagsCircle\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KimSpeer"
+                }
+            ],
+            "description": "This is my package tallui-flags-circle",
+            "homepage": "https://github.com/usetall/tallui-flags-circle",
+            "keywords": [
+                "Blade",
+                "Icons",
+                "Laravel",
+                "Package",
+                "TallUI"
             ],
             "transport-options": {
                 "relative": true
