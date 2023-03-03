@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e41bdb50145002386dd42a91f64c573",
+    "content-hash": "198ad82ef25b59b4c6380284e6f316e8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6080,6 +6080,103 @@
             "time": "2023-01-03T09:29:04+00:00"
         },
         {
+            "name": "usetall/icons-show",
+            "version": "dev-feature/icons-search",
+            "dist": {
+                "type": "path",
+                "url": "./_custom/icons-show",
+                "reference": "6baed0f91b9272461c67e4f17136ff16774e39c2"
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/contracts": "^10.0",
+                "illuminate/filesystem": "^10.0",
+                "illuminate/support": "^10.0",
+                "illuminate/view": "^10.0",
+                "livewire/livewire": "^2.0",
+                "nesbot/carbon": "^2.38",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.13.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.0",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpunit/phpunit": "^10.0",
+                "spatie/laravel-ray": "^1.26"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Usetall\\IconsShow\\IconsShowServiceProvider"
+                    ],
+                    "aliases": {
+                        "IconsShow": "Usetall\\IconsShow\\Facades\\IconsShow"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Usetall\\IconsShow\\": "src",
+                    "Usetall\\IconsShow\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Usetall\\IconsShow\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KimSpeer",
+                    "email": "kim.speer@co-IT.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is my package icons-show",
+            "homepage": "https://github.com/usetall/icons-show",
+            "keywords": [
+                "admin",
+                "alpinejs",
+                "icons-show",
+                "laravel",
+                "livewire",
+                "tailwindcss",
+                "tall-stack",
+                "usetall"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "usetall/tallui-admin-panel",
             "version": "dev-feature/icons-search",
             "dist": {
@@ -6264,62 +6361,6 @@
                 "tall-stack",
                 "tallui-core",
                 "usetall"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "usetall/tallui-flags-round",
-            "version": "dev-feature/icons-search",
-            "dist": {
-                "type": "path",
-                "url": "./_icons/tallui-flags-round",
-                "reference": "9d2472c6e83b7a55858942642e80c5ebefbd09f2"
-            },
-            "require": {
-                "blade-ui-kit/blade-icons": "^1.4",
-                "illuminate/support": "^10.0",
-                "php": "~8.1.0|~8.2.0"
-            },
-            "require-dev": {
-                "orchestra/testbench": "^8.0",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Usetall\\TalluiFlagsRound\\TalluiFlagsRoundServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Usetall\\TalluiFlagsRound\\": "src"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "KimSpeer"
-                }
-            ],
-            "description": "This is my package tallui-flags-round",
-            "homepage": "https://github.com/usetall/tallui-flags-round",
-            "keywords": [
-                "Blade",
-                "Icons",
-                "Laravel",
-                "Package",
-                "TallUI"
             ],
             "transport-options": {
                 "relative": true
@@ -10069,16 +10110,16 @@
         },
         {
             "name": "spatie/laravel-ray",
-            "version": "1.32.2",
+            "version": "1.32.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-ray.git",
-                "reference": "0c28a8274ec261a2857b4318b6f934af98024395"
+                "reference": "8c7ea86c8092bcfe7a046f640b6ac9e5d7ec98cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-ray/zipball/0c28a8274ec261a2857b4318b6f934af98024395",
-                "reference": "0c28a8274ec261a2857b4318b6f934af98024395",
+                "url": "https://api.github.com/repos/spatie/laravel-ray/zipball/8c7ea86c8092bcfe7a046f640b6ac9e5d7ec98cd",
+                "reference": "8c7ea86c8092bcfe7a046f640b6ac9e5d7ec98cd",
                 "shasum": ""
             },
             "require": {
@@ -10089,7 +10130,7 @@
                 "illuminate/support": "^7.20|^8.19|^9.0|^10.0",
                 "php": "^7.4|^8.0",
                 "spatie/backtrace": "^1.0",
-                "spatie/ray": "^1.33",
+                "spatie/ray": "^1.37",
                 "symfony/stopwatch": "4.2|^5.1|^6.0",
                 "zbateson/mail-mime-parser": "^1.3.1|^2.0"
             },
@@ -10138,7 +10179,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-ray/issues",
-                "source": "https://github.com/spatie/laravel-ray/tree/1.32.2"
+                "source": "https://github.com/spatie/laravel-ray/tree/1.32.3"
             },
             "funding": [
                 {
@@ -10150,7 +10191,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2023-02-06T09:46:50+00:00"
+            "time": "2023-03-03T13:37:21+00:00"
         },
         {
             "name": "spatie/macroable",
@@ -10204,16 +10245,16 @@
         },
         {
             "name": "spatie/ray",
-            "version": "1.36.2",
+            "version": "1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/ray.git",
-                "reference": "71dfde21900447ab37698fc07ff28b7f1e1822b8"
+                "reference": "eee231d752eb9b0df33aa99a507c89b5a0ed34fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/ray/zipball/71dfde21900447ab37698fc07ff28b7f1e1822b8",
-                "reference": "71dfde21900447ab37698fc07ff28b7f1e1822b8",
+                "url": "https://api.github.com/repos/spatie/ray/zipball/eee231d752eb9b0df33aa99a507c89b5a0ed34fb",
+                "reference": "eee231d752eb9b0df33aa99a507c89b5a0ed34fb",
                 "shasum": ""
             },
             "require": {
@@ -10264,7 +10305,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/ray/issues",
-                "source": "https://github.com/spatie/ray/tree/1.36.2"
+                "source": "https://github.com/spatie/ray/tree/1.37.0"
             },
             "funding": [
                 {
@@ -10276,7 +10317,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2023-02-10T09:24:13+00:00"
+            "time": "2023-03-03T13:24:41+00:00"
         },
         {
             "name": "symfony/polyfill-iconv",
