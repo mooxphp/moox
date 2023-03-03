@@ -22,9 +22,6 @@ class TalluiIconsSearch extends LivewireComponent
         'set' => ['except' => ''],
     ];
 
-    public function mount(): void
-    {
-    }
 
     public function resetSearch(): void
     {
@@ -42,7 +39,7 @@ class TalluiIconsSearch extends LivewireComponent
         }
 
         return Icon::search($this->search)
-            ->when(! empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
+            ->when(!empty($this->set), fn ($query) => $query->where('icon_set_id', $this->set))
             ->take(500)
             ->get();
     }
