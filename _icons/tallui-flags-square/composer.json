@@ -1,0 +1,49 @@
+{
+    "name": "usetall/tallui-flags-square",
+    "description": "This is my package tallui-flags-square",
+    "keywords": [
+        "TallUI",
+        "Blade",
+        "Icons",
+        "Laravel",
+        "Package"
+    ],
+    "homepage": "https://github.com/usetall/tallui-flags-square",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KimSpeer"
+        }
+    ],
+    "require": {
+        "php": "~8.1.0|~8.2.0",
+        "blade-ui-kit/blade-icons": "^1.4",
+        "illuminate/support": "^10.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Usetall\\TalluiFlagsSquare\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Usetall\\TalluiFlagsSquare\\TalluiFlagsSquareServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
