@@ -44,7 +44,19 @@
         },
         {
             "type": "path",
+            "url": "./_icons/tallui-flags-origin"
+        },
+        {
+            "type": "path",
+            "url": "./_icons/tallui-flags-square"
+        },
+        {
+            "type": "path",
             "url": "./_icons/tallui-flags-circle"
+        },
+        {
+            "type": "path",
+            "url": "./_icons/tallui-flags-rect"
         }
     ],
     "license": "MIT",
@@ -61,7 +73,10 @@
         "usetall/tallui-form-components": "*",
         "usetall/tallui-web-components": "*",
         "usetall/tallui-icons-search": "*",
+        "usetall/tallui-flags-origin":"*",
+        "usetall/tallui-flags-square":"*",
         "usetall/tallui-flags-circle":"*",
+        "usetall/tallui-flags-rect":"*",
         "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
