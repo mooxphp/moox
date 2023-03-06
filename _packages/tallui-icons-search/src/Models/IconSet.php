@@ -62,4 +62,3 @@ class IconSet extends Model
         return (string) Str::of($this->name)->replace('-', ' ')->title();
     }
 }
-
