@@ -25,9 +25,33 @@ class IconSet extends Model
     protected array $rows = [
         [
             'id' => 1,
-            'name' => 'tallui-flags-round',
-            'repository' => 'https://github.com/usetall/tallui-flags-round',
-            'composer' => 'usetall/tallui-flags-round',
+            'name' => 'tallui-flags-circle',
+            'repository' => 'https://github.com/usetall/tallui-flags-circle',
+            'composer' => 'usetall/tallui-flags-circle',
+            'ignore_rule' => '/^(?:o|s)-/',
+            'outline_rule' => '/^o-/',
+        ],
+        [
+            'id' => 2,
+            'name' => 'tallui-flags-origin',
+            'repository' => 'https://github.com/usetall/tallui-flags-origin',
+            'composer' => 'usetall/tallui-flags-origin',
+            'ignore_rule' => '/^(?:o|s)-/',
+            'outline_rule' => '/^o-/',
+        ],
+        [
+            'id' => 3,
+            'name' => 'tallui-flags-rect',
+            'repository' => 'https://github.com/usetall/tallui-flags-rect',
+            'composer' => 'usetall/tallui-flags-rect',
+            'ignore_rule' => '/^(?:o|s)-/',
+            'outline_rule' => '/^o-/',
+        ],
+        [
+            'id' => 4,
+            'name' => 'tallui-flags-square',
+            'repository' => 'https://github.com/usetall/tallui-flags-square',
+            'composer' => 'usetall/tallui-flags-square',
             'ignore_rule' => '/^(?:o|s)-/',
             'outline_rule' => '/^o-/',
         ],
@@ -38,3 +62,4 @@ class IconSet extends Model
         return (string) Str::of($this->name)->replace('-', ' ')->title();
     }
 }
+

@@ -6080,103 +6080,6 @@
             "time": "2023-01-03T09:29:04+00:00"
         },
         {
-            "name": "usetall/icons-show",
-            "version": "dev-feature/icons-search",
-            "dist": {
-                "type": "path",
-                "url": "./_custom/icons-show",
-                "reference": "6baed0f91b9272461c67e4f17136ff16774e39c2"
-            },
-            "require": {
-                "ext-json": "*",
-                "illuminate/contracts": "^10.0",
-                "illuminate/filesystem": "^10.0",
-                "illuminate/support": "^10.0",
-                "illuminate/view": "^10.0",
-                "livewire/livewire": "^2.0",
-                "nesbot/carbon": "^2.38",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0",
-                "nunomaduro/collision": "^7.0",
-                "nunomaduro/larastan": "^2.0.1",
-                "orchestra/testbench": "^8.0",
-                "pestphp/pest": "^2.0",
-                "pestphp/pest-plugin-laravel": "^2.0",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^10.0",
-                "spatie/laravel-ray": "^1.26"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Usetall\\IconsShow\\IconsShowServiceProvider"
-                    ],
-                    "aliases": {
-                        "IconsShow": "Usetall\\IconsShow\\Facades\\IconsShow"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Usetall\\IconsShow\\": "src",
-                    "Usetall\\IconsShow\\Database\\Factories\\": "database/factories"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Usetall\\IconsShow\\Tests\\": "tests"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": [
-                    "@php ./vendor/bin/testbench package:discover --ansi"
-                ],
-                "analyse": [
-                    "vendor/bin/phpstan analyse"
-                ],
-                "test": [
-                    "vendor/bin/pest"
-                ],
-                "test-coverage": [
-                    "vendor/bin/pest --coverage"
-                ],
-                "format": [
-                    "vendor/bin/pint"
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "KimSpeer",
-                    "email": "kim.speer@co-IT.eu",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package icons-show",
-            "homepage": "https://github.com/usetall/icons-show",
-            "keywords": [
-                "admin",
-                "alpinejs",
-                "icons-show",
-                "laravel",
-                "livewire",
-                "tailwindcss",
-                "tall-stack",
-                "usetall"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
             "name": "usetall/tallui-admin-panel",
             "version": "dev-feature/icons-search",
             "dist": {
@@ -6368,11 +6271,11 @@
         },
         {
             "name": "usetall/tallui-flags-circle",
-            "version": "dev-main",
+            "version": "dev-feature/icons-search",
             "dist": {
                 "type": "path",
                 "url": "./_icons/tallui-flags-circle",
-                "reference": "fec7a45da5b18ea5d4178d6a87693c72d13c029a"
+                "reference": "b0f8151d41cc808d893ff77a1149ac7f6f32f753"
             },
             "require": {
                 "blade-ui-kit/blade-icons": "^1.4",
@@ -6480,11 +6383,11 @@
         },
         {
             "name": "usetall/tallui-flags-rect",
-            "version": "dev-main",
+            "version": "dev-feature/icons-search",
             "dist": {
                 "type": "path",
                 "url": "./_icons/tallui-flags-rect",
-                "reference": "1a40307c17d3e49aedc080fa498aaa623b48a75b"
+                "reference": "58ee0b618a3f9b6522c6aea73f20c4170e17d8df"
             },
             "require": {
                 "blade-ui-kit/blade-icons": "^1.4",
@@ -6536,11 +6439,11 @@
         },
         {
             "name": "usetall/tallui-flags-square",
-            "version": "dev-main",
+            "version": "dev-feature/icons-search",
             "dist": {
                 "type": "path",
                 "url": "./_icons/tallui-flags-square",
-                "reference": "9ea9847110dacdf331cea9720ef3c42361f9ffcb"
+                "reference": "926b1dcd5f0f87131cfe845a50fc2c07138b11ae"
             },
             "require": {
                 "blade-ui-kit/blade-icons": "^1.4",
@@ -8503,16 +8406,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.3",
+            "version": "1.10.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "5419375b5891add97dc74be71e6c1c34baaddf64"
+                "reference": "8d39218664b45a4a42d5be66d2b63dcf8c149982"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/5419375b5891add97dc74be71e6c1c34baaddf64",
-                "reference": "5419375b5891add97dc74be71e6c1c34baaddf64",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8d39218664b45a4a42d5be66d2b63dcf8c149982",
+                "reference": "8d39218664b45a4a42d5be66d2b63dcf8c149982",
                 "shasum": ""
             },
             "require": {
@@ -8542,7 +8445,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.10.3"
+                "source": "https://github.com/phpstan/phpstan/tree/1.10.4"
             },
             "funding": [
                 {
@@ -8558,7 +8461,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-02-25T14:47:13+00:00"
+            "time": "2023-03-06T13:39:20+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -8662,16 +8565,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "10.0.1",
+            "version": "10.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "b9c21a93dd8c8eed79879374884ee733259475cc"
+                "reference": "20800e84296ea4732f9a125e08ce86b4004ae3e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/b9c21a93dd8c8eed79879374884ee733259475cc",
-                "reference": "b9c21a93dd8c8eed79879374884ee733259475cc",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/20800e84296ea4732f9a125e08ce86b4004ae3e4",
+                "reference": "20800e84296ea4732f9a125e08ce86b4004ae3e4",
                 "shasum": ""
             },
             "require": {
@@ -8693,8 +8596,8 @@
                 "phpunit/phpunit": "^10.0"
             },
             "suggest": {
-                "ext-pcov": "*",
-                "ext-xdebug": "*"
+                "ext-pcov": "PHP extension that provides line coverage",
+                "ext-xdebug": "PHP extension that provides line coverage as well as branch and path coverage"
             },
             "type": "library",
             "extra": {
@@ -8727,7 +8630,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/10.0.1"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/10.0.2"
             },
             "funding": [
                 {
@@ -8735,7 +8638,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-02-25T05:35:03+00:00"
+            "time": "2023-03-06T13:00:19+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
