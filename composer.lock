@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c53a1da912c2fd0bb8f58e2fa5bfa9f5",
+    "content-hash": "1d01dee91706678a3cc4db731df487f1",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -6595,7 +6595,7 @@
             "version": "dev-feature/icons-search",
             "dist": {
                 "type": "path",
-                "url": "./_packages/tallui-icons-search",
+                "url": "./_internal/tallui-icons-search",
                 "reference": "4071b02c5836c666b33755a9d85e847d2ded2400"
             },
             "require": {

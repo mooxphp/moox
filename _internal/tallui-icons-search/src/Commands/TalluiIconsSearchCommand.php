@@ -37,7 +37,6 @@ class TalluiIconsSearchCommand extends Command
         $this->sets = $factory->all();
         $this->icons = $manifest->getManifest($this->sets);
 
-        print_r($this->sets);
         unset($this->sets['default']);
 
         $this->info('Starting to import icon sets...');
@@ -59,7 +58,6 @@ class TalluiIconsSearchCommand extends Command
 
     private function parseIcons(IconSet $iconSet): void
     {
-        print_r($iconSet);
         Icon::withoutSyncingToSearch(function () use ($iconSet) {
             $set = $this->sets[$iconSet->name];
 

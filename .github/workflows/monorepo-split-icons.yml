@@ -16,7 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - tallui-web-icons
+          - tallui-flags-circle
+          - tallui-flags-origin
+          - tallui-flags-rect
+          - tallui-flags-square
     steps:
       - uses: actions/checkout@v3
 

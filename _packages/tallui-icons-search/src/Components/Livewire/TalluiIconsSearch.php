@@ -12,19 +12,15 @@ use Usetall\TalluiIconsSearch\Models\IconSet;
 
 class TalluiIconsSearch extends LivewireComponent
 {
-    public mixed $search = '';
+    public string $search = '';
 
-    public mixed $set = '';
+    public string $set = '';
 
     /** @var mixed */
     protected $queryString = [
         'search' => ['except' => ''],
         'set' => ['except' => ''],
     ];
-
-    public function mount(): void
-    {
-    }
 
     public function resetSearch(): void
     {
