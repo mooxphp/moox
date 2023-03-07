@@ -14,5 +14,4 @@ final class ShowIconController
             'icon' => $icon,
         ]);
     }
-
 }
