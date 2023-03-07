@@ -59,7 +59,7 @@
 
         <div class="grid grid-cols-2 gap-3 mt-5 text-sm gap-y-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-10">
             @foreach ($icons as $icon)
-                <a href=""
+                <a href="{{ route('icons', $icon) }}"
                     class="flex flex-col items-center justify-between w-full h-full p-3 text-gray-500 transition duration-300 ease-in-out border border-gray-200 rounded-lg hover:text-scarlet-500 hover:shadow-md">
                     {{ svg($icon->name, 'w-8 h-8') }}
 

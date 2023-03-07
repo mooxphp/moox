@@ -34,6 +34,7 @@ class TalluiIconsSearchServiceProvider extends PackageServiceProvider
         $this->bootBladeComponents();
         $this->bootLivewireComponents();
         $this->bootDirectives();
+        $this->loadRoutesFrom(__DIR__.'/routes/web.php');
     }
 
     private function bootResources(): void

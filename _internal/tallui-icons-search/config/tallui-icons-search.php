@@ -18,6 +18,7 @@ return [
     */
 
     'components' => [
+        'icons-show' => Components\Blade\IconsShow::class,
     ],
 
     /*
