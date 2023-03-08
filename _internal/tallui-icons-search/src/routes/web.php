@@ -1,10 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Usetall\TalluiIconsSearch\Models\Icon;
+use Usetall\TalluiIconsSearch\Controllers\ShowIconController;
 
-Route::view('/icons/{icon}', function (Icon $icon) {
-    return view('tallui-icons-search::components.blade.icons-show', [
-        'icon' => $icon,
-    ]);
-})->name('icons');
+Route::get('/icons/{icon}', ShowIconController::class)->name('icons');

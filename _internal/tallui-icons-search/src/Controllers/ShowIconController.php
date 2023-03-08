@@ -12,6 +12,7 @@ final class ShowIconController
     {
         return view('tallui-icons-search::components.blade.icons-show', [
             'icon' => $icon,
+            'icons' => Icon::relatedIcons($icon),
         ]);
     }
 }

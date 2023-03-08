@@ -1,4 +1,4 @@
-{{-- <div id="icon-detail" class="relative max-w-screen-xl px-4 mx-auto mt-6 sm:px-6">
+ <div id="icon-detail" class="relative max-w-screen-xl px-4 mx-auto mt-6 sm:px-6">
         <h3 class="text-3xl font-extrabold leading-8 tracking-tight text-gray-900 font-hind sm:text-5xl sm:leading-10">
             <a class="text-scarlet-600 hover:text-scarlet-500" :href="$icon->set->repository">
                 {{ $icon->set->name }}
@@ -10,11 +10,11 @@
         <div class="w-full mt-6 sm:grid sm:grid-cols-5 sm:gap-10">
             <div class="flex items-center justify-center w-full py-12 text-gray-700 bg-gray-100 sm:col-span-3">
                 {{ svg($icon->name, 'w-64 h-64') }}
-            </div> --}}
+            </div>
 
 
 
-        {{-- @if (count($icons))
+        @if (count($icons))
             <div class="mt-10">
                 <h4 class="text-2xl font-semibold leading-6 tracking-tight text-gray-900 font-hind sm:text-3xl sm:leading-8">
                     Similar icons
@@ -36,8 +36,6 @@
                     @endforeach
                 </div>
             </div>
-        @endif --}}
-    {{-- </div> --}}
-    <div>
-        Hi there
+        @endif
     </div>
+
