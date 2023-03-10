@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 27.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 130.5 150" style="enable-background:new 0 0 130.5 150;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);stroke:#297EA6;}
+	.st1{fill:none;stroke:#297EA6;stroke-width:2;}
+	.st2{fill:#297EA6;}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="96.3463" y1="129.1725" x2="34.0744" y2="21.3144">
+	<stop  offset="2.077838e-07" style="stop-color:#3E81B1;stop-opacity:0.4"/>
+	<stop  offset="1" style="stop-color:#004850;stop-opacity:0.1"/>
+</linearGradient>
+<polygon class="st0" points="127.5,111.2 65.2,147.1 2.9,111.2 2.9,39.3 65.2,3.4 127.5,39.3 "/>
+<g transform="translate(439 265)">
+	<path class="st1" d="M-373.7-262.1l62.4,36v72.1l-62.4,36l-62.4-36V-226L-373.7-262.1z"/>
+</g>
+<polygon class="st2" points="74.7,141.7 65.3,147.1 56,141.7 56,9.3 74.7,9.3 "/>
+<polygon class="st2" points="73.3,17.3 2.9,58 2.9,39 65.2,3.4 "/>
+<polygon class="st2" points="57.1,17.3 127.5,58 127.5,39 65.2,3.4 "/>
+</svg>

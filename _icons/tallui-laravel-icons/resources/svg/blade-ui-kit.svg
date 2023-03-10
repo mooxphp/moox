@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="187" viewBox="0 0 108 187">
+    <title>Logomark Blade UI Kit</title>
+    <style type="text/css">.a{fill:#e42d27}.b{fill:#ee372b}.c{fill:#f16b65}.d{fill:#f7a8a6}.e{fill:#facac7}.f{fill:#fce9e9}</style>
+    <path class="a" d="M0 125l36-21v83l-36-20z"/>
+    <path class="b" d="M0 42l36 21v41l-36 21zM72 125l36 20-72 42v-42z"/>
+    <path class="c" d="M108 104v41l-36-20z"/>
+    <path class="d" d="M72 42l36 21-36 20z"/>
+    <path class="c" d="M108 21v42l-36-21z"/>
+    <path class="d" d="M72 83v42l36-21z"/>
+    <path class="e" d="M36 104l36 21v-42z"/>
+    <path class="b" d="M72 0v42l36-21z"/>
+    <path class="a" d="M36 21l-36 21 36 21 36-21v-42z"/>
+    <path class="f" d="M36 104l36 21-36 20z"/>
+</svg>
