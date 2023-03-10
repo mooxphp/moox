@@ -61,7 +61,7 @@
             @foreach ($icons as $icon)
 
             <div  class="flex flex-col items-center" wire:key="result_{{ $icon->id }}">
-                <a href="{{ route('icons', $icon)}}"
+                <a href=""
                     class="flex flex-col items-center justify-between w-full h-full p-3 text-gray-500 transition duration-300 ease-in-out border border-gray-200 rounded-lg hover:text-scarlet-500 hover:shadow-md">
                     {{ svg($icon->name, 'w-8 h-8') }}
 
