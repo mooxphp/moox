@@ -20,6 +20,7 @@ jobs:
           - tallui-flags-origin
           - tallui-flags-rect
           - tallui-flags-square
+          - tallui-laravel-icons
     steps:
       - uses: actions/checkout@v3
 
