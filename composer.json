@@ -56,6 +56,10 @@
         },
         {
             "type": "path",
+            "url": "./_icons/tallui-laravel-icons"
+        },
+        {
+            "type": "path",
             "url": "./_internal/tallui-icons-search"
         }
     ],
@@ -76,6 +80,7 @@
         "usetall/tallui-flags-square":"*",
         "usetall/tallui-flags-circle":"*",
         "usetall/tallui-flags-rect":"*",
+        "usetall/tallui-laravel-icons":"*",
         "usetall/tallui-icons-search":"*",
         "wikimedia/composer-merge-plugin": "^2.0"
     },

@@ -55,6 +55,14 @@ class IconSet extends Model
             'ignore_rule' => '/^(?:o|s)-/',
             'outline_rule' => '/^o-/',
         ],
+        [
+            'id' => 5,
+            'name' => 'tallui-laravel-icons',
+            'repository' => 'https://github.com/usetall/tallui-laravel-icons',
+            'composer' => 'usetall/tallui-laravel-icons',
+            'ignore_rule' => '/^(?:o|s)-/',
+            'outline_rule' => '/^o-/',
+        ],
     ];
 
     public function name(): string
