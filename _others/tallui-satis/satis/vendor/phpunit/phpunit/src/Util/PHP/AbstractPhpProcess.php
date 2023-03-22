@@ -24,8 +24,8 @@ use function substr;
 use function trim;
 use function unserialize;
 use ErrorException;
-use PHPUnit\Event\Code\TestMethod;
-use PHPUnit\Event\Code\Throwable;
+use PHPUnit\Event\Code\TestMethodBuilder;
+use PHPUnit\Event\Code\ThrowableBuilder;
 use PHPUnit\Event\Facade;
 use PHPUnit\Event\NoPreviousThrowableException;
 use PHPUnit\Event\TestData\MoreThanOneDataSetFromDataProviderException;
@@ -251,8 +251,8 @@ abstract class AbstractPhpProcess
             assert($test instanceof TestCase);
 
             Facade::emitter()->testErrored(
-                TestMethod::fromTestCase($test),
-                Throwable::from($exception)
+                TestMethodBuilder::fromTestCase($test),
+                ThrowableBuilder::from($exception)
             );
 
             return;
@@ -282,12 +282,12 @@ abstract class AbstractPhpProcess
                 assert($test instanceof TestCase);
 
                 Facade::emitter()->testErrored(
-                    TestMethod::fromTestCase($test),
-                    Throwable::from($exception)
+                    TestMethodBuilder::fromTestCase($test),
+                    ThrowableBuilder::from($exception)
                 );
 
                 Facade::emitter()->testFinished(
-                    TestMethod::fromTestCase($test),
+                    TestMethodBuilder::fromTestCase($test),
                     0
                 );
             }
@@ -300,8 +300,8 @@ abstract class AbstractPhpProcess
             assert($test instanceof TestCase);
 
             Facade::emitter()->testErrored(
-                TestMethod::fromTestCase($test),
-                Throwable::from($exception)
+                TestMethodBuilder::fromTestCase($test),
+                ThrowableBuilder::from($exception)
             );
         }
 
@@ -310,7 +310,7 @@ abstract class AbstractPhpProcess
                 $output = $childResult['output'];
             }
 
-            Facade::forward($childResult['events']);
+            Facade::instance()->forward($childResult['events']);
             PassedTests::instance()->import($childResult['passedTests']);
 
             assert($test instanceof TestCase);

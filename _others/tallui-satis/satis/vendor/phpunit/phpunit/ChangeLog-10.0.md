@@ -2,6 +2,71 @@
 
 All notable changes of the PHPUnit 10.0 release series are documented in this file using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
+## [10.0.18] - 2023-03-22
+
+### Fixed
+
+* [#5287](https://github.com/sebastianbergmann/phpunit/issues/5287): Tests from test class with same non-fully qualified class name as another test class are sometimes not discovered
+* [#5288](https://github.com/sebastianbergmann/phpunit/issues/5288): `@dataProvider` annotation rejects previously valid method name style
+
+## [10.0.17] - 2023-03-20
+
+### Changed
+
+* [#5204](https://github.com/sebastianbergmann/phpunit/pull/5204): Register event subscribers where state is already global
+* [#5285](https://github.com/sebastianbergmann/phpunit/issues/5285): Print complete test result (outcome and issues) when `--teamcity` is used
+
+## [10.0.16] - 2023-03-13
+
+### Added
+
+* `PHPUnit\Event\Test\PrintedUnexpectedOutput` and `PHPUnit\Event\Test\PrintedUnexpectedOutputSubscriber` (required for the fixing [#5278](https://github.com/sebastianbergmann/phpunit/issues/5278))
+
+### Changed
+
+* [#5276](https://github.com/sebastianbergmann/phpunit/issues/5276): Restore display of summary and warnings when `--teamcity` is used
+
+### Fixed
+
+* [#5278](https://github.com/sebastianbergmann/phpunit/issues/5278): Test Runner swallows output made during test
+* [#5279](https://github.com/sebastianbergmann/phpunit/pull/5279): `StringContains` constraint does not correctly handle option for ignoring line endings
+
+## [10.0.15] - 2023-03-09
+
+### Changed
+
+* Improved the HTML and CSS for the output of `--testdox-html`
+
+### Fixed
+
+* Fixed some inconsistencies in expectation failure messages
+* Restored errors when multiple `@coversDefaultClass` and/or `@usesDefaultClass` annotations are used
+
+## [10.0.14] - 2023-03-01
+
+### Changed
+
+* The `PHPUnit\Event\Test\AssertionSucceeded` and `PHPUnit\Event\Test\AssertionFailed` events are no longer emitted when they have no subscribers
+* The `PHPUnit\Event\Test\AssertionSucceeded::value()` method is no longer deprecated and returns the exported value again
+
+## [10.0.13] - 2023-02-27
+
+### Fixed
+
+* [#5186](https://github.com/sebastianbergmann/phpunit/issues/5186): SBOM does not validate
+* [#5258](https://github.com/sebastianbergmann/phpunit/issues/5258): JUnit logger crashes when test is skipped by missing PHP extension when running in separate process
+
+## [10.0.12] - 2023-02-25
+
+### Changed
+
+* Values of other types than `array` may now be passed to `assertIsList()`
+
+### Fixed
+
+* [#5234](https://github.com/sebastianbergmann/phpunit/issues/5234): Constants defined in configuration file are not defined in bootstrap file when test is run in separate process
+* [#5251](https://github.com/sebastianbergmann/phpunit/pull/5251): JUnit XML logger does not properly handle errors on unprepared tests
+
 ## [10.0.11] - 2023-02-20
 
 ### Fixed
@@ -32,7 +97,7 @@ All notable changes of the PHPUnit 10.0 release series are documented in this fi
 
 ### Changed
 
-* The `PHPUnit\Event\Test\AssertionSucceeded::value()` method is now deprecated and always returns `''`
+* The `PHPUnit\Event\Test\AssertionSucceeded::value()` method is now deprecated and always returns `''` (reverted in PHPUnit 10.0.14)
 
 ### Fixed
 
@@ -210,6 +275,13 @@ All notable changes of the PHPUnit 10.0 release series are documented in this fi
 * PHP 7.3, PHP 7.4, and PHP 8.0 are no longer supported
 * `phpunit/php-code-coverage` [no longer supports PHPDBG and Xdebug 2](https://github.com/sebastianbergmann/php-code-coverage/blob/10.0.0/ChangeLog.md#1000---2023-02-03)
 
+[10.0.18]: https://github.com/sebastianbergmann/phpunit/compare/10.0.17...10.0.18
+[10.0.17]: https://github.com/sebastianbergmann/phpunit/compare/10.0.16...10.0.17
+[10.0.16]: https://github.com/sebastianbergmann/phpunit/compare/10.0.15...10.0.16
+[10.0.15]: https://github.com/sebastianbergmann/phpunit/compare/10.0.14...10.0.15
+[10.0.14]: https://github.com/sebastianbergmann/phpunit/compare/10.0.13...10.0.14
+[10.0.13]: https://github.com/sebastianbergmann/phpunit/compare/10.0.12...10.0.13
+[10.0.12]: https://github.com/sebastianbergmann/phpunit/compare/10.0.11...10.0.12
 [10.0.11]: https://github.com/sebastianbergmann/phpunit/compare/10.0.10...10.0.11
 [10.0.10]: https://github.com/sebastianbergmann/phpunit/compare/10.0.9...10.0.10
 [10.0.9]: https://github.com/sebastianbergmann/phpunit/compare/10.0.8...10.0.9

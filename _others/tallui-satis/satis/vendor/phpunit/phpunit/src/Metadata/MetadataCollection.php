@@ -11,19 +11,16 @@ namespace PHPUnit\Metadata;
 
 use function array_filter;
 use function array_merge;
-use function class_exists;
 use function count;
-use function method_exists;
 use Countable;
 use IteratorAggregate;
-use PHPUnit\Metadata\Parser\Registry as MetadataRegistry;
 
 /**
- * @internal This class is not covered by the backward compatibility promise for PHPUnit
- *
  * @template-implements IteratorAggregate<int, Metadata>
  *
  * @psalm-immutable
+ *
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 final class MetadataCollection implements Countable, IteratorAggregate
 {
@@ -31,23 +28,6 @@ final class MetadataCollection implements Countable, IteratorAggregate
      * @psalm-var list<Metadata>
      */
     private readonly array $metadata;
-
-    /**
-     * @psalm-param class-string $className
-     * @psalm-param non-empty-string $methodName
-     */
-    public static function for(string $className, string $methodName): self
-    {
-        if (class_exists($className)) {
-            if (method_exists($className, $methodName)) {
-                return MetadataRegistry::parser()->forClassAndMethod($className, $methodName);
-            }
-
-            return MetadataRegistry::parser()->forClass($className);
-        }
-
-        return self::fromArray([]);
-    }
 
     /**
      * @psalm-param list<Metadata> $metadata
@@ -176,16 +156,6 @@ final class MetadataCollection implements Countable, IteratorAggregate
             ...array_filter(
                 $this->metadata,
                 static fn (Metadata $metadata): bool => $metadata->isBefore()
-            )
-        );
-    }
-
-    public function isCodeCoverageIgnore(): self
-    {
-        return new self(
-            ...array_filter(
-                $this->metadata,
-                static fn (Metadata $metadata): bool => $metadata->isCodeCoverageIgnore()
             )
         );
     }

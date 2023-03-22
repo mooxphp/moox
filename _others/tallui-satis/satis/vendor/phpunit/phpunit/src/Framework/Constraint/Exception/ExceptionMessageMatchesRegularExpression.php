@@ -14,22 +14,20 @@ use function sprintf;
 use Exception;
 
 /**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class MessageMatchesRegularExpression extends Constraint
+final class ExceptionMessageMatchesRegularExpression extends Constraint
 {
-    private readonly string $messageType;
     private readonly string $regularExpression;
 
-    public function __construct(string $messageType, string $regularExpression)
+    public function __construct(string $regularExpression)
     {
-        $this->messageType       = $messageType;
         $this->regularExpression = $regularExpression;
     }
 
     public function toString(): string
     {
-        return $this->messageType . ' message matches ';
+        return 'exception message matches ' . $this->exporter()->export($this->regularExpression);
     }
 
     /**
@@ -46,8 +44,7 @@ final class MessageMatchesRegularExpression extends Constraint
         if ($match === false) {
             throw new \PHPUnit\Framework\Exception(
                 sprintf(
-                    'Invalid expected %s message regular expression given: %s',
-                    $this->messageType,
+                    'Invalid expected exception message regular expression given: %s',
                     $this->regularExpression
                 )
             );
@@ -65,8 +62,7 @@ final class MessageMatchesRegularExpression extends Constraint
     protected function failureDescription(mixed $other): string
     {
         return sprintf(
-            "%s message '%s' matches '%s'",
-            $this->messageType,
+            "exception message '%s' matches '%s'",
             $other,
             $this->regularExpression
         );

@@ -111,7 +111,7 @@ if (!function_exists('PHPUnit\Framework\assertIsList')) {
      *
      * @see Assert::assertIsList
      */
-    function assertIsList(array $array, string $message = ''): void
+    function assertIsList(mixed $array, string $message = ''): void
     {
         Assert::assertIsList(...func_get_args());
     }
@@ -2095,7 +2095,7 @@ if (!function_exists('PHPUnit\Framework\assertJson')) {
      *
      * @see Assert::assertJson
      */
-    function assertJson(string $actualJson, string $message = ''): void
+    function assertJson(string $actual, string $message = ''): void
     {
         Assert::assertJson(...func_get_args());
     }
@@ -2424,6 +2424,9 @@ if (!function_exists('PHPUnit\Framework\identicalTo')) {
 }
 
 if (!function_exists('PHPUnit\Framework\isInstanceOf')) {
+    /**
+     * @throws UnknownClassOrInterfaceException
+     */
     function isInstanceOf(string $className): IsInstanceOf
     {
         return Assert::isInstanceOf(...func_get_args());

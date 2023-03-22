@@ -7,17 +7,22 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Metadata;
+namespace PHPUnit\Framework;
+
+use function sprintf;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
- *
- * @psalm-immutable
  */
-final class CodeCoverageIgnore extends Metadata
+final class UnknownTypeException extends InvalidArgumentException
 {
-    public function isCodeCoverageIgnore(): bool
+    public function __construct(string $name)
     {
-        return true;
+        parent::__construct(
+            sprintf(
+                'Type "%s" is not known',
+                $name
+            )
+        );
     }
 }

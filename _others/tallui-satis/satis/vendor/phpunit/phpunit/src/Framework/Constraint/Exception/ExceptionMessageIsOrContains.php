@@ -13,26 +13,24 @@ use function sprintf;
 use function str_contains;
 
 /**
- * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ * @internal This class is not covered by the backward compatibility promise for PHPUnit
  */
-final class MessageIsOrContains extends Constraint
+final class ExceptionMessageIsOrContains extends Constraint
 {
-    private readonly string $messageType;
     private readonly string $expectedMessage;
 
-    public function __construct(string $messageType, string $expectedMessage)
+    public function __construct(string $expectedMessage)
     {
-        $this->messageType     = $messageType;
         $this->expectedMessage = $expectedMessage;
     }
 
     public function toString(): string
     {
         if ($this->expectedMessage === '') {
-            return $this->messageType . ' message is empty';
+            return 'exception message is empty';
         }
 
-        return $this->messageType . ' message contains ';
+        return 'exception message contains ' . $this->exporter()->export($this->expectedMessage);
     }
 
     protected function matches(mixed $other): bool
@@ -54,15 +52,13 @@ final class MessageIsOrContains extends Constraint
     {
         if ($this->expectedMessage === '') {
             return sprintf(
-                "%s message is empty but is '%s'",
-                $this->messageType,
+                "exception message is empty but is '%s'",
                 $other
             );
         }
 
         return sprintf(
-            "%s message '%s' contains '%s'",
-            $this->messageType,
+            "exception message '%s' contains '%s'",
             $other,
             $this->expectedMessage
         );

@@ -224,7 +224,11 @@ final class TestRunner
             );
         }
 
-        if ($this->configuration->disallowTestOutput() && $test->hasOutput()) {
+        if ($test->hasUnexpectedOutput()) {
+            Event\Facade::emitter()->testPrintedUnexpectedOutput($test->output());
+        }
+
+        if ($this->configuration->disallowTestOutput() && $test->hasUnexpectedOutput()) {
             Event\Facade::emitter()->testConsideredRisky(
                 $test->valueObjectForEvents(),
                 sprintf(
@@ -347,6 +351,7 @@ final class TestRunner
 
     /**
      * @psalm-param class-string $className
+     * @psalm-param non-empty-string $methodName
      */
     private function hasCoverageMetadata(string $className, string $methodName): bool
     {

@@ -33,7 +33,7 @@ use PHPUnit\Event\TestData\TestDataCollection;
 use PHPUnit\Framework\InvalidDataProviderException;
 use PHPUnit\Metadata\DataProvider as DataProviderMetadata;
 use PHPUnit\Metadata\MetadataCollection;
-use PHPUnit\Metadata\Parser\Registry;
+use PHPUnit\Metadata\Parser\Registry as MetadataRegistry;
 use PHPUnit\Metadata\TestWith;
 use PHPUnit\Util\Reflection;
 use ReflectionClass;
@@ -54,8 +54,8 @@ final class DataProvider
      */
     public function providedData(string $className, string $methodName): ?array
     {
-        $dataProvider = Registry::parser()->forMethod($className, $methodName)->isDataProvider();
-        $testWith     = Registry::parser()->forMethod($className, $methodName)->isTestWith();
+        $dataProvider = MetadataRegistry::parser()->forMethod($className, $methodName)->isDataProvider();
+        $testWith     = MetadataRegistry::parser()->forMethod($className, $methodName)->isTestWith();
 
         if ($dataProvider->isEmpty() && $testWith->isEmpty()) {
             return $this->dataProvidedByTestWithAnnotation($className, $methodName);
@@ -269,11 +269,11 @@ final class DataProvider
             $methodName,
             $location['file'],
             $location['line'],
-            Event\Code\TestDox::fromClassNameAndMethodName(
+            Event\Code\TestDoxBuilder::fromClassNameAndMethodName(
                 $className,
                 $methodName
             ),
-            MetadataCollection::for(
+            MetadataRegistry::parser()->forClassAndMethod(
                 $className,
                 $methodName
             ),

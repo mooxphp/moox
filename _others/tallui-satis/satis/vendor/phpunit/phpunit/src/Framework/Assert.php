@@ -103,7 +103,7 @@ abstract class Assert
     /**
      * @throws ExpectationFailedException
      */
-    final public static function assertIsList(array $array, string $message = ''): void
+    final public static function assertIsList(mixed $array, string $message = ''): void
     {
         static::assertThat(
             $array,
@@ -983,6 +983,7 @@ abstract class Assert
      *
      * @throws Exception
      * @throws ExpectationFailedException
+     * @throws UnknownClassOrInterfaceException
      *
      * @psalm-template ExpectedType of object
      *
@@ -1824,9 +1825,9 @@ abstract class Assert
      *
      * @throws ExpectationFailedException
      */
-    final public static function assertJson(string $actualJson, string $message = ''): void
+    final public static function assertJson(string $actual, string $message = ''): void
     {
-        static::assertThat($actualJson, static::isJson(), $message);
+        static::assertThat($actual, static::isJson(), $message);
     }
 
     /**
@@ -2125,6 +2126,9 @@ abstract class Assert
         return new IsIdentical($value);
     }
 
+    /**
+     * @throws UnknownClassOrInterfaceException
+     */
     final public static function isInstanceOf(string $className): IsInstanceOf
     {
         return new IsInstanceOf($className);
