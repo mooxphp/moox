@@ -117,21 +117,24 @@
         },
         {
             "name": "dasprid/enum",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DASPRiD/Enum.git",
-                "reference": "5abf82f213618696dda8e3bf6f64dd042d8542b2"
+                "reference": "8e6b6ea76eabbf19ea2bf5b67b98e1860474012f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DASPRiD/Enum/zipball/5abf82f213618696dda8e3bf6f64dd042d8542b2",
-                "reference": "5abf82f213618696dda8e3bf6f64dd042d8542b2",
+                "url": "https://api.github.com/repos/DASPRiD/Enum/zipball/8e6b6ea76eabbf19ea2bf5b67b98e1860474012f",
+                "reference": "8e6b6ea76eabbf19ea2bf5b67b98e1860474012f",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1 <9.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7 | ^8 | ^9",
-                "squizlabs/php_codesniffer": "^3.4"
+                "squizlabs/php_codesniffer": "*"
             },
             "type": "library",
             "autoload": {
@@ -158,9 +161,9 @@
             ],
             "support": {
                 "issues": "https://github.com/DASPRiD/Enum/issues",
-                "source": "https://github.com/DASPRiD/Enum/tree/1.0.3"
+                "source": "https://github.com/DASPRiD/Enum/tree/1.0.4"
             },
-            "time": "2020-10-02T16:03:48+00:00"
+            "time": "2023-03-01T18:44:03+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -1083,16 +1086,16 @@
         },
         {
             "name": "jaybizzle/crawler-detect",
-            "version": "v1.2.113",
+            "version": "v1.2.114",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JayBizzle/Crawler-Detect.git",
-                "reference": "6710b75871da2b718550c2bc33388315a3b20151"
+                "reference": "62d0e6b38f6715c673e156ffb0fc894791de3452"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/6710b75871da2b718550c2bc33388315a3b20151",
-                "reference": "6710b75871da2b718550c2bc33388315a3b20151",
+                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/62d0e6b38f6715c673e156ffb0fc894791de3452",
+                "reference": "62d0e6b38f6715c673e156ffb0fc894791de3452",
                 "shasum": ""
             },
             "require": {
@@ -1129,9 +1132,9 @@
             ],
             "support": {
                 "issues": "https://github.com/JayBizzle/Crawler-Detect/issues",
-                "source": "https://github.com/JayBizzle/Crawler-Detect/tree/v1.2.113"
+                "source": "https://github.com/JayBizzle/Crawler-Detect/tree/v1.2.114"
             },
-            "time": "2023-02-02T21:01:40+00:00"
+            "time": "2023-03-21T21:54:27+00:00"
         },
         {
             "name": "jenssegers/agent",
@@ -1481,34 +1484,33 @@
         },
         {
             "name": "laravel/jetstream",
-            "version": "v3.0.1",
+            "version": "v3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/jetstream.git",
-                "reference": "1b8db2e3506b1d3e003ea5968f508b966aec056c"
+                "reference": "4bedb125c742c3f8d43226d1ab0a9a27b8383cde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/jetstream/zipball/1b8db2e3506b1d3e003ea5968f508b966aec056c",
-                "reference": "1b8db2e3506b1d3e003ea5968f508b966aec056c",
+                "url": "https://api.github.com/repos/laravel/jetstream/zipball/4bedb125c742c3f8d43226d1ab0a9a27b8383cde",
+                "reference": "4bedb125c742c3f8d43226d1ab0a9a27b8383cde",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "illuminate/console": "^9.21|^10.0",
-                "illuminate/support": "^9.21|^10.0",
+                "illuminate/console": "^10.0",
+                "illuminate/support": "^10.0",
                 "jenssegers/agent": "^2.6",
                 "laravel/fortify": "^1.15",
-                "php": "^8.0.2"
-            },
-            "conflict": {
-                "laravel/framework": "<9.37.0"
+                "php": "^8.1.0"
             },
             "require-dev": {
                 "inertiajs/inertia-laravel": "^0.6.5",
                 "laravel/sanctum": "^3.0",
+                "livewire/livewire": "^2.12",
                 "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^7.0|^8.0",
+                "orchestra/testbench": "^8.0",
+                "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^9.3"
             },
             "type": "library",
@@ -1547,7 +1549,7 @@
                 "issues": "https://github.com/laravel/jetstream/issues",
                 "source": "https://github.com/laravel/jetstream"
             },
-            "time": "2023-02-15T14:52:33+00:00"
+            "time": "2023-04-10T14:04:50+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -5870,11 +5872,11 @@
         },
         {
             "name": "usetall/tallui-admin-panel",
-            "version": "dev-feat/package-testing",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-admin-panel",
-                "reference": "f7ae149d7e91c09cb2c0663c16cf124121eefa3a"
+                "reference": "2deeba18b945e12abf3a90515d52852131189cc5"
             },
             "require": {
                 "ext-json": "*",
@@ -5967,11 +5969,11 @@
         },
         {
             "name": "usetall/tallui-core",
-            "version": "dev-feat/package-testing",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_packages/tallui-core",
-                "reference": "37206b693f0afdb148a7d3817770dff546619fd2"
+                "reference": "df4368695a82f65d2d1592e0fa31498e68dcd4ff"
             },
             "require": {
                 "ext-json": "*",
@@ -6060,11 +6062,11 @@
         },
         {
             "name": "usetall/tallui-form-components",
-            "version": "dev-feat/package-testing",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-form-components",
-                "reference": "480afb4f8513e2c807ff7b5de5ec8567a3baeb51"
+                "reference": "368f079330f649e82883fd1314b7af52dd032f82"
             },
             "require": {
                 "ext-json": "*",
@@ -6157,11 +6159,11 @@
         },
         {
             "name": "usetall/tallui-web-components",
-            "version": "dev-feat/package-testing",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./_components/tallui-web-components",
-                "reference": "8168c5a06d29b6ac36144e987eaaed0e708032da"
+                "reference": "c829c6e1a0c923b9704a2fa4a36e1c8cb22ada7e"
             },
             "require": {
                 "ext-json": "*",
