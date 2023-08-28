@@ -1,8 +1,5 @@
 <?php
-
-declare(strict_types=1);
-
 return [
-    'next' => 'Sonrakiler &raquo;',
-    'previous' => '&laquo; Öncekiler',
+    'next' => 'Sonraki &raquo;',
+    'previous' => '&laquo; Önceki',
 ];
