@@ -257,19 +257,17 @@ class RepositorySet
      */
     private function getSecurityAdvisoriesForConstraints(array $packageConstraintMap, bool $allowPartialAdvisories): array
     {
-        $advisories = [];
+        $repoAdvisories = [];
         foreach ($this->repositories as $repository) {
             if (!$repository instanceof AdvisoryProviderInterface || !$repository->hasSecurityAdvisories()) {
                 continue;
             }
 
-            $result = $repository->getSecurityAdvisories($packageConstraintMap, $allowPartialAdvisories);
-            foreach ($result['namesFound'] as $nameFound) {
-                unset($packageConstraintMap[$nameFound]);
-            }
-
-            $advisories = array_merge($advisories, $result['advisories']);
+            $repoAdvisories[] = $repository->getSecurityAdvisories($packageConstraintMap, $allowPartialAdvisories)['advisories'];
         }
+
+        $advisories = array_merge_recursive([], ...$repoAdvisories);
+        ksort($advisories);
 
         return $advisories;
     }
@@ -369,12 +367,18 @@ class RepositorySet
     {
         $request = new Request($lockedRepo);
 
+        $allowedPackages = [];
         foreach ($packageNames as $packageName) {
             if (PlatformRepository::isPlatformPackage($packageName)) {
                 throw new \LogicException('createPoolForPackage(s) can not be used for platform packages, as they are never loaded by the PoolBuilder which expects them to be fixed. Use createPoolWithAllPackages or pass in a proper request with the platform packages you need fixed in it.');
             }
 
             $request->requireName($packageName);
+            $allowedPackages[] = strtolower($packageName);
+        }
+
+        if (count($allowedPackages) > 0) {
+            $request->restrictPackages($allowedPackages);
         }
 
         return $this->createPool($request, new NullIO());

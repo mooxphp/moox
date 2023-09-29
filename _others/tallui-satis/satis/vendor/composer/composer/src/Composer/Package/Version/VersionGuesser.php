@@ -76,7 +76,7 @@ class VersionGuesser
         }
 
         $versionData = $this->guessGitVersion($packageConfig, $path);
-        if (null !== $versionData && null !== $versionData['version']) {
+        if (null !== $versionData['version']) {
             return $this->postprocess($versionData);
         }
 
@@ -86,7 +86,7 @@ class VersionGuesser
         }
 
         $versionData = $this->guessFossilVersion($path);
-        if (null !== $versionData && null !== $versionData['version']) {
+        if (null !== $versionData['version']) {
             return $this->postprocess($versionData);
         }
 
@@ -322,9 +322,8 @@ class VersionGuesser
                             $prettyVersion = 'dev-' . $candidateVersion;
                             if ($length === 0) {
                                 foreach ($promises as $promise) {
-                                    if ($promise instanceof CancellablePromiseInterface) {
-                                        $promise->cancel();
-                                    }
+                                    // to support react/promise 2.x we wrap the promise in a resolve() call for safety
+                                    \React\Promise\resolve($promise)->cancel();
                                 }
                             }
                         }

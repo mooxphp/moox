@@ -102,10 +102,20 @@ class PoolBuilder
      * @var BasePackage[]
      */
     private $unacceptableFixedOrLockedPackages = [];
-    /** @var string[] */
+    /** @var array<string> */
     private $updateAllowList = [];
     /** @var array<string, array<PackageInterface>> */
     private $skippedLoad = [];
+
+    /**
+     * If provided, only these package names are loaded
+     *
+     * This is a special-use functionality of the Request class to optimize the pool creation process
+     * when only a minimal subset of packages is needed and we do not need their dependencies.
+     *
+     * @var array<string, int>|null
+     */
+    private $restrictedPackagesList = null;
 
     /**
      * Keeps a list of dependencies which are locked but were auto-unlocked as they are path repositories
@@ -165,6 +175,8 @@ class PoolBuilder
      */
     public function buildPool(array $repositories, Request $request): Pool
     {
+        $this->restrictedPackagesList = $request->getRestrictedPackages() !== null ? array_flip($request->getRestrictedPackages()) : null;
+
         if ($request->getUpdateAllowList()) {
             $this->updateAllowList = $request->getUpdateAllowList();
             $this->warnAboutNonMatchingUpdateAllowList($request);
@@ -366,6 +378,10 @@ class PoolBuilder
     private function loadPackagesMarkedForLoading(Request $request, array $repositories): void
     {
         foreach ($this->packagesToLoad as $name => $constraint) {
+            if ($this->restrictedPackagesList !== null && !isset($this->restrictedPackagesList[$name])) {
+                unset($this->packagesToLoad[$name]);
+                continue;
+            }
             $this->loadedPackages[$name] = $constraint;
         }
 
@@ -421,7 +437,10 @@ class PoolBuilder
 
         // if propagateUpdate is false we are loading a fixed or locked package, root aliases do not apply as they are
         // manually loaded as separate packages in this case
-        if ($propagateUpdate && isset($this->rootAliases[$name][$package->getVersion()])) {
+        //
+        // packages in pathRepoUnlocked however need to also load root aliases, they have propagateUpdate set to
+        // false because their deps should not be unlocked, but that is irrelevant for root aliases
+        if (($propagateUpdate || isset($this->pathRepoUnlocked[$package->getName()])) && isset($this->rootAliases[$name][$package->getVersion()])) {
             $alias = $this->rootAliases[$name][$package->getVersion()];
             if ($package instanceof AliasPackage) {
                 $basePackage = $package->getAliasOf();
@@ -483,7 +502,8 @@ class PoolBuilder
 
                     if ($request->getUpdateAllowTransitiveRootDependencies() || !$skippedRootRequires) {
                         $this->unlockPackage($request, $repositories, $replace);
-                        $this->markPackageNameForLoading($request, $replace, $link->getConstraint());
+                        // the replaced package only needs to be loaded if something else requires it
+                        $this->markPackageNameForLoadingIfRequired($request, $replace);
                     } else {
                         foreach ($skippedRootRequires as $rootRequire) {
                             if (!isset($this->updateAllowWarned[$rootRequire])) {
@@ -555,7 +575,7 @@ class PoolBuilder
      */
     private function isUpdateAllowed(BasePackage $package): bool
     {
-        foreach ($this->updateAllowList as $pattern => $void) {
+        foreach ($this->updateAllowList as $pattern) {
             $patternRegexp = BasePackage::packageNameToRegexp($pattern);
             if (Preg::isMatch($patternRegexp, $package->getName())) {
                 return true;
@@ -567,7 +587,7 @@ class PoolBuilder
 
     private function warnAboutNonMatchingUpdateAllowList(Request $request): void
     {
-        foreach ($this->updateAllowList as $pattern => $void) {
+        foreach ($this->updateAllowList as $pattern) {
             $patternRegexp = BasePackage::packageNameToRegexp($pattern);
             // update pattern matches a locked package? => all good
             foreach ($request->getLockedRepository()->getPackages() as $package) {
@@ -639,6 +659,8 @@ class PoolBuilder
                     // make sure that any requirements for this package by other locked or fixed packages are now
                     // also loaded, as they were previously ignored because the locked (now unlocked) package already
                     // satisfied their requirements
+                    // and if this package is replacing another that is required by a locked or fixed package, ensure
+                    // that we load that replaced package in case an update to this package removes the replacement
                     foreach ($request->getFixedOrLockedPackages() as $fixedOrLockedPackage) {
                         if ($fixedOrLockedPackage === $lockedPackage) {
                             continue;
@@ -649,8 +671,31 @@ class PoolBuilder
                             if (isset($requires[$lockedPackage->getName()])) {
                                 $this->markPackageNameForLoading($request, $lockedPackage->getName(), $requires[$lockedPackage->getName()]->getConstraint());
                             }
+
+                            foreach ($lockedPackage->getReplaces() as $replace) {
+                                if (isset($requires[$replace->getTarget()], $this->skippedLoad[$replace->getTarget()])) {
+                                    $this->unlockPackage($request, $repositories, $replace->getTarget());
+                                    // this package is in $requires so no need to call markPackageNameForLoadingIfRequired
+                                    $this->markPackageNameForLoading($request, $replace->getTarget(), $replace->getConstraint());
+                                }
+                            }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private function markPackageNameForLoadingIfRequired(Request $request, string $name): void
+    {
+        if ($this->isRootRequire($request, $name)) {
+            $this->markPackageNameForLoading($request, $name, $request->getRequires()[$name]);
+        }
+
+        foreach ($this->packages as $package) {
+            foreach ($package->getRequires() as $link) {
+                if ($name === $link->getTarget()) {
+                    $this->markPackageNameForLoading($request, $link->getTarget(), $link->getConstraint());
                 }
             }
         }

@@ -132,7 +132,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
 
         $retries = 3;
         $distUrls = $package->getDistUrls();
-        /** @var non-empty-array<array{base: non-empty-string, processed: non-empty-string, cacheKey: string}> $urls */
+        /** @var array<array{base: non-empty-string, processed: non-empty-string, cacheKey: string}> $urls */
         $urls = [];
         foreach ($distUrls as $index => $url) {
             $processedUrl = $this->processUrl($package, $url);
@@ -146,6 +146,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
                 'cacheKey' => $cacheKeyGenerator($package, $processedUrl),
             ];
         }
+        assert(count($urls) > 0);
 
         $fileName = $this->getFileName($package, $path);
         $this->filesystem->ensureDirectoryExists($path);
@@ -352,7 +353,7 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
 
         $this->filesystem->emptyDirectory($path);
         $this->filesystem->ensureDirectoryExists($path);
-        $this->filesystem->rename($this->getFileName($package, $path), $path . '/' . pathinfo(parse_url(strtr((string) $package->getDistUrl(), '\\', '/'), PHP_URL_PATH), PATHINFO_BASENAME));
+        $this->filesystem->rename($this->getFileName($package, $path), $path . '/' . $this->getDistPath($package, PATHINFO_BASENAME));
 
         if ($package->getBinaries()) {
             // Single files can not have a mode set like files in archives
@@ -365,6 +366,11 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
         }
 
         return \React\Promise\resolve(null);
+    }
+
+    protected function getDistPath(PackageInterface $package, int $component): string
+    {
+        return pathinfo((string) parse_url(strtr((string) $package->getDistUrl(), '\\', '/'), PHP_URL_PATH), $component);
     }
 
     protected function clearLastCacheWrite(PackageInterface $package): void
@@ -430,7 +436,12 @@ class FileDownloader implements DownloaderInterface, ChangeReportInterface
      */
     protected function getFileName(PackageInterface $package, string $path): string
     {
-        return rtrim($this->config->get('vendor-dir').'/composer/tmp-'.md5($package.spl_object_hash($package)).'.'.pathinfo(parse_url(strtr((string) $package->getDistUrl(), '\\', '/'), PHP_URL_PATH), PATHINFO_EXTENSION), '.');
+        $extension = $this->getDistPath($package, PATHINFO_EXTENSION);
+        if ($extension === '') {
+            $extension = $package->getDistType();
+        }
+
+        return rtrim($this->config->get('vendor-dir') . '/composer/tmp-' . md5($package . spl_object_hash($package)) . '.' . $extension, '.');
     }
 
     /**

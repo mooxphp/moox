@@ -332,7 +332,12 @@ EOT
             }
             if ($input->getOption('path')) {
                 $io->write($package->getName(), false);
-                $io->write(' ' . strtok(realpath($composer->getInstallationManager()->getInstallPath($package)), "\r\n"));
+                $path = $composer->getInstallationManager()->getInstallPath($package);
+                if (is_string($path)) {
+                    $io->write(' ' . strtok(realpath($path), "\r\n"));
+                } else {
+                    $io->write(' null');
+                }
 
                 return $exitCode;
             }
@@ -437,6 +442,10 @@ EOT
         $exitCode = 0;
         $viewData = [];
         $viewMetaData = [];
+
+        $writeVersion = false;
+        $writeDescription = false;
+
         foreach (['platform' => true, 'locked' => true, 'available' => false, 'installed' => true] as $type => $showVersion) {
             if (isset($packages[$type])) {
                 ksort($packages[$type]);
@@ -509,7 +518,12 @@ EOT
                             $packageViewData['description'] = $package->getDescription();
                         }
                         if ($writePath) {
-                            $packageViewData['path'] = strtok(realpath($composer->getInstallationManager()->getInstallPath($package)), "\r\n");
+                            $path = $composer->getInstallationManager()->getInstallPath($package);
+                            if (is_string($path)) {
+                                $packageViewData['path'] = strtok(realpath($path), "\r\n");
+                            } else {
+                                $packageViewData['path'] = null;
+                            }
                         }
 
                         $packageIsAbandoned = false;
@@ -606,14 +620,14 @@ EOT
                     $io->writeError('');
                     $io->writeError('<info>Direct dependencies required in composer.json:</>');
                     if (\count($directDeps) > 0) {
-                        $this->printPackages($io, $directDeps, $indent, $versionFits, $latestFits, $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
+                        $this->printPackages($io, $directDeps, $indent, $writeVersion && $versionFits, $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
                     } else {
                         $io->writeError('Everything up to date');
                     }
                     $io->writeError('');
                     $io->writeError('<info>Transitive dependencies not required in composer.json:</>');
                     if (\count($transitiveDeps) > 0) {
-                        $this->printPackages($io, $transitiveDeps, $indent, $versionFits, $latestFits, $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
+                        $this->printPackages($io, $transitiveDeps, $indent, $writeVersion && $versionFits, $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
                     } else {
                         $io->writeError('Everything up to date');
                     }
@@ -621,7 +635,7 @@ EOT
                     if ($writeLatest && \count($packages) === 0) {
                         $io->writeError('All your direct dependencies are up to date');
                     } else {
-                        $this->printPackages($io, $packages, $indent, $versionFits, $latestFits, $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
+                        $this->printPackages($io, $packages, $indent, $writeVersion && $versionFits, $writeLatest && $latestFits, $writeDescription && $descriptionFits, $width, $versionLength, $nameLength, $latestLength);
                     }
                 }
 
@@ -635,19 +649,22 @@ EOT
     }
 
     /**
-     * @param array<array{name: string, direct-dependency?: bool, version?: string, latest?: string, latest-status?: string, description?: string|null, path?: string, source?: string|null, homepage?: string|null, warning?: string, abandoned?: bool|string}> $packages
+     * @param array<array{name: string, direct-dependency?: bool, version?: string, latest?: string, latest-status?: string, description?: string|null, path?: string|null, source?: string|null, homepage?: string|null, warning?: string, abandoned?: bool|string}> $packages
      */
     private function printPackages(IOInterface $io, array $packages, string $indent, bool $writeVersion, bool $writeLatest, bool $writeDescription, int $width, int $versionLength, int $nameLength, int $latestLength): void
     {
+        $padName = $writeVersion || $writeLatest || $writeDescription;
+        $padVersion = $writeLatest || $writeDescription;
+        $padLatest = $writeDescription;
         foreach ($packages as $package) {
             $link = $package['source'] ?? $package['homepage'] ?? '';
             if ($link !== '') {
-                $io->write($indent . '<href='.OutputFormatter::escape($link).'>'.$package['name'].'</>'. str_repeat(' ', $nameLength - strlen($package['name'])), false);
+                $io->write($indent . '<href='.OutputFormatter::escape($link).'>'.$package['name'].'</>'. str_repeat(' ', ($padName ? $nameLength - strlen($package['name']) : 0)), false);
             } else {
-                $io->write($indent . str_pad($package['name'], $nameLength, ' '), false);
+                $io->write($indent . str_pad($package['name'], ($padName ? $nameLength : 0), ' '), false);
             }
             if (isset($package['version']) && $writeVersion) {
-                $io->write(' ' . str_pad($package['version'], $versionLength, ' '), false);
+                $io->write(' ' . str_pad($package['version'], ($padVersion ? $versionLength : 0), ' '), false);
             }
             if (isset($package['latest']) && isset($package['latest-status']) && $writeLatest) {
                 $latestVersion = $package['latest'];
@@ -656,7 +673,7 @@ EOT
                 if (!$io->isDecorated()) {
                     $latestVersion = str_replace(['up-to-date', 'semver-safe-update', 'update-possible'], ['=', '!', '~'], $updateStatus) . ' ' . $latestVersion;
                 }
-                $io->write(' <' . $style . '>' . str_pad($latestVersion, $latestLength, ' ') . '</' . $style . '>', false);
+                $io->write(' <' . $style . '>' . str_pad($latestVersion, ($padLatest ? $latestLength : 0), ' ') . '</' . $style . '>', false);
             }
             if (isset($package['description']) && $writeDescription) {
                 $description = strtok($package['description'], "\r\n");
@@ -669,8 +686,8 @@ EOT
                 }
                 $io->write(' ' . $description, false);
             }
-            if (isset($package['path'])) {
-                $io->write(' ' . $package['path'], false);
+            if (array_key_exists('path', $package)) {
+                $io->write(' '.(is_string($package['path']) ? $package['path'] : 'null'), false);
             }
             $io->write('');
             if (isset($package['warning'])) {
@@ -746,8 +763,12 @@ EOT
         }
 
         // select preferred package according to policy rules
-        if (!$matchedPackage && $matches && $preferred = $policy->selectPreferredPackages($pool, $matches)) {
+        if (null === $matchedPackage && $matches && $preferred = $policy->selectPreferredPackages($pool, $matches)) {
             $matchedPackage = $pool->literalToPackage($preferred[0]);
+        }
+
+        if ($matchedPackage !== null && !$matchedPackage instanceof CompletePackageInterface) {
+            throw new \LogicException('ShowCommand::getPackage can only work with CompletePackageInterface, but got '.get_class($matchedPackage));
         }
 
         return [$matchedPackage, $versions];
@@ -801,8 +822,13 @@ EOT
         $io->write('<info>homepage</info> : ' . $package->getHomepage());
         $io->write('<info>source</info>   : ' . sprintf('[%s] <comment>%s</comment> %s', $package->getSourceType(), $package->getSourceUrl(), $package->getSourceReference()));
         $io->write('<info>dist</info>     : ' . sprintf('[%s] <comment>%s</comment> %s', $package->getDistType(), $package->getDistUrl(), $package->getDistReference()));
-        if ($installedRepo->hasPackage($package)) {
-            $io->write('<info>path</info>     : ' . sprintf('%s', realpath($this->requireComposer()->getInstallationManager()->getInstallPath($package))));
+        if (!PlatformRepository::isPlatformPackage($package->getName()) && $installedRepo->hasPackage($package)) {
+            $path = $this->requireComposer()->getInstallationManager()->getInstallPath($package);
+            if (is_string($path)) {
+                $io->write('<info>path</info>     : ' . realpath($path));
+            } else {
+                $io->write('<info>path</info>     : null');
+            }
         }
         $io->write('<info>names</info>    : ' . implode(', ', $package->getNames()));
 
@@ -957,10 +983,15 @@ EOT
             ];
         }
 
-        if ($installedRepo->hasPackage($package)) {
-            $path = realpath($this->requireComposer()->getInstallationManager()->getInstallPath($package));
-            if ($path !== false) {
-                $json['path'] = $path;
+        if (!PlatformRepository::isPlatformPackage($package->getName()) && $installedRepo->hasPackage($package)) {
+            $path = $this->requireComposer()->getInstallationManager()->getInstallPath($package);
+            if (is_string($path)) {
+                $path = realpath($path);
+                if ($path !== false) {
+                    $json['path'] = $path;
+                }
+            } else {
+                $json['path'] = null;
             }
         }
 
@@ -1230,6 +1261,9 @@ EOT
                 }
                 $colorIdent = $level % count($this->colors);
                 $color = $this->colors[$colorIdent];
+
+                assert(is_string($require['name']));
+                assert(is_string($require['version']));
 
                 $circularWarn = in_array(
                     $require['name'],

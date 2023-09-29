@@ -139,8 +139,13 @@ class ComposerRepository extends ArrayRepository implements ConfigurableReposito
     {
         parent::__construct();
         if (!Preg::isMatch('{^[\w.]+\??://}', $repoConfig['url'])) {
-            // assume http as the default protocol
-            $repoConfig['url'] = 'http://'.$repoConfig['url'];
+            if (($localFilePath = realpath($repoConfig['url'])) !== false) {
+                // it is a local path, add file scheme
+                $repoConfig['url'] = 'file://'.$localFilePath;
+            } else {
+                // otherwise, assume http as the default protocol
+                $repoConfig['url'] = 'http://'.$repoConfig['url'];
+            }
         }
         $repoConfig['url'] = rtrim($repoConfig['url'], '/');
         if ($repoConfig['url'] === '') {
@@ -685,14 +690,15 @@ class ComposerRepository extends ArrayRepository implements ConfigurableReposito
         }
 
         if ($apiUrl !== null && count($packageConstraintMap) > 0) {
-            $options = [
-                'http' => [
-                    'method' => 'POST',
-                    'header' => ['Content-type: application/x-www-form-urlencoded'],
-                    'timeout' => 10,
-                    'content' => http_build_query(['packages' => array_keys($packageConstraintMap)]),
-                ],
-            ];
+            $options = $this->options;
+            $options['http']['method'] = 'POST';
+            if (isset($options['http']['header'])) {
+                $options['http']['header'] = (array) $options['http']['header'];
+            }
+            $options['http']['header'][] = 'Content-type: application/x-www-form-urlencoded';
+            $options['http']['timeout'] = 10;
+            $options['http']['content'] = http_build_query(['packages' => array_keys($packageConstraintMap)]);
+
             $response = $this->httpDownloader->get($apiUrl, $options);
             /** @var string $name */
             foreach ($response->decodeJson()['advisories'] as $name => $list) {
@@ -1065,6 +1071,9 @@ class ComposerRepository extends ArrayRepository implements ConfigurableReposito
         return ['namesFound' => $namesFound, 'packages' => $packages];
     }
 
+    /**
+     * @phpstan-return PromiseInterface<array{mixed, string}>
+     */
     private function startCachedAsyncDownload(string $fileName, ?string $packageName = null): PromiseInterface
     {
         if (null === $this->lazyProvidersUrl) {
@@ -1593,6 +1602,9 @@ class ComposerRepository extends ArrayRepository implements ConfigurableReposito
         }
     }
 
+    /**
+     * @phpstan-return PromiseInterface<array<mixed>|true> true if the response was a 304 and the cache is fresh, otherwise it returns the decoded json
+     */
     private function asyncFetchFile(string $filename, string $cacheKey, ?string $lastModifiedTime = null): PromiseInterface
     {
         if ('' === $filename) {
@@ -1605,7 +1617,10 @@ class ComposerRepository extends ArrayRepository implements ConfigurableReposito
 
         if (isset($this->freshMetadataUrls[$filename]) && $lastModifiedTime) {
             // make it look like we got a 304 response
-            return \React\Promise\resolve(true);
+            /** @var PromiseInterface<true> $promise */
+            $promise = \React\Promise\resolve(true);
+
+            return $promise;
         }
 
         $httpDownloader = $this->httpDownloader;

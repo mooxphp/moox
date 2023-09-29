@@ -87,6 +87,10 @@ class Application extends BaseApplication
 
     public function __construct(string $name = 'Composer', string $version = '')
     {
+        if (method_exists($this, 'setCatchErrors')) {
+            $this->setCatchErrors(true);
+        }
+
         static $shutdownRegistered = false;
         if ($version === '') {
             $version = Composer::getVersion();
@@ -339,7 +343,8 @@ class Application extends BaseApplication
 
             // Check system temp folder for usability as it can cause weird runtime issues otherwise
             Silencer::call(static function () use ($io): void {
-                $tempfile = sys_get_temp_dir() . '/temp-' . md5(microtime());
+                $pid = function_exists('getmypid') ? getmypid() . '-' : '';
+                $tempfile = sys_get_temp_dir() . '/temp-' . $pid . md5(microtime());
                 if (!(file_put_contents($tempfile, __FILE__) && (file_get_contents($tempfile) === __FILE__) && unlink($tempfile) && !file_exists($tempfile))) {
                     $io->writeError(sprintf('<error>PHP temp directory (%s) does not exist or is not writable to Composer. Set sys_temp_dir in your php.ini</error>', sys_get_temp_dir()));
                 }
@@ -394,9 +399,10 @@ class Application extends BaseApplication
 
             $this->hintCommonErrors($e, $output);
 
-            // symfony/console does not handle \Error subtypes so we have to renderThrowable ourselves
+            // symfony/console <6.4 does not handle \Error subtypes so we have to renderThrowable ourselves
             // instead of rethrowing those for consumption by the parent class
-            if (!$e instanceof \Exception) {
+            // can be removed when Composer supports PHP 8.1+
+            if (!method_exists($this, 'setCatchErrors') && !$e instanceof \Exception) {
                 if ($output instanceof ConsoleOutputInterface) {
                     $this->renderThrowable($e, $output->getErrorOutput());
                 } else {

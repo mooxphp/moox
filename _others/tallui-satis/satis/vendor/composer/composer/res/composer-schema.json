@@ -111,6 +111,11 @@
                     "type": "string",
                     "description": "URL to the RSS feed.",
                     "format": "uri"
+                },
+                "security": {
+                    "type": "string",
+                    "description": "URL to the vulnerability disclosure policy (VDP).",
+                    "format": "uri"
                 }
             }
         },
@@ -318,6 +323,34 @@
                     "description": "The install method Composer will prefer to use, defaults to auto and can be any of source, dist, auto, or an object of {\"pattern\": \"preference\"}.",
                     "additionalProperties": {
                         "type": ["string"]
+                    }
+                },
+                "audit": {
+                    "type": "object",
+                    "description": "Security audit configuration options",
+                    "properties": {
+                        "ignore": {
+                            "anyOf": [
+                                {
+                                    "type": "object",
+                                    "description": "A list of advisory ids, remote ids or CVE ids (keys) and the explanations (values) for why they're being ignored. The listed items are reported but let the audit command pass.",
+                                    "additionalProperties": {
+                                        "type": ["string", "string"]
+                                    }
+                                },
+                                {
+                                    "type": "array",
+                                    "description": "A set of advisory ids, remote ids or CVE ids that are reported but let the audit command pass.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
+                        },
+                        "abandoned": {
+                            "enum": ["ignore", "report", "fail"],
+                            "description": "Whether abandoned packages should be ignored, reported as problems or cause an audit failure."
+                        }
                     }
                 },
                 "notify-on-install": {

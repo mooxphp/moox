@@ -277,6 +277,9 @@ class EventDispatcher
 
                     $app = new Application();
                     $app->setCatchExceptions(false);
+                    if (method_exists($app, 'setCatchErrors')) {
+                        $app->setCatchErrors(false);
+                    }
                     $app->setAutoExit(false);
                     $cmd = new $className($event->getName());
                     $app->add($cmd);
@@ -351,6 +354,14 @@ class EventDispatcher
                         if ($matched && !file_exists($match[0])) {
                             $finder = new ExecutableFinder;
                             if ($pathToExec = $finder->find($match[0])) {
+                                if (Platform::isWindows()) {
+                                    $execWithoutExt = Preg::replace('{\.(exe|bat|cmd|com)$}i', '', $pathToExec);
+                                    // prefer non-extension file if it exists when executing with PHP
+                                    if (file_exists($execWithoutExt)) {
+                                        $pathToExec = $execWithoutExt;
+                                    }
+                                    unset($execWithoutExt);
+                                }
                                 $pathAndArgs = $pathToExec . substr($pathAndArgs, strlen($match[0]));
                             }
                         }

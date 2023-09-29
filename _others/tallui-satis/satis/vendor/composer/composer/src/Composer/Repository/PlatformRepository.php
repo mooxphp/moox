@@ -238,7 +238,12 @@ class PlatformRepository extends ArrayRepository
                             $parsedVersion = Version::parseOpenssl($sslMatches['version'], $isFips);
                             $this->addLibrary($name.'-openssl'.($isFips ? '-fips' : ''), $parsedVersion, 'curl OpenSSL version ('.$parsedVersion.')', [], $isFips ? ['curl-openssl'] : []);
                         } else {
-                            $this->addLibrary($name.'-'.$library, $sslMatches['version'], 'curl '.$library.' version ('.$sslMatches['version'].')', ['curl-openssl']);
+                            if ($library === '(securetransport) openssl') {
+                                $shortlib = 'securetransport';
+                            } else {
+                                $shortlib = $library;
+                            }
+                            $this->addLibrary($name.'-'.$shortlib, $sslMatches['version'], 'curl '.$library.' version ('.$sslMatches['version'].')', ['curl-openssl']);
                         }
                     }
 
@@ -333,8 +338,10 @@ class PlatformRepository extends ArrayRepository
 
                     // Add a separate version for the CLDR library version
                     if ($this->runtime->hasClass('ResourceBundle')) {
-                        $cldrVersion = $this->runtime->invoke(['ResourceBundle', 'create'], ['root', 'ICUDATA', false])->get('Version');
-                        $this->addLibrary('icu-cldr', $cldrVersion, 'ICU CLDR project version');
+                        $resourceBundle = $this->runtime->invoke(['ResourceBundle', 'create'], ['root', 'ICUDATA', false]);
+                        if ($resourceBundle !== null) {
+                            $this->addLibrary('icu-cldr', $resourceBundle->get('Version'), 'ICU CLDR project version');
+                        }
                     }
 
                     if ($this->runtime->hasClass('IntlChar')) {
@@ -447,6 +454,32 @@ class PlatformRepository extends ArrayRepository
 
                     if (Preg::isMatch('/^PostgreSQL\(libpq\) Version => (?<version>.*)$/im', $info, $matches)) {
                         $this->addLibrary($name.'-libpq', $matches['version'], 'libpq for '.$name);
+                    }
+                    break;
+
+                case 'pq':
+                    $info = $this->runtime->getExtensionInfo($name);
+
+                    // Used Library => Compiled => Linked
+                    // libpq => 14.3 (Ubuntu 14.3-1.pgdg22.04+1) => 15.0.2
+                    if (Preg::isMatch('/^libpq => (?<compiled>.+) => (?<linked>.+)$/im', $info, $matches)) {
+                        $this->addLibrary($name.'-libpq', $matches['linked'], 'libpq for '.$name);
+                    }
+                    break;
+
+                case 'rdkafka':
+                    if ($this->runtime->hasConstant('RD_KAFKA_VERSION')) {
+                        /**
+                         * Interpreted as hex \c MM.mm.rr.xx:
+                         *  - MM = Major
+                         *  - mm = minor
+                         *  - rr = revision
+                         *  - xx = pre-release id (0xff is the final release)
+                         *
+                         * pre-release ID in practice is always 0xff even for RCs etc, so we ignore it
+                         */
+                        $libRdKafkaVersionInt = $this->runtime->getConstant('RD_KAFKA_VERSION');
+                        $this->addLibrary($name.'-librdkafka', sprintf('%d.%d.%d', ($libRdKafkaVersionInt & 0xFF000000) >> 24, ($libRdKafkaVersionInt & 0x00FF0000) >> 16, ($libRdKafkaVersionInt & 0x0000FF00) >> 8), 'librdkafka for '.$name);
                     }
                     break;
 
