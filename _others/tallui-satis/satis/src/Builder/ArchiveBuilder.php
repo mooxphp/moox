@@ -53,7 +53,7 @@ class ArchiveBuilder extends Builder
         $progressBar = null;
         $hasStarted = false;
         $verbosity = $this->output->getVerbosity();
-        $renderProgress = $this->input->getOption('stats') && OutputInterface::VERBOSITY_NORMAL == $verbosity;
+        $renderProgress = $this->input->getOption('stats') && $verbosity == OutputInterface::VERBOSITY_NORMAL;
 
         if ($renderProgress) {
             $packageCount = 0;
@@ -103,7 +103,7 @@ class ArchiveBuilder extends Builder
 
                 $intermediatePath = preg_replace('#[^a-z0-9-_/]#i', '-', $package->getName());
 
-                if ('pear-library' === $package->getType()) {
+                if ($package->getType() === 'pear-library') {
                     /* @see https://github.com/composer/composer/commit/44a4429978d1b3c6223277b875762b2930e83e8c */
                     throw new \RuntimeException('The PEAR repository has been removed from Composer 2.0');
                 }

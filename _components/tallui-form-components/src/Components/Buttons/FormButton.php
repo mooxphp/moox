@@ -9,7 +9,7 @@ use Usetall\TalluiFormComponents\Components\BladeComponent;
 
 class FormButton extends BladeComponent
 {
-    public string|null $action;
+    public ?string $action;
 
     public string $method;
 

@@ -46,13 +46,13 @@ class ArchiveBuilderHelper
 
     public function isSkippable(PackageInterface $package): bool
     {
-        if ('metapackage' === $package->getType()) {
+        if ($package->getType() === 'metapackage') {
             return true;
         }
 
         $name = $package->getPrettyString();
 
-        if (true === $this->archiveConfig['skip-dev'] && true === $package->isDev()) {
+        if ($this->archiveConfig['skip-dev'] === true && $package->isDev() === true) {
             $this->output->writeln(sprintf("<info>Skipping '%s' (is dev)</info>", $name));
 
             return true;

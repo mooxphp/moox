@@ -76,7 +76,7 @@ class Application extends ComposerApplication
 
     public function getComposerWithConfig($config): ?Composer
     {
-        if (null === $this->composer) {
+        if ($this->composer === null) {
             try {
                 $this->composer = Factory::create(Platform::isInputCompletionProcess() ? new NullIO() : $this->io, $config, false, false);
             } catch (\InvalidArgumentException $e) {
