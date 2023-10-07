@@ -104,7 +104,7 @@ class PackagesBuilder extends Builder
             $stableVersions = [];
             $devVersions = [];
             foreach ($versionPackages as $version => $versionConfig) {
-                if ('dev' === VersionParser::parseStability($versionConfig['version'])) {
+                if (VersionParser::parseStability($versionConfig['version']) === 'dev') {
                     $devVersions[] = $versionConfig;
                 } else {
                     $stableVersions[] = $versionConfig;
@@ -153,7 +153,7 @@ class PackagesBuilder extends Builder
             $path = $this->outputDir.'/'.ltrim($includesUrl, '/');
             $dirname = dirname($path);
             $basename = basename($path);
-            if (false !== strpos($dirname, '%hash%')) {
+            if (strpos($dirname, '%hash%') !== false) {
                 throw new \RuntimeException('Refusing to prune when %hash% is in dirname');
             }
             $pattern = '#^'.str_replace('%hash%', '([0-9a-zA-Z]{'.strlen($hash).'})', preg_quote($basename, '#')).'$#';
@@ -218,7 +218,7 @@ class PackagesBuilder extends Builder
         $contents = $repoJson->encode(['packages' => $packages], $options)."\n";
         $hash = hash($hashAlgorithm, $contents);
 
-        if (false !== strpos($includesUrl, '%hash%')) {
+        if (strpos($includesUrl, '%hash%') !== false) {
             $this->writtenIncludeJsons[] = [$hash, $includesUrl];
             $filename = str_replace('%hash%', $hash, $includesUrl);
             if (file_exists($path = $this->outputDir.'/'.ltrim($filename, '/'))) {

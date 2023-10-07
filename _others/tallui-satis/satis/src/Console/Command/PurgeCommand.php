@@ -67,7 +67,7 @@ class PurgeCommand extends BaseCommand
         }
 
         $outputDir = $input->getArgument('output-dir') ?? $config['output-dir'] ?? null;
-        if (null === $outputDir) {
+        if ($outputDir === null) {
             throw new \InvalidArgumentException('The output dir must be specified as second argument or be configured inside '.$input->getArgument('file'));
         }
 
@@ -150,12 +150,12 @@ class PurgeCommand extends BaseCommand
         $empty = true;
         $children = @scandir($dir);
 
-        if (false === $children) {
+        if ($children === false) {
             return false;
         }
 
         foreach ($children as $child) {
-            if ('.' === $child || '..' === $child) {
+            if ($child === '.' || $child === '..') {
                 continue;
             }
 

@@ -21,7 +21,7 @@ use Composer\Plugin\PluginInterface;
 /**
  * Composer Satis Plugin
  */
-class SatisPlugin implements PluginInterface, Capable
+class SatisPlugin implements Capable, PluginInterface
 {
     protected Composer $composer;
 
