@@ -16,27 +16,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./_packages/tallui-admin-panel"
-        },
-        {
-            "type": "path",
-            "url": "./_packages/tallui-core"
-        },
-        {
-            "type": "path",
-            "url": "./_components/tallui-web-components"
-        },
-        {
-            "type": "path",
-            "url": "./_components/tallui-form-components"
-        },
-        {
-            "type": "path",
-            "url": "./_components/tallui-app-components"
-        },
-        {
-            "type": "path",
-            "url": "./_components/tallui-dev-components"
+            "url": "./_other/skeleton"
         }
     ],
     "license": "MIT",
@@ -48,10 +28,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.11",
-        "usetall/tallui-admin-panel": "*",
-        "usetall/tallui-core": "*",
-        "usetall/tallui-form-components": "*",
-        "usetall/tallui-web-components": "*",
+        "moox/skeleton": "*",
         "wikimedia/composer-merge-plugin": "^2.0"
     },
     "require-dev": {
