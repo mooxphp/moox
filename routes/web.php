@@ -27,16 +27,6 @@ Route::get('/components', function () {
     return view('components.overview');
 });
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
-
 $custom_parts = config('tallui.custom_views');
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {

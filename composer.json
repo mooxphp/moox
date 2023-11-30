@@ -22,33 +22,32 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "guzzlehttp/guzzle": "^7.2",
+        "filament/filament": "^3.1",
+        "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^10.0",
-        "laravel/jetstream": "^3.0",
-        "laravel/sanctum": "^3.0",
-        "laravel/tinker": "^2.7",
-        "livewire/livewire": "^2.11",
+        "laravel/tinker": "^2.8",
+        "livewire/livewire": "^3.0",
         "moox/skeleton": "*",
-        "wikimedia/composer-merge-plugin": "^2.0"
+        "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
+        "fakerphp/faker": "^1.23.1",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.0.1",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^7.0",
-        "nunomaduro/larastan": "^2.0.1",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6.6",
+        "nunomaduro/collision": "^7.1",
+        "nunomaduro/larastan": "^2.6",
         "orchestra/testbench": "^8.0",
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",
         "pestphp/pest-plugin-livewire": "^2.0",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^1.9",
+        "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^10.0",
-        "spatie/laravel-ignition": "^2.0",
-        "spatie/laravel-ray": "^1.26"
+        "spatie/laravel-ignition": "^2.3",
+        "spatie/laravel-ray": "^1.33"
     },
     "autoload": {
         "psr-4": {
@@ -65,7 +64,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

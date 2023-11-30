@@ -22,7 +22,6 @@
                     "illuminate/filesystem": "^10.0",
                     "illuminate/support": "^10.0",
                     "illuminate/view": "^10.0",
-                    "laravel/jetstream": "^3.0",
                     "livewire/livewire": "^2.0",
                     "nesbot/carbon": "^2.38",
                     "php": "^8.2",
