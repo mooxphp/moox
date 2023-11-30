@@ -358,18 +358,6 @@ class Email extends Message
 
     /**
      * @return $this
-     *
-     * @deprecated since Symfony 6.2, use addPart() instead
-     */
-    public function attachPart(DataPart $part): static
-    {
-        @trigger_deprecation('symfony/mime', '6.2', 'The "%s()" method is deprecated, use "addPart()" instead.', __METHOD__);
-
-        return $this->addPart($part);
-    }
-
-    /**
-     * @return $this
      */
     public function addPart(DataPart $part): static
     {
@@ -396,7 +384,7 @@ class Email extends Message
         return $this->generateBody();
     }
 
-    public function ensureValidity()
+    public function ensureValidity(): void
     {
         $this->ensureBodyValid();
 
@@ -492,14 +480,16 @@ class Email extends Message
         $otherParts = $relatedParts = [];
         foreach ($this->attachments as $part) {
             foreach ($names as $name) {
-                if ($name !== $part->getName()) {
+                if ($name !== $part->getName() && (!$part->hasContentId() || $name !== $part->getContentId())) {
                     continue;
                 }
                 if (isset($relatedParts[$name])) {
                     continue 2;
                 }
 
-                $html = str_replace('cid:'.$name, 'cid:'.$part->getContentId(), $html, $count);
+                if ($name !== $part->getContentId()) {
+                    $html = str_replace('cid:'.$name, 'cid:'.$part->getContentId(), $html, $count);
+                }
                 $relatedParts[$name] = $part;
                 $part->setName($part->getContentId())->asInline();
 
@@ -525,7 +515,10 @@ class Email extends Message
         return $this;
     }
 
-    private function addListAddressHeaderBody(string $name, array $addresses)
+    /**
+     * @return $this
+     */
+    private function addListAddressHeaderBody(string $name, array $addresses): static
     {
         if (!$header = $this->getHeaders()->get($name)) {
             return $this->setListAddressHeaderBody($name, $addresses);

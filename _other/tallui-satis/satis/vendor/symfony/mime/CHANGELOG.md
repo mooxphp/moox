@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+7.0
+---
+
+ * Remove `Email::attachPart()`, use `Email::addPart()` instead
+ * Argument `$body` is now required (at least null) in `Message::setBody()`
+ * Require explicit argument when calling `Message::setBody()`
+
+6.3
+---
+
+ * Support detection of related parts if `Content-Id` is used instead of the name
+ * Add `TextPart::getDisposition()`
+
 6.2
 ---
 
