@@ -1,5 +1,5 @@
 {
-    "name": "usetall/tallui-custom",
+    "name": "mooxphp/moox-custom",
     "description": "The TallUI Monorepo - a merged Composer.json for custom packages.",
     "keywords": ["framework", "laravel", "package", "custom", "composer", "monorepo"],
     "license": "MIT",

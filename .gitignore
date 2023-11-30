@@ -48,7 +48,7 @@ Homestead.yaml
 # Windows
 Thumbs.db
 
-# TallUI Custom
+# Moox Custom
 /resources/views/custom/*
 !/resources/views/custom/overview.blade.php
 !/resources/views/custom/example.blade.php

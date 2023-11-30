@@ -25,7 +25,7 @@ filter:
     - "_packages"
     - "_themes"
   excluded_paths:
-    - "_others/tallui-art/*"
+    - "_others/satis/*"
 checks:
   php: true
   javascript: true

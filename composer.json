@@ -1,7 +1,7 @@
 {
-    "name": "usetall/tallui",
+    "name": "mooxphp/moox",
     "type": "project",
-    "description": "The TallUI Monorepo - a Laravel App for the TALL-Stack.",
+    "description": "The Moox Monorepo - a Laravel Demo App and our Homepage",
     "keywords": [
         "framework",
         "laravel",

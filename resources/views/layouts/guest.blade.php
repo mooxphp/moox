@@ -52,7 +52,7 @@
                 >Admin</a>
                 <a
                     class="has-tooltip"
-                    href="https://github.com/usetall/tallui"
+                    href="https://github.com/mooxphp/moox"
                 >
                     <img
                         class="h-8 px-4"
