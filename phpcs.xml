@@ -2,24 +2,20 @@
 <ruleset name="PHP_CodeSniffer">
     <description>The coding standard for our project.</description>
     <rule ref="PSR2"/>
-
     <file>_components</file>
     <file>_data</file>
     <file>_icons</file>
-    <file>_others</file>
+    <file>_other</file>
     <file>_packages</file>
     <file>_themes</file>
-
     <exclude-pattern>bootstrap/cache/*</exclude-pattern>
     <exclude-pattern>bootstrap/autoload.php</exclude-pattern>
     <exclude-pattern>*/migrations/*</exclude-pattern>
     <exclude-pattern>*/seeds/*</exclude-pattern>
     <exclude-pattern>*.blade.php</exclude-pattern>
     <exclude-pattern>*.js</exclude-pattern>
-
     <!-- Show progression -->
     <arg value="p"/>
-
     <rule ref="Generic.Files.LineLength">
         <properties>
             <property name="lineLimit" value="130"/>

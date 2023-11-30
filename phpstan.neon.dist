@@ -9,7 +9,7 @@ parameters:
         - _icons
         - _packages
         - _themes
-        - _others
+        - _other
         - app
     excludePaths:
         - '_components/*/build/*'
@@ -18,15 +18,15 @@ parameters:
         - '_packages/*/build/*'
         - '_themes/admin/*/build/*'
         - '_themes/website/*/build/*'
-        - '_others/*/build/*'
+        - '_other/*/build/*'
         - '_components/*/vendor/*'
         - '_data/*/vendor/*'
         - '_icons/*/vendor/*'
         - '_packages/*/vendor/*'
         - '_themes/admin/*/vendor/*'
         - '_themes/website/*/vendor/*'
-        - '_others/*/vendor/*'
-        - '_others/satis/*'
+        - '_other/*/vendor/*'
+        - '_other/satis/*'
     ignoreErrors:
         -
             messages:

@@ -5,9 +5,9 @@
 ## We are currently moving from TallUI to Moox, changing Namespaces too. Please be patient ...
 
 <p align="center">
-    <img src="https://github.com/mooxphp/moox/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
+    <img src="https://github.com/mooxphp/moox/raw/main/_other/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
     <br><br>
-    <img src="https://github.com/mooxphp/moox/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+    <img src="https://github.com/mooxphp/moox/raw/main//_other/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
 </p><br>
 
 <p align="center">

@@ -1,8 +1,8 @@
 <p align="center">
-    <a href="https://tallui.io" target="_blank"><img src="https://github.com/mooxphp/moox/raw/main/_others/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo"></a>
+    <a href="https://tallui.io" target="_blank"><img src="https://github.com/mooxphp/moox/raw/main/_other/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo"></a>
         <br><br>
       <a href="https://tallui.io" target="_blank">
-        <img src="https://github.com/mooxphp/moox/raw/main//_others/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+        <img src="https://github.com/mooxphp/moox/raw/main//_other/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
     </a>
 </p><br>
 <p align="center">
