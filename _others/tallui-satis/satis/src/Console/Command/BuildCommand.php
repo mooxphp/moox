@@ -165,7 +165,7 @@ class BuildCommand extends BaseCommand
             $output->writeln(sprintf('<warning>%s: %s</warning>', get_class($e), $e->getMessage()));
         }
 
-        if ((null !== $repositoryUrl && [] !== $repositoryUrl) && count($packagesFilter) > 0) {
+        if (($repositoryUrl !== null && $repositoryUrl !== []) && count($packagesFilter) > 0) {
             throw new \InvalidArgumentException('The arguments "package" and "repository-url" can not be used together.');
         }
 
@@ -176,7 +176,7 @@ class BuildCommand extends BaseCommand
             $outputDir = $config['output-dir'] ?? null;
         }
 
-        if (null === $outputDir) {
+        if ($outputDir === null) {
             throw new \InvalidArgumentException('The output dir must be specified as second argument or be configured inside '.$input->getArgument('file'));
         }
 
@@ -217,7 +217,7 @@ class BuildCommand extends BaseCommand
 
         $packageSelection = new PackageSelection($output, $outputDir, $config, $skipErrors);
 
-        if (null !== $repositoryUrl && [] !== $repositoryUrl) {
+        if ($repositoryUrl !== null && $repositoryUrl !== []) {
             $packageSelection->setRepositoriesFilter($repositoryUrl, (bool) $input->getOption('repository-strict'));
         } else {
             $packageSelection->setPackagesFilter($packagesFilter);
@@ -306,8 +306,8 @@ class BuildCommand extends BaseCommand
 
         $parser = new JsonParser();
         $result = $parser->lint($content);
-        if (null === $result) {
-            if (defined('JSON_ERROR_UTF8') && JSON_ERROR_UTF8 === json_last_error()) {
+        if ($result === null) {
+            if (defined('JSON_ERROR_UTF8') && json_last_error() === JSON_ERROR_UTF8) {
                 throw new UnexpectedValueException('"'.$configFile.'" is not UTF-8, could not parse as JSON');
             }
 

@@ -121,13 +121,13 @@ class PackageSelection
      */
     public function setRepositoriesFilter(?array $repositoriesFilter, bool $forDependencies = false): void
     {
-        $this->repositoriesFilter = [] !== $repositoriesFilter ? $repositoriesFilter : null;
+        $this->repositoriesFilter = $repositoriesFilter !== [] ? $repositoriesFilter : null;
         $this->repositoryFilterDep = (bool) $forDependencies;
     }
 
     public function hasRepositoriesFilter(): bool
     {
-        return null !== $this->repositoriesFilter;
+        return $this->repositoriesFilter !== null;
     }
 
     public function hasBlacklist(): bool
@@ -137,7 +137,7 @@ class PackageSelection
 
     public function hasTypeFilter(): bool
     {
-        return null !== $this->includeTypes || count($this->excludeTypes) > 0;
+        return $this->includeTypes !== null || count($this->excludeTypes) > 0;
     }
 
     public function setPackagesFilter(array $packagesFilter = []): void
@@ -168,7 +168,7 @@ class PackageSelection
         if ($this->hasRepositoriesFilter()) {
             $repos = $this->filterRepositories($repos);
 
-            if (0 === count($repos)) {
+            if (count($repos) === 0) {
                 throw new \InvalidArgumentException(sprintf('Specified repository URL(s) "%s" do not exist.', implode('", "', $this->repositoriesFilter)));
             }
         } else {
@@ -184,10 +184,10 @@ class PackageSelection
                         if (
                             ! isset($config['url']) ||
                             ! is_string($config['url']) ||
-                            '' === $config['url'] ||
+                            $config['url'] === '' ||
                             ! isset($satisRepo['url']) ||
                             ! is_string($satisRepo['url']) ||
-                            '' === $satisRepo['url']
+                            $satisRepo['url'] === ''
                         ) {
                             continue;
                         }
@@ -207,7 +207,7 @@ class PackageSelection
         if ($this->hasFilterForPackages()) {
             $repos = $this->filterPackages($repos);
 
-            if (0 === count($repos)) {
+            if (count($repos) === 0) {
                 throw new \InvalidArgumentException(sprintf('Could not find any repositories config with "name" matching your package(s) filter: %s', implode(', ', $this->packagesFilter)));
             }
         }
@@ -225,14 +225,14 @@ class PackageSelection
             $repositorySet = new RepositorySet($this->minimumStability, $stabilityFlags);
             $this->addRepositories($repositorySet, $repos);
             // dependencies of required packages might have changed and be part of filtered repos
-            if ($this->hasRepositoriesFilter() && true !== $this->repositoryFilterDep) {
+            if ($this->hasRepositoriesFilter() && $this->repositoryFilterDep !== true) {
                 $this->addRepositories($repositorySet, \array_filter($initialRepos, function ($r) use ($repos) {
-                    return false === \in_array($r, $repos);
+                    return \in_array($r, $repos) === false;
                 }));
             }
 
             // additional repositories for dependencies
-            if (! $this->hasRepositoriesFilter() || true !== $this->repositoryFilterDep) {
+            if (! $this->hasRepositoriesFilter() || $this->repositoryFilterDep !== true) {
                 $this->addRepositories($repositorySet, $this->getDepRepos($composer));
             }
 
@@ -349,11 +349,11 @@ class PackageSelection
     {
         $this->depRepositories = $config['repositories-dep'] ?? [];
 
-        $this->requireAll = isset($config['require-all']) && true === $config['require-all'];
-        $this->requireDependencies = isset($config['require-dependencies']) && true === $config['require-dependencies'];
-        $this->requireDevDependencies = isset($config['require-dev-dependencies']) && true === $config['require-dev-dependencies'];
-        $this->onlyDependencies = isset($config['only-dependencies']) && true === $config['only-dependencies'];
-        $this->onlyBestCandidates = isset($config['only-best-candidates']) && true === $config['only-best-candidates'];
+        $this->requireAll = isset($config['require-all']) && $config['require-all'] === true;
+        $this->requireDependencies = isset($config['require-dependencies']) && $config['require-dependencies'] === true;
+        $this->requireDevDependencies = isset($config['require-dev-dependencies']) && $config['require-dev-dependencies'] === true;
+        $this->onlyDependencies = isset($config['only-dependencies']) && $config['only-dependencies'] === true;
+        $this->onlyBestCandidates = isset($config['only-best-candidates']) && $config['only-best-candidates'] === true;
         $this->requireDependencyFilter = (bool) ($config['require-dependency-filter'] ?? true);
 
         if (! $this->requireAll && ! isset($config['require'])) {
@@ -391,18 +391,18 @@ class PackageSelection
                 continue;
             }
 
-            if ('/private' === $entry || '/local' === $entry) {
+            if ($entry === '/private' || $entry === '/local') {
                 $patterns[] = [$entry];
 
                 continue;
-            } elseif (false !== strpos($entry, ':')) {
+            } elseif (strpos($entry, ':') !== false) {
                 $type = 'ipv6';
                 if (! defined('AF_INET6')) {
                     $this->output->writeln('<error>Unable to use IPv6.</error>');
 
                     continue;
                 }
-            } elseif (0 === preg_match('#[^/.\\d]#', $entry)) {
+            } elseif (preg_match('#[^/.\\d]#', $entry) === 0) {
                 $type = 'ipv4';
             } else {
                 $type = 'name';
@@ -416,7 +416,7 @@ class PackageSelection
             $host = @inet_pton($host);
 
             /** @var string|null $mask */
-            if (false === $host || (int) $mask != $mask) {
+            if ($host === false || (int) $mask != $mask) {
                 $this->output->writeln(sprintf('<error>Invalid subnet "%s"</error>', $entry));
 
                 continue;
@@ -424,12 +424,12 @@ class PackageSelection
 
             $host = unpack('N*', $host);
 
-            if (null === $mask) {
-                $mask = 'ipv4' === $type ? 32 : 128;
+            if ($mask === null) {
+                $mask = $type === 'ipv4' ? 32 : 128;
             } else {
                 $mask = (int) $mask;
 
-                if ($mask < 0 || ('ipv4' === $type && $mask > 32) || ('ipv6' === $type && $mask > 128)) {
+                if ($mask < 0 || ($type === 'ipv4' && $mask > 32) || ($type === 'ipv6' && $mask > 128)) {
                     continue;
                 }
             }
@@ -442,7 +442,7 @@ class PackageSelection
 
     private function applyStripHosts(): void
     {
-        if (false === $this->stripHosts) {
+        if ($this->stripHosts === false) {
             return;
         }
 
@@ -459,17 +459,17 @@ class PackageSelection
             }
 
             foreach ($sources as $index => $type) {
-                $url = 'source' === $type ? $package->getSourceUrl() : $package->getDistUrl();
+                $url = $type === 'source' ? $package->getSourceUrl() : $package->getDistUrl();
 
                 // skip distURL applied by ArchiveBuilder
-                if ('dist' === $type && null !== $this->archiveEndpoint
+                if ($type === 'dist' && $this->archiveEndpoint !== null
                     && substr($url, 0, strlen($this->archiveEndpoint)) === $this->archiveEndpoint
                 ) {
                     continue;
                 }
 
                 if ($this->matchStripHostsPatterns($url)) {
-                    if ('dist' === $type) {
+                    if ($type === 'dist') {
                         // if the type is not set, ArrayDumper ignores the other properties
                         $package->setDistType(null);
                     } else {
@@ -478,7 +478,7 @@ class PackageSelection
 
                     unset($sources[$index]);
 
-                    if (0 === count($sources)) {
+                    if (count($sources) === 0) {
                         $this->output->writeln(sprintf('<error>%s has no source left after applying the strip-hosts filters and will be removed</error>', $package->getUniqueName()));
 
                         unset($this->selected[$uniqueName]);
@@ -500,41 +500,41 @@ class PackageSelection
 
         $url = trim(parse_url($url, PHP_URL_HOST), '[]');
 
-        if (false !== filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        if (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
             $urltype = 'ipv4';
-        } elseif (false !== filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+        } elseif (filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false) {
             $urltype = 'ipv6';
         } else {
             $urltype = 'name';
         }
 
         $urlunpack = null;
-        if ('ipv4' === $urltype || 'ipv6' === $urltype) {
+        if ($urltype === 'ipv4' || $urltype === 'ipv6') {
             $urlunpack = unpack('N*', @inet_pton($url));
         }
 
         foreach ($this->stripHosts as $pattern) {
             @[$type, $host, $mask] = $pattern;
 
-            if ('/local' === $type) {
-                if (('name' === $urltype && 'localhost' === strtolower($url)) || (
-                    ('ipv4' === $urltype || 'ipv6' === $urltype) &&
-                    false === filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE)
+            if ($type === '/local') {
+                if (($urltype === 'name' && strtolower($url) === 'localhost') || (
+                    ($urltype === 'ipv4' || $urltype === 'ipv6') &&
+                    filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE) === false
                 )) {
                     return true;
                 }
-            } elseif ('/private' === $type) {
-                if (('ipv4' === $urltype || 'ipv6' === $urltype)
-                    && false === filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)
+            } elseif ($type === '/private') {
+                if (($urltype === 'ipv4' || $urltype === 'ipv6')
+                    && filter_var($url, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) === false
                 ) {
                     return true;
                 }
-            } elseif ('ipv4' === $type || 'ipv6' === $type) {
+            } elseif ($type === 'ipv4' || $type === 'ipv6') {
                 if ($urltype === $type && $this->matchAddr($urlunpack, $host, $mask)) {
                     return true;
                 }
-            } elseif ('name' === $type) {
-                if ('name' === $urltype && preg_match($host, $url)) {
+            } elseif ($type === 'name') {
+                if ($urltype === 'name' && preg_match($host, $url)) {
                     return true;
                 }
             }
@@ -633,7 +633,7 @@ class PackageSelection
         $excluded = [];
         if ($this->hasTypeFilter()) {
             foreach ($this->selected as $selectedKey => $package) {
-                if (null !== $this->includeTypes && ! in_array($package->getType(), $this->includeTypes)) {
+                if ($this->includeTypes !== null && ! in_array($package->getType(), $this->includeTypes)) {
                     if ($verbose) {
                         $this->output->writeln(
                             'Excluded '.$package->getPrettyName()
@@ -743,7 +743,7 @@ class PackageSelection
 
         reset($links);
 
-        while (null !== key($links)) {
+        while (key($links) !== null) {
             $link = current($links);
             $matches = [];
             if (is_a($link, PackageInterface::class)) {
@@ -759,7 +759,7 @@ class PackageSelection
                     $matches = $repositorySet->createPoolForPackage($link->getTarget())->whatProvides($name, $link->getConstraint());
                 }
 
-                if (0 === \count($matches)) {
+                if (\count($matches) === 0) {
                     $this->output->writeln('<error>The '.$name.' '.$link->getPrettyConstraint().' requirement did not match any package</error>');
                 }
             }
@@ -781,7 +781,7 @@ class PackageSelection
 
                 // Check if + character is present, only once according to Semver;
                 // otherwise metadata will stripped as usual
-                if (1 === substr_count($prettyVersion, '+')) {
+                if (substr_count($prettyVersion, '+') === 1) {
                     // re-inject metadata because it has been stripped by the VersionParser
                     if (preg_match('/.+(\+[0-9A-Za-z-]*)$/', $prettyVersion, $match)) {
                         $uniqueName .= $match[1];
@@ -790,7 +790,7 @@ class PackageSelection
 
                 // add matching package if not yet selected
                 if (! isset($this->selected[$uniqueName])) {
-                    if (false === $isRoot || false === $this->onlyDependencies) {
+                    if ($isRoot === false || $this->onlyDependencies === false) {
                         if ($verbose) {
                             $this->output->writeln('Selected '.$package->getPrettyName().' ('.$prettyVersion.')');
                         }
@@ -805,7 +805,7 @@ class PackageSelection
                             $linkId = $target.' '.$dependencyLink->getConstraint();
                             // prevent loading multiple times the same link
                             if (! isset($depsLinks[$linkId])) {
-                                if (false === $isRoot) {
+                                if ($isRoot === false) {
                                     $links[] = $dependencyLink;
                                 }
                                 $depsLinks[$linkId] = $dependencyLink;
