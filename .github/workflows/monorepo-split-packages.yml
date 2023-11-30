@@ -16,8 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - tallui-admin-panel
-          - tallui-core
+          - blog
 
     steps:
       - uses: actions/checkout@v3
