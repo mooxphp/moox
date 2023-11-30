@@ -1,0 +1,31 @@
+{
+    "name": "twig/html-extra",
+    "type": "library",
+    "description": "A Twig extension for HTML",
+    "keywords": ["twig", "html"],
+    "homepage": "https://twig.symfony.com",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Fabien Potencier",
+            "email": "fabien@symfony.com",
+            "homepage": "http://fabien.potencier.org",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.5",
+        "symfony/mime": "^5.4|^6.0|^7.0",
+        "twig/twig": "^3.0"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^6.4|^7.0"
+    },
+    "autoload": {
+        "psr-4" : { "Twig\\Extra\\Html\\" : "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    }
+}
