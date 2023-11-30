@@ -4,7 +4,6 @@ includes:
 parameters:
     level: 8
     paths:
-        - _builder
         - _components
         - _data
         - _icons
@@ -13,7 +12,6 @@ parameters:
         - _others
         - app
     excludePaths:
-        - '_builder/*/build/*'
         - '_components/*/build/*'
         - '_data/*/build/*'
         - '_icons/*/build/*'
@@ -21,7 +19,6 @@ parameters:
         - '_themes/admin/*/build/*'
         - '_themes/website/*/build/*'
         - '_others/*/build/*'
-        - '_builder/*/vendor/*'
         - '_components/*/vendor/*'
         - '_data/*/vendor/*'
         - '_icons/*/vendor/*'
@@ -37,7 +34,6 @@ parameters:
             paths:
                 - _components/*/tests/*
                 - _packages/*/tests/*
-                - _builder/*/tests/*
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
             messages:
@@ -45,13 +41,4 @@ parameters:
             paths:
                 - _other/builder/*
             reportUnmatched: false
-        -
-            # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
-            messages:
-                - '#^Class BladeUI\\Icons\\Factory not found\.$#'
-                - '#^Parameter \$factory of anonymous function has invalid type BladeUI\\Icons\\Factory\.$#'
-                - '#^Call to method add\(\) on an unknown class BladeUI\\Icons\\Factory\.$#'
-                - '#^Function svg not found\.$#'
-            paths:
-                - _builder/tallui-icons-builder/*
     tmpDir: build/phpstan
