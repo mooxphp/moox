@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Skeleton\Resources;
+namespace Moox\Builder\Resources;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
@@ -12,14 +12,14 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Moox\Skeleton\Models\Skeleton;
-use Moox\Skeleton\Resources\SkeletonResource\Pages\ListPage;
-use Moox\Skeleton\Resources\SkeletonResource\Widgets\SkeletonWidgets;
-use Moox\Skeleton\SkeletonPlugin;
+use Moox\Builder\BuilderPlugin;
+use Moox\Builder\Models\Builder;
+use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
+use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
 
-class SkeletonResource extends Resource
+class BuilderResource extends Resource
 {
-    protected static ?string $model = Skeleton::class;
+    protected static ?string $model = Builder::class;
 
     public static function form(Form $form): Form
     {
@@ -39,14 +39,14 @@ class SkeletonResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('skeleton::translations.name'))
+                    ->label(__('builder::translations.name'))
                     ->sortable(),
                 TextColumn::make('started_at')
-                    ->label(__('skeleton::translations.started_at'))
+                    ->label(__('builder::translations.started_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('failed')
-                    ->label(__('skeleton::translations.failed'))
+                    ->label(__('builder::translations.failed'))
                     ->sortable(),
             ])
             ->defaultSort('name', 'desc')
@@ -75,23 +75,23 @@ class SkeletonResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            SkeletonWidgets::class,
+            BuilderWidgets::class,
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return SkeletonPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return BuilderPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return SkeletonPlugin::get()->getLabel();
+        return BuilderPlugin::get()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return SkeletonPlugin::get()->getPluralLabel();
+        return BuilderPlugin::get()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -101,26 +101,26 @@ class SkeletonResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return SkeletonPlugin::get()->getNavigationGroup();
+        return BuilderPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return SkeletonPlugin::get()->getNavigationSort();
+        return BuilderPlugin::get()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return SkeletonPlugin::get()->getBreadcrumb();
+        return BuilderPlugin::get()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return SkeletonPlugin::get()->shouldRegisterNavigation();
+        return BuilderPlugin::get()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return SkeletonPlugin::get()->getNavigationIcon();
+        return BuilderPlugin::get()->getNavigationIcon();
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace Moox\Skeleton;
+namespace Moox\Builder;
 
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 
-class SkeletonPlugin implements Plugin
+class BuilderPlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -66,7 +66,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getId(): string
     {
-        return 'skeleton';
+        return 'builder';
     }
 
     /**
@@ -108,7 +108,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getResource(): string
     {
-        return $this->resource ?? config('skeleton.resources.skeleton.resource');
+        return $this->resource ?? config('builder.resources.builder.resource');
     }
 
     /**
@@ -126,7 +126,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getLabel(): ?string
     {
-        return $this->evaluate($this->label) ?? config('skeleton.resources.skeleton.label');
+        return $this->evaluate($this->label) ?? config('builder.resources.builder.label');
     }
 
     /**
@@ -144,7 +144,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getPluralLabel(): ?string
     {
-        return $this->evaluate($this->pluralLabel) ?? config('skeleton.resources.skeleton.plural_label');
+        return $this->evaluate($this->pluralLabel) ?? config('builder.resources.builder.plural_label');
     }
 
     /**
@@ -162,7 +162,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getNavigationGroup(): ?string
     {
-        return $this->navigationGroup ?? config('skeleton.resources.skeleton.navigation_group');
+        return $this->navigationGroup ?? config('builder.resources.builder.navigation_group');
     }
 
     /**
@@ -180,7 +180,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getNavigationIcon(): ?string
     {
-        return $this->navigationIcon ?? config('skeleton.resources.skeleton.navigation_icon');
+        return $this->navigationIcon ?? config('builder.resources.builder.navigation_icon');
     }
 
     /**
@@ -198,7 +198,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getNavigationSort(): ?int
     {
-        return $this->navigationSort ?? config('skeleton.resources.skeleton.navigation_sort');
+        return $this->navigationSort ?? config('builder.resources.builder.navigation_sort');
     }
 
     /**
@@ -216,7 +216,7 @@ class SkeletonPlugin implements Plugin
      */
     public function getNavigationCountBadge(): ?bool
     {
-        return $this->navigationCountBadge ?? config('skeleton.resources.skeleton.navigation_count_badge');
+        return $this->navigationCountBadge ?? config('builder.resources.builder.navigation_count_badge');
     }
 
     /**
@@ -234,7 +234,7 @@ class SkeletonPlugin implements Plugin
      */
     public function shouldRegisterNavigation(): bool
     {
-        return $this->navigation ?? config('skeleton.resources.skeleton.enabled');
+        return $this->navigation ?? config('builder.resources.builder.enabled');
     }
 
     /**
@@ -252,6 +252,6 @@ class SkeletonPlugin implements Plugin
      */
     public function getBreadcrumb(): string
     {
-        return __('skeleton::translations.breadcrumb');
+        return __('builder::translations.breadcrumb');
     }
 }

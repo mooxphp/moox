@@ -1,12 +1,12 @@
 <?php
 
-namespace Moox\Skeleton\Models;
+namespace Moox\Builder\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Skeleton extends Model
+class Builder extends Model
 {
-    protected $table = 'skeleton';
+    protected $table = 'builder';
 
     protected $fillable = [
         'name',

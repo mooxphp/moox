@@ -16,7 +16,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./_other/skeleton"
+            "url": "./_other/builder"
         }
     ],
     "license": "MIT",
@@ -27,7 +27,7 @@
         "laravel/framework": "^10.0",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
-        "moox/skeleton": "*",
+        "moox/builder": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

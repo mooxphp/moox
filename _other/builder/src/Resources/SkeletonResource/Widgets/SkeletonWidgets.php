@@ -1,13 +1,13 @@
 <?php
 
-namespace Moox\Skeleton\Resources\SkeletonResource\Widgets;
+namespace Moox\Builder\Resources\BuilderResource\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
-use Moox\Skeleton\Models\Skeleton;
+use Moox\Builder\Models\Builder;
 
-class SkeletonWidgets extends BaseWidget
+class BuilderWidgets extends BaseWidget
 {
     protected function getCards(): array
     {
@@ -17,14 +17,14 @@ class SkeletonWidgets extends BaseWidget
             DB::raw('COUNT(*) as count'),
         ];
 
-        $aggregatedInfo = Skeleton::query()
+        $aggregatedInfo = Builder::query()
             ->select($aggregationColumns)
             ->first();
 
         return [
-            Stat::make(__('skeleton::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('skeleton::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('skeleton::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('builder::translations.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('builder::translations.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('builder::translations.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

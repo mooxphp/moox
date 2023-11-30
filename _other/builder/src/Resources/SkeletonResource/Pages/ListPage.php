@@ -1,16 +1,16 @@
 <?php
 
-namespace Moox\Skeleton\Resources\SkeletonResource\Pages;
+namespace Moox\Builder\Resources\BuilderResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Skeleton\Models\Skeleton;
-use Moox\Skeleton\Resources\SkeletonResource;
-use Moox\Skeleton\Resources\SkeletonResource\Widgets\SkeletonWidgets;
+use Moox\Builder\Models\Builder;
+use Moox\Builder\Resources\BuilderResource;
+use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
 
 class ListPage extends ListRecords
 {
-    public static string $resource = SkeletonResource::class;
+    public static string $resource = BuilderResource::class;
 
     public function getActions(): array
     {
@@ -20,20 +20,20 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            SkeletonWidgets::class,
+            BuilderWidgets::class,
         ];
     }
 
     public function getTitle(): string
     {
-        return __('skeleton::translations.title');
+        return __('builder::translations.title');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Skeleton {
+                ->using(function (array $data, string $model): Builder {
                     return $model::create($data);
                 }),
         ];

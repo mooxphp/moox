@@ -1,4 +1,4 @@
-# Moox Skeleton
+# Moox Builder
 
 This template is used for generating all Moox packages.
 
@@ -9,20 +9,20 @@ If you install it, it will completely work without beeing useful. Guaranteed!
 You can install the package via composer:
 
 ```bash
-composer require moox/skeleton
+composer require moox/builder
 ```
 
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --tag="skeleton-migrations"
+php artisan vendor:publish --tag="builder-migrations"
 php artisan migrate
 ```
 
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="skeleton-config"
+php artisan vendor:publish --tag="builder-config"
 ```
 
 ## Changelog

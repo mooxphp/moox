@@ -2,15 +2,15 @@
 
 return [
     'resources' => [
-        'skeleton' => [
+        'builder' => [
             'enabled' => true,
-            'label' => 'Skeleton',
-            'plural_label' => 'Skeletons',
-            'navigation_group' => 'Skeleton Group',
+            'label' => 'Builder',
+            'plural_label' => 'Builders',
+            'navigation_group' => 'Builder Group',
             'navigation_icon' => 'heroicon-o-play',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
-            'resource' => Moox\Skeleton\Resources\SkeletonResource::class,
+            'resource' => Moox\Builder\Resources\BuilderResource::class,
         ],
     ],
     'pruning' => [

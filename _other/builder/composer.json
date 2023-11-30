@@ -1,5 +1,5 @@
 {
-    "name": "moox/skeleton",
+    "name": "moox/builder",
     "description": "This template is used for generating all Moox packages.",
     "keywords": [
         "Laravel",
@@ -22,13 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Skeleton\\": "src"
+            "Moox\\Builder\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Skeleton\\SkeletonServiceProvider"
+                "Moox\\Builder\\BuilderServiceProvider"
             ]
         }
     },

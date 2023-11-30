@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Moox\Skeleton;
+namespace Moox\Builder;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class SkeletonServiceProvider extends PackageServiceProvider
+class BuilderServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('skeleton')
+            ->name('builder')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigration('create_skeleton_table');
+            ->hasMigration('create_builder_table');
     }
 }
