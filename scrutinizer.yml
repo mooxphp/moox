@@ -21,11 +21,11 @@ filter:
     - "_components/*"
     - "_data"
     - "_icons"
-    - "_others"
+    - "_other"
     - "_packages"
     - "_themes"
   excluded_paths:
-    - "_others/satis/*"
+    - "_other/satis/*"
 checks:
   php: true
   javascript: true
