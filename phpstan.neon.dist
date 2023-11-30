@@ -26,6 +26,7 @@ parameters:
         - '_themes/admin/*/vendor/*'
         - '_themes/website/*/vendor/*'
         - '_other/*/vendor/*'
+        - '_other/builder/*'
         - '_other/satis/*'
     ignoreErrors:
         -
@@ -34,6 +35,7 @@ parameters:
             paths:
                 - _components/*/tests/*
                 - _packages/*/tests/*
+            reportUnmatched: false
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
             messages:
