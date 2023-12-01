@@ -3,7 +3,7 @@
         'name' => 'composer/satis',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '74f630043aa3a5c0d27d0dfce1e601c21e33be35',
+        'reference' => 'e1b04d5c275f759fcc346ace168da9a01f6453d0',
         'type' => 'composer-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(
@@ -60,7 +60,7 @@
         'composer/satis' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '74f630043aa3a5c0d27d0dfce1e601c21e33be35',
+            'reference' => 'e1b04d5c275f759fcc346ace168da9a01f6453d0',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(
@@ -399,20 +399,11 @@
             'dev_requirement' => false,
         ),
         'symfony/console' => array(
-            'pretty_version' => 'v6.4.0',
-            'version' => '6.4.0.0',
-            'reference' => 'cd9864b47c367450e14ab32f78fdbf98c44c26b6',
+            'pretty_version' => 'v7.0.0',
+            'version' => '7.0.0.0',
+            'reference' => '64e06788686633deb8d9a7c75ab31bcf4b233a26',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/console',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
-        'symfony/deprecation-contracts' => array(
-            'pretty_version' => 'v3.4.0',
-            'version' => '3.4.0.0',
-            'reference' => '7c3aff79d10325257a001fcf92d991f24fc967cf',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../symfony/deprecation-contracts',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
