@@ -3,7 +3,7 @@
         'name' => 'composer/satis',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'acabd8a5ef7047803277b4c17863d2b18c82c3b3',
+        'reference' => '74f630043aa3a5c0d27d0dfce1e601c21e33be35',
         'type' => 'composer-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(
@@ -60,7 +60,7 @@
         'composer/satis' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'acabd8a5ef7047803277b4c17863d2b18c82c3b3',
+            'reference' => '74f630043aa3a5c0d27d0dfce1e601c21e33be35',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(
