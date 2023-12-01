@@ -18,4 +18,9 @@ class BuilderServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasMigration('create_builder_table');
     }
+
+    public function boot()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+    }
 }
