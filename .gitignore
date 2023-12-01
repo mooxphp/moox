@@ -4,12 +4,13 @@
 
 # Composer
 /vendor
+/_other/satis/satis/vendor
 # composer.lock - it's a dev platform, we want the lock-file to be in sync
 auth.json
 
 # NPM / Node
 /node_modules
-npm-debug.log
+/_other/satis/satis/node_modules
 # package-lock.json - it's a dev platform, we want the lock-file to be in sync
 
 # Laravel
