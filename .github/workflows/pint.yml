@@ -24,7 +24,7 @@ jobs:
         uses: aglipanci/laravel-pint-action@2.1.0
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           push_options: --force
           commit_message: Fix styling
