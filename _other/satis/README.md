@@ -2,7 +2,7 @@
 
 The TallUI Composer Satis Repository enables us to provide access to private repositories (like heco and meinsolarstrom), public-but-not-yet-published repositories and commercial packages (in a possible future):
 
-http://satis.tallui.io/
+http://satis.moox.org/
 
 ## Devlog
 
@@ -15,7 +15,7 @@ Create the JSON-config: `touch satis.json`:
 ```json
 {
     "name": "mooxphp/moox-repository",
-    "homepage": "https://satis.tallui.io",
+    "homepage": "https://satis.moox.org",
     "output-dir": "public",
     "repositories": [
         { "type": "vcs", "url": "https://github.com/adrolli/test-repo" }

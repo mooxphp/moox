@@ -12,7 +12,7 @@
                 },
                 "dist": {
                     "type": "zip",
-                    "url": "https://satis.tallui.io/dist/adrolli/test-repo/adrolli-test-repo-e0834e47f3bf8d12a8de4780d1f7e730b159a90b-zip-27db3d.zip",
+                    "url": "https://satis.moox.org/dist/adrolli/test-repo/adrolli-test-repo-e0834e47f3bf8d12a8de4780d1f7e730b159a90b-zip-27db3d.zip",
                     "reference": "e0834e47f3bf8d12a8de4780d1f7e730b159a90b",
                     "shasum": "1fa10761befc2dad5abc62119d7347dcb213ecb8"
                 },

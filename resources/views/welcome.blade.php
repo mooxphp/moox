@@ -15,9 +15,9 @@
 
         <div class="flex justify-center m-5">
             <a
-                href="https://www.tallui.io"
+                href="https://www.moox.org"
                 class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded"
-            >tallui.io</a>
+            >moox.org</a>
         </div>
     </div>
     <footer class="mt-105">
