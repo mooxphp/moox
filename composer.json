@@ -16,7 +16,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "packages/builder"
+            "url": "../_packages/builder"
         }
     ],
     "license": "MIT",
