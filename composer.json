@@ -16,10 +16,6 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./_other/builder"
-        },
-        {
-            "type": "path",
             "url": "packages/builder"
         }
     ],
@@ -31,7 +27,6 @@
         "laravel/framework": "^10.0",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
-        "moox/builder": "*",
         "wikimedia/composer-merge-plugin": "^2.1",
         "moox/builder":"*"
     },
