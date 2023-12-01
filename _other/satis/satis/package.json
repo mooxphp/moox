@@ -5,7 +5,7 @@
         "date-fns": "^2.28.0",
         "eslint-webpack-plugin": "^4.0.0",
         "husky": "^8.0.0",
-        "lint-staged": "^15.0.0",
+        "lint-staged": "^13.1.0",
         "prettier": "^2.6.0",
         "sass": "^1.49.9",
         "sass-loader": "^13.0.0"
