@@ -16,7 +16,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "../_packages/builder"
+            "url": "_other/builder"
         }
     ],
     "license": "MIT",
@@ -28,7 +28,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "wikimedia/composer-merge-plugin": "^2.1",
-        "moox/builder":"*"
+        "moox/builder": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
