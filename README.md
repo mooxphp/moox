@@ -1,14 +1,9 @@
-# Moox
-
-## Coming soon ...
-
-## We are currently moving from TallUI to Moox, changing Namespaces too. Please be patient ...
-
 <p align="center">
-    <img src="https://github.com/mooxphp/moox/raw/main/_other/tallui-art/tallui-logo.svg" width="100" alt="TallUI Logo">
-    <br><br>
-    <img src="https://github.com/mooxphp/moox/raw/main//_other/tallui-art/tallui-textlogo.svg" width="110" alt="TallUI Textlogo">
+    <br>
+  	<img src="https://github.com/mooxphp/moox/raw/main/_other/art/moox-logo.png" width="200" alt="Moox Logo">
+    <br>
 </p><br>
+
 
 <p align="center">
     <a href="https://github.com/mooxphp/moox/actions/workflows/pest.yml">
@@ -57,7 +52,7 @@
         <img src="https://hosted.weblate.org/widgets/tallui/-/svg-badge.svg" alt="Translation status" />
     </a>
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md">
-        <img alt="License" src="https://img.shields.io/github/license/mooxphp/moox-app-components?color=blue&label=license">
+        <img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license">
     </a>
     <a href="https://mooxphp.slack.com/">
         <img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack">
@@ -66,28 +61,27 @@
     <br>
 </p>
 
-# TallUI Monorepo
 
-Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
+# Moox Monorepo
 
-This is the TallUI Monorepo containing all packages and the Laravel dev app.
+Welcome to the Moox project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
+
+This is the Moox Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
 
-TallUI packages are categorized in
+Moox packages are categorized in
 
--   [\_components](./_components/README.md) - Laravel packages only packed with Blade and Livewire components
 -   [\_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
--   [\_icons](./_icons/README.md) - Laravel packages only with SVG icons, compatible with Blade Icons
 -   [\_other](./_other/README.md) - Other Laravel packages or assisting repos like Builder and Satis
--   [\_packages](./_packages/README.md) - Full blown Laravel packages like TallUI Core or Admin Panel
--   [\_themes](./_themes/README.md) - Themes for the admin (backend) or website (frontend)
+-   [\_packages](./_packages/README.md) - Full blown Laravel packages like Blog, Pages, Jobs
+-   [\_themes](./_themes/README.md) - Themes for admin (backend) or website (frontend)
 
 Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./_builder/README.md) for more information about how to build and publish packages.
 
 ## Installation
 
-The Laravel dev app in the root-folder of the TallUI Monorepo is made for instant development with Laravel Valet, Laravel Sail or Laragon.
+The Laravel dev app in the root-folder of the Moox Monorepo is made for instant development with Laravel Valet, Laravel Sail or Laragon.
 
 ```bash
 # Use the prepared composer.json
@@ -121,7 +115,7 @@ rm -Rf vendor/mooxphp
 Our Monorepo is prepared to be a double agent:
 
 -   Develop a private or public project
--   while contributing to the TallUI project
+-   while contributing to the Moox project
 
 This is done by supporting custom packages in the development app of our Monorepo. Sounds interesting? Read on [\_custom/README.md](_custom/README.md).
 
@@ -200,7 +194,7 @@ Currently done manually, an automatic release feature is on the way.
 
 ## Testing
 
-We test TallUI using:
+We test Moox using:
 
 -   Monorepo
     -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
@@ -221,14 +215,14 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 
 ## Translation
 
-TallUI is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./TRANSLATE.md).
+Moox is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./TRANSLATE.md).
 
-<a href="https://hosted.weblate.org/engage/tallui/">
-<img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" /></a>
+<a href="https://hosted.weblate.org/engage/moox/">
+<img src="https://hosted.weblate.org/widgets/moox/-/open-graph.png" alt="Translation status" /></a>
 
 ## Contributors
 
-TallUI is made by these nice people, and bots ...
+Mood is made by these nice people, and bots ...
 
 <!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -start -->
 <table>
@@ -334,15 +328,15 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,tallui-bot,bots,milotype -end -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,moox-bot,bots,milotype,tallui-bot -end -->
 
 ## License
 
-TallUI is free Open-Source software licensed under the [MIT License](LICENSE.md).
+Moox is free Open-Source software licensed under the [MIT License](LICENSE.md).
 
 Some of the projects we depend on are released under a different license. We do our best to make sure that these licenses allow private as well as commercial use and do not impose any restrictions.
 
-If you notice any problem with TallUI licensing or any dependency, please mail us at dev@tallui.io.
+If you notice any problem with Moox licensing or any dependency, please mail us at dev@moox.org.
 
 ## Security
 
