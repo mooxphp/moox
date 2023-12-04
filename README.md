@@ -45,8 +45,8 @@
     <a href="https://codeclimate.com/github/mooxphp/moox/maintainability">
         <img src="https://api.codeclimate.com/v1/badges/1b6dae4442e751fd60b9/maintainability" alt="Code Climate Maintainability">
     </a>
-    <a href="https://app.snyk.io/org/adrolli/project/dd7d7d2c-7a0c-4741-ab01-e3d11ea18fa0">
-        <img alt="Snyk Security" src="https://img.shields.io/snyk/vulnerabilities/github/mooxphp/moox">
+    <a href="https://snyk.io/test/github/mooxphp/moox">
+        <img alt="Snyk Security" src="https://snyk.io/test/github/mooxphp/moox/badge.svg">
     </a>
 </p>
 <p align="center">
@@ -59,8 +59,8 @@
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/mooxphp/moox-app-components?color=blue&label=license">
     </a>
-    <a href="https://tallui.slack.com/">
-        <img alt="Slack" src="https://img.shields.io/badge/Slack-TallUI-blue?logo=slack">
+    <a href="https://mooxphp.slack.com/">
+        <img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack">
     </a>
     <br>
     <br>
