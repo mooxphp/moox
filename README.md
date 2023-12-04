@@ -284,10 +284,10 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/tallui-bot">
-            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
+        <a href="https://github.com/mooxbot">
+            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="mooxbot"/>
             <br />
-            <sub><b>tallui-bot</b></sub>
+            <sub><b>mooxbot</b></sub>
         </a>
     </td>
     <td align="center">
@@ -305,6 +305,21 @@ TallUI is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/tallui-bot">
+            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
+            <br />
+            <sub><b>tallui-bot</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/renovate[bot]">
+            <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
+            <br />
+            <sub><b>renovate[bot]</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
         <a href="https://github.com/github-actions[bot]">
             <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
             <br />
@@ -316,14 +331,6 @@ TallUI is made by these nice people, and bots ...
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
             <br />
             <sub><b>dependabot[bot]</b></sub>
-        </a>
-    </td></tr>
-<tr>
-    <td align="center">
-        <a href="https://github.com/renovate[bot]">
-            <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
-            <br />
-            <sub><b>renovate[bot]</b></sub>
         </a>
     </td>
     <td align="center">
