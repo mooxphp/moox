@@ -35,7 +35,7 @@
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6.6",
-        "nunomaduro/collision": "^7.1",
+        "nunomaduro/collision": "^8.0",
         "nunomaduro/larastan": "^2.6",
         "orchestra/testbench": "^8.0",
         "pestphp/pest": "^2.0",
