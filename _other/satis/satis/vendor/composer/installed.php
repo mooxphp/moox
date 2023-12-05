@@ -3,7 +3,7 @@
         'name' => 'composer/satis',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'fffa9da52c902d29daf1226cd3dd86dfb326d1df',
+        'reference' => 'f3bfc9837075d9c59a4e6c95db773e29fc274512',
         'type' => 'composer-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(
@@ -60,7 +60,7 @@
         'composer/satis' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'fffa9da52c902d29daf1226cd3dd86dfb326d1df',
+            'reference' => 'f3bfc9837075d9c59a4e6c95db773e29fc274512',
             'type' => 'composer-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(
@@ -399,9 +399,9 @@
             'dev_requirement' => false,
         ),
         'symfony/console' => array(
-            'pretty_version' => 'v7.0.0',
-            'version' => '7.0.0.0',
-            'reference' => '64e06788686633deb8d9a7c75ab31bcf4b233a26',
+            'pretty_version' => 'v7.0.1',
+            'version' => '7.0.1.0',
+            'reference' => 'cdce5c684b2f920bb1343deecdfba356ffad83d5',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/console',
             'aliases' => array(),
