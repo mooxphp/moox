@@ -2,6 +2,20 @@
 
 All notable changes of the PHPUnit 10.5 release series are documented in this file using the [Keep a CHANGELOG](https://keepachangelog.com/) principles.
 
+## [10.5.2] - 2023-12-05
+
+### Fixed
+
+* [#5561](https://github.com/sebastianbergmann/phpunit/issues/5561): JUnit XML logger does not handle assertion failures in before-test methods
+* [#5567](https://github.com/sebastianbergmann/phpunit/issues/5567): Infinite recursion when recursive / self-referencing arrays are checked whether they contain only scalar values
+
+## [10.5.1] - 2023-12-01
+
+### Fixed
+
+* [#5593](https://github.com/sebastianbergmann/phpunit/issues/5593): Return Value Generator fails to correctly create test stub for method with `static` return type declaration when used recursively
+* [#5596](https://github.com/sebastianbergmann/phpunit/issues/5596): `PHPUnit\Framework\TestCase` has `@internal` annotation in PHAR
+
 ## [10.5.0] - 2023-12-01
 
 ### Added
@@ -18,4 +32,6 @@ All notable changes of the PHPUnit 10.5 release series are documented in this fi
 
 * [#5563](https://github.com/sebastianbergmann/phpunit/issues/5563): `createMockForIntersectionOfInterfaces()` does not automatically register mock object for expectation verification
 
+[10.5.2]: https://github.com/sebastianbergmann/phpunit/compare/10.5.1...10.5.2
+[10.5.1]: https://github.com/sebastianbergmann/phpunit/compare/10.5.0...10.5.1
 [10.5.0]: https://github.com/sebastianbergmann/phpunit/compare/10.4.2...10.5.0
