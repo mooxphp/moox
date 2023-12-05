@@ -11,6 +11,7 @@ namespace PHPUnit\Util;
 
 use function is_array;
 use function is_scalar;
+use SebastianBergmann\RecursionContext\Context;
 
 /**
  * @internal This class is not covered by the backward compatibility promise for PHPUnit
@@ -19,16 +20,16 @@ final class Exporter
 {
     public static function export(mixed $value, bool $exportObjects = false): string
     {
-        if (self::isScalarOrArrayOfScalars($value) || $exportObjects) {
+        if (self::isExportable($value) || $exportObjects) {
             return (new \SebastianBergmann\Exporter\Exporter)->export($value);
         }
 
         return '{enable export of objects to see this value}';
     }
 
-    private static function isScalarOrArrayOfScalars(mixed $value): bool
+    private static function isExportable(mixed &$value, Context $context = null): bool
     {
-        if (is_scalar($value)) {
+        if (is_scalar($value) || $value === null) {
             return true;
         }
 
@@ -36,8 +37,19 @@ final class Exporter
             return false;
         }
 
-        foreach ($value as $_value) {
-            if (!self::isScalarOrArrayOfScalars($_value)) {
+        if (!$context) {
+            $context = new Context;
+        }
+
+        if ($context->contains($value) !== false) {
+            return true;
+        }
+
+        $array = $value;
+        $context->add($value);
+
+        foreach ($array as &$_value) {
+            if (!self::isExportable($_value, $context)) {
                 return false;
             }
         }
