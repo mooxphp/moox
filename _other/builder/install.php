@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 function ask(string $question, string $default = ''): string
 {
     $answer = readline($question . ($default ? " ({$default})" : null) . ': ');
@@ -133,12 +135,12 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ "Builder builder create_builder_table"'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ "Builder builder "'));
 }
 
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder|create_builder_table" --exclude-dir=vendor ./* ./.github/* | grep -v ' . basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder" --exclude-dir=vendor ./* ./.github/* | grep -v ' . basename(__FILE__)));
 }
 
 function getGitHubApiEndpoint(string $endpoint): ?stdClass
@@ -246,16 +248,6 @@ $authorName = ask('Author name', $gitName);
 
 $gitEmail = run('git config user.email');
 $authorEmail = ask('Author email', $gitEmail);
-$authorUsername = ask('Author username', guessGitHubUsername());
-
-$guessGitHubVendorInfo = guessGitHubVendorInfo($authorName, $authorUsername);
-
-$vendorName = ask('Vendor name', $guessGitHubVendorInfo[0]);
-$vendorUsername = ask('Vendor username', $guessGitHubVendorInfo[1] ?? slugify($vendorName));
-$vendorSlug = slugify($vendorUsername);
-
-$vendorNamespace = str_replace('-', '', ucwords($vendorName));
-$vendorNamespace = ask('Vendor namespace', $vendorNamespace);
 
 $currentDirectory = getcwd();
 $folderName = basename($currentDirectory);
@@ -276,7 +268,9 @@ $useLaravelRay = confirm('Use Ray for debugging?', true);
 $useUpdateChangelogWorkflow = confirm('Use automatic changelog updater workflow?', true);
 
 writeln('------');
-writeln("Namespace  : {$vendorNamespace}\\{$className}");
+writeln("Author : {$authorName}");
+writeln("Namespace  : Moox\\{$className}");
+writeln("Packagename : moox\{$packageslug}");
 writeln("Class name : {$className}");
 writeln('------');
 
@@ -290,9 +284,12 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
+        'Alf Drollinger' => $authorName,
+        'alf@moox.org' => $authorEmail,
         'Builder' => $className,
         'builder' => $packageSlug,
         'create_builder_table' => title_snake($packageSlug),
+        'This template is used for generating all Moox packages.' => $description,
     ]);
 
     match (true) {
