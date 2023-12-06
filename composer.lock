@@ -1102,7 +1102,7 @@
         },
         {
             "name": "filament/actions",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/actions.git",
@@ -1153,7 +1153,7 @@
         },
         {
             "name": "filament/filament",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/panels.git",
@@ -1218,16 +1218,16 @@
         },
         {
             "name": "filament/forms",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/forms.git",
-                "reference": "cf4215586d50910ca6c9cad1673de683ed958063"
+                "reference": "f17e0810499613cb86c5b9359db97651e39445ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/forms/zipball/cf4215586d50910ca6c9cad1673de683ed958063",
-                "reference": "cf4215586d50910ca6c9cad1673de683ed958063",
+                "url": "https://api.github.com/repos/filamentphp/forms/zipball/f17e0810499613cb86c5b9359db97651e39445ae",
+                "reference": "f17e0810499613cb86c5b9359db97651e39445ae",
                 "shasum": ""
             },
             "require": {
@@ -1270,11 +1270,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2023-12-06T13:27:26+00:00"
+            "time": "2023-12-06T15:58:44+00:00"
         },
         {
             "name": "filament/infolists",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/infolists.git",
@@ -1325,7 +1325,7 @@
         },
         {
             "name": "filament/notifications",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/notifications.git",
@@ -1377,7 +1377,7 @@
         },
         {
             "name": "filament/support",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/support.git",
@@ -1434,16 +1434,16 @@
         },
         {
             "name": "filament/tables",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/tables.git",
-                "reference": "99f6f06631587bdd8f7a11f8622b7dc3c0968db1"
+                "reference": "03fa12c2824a0031e02000c3efb3fa01c33df09d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/tables/zipball/99f6f06631587bdd8f7a11f8622b7dc3c0968db1",
-                "reference": "99f6f06631587bdd8f7a11f8622b7dc3c0968db1",
+                "url": "https://api.github.com/repos/filamentphp/tables/zipball/03fa12c2824a0031e02000c3efb3fa01c33df09d",
+                "reference": "03fa12c2824a0031e02000c3efb3fa01c33df09d",
                 "shasum": ""
             },
             "require": {
@@ -1483,11 +1483,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2023-12-06T13:27:31+00:00"
+            "time": "2023-12-06T15:59:04+00:00"
         },
         {
             "name": "filament/widgets",
-            "version": "v3.1.13",
+            "version": "v3.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/widgets.git",
