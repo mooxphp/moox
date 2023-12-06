@@ -16,7 +16,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./_other/builder"
+            "url": "_other/builder"
         }
     ],
     "license": "MIT",
@@ -27,8 +27,8 @@
         "laravel/framework": "^10.0",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
-        "moox/builder": "*",
-        "wikimedia/composer-merge-plugin": "^2.1"
+        "wikimedia/composer-merge-plugin": "^2.1",
+        "moox/builder": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
@@ -36,7 +36,7 @@
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6.6",
         "nunomaduro/collision": "^7.1",
-        "nunomaduro/larastan": "^2.6",
+        "larastan/larastan": "^2.6",
         "orchestra/testbench": "^8.0",
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",

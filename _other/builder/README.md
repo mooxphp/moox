@@ -62,29 +62,36 @@
 
 # Moox Builder
 
-This template is used for generating all Moox packages.
+This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.
+
+Learn more: [Builder Docs](https://moox.org/builder)
 
 If you install it, it will completely work without beeing useful. Guaranteed!
 
 ## Installation
 
-You can install the package via composer:
+Install the package via composer:
 
 ```bash
 composer require moox/builder
 ```
 
-You can publish and run the migrations with:
+Publish and run the migrations:
 
 ```bash
 php artisan vendor:publish --tag="builder-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Publish the config file with:
 
 ```bash
 php artisan vendor:publish --tag="builder-config"
+```
+
+### Or 
+```bash
+php artisan `moox:install`
 ```
 
 ## Changelog
