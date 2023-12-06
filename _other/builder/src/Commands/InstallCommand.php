@@ -26,11 +26,11 @@ class InstallCommand extends Command
     public function handle()
     {
         $this->comment('Publishing Builder Configuration...');
-        // $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+        $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
 
         $this->comment('Publishing Builder Migrations...');
         $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
-
+        $this->call('migrate');
         $this->info('Builder was installed successfully');
     }
 }

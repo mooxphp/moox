@@ -84,32 +84,6 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-function remove_composer_deps(array $names)
-{
-    $data = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
-
-    foreach ($data['require-dev'] as $name => $version) {
-        if (in_array($name, $names, true)) {
-            unset($data['require-dev'][$name]);
-        }
-    }
-
-    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-}
-
-function remove_composer_script($scriptName)
-{
-    $data = json_decode(file_get_contents(__DIR__ . '/composer.json'), true);
-
-    foreach ($data['scripts'] as $name => $script) {
-        if ($scriptName === $name) {
-            unset($data['scripts'][$name]);
-            break;
-        }
-    }
-
-    file_put_contents(__DIR__ . '/composer.json', json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-}
 
 function remove_readme_paragraphs(string $file): void
 {
@@ -243,14 +217,13 @@ function guessGitHubVendorInfo($authorName, $username): array
     return [$response->name ?? $authorName, $response->login ?? $username];
 }
 
-$gitName = run('git config user.name');
-$authorName = ask('Author name', $gitName);
+$authorName = ask('Author name', 'Moox Developer');
 
-$gitEmail = run('git config user.email');
-$authorEmail = ask('Author email', $gitEmail);
+$authorEmail = ask('Author email', 'dev@moox.org');
 
 $currentDirectory = getcwd();
 $folderName = basename($currentDirectory);
+
 
 $packageName = ask('Package name', $folderName);
 $packageSlug = slugify($packageName);
@@ -261,18 +234,16 @@ $className = ask('Class name', $className);
 $variableName = lcfirst($className);
 $description = ask('Package description', "This is my package {$packageSlug}");
 
-$usePhpStan = confirm('Enable PhpStan?', true);
-$useLaravelPint = confirm('Enable Laravel Pint?', true);
-$useDependabot = confirm('Enable Dependabot?', true);
-$useLaravelRay = confirm('Use Ray for debugging?', true);
-$useUpdateChangelogWorkflow = confirm('Use automatic changelog updater workflow?', true);
 
-writeln('------');
-writeln("Author : {$authorName}");
-writeln("Namespace  : Moox\\{$className}");
-writeln("Packagename : moox\{$packageslug}");
-writeln("Class name : {$className}");
-writeln('------');
+    writeln('------');
+    writeln("Author : {$authorName}");
+    writeln("Author Email : {$authorEmail}");
+    writeln("Namespace  : Moox\\{$className}");
+    writeln("Packagename : moox\{$packageSlug}");
+    writeln("Class name : {$className}Plugin");
+    writeln('------');
+
+
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
 
@@ -284,8 +255,8 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
-        'Alf Drollinger' => $authorName,
-        'alf@moox.org' => $authorEmail,
+        'Moox Developer' => $authorName,
+        'dev@moox.org' => $authorEmail,
         'Builder' => $className,
         'builder' => $packageSlug,
         'create_builder_table' => title_snake($packageSlug),
@@ -304,39 +275,6 @@ foreach ($files as $file) {
     };
 }
 rename(determineSeparator('src/Resources/BuilderResource'), determineSeparator('./src/Resources/' . $className . 'Resource'));
-
-if (!$useLaravelPint) {
-    safeUnlink(__DIR__ . '/.github/workflows/fix-php-code-style-issues.yml');
-    safeUnlink(__DIR__ . '/pint.json');
-}
-
-if (!$usePhpStan) {
-    safeUnlink(__DIR__ . '/phpstan.neon.dist');
-    safeUnlink(__DIR__ . '/phpstan-baseline.neon');
-    safeUnlink(__DIR__ . '/.github/workflows/phpstan.yml');
-
-    remove_composer_deps([
-        'phpstan/extension-installer',
-        'phpstan/phpstan-deprecation-rules',
-        'phpstan/phpstan-phpunit',
-        'nunomaduro/larastan',
-    ]);
-
-    remove_composer_script('phpstan');
-}
-
-if (!$useDependabot) {
-    safeUnlink(__DIR__ . '/.github/dependabot.yml');
-    safeUnlink(__DIR__ . '/.github/workflows/dependabot-auto-merge.yml');
-}
-
-if (!$useLaravelRay) {
-    remove_composer_deps(['spatie/laravel-ray']);
-}
-
-if (!$useUpdateChangelogWorkflow) {
-    safeUnlink(__DIR__ . '/.github/workflows/update-changelog.yml');
-}
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 
