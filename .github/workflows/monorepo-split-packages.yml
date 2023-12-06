@@ -31,5 +31,5 @@ jobs:
           repository_organization: "mooxphp"
           repository_name: "${{ matrix.package }}"
 
-          user_name: "tallui-bot"
-          user_email: "bot@tallui.io"
+          user_name: "mooxbot"
+          user_email: "bot@moox.org"
