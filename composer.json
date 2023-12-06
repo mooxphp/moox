@@ -33,10 +33,10 @@
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
         "laravel/pint": "^1.0",
-        "laravel/sail": "^1.26",
+        "laravel/sail": "*",
         "mockery/mockery": "^1.6.6",
         "nunomaduro/collision": "*",
-        "larastan/larastan": "^2.6",
+        "larastan/larastan": "*",
         "orchestra/testbench": "^9.0",
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",
