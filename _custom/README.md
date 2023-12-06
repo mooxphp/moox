@@ -47,8 +47,8 @@
     <a href="https://github.com/mooxphp/moox/issues/94">
         <img src="https://img.shields.io/badge/renovate-enabled-brightgreen.svg" alt="Renovate" />
     </a>
-    <a href="https://hosted.weblate.org/engage/tallui/">
-        <img src="https://hosted.weblate.org/widgets/tallui/-/svg-badge.svg" alt="Translation status" />
+    <a href="https://hosted.weblate.org/engage/moox/">
+        <img src="https://hosted.weblate.org/widgets/moox/-/svg-badge.svg" alt="Translation status" />
     </a>
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md">
         <img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license">

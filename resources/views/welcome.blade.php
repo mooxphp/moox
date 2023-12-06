@@ -107,9 +107,9 @@
                     alt="Renovate"
                 />
             </a>
-            <a href="https://hosted.weblate.org/engage/tallui/">
+            <a href="https://hosted.weblate.org/engage/moox/">
                 <img
-                    src="https://hosted.weblate.org/widgets/tallui/-/svg-badge.svg"
+                    src="https://hosted.weblate.org/widgets/moox/-/svg-badge.svg"
                     alt="Translation status"
                 />
             </a>

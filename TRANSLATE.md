@@ -2,8 +2,8 @@
 
 Moox is translated in 81 languages:
 
-<a href="https://hosted.weblate.org/engage/tallui/">
-<img src="https://hosted.weblate.org/widgets/tallui/-/multi-auto.svg" alt="Translation status" />
+<a href="https://hosted.weblate.org/engage/moox/">
+<img src="https://hosted.weblate.org/widgets/moox/-/multi-auto.svg" alt="Translation status" />
 </a>
 
 See https://laravel.com/docs/9.x/localization on how to use translated strings.
@@ -21,6 +21,6 @@ We use Weblate for translation because
 
 You can contribute to TallUI being a translator:
 
-<a href="https://hosted.weblate.org/engage/tallui/">
-<img src="https://hosted.weblate.org/widgets/tallui/-/open-graph.png" alt="Translation status" />
+<a href="https://hosted.weblate.org/engage/moox/">
+<img src="https://hosted.weblate.org/widgets/moox/-/open-graph.png" alt="Translation status" />
 </a>
