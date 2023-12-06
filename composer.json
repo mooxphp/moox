@@ -24,8 +24,8 @@
         "php": "^8.2",
         "filament/filament": "^3.1",
         "guzzlehttp/guzzle": "^7.8",
-        "laravel/framework": "^11.0",
-        "laravel/tinker": "*",
+        "laravel/framework": "^10.0",
+        "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "wikimedia/composer-merge-plugin": "^2.1",
         "moox/builder": "*"
@@ -33,11 +33,11 @@
     "require-dev": {
         "fakerphp/faker": "^1.23.1",
         "laravel/pint": "^1.0",
-        "laravel/sail": "*",
+        "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6.6",
-        "nunomaduro/collision": "*",
-        "larastan/larastan": "*",
-        "orchestra/testbench": "^9.0",
+        "nunomaduro/collision": "^7.1",
+        "larastan/larastan": "^2.6",
+        "orchestra/testbench": "^8.0",
         "pestphp/pest": "^2.0",
         "pestphp/pest-plugin-laravel": "^2.0",
         "pestphp/pest-plugin-livewire": "^2.0",
@@ -46,8 +46,8 @@
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^10.0",
-        "spatie/laravel-ignition": "*",
-        "spatie/laravel-ray": "*"
+        "spatie/laravel-ignition": "^2.3",
+        "spatie/laravel-ray": "^1.33"
     },
     "autoload": {
         "psr-4": {
