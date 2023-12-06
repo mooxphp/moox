@@ -22,6 +22,10 @@ jobs:
           php-version: "8.2"
           coverage: none
 
+      - name: Check PHP install
+        run: |
+          sudo dpkg --get-selections | grep php
+
       - name: Install dependencies
         run: |
           composer update
