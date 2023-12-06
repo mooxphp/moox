@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 function ask(string $question, string $default = ''): string
 {
-    $answer = readline($question . ($default ? " ({$default})" : null) . ': ');
+    $answer = readline($question.($default ? " ({$default})" : null).': ');
 
-    if (!$answer) {
+    if (! $answer) {
         return $default;
     }
 
@@ -16,9 +16,9 @@ function ask(string $question, string $default = ''): string
 
 function confirm(string $question, bool $default = false): bool
 {
-    $answer = ask($question . ' (' . ($default ? 'Y/n' : 'y/N') . ')');
+    $answer = ask($question.' ('.($default ? 'Y/n' : 'y/N').')');
 
-    if (!$answer) {
+    if (! $answer) {
         return $default;
     }
 
@@ -27,7 +27,7 @@ function confirm(string $question, bool $default = false): bool
 
 function writeln(string $line): void
 {
-    echo $line . PHP_EOL;
+    echo $line.PHP_EOL;
 }
 
 function run(string $command): string
@@ -84,7 +84,6 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-
 function remove_readme_paragraphs(string $file): void
 {
     $contents = file_get_contents($file);
@@ -109,12 +108,12 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ "Builder builder "'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ "Builder builder "'));
 }
 
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder" --exclude-dir=vendor ./* ./.github/* | grep -v ' . basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
 }
 
 function getGitHubApiEndpoint(string $endpoint): ?stdClass
@@ -158,7 +157,7 @@ function searchCommitsForGitHubUsername(): string
         return [
             'name' => $name,
             'email' => $email,
-            'isMatch' => strtolower($name) === $authorName && !str_contains($name, '[bot]'),
+            'isMatch' => strtolower($name) === $authorName && ! str_contains($name, '[bot]'),
         ];
     }, $committersLines), fn ($item) => $item['isMatch']);
 
@@ -187,12 +186,12 @@ function guessGitHubUsernameUsingCli()
 function guessGitHubUsername(): string
 {
     $username = searchCommitsForGitHubUsername();
-    if (!empty($username)) {
+    if (! empty($username)) {
         return $username;
     }
 
     $username = guessGitHubUsernameUsingCli();
-    if (!empty($username)) {
+    if (! empty($username)) {
         return $username;
     }
 
@@ -224,7 +223,6 @@ $authorEmail = ask('Author email', 'dev@moox.org');
 $currentDirectory = getcwd();
 $folderName = basename($currentDirectory);
 
-
 $packageName = ask('Package name', $folderName);
 $packageSlug = slugify($packageName);
 $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
@@ -234,20 +232,17 @@ $className = ask('Class name', $className);
 $variableName = lcfirst($className);
 $description = ask('Package description', "This is my package {$packageSlug}");
 
-
-    writeln('------');
-    writeln("Author : {$authorName}");
-    writeln("Author Email : {$authorEmail}");
-    writeln("Namespace  : Moox\\{$className}");
-    writeln("Packagename : moox\{$packageSlug}");
-    writeln("Class name : {$className}Plugin");
-    writeln('------');
-
-
+writeln('------');
+writeln("Author : {$authorName}");
+writeln("Author Email : {$authorEmail}");
+writeln("Namespace  : Moox\\{$className}");
+writeln("Packagename : moox\{$packageSlug}");
+writeln("Class name : {$className}Plugin");
+writeln('------');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
 
-if (!confirm('Modify files?', true)) {
+if (! confirm('Modify files?', true)) {
     exit(1);
 }
 
@@ -264,17 +259,17 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/BuilderPlugin.php')) => rename($file, determineSeparator('./src/' . $className . 'Plugin.php')),
-        str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/' . $className . 'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/' . $className . 'Resource.php')),
-        str_contains($file, determineSeparator('src/Models/Builder.php')) => rename($file, determineSeparator('./src/Models/' . $className . '.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/' . $className . 'Widgets.php')),
-        str_contains($file, determineSeparator('database/migrations/builder.php.stub')) => rename($file, determineSeparator('./database/migrations/' . title_snake($packageSlugWithoutPrefix) . '.php.stub')),
-        str_contains($file, determineSeparator('config/builder.php')) => rename($file, determineSeparator('./config/' . $packageSlugWithoutPrefix . '.php')),
+        str_contains($file, determineSeparator('src/BuilderPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
+        str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
+        str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
+        str_contains($file, determineSeparator('src/Models/Builder.php')) => rename($file, determineSeparator('./src/Models/'.$className.'.php')),
+        str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
+        str_contains($file, determineSeparator('database/migrations/builder.php.stub')) => rename($file, determineSeparator('./database/migrations/'.title_snake($packageSlugWithoutPrefix).'.php.stub')),
+        str_contains($file, determineSeparator('config/builder.php')) => rename($file, determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php')),
         default => [],
     };
 }
-rename(determineSeparator('src/Resources/BuilderResource'), determineSeparator('./src/Resources/' . $className . 'Resource'));
+rename(determineSeparator('src/Resources/BuilderResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 
