@@ -222,7 +222,7 @@ Moox is translated with Weblate. More information about the languages, translati
 
 Mood is made by these nice people, and bots ...
 
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,mooxbot,bots,milotype,tallui-bot -start -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,tallui-bot -start -->
 <table>
 <tr>
     <td align="center">
@@ -326,7 +326,7 @@ Mood is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,weblate,laravel-shift,mooxbot,bots,milotype,tallui-bot -end -->
+<!-- readme: adrolli,Reinhold-Jesse,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,tallui-bot -end -->
 
 ## License
 
