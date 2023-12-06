@@ -1,4 +1,3 @@
-<p align="center">
 ![Moox Builder](https://github.com/mooxphp/moox/raw/main/_other/art/banner/builder.jpg)
 
 # Moox Builder
