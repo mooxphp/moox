@@ -20,18 +20,14 @@ and run the install command for this package:
 php artisan `mooxbuilder:install`
 ```
 
-The install command does the following. Alternatively you can run as single commands.
-
-Publish and run the migrations:
+The install command does the following:
 
 ```bash
+// Publish and run the migrations:
 php artisan vendor:publish --tag="builder-migrations"
 php artisan migrate
-```
 
-Publish the config file with:
-
-```bash
+// Publish the config file with:
 php artisan vendor:publish --tag="builder-config"
 ```
 
