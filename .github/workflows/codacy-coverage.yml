@@ -12,17 +12,7 @@ jobs:
       SESSION_DRIVER: array
       DB_DATABASE: ":memory:"
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ubuntu-latest]
-        php: [8.2]
-        laravel: [10.*]
-        stability: [prefer-stable]
-        include:
-          - laravel: 10.*
-            testbench: 8.*
+    runs-on: ubuntu-latest
 
     name: Checkout
 
@@ -33,7 +23,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: "8.2"
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: pcov
 
@@ -41,6 +31,10 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Remove PHP-PSR Extension
+        run: |
+          sudo apt remove php8.2-psr
 
       - name: Install dependencies
         run: |
