@@ -49,9 +49,6 @@
         "spatie/laravel-ignition": "^2.3",
         "spatie/laravel-ray": "^1.33"
     },
-    "conflict": {
-        "ext-psr": "*"
-    },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
