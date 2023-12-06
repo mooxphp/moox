@@ -24,9 +24,9 @@ jobs:
 
       - name: Remove PHP-PSR Extension
         run: |
-          sudo ls /etc/php/8.2/
-          sudo ls /etc/php/8.2/conf.d/
-          sudo rm /etc/php/8.2/conf.d/psr.ini
+          sudo ls /etc/php/8.2/fpm/
+          sudo ls /etc/php/8.2/fpm/conf.d/
+          sudo rm /etc/php/8.2/fpm/conf.d/psr.ini
           sudo service php8.2-fpm restart
           sudo dpkg --get-selections | grep php
 
