@@ -28,7 +28,7 @@ jobs:
 
           package_directory: "_other/${{ matrix.package }}"
 
-          repository_organization: "moox"
+          repository_organization: "mooxphp"
           repository_name: "${{ matrix.package }}"
 
           user_name: "tallui-bot"
