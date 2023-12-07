@@ -2,25 +2,33 @@
 
 # Moox Builder
 
+<!--shortdesc-->
 This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.
 
 If you install it, it will completely work without beeing useful. Guaranteed!
+<!--/shortdesc-->
 
-## Installation
+## Quick Installation
 
-Install the package via composer:
+These two commmands are all you need to install the package:
 
 ```bash
 composer require moox/builder
+php artisan mooxbuilder:install
 ```
 
-and run the install command for this package:
+Curious what the install command does? See manual installation below.
 
-```bash
-php artisan `mooxbuilder:install`
-```
+## What does it do?
 
-The install command does the following:
+<!--whatdoes-->
+Here are some things missing, like an overview with screenshots about this package, or simply a link to the package's docs.
+<!--/whatdoes-->
+
+
+## Manual Installation
+
+Instead of using the install-command `php artisan mooxbuilder:install` you are able to install this package manually step by step:
 
 ```bash
 // Publish and run the migrations:
