@@ -108,12 +108,12 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ "Builder builder "'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ "Builder builder create_builder_table"'));
 }
 
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder|create_builder_table" --exclude-dir=vendor ./* ./.github/* | grep -v '.basename(__FILE__)));
 }
 
 function getGitHubApiEndpoint(string $endpoint): ?stdClass
@@ -265,7 +265,7 @@ foreach ($files as $file) {
         str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
         str_contains($file, determineSeparator('src/Models/Builder.php')) => rename($file, determineSeparator('./src/Models/'.$className.'.php')),
         str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
-        str_contains($file, determineSeparator('database/migrations/builder.php.stub')) => rename($file, determineSeparator('./database/migrations/'.title_snake($packageSlugWithoutPrefix).'.php.stub')),
+        str_contains($file, determineSeparator('database/migrations/create_builder_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($packageSlugWithoutPrefix).'_table.php.stub')),
         str_contains($file, determineSeparator('config/builder.php')) => rename($file, determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
