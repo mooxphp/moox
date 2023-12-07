@@ -252,8 +252,8 @@ foreach ($files as $file) {
     replace_in_file($file, [
         'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
-        'This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.'=>$description,
-        'If you install it, it will completely work without beeing useful. Guaranteed!'=>'',
+        'This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.' => $description,
+        'If you install it, it will completely work without beeing useful. Guaranteed!' => '',
         'Builder' => $className,
         'builder' => $packageSlug,
         'create_builder_table' => title_snake($packageSlug),
