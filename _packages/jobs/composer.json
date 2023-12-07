@@ -1,0 +1,51 @@
+{
+    "name": "adrolli/filament-job-manager",
+    "description": "A Filament panel for managing job queues including failed jobs and batches.",
+    "keywords": [
+        "laravel",
+        "filament",
+        "jobs",
+        "queues",
+        "failed-jobs",
+        "batches",
+        "monitor",
+        "redis"
+    ],
+    "homepage": "https://github.com/adrolli/filament-job-manager",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alf Drollinger",
+            "email": "alf@drollinger.info",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0.2",
+        "spatie/laravel-package-tools": "^1.9.2",
+        "invaders-xx/filament-jsoneditor": "^3.0",
+        "filament/filament": "^3.0"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "Adrolli\\FilamentJobManager\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Adrolli\\FilamentJobManager\\FilamentJobManagerServiceProvider",
+                "Adrolli\\FilamentJobManager\\JobManagerProvider"
+            ],
+            "aliases": {
+                "JobMonitor": "Adrolli\\FilamentJobManager\\JobManagerProvider\\Facade"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
