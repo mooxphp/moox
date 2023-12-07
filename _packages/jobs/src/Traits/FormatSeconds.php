@@ -1,6 +1,6 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Traits;
+namespace Moox\Jobs\Traits;
 
 trait FormatSeconds
 {

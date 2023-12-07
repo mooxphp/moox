@@ -1,11 +1,7 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Resources;
+namespace Moox\Jobs\Resources;
 
-use Adrolli\FilamentJobManager\FilamentWaitingJobsPlugin;
-use Adrolli\FilamentJobManager\Models\Job;
-use Adrolli\FilamentJobManager\Resources\WaitingJobsResource\Pages\ListJobsWaiting;
-use Adrolli\FilamentJobManager\Resources\WaitingJobsResource\Widgets\JobsWaitingOverview;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +12,10 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Jobs\Models\Job;
+use Moox\Jobs\Resources\WaitingJobsResource\Pages\ListJobsWaiting;
+use Moox\Jobs\Resources\WaitingJobsResource\Widgets\JobsWaitingOverview;
 
 class WaitingJobsResource extends Resource
 {
@@ -49,29 +49,29 @@ class WaitingJobsResource extends Resource
             ->columns([
                 TextColumn::make('status')
                     ->badge()
-                    ->label(__('filament-job-manager::translations.status'))
+                    ->label(__('jobs::translations.status'))
                     ->sortable()
-                    ->formatStateUsing(fn (string $state): string => __("filament-job-manager::translations.{$state}"))
+                    ->formatStateUsing(fn (string $state): string => __("jobs::translations.{$state}"))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'waiting' => 'success',
                         'failed' => 'danger',
                     }),
                 TextColumn::make('display_name')
-                    ->label(__('filament-job-manager::translations.name'))
+                    ->label(__('jobs::translations.name'))
                     ->sortable(),
                 TextColumn::make('queue')
-                    ->label(__('filament-job-manager::translations.queue'))
+                    ->label(__('jobs::translations.queue'))
                     ->sortable(),
                 TextColumn::make('attempts')
-                    ->label(__('filament-job-manager::translations.attempts'))
+                    ->label(__('jobs::translations.attempts'))
                     ->sortable(),
                 TextColumn::make('reserved_at')
-                    ->label(__('filament-job-manager::translations.created_at'))
+                    ->label(__('jobs::translations.created_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('filament-job-manager::translations.created_at'))
+                    ->label(__('jobs::translations.created_at'))
                     ->since()
                     ->sortable(),
             ])
@@ -104,17 +104,17 @@ class WaitingJobsResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return FilamentWaitingJobsPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return JobsWaitingPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return FilamentWaitingJobsPlugin::get()->getLabel();
+        return JobsWaitingPlugin::get()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return FilamentWaitingJobsPlugin::get()->getPluralLabel();
+        return JobsWaitingPlugin::get()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -124,26 +124,26 @@ class WaitingJobsResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return FilamentWaitingJobsPlugin::get()->getNavigationGroup();
+        return JobsWaitingPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return FilamentWaitingJobsPlugin::get()->getNavigationSort();
+        return JobsWaitingPlugin::get()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return FilamentWaitingJobsPlugin::get()->getBreadcrumb();
+        return JobsWaitingPlugin::get()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return FilamentWaitingJobsPlugin::get()->shouldRegisterNavigation();
+        return JobsWaitingPlugin::get()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return FilamentWaitingJobsPlugin::get()->getNavigationIcon();
+        return JobsWaitingPlugin::get()->getNavigationIcon();
     }
 }

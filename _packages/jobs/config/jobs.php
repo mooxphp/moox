@@ -10,7 +10,7 @@ return [
             'navigation_icon' => 'heroicon-o-play',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\JobsResource::class,
+            'resource' => Moox\Jobs\Resources\JobsResource::class,
         ],
         'jobs_waiting' => [
             'enabled' => true,
@@ -20,7 +20,7 @@ return [
             'navigation_icon' => 'heroicon-o-pause',
             'navigation_sort' => 2,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\WaitingJobsResource::class,
+            'resource' => Moox\Jobs\Resources\WaitingJobsResource::class,
         ],
         'failed_jobs' => [
             'enabled' => true,
@@ -30,7 +30,7 @@ return [
             'navigation_icon' => 'heroicon-o-exclamation-triangle',
             'navigation_sort' => 3,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\FailedJobsResource::class,
+            'resource' => Moox\Jobs\Resources\FailedJobsResource::class,
         ],
         'job_batches' => [
             'enabled' => true,
@@ -40,7 +40,7 @@ return [
             'navigation_icon' => 'heroicon-o-inbox-stack',
             'navigation_sort' => 4,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\JobBatchesResource::class,
+            'resource' => Moox\Jobs\Resources\JobBatchesResource::class,
         ],
     ],
     'pruning' => [

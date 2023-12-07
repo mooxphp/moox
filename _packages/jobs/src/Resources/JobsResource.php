@@ -1,11 +1,7 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Resources;
+namespace Moox\Jobs\Resources;
 
-use Adrolli\FilamentJobManager\FilamentJobsPlugin;
-use Adrolli\FilamentJobManager\Models\JobManager;
-use Adrolli\FilamentJobManager\Resources\JobsResource\Pages\ListJobs;
-use Adrolli\FilamentJobManager\Resources\JobsResource\Widgets\JobStatsOverview;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +12,10 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Moox\Jobs\JobsPlugin;
+use Moox\Jobs\Models\JobManager;
+use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
+use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
 
 class JobsResource extends Resource
 {
@@ -51,27 +51,27 @@ class JobsResource extends Resource
             ->columns([
                 TextColumn::make('status')
                     ->badge()
-                    ->label(__('filament-job-manager::translations.status'))
+                    ->label(__('jobs::translations.status'))
                     ->sortable()
-                    ->formatStateUsing(fn (string $state): string => __("filament-job-manager::translations.{$state}"))
+                    ->formatStateUsing(fn (string $state): string => __("jobs::translations.{$state}"))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'succeeded' => 'success',
                         'failed' => 'danger',
                     }),
                 TextColumn::make('name')
-                    ->label(__('filament-job-manager::translations.name'))
+                    ->label(__('jobs::translations.name'))
                     ->sortable(),
                 TextColumn::make('queue')
-                    ->label(__('filament-job-manager::translations.queue'))
+                    ->label(__('jobs::translations.queue'))
                     ->sortable(),
                 TextColumn::make('progress')
-                    ->label(__('filament-job-manager::translations.progress'))
+                    ->label(__('jobs::translations.progress'))
                     ->formatStateUsing(fn (string $state) => "{$state}%")
                     ->sortable(),
-                // ProgressColumn::make('progress')->label(__('filament-job-manager::translations.progress'))->color('warning'),
+                // ProgressColumn::make('progress')->label(__('jobs::translations.progress'))->color('warning'),
                 TextColumn::make('started_at')
-                    ->label(__('filament-job-manager::translations.started_at'))
+                    ->label(__('jobs::translations.started_at'))
                     ->since()
                     ->sortable(),
             ])
@@ -104,17 +104,17 @@ class JobsResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return FilamentJobsPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return JobsPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return FilamentJobsPlugin::get()->getLabel();
+        return JobsPlugin::get()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return FilamentJobsPlugin::get()->getPluralLabel();
+        return JobsPlugin::get()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -124,26 +124,26 @@ class JobsResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return FilamentJobsPlugin::get()->getNavigationGroup();
+        return JobsPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return FilamentJobsPlugin::get()->getNavigationSort();
+        return JobsPlugin::get()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return FilamentJobsPlugin::get()->getBreadcrumb();
+        return JobsPlugin::get()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return FilamentJobsPlugin::get()->shouldRegisterNavigation();
+        return JobsPlugin::get()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return FilamentJobsPlugin::get()->getNavigationIcon();
+        return JobsPlugin::get()->getNavigationIcon();
     }
 }

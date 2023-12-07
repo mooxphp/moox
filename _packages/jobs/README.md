@@ -1,5 +1,3 @@
-
-
 ![filament-banner](./docs/filament-banner.jpg)
 
 # Filament Job Manager
@@ -43,13 +41,13 @@ This Laravel package is made for Filament 3 and the awesome TALL-Stack.
 Install the package via Composer:
 
 ```bash
-composer require adrolli/filament-job-manager
+composer require adrolli/jobs
 ```
 
 Create the necessary tables:
 
 ```bash
-php artisan vendor:publish --tag="filament-job-manager-migrations"
+php artisan vendor:publish --tag="jobs-migrations"
 
 # Queue tables, if using the database driver instead of Redis queue backend
 php artisan queue:table
@@ -62,7 +60,7 @@ php artisan migrate
 Publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="filament-job-manager-config"
+php artisan vendor:publish --tag="jobs-config"
 ```
 
 This is the content of the published config file:
@@ -78,7 +76,7 @@ return [
             'navigation_icon' => 'heroicon-o-play',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\JobsResource::class,
+            'resource' => Moox\Jobs\Resources\JobsResource::class,
         ],
         'jobs_waiting' => [
             'enabled' => true,
@@ -88,7 +86,7 @@ return [
             'navigation_icon' => 'heroicon-o-pause',
             'navigation_sort' => 2,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\WaitingJobsResource::class,
+            'resource' => Moox\Jobs\Resources\WaitingJobsResource::class,
         ],
         'failed_jobs' => [
             'enabled' => true,
@@ -98,7 +96,7 @@ return [
             'navigation_icon' => 'heroicon-o-exclamation-triangle',
             'navigation_sort' => 3,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\FailedJobsResource::class,
+            'resource' => Moox\Jobs\Resources\FailedJobsResource::class,
         ],
         'job_batches' => [
             'enabled' => true,
@@ -108,7 +106,7 @@ return [
             'navigation_icon' => 'heroicon-o-inbox-stack',
             'navigation_sort' => 4,
             'navigation_count_badge' => true,
-            'resource' => Adrolli\FilamentJobManager\Resources\JobBatchesResource::class,
+            'resource' => Moox\Jobs\Resources\JobBatchesResource::class,
         ],
     ],
     'pruning' => [
@@ -122,10 +120,10 @@ Register the Plugins in `app/Providers/Filament/AdminPanelProvider.php`:
 
 ```php
     ->plugins([
-	FilamentJobsPlugin::make(),
-    FilamentWaitingJobsPlugin::make(),
-	FilamentFailedJobsPlugin::make(),
-	FilamentJobBatchesPlugin::make(),
+	JobsPlugin::make(),
+    JobsWaitingPlugin::make(),
+	JobsFailedPlugin::make(),
+	JobsBatchesPlugin::make(),
     ])
 ```
 
@@ -133,7 +131,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 
 ```php
     ->plugins([
-	FilamentJobsPlugin::make()
+	JobsPlugin::make()
 	    ->label('Job runs')
 	    ->pluralLabel('Jobs that seems to run')
 	    ->enableNavigation(true)
@@ -143,7 +141,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 	    ->navigationCountBadge(true)
 	    ->enablePruning(true)
 	    ->pruningRetention(7),
-	FilamentWaitingJobsPlugin::make()
+	JobsWaitingPlugin::make()
 	    ->label('Job waiting')
 	    ->pluralLabel('Jobs waiting in line')
 	    ->enableNavigation(true)
@@ -151,7 +149,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 	    ->navigationGroup('My Jobs and Queues')
 	    ->navigationSort(5)
 	    ->navigationCountBadge(true)
-	FilamentFailedJobsPlugin::make()
+	JobsFailedPlugin::make()
 	    ->label('Job failed')
 	    ->pluralLabel('Jobs that failed hard')
 	    ->enableNavigation(true)
@@ -182,7 +180,7 @@ You do not need to change anything in your Jobs to work with Filament Job Monito
 
 namespace App\Jobs;
 
-use Adrolli\FilamentJobManager\Traits\JobProgress;
+use Moox\Jobs\Traits\JobProgress;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -221,9 +219,9 @@ If you would like to prevent certain users from accessing your page, you can reg
 
 ```php
 use App\Policies\JobMonitorPolicy;
-use Adrolli\FilamentJobManager\Models\FailedJob;
-use Adrolli\FilamentJobManager\Models\JobBatch;
-use Adrolli\FilamentJobManager\Models\JobMonitor;
+use Moox\Jobs\Models\FailedJob;
+use Moox\Jobs\Models\JobBatch;
+use Moox\Jobs\Models\JobMonitor;
 
 class AuthServiceProvider extends ServiceProvider
 {

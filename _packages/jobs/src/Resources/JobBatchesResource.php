@@ -1,15 +1,15 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Resources;
+namespace Moox\Jobs\Resources;
 
-use Adrolli\FilamentJobManager\FilamentJobBatchesPlugin;
-use Adrolli\FilamentJobManager\Models\JobBatch;
-use Adrolli\FilamentJobManager\Resources\JobBatchesResource\Pages\ListJobBatches;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Moox\Jobs\JobsBatchesPlugin;
+use Moox\Jobs\Models\JobBatch;
+use Moox\Jobs\Resources\JobBatchesResource\Pages\ListJobBatches;
 
 class JobBatchesResource extends Resource
 {
@@ -17,17 +17,17 @@ class JobBatchesResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return FilamentJobBatchesPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return JobsBatchesPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return FilamentJobBatchesPlugin::get()->getLabel();
+        return JobsBatchesPlugin::get()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return FilamentJobBatchesPlugin::get()->getPluralLabel();
+        return JobsBatchesPlugin::get()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -37,27 +37,27 @@ class JobBatchesResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return FilamentJobBatchesPlugin::get()->getNavigationGroup();
+        return JobsBatchesPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return FilamentJobBatchesPlugin::get()->getNavigationSort();
+        return JobsBatchesPlugin::get()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return FilamentJobBatchesPlugin::get()->getBreadcrumb();
+        return JobsBatchesPlugin::get()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return FilamentJobBatchesPlugin::get()->shouldRegisterNavigation();
+        return JobsBatchesPlugin::get()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return FilamentJobBatchesPlugin::get()->getNavigationIcon();
+        return JobsBatchesPlugin::get()->getNavigationIcon();
     }
 
     public static function table(Table $table): Table

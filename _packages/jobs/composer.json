@@ -1,6 +1,6 @@
 {
-    "name": "adrolli/filament-job-manager",
-    "description": "A Filament panel for managing job queues including failed jobs and batches.",
+    "name": "moox/jobs",
+    "description": "Manage Job Queues, Failed Jobs and Batches in Filament.",
     "keywords": [
         "laravel",
         "filament",
@@ -11,7 +11,7 @@
         "monitor",
         "redis"
     ],
-    "homepage": "https://github.com/adrolli/filament-job-manager",
+    "homepage": "https://github.com/mooxphp/jobs",
     "license": "MIT",
     "authors": [
         {
@@ -29,7 +29,7 @@
     "require-dev": {},
     "autoload": {
         "psr-4": {
-            "Adrolli\\FilamentJobManager\\": "src"
+            "Moox\\Jobs\\": "src"
         }
     },
     "config": {
@@ -38,11 +38,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Adrolli\\FilamentJobManager\\FilamentJobManagerServiceProvider",
-                "Adrolli\\FilamentJobManager\\JobManagerProvider"
+                "Moox\\Jobs\\JobsServiceProvider",
+                "Moox\\Jobs\\JobManagerProvider"
             ],
             "aliases": {
-                "JobMonitor": "Adrolli\\FilamentJobManager\\JobManagerProvider\\Facade"
+                "JobMonitor": "Moox\\Jobs\\JobManagerProvider\\Facade"
             }
         }
     },
