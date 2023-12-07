@@ -1,8 +1,19 @@
-![filament-banner](./docs/filament-banner.jpg)
+![Moox Jobs](https://github.com/mooxphp/moox/raw/main/_other/art/banner/jobs.jpg)
 
-# Filament Job Manager
+# Moox Jobs
 
-Filament panel for managing job queues including failed jobs and batches.
+Managing Job Queues, Failed Jobs and Batches in Filament.
+
+## Quick installation
+
+These two commmands are all you need to install the package:
+
+```bash
+composer require moox/jobs
+php artisan mooxjobs:install (wip)
+```
+
+Curious what the install command does? See manual installation below.
 
 ## Features
 
@@ -34,7 +45,7 @@ See your job batches, prune batches:
 
 ![screenshot-batches](./docs/screenshot-batches.jpg)
 
-## Installation
+## Manual Installation
 
 This Laravel package is made for Filament 3 and the awesome TALL-Stack.
 
