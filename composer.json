@@ -32,7 +32,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "moox/builder": "*",
-        "moox/jobs": "dev-main",
+        "moox/jobs": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
