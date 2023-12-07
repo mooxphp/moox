@@ -1,0 +1,68 @@
+{
+  "name": "tallui-laravel-livewire-tailwind",
+  "displayName": "TallUI Laravel, PHP and TALL-Stack VScode Extensions",
+  "description": "VS Code Extensions for TallUI and the Tall-Stack: PHP, Laravel, Livewire, Tailwind and AlpineJS",
+  "version": "1.0.7",
+  "publisher": "adrolli",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other",
+    "Extension Packs"
+  ],
+  "galleryBanner": {
+    "color": "#2A7490",
+    "theme": "dark"
+  },
+  "icon": "logo.png",
+  "homepage": "https://tallui.io",
+  "bugs": {
+    "url": "https://github.com/adrolli/tallui-vscode/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrolli/tallui-vscode"
+  },
+  "extensionPack": [
+    "adrianwilczynski.alpine-js-intellisense",
+    "ahinkle.laravel-model-snippets",
+    "amiralizadeh9480.laravel-extra-intellisense",
+    "austenc.laravel-docs",
+    "austenc.livewire-docs",
+    "austenc.tailwind-docs",
+    "bebo925.livewire-switcher",
+    "bmewburn.vscode-intelephense-client",
+    "bourhaouta.tailwindshades",
+    "bradlc.vscode-tailwindcss",
+    "cierra.livewire-vscode",
+    "codingyu.laravel-goto-view",
+    "dansysanalyst.pest-snippets",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "heybourn.headwind",
+    "ikappas.composer",
+    "kamikillerto.vscode-colorize",
+    "MehediDracula.php-constructor",
+    "MehediDracula.php-namespace-resolver",
+    "mikestead.dotenv",
+    "neilbrayfield.php-docblocker",
+    "onecentlin.laravel-blade",
+    "onecentlin.laravel5-snippets",
+    "open-southeners.laravel-pint",
+    "patbenatar.advanced-new-file",
+    "phproberto.vscode-php-getters-setters",
+    "ryannaddy.laravel-artisan",
+    "sevavietl.php-files",
+    "shd101wyy.markdown-preview-enhanced",
+    "shufo.vscode-blade-formatter",
+    "stef-k.laravel-goto-controller",
+    "swordev.phpstan",
+    "ValeryanM.vscode-phpsab",
+    "wk-j.save-and-run",
+    "xdebug.php-debug"
+  ]
+}
