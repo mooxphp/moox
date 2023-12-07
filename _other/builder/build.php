@@ -267,7 +267,7 @@ foreach ($files as $file) {
         str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
         str_contains($file, determineSeparator('database/migrations/builder.php.stub')) => rename($file, determineSeparator('./database/migrations/'.title_snake($packageSlugWithoutPrefix).'.php.stub')),
         str_contains($file, determineSeparator('config/builder.php')) => rename($file, determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php')),
-        str_contains($file, 'README.md') => replace_readme_paragraphs($file,$description),
+        str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };
 }
