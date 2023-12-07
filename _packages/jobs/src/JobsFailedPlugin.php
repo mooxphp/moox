@@ -1,13 +1,13 @@
 <?php
 
-namespace Adrolli\FilamentJobManager;
+namespace Moox\Jobs;
 
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 
-class FilamentFailedJobsPlugin implements Plugin
+class JobsFailedPlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -108,7 +108,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getResource(): string
     {
-        return $this->resource ?? config('filament-job-manager.resources.failed_jobs.resource');
+        return $this->resource ?? config('jobs.resources.failed_jobs.resource');
     }
 
     /**
@@ -126,7 +126,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getLabel(): ?string
     {
-        return $this->evaluate($this->label) ?? config('filament-job-manager.resources.failed_jobs.label');
+        return $this->evaluate($this->label) ?? config('jobs.resources.failed_jobs.label');
     }
 
     /**
@@ -144,7 +144,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getPluralLabel(): ?string
     {
-        return $this->evaluate($this->pluralLabel) ?? config('filament-job-manager.resources.failed_jobs.plural_label');
+        return $this->evaluate($this->pluralLabel) ?? config('jobs.resources.failed_jobs.plural_label');
     }
 
     /**
@@ -162,7 +162,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getNavigationGroup(): ?string
     {
-        return $this->navigationGroup ?? config('filament-job-manager.resources.failed_jobs.navigation_group');
+        return $this->navigationGroup ?? config('jobs.resources.failed_jobs.navigation_group');
     }
 
     /**
@@ -180,7 +180,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getNavigationIcon(): ?string
     {
-        return $this->navigationIcon ?? config('filament-job-manager.resources.failed_jobs.navigation_icon');
+        return $this->navigationIcon ?? config('jobs.resources.failed_jobs.navigation_icon');
     }
 
     /**
@@ -198,7 +198,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getNavigationSort(): ?int
     {
-        return $this->navigationSort ?? config('filament-job-manager.resources.failed_jobs.navigation_sort');
+        return $this->navigationSort ?? config('jobs.resources.failed_jobs.navigation_sort');
     }
 
     /**
@@ -216,7 +216,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getNavigationCountBadge(): ?bool
     {
-        return $this->navigationCountBadge ?? config('filament-job-manager.resources.failed_jobs.navigation_count_badge');
+        return $this->navigationCountBadge ?? config('jobs.resources.failed_jobs.navigation_count_badge');
     }
 
     /**
@@ -234,7 +234,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function shouldRegisterNavigation(): bool
     {
-        return $this->navigation ?? config('filament-job-manager.resources.failed_jobs.enabled');
+        return $this->navigation ?? config('jobs.resources.failed_jobs.enabled');
     }
 
     /**
@@ -252,7 +252,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getPruning(): ?bool
     {
-        return $this->pruning ?? config('filament-job-manager.pruning.enabled');
+        return $this->pruning ?? config('jobs.pruning.enabled');
     }
 
     /**
@@ -270,7 +270,7 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getPruningRetention(): ?int
     {
-        return $this->pruningRetention ?? config('filament-job-manager.pruning.retention_days');
+        return $this->pruningRetention ?? config('jobs.pruning.retention_days');
     }
 
     /**
@@ -288,6 +288,6 @@ class FilamentFailedJobsPlugin implements Plugin
      */
     public function getBreadcrumb(): string
     {
-        return __('filament-job-manager::translations.breadcrumb');
+        return __('jobs::translations.breadcrumb');
     }
 }

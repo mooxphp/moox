@@ -1,10 +1,7 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Resources;
+namespace Moox\Jobs\Resources;
 
-use Adrolli\FilamentJobManager\FilamentFailedJobsPlugin;
-use Adrolli\FilamentJobManager\Models\FailedJob;
-use Adrolli\FilamentJobManager\Resources\FailedJobsResource\Pages\ListFailedJobs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -20,6 +17,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use InvadersXX\FilamentJsoneditor\Forms\JSONEditor;
+use Moox\Jobs\JobsFailedPlugin;
+use Moox\Jobs\Models\FailedJob;
+use Moox\Jobs\Resources\FailedJobsResource\Pages\ListFailedJobs;
 
 class FailedJobsResource extends Resource
 {
@@ -27,17 +27,17 @@ class FailedJobsResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return FilamentFailedJobsPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return JobsFailedPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return FilamentFailedJobsPlugin::get()->getLabel();
+        return JobsFailedPlugin::get()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return FilamentFailedJobsPlugin::get()->getPluralLabel();
+        return JobsFailedPlugin::get()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -47,27 +47,27 @@ class FailedJobsResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return FilamentFailedJobsPlugin::get()->getNavigationGroup();
+        return JobsFailedPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return FilamentFailedJobsPlugin::get()->getNavigationSort();
+        return JobsFailedPlugin::get()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return FilamentFailedJobsPlugin::get()->getBreadcrumb();
+        return JobsFailedPlugin::get()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return FilamentFailedJobsPlugin::get()->shouldRegisterNavigation();
+        return JobsFailedPlugin::get()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return FilamentFailedJobsPlugin::get()->getNavigationIcon();
+        return JobsFailedPlugin::get()->getNavigationIcon();
     }
 
     public static function form(Form $form): Form

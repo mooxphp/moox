@@ -1,8 +1,8 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Traits;
+namespace Moox\Jobs\Traits;
 
-use Adrolli\FilamentJobManager\Models\JobManager;
+use Moox\Jobs\Models\JobManager;
 
 trait JobProgress
 {

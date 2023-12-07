@@ -1,13 +1,13 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Resources\WaitingJobsResource\Widgets;
+namespace Moox\Jobs\Resources\WaitingJobsResource\Widgets;
 
-use Adrolli\FilamentJobManager\Models\Job;
-use Adrolli\FilamentJobManager\Models\JobManager;
-use Adrolli\FilamentJobManager\Traits\FormatSeconds;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
+use Moox\Jobs\Models\Job;
+use Moox\Jobs\Models\JobManager;
+use Moox\Jobs\Traits\FormatSeconds;
 
 class JobsWaitingOverview extends BaseWidget
 {
@@ -29,9 +29,9 @@ class JobsWaitingOverview extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('filament-job-manager::translations.waiting_jobs'), $jobsWaiting->count ?? 0),
-            Stat::make(__('filament-job-manager::translations.execution_time'), ($this->formatSeconds($aggregatedInfo->total_time_elapsed) ?? '0 s')),
-            Stat::make(__('filament-job-manager::translations.average_time'), ceil((float) $aggregatedInfo->average_time_elapsed).'s' ?? 0),
+            Stat::make(__('jobs::translations.waiting_jobs'), $jobsWaiting->count ?? 0),
+            Stat::make(__('jobs::translations.execution_time'), ($this->formatSeconds($aggregatedInfo->total_time_elapsed) ?? '0 s')),
+            Stat::make(__('jobs::translations.average_time'), ceil((float) $aggregatedInfo->average_time_elapsed).'s' ?? 0),
         ];
     }
 }

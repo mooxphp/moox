@@ -1,6 +1,6 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Models;
+namespace Moox\Jobs\Models;
 
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -105,8 +105,8 @@ class JobManager extends Model
      */
     public function prunable()
     {
-        if (config('filament-job-manager.pruning.activate')) {
-            return static::where('created_at', '<=', now()->subDays(config('filament-job-manager.pruning.retention_days')));
+        if (config('jobs.pruning.activate')) {
+            return static::where('created_at', '<=', now()->subDays(config('jobs.pruning.retention_days')));
         }
 
         return false;

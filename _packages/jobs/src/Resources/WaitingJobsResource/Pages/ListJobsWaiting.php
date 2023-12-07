@@ -1,10 +1,10 @@
 <?php
 
-namespace Adrolli\FilamentJobManager\Resources\WaitingJobsResource\Pages;
+namespace Moox\Jobs\Resources\WaitingJobsResource\Pages;
 
-use Adrolli\FilamentJobManager\Resources\WaitingJobsResource;
-use Adrolli\FilamentJobManager\Resources\WaitingJobsResource\Widgets\JobsWaitingOverview;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Jobs\Resources\WaitingJobsResource;
+use Moox\Jobs\Resources\WaitingJobsResource\Widgets\JobsWaitingOverview;
 
 class ListJobsWaiting extends ListRecords
 {
@@ -24,6 +24,6 @@ class ListJobsWaiting extends ListRecords
 
     public function getTitle(): string
     {
-        return __('filament-job-manager::translations.title');
+        return __('jobs::translations.title');
     }
 }

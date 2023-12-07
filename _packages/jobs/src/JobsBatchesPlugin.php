@@ -1,13 +1,13 @@
 <?php
 
-namespace Adrolli\FilamentJobManager;
+namespace Moox\Jobs;
 
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 
-class FilamentJobBatchesPlugin implements Plugin
+class JobsBatchesPlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -108,7 +108,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getResource(): string
     {
-        return $this->resource ?? config('filament-job-manager.resources.job_batches.resource');
+        return $this->resource ?? config('jobs.resources.job_batches.resource');
     }
 
     /**
@@ -126,7 +126,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getLabel(): ?string
     {
-        return $this->evaluate($this->label) ?? config('filament-job-manager.resources.job_batches.label');
+        return $this->evaluate($this->label) ?? config('jobs.resources.job_batches.label');
     }
 
     /**
@@ -144,7 +144,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getPluralLabel(): ?string
     {
-        return $this->evaluate($this->pluralLabel) ?? config('filament-job-manager.resources.job_batches.plural_label');
+        return $this->evaluate($this->pluralLabel) ?? config('jobs.resources.job_batches.plural_label');
     }
 
     /**
@@ -162,7 +162,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getNavigationGroup(): ?string
     {
-        return $this->navigationGroup ?? config('filament-job-manager.resources.job_batches.navigation_group');
+        return $this->navigationGroup ?? config('jobs.resources.job_batches.navigation_group');
     }
 
     /**
@@ -180,7 +180,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getNavigationIcon(): ?string
     {
-        return $this->navigationIcon ?? config('filament-job-manager.resources.job_batches.navigation_icon');
+        return $this->navigationIcon ?? config('jobs.resources.job_batches.navigation_icon');
     }
 
     /**
@@ -198,7 +198,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getNavigationSort(): ?int
     {
-        return $this->navigationSort ?? config('filament-job-manager.resources.job_batches.navigation_sort');
+        return $this->navigationSort ?? config('jobs.resources.job_batches.navigation_sort');
     }
 
     /**
@@ -216,7 +216,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getNavigationCountBadge(): ?bool
     {
-        return $this->navigationCountBadge ?? config('filament-job-manager.resources.job_batches.navigation_count_badge');
+        return $this->navigationCountBadge ?? config('jobs.resources.job_batches.navigation_count_badge');
     }
 
     /**
@@ -234,7 +234,7 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function shouldRegisterNavigation(): bool
     {
-        return $this->navigation ?? config('filament-job-manager.resources.job_batches.enabled');
+        return $this->navigation ?? config('jobs.resources.job_batches.enabled');
     }
 
     /**
@@ -288,6 +288,6 @@ class FilamentJobBatchesPlugin implements Plugin
      */
     public function getBreadcrumb(): string
     {
-        return __('filament-job-manager::translations.breadcrumb');
+        return __('jobs::translations.breadcrumb');
     }
 }
