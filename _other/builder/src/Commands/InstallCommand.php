@@ -11,14 +11,14 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'moox:install';
+    protected $signature = 'mooxbuilder:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Publish Migration and Config. from Builder Package ';
 
     /**
      * Execute the console command.

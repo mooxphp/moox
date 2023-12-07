@@ -236,7 +236,7 @@ writeln('------');
 writeln("Author : {$authorName}");
 writeln("Author Email : {$authorEmail}");
 writeln("Namespace  : Moox\\{$className}");
-writeln("Packagename : moox\{$packageSlug}");
+writeln("Packagename : moox\\{$packageSlug}");
 writeln("Class name : {$className}Plugin");
 writeln('------');
 
@@ -256,6 +256,8 @@ foreach ($files as $file) {
         'builder' => $packageSlug,
         'create_builder_table' => title_snake($packageSlug),
         'This template is used for generating all Moox packages.' => $description,
+        'This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.
+        If you install it, it will completely work without beeing useful. Guaranteed!'=>$description,
     ]);
 
     match (true) {
