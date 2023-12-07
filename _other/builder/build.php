@@ -84,13 +84,13 @@ function remove_prefix(string $prefix, string $content): string
     return $content;
 }
 
-function remove_readme_paragraphs(string $file): void
+function replace_readme_paragraphs(string $file, string $content): void
 {
     $contents = file_get_contents($file);
 
     file_put_contents(
         $file,
-        preg_replace('/<!--delete-->.*<!--\/delete-->/s', '', $contents) ?: $contents
+        preg_replace('/<!--shortdesc-->.*<!--\/shortdesc-->/s', $content, $contents) ?: $contents
     );
 }
 
@@ -252,12 +252,11 @@ foreach ($files as $file) {
     replace_in_file($file, [
         'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
-        'This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.' => $description,
-        'If you install it, it will completely work without beeing useful. Guaranteed!' => '',
         'Builder' => $className,
         'builder' => $packageSlug,
         'create_builder_table' => title_snake($packageSlug),
         'This template is used for generating all Moox packages.' => $description,
+        'Here are some things missing, like an overview with screenshots about this package, or simply a link to the package\'s docs.' => $description,
     ]);
 
     match (true) {
@@ -268,6 +267,7 @@ foreach ($files as $file) {
         str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
         str_contains($file, determineSeparator('database/migrations/builder.php.stub')) => rename($file, determineSeparator('./database/migrations/'.title_snake($packageSlugWithoutPrefix).'.php.stub')),
         str_contains($file, determineSeparator('config/builder.php')) => rename($file, determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php')),
+        str_contains($file, 'README.md') => replace_readme_paragraphs($file,$description),
         default => [],
     };
 }
