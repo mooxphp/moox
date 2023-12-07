@@ -18,10 +18,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Builder\BuilderPlugin;
-use Moox\Jobs\JobsBatchesPlugin;
-use Moox\Jobs\JobsFailedPlugin;
-use Moox\Jobs\JobsPlugin;
-use Moox\Jobs\JobsWaitingPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -60,11 +56,14 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                //                BuilderPlugin::make(),
+                BuilderPlugin::make(),
+<<<<<<< Updated upstream
+=======
                 JobsPlugin::make(),
                 JobsWaitingPlugin::make(),
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
+>>>>>>> Stashed changes
             ]);
     }
 }
