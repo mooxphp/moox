@@ -290,6 +290,13 @@ Mood is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/Kim-the-Diamond">
+            <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
+            <br />
+            <sub><b>Kim-the-Diamond</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/janakeks">
             <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
             <br />
@@ -302,15 +309,15 @@ Mood is made by these nice people, and bots ...
             <br />
             <sub><b>renovate[bot]</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/github-actions[bot]">
             <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
             <br />
             <sub><b>github-actions[bot]</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/dependabot[bot]">
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
