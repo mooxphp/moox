@@ -2,12 +2,12 @@
 
 namespace Adrolli\FilamentJobManager\Resources\FailedJobsResource\Pages;
 
-use Filament\Resources\Pages\ListRecords;
+use Adrolli\FilamentJobManager\Models\FailedJob;
+use Adrolli\FilamentJobManager\Resources\FailedJobsResource;
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
+use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
-use Adrolli\FilamentJobManager\Resources\FailedJobsResource;
-use Adrolli\FilamentJobManager\Models\FailedJob;
 
 class ListFailedJobs extends ListRecords
 {

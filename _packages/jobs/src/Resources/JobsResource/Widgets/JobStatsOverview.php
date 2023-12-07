@@ -26,7 +26,7 @@ class JobStatsOverview extends BaseWidget
 
         return [
             Stat::make(__('filament-job-manager::translations.total_jobs'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('filament-job-manager::translations.execution_time'), ($this->formatSeconds($aggregatedInfo->total_time_elapsed ?? 0)?? '0 s')),
+            Stat::make(__('filament-job-manager::translations.execution_time'), ($this->formatSeconds($aggregatedInfo->total_time_elapsed ?? 0) ?? '0 s')),
             Stat::make(__('filament-job-manager::translations.average_time'), ceil((float) $aggregatedInfo->average_time_elapsed).'s' ?? 0),
         ];
     }

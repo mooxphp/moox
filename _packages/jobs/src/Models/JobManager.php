@@ -75,7 +75,7 @@ class JobManager extends Model
             return true;
         }
 
-        return null !== $this->finished_at;
+        return $this->finished_at !== null;
     }
 
     /**

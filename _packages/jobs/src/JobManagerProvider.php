@@ -86,7 +86,7 @@ class JobManagerProvider extends ServiceProvider
             ->orderByDesc('started_at')
             ->first();
 
-        if (null === $monitor) {
+        if ($monitor === null) {
             return;
         }
 
@@ -96,7 +96,7 @@ class JobManagerProvider extends ServiceProvider
             'failed' => $failed,
         ];
 
-        if (null !== $exception) {
+        if ($exception !== null) {
             $attributes += [
                 'exception_message' => mb_strcut($exception->getMessage(), 0, 65535),
             ];
