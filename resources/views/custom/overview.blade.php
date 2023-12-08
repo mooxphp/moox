@@ -11,7 +11,7 @@
 
         <div class="flex justify-center m-5">
 
-            @foreach (config('tallui.custom_views') as $key => $value)
+            @foreach (config('moox.custom_views') as $key => $value)
                 <a
                     href="custom/{{ $value }}"
                     class="hover:text-[#69bce2] mx-5 px-5 py-2 border-[#002945] bg-[#002945] text-2xl font-extrabold border-2 rounded"

@@ -27,7 +27,7 @@ Route::get('/components', function () {
     return view('components.overview');
 });
 
-$custom_parts = config('tallui.custom_views');
+$custom_parts = config('moox.custom_views');
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
         $custom_view = 'custom.'.$custom_part;
@@ -38,7 +38,7 @@ if (is_array($custom_parts)) {
     }
 }
 
-$custom_parts = explode(', ', config('tallui.custom_routes'));
+$custom_parts = explode(', ', config('moox.custom_routes'));
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
         $tui_routes = base_path('routes/custom_'.$custom_part.'.php');
