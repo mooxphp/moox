@@ -60,7 +60,7 @@
     <br>
 </p>
 
-# TallUI Custom
+# Moox Custom
 
 To develop your own packages, public or private, while contributing to TAllUI, we included a second composer.json. This composer-file can be edited without overwriting the main composer.json.
 
