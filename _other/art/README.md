@@ -12,7 +12,7 @@
         <img alt="Laravel PINT PHP Code Style" src="https://github.com/mooxphp/moox/actions/workflows/pint.yml/badge.svg">
     </a>
     <a href="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml">
-        <img alt="PHPStan Level 5" src="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml/badge.svg">
+        <img alt="PHPStan Level 2" src="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml/badge.svg">
     </a>
 </p>
 <p align="center">
@@ -68,10 +68,10 @@ Here is the place to find our logo, signet, screenshots and banners as well as i
 
 Moox is a random word that:
 
-- was a short .org domain I registered 20 years ago
-- was a popular set of TYPO3 Extensions about 10 years ago
-- sound good combined with techy words, try "Moox Blog"
-- can be used like "google", try "let me moox your website"
+-   was a short .org domain I registered 20 years ago
+-   was a popular set of TYPO3 Extensions about 10 years ago
+-   sound good combined with techy words, try "Moox Blog"
+-   can be used like "google", try "let me moox your website"
 
 ## Moox Logo
 
@@ -87,7 +87,6 @@ The banner sizes are 1280 by 640 pixels.
 ## Moox Screenshot
 
 Our screenshots should use the Moox Screenshot Mockup. Please take care of not leaking private data.
-
 
 ## Moox Bot
 
