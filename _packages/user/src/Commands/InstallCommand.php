@@ -18,7 +18,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Publish and migrate Moox UserPackage';
+    protected $description = 'Publish and migrate Moox User Package';
 
     /**
      * Execute the console command.
