@@ -1,13 +1,13 @@
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Widgets;
+namespace Moox\Core\Resources\CoreResource\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
-use Moox\Builder\Models\Builder;
+use Moox\Core\Models\Core;
 
-class BuilderWidgets extends BaseWidget
+class CoreWidgets extends BaseWidget
 {
     protected function getCards(): array
     {
@@ -17,14 +17,14 @@ class BuilderWidgets extends BaseWidget
             DB::raw('COUNT(*) as count'),
         ];
 
-        $aggregatedInfo = Builder::query()
+        $aggregatedInfo = Core::query()
             ->select($aggregationColumns)
             ->first();
 
         return [
-            Stat::make(__('builder::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::translations.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::translations.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::translations.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

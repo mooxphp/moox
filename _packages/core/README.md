@@ -1,20 +1,16 @@
-![Moox Builder](https://github.com/mooxphp/moox/raw/main/_other/art/banner/builder.jpg)
+![Moox Core](https://github.com/mooxphp/moox/raw/main/_other/art/banner/core.jpg)
 
-# Moox Builder
+# Moox Core
 
-<!--shortdesc-->
-This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.
-
-If you install it, it will completely work without beeing useful. Guaranteed!
-<!--/shortdesc-->
+This is my package core
 
 ## Quick Installation
 
 These two commmands are all you need to install the package:
 
 ```bash
-composer require moox/builder
-php artisan mooxbuilder:install
+composer require moox/core
+php artisan mooxcore:install
 ```
 
 Curious what the install command does? See manual installation below.
@@ -22,21 +18,21 @@ Curious what the install command does? See manual installation below.
 ## What does it do?
 
 <!--whatdoes-->
-Here are some things missing, like an overview with screenshots about this package, or simply a link to the package's docs.
+This is my package core
 <!--/whatdoes-->
 
 
 ## Manual Installation
 
-Instead of using the install-command `php artisan mooxbuilder:install` you are able to install this package manually step by step:
+Instead of using the install-command `php artisan mooxcore:install` you are able to install this package manually step by step:
 
 ```bash
 // Publish and run the migrations:
-php artisan vendor:publish --tag="builder-migrations"
+php artisan vendor:publish --tag="core-migrations"
 php artisan migrate
 
 // Publish the config file with:
-php artisan vendor:publish --tag="builder-config"
+php artisan vendor:publish --tag="core-config"
 ```
 
 ## Changelog

@@ -2,15 +2,15 @@
 
 return [
     'resources' => [
-        'builder' => [
+        'core' => [
             'enabled' => true,
-            'label' => 'Builder',
-            'plural_label' => 'Builders',
-            'navigation_group' => 'Builder Group',
+            'label' => 'Core',
+            'plural_label' => 'Cores',
+            'navigation_group' => 'Core Group',
             'navigation_icon' => 'heroicon-o-play',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
-            'resource' => Moox\Builder\Resources\BuilderResource::class,
+            'resource' => Moox\Core\Resources\CoreResource::class,
         ],
     ],
     'pruning' => [

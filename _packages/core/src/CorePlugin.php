@@ -1,13 +1,13 @@
 <?php
 
-namespace Moox\Builder;
+namespace Moox\Core;
 
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 
-class BuilderPlugin implements Plugin
+class CorePlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -66,7 +66,7 @@ class BuilderPlugin implements Plugin
      */
     public function getId(): string
     {
-        return 'builder';
+        return 'core';
     }
 
     /**
@@ -108,7 +108,7 @@ class BuilderPlugin implements Plugin
      */
     public function getResource(): string
     {
-        return $this->resource ?? config('builder.resources.builder.resource');
+        return $this->resource ?? config('core.resources.core.resource');
     }
 
     /**
@@ -126,7 +126,7 @@ class BuilderPlugin implements Plugin
      */
     public function getLabel(): ?string
     {
-        return $this->evaluate($this->label) ?? config('builder.resources.builder.label');
+        return $this->evaluate($this->label) ?? config('core.resources.core.label');
     }
 
     /**
@@ -144,7 +144,7 @@ class BuilderPlugin implements Plugin
      */
     public function getPluralLabel(): ?string
     {
-        return $this->evaluate($this->pluralLabel) ?? config('builder.resources.builder.plural_label');
+        return $this->evaluate($this->pluralLabel) ?? config('core.resources.core.plural_label');
     }
 
     /**
@@ -162,7 +162,7 @@ class BuilderPlugin implements Plugin
      */
     public function getNavigationGroup(): ?string
     {
-        return $this->navigationGroup ?? config('builder.resources.builder.navigation_group');
+        return $this->navigationGroup ?? config('core.resources.core.navigation_group');
     }
 
     /**
@@ -180,7 +180,7 @@ class BuilderPlugin implements Plugin
      */
     public function getNavigationIcon(): ?string
     {
-        return $this->navigationIcon ?? config('builder.resources.builder.navigation_icon');
+        return $this->navigationIcon ?? config('core.resources.core.navigation_icon');
     }
 
     /**
@@ -198,7 +198,7 @@ class BuilderPlugin implements Plugin
      */
     public function getNavigationSort(): ?int
     {
-        return $this->navigationSort ?? config('builder.resources.builder.navigation_sort');
+        return $this->navigationSort ?? config('core.resources.core.navigation_sort');
     }
 
     /**
@@ -216,7 +216,7 @@ class BuilderPlugin implements Plugin
      */
     public function getNavigationCountBadge(): ?bool
     {
-        return $this->navigationCountBadge ?? config('builder.resources.builder.navigation_count_badge');
+        return $this->navigationCountBadge ?? config('core.resources.core.navigation_count_badge');
     }
 
     /**
@@ -234,7 +234,7 @@ class BuilderPlugin implements Plugin
      */
     public function shouldRegisterNavigation(): bool
     {
-        return $this->navigation ?? config('builder.resources.builder.enabled');
+        return $this->navigation ?? config('core.resources.core.enabled');
     }
 
     /**
@@ -252,6 +252,6 @@ class BuilderPlugin implements Plugin
      */
     public function getBreadcrumb(): string
     {
-        return __('builder::translations.breadcrumb');
+        return __('core::translations.breadcrumb');
     }
 }
