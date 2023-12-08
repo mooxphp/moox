@@ -62,6 +62,9 @@
 
 # TallUI Others
 
-Welcome to the TallUI project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
+Here is the place to find:
 
-An overview to all other things residing in this directory will come soon.
+- [art](art/README.md) - the logo, banner images and screenshots
+- [builder](builder/README.md) - our package skeleton template or plugin builder
+- [satis](satis/README.md) - Satis, the self-hosted private Repo for Moox
+- [vscode](vscode/README.md) - our VS Code Extension Pack for TALL-Stack developers
