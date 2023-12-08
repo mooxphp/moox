@@ -20,7 +20,7 @@ return [
             'navigation_icon' => 'heroicon-o-pause',
             'navigation_sort' => 2,
             'navigation_count_badge' => true,
-            'resource' => Moox\Jobs\Resources\WaitingJobsResource::class,
+            'resource' => Moox\Jobs\Resources\JobsWaitingResource::class,
         ],
         'failed_jobs' => [
             'enabled' => true,
@@ -30,7 +30,7 @@ return [
             'navigation_icon' => 'heroicon-o-exclamation-triangle',
             'navigation_sort' => 3,
             'navigation_count_badge' => true,
-            'resource' => Moox\Jobs\Resources\FailedJobsResource::class,
+            'resource' => Moox\Jobs\Resources\JobsFailedResource::class,
         ],
         'job_batches' => [
             'enabled' => true,

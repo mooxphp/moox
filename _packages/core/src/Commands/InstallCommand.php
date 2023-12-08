@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Commands;
+namespace Moox\Core\Commands;
 
 use Illuminate\Console\Command;
 
@@ -11,26 +11,26 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxbuilder:install';
+    protected $signature = 'mooxcore:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Publish Migration and Config. from Builder Package ';
+    protected $description = 'Publish Migration and Config. from Core Package ';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $this->comment('Publishing Builder Configuration...');
-        $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+        $this->comment('Publishing Core Configuration...');
+        $this->callSilent('vendor:publish', ['--tag' => 'core-config']);
 
-        $this->comment('Publishing Builder Migrations...');
-        $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+        $this->comment('Publishing Core Migrations...');
+        $this->callSilent('vendor:publish', ['--tag' => 'core-migrations']);
         $this->call('migrate');
-        $this->info('Builder was installed successfully');
+        $this->info('Core was installed successfully');
     }
 }

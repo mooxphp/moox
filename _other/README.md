@@ -12,7 +12,7 @@
         <img alt="Laravel PINT PHP Code Style" src="https://github.com/mooxphp/moox/actions/workflows/pint.yml/badge.svg">
     </a>
     <a href="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml">
-        <img alt="PHPStan Level 5" src="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml/badge.svg">
+        <img alt="PHPStan Level 2" src="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml/badge.svg">
     </a>
 </p>
 <p align="center">
@@ -64,7 +64,7 @@
 
 Here is the place to find:
 
-- [art](art/README.md) - the logo, banner images and screenshots
-- [builder](builder/README.md) - our package skeleton template or plugin builder
-- [satis](satis/README.md) - Satis, the self-hosted private Repo for Moox
-- [vscode](vscode/README.md) - our VS Code Extension Pack for TALL-Stack developers
+-   [art](art/README.md) - the logo, banner images and screenshots
+-   [builder](builder/README.md) - our package skeleton template or plugin builder
+-   [satis](satis/README.md) - Satis, the self-hosted private Repo for Moox
+-   [vscode](vscode/README.md) - our VS Code Extension Pack for TALL-Stack developers

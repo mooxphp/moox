@@ -24,10 +24,19 @@ class JobStatsOverview extends BaseWidget
             ->select($aggregationColumns)
             ->first();
 
+        if ($aggregatedInfo) {
+            $averageTime = property_exists($aggregatedInfo, 'average_time_elapsed') ? ceil((float) $aggregatedInfo->average_time_elapsed).'s' : '0';
+            $totalTime = property_exists($aggregatedInfo, 'total_time_elapsed') ? $this->formatSeconds($aggregatedInfo->total_time_elapsed).'s' : '0';
+        } else {
+            $averageTime = '0';
+            $totalTime = '0';
+        }
+
         return [
             Stat::make(__('jobs::translations.total_jobs'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('jobs::translations.execution_time'), ($this->formatSeconds($aggregatedInfo->total_time_elapsed ?? 0) ?? '0 s')),
-            Stat::make(__('jobs::translations.average_time'), ceil((float) $aggregatedInfo->average_time_elapsed).'s' ?? 0),
+            Stat::make(__('jobs::translations.execution_time'), $totalTime),
+            Stat::make(__('jobs::translations.average_time'), $averageTime),
         ];
+
     }
 }

@@ -17,11 +17,18 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Moox\Blog\BlogPlugin;
 use Moox\Builder\BuilderPlugin;
+use Moox\Core\CorePlugin;
+use Moox\Data\DataPlugin;
+use Moox\File\FilePlugin;
 use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Logs\LogsPlugin;
+use Moox\Page\PagePlugin;
+use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -65,6 +72,14 @@ class AdminPanelProvider extends PanelProvider
                 JobsWaitingPlugin::make(),
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
+                BlogPlugin::make(),
+                CorePlugin::make(),
+                DataPlugin::make(),
+                FilePlugin::make(),
+                JobsPlugin::make(),
+                LogsPlugin::make(),
+                PagePlugin::make(),
+                UserPlugin::make(),
             ]);
     }
 }

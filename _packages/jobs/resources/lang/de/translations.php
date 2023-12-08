@@ -20,4 +20,5 @@ return [
     'progress' => 'Fortschritt',
     'started_at' => 'Gestartet am',
     'created_at' => 'Erstellt am',
+    'reserved_at' => 'Reserviert am',
 ];

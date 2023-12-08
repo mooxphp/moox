@@ -39,7 +39,7 @@
 
             <a href="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml">
                 <img
-                    alt="PHPStan Level 5"
+                    alt="PHPStan Level 2"
                     src="https://github.com/mooxphp/moox/actions/workflows/phpstan.yml/badge.svg"
                 >
             </a>

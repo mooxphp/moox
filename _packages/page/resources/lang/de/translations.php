@@ -1,0 +1,14 @@
+<?php
+
+return [
+    'breadcrumb' => 'Page',
+    'title' => 'Page',
+    'navigation_label' => 'Page',
+    'navigation_group' => 'Page Gruppe',
+    'totalone' => 'Page Eins',
+    'totaltwo' => 'Page Zwei',
+    'totalthree' => 'Page Drei',
+    'name' => 'Name',
+    'started_at' => 'Gestartet',
+    'failed' => 'failed',
+];
