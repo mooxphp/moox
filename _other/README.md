@@ -60,7 +60,7 @@
     <br>
 </p>
 
-# TallUI Others
+# TallUI Other
 
 Here is the place to find:
 
