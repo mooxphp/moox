@@ -68,14 +68,7 @@ This is the Moox Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
 
-Moox packages are categorized in
-
--   [\_data](./_data/README.md) - Laravel packages only used as data-provider (model, migration, seeding)
--   [\_other](./_other/README.md) - Other Laravel packages or assisting repos like Builder and Satis
--   [\_packages](./_packages/README.md) - Full blown Laravel packages like Blog, Pages, Jobs
--   [\_themes](./_themes/README.md) - Themes for admin (backend) or website (frontend)
-
-Packages are automatically updated to their own read-only repos when pushed to `main`. See the [Builder docs](./_builder/README.md) for more information about how to build and publish packages.
+All installable Moox packages like Core, Page, Blog, Jobs etc. are in [\_packages](./_packages/README.md). Things like Art (logo, banners, screenshots), Satis, Builder and the VS Code Pack are in [\_other](./_other/README.md).
 
 ## Installation
 
@@ -122,12 +115,12 @@ This is done by supporting custom packages in the development app of our Monorep
 -   Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
 -   Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
 -   Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
--   Use https://github.com/mooxphp/moox-package-builder to create your own packages
+-   Use https://github.com/mooxphp/builder to create your own packages
 -   Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Branching
 
--   `main` is the current stable version, branch-protected, auto-commits to all packages, deployed to dev
+-   `main` is the current stable version, branch-protected, auto-commits to all packages, deployed to li
 -   `feature/...` please prefix all feature-branches, create your pull requests directly to main
 
 Use issue-based branches, prefix them with feature/ (e.g. feature/38-welcome-view) for automated tests and code analysis.

@@ -62,4 +62,13 @@
 
 # Moox Packages
 
-Welcome to the TallUI project. We are in an early stage of development. We will soon publish packages for Laravel and the TALL-Stack. Stay tuned.
+Welcome to the TallUI project. We are in an early stage of development. Our first packages are in the making:
+
+-   [Moox Core](core/README.md) - provides basic resources like categories, tags, authors, settings
+-   [Moox Page](page/README.md) - is a simple CMS
+-   [Moox Blog](blog/README.md) - is a simple blog
+-   [Moox Logs](logs/README.md) - is an activity log, make audit trails
+-   [Moox Data](data/README.md) - provides static data like languages, countries
+-   [Moox User](user/README.md) - manage an impersonate users
+-   [Moox File](file/README.md) - file and media manager
+-   [Moox Jobs](jobs/README.md) - Job Queues, failed jobs and batches
