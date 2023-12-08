@@ -15,12 +15,13 @@ php artisan mooxcore:install
 
 Curious what the install command does? See manual installation below.
 
-## What does it do?
+## What it does
 
 <!--whatdoes-->
-This is my package core
-<!--/whatdoes-->
 
+This is my package core
+
+<!--/whatdoes-->
 
 ## Manual Installation
 

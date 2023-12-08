@@ -15,12 +15,13 @@ php artisan mooxpage:install
 
 Curious what the install command does? See manual installation below.
 
-## What does it do?
+## What it does
 
 <!--whatdoes-->
-This is my package page
-<!--/whatdoes-->
 
+This is my package page
+
+<!--/whatdoes-->
 
 ## Manual Installation
 

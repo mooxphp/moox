@@ -15,12 +15,13 @@ php artisan mooxblog:install
 
 Curious what the install command does? See manual installation below.
 
-## What does it do?
+## What it does
 
 <!--whatdoes-->
-This is my package blog
-<!--/whatdoes-->
 
+This is my package blog
+
+<!--/whatdoes-->
 
 ## Manual Installation
 

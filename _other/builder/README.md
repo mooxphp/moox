@@ -3,9 +3,11 @@
 # Moox Builder
 
 <!--shortdesc-->
+
 This template is used for generating all Moox packages. Press the Template-Button in GitHub, to create your own.
 
 If you install it, it will completely work without beeing useful. Guaranteed!
+
 <!--/shortdesc-->
 
 ## Quick Installation
@@ -19,12 +21,13 @@ php artisan mooxbuilder:install
 
 Curious what the install command does? See manual installation below.
 
-## What does it do?
+## What it does
 
 <!--whatdoes-->
-Here are some things missing, like an overview with screenshots about this package, or simply a link to the package's docs.
-<!--/whatdoes-->
 
+Here are some things missing, like an overview with screenshots about this package, or simply a link to the package's docs.
+
+<!--/whatdoes-->
 
 ## Manual Installation
 

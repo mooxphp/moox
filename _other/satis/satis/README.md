@@ -73,8 +73,8 @@ See the list of [contributors][] who participate(d) in this project.
 
 ## Examples
 
--   [eventum/composer] - A simple static set of packages hosted in GitHub Pages
--   [satis.spatie.be] - A brief guide to setting up and securing a Satis repository
+-   [eventum/composer][] - A simple static set of packages hosted in GitHub Pages
+-   [satis.spatie.be][] - A brief guide to setting up and securing a Satis repository
 
 ## License
 
