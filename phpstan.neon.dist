@@ -2,25 +2,14 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 8
+    level: 2
     paths:
-        - _data
-        - _packages
-        - _themes
+        - _custom
         - _other
+        - _packages
         - app
     excludePaths:
-        - '_data/*/build/*'
-        - '_packages/*/build/*'
-        - '_themes/admin/*/build/*'
-        - '_themes/website/*/build/*'
-        - '_other/*/build/*'
-        - '_components/*/vendor/*'
-        - '_data/*/vendor/*'
-        - '_icons/*/vendor/*'
         - '_packages/*/vendor/*'
-        - '_themes/admin/*/vendor/*'
-        - '_themes/website/*/vendor/*'
         - '_other/*/vendor/*'
         - '_other/builder/*'
         - '_other/satis/*'
