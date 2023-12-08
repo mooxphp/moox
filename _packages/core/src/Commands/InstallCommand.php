@@ -31,6 +31,6 @@ class InstallCommand extends Command
         $this->comment('Publishing Core Migrations...');
         $this->callSilent('vendor:publish', ['--tag' => 'core-migrations']);
         $this->call('migrate');
-        $this->info('Core was installed successfully');
+        $this->info('Moox Core was installed successfully');
     }
 }

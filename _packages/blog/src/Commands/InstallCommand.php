@@ -31,6 +31,6 @@ class InstallCommand extends Command
         $this->comment('Publishing Blog Migrations...');
         $this->callSilent('vendor:publish', ['--tag' => 'blog-migrations']);
         $this->call('migrate');
-        $this->info('Blog was installed successfully');
+        $this->info('Moox Blog was installed successfully');
     }
 }

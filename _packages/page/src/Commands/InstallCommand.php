@@ -31,6 +31,6 @@ class InstallCommand extends Command
         $this->comment('Publishing Page Migrations...');
         $this->callSilent('vendor:publish', ['--tag' => 'page-migrations']);
         $this->call('migrate');
-        $this->info('Page was installed successfully');
+        $this->info('Moox Page was installed successfully');
     }
 }

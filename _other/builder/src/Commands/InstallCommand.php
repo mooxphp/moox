@@ -31,6 +31,6 @@ class InstallCommand extends Command
         $this->comment('Publishing Builder Migrations...');
         $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
         $this->call('migrate');
-        $this->info('Builder was installed successfully');
+        $this->info('Moox Builder was installed successfully');
     }
 }
