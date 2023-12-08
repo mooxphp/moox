@@ -16,4 +16,6 @@ return [
     'queue' => 'Cola',
     'progress' => 'Progreso',
     'started_at' => 'Iniciado a las',
+    'created_at' => 'Creado a las',
+    'reserved_at' => 'Reservado a las',
 ];

@@ -19,9 +19,9 @@ use Illuminate\Support\Str;
 use InvadersXX\FilamentJsoneditor\Forms\JSONEditor;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\Models\FailedJob;
-use Moox\Jobs\Resources\FailedJobsResource\Pages\ListFailedJobs;
+use Moox\Jobs\Resources\JobsFailedResource\Pages\ListFailedJobs;
 
-class FailedJobsResource extends Resource
+class JobsFailedResource extends Resource
 {
     protected static ?string $model = FailedJob::class;
 

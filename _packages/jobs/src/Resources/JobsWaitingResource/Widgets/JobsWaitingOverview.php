@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Jobs\Resources\WaitingJobsResource\Widgets;
+namespace Moox\Jobs\Resources\JobsWaitingResource\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -28,10 +28,18 @@ class JobsWaitingOverview extends BaseWidget
             ->select($aggregationColumns)
             ->first();
 
+        if ($aggregatedInfo) {
+            $averageTime = property_exists($aggregatedInfo, 'average_time_elapsed') ? ceil((float) $aggregatedInfo->average_time_elapsed).'s' : '0';
+            $totalTime = property_exists($aggregatedInfo, 'total_time_elapsed') ? $this->formatSeconds($aggregatedInfo->total_time_elapsed).'s' : '0';
+        } else {
+            $averageTime = '0';
+            $totalTime = '0';
+        }
+
         return [
             Stat::make(__('jobs::translations.waiting_jobs'), $jobsWaiting->count ?? 0),
-            Stat::make(__('jobs::translations.execution_time'), ($this->formatSeconds($aggregatedInfo->total_time_elapsed) ?? '0 s')),
-            Stat::make(__('jobs::translations.average_time'), ceil((float) $aggregatedInfo->average_time_elapsed).'s' ?? 0),
+            Stat::make(__('jobs::translations.execution_time'), $totalTime),
+            Stat::make(__('jobs::translations.average_time'), $averageTime),
         ];
     }
 }

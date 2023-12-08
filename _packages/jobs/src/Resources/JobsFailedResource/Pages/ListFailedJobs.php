@@ -1,17 +1,17 @@
 <?php
 
-namespace Moox\Jobs\Resources\FailedJobsResource\Pages;
+namespace Moox\Jobs\Resources\JobsFailedResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Jobs\Models\FailedJob;
-use Moox\Jobs\Resources\FailedJobsResource;
+use Moox\Jobs\Resources\JobsFailedResource;
 
 class ListFailedJobs extends ListRecords
 {
-    protected static string $resource = FailedJobsResource::class;
+    protected static string $resource = JobsFailedResource::class;
 
     public function getActions(): array
     {

@@ -14,10 +14,10 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Jobs\Models\Job;
-use Moox\Jobs\Resources\WaitingJobsResource\Pages\ListJobsWaiting;
-use Moox\Jobs\Resources\WaitingJobsResource\Widgets\JobsWaitingOverview;
+use Moox\Jobs\Resources\JobsWaitingResource\Pages\ListJobsWaiting;
+use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
 
-class WaitingJobsResource extends Resource
+class JobsWaitingResource extends Resource
 {
     protected static ?string $model = Job::class;
 
@@ -67,7 +67,7 @@ class WaitingJobsResource extends Resource
                     ->label(__('jobs::translations.attempts'))
                     ->sortable(),
                 TextColumn::make('reserved_at')
-                    ->label(__('jobs::translations.created_at'))
+                    ->label(__('jobs::translations.reserved_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('created_at')

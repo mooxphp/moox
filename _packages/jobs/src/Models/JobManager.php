@@ -33,11 +33,6 @@ class JobManager extends Model
         'finished_at' => 'datetime',
     ];
 
-    /*
-     *--------------------------------------------------------------------------
-     * Mutators
-     *--------------------------------------------------------------------------
-     */
     public function status(): Attribute
     {
         return Attribute::make(
@@ -51,12 +46,6 @@ class JobManager extends Model
         );
     }
 
-    /*
-     *--------------------------------------------------------------------------
-     * Methods
-     *--------------------------------------------------------------------------
-     */
-
     public static function getJobId(JobContract $job): string|int
     {
         if ($jobId = $job->getJobId()) {
@@ -66,9 +55,6 @@ class JobManager extends Model
         return Hash::make($job->getRawBody());
     }
 
-    /**
-     * check if the job is finished.
-     */
     public function isFinished(): bool
     {
         if ($this->hasFailed()) {
@@ -78,17 +64,11 @@ class JobManager extends Model
         return $this->finished_at !== null;
     }
 
-    /**
-     * Check if the job has failed.
-     */
     public function hasFailed(): bool
     {
         return $this->failed;
     }
 
-    /**
-     * check if the job has succeeded.
-     */
     public function hasSucceeded(): bool
     {
         if (! $this->isFinished()) {
@@ -99,8 +79,6 @@ class JobManager extends Model
     }
 
     /**
-     * Get the prunable model query.
-     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function prunable()
@@ -109,6 +87,6 @@ class JobManager extends Model
             return static::where('created_at', '<=', now()->subDays(config('jobs.pruning.retention_days')));
         }
 
-        return false;
+        return static::query();
     }
 }
