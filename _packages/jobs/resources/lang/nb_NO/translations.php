@@ -1,0 +1,23 @@
+<?php
+return [
+    'breadcrumb' => '',
+    'title' => '',
+    'navigation_label' => '',
+    'navigation_group' => '',
+    'total_jobs' => '',
+    'waiting_jobs' => '',
+    'execution_time' => '',
+    'average_time' => '',
+    'succeeded' => '',
+    'failed' => '',
+    'running' => '',
+    'waiting' => '',
+    'status' => '',
+    'attempts' => '',
+    'name' => '',
+    'queue' => '',
+    'progress' => '',
+    'started_at' => '',
+    'created_at' => '',
+    'reserved_at' => '',
+];
