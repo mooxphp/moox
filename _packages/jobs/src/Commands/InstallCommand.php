@@ -3,6 +3,7 @@
 namespace Moox\Jobs\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 
 class InstallCommand extends Command
 {
@@ -44,7 +45,45 @@ class InstallCommand extends Command
             $this->comment('adrolli/filament-job-manager package uninstalled successfully.');
         }
 
+        $this->comment('Running Migrations...');
         $this->call('migrate');
+
+        $this->comment('Registering the Filament Resources...');
+
+        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
+
+        if (File::exists($providerPath)) {
+
+            $content = File::get($providerPath);
+
+            $pluginsToAdd = [
+                'JobsPlugin::make(),',
+                'JobsWaitingPlugin::make(),',
+                'JobsFailedPlugin::make(),',
+                'JobsBatchesPlugin::make(),',
+            ];
+
+            $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
+
+            $replacement = function ($matches) use ($pluginsToAdd) {
+                $existingPlugins = trim($matches[1]);
+                $newPlugins = implode("\n", $pluginsToAdd);
+
+                return "->plugins([\n".$existingPlugins."\n".$newPlugins."\n]);";
+            };
+
+            $newContent = preg_replace_callback($pattern, $replacement, $content);
+
+            File::put($providerPath, $newContent);
+
+            $this->info('Plugins added to AdminPanelProvider.');
+
+        } else {
+
+            $this->error('AdminPanelProvider not found.');
+
+        }
+
         $this->info('Moox Jobs was installed successfully');
     }
 }
