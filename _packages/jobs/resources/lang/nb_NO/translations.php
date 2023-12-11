@@ -1,4 +1,5 @@
 <?php
+
 return [
     'breadcrumb' => 'Jobb-håndterer',
     'title' => 'Jobber',
