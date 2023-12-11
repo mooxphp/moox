@@ -18,6 +18,9 @@
     ],
     "require": {
         "spatie/laravel-package-tools": "^1.13.0",
+        "bezhansalleh/filament-shield": "^2.0",
+        "stechstudio/filament-impersonate": "^3.5",
+        "jeffgreco13/filament-breezy": "^2.2",
         "filament/filament": "^3.0"
     },
     "autoload": {
