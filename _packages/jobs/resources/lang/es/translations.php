@@ -1,5 +1,4 @@
 <?php
-
 return [
     'breadcrumb' => 'Monitor de Trabajos En Cola',
     'title' => 'Trabajos En Cola',
@@ -18,4 +17,7 @@ return [
     'started_at' => 'Iniciado a las',
     'created_at' => 'Creado a las',
     'reserved_at' => 'Reservado a las',
+    'waiting_jobs' => 'Número de trabajos en espera',
+    'attempts' => 'Intentos',
+    'waiting' => 'En espera',
 ];
