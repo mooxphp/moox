@@ -62,23 +62,23 @@
         },
         {
             "name": "bezhansalleh/filament-shield",
-            "version": "2.4.9",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bezhanSalleh/filament-shield.git",
-                "reference": "9fc7d1cff09cafb6f98abfe8f65855c06eaa8d5c"
+                "reference": "919856a29f76ce73eec417dcfd564c93994df0fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bezhanSalleh/filament-shield/zipball/9fc7d1cff09cafb6f98abfe8f65855c06eaa8d5c",
-                "reference": "9fc7d1cff09cafb6f98abfe8f65855c06eaa8d5c",
+                "url": "https://api.github.com/repos/bezhanSalleh/filament-shield/zipball/919856a29f76ce73eec417dcfd564c93994df0fd",
+                "reference": "919856a29f76ce73eec417dcfd564c93994df0fd",
                 "shasum": ""
             },
             "require": {
                 "filament/filament": "^3.0",
                 "php": "^8.1",
                 "spatie/laravel-package-tools": "^1.9",
-                "spatie/laravel-permission": "^5.0"
+                "spatie/laravel-permission": "^6.0"
             },
             "require-dev": {
                 "laravel/pint": "^1.0",
@@ -135,7 +135,7 @@
             ],
             "support": {
                 "issues": "https://github.com/bezhanSalleh/filament-shield/issues",
-                "source": "https://github.com/bezhanSalleh/filament-shield/tree/2.4.9"
+                "source": "https://github.com/bezhanSalleh/filament-shield/tree/3.1.1"
             },
             "funding": [
                 {
@@ -143,7 +143,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-16T16:11:43+00:00"
+            "time": "2023-12-06T17:28:54+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -352,16 +352,16 @@
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
-            "version": "2.0.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon-doctrine-types.git",
-                "reference": "67a77972b9f398ae7068dabacc39c08aeee170d5"
+                "reference": "99f76ffa36cce3b70a4a6abce41dba15ca2e84cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon-doctrine-types/zipball/67a77972b9f398ae7068dabacc39c08aeee170d5",
-                "reference": "67a77972b9f398ae7068dabacc39c08aeee170d5",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon-doctrine-types/zipball/99f76ffa36cce3b70a4a6abce41dba15ca2e84cb",
+                "reference": "99f76ffa36cce3b70a4a6abce41dba15ca2e84cb",
                 "shasum": ""
             },
             "require": {
@@ -401,7 +401,7 @@
             ],
             "support": {
                 "issues": "https://github.com/CarbonPHP/carbon-doctrine-types/issues",
-                "source": "https://github.com/CarbonPHP/carbon-doctrine-types/tree/2.0.0"
+                "source": "https://github.com/CarbonPHP/carbon-doctrine-types/tree/2.1.0"
             },
             "funding": [
                 {
@@ -417,7 +417,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-01T14:29:01+00:00"
+            "time": "2023-12-11T17:09:12+00:00"
         },
         {
             "name": "danharrin/date-format-converter",
@@ -4215,10 +4215,10 @@
             "dist": {
                 "type": "path",
                 "url": "_packages/user",
-                "reference": "82655d8e7a61239750bddbdc038ef0417c4ea20c"
+                "reference": "ab658e6320950b988d76d32d0eb08ed21e5dffd6"
             },
             "require": {
-                "bezhansalleh/filament-shield": "^2.0",
+                "bezhansalleh/filament-shield": "^3.0",
                 "filament/filament": "^3.0",
                 "jeffgreco13/filament-breezy": "^2.2",
                 "spatie/laravel-package-tools": "^1.13.0",
@@ -5874,35 +5874,35 @@
         },
         {
             "name": "spatie/laravel-permission",
-            "version": "5.11.1",
+            "version": "6.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-permission.git",
-                "reference": "7090824cca57e693b880ce3aaf7ef78362e28bbd"
+                "reference": "299dd2c9bce700ea641021c1aea0dfece25e541d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/7090824cca57e693b880ce3aaf7ef78362e28bbd",
-                "reference": "7090824cca57e693b880ce3aaf7ef78362e28bbd",
+                "url": "https://api.github.com/repos/spatie/laravel-permission/zipball/299dd2c9bce700ea641021c1aea0dfece25e541d",
+                "reference": "299dd2c9bce700ea641021c1aea0dfece25e541d",
                 "shasum": ""
             },
             "require": {
-                "illuminate/auth": "^7.0|^8.0|^9.0|^10.0",
-                "illuminate/container": "^7.0|^8.0|^9.0|^10.0",
-                "illuminate/contracts": "^7.0|^8.0|^9.0|^10.0",
-                "illuminate/database": "^7.0|^8.0|^9.0|^10.0",
-                "php": "^7.3|^8.0"
+                "illuminate/auth": "^8.12|^9.0|^10.0|^11.0",
+                "illuminate/container": "^8.12|^9.0|^10.0|^11.0",
+                "illuminate/contracts": "^8.12|^9.0|^10.0|^11.0",
+                "illuminate/database": "^8.12|^9.0|^10.0|^11.0",
+                "php": "^8.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0",
-                "phpunit/phpunit": "^9.4",
-                "predis/predis": "^1.1"
+                "laravel/passport": "^11.0",
+                "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^9.4|^10.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "5.x-dev",
-                    "dev-master": "5.x-dev"
+                    "dev-main": "6.x-dev",
+                    "dev-master": "6.x-dev"
                 },
                 "laravel": {
                     "providers": [
@@ -5930,7 +5930,7 @@
                     "role": "Developer"
                 }
             ],
-            "description": "Permission handling for Laravel 6.0 and up",
+            "description": "Permission handling for Laravel 8.0 and up",
             "homepage": "https://github.com/spatie/laravel-permission",
             "keywords": [
                 "acl",
@@ -5944,7 +5944,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-permission/issues",
-                "source": "https://github.com/spatie/laravel-permission/tree/5.11.1"
+                "source": "https://github.com/spatie/laravel-permission/tree/6.2.0"
             },
             "funding": [
                 {
@@ -5952,7 +5952,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-10-25T05:12:01+00:00"
+            "time": "2023-12-09T01:40:07+00:00"
         },
         {
             "name": "stechstudio/filament-impersonate",
