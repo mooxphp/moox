@@ -1,4 +1,5 @@
 <?php
+
 return [
     'breadcrumb' => 'Monitor de Trabajos En Cola',
     'title' => 'Trabajos En Cola',
