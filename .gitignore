@@ -4,9 +4,9 @@
 
 # Composer
 /vendor
-/_other/satis/satis/vendor
-# composer.lock - it's a dev platform, we want the lock-file to be in sync
+_other/satis/satis/vendor
 auth.json
+# composer.lock - it's a dev platform, we want the lock-file to be in sync
 
 # NPM / Node
 /node_modules
