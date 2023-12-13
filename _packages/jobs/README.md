@@ -10,7 +10,9 @@ These two commmands are all you need to install the package:
 
 ```bash
 composer require moox/jobs
-php artisan mooxjobs:install (wip)
+
+# the installer is work in progress, please use manual installation below
+php artisan mooxjobs:install
 ```
 
 Curious what the install command does? See manual installation below.
@@ -21,7 +23,7 @@ Curious what the install command does? See manual installation below.
 
 Monitor your running and finished jobs:
 
-![https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-jobs](./docs/screenshot-jobs.jpg)
+![screenshot-jobs](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-jobs.jpg)
 
 This table includes auto-pruning (7 days retention, configurable).
 
@@ -29,30 +31,30 @@ This table includes auto-pruning (7 days retention, configurable).
 
 See all waiting Jobs queued, kill one or many:
 
-![screenshot-waiting](./docs/screenshot-waiting.jpg)
+![screenshot-waiting](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-waiting.jpg)
 
 ### Jobs failed
 
 See all failed Jobs including details, retry or delete:
 
-![screenshot-details](./docs/screenshot-details.jpg)
+![screenshot-details](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-details.jpg)
 
-![screenshot-detail](./docs/screenshot-detail.jpg)
+![screenshot-detail](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-detail.jpg)
 
 ### Job batches
 
 See your job batches, prune batches:
 
-![screenshot-batches](./docs/screenshot-batches.jpg)
+![screenshot-batches](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-batches.jpg)
 
 ## Manual Installation
 
-This Laravel package is made for Filament 3 and the awesome TALL-Stack.
+This Laravel package is made for Filament 3 and the awesome TALL-Stack. If you don't want to use our install command, follow thes manual steps to install the package.
 
 Install the package via Composer:
 
 ```bash
-composer require adrolli/jobs
+composer require moox/jobs
 ```
 
 Create the necessary tables:
@@ -130,18 +132,18 @@ return [
 Register the Plugins in `app/Providers/Filament/AdminPanelProvider.php`:
 
 ```php
-    ->plugins([
+->plugins([
 	JobsPlugin::make(),
-    JobsWaitingPlugin::make(),
+  JobsWaitingPlugin::make(),
 	JobsFailedPlugin::make(),
 	JobsBatchesPlugin::make(),
-    ])
+])
 ```
 
 Instead of publishing and modifying the config-file, you can also do all settings in AdminPanelProvider like so:
 
 ```php
-    ->plugins([
+->plugins([
 	JobsPlugin::make()
 	    ->label('Job runs')
 	    ->pluralLabel('Jobs that seems to run')
@@ -168,10 +170,10 @@ Instead of publishing and modifying the config-file, you can also do all setting
 	    ->navigationGroup('My Jobs and Queues')
 	    ->navigationSort(5)
 	    ->navigationCountBadge(true)
-    ])
+])
 ```
 
-You don't need to register all Resources. If you don't use Job Batches, you can hide this feature by not registering it, like in this example. The settings of Job Batches is identical to Failed Jobs, if you want to include it with individual settings.
+You don't need to register all Resources. If you don't use Job Batches, you can hide this feature by not registering it. 
 
 ## Usage
 
