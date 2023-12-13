@@ -54,6 +54,9 @@ cp .env.example .env
 # Build
 composer install
 
+# Create a user
+php artisan make:filament-user
+
 # Run Sail, start Laragon or Valet
 ./vendor/bin/sail up
 
@@ -70,6 +73,8 @@ php artisan sail:install
 # switching from Laragon to Sail for example
 rm -Rf vendor/mooxphp
 ```
+
+The Moox Admin is now available at /moox, e. g. https://moox.test/moox
 
 ## Custom packages
 
