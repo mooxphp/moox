@@ -196,10 +196,10 @@ Mood is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/reinhold-jesse">
-            <img src="https://avatars.githubusercontent.com/u/88349887?v=4" width="100;" alt="reinhold-jesse"/>
+        <a href="https://github.com/azizovic12">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
             <br />
-            <sub><b>reinhold-jesse</b></sub>
+            <sub><b>azizovic12</b></sub>
         </a>
     </td>
     <td align="center">
@@ -214,13 +214,6 @@ Mood is made by these nice people, and bots ...
             <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
             <br />
             <sub><b>wp1111</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/azizovic12">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
-            <br />
-            <sub><b>azizovic12</b></sub>
         </a>
     </td>
     <td align="center">
