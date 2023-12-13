@@ -33,7 +33,7 @@ class UserServiceProvider extends PackageServiceProvider
 
             Filament::registerNavigationItems([
                 NavigationItem::make('Profile')
-                    ->url('/user/profile')
+                    ->url('/moox/profile')
                     ->icon('heroicon-o-user')
                     ->group('User'),
             ]);
