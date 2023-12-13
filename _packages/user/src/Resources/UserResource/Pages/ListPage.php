@@ -6,7 +6,6 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
-use Moox\User\Resources\UserResource\Widgets\UserWidgets;
 
 class ListPage extends ListRecords
 {
@@ -15,13 +14,6 @@ class ListPage extends ListRecords
     public function getActions(): array
     {
         return [];
-    }
-
-    public function getHeaderWidgets(): array
-    {
-        return [
-            UserWidgets::class,
-        ];
     }
 
     public function getTitle(): string

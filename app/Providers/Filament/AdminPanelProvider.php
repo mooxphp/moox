@@ -68,6 +68,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->spa()
             ->plugins([
                 BuilderPlugin::make(),
                 JobsPlugin::make(),
@@ -88,7 +89,7 @@ class AdminPanelProvider extends PanelProvider
                         shouldRegisterUserMenu: true,
                         shouldRegisterNavigation: false,
                         hasAvatars: true,
-                        slug: 'my-profile',
+                        slug: 'profile',
                     )
                     ->enableTwoFactorAuthentication(
                         force: false,
