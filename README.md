@@ -45,31 +45,39 @@ All installable Moox packages like Core, Page, Blog, Jobs etc. are in [\_package
 The Laravel dev app in the root-folder of the Moox Monorepo is made for instant development with Laravel Valet, Laravel Sail or Laragon.
 
 ```bash
-# Use the prepared composer.json
-cp _custom/composer.json-example _custom/composer.json
-
 # Create a .env file and adjust to your needs
 cp .env.example .env
 
-# Build
+# Don't forget to create the database according .env
+
+# Install via Composer
 composer install
 
-# Create a user
-php artisan make:filament-user
+# Migrate and seed
+php artisan migrate:fresh --seed
 
-# Run Sail, start Laragon or Valet
-./vendor/bin/sail up
-
-# Run Vite
-# for Laravel Sail on Windows: do it in Ubuntu, not inside the Sail container
+# Use Vite (for Laravel Sail on Windows: do it in Ubuntu, not inside the Sail container)
 npm install
 npm run dev
+```
+
+Optional things:
+
+```bash
+# You can create a user then
+php artisan make:filament-user
+
+# You can use the custom composer.json
+cp _custom/composer.json-example _custom/composer.json
+
+# Run Sail (alternatively start Herd,Laragon or Valet)
+./vendor/bin/sail up
 
 # Rebuild the sail config if needed
 ./vendor/bin/sail down --rmi all -v
 php artisan sail:install
 
-# Remove broken symlinks
+# Remove broken symlinks if needed
 # switching from Laragon to Sail for example
 rm -Rf vendor/mooxphp
 ```
