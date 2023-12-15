@@ -100,7 +100,9 @@ class UserPlugin implements Plugin
      */
     public static function get(): static
     {
-        return filament(app(static::class)->getId());
+        $id = app(static::class)->getId();
+
+        return app(static::class); // Update the return statement to return the plugin instance.
     }
 
     /**
