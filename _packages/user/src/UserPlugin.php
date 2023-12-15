@@ -102,7 +102,7 @@ class UserPlugin implements Plugin
     {
         $id = app(static::class)->getId();
 
-        return app(static::class); // Update the return statement to return the plugin instance.
+        return app(static::class);
     }
 
     /**

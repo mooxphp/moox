@@ -58,6 +58,7 @@ class JobsResource extends Resource
                         'running' => 'primary',
                         'succeeded' => 'success',
                         'failed' => 'danger',
+                        default => 'secondary',
                     }),
                 TextColumn::make('name')
                     ->label(__('jobs::translations.name'))
@@ -119,7 +120,7 @@ class JobsResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel()) ?? Str::title(static::getModelLabel());
+        return Str::title(static::getPluralModelLabel());
     }
 
     public static function getNavigationGroup(): ?string

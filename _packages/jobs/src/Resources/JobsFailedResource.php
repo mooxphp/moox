@@ -42,7 +42,7 @@ class JobsFailedResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel()) ?? Str::title(static::getModelLabel());
+        return Str::title(static::getPluralModelLabel());
     }
 
     public static function getNavigationGroup(): ?string
