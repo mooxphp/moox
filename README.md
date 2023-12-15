@@ -209,13 +209,6 @@ Mood is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/azizovic12">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
-            <br />
-            <sub><b>azizovic12</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/weblate">
             <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
             <br />
@@ -227,6 +220,13 @@ Mood is made by these nice people, and bots ...
             <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
             <br />
             <sub><b>wp1111</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/azizovic12">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
+            <br />
+            <sub><b>azizovic12</b></sub>
         </a>
     </td>
     <td align="center">
@@ -242,8 +242,7 @@ Mood is made by these nice people, and bots ...
             <br />
             <sub><b>laravel-shift</b></sub>
         </a>
-    </td>
-</tr>
+    </td></tr>
 <tr>
     <td align="center">
         <a href="https://github.com/mooxbot">
@@ -286,7 +285,8 @@ Mood is made by these nice people, and bots ...
             <br />
             <sub><b>github-actions[bot]</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/dependabot[bot]">
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
@@ -294,20 +294,11 @@ Mood is made by these nice people, and bots ...
             <sub><b>dependabot[bot]</b></sub>
         </a>
     </td>
-</tr>
-<tr>
     <td align="center">
         <a href="https://github.com/milotype">
             <img src="https://avatars.githubusercontent.com/u/43657314?v=4" width="100;" alt="milotype"/>
             <br />
             <sub><b>milotype</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/tallui-bot">
-            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="tallui-bot"/>
-            <br />
-            <sub><b>tallui-bot</b></sub>
         </a>
     </td></tr>
 </table>
