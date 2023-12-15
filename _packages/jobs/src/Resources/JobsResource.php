@@ -105,17 +105,17 @@ class JobsResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return JobsPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return JobsPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return JobsPlugin::get()->getLabel();
+        return JobsPlugin::make()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return JobsPlugin::get()->getPluralLabel();
+        return JobsPlugin::make()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -125,26 +125,26 @@ class JobsResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return JobsPlugin::get()->getNavigationGroup();
+        return JobsPlugin::make()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return JobsPlugin::get()->getNavigationSort();
+        return JobsPlugin::make()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return JobsPlugin::get()->getBreadcrumb();
+        return JobsPlugin::make()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return JobsPlugin::get()->shouldRegisterNavigation();
+        return JobsPlugin::make()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return JobsPlugin::get()->getNavigationIcon();
+        return JobsPlugin::make()->getNavigationIcon();
     }
 }

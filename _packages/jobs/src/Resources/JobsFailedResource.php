@@ -27,17 +27,17 @@ class JobsFailedResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return JobsFailedPlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return JobsFailedPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return JobsFailedPlugin::get()->getLabel();
+        return JobsFailedPlugin::make()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return JobsFailedPlugin::get()->getPluralLabel();
+        return JobsFailedPlugin::make()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -47,27 +47,27 @@ class JobsFailedResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return JobsFailedPlugin::get()->getNavigationGroup();
+        return JobsFailedPlugin::make()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return JobsFailedPlugin::get()->getNavigationSort();
+        return JobsFailedPlugin::make()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return JobsFailedPlugin::get()->getBreadcrumb();
+        return JobsFailedPlugin::make()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return JobsFailedPlugin::get()->shouldRegisterNavigation();
+        return JobsFailedPlugin::make()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return JobsFailedPlugin::get()->getNavigationIcon();
+        return JobsFailedPlugin::make()->getNavigationIcon();
     }
 
     public static function form(Form $form): Form

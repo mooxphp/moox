@@ -96,16 +96,6 @@ class JobsBatchesPlugin implements Plugin
     }
 
     /**
-     * Get the plugin instance.
-     */
-    public static function get(): static
-    {
-        $id = app(static::class)->getId();
-
-        return app(static::class);
-    }
-
-    /**
      * Get the resource class.
      */
     public function getResource(): string
