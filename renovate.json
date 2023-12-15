@@ -2,5 +2,28 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "config:base"
+    ],
+    "lockFileMaintenance": {
+        "enabled": true,
+        "schedule": "after 12am and before 6am"
+    },
+    "packageRules": [
+        {
+            "managers": [
+                "npm",
+                "composer"
+            ],
+            "updateTypes": [
+                "patch",
+                "minor",
+                "major"
+            ],
+            "packagePatterns": [
+                "*"
+            ],
+            "excludePackagePatterns": [
+                "*lock*"
+            ]
+        }
     ]
 }

@@ -43,7 +43,7 @@ class UserResource extends Resource
                 ->dehydrateStateUsing(static function ($state) use ($form) {
                     return ! empty($state)
                         ? Hash::make($state)
-                        : User::find($form->getColumns())?->getAttribute('password');
+                        : User::find($form->getColumns())?->password;
                 }),
         ];
 
