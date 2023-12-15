@@ -20,27 +20,7 @@
         },
         {
             "type": "path",
-            "url": "_packages/blog"
-        },
-        {
-            "type": "path",
-            "url": "_packages/core"
-        },
-        {
-            "type": "path",
-            "url": "_packages/data"
-        },
-        {
-            "type": "path",
-            "url": "_packages/file"
-        },
-        {
-            "type": "path",
             "url": "_packages/jobs"
-        },
-        {
-            "type": "path",
-            "url": "_packages/logs"
         },
         {
             "type": "path",
@@ -60,12 +40,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
         "moox/builder": "*",
-        "moox/blog": "*",
-        "moox/core": "*",
-        "moox/data": "*",
-        "moox/file": "*",
         "moox/jobs": "*",
-        "moox/logs": "*",
         "moox/page": "*",
         "moox/user": "*",
         "wikimedia/composer-merge-plugin": "^2.1"

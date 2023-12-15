@@ -81,17 +81,17 @@ class PageResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return PagePlugin::get()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
+        return PagePlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
     }
 
     public static function getModelLabel(): string
     {
-        return PagePlugin::get()->getLabel();
+        return PagePlugin::make()->getLabel();
     }
 
     public static function getPluralModelLabel(): string
     {
-        return PagePlugin::get()->getPluralLabel();
+        return PagePlugin::make()->getPluralLabel();
     }
 
     public static function getNavigationLabel(): string
@@ -101,26 +101,26 @@ class PageResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return PagePlugin::get()->getNavigationGroup();
+        return PagePlugin::make()->getNavigationGroup();
     }
 
     public static function getNavigationSort(): ?int
     {
-        return PagePlugin::get()->getNavigationSort();
+        return PagePlugin::make()->getNavigationSort();
     }
 
     public static function getBreadcrumb(): string
     {
-        return PagePlugin::get()->getBreadcrumb();
+        return PagePlugin::make()->getBreadcrumb();
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return PagePlugin::get()->shouldRegisterNavigation();
+        return PagePlugin::make()->shouldRegisterNavigation();
     }
 
     public static function getNavigationIcon(): string
     {
-        return PagePlugin::get()->getNavigationIcon();
+        return PagePlugin::make()->getNavigationIcon();
     }
 }

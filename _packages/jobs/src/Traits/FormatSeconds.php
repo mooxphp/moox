@@ -4,7 +4,7 @@ namespace Moox\Jobs\Traits;
 
 trait FormatSeconds
 {
-    public function formatSeconds($seconds)
+    public function formatSeconds(int $seconds): string
     {
         $days = floor($seconds / (60 * 60 * 24));
         $seconds -= $days * (60 * 60 * 24);

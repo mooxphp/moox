@@ -24,7 +24,7 @@ class InstallCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->comment('Publishing Jobs Configuration...');
         $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);

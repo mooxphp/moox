@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e959e3308ee049cae1be27128dbd987b",
+    "content-hash": "33c62bd94b9a83da05f7def66b8888da",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3824,53 +3824,6 @@
             "time": "2023-10-27T15:32:31+00:00"
         },
         {
-            "name": "moox/blog",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "_packages/blog",
-                "reference": "3480ea3a23bd4bef7039bf4ee3a24da2f58b64d3"
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Moox\\Blog\\BlogServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Moox\\Blog\\": "src"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Moox Developer",
-                    "email": "dev@moox.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package blog",
-            "homepage": "https://moox.org/",
-            "keywords": [
-                "Filament",
-                "Filament plugin",
-                "Laravel",
-                "Laravel package"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
             "name": "moox/builder",
             "version": "dev-main",
             "dist": {
@@ -3906,147 +3859,6 @@
                 }
             ],
             "description": "This template is used for generating all Moox packages.",
-            "homepage": "https://moox.org/",
-            "keywords": [
-                "Filament",
-                "Filament plugin",
-                "Laravel",
-                "Laravel package"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "moox/core",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "_packages/core",
-                "reference": "4315ffb143004b0ec28c63e4d8585d57c4cf470f"
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Moox\\Core\\CoreServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Moox\\Core\\": "src"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Moox Developer",
-                    "email": "dev@moox.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package core",
-            "homepage": "https://moox.org/",
-            "keywords": [
-                "Filament",
-                "Filament plugin",
-                "Laravel",
-                "Laravel package"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "moox/data",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "_packages/data",
-                "reference": "fd2cb3a0eec1529f4e6c184df32e7eceb957f709"
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Moox\\Data\\DataServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Moox\\Data\\": "src"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Moox Developer",
-                    "email": "dev@moox.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package data",
-            "homepage": "https://moox.org/",
-            "keywords": [
-                "Filament",
-                "Filament plugin",
-                "Laravel",
-                "Laravel package"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "moox/file",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "_packages/file",
-                "reference": "0b501492a7c9fb3d3f3f3f7e04665e3f6b5e05e0"
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Moox\\File\\FileServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Moox\\File\\": "src"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Moox Developer",
-                    "email": "dev@moox.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package file",
             "homepage": "https://moox.org/",
             "keywords": [
                 "Filament",
@@ -4110,53 +3922,6 @@
                 "monitor",
                 "queues",
                 "redis"
-            ],
-            "transport-options": {
-                "relative": true
-            }
-        },
-        {
-            "name": "moox/logs",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "_packages/logs",
-                "reference": "6c35493099083e80f39ab09fbeeca96674685c54"
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "spatie/laravel-package-tools": "^1.13.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Moox\\Logs\\LogsServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Moox\\Logs\\": "src"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Moox Developer",
-                    "email": "dev@moox.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "This is my package logs",
-            "homepage": "https://moox.org/",
-            "keywords": [
-                "Filament",
-                "Filament plugin",
-                "Laravel",
-                "Laravel package"
             ],
             "transport-options": {
                 "relative": true
@@ -13416,5 +13181,5 @@
         "php": "^8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
