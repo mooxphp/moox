@@ -2,9 +2,9 @@
 
 namespace Moox\User\Resources\UserResource\Pages;
 
+use App\Models\User;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
 
 class ListPage extends ListRecords
