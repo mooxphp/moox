@@ -4,6 +4,10 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
+## Upgrading
+
+Coming from adrolli/filament-job-monitor, first to a `composer remove adrolli/filament-job-manager`. As database tables are fully compatible, Moox Jobs will proceed working after installation without loosing a single job.
+
 ## Quick installation
 
 These two commmands are all you need to install the package:
@@ -173,7 +177,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 ])
 ```
 
-You don't need to register all Resources. If you don't use Job Batches, you can hide this feature by not registering it. 
+You don't need to register all Resources. If you don't use Job Batches, you can hide this feature by not registering it.
 
 ## Usage
 

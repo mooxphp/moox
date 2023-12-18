@@ -39,12 +39,6 @@ class InstallCommand extends Command
             $this->callSilent('queue:batches-table');
         }
 
-        if (class_exists('Adrolli\FilamentJobManager\ServiceProvider')) {
-            $this->comment('Uninstalling adrolli/filament-job-manager package...');
-            $this->callSilent('composer', ['remove', 'adrolli/filament-job-manager']);
-            $this->comment('adrolli/filament-job-manager package uninstalled successfully.');
-        }
-
         $this->comment('Running Migrations...');
         $this->call('migrate');
 
