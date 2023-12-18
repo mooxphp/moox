@@ -14,7 +14,7 @@ class RolesHasPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        $path = 'role_has_permissions.sql';
+        $path = 'database/seeders/role_has_permissions.sql';
         DB::unprepared(file_get_contents($path));
         $this->command->info('RolesHasPermissions table seeded!');
     }

@@ -14,7 +14,7 @@ class ModelHasPermissionsSeeder extends Seeder
      */
     public function run()
     {
-        $path = 'model_has_permissions.sql';
+        $path = 'database/seeders/model_has_permissions.sql';
         DB::unprepared(file_get_contents($path));
         $this->command->info('ModelHasPermissions table seeded!');
     }

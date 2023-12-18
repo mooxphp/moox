@@ -14,7 +14,7 @@ class ModelHasRolesSeeder extends Seeder
      */
     public function run()
     {
-        $path = 'model_has_roles.sql';
+        $path = 'database/seeders/model_has_roles.sql';
         DB::unprepared(file_get_contents($path));
         $this->command->info('ModelHasRoles table seeded!');
     }
