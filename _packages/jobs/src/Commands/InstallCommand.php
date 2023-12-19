@@ -27,7 +27,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Publish and migrate Moox Jobs Package';
+    protected $description = 'Install Moox Jobs, publishes configuration, migrations and registers plugins.';
 
     /**
      * Execute the console command.
@@ -80,7 +80,9 @@ class InstallCommand extends Command
 
     public function publish_migrations(): void
     {
-        if (confirm('Do you wish to publish the migrations?', true)) {
+        if (Schema::hasTable('job_monitor')) {
+            warning('The job monitor table already exists. The migrations will not be published.');
+        } elseif (confirm('Do you wish to publish the migrations?', true)) {
             info('Publishing Jobs Migrations...');
             $this->callSilent('vendor:publish', ['--tag' => 'jobs-migrations']);
         }
