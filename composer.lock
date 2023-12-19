@@ -62,16 +62,16 @@
         },
         {
             "name": "bezhansalleh/filament-shield",
-            "version": "3.1.1",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bezhanSalleh/filament-shield.git",
-                "reference": "919856a29f76ce73eec417dcfd564c93994df0fd"
+                "reference": "e4d6ee81d3d15c94dfe7a5bfb0262050e4324398"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bezhanSalleh/filament-shield/zipball/919856a29f76ce73eec417dcfd564c93994df0fd",
-                "reference": "919856a29f76ce73eec417dcfd564c93994df0fd",
+                "url": "https://api.github.com/repos/bezhanSalleh/filament-shield/zipball/e4d6ee81d3d15c94dfe7a5bfb0262050e4324398",
+                "reference": "e4d6ee81d3d15c94dfe7a5bfb0262050e4324398",
                 "shasum": ""
             },
             "require": {
@@ -135,7 +135,7 @@
             ],
             "support": {
                 "issues": "https://github.com/bezhanSalleh/filament-shield/issues",
-                "source": "https://github.com/bezhanSalleh/filament-shield/tree/3.1.1"
+                "source": "https://github.com/bezhanSalleh/filament-shield/tree/3.1.2"
             },
             "funding": [
                 {
@@ -143,20 +143,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-12-06T17:28:54+00:00"
+            "time": "2023-12-19T05:32:27+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",
-            "version": "2.1.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/blade-ui-kit/blade-heroicons.git",
-                "reference": "f756c807b0d04afd2caf7079bac26492da9cc6d4"
+                "reference": "bcf4be8f6bbde0bb4c23f2e3fb189b88dec1580a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/blade-ui-kit/blade-heroicons/zipball/f756c807b0d04afd2caf7079bac26492da9cc6d4",
-                "reference": "f756c807b0d04afd2caf7079bac26492da9cc6d4",
+                "url": "https://api.github.com/repos/blade-ui-kit/blade-heroicons/zipball/bcf4be8f6bbde0bb4c23f2e3fb189b88dec1580a",
+                "reference": "bcf4be8f6bbde0bb4c23f2e3fb189b88dec1580a",
                 "shasum": ""
             },
             "require": {
@@ -200,19 +200,19 @@
             ],
             "support": {
                 "issues": "https://github.com/blade-ui-kit/blade-heroicons/issues",
-                "source": "https://github.com/blade-ui-kit/blade-heroicons/tree/2.1.0"
+                "source": "https://github.com/blade-ui-kit/blade-heroicons/tree/2.2.1"
             },
             "funding": [
                 {
-                    "url": "https://github.com/caneco",
+                    "url": "https://github.com/sponsors/driesvints",
                     "type": "github"
                 },
                 {
-                    "url": "https://github.com/driesvints",
-                    "type": "github"
+                    "url": "https://www.paypal.com/paypalme/driesvints",
+                    "type": "paypal"
                 }
             ],
-            "time": "2023-01-11T08:38:22+00:00"
+            "time": "2023-12-18T20:44:03+00:00"
         },
         {
             "name": "blade-ui-kit/blade-icons",
