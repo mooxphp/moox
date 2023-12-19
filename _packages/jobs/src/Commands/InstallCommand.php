@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Schema;
 
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\note;
+use function Laravel\Prompts\warning;
 
 class InstallCommand extends Command
 {
@@ -88,10 +88,6 @@ class InstallCommand extends Command
 
     public function create_queue_tables(): void
     {
-        if (config('queue.default') != 'database') {
-            error('Your queue driver should be set to database, to use all features of Moox Jobs.');
-        }
-
         if ($createQueueTables = confirm('Do you wish to create the queue tables?', true)) {
             note('Your Jobs are using the database queue driver. Creating Queue Tables...');
 
@@ -122,13 +118,19 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Jobs Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 
     public function register_plugins(): void
     {
         note('Registering the Filament Resources...');
+
+        $queueDriver = '';
+
+        if (config('queue.default') == 'database') {
+            $queueDriver = 'database';
+        }
 
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
@@ -140,11 +142,21 @@ class InstallCommand extends Command
 
             $namespace = "\Moox\Jobs";
 
-            $pluginsToAdd = multiselect(
-                label: 'These plugins will be installed:',
-                options: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
-                default: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
-            );
+            if ($queueDriver != 'database') {
+                warning('The queue driver is not set to database. Jobs waiting will not be installed.');
+
+                $pluginsToAdd = multiselect(
+                    label: 'These plugins will be installed:',
+                    options: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
+                    default: ['JobsPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
+                );
+            } else {
+                $pluginsToAdd = multiselect(
+                    label: 'These plugins will be installed:',
+                    options: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
+                    default: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
+                );
+            }
 
             $function = '::make(),';
 
