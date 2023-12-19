@@ -138,7 +138,7 @@ Register the Plugins in `app/Providers/Filament/AdminPanelProvider.php`:
 ```php
 ->plugins([
 	JobsPlugin::make(),
-  JobsWaitingPlugin::make(),
+    JobsWaitingPlugin::make(),
 	JobsFailedPlugin::make(),
 	JobsBatchesPlugin::make(),
 ])

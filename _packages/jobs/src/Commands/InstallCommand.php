@@ -4,6 +4,14 @@ namespace Moox\Jobs\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
+
+use function Laravel\Prompts\alert;
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\note;
 
 class InstallCommand extends Command
 {
@@ -26,23 +34,101 @@ class InstallCommand extends Command
      */
     public function handle(): void
     {
-        $this->comment('Publishing Jobs Configuration...');
-        $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
+        $this->art();
+        $this->welcome();
+        $this->publish_configuration();
+        $this->publish_migrations();
+        $this->create_queue_tables();
+        $this->run_migrations();
+        $this->register_plugins();
+        $this->finish();
+    }
 
-        $this->comment('Publishing Jobs Migrations...');
-        $this->callSilent('vendor:publish', ['--tag' => 'jobs-migrations']);
+    public function art(): void
+    {
+        info('
 
-        if (config('queue.default') === 'database') {
-            $this->comment('Creating Queue Tables...');
-            $this->callSilent('queue:table');
-            $this->callSilent('queue:failed-table');
-            $this->callSilent('queue:batches-table');
+        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓▓▓           ▓▓▓▓▓▓▓▓▓▓▓▓   ▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓
+        ▓▓▒░░▒▓▓▒▒░░░░░░▒▒▓▓▓▒░░░░░░░▒▓▓   ▓▓▓▓▒░░░░░░░▒▓▓▓▓     ▓▓▓▓▓▒░░░░░░░▒▒▓▓▓▓▓▒▒▒▒▓▓      ▓▓▓▒▒▒▒▓▓
+        ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓░░░░░▒▓▓   ▓▓▒░░░░░▓▓
+        ▓▒░░░░░░▒▓▓▓▓▒░░░░░░░▒▓▓▓▓░░░░░▒▓▓▓░░░░░▒▓▓▓▓▒░░░░░░░▓▓▓▓░░░░░░▒▓▓▓▓▓░░░░░░▒▓▓░░░░░▒▓▓▓▓▓░░░░░▒▓▓
+        ▓▒░░░░▓▓▓▓  ▓▓░░░░░▓▓▓  ▓▓▓░░░░▒▓▓░░░░▒▓▓▓   ▓▓▓▓░░░░░▓░░░░░░▓▓▓▓   ▓▓▓▒░░░░▓▓▓▒░░░░░▓▓▓░░░░░▓▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▓░░▒░░░░░▓▓▓        ▓▓░░░░▒▓▓▓▓░░░░░░░░░░░▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓          ▓▓▓░░░░░▒▓▓          ▓▓▒░░░░▓ ▓▓▓░░░░░░░░░▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▒░░░░░▒░░▒▓▓        ▓▓░░░░▒▓▓▓▒░░░░░▒░░░░░▒▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓░░░░▒▓▓▓   ▓▓▓▒░░░░░▒▒░░░░░▒▓▓▓   ▓▓▓░░░░░▓▓▓░░░░░▒▓▓▓░░░░░▒▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓░░░░░░▒▒▓▓▒░░░░░░▒▓▓▓▓░░░░░░░▒▒▓▓▒░░░░░░▓▓▓░░░░░▒▓▓▓▓▓▒░░░░░▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▒░░░░░▓▓▓   ▓▓▒░░░░░▒▓
+        ▓▓░░░▒▓▓    ▓▓▒░░░▒▓▓    ▓▓░░░░▓▓  ▓▓▓▓▒░░░░░░▒▒▓▓▓▓     ▓▓▓▓▓▒▒░░░░░▒▒▓▓▓▓▓░░░░▒▓▓      ▓▓▓░░░░▒▓
+        ▓▓▓▓▓▓▓      ▓▓▓▓▓▓▓     ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓▓▓▓▓▓           ▓▓▓▓▓▓▓▓▓▓▓▓  ▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓
+
+        ');
+    }
+
+    public function welcome(): void
+    {
+        note('Welcome to the Moox Jobs installer');
+    }
+
+    public function publish_configuration(): void
+    {
+        if (confirm('Do you wish to publish the configuration?', true)) {
+            info('Publishing Jobs Configuration...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
+        }
+    }
+
+    public function publish_migrations(): void
+    {
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            info('Publishing Jobs Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-migrations']);
+        }
+    }
+
+    public function create_queue_tables(): void
+    {
+        if (config('queue.default') != 'database') {
+            error('Your queue driver should be set to database, to use all features of Moox Jobs.');
         }
 
-        $this->comment('Running Migrations...');
-        $this->call('migrate');
+        if ($createQueueTables = confirm('Do you wish to create the queue tables?', true)) {
+            note('Your Jobs are using the database queue driver. Creating Queue Tables...');
 
-        $this->comment('Registering the Filament Resources...');
+            if (Schema::hasTable('jobs')) {
+                note('The jobs table already exists.');
+            } else {
+                info('The jobs table will be created.');
+                $this->callSilent('queue:table');
+            }
+
+            if (Schema::hasTable('failed_jobs')) {
+                note('The failed jobs table already exists.');
+            } else {
+                info('The failed jobs table will be created.');
+                $this->callSilent('queue:failed-table');
+            }
+
+            if (Schema::hasTable('job_batches')) {
+                note('The jobs batches table already exists.');
+            } else {
+                info('The job batches table will be created.');
+                $this->callSilent('queue:batches-table');
+            }
+        }
+    }
+
+    public function run_migrations(): void
+    {
+        if (confirm('Do you wish to run the migrations?', true)) {
+            info('Running Jobs Migrations...');
+            $this->call('migrate');
+        }
+    }
+
+    public function register_plugins(): void
+    {
+        note('Registering the Filament Resources...');
 
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
@@ -50,34 +136,58 @@ class InstallCommand extends Command
 
             $content = File::get($providerPath);
 
-            $pluginsToAdd = [
-                'JobsPlugin::make(),',
-                'JobsWaitingPlugin::make(),',
-                'JobsFailedPlugin::make(),',
-                'JobsBatchesPlugin::make(),',
-            ];
+            $intend = '                ';
+
+            $namespace = "\Moox\Jobs";
+
+            $pluginsToAdd = multiselect(
+                label: 'These plugins will be installed:',
+                options: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
+                default: ['JobsPlugin', 'JobsWaitingPlugin', 'JobsFailedPlugin', 'JobsBatchesPlugin'],
+            );
+
+            $function = '::make(),';
 
             $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
+            $newPlugins = '';
 
-            $replacement = function ($matches) use ($pluginsToAdd) {
-                $existingPlugins = trim($matches[1]);
-                $newPlugins = implode("\n", $pluginsToAdd);
+            foreach ($pluginsToAdd as $plugin) {
+                $searchPlugin = '/'.$plugin.'/';
+                if (preg_match($searchPlugin, $content)) {
+                    info("$plugin already registered.");
+                } else {
+                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
+                }
+            }
 
-                return "->plugins([\n".$existingPlugins."\n".$newPlugins."\n]);";
-            };
+            if ($newPlugins) {
 
-            $newContent = preg_replace_callback($pattern, $replacement, $content);
+                if (preg_match($pattern, $content)) {
+                    info('Plugins section found. Adding new plugins...');
 
-            File::put($providerPath, $newContent);
+                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                    $newContent = preg_replace($pattern, $replacement, $content);
 
-            $this->info('Plugins added to AdminPanelProvider.');
+                } else {
+                    info('Plugins section created. Adding new plugins...');
+
+                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                    $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
+                    $replacement = "$1\n".$pluginsSection;
+                    $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
+                }
+
+                File::put($providerPath, $newContent);
+            }
 
         } else {
 
-            $this->error('AdminPanelProvider not found.');
-
+            alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
+    }
 
-        $this->info('Moox Jobs was installed successfully');
+    public function finish(): void
+    {
+        note('Moox Jobs installed successfully. Enjoy!');
     }
 }
