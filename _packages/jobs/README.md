@@ -4,9 +4,11 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
+Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis (currently not able to provide waiting jobs for Redis).
+
 ## Upgrading
 
-Coming from adrolli/filament-job-monitor, first to a `composer remove adrolli/filament-job-manager`. As database tables are fully compatible, Moox Jobs will proceed working after installation without loosing a single job.
+Do a `composer remove adrolli/filament-job-manager`, if installed. Database tables are fully compatible, Moox Jobs will proceed working after installation.
 
 ## Quick installation
 
@@ -138,7 +140,7 @@ Register the Plugins in `app/Providers/Filament/AdminPanelProvider.php`:
 ```php
 ->plugins([
 	JobsPlugin::make(),
-  JobsWaitingPlugin::make(),
+    JobsWaitingPlugin::make(),
 	JobsFailedPlugin::make(),
 	JobsBatchesPlugin::make(),
 ])
