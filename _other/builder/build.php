@@ -216,6 +216,8 @@ function guessGitHubVendorInfo($authorName, $username): array
     return [$response->name ?? $authorName, $response->login ?? $username];
 }
 
+writeln(' ');
+writeln(' ');
 writeln('▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓▓▓           ▓▓▓▓▓▓▓▓▓▓▓▓   ▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓');
 writeln('▓▓▒░░▒▓▓▒▒░░░░░░▒▒▓▓▓▒░░░░░░░▒▓▓   ▓▓▓▓▒░░░░░░░▒▓▓▓▓     ▓▓▓▓▓▒░░░░░░░▒▒▓▓▓▓▓▒▒▒▒▓▓      ▓▓▓▒▒▒▒▓▓');
 writeln('▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓░░░░░▒▓▓   ▓▓▒░░░░░▓▓');
@@ -229,6 +231,12 @@ writeln('▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░
 writeln('▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▒░░░░░▓▓▓   ▓▓▒░░░░░▒▓');
 writeln('▓▓░░░▒▓▓    ▓▓▒░░░▒▓▓    ▓▓░░░░▓▓  ▓▓▓▓▒░░░░░░▒▒▓▓▓▓     ▓▓▓▓▓▒▒░░░░░▒▒▓▓▓▓▓░░░░▒▓▓      ▓▓▓░░░░▒▓');
 writeln('▓▓▓▓▓▓▓      ▓▓▓▓▓▓▓     ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓▓▓▓▓▓           ▓▓▓▓▓▓▓▓▓▓▓▓  ▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓');
+writeln(' ');
+writeln(' ');
+writeln('Welcome to Moox Builder');
+writeln(' ');
+writeln('This script will guide you through the process of configuring your own Moox package.');
+writeln(' ');
 
 $authorName = ask('Author name', 'Moox Developer');
 
@@ -290,3 +298,6 @@ rename(determineSeparator('src/Resources/BuilderResource'), determineSeparator('
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 
 confirm('Let this script delete itself?', true) && unlink(__FILE__);
+
+writeln(' ');
+writeln('Moox Builder is finished. Have fun!');
