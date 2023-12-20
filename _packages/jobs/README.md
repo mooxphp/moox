@@ -16,8 +16,6 @@ These two commmands are all you need to install the package:
 
 ```bash
 composer require moox/jobs
-
-# the installer is work in progress, please use manual installation below
 php artisan mooxjobs:install
 ```
 
