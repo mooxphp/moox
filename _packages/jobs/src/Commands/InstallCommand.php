@@ -80,7 +80,7 @@ class InstallCommand extends Command
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('job_monitor')) {
+        if (Schema::hasTable('job_manager')) {
             warning('The job monitor table already exists. The migrations will not be published.');
         } elseif (confirm('Do you wish to publish the migrations?', true)) {
             info('Publishing Jobs Migrations...');
