@@ -18,7 +18,7 @@
     ],
     "require": {
         "spatie/laravel-package-tools": "^1.13.0",
-        "johnpbloch/wordpress": "^6.3",
+        "roots/wordpress": "^6.4",
         "filament/filament": "^3.0"
     },
     "autoload": {
@@ -31,11 +31,6 @@
             "providers": [
                 "Moox\\Press\\PressServiceProvider"
             ]
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "johnpbloch/wordpress": true
         }
     },
     "minimum-stability": "dev",
