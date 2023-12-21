@@ -126,7 +126,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true,
-            "wikimedia/composer-merge-plugin": true
+            "wikimedia/composer-merge-plugin": true,
+            "roots/wordpress-core-installer": true
         }
     },
     "minimum-stability": "dev",
