@@ -29,6 +29,10 @@
         {
             "type": "path",
             "url": "_packages/user"
+        },
+        {
+            "type": "path",
+            "url": "_packages/press"
         }
     ],
     "license": "MIT",
@@ -43,6 +47,7 @@
         "moox/jobs": "*",
         "moox/page": "*",
         "moox/user": "*",
+        "moox/press": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
