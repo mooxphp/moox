@@ -33,6 +33,11 @@
             ]
         }
     },
+    "config": {
+        "allow-plugins": {
+            "johnpbloch/wordpress": true
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
