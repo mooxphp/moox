@@ -2,7 +2,17 @@
 
 # Moox Press
 
-This is my package press
+This integrates WordPress into Filament - work in progress.
+
+Developers notes:
+
+-   in deployment you must create a symbolic link (see deploy.sh)
+-   in main composer.json you must allow the plugin for the wordpress installer
+
+```json
+        "allow-plugins": {
+            "roots/wordpress-core-installer": true
+```
 
 ## Quick Installation
 
