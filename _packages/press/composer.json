@@ -1,6 +1,6 @@
 {
-    "name": "moox/builder",
-    "description": "This template is used for generating all Moox packages.",
+    "name": "moox/press",
+    "description": "This is my package press",
     "keywords": [
         "Laravel",
         "Filament",
@@ -22,13 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Builder\\": "src"
+            "Moox\\Press\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Builder\\BuilderServiceProvider"
+                "Moox\\Press\\PressServiceProvider"
             ]
         }
     },

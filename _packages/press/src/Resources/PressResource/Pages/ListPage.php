@@ -1,16 +1,16 @@
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Pages;
+namespace Moox\Press\Resources\PressResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Builder\Models\Builder;
-use Moox\Builder\Resources\BuilderResource;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Press\Models\Press;
+use Moox\Press\Resources\PressResource;
+use Moox\Press\Resources\PressResource\Widgets\PressWidgets;
 
 class ListPage extends ListRecords
 {
-    public static string $resource = BuilderResource::class;
+    public static string $resource = PressResource::class;
 
     public function getActions(): array
     {
@@ -20,20 +20,20 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            PressWidgets::class,
         ];
     }
 
     public function getTitle(): string
     {
-        return __('builder::translations.title');
+        return __('press::translations.title');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Builder {
+                ->using(function (array $data, string $model): Press {
                     return $model::create($data);
                 }),
         ];
