@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\User;
 
 use Moox\User\Commands\InstallCommand;
@@ -15,6 +17,7 @@ class UserServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
+            ->hasMigration('create_user_table')
             ->hasCommand(InstallCommand::class);
     }
 }
