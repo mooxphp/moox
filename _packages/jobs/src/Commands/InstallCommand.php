@@ -138,7 +138,10 @@ class InstallCommand extends Command
         if (! File::exists($providerPath)) {
 
             info('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist. We try to install now ...');
-            $this->call('artisan filament:install --panels');
+
+            $this->call('filament:install', ['--panels' => true]);
+
+            info('Filament seems to be installed. Now proceeding with Moox Jobs installation ...');
 
         }
 
