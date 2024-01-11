@@ -2,8 +2,6 @@
 /**
  * Fonts functions.
  *
- * @package    WordPress
- * @subpackage Fonts
  * @since      6.4.0
  */
 
@@ -12,13 +10,12 @@
  *
  * @since 6.4.0
  *
- * @param array[][] $fonts {
+ * @param  array[][]  $fonts {
  *     Optional. The font-families and their font variations. Default empty array.
  *
  *     @type string $font-family => array[] $variations {
  *         Optional. An associated array of font variations for this font-family.
  *         Each variation has the following structure.
- *
  *         @type array $font_variation {
  *             @type string          $font-family             The font-family property.
  *             @type string|string[] $src                     The URL(s) to each resource containing the font data.
@@ -38,16 +35,17 @@
  *     }
  * }
  */
-function wp_print_font_faces( $fonts = array() ) {
+function wp_print_font_faces($fonts = [])
+{
 
-	if ( empty( $fonts ) ) {
-		$fonts = WP_Font_Face_Resolver::get_fonts_from_theme_json();
-	}
+    if (empty($fonts)) {
+        $fonts = WP_Font_Face_Resolver::get_fonts_from_theme_json();
+    }
 
-	if ( empty( $fonts ) ) {
-		return;
-	}
+    if (empty($fonts)) {
+        return;
+    }
 
-	$wp_font_face = new WP_Font_Face();
-	$wp_font_face->generate_and_print( $fonts );
+    $wp_font_face = new WP_Font_Face();
+    $wp_font_face->generate_and_print($fonts);
 }

@@ -14,8 +14,9 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
      *
      * Base64 character set "[A-Z][a-z][0-9]+/"
      *
-     * @param string $src
+     * @param  string  $src
      * @return string
+     *
      * @throws TypeError
      */
     public static function encode($src)
@@ -28,8 +29,9 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
      *
      * Base64 character set "[A-Z][a-z][0-9]+/"
      *
-     * @param string $src
+     * @param  string  $src
      * @return string
+     *
      * @throws TypeError
      */
     public static function encodeUnpadded($src)
@@ -38,9 +40,10 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
     }
 
     /**
-     * @param string $src
-     * @param bool $pad   Include = padding?
+     * @param  string  $src
+     * @param  bool  $pad   Include = padding?
      * @return string
+     *
      * @throws TypeError
      */
     protected static function doEncode($src, $pad = true)
@@ -56,10 +59,10 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
             $b2 = $chunk[3];
 
             $dest .=
-                self::encode6Bits(               $b0 >> 2       ) .
-                self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63) .
-                self::encode6Bits((($b1 << 2) | ($b2 >> 6)) & 63) .
-                self::encode6Bits(  $b2                     & 63);
+                self::encode6Bits($b0 >> 2).
+                self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63).
+                self::encode6Bits((($b1 << 2) | ($b2 >> 6)) & 63).
+                self::encode6Bits($b2 & 63);
         }
         // The last chunk, which may have padding:
         if ($i < $srcLen) {
@@ -69,21 +72,22 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
             if ($i + 1 < $srcLen) {
                 $b1 = $chunk[2];
                 $dest .=
-                    self::encode6Bits($b0 >> 2) .
-                    self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63) .
+                    self::encode6Bits($b0 >> 2).
+                    self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63).
                     self::encode6Bits(($b1 << 2) & 63);
                 if ($pad) {
                     $dest .= '=';
                 }
             } else {
                 $dest .=
-                    self::encode6Bits( $b0 >> 2) .
+                    self::encode6Bits($b0 >> 2).
                     self::encode6Bits(($b0 << 4) & 63);
                 if ($pad) {
                     $dest .= '==';
                 }
             }
         }
+
         return $dest;
     }
 
@@ -92,11 +96,13 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
      *
      * Base64 character set "./[A-Z][a-z][0-9]"
      *
-     * @param string $src
-     * @param bool $strictPadding
+     * @param  string  $src
+     * @param  bool  $strictPadding
      * @return string
+     *
      * @throws RangeException
      * @throws TypeError
+     *
      * @psalm-suppress RedundantCondition
      */
     public static function decode($src, $strictPadding = false)
@@ -128,7 +134,7 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
             }
         } else {
             $src = rtrim($src, '=');
-            $srcLen =  ParagonIE_Sodium_Core_Util::strlen($src);
+            $srcLen = ParagonIE_Sodium_Core_Util::strlen($src);
         }
 
         $err = 0;
@@ -144,9 +150,9 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
 
             $dest .= pack(
                 'CCC',
-                ((($c0 << 2) | ($c1 >> 4)) & 0xff),
-                ((($c1 << 4) | ($c2 >> 2)) & 0xff),
-                ((($c2 << 6) | $c3) & 0xff)
+                ((($c0 << 2) | ($c1 >> 4)) & 0xFF),
+                ((($c1 << 4) | ($c2 >> 2)) & 0xFF),
+                ((($c2 << 6) | $c3) & 0xFF)
             );
             $err |= ($c0 | $c1 | $c2 | $c3) >> 8;
         }
@@ -161,15 +167,15 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
                 $c2 = self::decode6Bits($chunk[3]);
                 $dest .= pack(
                     'CC',
-                    ((($c0 << 2) | ($c1 >> 4)) & 0xff),
-                    ((($c1 << 4) | ($c2 >> 2)) & 0xff)
+                    ((($c0 << 2) | ($c1 >> 4)) & 0xFF),
+                    ((($c1 << 4) | ($c2 >> 2)) & 0xFF)
                 );
                 $err |= ($c0 | $c1 | $c2) >> 8;
             } elseif ($i + 1 < $srcLen) {
                 $c1 = self::decode6Bits($chunk[2]);
                 $dest .= pack(
                     'C',
-                    ((($c0 << 2) | ($c1 >> 4)) & 0xff)
+                    ((($c0 << 2) | ($c1 >> 4)) & 0xFF)
                 );
                 $err |= ($c0 | $c1) >> 8;
             } elseif ($i < $srcLen && $strictPadding) {
@@ -178,13 +184,15 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
         }
         /** @var bool $check */
         $check = ($err === 0);
-        if (!$check) {
+        if (! $check) {
             throw new RangeException(
                 'Base64::decode() only expects characters in the correct base64 alphabet'
             );
         }
+
         return $dest;
     }
+
     // COPY ParagonIE_Sodium_Core_Base64_Common ENDING HERE
     /**
      * Uses bitwise operators instead of table-lookups to turn 6-bit integers
@@ -194,7 +202,7 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
      * [A-Z]      [a-z]      [0-9]      +     /
      * 0x41-0x5a, 0x61-0x7a, 0x30-0x39, 0x2b, 0x2f
      *
-     * @param int $src
+     * @param  int  $src
      * @return int
      */
     protected static function decode6Bits($src)
@@ -202,19 +210,19 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
         $ret = -1;
 
         // if ($src > 0x40 && $src < 0x5b) $ret += $src - 0x41 + 1; // -64
-        $ret += (((0x40 - $src) & ($src - 0x5b)) >> 8) & ($src - 64);
+        $ret += (((0x40 - $src) & ($src - 0x5B)) >> 8) & ($src - 64);
 
         // if ($src > 0x60 && $src < 0x7b) $ret += $src - 0x61 + 26 + 1; // -70
-        $ret += (((0x60 - $src) & ($src - 0x7b)) >> 8) & ($src - 70);
+        $ret += (((0x60 - $src) & ($src - 0x7B)) >> 8) & ($src - 70);
 
         // if ($src > 0x2f && $src < 0x3a) $ret += $src - 0x30 + 52 + 1; // 5
-        $ret += (((0x2f - $src) & ($src - 0x3a)) >> 8) & ($src + 5);
+        $ret += (((0x2F - $src) & ($src - 0x3A)) >> 8) & ($src + 5);
 
         // if ($src == 0x2c) $ret += 62 + 1;
-        $ret += (((0x2c - $src) & ($src - 0x2e)) >> 8) & 63;
+        $ret += (((0x2C - $src) & ($src - 0x2E)) >> 8) & 63;
 
         // if ($src == 0x5f) ret += 63 + 1;
-        $ret += (((0x5e - $src) & ($src - 0x60)) >> 8) & 64;
+        $ret += (((0x5E - $src) & ($src - 0x60)) >> 8) & 64;
 
         return $ret;
     }
@@ -223,7 +231,7 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
      * Uses bitwise operators instead of table-lookups to turn 8-bit integers
      * into 6-bit integers.
      *
-     * @param int $src
+     * @param  int  $src
      * @return string
      */
     protected static function encode6Bits($src)

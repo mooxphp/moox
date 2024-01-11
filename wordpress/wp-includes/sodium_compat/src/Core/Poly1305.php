@@ -14,9 +14,10 @@ abstract class ParagonIE_Sodium_Core_Poly1305 extends ParagonIE_Sodium_Core_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $m
-     * @param string $key
+     * @param  string  $m
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -30,6 +31,7 @@ abstract class ParagonIE_Sodium_Core_Poly1305 extends ParagonIE_Sodium_Core_Util
         $state = new ParagonIE_Sodium_Core_Poly1305_State(
             self::substr($key, 0, 32)
         );
+
         return $state
             ->update($m)
             ->finish();
@@ -38,10 +40,11 @@ abstract class ParagonIE_Sodium_Core_Poly1305 extends ParagonIE_Sodium_Core_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $mac
-     * @param string $m
-     * @param string $key
+     * @param  string  $mac
+     * @param  string  $m
+     * @param  string  $key
      * @return bool
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -58,6 +61,7 @@ abstract class ParagonIE_Sodium_Core_Poly1305 extends ParagonIE_Sodium_Core_Util
         $calc = $state
             ->update($m)
             ->finish();
+
         return self::verify_16($calc, $mac);
     }
 }

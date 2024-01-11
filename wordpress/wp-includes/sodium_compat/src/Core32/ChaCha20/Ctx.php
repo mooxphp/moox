@@ -19,10 +19,11 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
      *
      * @internal You should not use this directly from another application
      *
-     * @param string $key     ChaCha20 key.
-     * @param string $iv      Initialization Vector (a.k.a. nonce).
-     * @param string $counter The initial counter value.
+     * @param  string  $key     ChaCha20 key.
+     * @param  string  $iv      Initialization Vector (a.k.a. nonce).
+     * @param  string  $counter The initial counter value.
      *                        Defaults to 8 0x00 bytes.
+     *
      * @throws InvalidArgumentException
      * @throws SodiumException
      * @throws TypeError
@@ -38,17 +39,17 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
         $this->container = new SplFixedArray(16);
 
         /* "expand 32-byte k" as per ChaCha20 spec */
-        $this->container[0]  = new ParagonIE_Sodium_Core32_Int32(array(0x6170, 0x7865));
-        $this->container[1]  = new ParagonIE_Sodium_Core32_Int32(array(0x3320, 0x646e));
-        $this->container[2]  = new ParagonIE_Sodium_Core32_Int32(array(0x7962, 0x2d32));
-        $this->container[3]  = new ParagonIE_Sodium_Core32_Int32(array(0x6b20, 0x6574));
+        $this->container[0] = new ParagonIE_Sodium_Core32_Int32([0x6170, 0x7865]);
+        $this->container[1] = new ParagonIE_Sodium_Core32_Int32([0x3320, 0x646E]);
+        $this->container[2] = new ParagonIE_Sodium_Core32_Int32([0x7962, 0x2D32]);
+        $this->container[3] = new ParagonIE_Sodium_Core32_Int32([0x6B20, 0x6574]);
 
-        $this->container[4]  = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 0, 4));
-        $this->container[5]  = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 4, 4));
-        $this->container[6]  = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 8, 4));
-        $this->container[7]  = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 12, 4));
-        $this->container[8]  = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 16, 4));
-        $this->container[9]  = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 20, 4));
+        $this->container[4] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 0, 4));
+        $this->container[5] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 4, 4));
+        $this->container[6] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 8, 4));
+        $this->container[7] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 12, 4));
+        $this->container[8] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 16, 4));
+        $this->container[9] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 20, 4));
         $this->container[10] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 24, 4));
         $this->container[11] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 28, 4));
 
@@ -66,14 +67,14 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
-     * @param int|ParagonIE_Sodium_Core32_Int32 $value
+     * @param  int  $offset
+     * @param  int|ParagonIE_Sodium_Core32_Int32  $value
      * @return void
      */
     #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        if (!is_int($offset)) {
+        if (! is_int($offset)) {
             throw new InvalidArgumentException('Expected an integer');
         }
         if ($value instanceof ParagonIE_Sodium_Core32_Int32) {
@@ -90,8 +91,9 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
+     * @param  int  $offset
      * @return bool
+     *
      * @psalm-suppress MixedArrayOffset
      */
     #[ReturnTypeWillChange]
@@ -103,8 +105,9 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
+     * @param  int  $offset
      * @return void
+     *
      * @psalm-suppress MixedArrayOffset
      */
     #[ReturnTypeWillChange]
@@ -116,8 +119,9 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
+     * @param  int  $offset
      * @return mixed|null
+     *
      * @psalm-suppress MixedArrayOffset
      */
     #[ReturnTypeWillChange]

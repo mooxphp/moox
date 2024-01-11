@@ -3,13 +3,14 @@
 /**
  * SimplePie Redis Cache Extension
  *
- * @package SimplePie
  * @author Jan Kozak <galvani78@gmail.com>
+ *
  * @link http://galvani.cz/
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ *
  * @version 0.2.9
  */
-
 
 /**
  * Caches data to redis
@@ -20,11 +21,10 @@
  * connect to redis on `localhost` on port 6379. All tables will be
  * prefixed with `simple_primary-` and data will expire after 3600 seconds
  *
- * @package SimplePie
- * @subpackage Caching
  * @uses Redis
  */
-class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
+class SimplePie_Cache_Redis implements SimplePie_Cache_Base
+{
     /**
      * Redis instance
      *
@@ -56,11 +56,12 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
     /**
      * Create a new cache object
      *
-     * @param string $location Location string (from SimplePie::$cache_location)
-     * @param string $name Unique ID for the cache
-     * @param string $type Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
+     * @param  string  $location Location string (from SimplePie::$cache_location)
+     * @param  string  $name Unique ID for the cache
+     * @param  string  $type Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
      */
-    public function __construct($location, $name, $options = null) {
+    public function __construct($location, $name, $options = null)
+    {
         //$this->cache = \flow\simple\cache\Redis::getRedisClientInstance();
         $parsed = SimplePie_Cache::parse_URL($location);
         $redis = new Redis();
@@ -69,36 +70,35 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
             $redis->auth($parsed['pass']);
         }
         if (isset($parsed['path'])) {
-            $redis->select((int)substr($parsed['path'], 1));
+            $redis->select((int) substr($parsed['path'], 1));
         }
         $this->cache = $redis;
 
-        if (!is_null($options) && is_array($options)) {
+        if (! is_null($options) && is_array($options)) {
             $this->options = $options;
         } else {
-            $this->options = array (
+            $this->options = [
                 'prefix' => 'rss:simple_primary:',
                 'expire' => 0,
-            );
+            ];
         }
 
-        $this->name = $this->options['prefix'] . $name;
+        $this->name = $this->options['prefix'].$name;
     }
 
-    /**
-     * @param \Redis $cache
-     */
-    public function setRedisClient(\Redis $cache) {
+    public function setRedisClient(\Redis $cache)
+    {
         $this->cache = $cache;
     }
 
     /**
      * Save data to the cache
      *
-     * @param array|SimplePie $data Data to store in the cache. If passed a SimplePie object, only cache the $data property
+     * @param  array|SimplePie  $data Data to store in the cache. If passed a SimplePie object, only cache the $data property
      * @return bool Successfulness
      */
-    public function save($data) {
+    public function save($data)
+    {
         if ($data instanceof SimplePie) {
             $data = $data->data;
         }
@@ -115,12 +115,14 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
      *
      * @return array Data for SimplePie::$data
      */
-    public function load() {
+    public function load()
+    {
         $data = $this->cache->get($this->name);
 
         if ($data !== false) {
             return unserialize($data);
         }
+
         return false;
     }
 
@@ -129,7 +131,8 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
      *
      * @return int Timestamp
      */
-    public function mtime() {
+    public function mtime()
+    {
 
         $data = $this->cache->get($this->name);
 
@@ -145,7 +148,8 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
      *
      * @return bool Success status
      */
-    public function touch() {
+    public function touch()
+    {
 
         $data = $this->cache->get($this->name);
 
@@ -154,6 +158,7 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
             if ($this->options['expire']) {
                 return $this->cache->expire($this->name, $this->options['expire']);
             }
+
             return $return;
         }
 
@@ -165,8 +170,8 @@ class SimplePie_Cache_Redis implements SimplePie_Cache_Base {
      *
      * @return bool Success status
      */
-    public function unlink() {
+    public function unlink()
+    {
         return $this->cache->set($this->name, null);
     }
-
 }

@@ -32,12 +32,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -47,78 +48,75 @@
  * Used by {@see SimplePie_Enclosure::get_rating()} and {@see SimplePie_Enclosure::get_ratings()}
  *
  * This class can be overloaded with {@see SimplePie::set_rating_class()}
- *
- * @package SimplePie
- * @subpackage API
  */
 class SimplePie_Rating
 {
-	/**
-	 * Rating scheme
-	 *
-	 * @var string
-	 * @see get_scheme()
-	 */
-	var $scheme;
+    /**
+     * Rating scheme
+     *
+     * @var string
+     *
+     * @see get_scheme()
+     */
+    public $scheme;
 
-	/**
-	 * Rating value
-	 *
-	 * @var string
-	 * @see get_value()
-	 */
-	var $value;
+    /**
+     * Rating value
+     *
+     * @var string
+     *
+     * @see get_value()
+     */
+    public $value;
 
-	/**
-	 * Constructor, used to input the data
-	 *
-	 * For documentation on all the parameters, see the corresponding
-	 * properties and their accessors
-	 */
-	public function __construct($scheme = null, $value = null)
-	{
-		$this->scheme = $scheme;
-		$this->value = $value;
-	}
+    /**
+     * Constructor, used to input the data
+     *
+     * For documentation on all the parameters, see the corresponding
+     * properties and their accessors
+     */
+    public function __construct($scheme = null, $value = null)
+    {
+        $this->scheme = $scheme;
+        $this->value = $value;
+    }
 
-	/**
-	 * String-ified version
-	 *
-	 * @return string
-	 */
-	public function __toString()
-	{
-		// There is no $this->data here
-		return md5(serialize($this));
-	}
+    /**
+     * String-ified version
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        // There is no $this->data here
+        return md5(serialize($this));
+    }
 
-	/**
-	 * Get the organizational scheme for the rating
-	 *
-	 * @return string|null
-	 */
-	public function get_scheme()
-	{
-		if ($this->scheme !== null)
-		{
-			return $this->scheme;
-		}
+    /**
+     * Get the organizational scheme for the rating
+     *
+     * @return string|null
+     */
+    public function get_scheme()
+    {
+        if ($this->scheme !== null) {
+            return $this->scheme;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Get the value of the rating
-	 *
-	 * @return string|null
-	 */
-	public function get_value()
-	{
-		if ($this->value !== null)
-		{
-			return $this->value;
-		}
+    /**
+     * Get the value of the rating
+     *
+     * @return string|null
+     */
+    public function get_value()
+    {
+        if ($this->value !== null) {
+            return $this->value;
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

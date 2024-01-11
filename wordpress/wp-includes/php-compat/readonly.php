@@ -8,7 +8,6 @@
  *
  * Including this file on PHP >= 8.1 results in a fatal error.
  *
- * @package WordPress
  * @since 5.9.0
  */
 
@@ -21,17 +20,18 @@
  *
  * @since 4.9.0
  * @deprecated 5.9.0 Use wp_readonly() introduced in 5.9.0.
- *
  * @see wp_readonly()
  *
- * @param mixed $readonly_value One of the values to compare.
- * @param mixed $current        Optional. The other value to compare if not just true.
+ * @param  mixed  $readonly_value One of the values to compare.
+ * @param  mixed  $current        Optional. The other value to compare if not just true.
  *                              Default true.
- * @param bool  $display        Optional. Whether to echo or just return the string.
+ * @param  bool  $display        Optional. Whether to echo or just return the string.
  *                              Default true.
  * @return string HTML attribute or empty string.
  */
-function readonly( $readonly_value, $current = true, $display = true ) {
-	_deprecated_function( __FUNCTION__, '5.9.0', 'wp_readonly()' );
-	return wp_readonly( $readonly_value, $current, $display );
+function readonly($readonly_value, $current = true, $display = true)
+{
+    _deprecated_function(__FUNCTION__, '5.9.0', 'wp_readonly()');
+
+    return wp_readonly($readonly_value, $current, $display);
 }

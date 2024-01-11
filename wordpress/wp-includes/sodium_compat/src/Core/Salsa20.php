@@ -16,10 +16,11 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
      *
      * @internal You should not use this directly from another application
      *
-     * @param string $in
-     * @param string $k
-     * @param string|null $c
+     * @param  string  $in
+     * @param  string  $k
+     * @param  string|null  $c
      * @return string
+     *
      * @throws TypeError
      */
     public static function core_salsa20($in, $k, $c = null)
@@ -28,24 +29,24 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
             throw new RangeException('Key must be 32 bytes long');
         }
         if ($c === null) {
-            $j0  = $x0  = 0x61707865;
-            $j5  = $x5  = 0x3320646e;
-            $j10 = $x10 = 0x79622d32;
-            $j15 = $x15 = 0x6b206574;
+            $j0 = $x0 = 0x61707865;
+            $j5 = $x5 = 0x3320646E;
+            $j10 = $x10 = 0x79622D32;
+            $j15 = $x15 = 0x6B206574;
         } else {
-            $j0  = $x0  = self::load_4(self::substr($c, 0, 4));
-            $j5  = $x5  = self::load_4(self::substr($c, 4, 4));
+            $j0 = $x0 = self::load_4(self::substr($c, 0, 4));
+            $j5 = $x5 = self::load_4(self::substr($c, 4, 4));
             $j10 = $x10 = self::load_4(self::substr($c, 8, 4));
             $j15 = $x15 = self::load_4(self::substr($c, 12, 4));
         }
-        $j1  = $x1  = self::load_4(self::substr($k, 0, 4));
-        $j2  = $x2  = self::load_4(self::substr($k, 4, 4));
-        $j3  = $x3  = self::load_4(self::substr($k, 8, 4));
-        $j4  = $x4  = self::load_4(self::substr($k, 12, 4));
-        $j6  = $x6  = self::load_4(self::substr($in, 0, 4));
-        $j7  = $x7  = self::load_4(self::substr($in, 4, 4));
-        $j8  = $x8  = self::load_4(self::substr($in, 8, 4));
-        $j9  = $x9  = self::load_4(self::substr($in, 12, 4));
+        $j1 = $x1 = self::load_4(self::substr($k, 0, 4));
+        $j2 = $x2 = self::load_4(self::substr($k, 4, 4));
+        $j3 = $x3 = self::load_4(self::substr($k, 8, 4));
+        $j4 = $x4 = self::load_4(self::substr($k, 12, 4));
+        $j6 = $x6 = self::load_4(self::substr($in, 0, 4));
+        $j7 = $x7 = self::load_4(self::substr($in, 4, 4));
+        $j8 = $x8 = self::load_4(self::substr($in, 8, 4));
+        $j9 = $x9 = self::load_4(self::substr($in, 12, 4));
         $j11 = $x11 = self::load_4(self::substr($k, 16, 4));
         $j12 = $x12 = self::load_4(self::substr($k, 20, 4));
         $j13 = $x13 = self::load_4(self::substr($k, 24, 4));
@@ -93,16 +94,16 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
             $x15 ^= self::rotate($x14 + $x13, 18);
         }
 
-        $x0  += $j0;
-        $x1  += $j1;
-        $x2  += $j2;
-        $x3  += $j3;
-        $x4  += $j4;
-        $x5  += $j5;
-        $x6  += $j6;
-        $x7  += $j7;
-        $x8  += $j8;
-        $x9  += $j9;
+        $x0 += $j0;
+        $x1 += $j1;
+        $x2 += $j2;
+        $x3 += $j3;
+        $x4 += $j4;
+        $x5 += $j5;
+        $x6 += $j6;
+        $x7 += $j7;
+        $x8 += $j8;
+        $x9 += $j9;
         $x10 += $j10;
         $x11 += $j11;
         $x12 += $j12;
@@ -110,31 +111,32 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
         $x14 += $j14;
         $x15 += $j15;
 
-        return self::store32_le($x0) .
-            self::store32_le($x1) .
-            self::store32_le($x2) .
-            self::store32_le($x3) .
-            self::store32_le($x4) .
-            self::store32_le($x5) .
-            self::store32_le($x6) .
-            self::store32_le($x7) .
-            self::store32_le($x8) .
-            self::store32_le($x9) .
-            self::store32_le($x10) .
-            self::store32_le($x11) .
-            self::store32_le($x12) .
-            self::store32_le($x13) .
-            self::store32_le($x14) .
+        return self::store32_le($x0).
+            self::store32_le($x1).
+            self::store32_le($x2).
+            self::store32_le($x3).
+            self::store32_le($x4).
+            self::store32_le($x5).
+            self::store32_le($x6).
+            self::store32_le($x7).
+            self::store32_le($x8).
+            self::store32_le($x9).
+            self::store32_le($x10).
+            self::store32_le($x11).
+            self::store32_le($x12).
+            self::store32_le($x13).
+            self::store32_le($x14).
             self::store32_le($x15);
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $len
-     * @param string $nonce
-     * @param string $key
+     * @param  int  $len
+     * @param  string  $nonce
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -143,16 +145,16 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
         if (self::strlen($key) !== 32) {
             throw new RangeException('Key must be 32 bytes long');
         }
-        $kcopy = '' . $key;
-        $in = self::substr($nonce, 0, 8) . str_repeat("\0", 8);
+        $kcopy = ''.$key;
+        $in = self::substr($nonce, 0, 8).str_repeat("\0", 8);
         $c = '';
         while ($len >= 64) {
             $c .= self::core_salsa20($in, $kcopy, null);
             $u = 1;
             // Internal counter.
-            for ($i = 8; $i < 16; ++$i) {
+            for ($i = 8; $i < 16; $i++) {
                 $u += self::chrToInt($in[$i]);
-                $in[$i] = self::intToChr($u & 0xff);
+                $in[$i] = self::intToChr($u & 0xFF);
                 $u >>= 8;
             }
             $len -= 64;
@@ -169,17 +171,19 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
         } catch (SodiumException $ex) {
             $kcopy = null;
         }
+
         return $c;
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $m
-     * @param string $n
-     * @param int $ic
-     * @param string $k
+     * @param  string  $m
+     * @param  string  $n
+     * @param  int  $ic
+     * @param  string  $k
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -202,9 +206,9 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
                 self::substr($block, 0, 64)
             );
             $u = 1;
-            for ($i = 8; $i < 16; ++$i) {
+            for ($i = 8; $i < 16; $i++) {
                 $u += self::chrToInt($in[$i]);
-                $in[$i] = self::intToChr($u & 0xff);
+                $in[$i] = self::intToChr($u & 0xFF);
                 $u >>= 8;
             }
 
@@ -233,10 +237,11 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $message
-     * @param string $nonce
-     * @param string $key
+     * @param  string  $message
+     * @param  string  $nonce
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -255,19 +260,20 @@ abstract class ParagonIE_Sodium_Core_Salsa20 extends ParagonIE_Sodium_Core_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $u
-     * @param int $c
+     * @param  int  $u
+     * @param  int  $c
      * @return int
      */
     public static function rotate($u, $c)
     {
-        $u &= 0xffffffff;
+        $u &= 0xFFFFFFFF;
         $c %= 32;
-        return (int) (0xffffffff & (
-                ($u << $c)
-                    |
-                ($u >> (32 - $c))
-            )
+
+        return (int) (0xFFFFFFFF & (
+            ($u << $c)
+                |
+            ($u >> (32 - $c))
+        )
         );
     }
 }

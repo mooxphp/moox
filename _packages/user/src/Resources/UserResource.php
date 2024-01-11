@@ -12,10 +12,10 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Moox\User\UserPlugin;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\ListPage;
 use Moox\User\Resources\UserResource\Widgets\UserWidgets;
+use Moox\User\UserPlugin;
 
 class UserResource extends Resource
 {

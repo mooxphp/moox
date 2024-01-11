@@ -17,8 +17,9 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
      *
      * Base64 character set "[A-Z][a-z][0-9]+/"
      *
-     * @param string $src
+     * @param  string  $src
      * @return string
+     *
      * @throws TypeError
      */
     public static function encode($src)
@@ -31,8 +32,9 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
      *
      * Base64 character set "[A-Z][a-z][0-9]+/"
      *
-     * @param string $src
+     * @param  string  $src
      * @return string
+     *
      * @throws TypeError
      */
     public static function encodeUnpadded($src)
@@ -41,9 +43,10 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
     }
 
     /**
-     * @param string $src
-     * @param bool $pad   Include = padding?
+     * @param  string  $src
+     * @param  bool  $pad   Include = padding?
      * @return string
+     *
      * @throws TypeError
      */
     protected static function doEncode($src, $pad = true)
@@ -59,10 +62,10 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
             $b2 = $chunk[3];
 
             $dest .=
-                self::encode6Bits(               $b0 >> 2       ) .
-                self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63) .
-                self::encode6Bits((($b1 << 2) | ($b2 >> 6)) & 63) .
-                self::encode6Bits(  $b2                     & 63);
+                self::encode6Bits($b0 >> 2).
+                self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63).
+                self::encode6Bits((($b1 << 2) | ($b2 >> 6)) & 63).
+                self::encode6Bits($b2 & 63);
         }
         // The last chunk, which may have padding:
         if ($i < $srcLen) {
@@ -72,21 +75,22 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
             if ($i + 1 < $srcLen) {
                 $b1 = $chunk[2];
                 $dest .=
-                    self::encode6Bits($b0 >> 2) .
-                    self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63) .
+                    self::encode6Bits($b0 >> 2).
+                    self::encode6Bits((($b0 << 4) | ($b1 >> 4)) & 63).
                     self::encode6Bits(($b1 << 2) & 63);
                 if ($pad) {
                     $dest .= '=';
                 }
             } else {
                 $dest .=
-                    self::encode6Bits( $b0 >> 2) .
+                    self::encode6Bits($b0 >> 2).
                     self::encode6Bits(($b0 << 4) & 63);
                 if ($pad) {
                     $dest .= '==';
                 }
             }
         }
+
         return $dest;
     }
 
@@ -95,11 +99,13 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
      *
      * Base64 character set "./[A-Z][a-z][0-9]"
      *
-     * @param string $src
-     * @param bool $strictPadding
+     * @param  string  $src
+     * @param  bool  $strictPadding
      * @return string
+     *
      * @throws RangeException
      * @throws TypeError
+     *
      * @psalm-suppress RedundantCondition
      */
     public static function decode($src, $strictPadding = false)
@@ -147,9 +153,9 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
 
             $dest .= pack(
                 'CCC',
-                ((($c0 << 2) | ($c1 >> 4)) & 0xff),
-                ((($c1 << 4) | ($c2 >> 2)) & 0xff),
-                ((($c2 << 6) |  $c3      ) & 0xff)
+                ((($c0 << 2) | ($c1 >> 4)) & 0xFF),
+                ((($c1 << 4) | ($c2 >> 2)) & 0xFF),
+                ((($c2 << 6) | $c3) & 0xFF)
             );
             $err |= ($c0 | $c1 | $c2 | $c3) >> 8;
         }
@@ -164,15 +170,15 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
                 $c2 = self::decode6Bits($chunk[3]);
                 $dest .= pack(
                     'CC',
-                    ((($c0 << 2) | ($c1 >> 4)) & 0xff),
-                    ((($c1 << 4) | ($c2 >> 2)) & 0xff)
+                    ((($c0 << 2) | ($c1 >> 4)) & 0xFF),
+                    ((($c1 << 4) | ($c2 >> 2)) & 0xFF)
                 );
                 $err |= ($c0 | $c1 | $c2) >> 8;
             } elseif ($i + 1 < $srcLen) {
                 $c1 = self::decode6Bits($chunk[2]);
                 $dest .= pack(
                     'C',
-                    ((($c0 << 2) | ($c1 >> 4)) & 0xff)
+                    ((($c0 << 2) | ($c1 >> 4)) & 0xFF)
                 );
                 $err |= ($c0 | $c1) >> 8;
             } elseif ($i < $srcLen && $strictPadding) {
@@ -181,11 +187,12 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
         }
         /** @var bool $check */
         $check = ($err === 0);
-        if (!$check) {
+        if (! $check) {
             throw new RangeException(
                 'Base64::decode() only expects characters in the correct base64 alphabet'
             );
         }
+
         return $dest;
     }
 
@@ -197,7 +204,7 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
      * [A-Z]      [a-z]      [0-9]      +     /
      * 0x41-0x5a, 0x61-0x7a, 0x30-0x39, 0x2b, 0x2f
      *
-     * @param int $src
+     * @param  int  $src
      * @return int
      */
     abstract protected static function decode6Bits($src);
@@ -206,7 +213,7 @@ abstract class ParagonIE_Sodium_Core_Base64_Common
      * Uses bitwise operators instead of table-lookups to turn 8-bit integers
      * into 6-bit integers.
      *
-     * @param int $src
+     * @param  int  $src
      * @return string
      */
     abstract protected static function encode6Bits($src);

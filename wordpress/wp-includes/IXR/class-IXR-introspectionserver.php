@@ -3,74 +3,75 @@
 /**
  * IXR_IntrospectionServer
  *
- * @package IXR
  * @since 1.5.0
  */
 class IXR_IntrospectionServer extends IXR_Server
 {
-    var $signatures;
-    var $help;
+    public $signatures;
 
-	/**
-	 * PHP5 constructor.
-	 */
-    function __construct()
+    public $help;
+
+    /**
+     * PHP5 constructor.
+     */
+    public function __construct()
     {
         $this->setCallbacks();
         $this->setCapabilities();
-        $this->capabilities['introspection'] = array(
+        $this->capabilities['introspection'] = [
             'specUrl' => 'http://xmlrpc.usefulinc.com/doc/reserved.html',
-            'specVersion' => 1
-        );
+            'specVersion' => 1,
+        ];
         $this->addCallback(
             'system.methodSignature',
             'this:methodSignature',
-            array('array', 'string'),
+            ['array', 'string'],
             'Returns an array describing the return type and required parameters of a method'
         );
         $this->addCallback(
             'system.getCapabilities',
             'this:getCapabilities',
-            array('struct'),
+            ['struct'],
             'Returns a struct describing the XML-RPC specifications supported by this server'
         );
         $this->addCallback(
             'system.listMethods',
             'this:listMethods',
-            array('array'),
+            ['array'],
             'Returns an array of available methods on this server'
         );
         $this->addCallback(
             'system.methodHelp',
             'this:methodHelp',
-            array('string', 'string'),
+            ['string', 'string'],
             'Returns a documentation string for the specified method'
         );
     }
 
-	/**
-	 * PHP4 constructor.
-	 */
-	public function IXR_IntrospectionServer() {
-		self::__construct();
-	}
+    /**
+     * PHP4 constructor.
+     */
+    public function IXR_IntrospectionServer()
+    {
+        self::__construct();
+    }
 
-    function addCallback($method, $callback, $args, $help)
+    public function addCallback($method, $callback, $args, $help)
     {
         $this->callbacks[$method] = $callback;
         $this->signatures[$method] = $args;
         $this->help[$method] = $help;
     }
 
-    function call($methodname, $args)
+    public function call($methodname, $args)
     {
         // Make sure it's in an array
-        if ($args && !is_array($args)) {
-            $args = array($args);
+        if ($args && ! is_array($args)) {
+            $args = [$args];
         }
 
         // Over-rides default call method, adds signature check
-        if (!$this->hasMethod($methodname)) {
+        if (! $this->hasMethod($methodname)) {
             return new IXR_Error(-32601, 'server error. requested method "'.$this->message->methodName.'" not specified.');
         }
         $method = $this->callbacks[$methodname];
@@ -91,13 +92,13 @@ class IXR_IntrospectionServer extends IXR_Server
             switch ($type) {
                 case 'int':
                 case 'i4':
-                    if (is_array($arg) || !is_int($arg)) {
+                    if (is_array($arg) || ! is_int($arg)) {
                         $ok = false;
                     }
                     break;
                 case 'base64':
                 case 'string':
-                    if (!is_string($arg)) {
+                    if (! is_string($arg)) {
                         $ok = false;
                     }
                     break;
@@ -108,33 +109,34 @@ class IXR_IntrospectionServer extends IXR_Server
                     break;
                 case 'float':
                 case 'double':
-                    if (!is_float($arg)) {
+                    if (! is_float($arg)) {
                         $ok = false;
                     }
                     break;
                 case 'date':
                 case 'dateTime.iso8601':
-                    if (!is_a($arg, 'IXR_Date')) {
+                    if (! is_a($arg, 'IXR_Date')) {
                         $ok = false;
                     }
                     break;
             }
-            if (!$ok) {
+            if (! $ok) {
                 return new IXR_Error(-32602, 'server error. invalid method parameters');
             }
         }
+
         // It passed the test - run the "real" method call
         return parent::call($methodname, $argsbackup);
     }
 
-    function methodSignature($method)
+    public function methodSignature($method)
     {
-        if (!$this->hasMethod($method)) {
+        if (! $this->hasMethod($method)) {
             return new IXR_Error(-32601, 'server error. requested method "'.$method.'" not specified.');
         }
         // We should be returning an array of types
         $types = $this->signatures[$method];
-        $return = array();
+        $return = [];
         foreach ($types as $type) {
             switch ($type) {
                 case 'string':
@@ -157,17 +159,18 @@ class IXR_IntrospectionServer extends IXR_Server
                     $return[] = new IXR_Base64('base64');
                     break;
                 case 'array':
-                    $return[] = array('array');
+                    $return[] = ['array'];
                     break;
                 case 'struct':
-                    $return[] = array('struct' => 'struct');
+                    $return[] = ['struct' => 'struct'];
                     break;
             }
         }
+
         return $return;
     }
 
-    function methodHelp($method)
+    public function methodHelp($method)
     {
         return $this->help[$method];
     }

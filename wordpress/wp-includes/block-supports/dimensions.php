@@ -6,7 +6,6 @@
  * appears under the "Dimensions" panel in the editor. It remains in its
  * original `spacing.php` file for compatibility with core.
  *
- * @package WordPress
  * @since 5.9.0
  */
 
@@ -14,28 +13,28 @@
  * Registers the style block attribute for block types that support it.
  *
  * @since 5.9.0
- * @access private
  *
- * @param WP_Block_Type $block_type Block Type.
+ * @param  WP_Block_Type  $block_type Block Type.
  */
-function wp_register_dimensions_support( $block_type ) {
-	// Setup attributes and styles within that if needed.
-	if ( ! $block_type->attributes ) {
-		$block_type->attributes = array();
-	}
+function wp_register_dimensions_support($block_type)
+{
+    // Setup attributes and styles within that if needed.
+    if (! $block_type->attributes) {
+        $block_type->attributes = [];
+    }
 
-	// Check for existing style attribute definition e.g. from block.json.
-	if ( array_key_exists( 'style', $block_type->attributes ) ) {
-		return;
-	}
+    // Check for existing style attribute definition e.g. from block.json.
+    if (array_key_exists('style', $block_type->attributes)) {
+        return;
+    }
 
-	$has_dimensions_support = block_has_support( $block_type, 'dimensions', false );
+    $has_dimensions_support = block_has_support($block_type, 'dimensions', false);
 
-	if ( $has_dimensions_support ) {
-		$block_type->attributes['style'] = array(
-			'type' => 'object',
-		);
-	}
+    if ($has_dimensions_support) {
+        $block_type->attributes['style'] = [
+            'type' => 'object',
+        ];
+    }
 }
 
 /**
@@ -44,50 +43,50 @@ function wp_register_dimensions_support( $block_type ) {
  *
  * @since 5.9.0
  * @since 6.2.0 Added `minHeight` support.
- * @access private
  *
- * @param WP_Block_Type $block_type       Block Type.
- * @param array         $block_attributes Block attributes.
+ * @param  WP_Block_Type  $block_type       Block Type.
+ * @param  array  $block_attributes Block attributes.
  * @return array Block dimensions CSS classes and inline styles.
  */
-function wp_apply_dimensions_support( $block_type, $block_attributes ) {
-	if ( wp_should_skip_block_supports_serialization( $block_type, 'dimensions' ) ) {
-		return array();
-	}
+function wp_apply_dimensions_support($block_type, $block_attributes)
+{
+    if (wp_should_skip_block_supports_serialization($block_type, 'dimensions')) {
+        return [];
+    }
 
-	$attributes = array();
+    $attributes = [];
 
-	// Width support to be added in near future.
+    // Width support to be added in near future.
 
-	$has_min_height_support = block_has_support( $block_type, array( 'dimensions', 'minHeight' ), false );
-	$block_styles           = isset( $block_attributes['style'] ) ? $block_attributes['style'] : null;
+    $has_min_height_support = block_has_support($block_type, ['dimensions', 'minHeight'], false);
+    $block_styles = isset($block_attributes['style']) ? $block_attributes['style'] : null;
 
-	if ( ! $block_styles ) {
-		return $attributes;
-	}
+    if (! $block_styles) {
+        return $attributes;
+    }
 
-	$skip_min_height                      = wp_should_skip_block_supports_serialization( $block_type, 'dimensions', 'minHeight' );
-	$dimensions_block_styles              = array();
-	$dimensions_block_styles['minHeight'] = null;
-	if ( $has_min_height_support && ! $skip_min_height ) {
-		$dimensions_block_styles['minHeight'] = isset( $block_styles['dimensions']['minHeight'] )
-			? $block_styles['dimensions']['minHeight']
-			: null;
-	}
-	$styles = wp_style_engine_get_styles( array( 'dimensions' => $dimensions_block_styles ) );
+    $skip_min_height = wp_should_skip_block_supports_serialization($block_type, 'dimensions', 'minHeight');
+    $dimensions_block_styles = [];
+    $dimensions_block_styles['minHeight'] = null;
+    if ($has_min_height_support && ! $skip_min_height) {
+        $dimensions_block_styles['minHeight'] = isset($block_styles['dimensions']['minHeight'])
+            ? $block_styles['dimensions']['minHeight']
+            : null;
+    }
+    $styles = wp_style_engine_get_styles(['dimensions' => $dimensions_block_styles]);
 
-	if ( ! empty( $styles['css'] ) ) {
-		$attributes['style'] = $styles['css'];
-	}
+    if (! empty($styles['css'])) {
+        $attributes['style'] = $styles['css'];
+    }
 
-	return $attributes;
+    return $attributes;
 }
 
 // Register the block support.
 WP_Block_Supports::get_instance()->register(
-	'dimensions',
-	array(
-		'register_attribute' => 'wp_register_dimensions_support',
-		'apply'              => 'wp_apply_dimensions_support',
-	)
+    'dimensions',
+    [
+        'register_attribute' => 'wp_register_dimensions_support',
+        'apply' => 'wp_apply_dimensions_support',
+    ]
 );

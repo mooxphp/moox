@@ -1,8 +1,6 @@
 <?php
 /**
  * Theme previews using the Site Editor for block themes.
- *
- * @package WordPress
  */
 
 /**
@@ -10,27 +8,28 @@
  *
  * @since 6.3.0
  *
- * @param string $current_stylesheet The current theme's stylesheet or template path.
+ * @param  string  $current_stylesheet The current theme's stylesheet or template path.
  * @return string The previewed theme's stylesheet or template path.
  */
-function wp_get_theme_preview_path( $current_stylesheet = null ) {
-	if ( ! current_user_can( 'switch_themes' ) ) {
-		return $current_stylesheet;
-	}
+function wp_get_theme_preview_path($current_stylesheet = null)
+{
+    if (! current_user_can('switch_themes')) {
+        return $current_stylesheet;
+    }
 
-	$preview_stylesheet = ! empty( $_GET['wp_theme_preview'] ) ? sanitize_text_field( wp_unslash( $_GET['wp_theme_preview'] ) ) : null;
-	$wp_theme           = wp_get_theme( $preview_stylesheet );
-	if ( ! is_wp_error( $wp_theme->errors() ) ) {
-		if ( current_filter() === 'template' ) {
-			$theme_path = $wp_theme->get_template();
-		} else {
-			$theme_path = $wp_theme->get_stylesheet();
-		}
+    $preview_stylesheet = ! empty($_GET['wp_theme_preview']) ? sanitize_text_field(wp_unslash($_GET['wp_theme_preview'])) : null;
+    $wp_theme = wp_get_theme($preview_stylesheet);
+    if (! is_wp_error($wp_theme->errors())) {
+        if (current_filter() === 'template') {
+            $theme_path = $wp_theme->get_template();
+        } else {
+            $theme_path = $wp_theme->get_stylesheet();
+        }
 
-		return sanitize_text_field( $theme_path );
-	}
+        return sanitize_text_field($theme_path);
+    }
 
-	return $current_stylesheet;
+    return $current_stylesheet;
 }
 
 /**
@@ -39,20 +38,21 @@ function wp_get_theme_preview_path( $current_stylesheet = null ) {
  *
  * @since 6.3.0
  */
-function wp_attach_theme_preview_middleware() {
-	// Don't allow non-admins to preview themes.
-	if ( ! current_user_can( 'switch_themes' ) ) {
-		return;
-	}
+function wp_attach_theme_preview_middleware()
+{
+    // Don't allow non-admins to preview themes.
+    if (! current_user_can('switch_themes')) {
+        return;
+    }
 
-	wp_add_inline_script(
-		'wp-api-fetch',
-		sprintf(
-			'wp.apiFetch.use( wp.apiFetch.createThemePreviewMiddleware( %s ) );',
-			wp_json_encode( sanitize_text_field( wp_unslash( $_GET['wp_theme_preview'] ) ) )
-		),
-		'after'
-	);
+    wp_add_inline_script(
+        'wp-api-fetch',
+        sprintf(
+            'wp.apiFetch.use( wp.apiFetch.createThemePreviewMiddleware( %s ) );',
+            wp_json_encode(sanitize_text_field(wp_unslash($_GET['wp_theme_preview'])))
+        ),
+        'after'
+    );
 }
 
 /**
@@ -62,15 +62,16 @@ function wp_attach_theme_preview_middleware() {
  * required to activate a theme. For use within the site editor.
  *
  * @see https://github.com/WordPress/gutenberg/pull/41836.
- *
  * @since 6.3.0
+ *
  * @private
  */
-function wp_block_theme_activate_nonce() {
-	$nonce_handle = 'switch-theme_' . wp_get_theme_preview_path();
-	?>
+function wp_block_theme_activate_nonce()
+{
+    $nonce_handle = 'switch-theme_'.wp_get_theme_preview_path();
+    ?>
 	<script type="text/javascript">
-		window.WP_BLOCK_THEME_ACTIVATE_NONCE = <?php echo wp_json_encode( wp_create_nonce( $nonce_handle ) ); ?>;
+		window.WP_BLOCK_THEME_ACTIVATE_NONCE = <?php echo wp_json_encode(wp_create_nonce($nonce_handle)); ?>;
 	</script>
 	<?php
 }
@@ -83,11 +84,12 @@ function wp_block_theme_activate_nonce() {
  *
  * @since 6.3.2
  */
-function wp_initialize_theme_preview_hooks() {
-	if ( ! empty( $_GET['wp_theme_preview'] ) ) {
-		add_filter( 'stylesheet', 'wp_get_theme_preview_path' );
-		add_filter( 'template', 'wp_get_theme_preview_path' );
-		add_action( 'init', 'wp_attach_theme_preview_middleware' );
-		add_action( 'admin_head', 'wp_block_theme_activate_nonce' );
-	}
+function wp_initialize_theme_preview_hooks()
+{
+    if (! empty($_GET['wp_theme_preview'])) {
+        add_filter('stylesheet', 'wp_get_theme_preview_path');
+        add_filter('template', 'wp_get_theme_preview_path');
+        add_action('init', 'wp_attach_theme_preview_middleware');
+        add_action('admin_head', 'wp_block_theme_activate_nonce');
+    }
 }
