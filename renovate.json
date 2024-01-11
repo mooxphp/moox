@@ -7,6 +7,9 @@
         "enabled": true,
         "schedule": "after 12am and before 6am"
     },
+    "ignorePaths": [
+        "**/wordpress/**"
+    ],
     "packageRules": [
         {
             "managers": [
