@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\alert;
 use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
@@ -136,6 +135,13 @@ class InstallCommand extends Command
 
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
+        if (! File::exists($providerPath)) {
+
+            info('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist. We try to install now ...');
+            $this->call('artisan filament:install --panels');
+
+        }
+
         if (File::exists($providerPath)) {
 
             $content = File::get($providerPath);
@@ -193,10 +199,6 @@ class InstallCommand extends Command
 
                 File::put($providerPath, $newContent);
             }
-
-        } else {
-
-            alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
     }
 
