@@ -6,8 +6,8 @@ This integrates WordPress into Filament - work in progress.
 
 Developers notes:
 
--   in deployment you must create a symbolic link (see deploy.sh)
 -   in main composer.json you must allow the plugin for the wordpress installer
+-   add the contents of deploy.sh to your deployment (e.g. on Forge) to create the symlink
 
 ```json
         "allow-plugins": {

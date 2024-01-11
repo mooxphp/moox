@@ -1,4 +1,4 @@
-# this should be added to your deployment script
+#!/bin/bash
 
 cd /public
 ln -s ../wordpress wp
