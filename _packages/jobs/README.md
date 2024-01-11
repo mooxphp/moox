@@ -137,10 +137,10 @@ Register the Plugins in `app/Providers/Filament/AdminPanelProvider.php`:
 
 ```php
 ->plugins([
-	JobsPlugin::make(),
-    JobsWaitingPlugin::make(),
-	JobsFailedPlugin::make(),
-	JobsBatchesPlugin::make(),
+    \Moox\Jobs\JobsPlugin::make(),
+    \Moox\Jobs\JobsWaitingPlugin::make(),
+    \Moox\Jobs\JobsFailedPlugin::make(),
+    \Moox\Jobs\JobsBatchesPlugin::make(),
 ])
 ```
 
@@ -148,7 +148,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 
 ```php
 ->plugins([
-	JobsPlugin::make()
+	\Moox\Jobs\JobsPlugin::make()
 	    ->label('Job runs')
 	    ->pluralLabel('Jobs that seems to run')
 	    ->enableNavigation(true)
@@ -158,7 +158,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 	    ->navigationCountBadge(true)
 	    ->enablePruning(true)
 	    ->pruningRetention(7),
-	JobsWaitingPlugin::make()
+	\Moox\Jobs\JobsWaitingPlugin::make()
 	    ->label('Job waiting')
 	    ->pluralLabel('Jobs waiting in line')
 	    ->enableNavigation(true)
@@ -166,7 +166,7 @@ Instead of publishing and modifying the config-file, you can also do all setting
 	    ->navigationGroup('My Jobs and Queues')
 	    ->navigationSort(5)
 	    ->navigationCountBadge(true)
-	JobsFailedPlugin::make()
+	\Moox\Jobs\JobsFailedPlugin::make()
 	    ->label('Job failed')
 	    ->pluralLabel('Jobs that failed hard')
 	    ->enableNavigation(true)
