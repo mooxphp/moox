@@ -649,7 +649,7 @@ function get_current_user_id()
     }
     $user = wp_get_current_user();
 
-    return  isset($user->ID) ? (int) $user->ID : 0;
+    return isset($user->ID) ? (int) $user->ID : 0;
 }
 
 /**

@@ -622,10 +622,10 @@ if (current_user_can('create_users')) {
 		<th scope="row"><label for="role"><?php _e('Role'); ?></label></th>
 		<td><select name="role" id="role">
 			<?php
-            if (! $new_user_role) {
-                $new_user_role = get_option('default_role');
-            }
-            wp_dropdown_roles($new_user_role);
+	        if (! $new_user_role) {
+	            $new_user_role = get_option('default_role');
+	        }
+	        wp_dropdown_roles($new_user_role);
 	    ?>
 			</select>
 		</td>

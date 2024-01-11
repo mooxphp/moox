@@ -205,7 +205,8 @@ function get_category_by_slug($slug)
  * @return int Category ID on success, 0 if the category doesn't exist.
  */
 function get_cat_ID($cat_name) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{$cat = get_term_by('name', $cat_name, 'category');
+{
+    $cat = get_term_by('name', $cat_name, 'category');
 
     if ($cat) {
         return $cat->term_id;

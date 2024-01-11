@@ -814,10 +814,10 @@ class Custom_Image_Header
 		}
 
         /**
-		         * Fires just before the submit button in the custom header options form.
-		         *
-		         * @since 3.1.0
-		         */
+		 * Fires just before the submit button in the custom header options form.
+		 *
+		 * @since 3.1.0
+		 */
         do_action('custom_header_options');
 
         wp_nonce_field('custom-header-options', '_wpnonce-custom-header-options');

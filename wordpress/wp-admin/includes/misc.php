@@ -991,7 +991,8 @@ function iis7_add_rewrite_rule($filename, $rewrite_rule)
  * @param  string  $filename
  */
 function saveDomDocument($doc, $filename) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{$config = $doc->saveXML();
+{
+    $config = $doc->saveXML();
     $config = preg_replace("/([^\r])\n/", "$1\r\n", $config);
 
     $fp = fopen($filename, 'w');

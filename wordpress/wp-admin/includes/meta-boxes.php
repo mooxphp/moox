@@ -1248,13 +1248,13 @@ function link_target_meta_box($link)
     ?>
 </span></legend>
 <p><label for="link_target_blank" class="selectit">
-<input id="link_target_blank" type="radio" name="link_target" value="_blank" <?php echo  isset($link->link_target) && ($link->link_target === '_blank') ? 'checked="checked"' : ''; ?> />
+<input id="link_target_blank" type="radio" name="link_target" value="_blank" <?php echo isset($link->link_target) && ($link->link_target === '_blank') ? 'checked="checked"' : ''; ?> />
 	<?php _e('<code>_blank</code> &mdash; new window or tab.'); ?></label></p>
 <p><label for="link_target_top" class="selectit">
-<input id="link_target_top" type="radio" name="link_target" value="_top" <?php echo  isset($link->link_target) && ($link->link_target === '_top') ? 'checked="checked"' : ''; ?> />
+<input id="link_target_top" type="radio" name="link_target" value="_top" <?php echo isset($link->link_target) && ($link->link_target === '_top') ? 'checked="checked"' : ''; ?> />
 	<?php _e('<code>_top</code> &mdash; current window or tab, with no frames.'); ?></label></p>
 <p><label for="link_target_none" class="selectit">
-<input id="link_target_none" type="radio" name="link_target" value="" <?php echo  isset($link->link_target) && ($link->link_target === '') ? 'checked="checked"' : ''; ?> />
+<input id="link_target_none" type="radio" name="link_target" value="" <?php echo isset($link->link_target) && ($link->link_target === '') ? 'checked="checked"' : ''; ?> />
 	<?php _e('<code>_none</code> &mdash; same window or tab.'); ?></label></p>
 </fieldset>
 <p><?php _e('Choose the target frame for your link.'); ?></p>
@@ -1334,7 +1334,7 @@ function link_xfn_meta_box($link)
 <table class="links-table">
 	<tr>
 		<th scope="row"><label for="link_rel"><?php /* translators: xfn: https://gmpg.org/xfn/ */ _e('rel:'); ?></label></th>
-		<td><input type="text" name="link_rel" id="link_rel" value="<?php echo  isset($link->link_rel) ? esc_attr($link->link_rel) : ''; ?>" /></td>
+		<td><input type="text" name="link_rel" id="link_rel" value="<?php echo isset($link->link_rel) ? esc_attr($link->link_rel) : ''; ?>" /></td>
 	</tr>
 	<tr>
 		<th scope="row"><?php /* translators: xfn: https://gmpg.org/xfn/ */ _e('identity'); ?></th>
@@ -1495,15 +1495,15 @@ function link_advanced_meta_box($link)
 <table class="links-table" cellpadding="0">
 	<tr>
 		<th scope="row"><label for="link_image"><?php _e('Image Address'); ?></label></th>
-		<td><input type="text" name="link_image" class="code" id="link_image" maxlength="255" value="<?php echo  isset($link->link_image) ? esc_attr($link->link_image) : ''; ?>" /></td>
+		<td><input type="text" name="link_image" class="code" id="link_image" maxlength="255" value="<?php echo isset($link->link_image) ? esc_attr($link->link_image) : ''; ?>" /></td>
 	</tr>
 	<tr>
 		<th scope="row"><label for="rss_uri"><?php _e('RSS Address'); ?></label></th>
-		<td><input name="link_rss" class="code" type="text" id="rss_uri" maxlength="255" value="<?php echo  isset($link->link_rss) ? esc_attr($link->link_rss) : ''; ?>" /></td>
+		<td><input name="link_rss" class="code" type="text" id="rss_uri" maxlength="255" value="<?php echo isset($link->link_rss) ? esc_attr($link->link_rss) : ''; ?>" /></td>
 	</tr>
 	<tr>
 		<th scope="row"><label for="link_notes"><?php _e('Notes'); ?></label></th>
-		<td><textarea name="link_notes" id="link_notes" rows="10"><?php echo  isset($link->link_notes) ? $link->link_notes : ''; // textarea_escaped?></textarea></td>
+		<td><textarea name="link_notes" id="link_notes" rows="10"><?php echo isset($link->link_notes) ? $link->link_notes : ''; // textarea_escaped?></textarea></td>
 	</tr>
 	<tr>
 		<th scope="row"><label for="link_rating"><?php _e('Rating'); ?></label></th>

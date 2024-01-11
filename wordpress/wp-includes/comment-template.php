@@ -310,7 +310,8 @@ function comment_author_link($comment_id = 0)
  * @return string Comment author's IP address, or an empty string if it's not available.
  */
 function get_comment_author_IP($comment_id = 0) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{$comment = get_comment($comment_id);
+{
+    $comment = get_comment($comment_id);
 
     /**
      * Filters the comment author's returned IP address.
@@ -335,7 +336,8 @@ function get_comment_author_IP($comment_id = 0) // phpcs:ignore WordPress.Naming
  *                                   Default current comment.
  */
 function comment_author_IP($comment_id = 0) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{echo esc_html(get_comment_author_IP($comment_id));
+{
+    echo esc_html(get_comment_author_IP($comment_id));
 }
 
 /**
@@ -728,7 +730,8 @@ function comment_excerpt($comment_id = 0)
  * @return string The comment ID as a numeric string.
  */
 function get_comment_ID() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{$comment = get_comment();
+{
+    $comment = get_comment();
 
     $comment_id = ! empty($comment->comment_ID) ? $comment->comment_ID : '0';
 
@@ -750,7 +753,8 @@ function get_comment_ID() // phpcs:ignore WordPress.NamingConventions.ValidFunct
  * @since 0.71
  */
 function comment_ID() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{echo get_comment_ID();
+{
+    echo get_comment_ID();
 }
 
 /**

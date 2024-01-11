@@ -2171,7 +2171,8 @@ function move_dir($from, $to, $overwrite = false)
  *                   null if the filesystem method class file does not exist.
  */
 function WP_Filesystem($args = false, $context = false, $allow_relaxed_file_ownership = false) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{global $wp_filesystem;
+{
+    global $wp_filesystem;
 
     require_once ABSPATH.'wp-admin/includes/class-wp-filesystem-base.php';
 

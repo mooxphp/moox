@@ -107,7 +107,8 @@ function get_the_category($post_id = false)
  * @return string|WP_Error Category name on success, WP_Error on failure.
  */
 function get_the_category_by_ID($cat_id) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{$cat_id = (int) $cat_id;
+{
+    $cat_id = (int) $cat_id;
     $category = get_term($cat_id);
 
     if (is_wp_error($category)) {
@@ -1099,7 +1100,7 @@ function _wp_object_name_sort_cb($a, $b)
  */
 function _wp_object_count_sort_cb($a, $b)
 {
-    return  $a->count - $b->count;
+    return $a->count - $b->count;
 }
 
 //

@@ -11,7 +11,8 @@
  * @since 0.71
  */
 function the_ID() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{echo get_the_ID();
+{
+    echo get_the_ID();
 }
 
 /**
@@ -22,7 +23,8 @@ function the_ID() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.
  * @return int|false The ID of the current item in the WordPress Loop. False if $post is not set.
  */
 function get_the_ID() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{$post = get_post();
+{
+    $post = get_post();
 
     return ! empty($post) ? $post->ID : false;
 }
@@ -456,7 +458,7 @@ function has_excerpt($post = 0)
 {
     $post = get_post($post);
 
-    return  ! empty($post->post_excerpt);
+    return ! empty($post->post_excerpt);
 }
 
 /**
@@ -1853,7 +1855,7 @@ function is_page_template($template = '')
         }
     }
 
-    return  $template === 'default' && ! $page_template;
+    return $template === 'default' && ! $page_template;
 }
 
 /**

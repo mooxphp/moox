@@ -562,14 +562,14 @@ define( 'BLOG_ID_CURRENT_SITE', 1 );
 </textarea>
 		<?php
         $keys_salts = [
-    'AUTH_KEY' => '',
-    'SECURE_AUTH_KEY' => '',
-    'LOGGED_IN_KEY' => '',
-    'NONCE_KEY' => '',
-    'AUTH_SALT' => '',
-    'SECURE_AUTH_SALT' => '',
-    'LOGGED_IN_SALT' => '',
-    'NONCE_SALT' => '',
+            'AUTH_KEY' => '',
+            'SECURE_AUTH_KEY' => '',
+            'LOGGED_IN_KEY' => '',
+            'NONCE_KEY' => '',
+            'AUTH_SALT' => '',
+            'SECURE_AUTH_SALT' => '',
+            'LOGGED_IN_SALT' => '',
+            'NONCE_SALT' => '',
         ];
     foreach ($keys_salts as $c => $v) {
         if (defined($c)) {

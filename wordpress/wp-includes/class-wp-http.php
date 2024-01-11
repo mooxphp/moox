@@ -738,7 +738,8 @@ class WP_Http
      * }
      */
     public static function processResponse($response) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-    {$response = explode("\r\n\r\n", $response, 2);
+    {
+        $response = explode("\r\n\r\n", $response, 2);
 
         return [
             'headers' => $response[0],
@@ -854,27 +855,28 @@ class WP_Http
      * @param  array  $r Full array of args passed into ::request()
      */
     public static function buildCookieHeader(&$r) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-    {if (! empty($r['cookies'])) {
-        // Upgrade any name => value cookie pairs to WP_HTTP_Cookie instances.
-        foreach ($r['cookies'] as $name => $value) {
-            if (! is_object($value)) {
-                $r['cookies'][$name] = new WP_Http_Cookie(
-                    [
-                        'name' => $name,
-                        'value' => $value,
-                    ]
-                );
+    {
+        if (! empty($r['cookies'])) {
+            // Upgrade any name => value cookie pairs to WP_HTTP_Cookie instances.
+            foreach ($r['cookies'] as $name => $value) {
+                if (! is_object($value)) {
+                    $r['cookies'][$name] = new WP_Http_Cookie(
+                        [
+                            'name' => $name,
+                            'value' => $value,
+                        ]
+                    );
+                }
             }
-        }
 
-        $cookies_header = '';
-        foreach ((array) $r['cookies'] as $cookie) {
-            $cookies_header .= $cookie->getHeaderValue().'; ';
-        }
+            $cookies_header = '';
+            foreach ((array) $r['cookies'] as $cookie) {
+                $cookies_header .= $cookie->getHeaderValue().'; ';
+            }
 
-        $cookies_header = substr($cookies_header, 0, -2);
-        $r['headers']['cookie'] = $cookies_header;
-    }
+            $cookies_header = substr($cookies_header, 0, -2);
+            $r['headers']['cookie'] = $cookies_header;
+        }
     }
 
     /**

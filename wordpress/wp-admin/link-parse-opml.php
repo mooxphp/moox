@@ -29,7 +29,8 @@ global $opml;
  * @param  array  $attrs    XML element attributes.
  */
 function startElement($parser, $tag_name, $attrs) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{global $names, $urls, $targets, $descriptions, $feeds;
+{
+    global $names, $urls, $targets, $descriptions, $feeds;
 
     if ($tag_name === 'OUTLINE') {
         $name = '';

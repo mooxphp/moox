@@ -467,7 +467,7 @@ final class WP_Screen
             return (bool) $this->in_admin;
         }
 
-        return  $admin === $this->in_admin;
+        return $admin === $this->in_admin;
     }
 
     /**

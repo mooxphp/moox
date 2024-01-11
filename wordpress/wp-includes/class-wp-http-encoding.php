@@ -214,7 +214,7 @@ class WP_Http_Encoding
                 return true;
             }
         } elseif (is_string($headers)) {
-            return  stripos($headers, 'content-encoding:') !== false;
+            return stripos($headers, 'content-encoding:') !== false;
         }
 
         return false;
@@ -233,6 +233,6 @@ class WP_Http_Encoding
      */
     public static function is_available()
     {
-        return  function_exists('gzuncompress') || function_exists('gzdeflate') || function_exists('gzinflate');
+        return function_exists('gzuncompress') || function_exists('gzdeflate') || function_exists('gzinflate');
     }
 }

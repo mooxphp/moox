@@ -705,18 +705,18 @@ function install_plugin_information()
 			<?php } if (isset($api->active_installs)) { ?>
 				<li><strong><?php _e('Active Installations:'); ?></strong>
 				<?php
-                if ($api->active_installs >= 1000000) {
-                    $active_installs_millions = floor($api->active_installs / 1000000);
-                    printf(
-                        /* translators: %s: Number of millions. */
-                        _nx('%s+ Million', '%s+ Million', $active_installs_millions, 'Active plugin installations'),
-                        number_format_i18n($active_installs_millions)
-                    );
-                } elseif ($api->active_installs < 10) {
-                    _ex('Less Than 10', 'Active plugin installations');
-                } else {
-                    echo number_format_i18n($api->active_installs).'+';
-                }
+			    if ($api->active_installs >= 1000000) {
+			        $active_installs_millions = floor($api->active_installs / 1000000);
+			        printf(
+			            /* translators: %s: Number of millions. */
+			            _nx('%s+ Million', '%s+ Million', $active_installs_millions, 'Active plugin installations'),
+			            number_format_i18n($active_installs_millions)
+			        );
+			    } elseif ($api->active_installs < 10) {
+			        _ex('Less Than 10', 'Active plugin installations');
+			    } else {
+			        echo number_format_i18n($api->active_installs).'+';
+			    }
 			    ?>
 				</li>
 			<?php } if (! empty($api->slug) && empty($api->external)) { ?>
