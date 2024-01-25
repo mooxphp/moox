@@ -91,9 +91,9 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array[][]  $fonts Optional. The font-families and their font variations.
-     *                         See {@see wp_print_font_faces()} for the supported fields.
-     *                         Default empty array.
+     * @param  array[][]  $fonts  Optional. The font-families and their font variations.
+     *                            See {@see wp_print_font_faces()} for the supported fields.
+     *                            Default empty array.
      */
     public function generate_and_print(array $fonts)
     {
@@ -126,7 +126,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $fonts The fonts to valid.
+     * @param  array  $fonts  The fonts to valid.
      * @return array Prepared font-faces organized by provider and font-family.
      */
     private function validate_fonts(array $fonts)
@@ -153,7 +153,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $font_face Font face property and value pairings to validate.
+     * @param  array  $font_face  Font face property and value pairings to validate.
      * @return array|false Validated font-face on success, or false on failure.
      */
     private function validate_font_face_declarations(array $font_face)
@@ -265,7 +265,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $font_faces The font-faces to generate @font-face CSS styles.
+     * @param  array  $font_faces  The font-faces to generate @font-face CSS styles.
      * @return string The `@font-face` CSS styles.
      */
     private function get_css($font_faces)
@@ -289,7 +289,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $font_face Font face to process.
+     * @param  array  $font_face  Font face to process.
      * @return array Font-face with ordered src items.
      */
     private function order_src(array $font_face)
@@ -364,7 +364,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $font_face Font face to process.
+     * @param  array  $font_face  Font face to process.
      * @return string This font-family's CSS.
      */
     private function build_font_face_css(array $font_face)
@@ -407,7 +407,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $value Value to process.
+     * @param  array  $value  Value to process.
      * @return string The CSS.
      */
     private function compile_src(array $value)
@@ -430,7 +430,7 @@ class WP_Font_Face
      *
      * @since 6.4.0
      *
-     * @param  array  $font_variation_settings Array of font variation settings.
+     * @param  array  $font_variation_settings  Array of font variation settings.
      * @return string The CSS.
      */
     private function compile_variations(array $font_variation_settings)

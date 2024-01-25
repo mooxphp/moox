@@ -29,7 +29,7 @@
  * @global array $shortcode_tags
  *
  * @param  string  $text  The text to be formatted.
- * @param  bool  $reset Set to true for unit testing. Translated patterns will reset.
+ * @param  bool  $reset  Set to true for unit testing. Translated patterns will reset.
  * @return string The string replaced with HTML entities.
  */
 function wptexturize($text, $reset = false)
@@ -71,7 +71,7 @@ function wptexturize($text, $reset = false)
          * @since 4.0.0
          * @see wptexturize()
          *
-         * @param  bool  $run_texturize Whether to short-circuit wptexturize().
+         * @param  bool  $run_texturize  Whether to short-circuit wptexturize().
          */
         $run_texturize = apply_filters('run_wptexturize', $run_texturize);
         if ($run_texturize === false) {
@@ -213,7 +213,7 @@ function wptexturize($text, $reset = false)
      *
      * @since 2.8.0
      *
-     * @param  string[]  $default_no_texturize_tags An array of HTML element names.
+     * @param  string[]  $default_no_texturize_tags  An array of HTML element names.
      */
     $no_texturize_tags = apply_filters('no_texturize_tags', $default_no_texturize_tags);
     /**
@@ -221,7 +221,7 @@ function wptexturize($text, $reset = false)
      *
      * @since 2.8.0
      *
-     * @param  string[]  $default_no_texturize_shortcodes An array of shortcode names.
+     * @param  string[]  $default_no_texturize_shortcodes  An array of shortcode names.
      */
     $no_texturize_shortcodes = apply_filters('no_texturize_shortcodes', $default_no_texturize_shortcodes);
 
@@ -307,12 +307,12 @@ function wptexturize($text, $reset = false)
  *
  * @since 4.3.0
  *
- * @param  string  $haystack    The plain text to be searched.
- * @param  string  $needle      The character to search for such as ' or ".
- * @param  string  $prime       The prime char to use for replacement.
+ * @param  string  $haystack  The plain text to be searched.
+ * @param  string  $needle  The character to search for such as ' or ".
+ * @param  string  $prime  The prime char to use for replacement.
  * @param  string  $open_quote  The opening quote char. Opening quote replacement must be
- *                            accomplished already.
- * @param  string  $close_quote The closing quote char to use for replacement.
+ *                              accomplished already.
+ * @param  string  $close_quote  The closing quote char to use for replacement.
  * @return string The $haystack value after primes and quotes replacements.
  */
 function wptexturize_primes($haystack, $needle, $prime, $open_quote, $close_quote)
@@ -382,9 +382,9 @@ function wptexturize_primes($haystack, $needle, $prime, $open_quote, $close_quot
  *
  * @since 2.9.0
  *
- * @param  string  $text              Text to check. Must be a tag like `<html>` or `[shortcode]`.
- * @param  string[]  $stack             Array of open tag elements.
- * @param  string[]  $disabled_elements Array of tag names to match against. Spaces are not allowed in tag names.
+ * @param  string  $text  Text to check. Must be a tag like `<html>` or `[shortcode]`.
+ * @param  string[]  $stack  Array of open tag elements.
+ * @param  string[]  $disabled_elements  Array of tag names to match against. Spaces are not allowed in tag names.
  */
 function _wptexturize_pushpop_element($text, &$stack, $disabled_elements)
 {
@@ -436,10 +436,10 @@ function _wptexturize_pushpop_element($text, &$stack, $disabled_elements)
  *
  * @since 0.71
  *
- * @param  string  $text The text which has to be formatted.
- * @param  bool  $br   Optional. If set, this will convert all remaining line breaks
- *                     after paragraphing. Line breaks within `<script>`, `<style>`,
- *                     and `<svg>` tags are not affected. Default true.
+ * @param  string  $text  The text which has to be formatted.
+ * @param  bool  $br  Optional. If set, this will convert all remaining line breaks
+ *                    after paragraphing. Line breaks within `<script>`, `<style>`,
+ *                    and `<svg>` tags are not affected. Default true.
  * @return string Text which has been converted into correct paragraph tags.
  */
 function wpautop($text, $br = true)
@@ -610,7 +610,7 @@ function wpautop($text, $br = true)
  *
  * @since 4.2.4
  *
- * @param  string  $input The text which has to be formatted.
+ * @param  string  $input  The text which has to be formatted.
  * @return string[] Array of the formatted text.
  */
 function wp_html_split($input)
@@ -684,7 +684,7 @@ function get_html_split_regex()
  *
  * @since 4.4.0
  *
- * @param  string  $shortcode_regex Optional. The result from _get_wptexturize_shortcode_regex().
+ * @param  string  $shortcode_regex  Optional. The result from _get_wptexturize_shortcode_regex().
  * @return string The regular expression
  */
 function _get_wptexturize_split_regex($shortcode_regex = '')
@@ -727,7 +727,7 @@ function _get_wptexturize_split_regex($shortcode_regex = '')
  *
  * @since 4.4.0
  *
- * @param  string[]  $tagnames Array of shortcodes to find.
+ * @param  string[]  $tagnames  Array of shortcodes to find.
  * @return string The regular expression
  */
 function _get_wptexturize_shortcode_regex($tagnames)
@@ -756,8 +756,8 @@ function _get_wptexturize_shortcode_regex($tagnames)
  *
  * @since 4.2.3
  *
- * @param  string  $haystack      The text which has to be formatted.
- * @param  array  $replace_pairs In the form array('from' => 'to', ...).
+ * @param  string  $haystack  The text which has to be formatted.
+ * @param  array  $replace_pairs  In the form array('from' => 'to', ...).
  * @return string The formatted text.
  */
 function wp_replace_in_html_tags($haystack, $replace_pairs)
@@ -808,7 +808,7 @@ function wp_replace_in_html_tags($haystack, $replace_pairs)
  *
  * @since 3.1.0
  *
- * @param  array  $matches preg_replace_callback matches array
+ * @param  array  $matches  preg_replace_callback matches array
  * @return string
  */
 function _autop_newline_preservation_helper($matches)
@@ -825,7 +825,7 @@ function _autop_newline_preservation_helper($matches)
  *
  * @global array $shortcode_tags
  *
- * @param  string  $text The content.
+ * @param  string  $text  The content.
  * @return string The filtered content.
  */
 function shortcode_unautop($text)
@@ -886,7 +886,7 @@ function shortcode_unautop($text)
  *
  * @since 1.2.1
  *
- * @param  string  $str The string to be checked
+ * @param  string  $str  The string to be checked
  * @return bool True if $str fits a UTF-8 model, false otherwise.
  */
 function seems_utf8($str)
@@ -935,17 +935,17 @@ function seems_utf8($str)
  * @since 1.2.2
  * @since 5.5.0 `$quote_style` also accepts `ENT_XML1`.
  *
- * @param  string  $text          The text which is to be encoded.
- * @param  int|string  $quote_style   Optional. Converts double quotes if set to ENT_COMPAT,
- *                                    both single and double if set to ENT_QUOTES or none if set to ENT_NOQUOTES.
- *                                    Converts single and double quotes, as well as converting HTML
- *                                    named entities (that are not also XML named entities) to their
- *                                    code points if set to ENT_XML1. Also compatible with old values;
- *                                    converting single quotes if set to 'single',
- *                                    double if set to 'double' or both if otherwise set.
- *                                    Default is ENT_NOQUOTES.
- * @param  false|string  $charset       Optional. The character encoding of the string. Default false.
- * @param  bool  $double_encode Optional. Whether to encode existing HTML entities. Default false.
+ * @param  string  $text  The text which is to be encoded.
+ * @param  int|string  $quote_style  Optional. Converts double quotes if set to ENT_COMPAT,
+ *                                   both single and double if set to ENT_QUOTES or none if set to ENT_NOQUOTES.
+ *                                   Converts single and double quotes, as well as converting HTML
+ *                                   named entities (that are not also XML named entities) to their
+ *                                   code points if set to ENT_XML1. Also compatible with old values;
+ *                                   converting single quotes if set to 'single',
+ *                                   double if set to 'double' or both if otherwise set.
+ *                                   Default is ENT_NOQUOTES.
+ * @param  false|string  $charset  Optional. The character encoding of the string. Default false.
+ * @param  bool  $double_encode  Optional. Whether to encode existing HTML entities. Default false.
  * @return string The encoded text with HTML entities.
  */
 function _wp_specialchars($text, $quote_style = ENT_NOQUOTES, $charset = false, $double_encode = false)
@@ -1021,14 +1021,14 @@ function _wp_specialchars($text, $quote_style = ENT_NOQUOTES, $charset = false, 
  *
  * @since 2.8.0
  *
- * @param  string  $text        The text which is to be decoded.
- * @param  string|int  $quote_style Optional. Converts double quotes if set to ENT_COMPAT,
- *                                both single and double if set to ENT_QUOTES or
- *                                none if set to ENT_NOQUOTES.
- *                                Also compatible with old _wp_specialchars() values;
- *                                converting single quotes if set to 'single',
- *                                double if set to 'double' or both if otherwise set.
- *                                Default is ENT_NOQUOTES.
+ * @param  string  $text  The text which is to be decoded.
+ * @param  string|int  $quote_style  Optional. Converts double quotes if set to ENT_COMPAT,
+ *                                   both single and double if set to ENT_QUOTES or
+ *                                   none if set to ENT_NOQUOTES.
+ *                                   Also compatible with old _wp_specialchars() values;
+ *                                   converting single quotes if set to 'single',
+ *                                   double if set to 'double' or both if otherwise set.
+ *                                   Default is ENT_NOQUOTES.
  * @return string The decoded text without HTML entities.
  */
 function wp_specialchars_decode($text, $quote_style = ENT_NOQUOTES)
@@ -1111,7 +1111,7 @@ function wp_specialchars_decode($text, $quote_style = ENT_NOQUOTES)
  *
  * @since 2.8.0
  *
- * @param  string  $text   The text which is to be checked.
+ * @param  string  $text  The text which is to be checked.
  * @param  bool  $strip  Optional. Whether to attempt to strip out invalid UTF8. Default false.
  * @return string The checked text.
  */
@@ -1162,9 +1162,9 @@ function wp_check_invalid_utf8($text, $strip = false)
  * @since 1.5.0
  * @since 5.8.3 Added the `encode_ascii_characters` parameter.
  *
- * @param  string  $utf8_string             String to encode.
- * @param  int  $length                  Max length of the string
- * @param  bool  $encode_ascii_characters Whether to encode ascii characters such as < " '
+ * @param  string  $utf8_string  String to encode.
+ * @param  int  $length  Max length of the string
+ * @param  bool  $encode_ascii_characters  Whether to encode ascii characters such as < " '
  * @return string String with Unicode encoded for URI.
  */
 function utf8_uri_encode($utf8_string, $length = 0, $encode_ascii_characters = false)
@@ -1611,10 +1611,10 @@ function utf8_uri_encode($utf8_string, $length = 0, $encode_ascii_characters = f
  * @since 6.0.0 Added the `$locale` parameter.
  * @since 6.1.0 Added Unicode NFC encoding normalization support.
  *
- * @param  string  $text   Text that might have accent characters.
- * @param  string  $locale Optional. The locale to use for accent removal. Some character
- *                       replacements depend on the locale being used (e.g. 'de_DE').
- *                       Defaults to the current locale.
+ * @param  string  $text  Text that might have accent characters.
+ * @param  string  $locale  Optional. The locale to use for accent removal. Some character
+ *                          replacements depend on the locale being used (e.g. 'de_DE').
+ *                          Defaults to the current locale.
  * @return string Filtered string with replaced "nice" characters.
  */
 function remove_accents($text, $locale = '')
@@ -2038,7 +2038,7 @@ function remove_accents($text, $locale = '')
  *
  * @since 2.1.0
  *
- * @param  string  $filename The filename to be sanitized.
+ * @param  string  $filename  The filename to be sanitized.
  * @return string The sanitized filename.
  */
 function sanitize_file_name($filename)
@@ -2070,7 +2070,7 @@ function sanitize_file_name($filename)
      *
      * @since 2.8.0
      *
-     * @param  string[]  $special_chars Array of characters to remove.
+     * @param  string[]  $special_chars  Array of characters to remove.
      * @param  string  $filename_raw  The original filename to be sanitized.
      */
     $special_chars = apply_filters('sanitize_file_name_chars', $special_chars, $filename_raw);
@@ -2132,8 +2132,8 @@ function sanitize_file_name($filename)
      *
      * @since 2.8.0
      *
-     * @param  string  $filename     Sanitized filename.
-     * @param  string  $filename_raw The filename prior to sanitization.
+     * @param  string  $filename  Sanitized filename.
+     * @param  string  $filename_raw  The filename prior to sanitization.
      */
     return apply_filters('sanitize_file_name', $filename, $filename_raw);
 }
@@ -2148,9 +2148,9 @@ function sanitize_file_name($filename)
  *
  * @since 2.0.0
  *
- * @param  string  $username The username to be sanitized.
- * @param  bool  $strict   Optional. If set to true, limits $username to specific characters.
- *                         Default false.
+ * @param  string  $username  The username to be sanitized.
+ * @param  bool  $strict  Optional. If set to true, limits $username to specific characters.
+ *                        Default false.
  * @return string The sanitized username, after passing through filters.
  */
 function sanitize_user($username, $strict = false)
@@ -2177,9 +2177,9 @@ function sanitize_user($username, $strict = false)
      *
      * @since 2.0.1
      *
-     * @param  string  $username     Sanitized username.
-     * @param  string  $raw_username The username prior to sanitization.
-     * @param  bool  $strict       Whether to limit the sanitization to specific characters.
+     * @param  string  $username  Sanitized username.
+     * @param  string  $raw_username  The username prior to sanitization.
+     * @param  bool  $strict  Whether to limit the sanitization to specific characters.
      */
     return apply_filters('sanitize_user', $username, $raw_username, $strict);
 }
@@ -2192,7 +2192,7 @@ function sanitize_user($username, $strict = false)
  *
  * @since 3.0.0
  *
- * @param  string  $key String key.
+ * @param  string  $key  String key.
  * @return string Sanitized key.
  */
 function sanitize_key($key)
@@ -2209,8 +2209,8 @@ function sanitize_key($key)
      *
      * @since 3.0.0
      *
-     * @param  string  $sanitized_key Sanitized key.
-     * @param  string  $key           The key prior to sanitization.
+     * @param  string  $sanitized_key  Sanitized key.
+     * @param  string  $key  The key prior to sanitization.
      */
     return apply_filters('sanitize_key', $sanitized_key, $key);
 }
@@ -2226,11 +2226,11 @@ function sanitize_key($key)
  *
  * @since 1.0.0
  *
- * @param  string  $title          The string to be sanitized.
- * @param  string  $fallback_title Optional. A title to use if $title is empty. Default empty.
- * @param  string  $context        Optional. The operation for which the string is sanitized.
- *                               When set to 'save', the string runs through remove_accents().
- *                               Default 'save'.
+ * @param  string  $title  The string to be sanitized.
+ * @param  string  $fallback_title  Optional. A title to use if $title is empty. Default empty.
+ * @param  string  $context  Optional. The operation for which the string is sanitized.
+ *                           When set to 'save', the string runs through remove_accents().
+ *                           Default 'save'.
  * @return string The sanitized string.
  */
 function sanitize_title($title, $fallback_title = '', $context = 'save')
@@ -2246,9 +2246,9 @@ function sanitize_title($title, $fallback_title = '', $context = 'save')
      *
      * @since 1.2.0
      *
-     * @param  string  $title     Sanitized title.
-     * @param  string  $raw_title The title prior to sanitization.
-     * @param  string  $context   The context for which the title is being sanitized.
+     * @param  string  $title  Sanitized title.
+     * @param  string  $raw_title  The title prior to sanitization.
+     * @param  string  $context  The context for which the title is being sanitized.
      */
     $title = apply_filters('sanitize_title', $title, $raw_title, $context);
 
@@ -2266,7 +2266,7 @@ function sanitize_title($title, $fallback_title = '', $context = 'save')
  *
  * @since 3.1.0
  *
- * @param  string  $title The string to be sanitized.
+ * @param  string  $title  The string to be sanitized.
  * @return string The sanitized string.
  */
 function sanitize_title_for_query($title)
@@ -2282,11 +2282,11 @@ function sanitize_title_for_query($title)
  *
  * @since 1.2.0
  *
- * @param  string  $title     The title to be sanitized.
- * @param  string  $raw_title Optional. Not used. Default empty.
- * @param  string  $context   Optional. The operation for which the string is sanitized.
- *                          When set to 'save', additional entities are converted to hyphens
- *                          or stripped entirely. Default 'display'.
+ * @param  string  $title  The title to be sanitized.
+ * @param  string  $raw_title  Optional. Not used. Default empty.
+ * @param  string  $context  Optional. The operation for which the string is sanitized.
+ *                           When set to 'save', additional entities are converted to hyphens
+ *                           or stripped entirely. Default 'display'.
  * @return string The sanitized title.
  */
 function sanitize_title_with_dashes($title, $raw_title = '', $context = 'display')
@@ -2421,7 +2421,7 @@ function sanitize_title_with_dashes($title, $raw_title = '', $context = 'display
  *
  * @since 2.5.1
  *
- * @param  string  $orderby Order by clause to be validated.
+ * @param  string  $orderby  Order by clause to be validated.
  * @return string|false Returns $orderby if valid, false otherwise.
  */
 function sanitize_sql_orderby($orderby)
@@ -2443,9 +2443,9 @@ function sanitize_sql_orderby($orderby)
  *
  * @since 2.8.0
  *
- * @param  string  $classname The classname to be sanitized.
+ * @param  string  $classname  The classname to be sanitized.
  * @param  string  $fallback  Optional. The value to return if the sanitization ends up as an empty string.
- *                          Default empty string.
+ *                            Default empty string.
  * @return string The sanitized value.
  */
 function sanitize_html_class($classname, $fallback = '')
@@ -2465,8 +2465,8 @@ function sanitize_html_class($classname, $fallback = '')
      *
      * @since 2.8.0
      *
-     * @param  string  $sanitized The sanitized HTML class.
-     * @param  string  $classname HTML class before sanitization.
+     * @param  string  $sanitized  The sanitized HTML class.
+     * @param  string  $classname  HTML class before sanitization.
      * @param  string  $fallback  The fallback string.
      */
     return apply_filters('sanitize_html_class', $sanitized, $classname, $fallback);
@@ -2477,7 +2477,7 @@ function sanitize_html_class($classname, $fallback = '')
  *
  * @since 6.2.1
  *
- * @param  string  $locale_name The locale name to be sanitized.
+ * @param  string  $locale_name  The locale name to be sanitized.
  * @return string The sanitized value.
  */
 function sanitize_locale_name($locale_name)
@@ -2490,8 +2490,8 @@ function sanitize_locale_name($locale_name)
      *
      * @since 6.2.1
      *
-     * @param  string  $sanitized   The sanitized locale name.
-     * @param  string  $locale_name The locale name before sanitization.
+     * @param  string  $sanitized  The sanitized locale name.
+     * @param  string  $locale_name  The locale name before sanitization.
      */
     return apply_filters('sanitize_locale_name', $sanitized, $locale_name);
 }
@@ -2501,8 +2501,8 @@ function sanitize_locale_name($locale_name)
  *
  * @since 0.71
  *
- * @param  string  $content    String of characters to be converted.
- * @param  string  $deprecated Not used.
+ * @param  string  $content  String of characters to be converted.
+ * @param  string  $deprecated  Not used.
  * @return string Converted string.
  */
 function convert_chars($content, $deprecated = '')
@@ -2523,7 +2523,7 @@ function convert_chars($content, $deprecated = '')
  *
  * @since 4.3.0
  *
- * @param  string  $content String with entities that need converting.
+ * @param  string  $content  String with entities that need converting.
  * @return string Converted string.
  */
 function convert_invalid_entities($content)
@@ -2576,7 +2576,7 @@ function convert_invalid_entities($content)
  * @since 0.71
  *
  * @param  string  $text  Text to be balanced
- * @param  bool  $force If true, forces balancing, ignoring the value of the option. Default false.
+ * @param  bool  $force  If true, forces balancing, ignoring the value of the option. Default false.
  * @return string Balanced text
  */
 function balanceTags($text, $force = false)  // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
@@ -2607,7 +2607,7 @@ function balanceTags($text, $force = false)  // phpcs:ignore WordPress.NamingCon
  *           Added Cleaning Hooks
  *      1.0  First Version
  *
- * @param  string  $text Text to be balanced.
+ * @param  string  $text  Text to be balanced.
  * @return string Balanced text.
  */
 function force_balance_tags($text)
@@ -2773,10 +2773,10 @@ function force_balance_tags($text)
  * @since 0.71
  * @since 4.4.0 The `$richedit` parameter was renamed to `$rich_text` for clarity.
  *
- * @param  string  $content   The text about to be edited.
- * @param  bool  $rich_text Optional. Whether `$content` should be considered rich text,
- *                          in which case it would not be passed through esc_textarea().
- *                          Default false.
+ * @param  string  $content  The text about to be edited.
+ * @param  bool  $rich_text  Optional. Whether `$content` should be considered rich text,
+ *                           in which case it would not be passed through esc_textarea().
+ *                           Default false.
  * @return string The text after the filter (and possibly htmlspecialchars()) has been run.
  */
 function format_to_edit($content, $rich_text = false)
@@ -2786,7 +2786,7 @@ function format_to_edit($content, $rich_text = false)
      *
      * @since 1.2.0
      *
-     * @param  string  $content The text, prior to formatting for editing.
+     * @param  string  $content  The text, prior to formatting for editing.
      */
     $content = apply_filters('format_to_edit', $content);
     if (! $rich_text) {
@@ -2809,7 +2809,7 @@ function format_to_edit($content, $rich_text = false)
  *
  * @since 0.71
  *
- * @param  int  $number     Number to append zeros to if not greater than threshold.
+ * @param  int  $number  Number to append zeros to if not greater than threshold.
  * @param  int  $threshold  Digit places number needs to be to not have zeros added.
  * @return string Adds leading zeros to number if needed.
  */
@@ -2823,7 +2823,7 @@ function zeroise($number, $threshold)
  *
  * @since 0.71
  *
- * @param  string  $value Value to which backslashes will be added.
+ * @param  string  $value  Value to which backslashes will be added.
  * @return string String with backslashes inserted.
  */
 function backslashit($value)
@@ -2846,7 +2846,7 @@ function backslashit($value)
  *
  * @since 1.2.0
  *
- * @param  string  $value Value to which trailing slash will be added.
+ * @param  string  $value  Value to which trailing slash will be added.
  * @return string String with trailing slash added.
  */
 function trailingslashit($value)
@@ -2862,7 +2862,7 @@ function trailingslashit($value)
  *
  * @since 2.2.0
  *
- * @param  string  $text Value from which trailing slashes will be removed.
+ * @param  string  $text  Value from which trailing slashes will be removed.
  * @return string String without the trailing slashes.
  */
 function untrailingslashit($value)
@@ -2875,7 +2875,7 @@ function untrailingslashit($value)
  *
  * @since 0.71
  *
- * @param  string|array  $gpc String or array of data to slash.
+ * @param  string|array  $gpc  String or array of data to slash.
  * @return string|array Slashed `$gpc`.
  */
 function addslashes_gpc($gpc)
@@ -2888,7 +2888,7 @@ function addslashes_gpc($gpc)
  *
  * @since 2.0.0
  *
- * @param  mixed  $value The value to be stripped.
+ * @param  mixed  $value  The value to be stripped.
  * @return mixed Stripped value.
  */
 function stripslashes_deep($value)
@@ -2901,7 +2901,7 @@ function stripslashes_deep($value)
  *
  * @since 4.4.0
  *
- * @param  mixed  $value The array or string to be stripped.
+ * @param  mixed  $value  The array or string to be stripped.
  * @return mixed The stripped value.
  */
 function stripslashes_from_strings_only($value)
@@ -2914,7 +2914,7 @@ function stripslashes_from_strings_only($value)
  *
  * @since 2.2.0
  *
- * @param  mixed  $value The array or string to be encoded.
+ * @param  mixed  $value  The array or string to be encoded.
  * @return mixed The encoded value.
  */
 function urlencode_deep($value)
@@ -2927,7 +2927,7 @@ function urlencode_deep($value)
  *
  * @since 3.4.0
  *
- * @param  mixed  $value The array or string to be encoded.
+ * @param  mixed  $value  The array or string to be encoded.
  * @return mixed The encoded value.
  */
 function rawurlencode_deep($value)
@@ -2940,7 +2940,7 @@ function rawurlencode_deep($value)
  *
  * @since 4.4.0
  *
- * @param  mixed  $value The array or string to be decoded.
+ * @param  mixed  $value  The array or string to be decoded.
  * @return mixed The decoded value.
  */
 function urldecode_deep($value)
@@ -2953,7 +2953,7 @@ function urldecode_deep($value)
  *
  * @since 0.71
  *
- * @param  string  $email_address Email address.
+ * @param  string  $email_address  Email address.
  * @param  int  $hex_encoding  Optional. Set to 1 to enable hex encoding.
  * @return string Converted email address.
  */
@@ -2983,7 +2983,7 @@ function antispambot($email_address, $hex_encoding = 0)
  *
  * @since 2.3.2
  *
- * @param  array  $matches Single Regex Match.
+ * @param  array  $matches  Single Regex Match.
  * @return string HTML A element with URI address.
  */
 function _make_url_clickable_cb($matches)
@@ -3024,7 +3024,7 @@ function _make_url_clickable_cb($matches)
  *
  * @since 2.3.2
  *
- * @param  array  $matches Single Regex Match.
+ * @param  array  $matches  Single Regex Match.
  * @return string HTML A element with URL address.
  */
 function _make_web_ftp_clickable_cb($matches)
@@ -3057,7 +3057,7 @@ function _make_web_ftp_clickable_cb($matches)
  *
  * @since 2.3.2
  *
- * @param  array  $matches Single Regex Match.
+ * @param  array  $matches  Single Regex Match.
  * @return string HTML A element with email address.
  */
 function _make_email_clickable_cb($matches)
@@ -3072,7 +3072,7 @@ function _make_email_clickable_cb($matches)
  *
  * @since 6.2.0
  *
- * @param  string  $url The URL.
+ * @param  string  $url  The URL.
  * @return string The rel attribute for the anchor or an empty string if no rel attribute should be added.
  */
 function _make_clickable_rel_attr($url)
@@ -3098,8 +3098,8 @@ function _make_clickable_rel_attr($url)
      *
      * @since 5.3.0
      *
-     * @param  string  $rel The rel value.
-     * @param  string  $url The matched URL being converted to a link tag.
+     * @param  string  $rel  The rel value.
+     * @param  string  $url  The matched URL being converted to a link tag.
      */
     $rel = apply_filters('make_clickable_rel', $rel, $url);
 
@@ -3116,7 +3116,7 @@ function _make_clickable_rel_attr($url)
  *
  * @since 0.71
  *
- * @param  string  $text Content to convert URIs.
+ * @param  string  $text  Content to convert URIs.
  * @return string Content with converted URIs.
  */
 function make_clickable($text)
@@ -3221,8 +3221,8 @@ function make_clickable($text)
  *
  * @since 3.4.0
  *
- * @param  string  $text   The string to split.
- * @param  int  $goal   The desired chunk length.
+ * @param  string  $text  The string to split.
+ * @param  int  $goal  The desired chunk length.
  * @return array Numeric array of chunks.
  */
 function _split_str_by_whitespace($text, $goal)
@@ -3260,8 +3260,8 @@ function _split_str_by_whitespace($text, $goal)
  *
  * @since 5.3.0
  *
- * @param  array  $matches Single match.
- * @param  string  $rel     The rel attribute to add.
+ * @param  array  $matches  Single match.
+ * @param  string  $rel  The rel attribute to add.
  * @return string HTML A element with the added rel attribute.
  */
 function wp_rel_callback($matches, $rel)
@@ -3301,7 +3301,7 @@ function wp_rel_callback($matches, $rel)
  *
  * @since 1.5.0
  *
- * @param  string  $text Content that may contain HTML A elements.
+ * @param  string  $text  Content that may contain HTML A elements.
  * @return string Converted content.
  */
 function wp_rel_nofollow($text)
@@ -3325,7 +3325,7 @@ function wp_rel_nofollow($text)
  * @since 2.3.0
  * @deprecated 5.3.0 Use wp_rel_callback()
  *
- * @param  array  $matches Single match.
+ * @param  array  $matches  Single match.
  * @return string HTML A Element with `rel="nofollow"`.
  */
 function wp_rel_nofollow_callback($matches)
@@ -3338,7 +3338,7 @@ function wp_rel_nofollow_callback($matches)
  *
  * @since 5.3.0
  *
- * @param  string  $text Content that may contain HTML A elements.
+ * @param  string  $text  Content that may contain HTML A elements.
  * @return string Converted content.
  */
 function wp_rel_ugc($text)
@@ -3362,7 +3362,7 @@ function wp_rel_ugc($text)
  * @since 5.1.0
  * @since 5.6.0 Removed 'noreferrer' relationship.
  *
- * @param  string  $text Content that may contain HTML A elements.
+ * @param  string  $text  Content that may contain HTML A elements.
  * @return string Converted content.
  */
 function wp_targeted_link_rel($text)
@@ -3401,7 +3401,7 @@ function wp_targeted_link_rel($text)
  * @since 5.1.0
  * @since 5.6.0 Removed 'noreferrer' relationship.
  *
- * @param  array  $matches Single match.
+ * @param  array  $matches  Single match.
  * @return string HTML A Element with `rel="noopener"` in addition to any existing values.
  */
 function wp_targeted_link_rel_callback($matches)
@@ -3423,8 +3423,8 @@ function wp_targeted_link_rel_callback($matches)
      *
      * @since 5.1.0
      *
-     * @param  string  $rel       The rel values.
-     * @param  string  $link_html The matched content of the link tag including all HTML attributes.
+     * @param  string  $rel  The rel values.
+     * @param  string  $link_html  The matched content of the link tag including all HTML attributes.
      */
     $rel = apply_filters('wp_targeted_link_rel', 'noopener', $link_html);
 
@@ -3508,7 +3508,7 @@ function wp_remove_targeted_link_rel_filters()
  *
  * @global array $wpsmiliestrans
  *
- * @param  array  $matches Single match. Smiley code to convert to image.
+ * @param  array  $matches  Single match. Smiley code to convert to image.
  * @return string Image string for smiley.
  */
 function translate_smiley($matches)
@@ -3536,9 +3536,9 @@ function translate_smiley($matches)
      *
      * @since 2.9.0
      *
-     * @param  string  $smiley_url URL for the smiley image.
-     * @param  string  $img        Filename for the smiley image.
-     * @param  string  $site_url   Site URL, as returned by site_url().
+     * @param  string  $smiley_url  URL for the smiley image.
+     * @param  string  $img  Filename for the smiley image.
+     * @param  string  $site_url  Site URL, as returned by site_url().
      */
     $src_url = apply_filters('smilies_src', includes_url("images/smilies/$img"), $img, site_url());
 
@@ -3555,7 +3555,7 @@ function translate_smiley($matches)
  *
  * @global string|array $wp_smiliessearch
  *
- * @param  string  $text Content to convert smilies from text.
+ * @param  string  $text  Content to convert smilies from text.
  * @return string Converted content with text smilies replaced with images.
  */
 function convert_smilies($text)
@@ -3606,8 +3606,8 @@ function convert_smilies($text)
  *
  * @since 0.71
  *
- * @param  string  $email      Email address to verify.
- * @param  bool  $deprecated Deprecated.
+ * @param  string  $email  Email address to verify.
+ * @param  bool  $deprecated  Deprecated.
  * @return string|false Valid email address on success, false on failure.
  */
 function is_email($email, $deprecated = false)
@@ -3627,8 +3627,8 @@ function is_email($email, $deprecated = false)
          *
          * @since 2.8.0
          *
-         * @param  string|false  $is_email The email address if successfully passed the is_email() checks, false otherwise.
-         * @param  string  $email    The email address being checked.
+         * @param  string|false  $is_email  The email address if successfully passed the is_email() checks, false otherwise.
+         * @param  string  $email  The email address being checked.
          * @param  string  $context  Context under which the email was tested.
          */
         return apply_filters('is_email', false, $email, 'email_too_short');
@@ -3701,7 +3701,7 @@ function is_email($email, $deprecated = false)
  *
  * @since 1.2.0
  *
- * @param  string  $subject Subject line.
+ * @param  string  $subject  Subject line.
  * @return string Converted string to ASCII.
  */
 function wp_iso_descrambler($subject)
@@ -3721,7 +3721,7 @@ function wp_iso_descrambler($subject)
  *
  * @since 3.1.0
  *
- * @param  array  $matches The preg_replace_callback matches array.
+ * @param  array  $matches  The preg_replace_callback matches array.
  * @return string Converted chars.
  */
 function _wp_iso_convert($matches)
@@ -3737,8 +3737,8 @@ function _wp_iso_convert($matches)
  *
  * @since 1.2.0
  *
- * @param  string  $date_string The date to be converted, in the timezone of the site.
- * @param  string  $format      The format string for the returned date. Default 'Y-m-d H:i:s'.
+ * @param  string  $date_string  The date to be converted, in the timezone of the site.
+ * @param  string  $format  The format string for the returned date. Default 'Y-m-d H:i:s'.
  * @return string Formatted version of the date, in UTC.
  */
 function get_gmt_from_date($date_string, $format = 'Y-m-d H:i:s')
@@ -3760,8 +3760,8 @@ function get_gmt_from_date($date_string, $format = 'Y-m-d H:i:s')
  *
  * @since 1.2.0
  *
- * @param  string  $date_string The date to be converted, in UTC or GMT timezone.
- * @param  string  $format      The format string for the returned date. Default 'Y-m-d H:i:s'.
+ * @param  string  $date_string  The date to be converted, in UTC or GMT timezone.
+ * @param  string  $format  The format string for the returned date. Default 'Y-m-d H:i:s'.
  * @return string Formatted version of the date, in the site's timezone.
  */
 function get_date_from_gmt($date_string, $format = 'Y-m-d H:i:s')
@@ -3780,7 +3780,7 @@ function get_date_from_gmt($date_string, $format = 'Y-m-d H:i:s')
  *
  * @since 1.5.0
  *
- * @param  string  $timezone Either 'Z' for 0 offset or '±hhmm'.
+ * @param  string  $timezone  Either 'Z' for 0 offset or '±hhmm'.
  * @return int|float The offset in seconds.
  */
 function iso8601_timezone_to_offset($timezone)
@@ -3803,8 +3803,8 @@ function iso8601_timezone_to_offset($timezone)
  *
  * @since 1.5.0
  *
- * @param  string  $date_string Date and time in ISO 8601 format {@link https://en.wikipedia.org/wiki/ISO_8601}.
- * @param  string  $timezone    Optional. If set to 'gmt' returns the result in UTC. Default 'user'.
+ * @param  string  $date_string  Date and time in ISO 8601 format {@link https://en.wikipedia.org/wiki/ISO_8601}.
+ * @param  string  $timezone  Optional. If set to 'gmt' returns the result in UTC. Default 'user'.
  * @return string|false The date and time in MySQL DateTime format - Y-m-d H:i:s, or false on failure.
  */
 function iso8601_to_datetime($date_string, $timezone = 'user')
@@ -3833,7 +3833,7 @@ function iso8601_to_datetime($date_string, $timezone = 'user')
  *
  * @since 1.5.0
  *
- * @param  string  $email Email address to filter.
+ * @param  string  $email  Email address to filter.
  * @return string Filtered email address.
  */
 function sanitize_email($email)
@@ -3849,9 +3849,9 @@ function sanitize_email($email)
          *
          * @since 2.8.0
          *
-         * @param  string  $sanitized_email The sanitized email address.
-         * @param  string  $email           The email address, as provided to sanitize_email().
-         * @param  string|null  $message    A message to pass to the user. null if email is sanitized.
+         * @param  string  $sanitized_email  The sanitized email address.
+         * @param  string  $email  The email address, as provided to sanitize_email().
+         * @param  string|null  $message  A message to pass to the user. null if email is sanitized.
          */
         return apply_filters('sanitize_email', '', $email, 'email_too_short');
     }
@@ -3944,8 +3944,8 @@ function sanitize_email($email)
  * @since 1.5.0
  * @since 5.3.0 Added support for showing a difference in seconds.
  *
- * @param  int  $from Unix timestamp from which the difference begins.
- * @param  int  $to   Optional. Unix timestamp to end the time difference. Default becomes time() if not set.
+ * @param  int  $from  Unix timestamp from which the difference begins.
+ * @param  int  $to  Optional. Unix timestamp to end the time difference. Default becomes time() if not set.
  * @return string Human-readable time difference.
  */
 function human_time_diff($from, $to = 0)
@@ -4012,10 +4012,10 @@ function human_time_diff($from, $to = 0)
      *
      * @since 4.0.0
      *
-     * @param  string  $since The difference in human-readable text.
+     * @param  string  $since  The difference in human-readable text.
      * @param  int  $diff  The difference in seconds.
      * @param  int  $from  Unix timestamp from which the difference begins.
-     * @param  int  $to    Unix timestamp to end the time difference.
+     * @param  int  $to  Unix timestamp to end the time difference.
      */
     return apply_filters('human_time_diff', $since, $diff, $from, $to);
 }
@@ -4032,8 +4032,8 @@ function human_time_diff($from, $to = 0)
  * @since 5.2.0 Added the `$post` parameter.
  * @since 6.3.0 Removes footnotes markup from the excerpt content.
  *
- * @param  string  $text Optional. The excerpt. If set to empty, an excerpt is generated.
- * @param  WP_Post|object|int  $post Optional. WP_Post instance or Post ID/object. Default null.
+ * @param  string  $text  Optional. The excerpt. If set to empty, an excerpt is generated.
+ * @param  WP_Post|object|int  $post  Optional. WP_Post instance or Post ID/object. Default null.
  * @return string The excerpt.
  */
 function wp_trim_excerpt($text = '', $post = null)
@@ -4087,7 +4087,7 @@ function wp_trim_excerpt($text = '', $post = null)
          *
          * @since 2.7.0
          *
-         * @param  int  $number The maximum number of words. Default 55.
+         * @param  int  $number  The maximum number of words. Default 55.
          */
         $excerpt_length = (int) apply_filters('excerpt_length', $excerpt_length);
 
@@ -4096,7 +4096,7 @@ function wp_trim_excerpt($text = '', $post = null)
          *
          * @since 2.9.0
          *
-         * @param  string  $more_string The string shown within the more link.
+         * @param  string  $more_string  The string shown within the more link.
          */
         $excerpt_more = apply_filters('excerpt_more', ' '.'[&hellip;]');
         $text = wp_trim_words($text, $excerpt_length, $excerpt_more);
@@ -4108,8 +4108,8 @@ function wp_trim_excerpt($text = '', $post = null)
      *
      * @since 2.8.0
      *
-     * @param  string  $text        The trimmed text.
-     * @param  string  $raw_excerpt The text prior to trimming.
+     * @param  string  $text  The trimmed text.
+     * @param  string  $raw_excerpt  The text prior to trimming.
      */
     return apply_filters('wp_trim_excerpt', $text, $raw_excerpt);
 }
@@ -4123,9 +4123,9 @@ function wp_trim_excerpt($text = '', $post = null)
  *
  * @since 3.3.0
  *
- * @param  string  $text      Text to trim.
- * @param  int  $num_words Number of words. Default 55.
- * @param  string  $more      Optional. What to append if $text needs to be trimmed. Default '&hellip;'.
+ * @param  string  $text  Text to trim.
+ * @param  int  $num_words  Number of words. Default 55.
+ * @param  string  $more  Optional. What to append if $text needs to be trimmed. Default '&hellip;'.
  * @return string Trimmed text.
  */
 function wp_trim_words($text, $num_words = 55, $more = null)
@@ -4161,10 +4161,10 @@ function wp_trim_words($text, $num_words = 55, $more = null)
      *
      * @since 3.3.0
      *
-     * @param  string  $text          The trimmed text.
-     * @param  int  $num_words     The number of words to trim the text to. Default 55.
-     * @param  string  $more          An optional string to append to the end of the trimmed text, e.g. &hellip;.
-     * @param  string  $original_text The text before it was trimmed.
+     * @param  string  $text  The trimmed text.
+     * @param  int  $num_words  The number of words to trim the text to. Default 55.
+     * @param  string  $more  An optional string to append to the end of the trimmed text, e.g. &hellip;.
+     * @param  string  $original_text  The text before it was trimmed.
      */
     return apply_filters('wp_trim_words', $text, $num_words, $more, $original_text);
 }
@@ -4174,7 +4174,7 @@ function wp_trim_words($text, $num_words = 55, $more = null)
  *
  * @since 1.5.1
  *
- * @param  string  $text The text within which entities will be converted.
+ * @param  string  $text  The text within which entities will be converted.
  * @return string Text with converted entities.
  */
 function ent2ncr($text)
@@ -4187,8 +4187,8 @@ function ent2ncr($text)
      *
      * @since 3.3.0
      *
-     * @param  string|null  $converted_text The text to be converted. Default null.
-     * @param  string  $text           The text prior to entity conversion.
+     * @param  string|null  $converted_text  The text to be converted. Default null.
+     * @param  string  $text  The text prior to entity conversion.
      */
     $filtered = apply_filters('pre_ent2ncr', null, $text);
     if ($filtered !== null) {
@@ -4469,9 +4469,9 @@ function ent2ncr($text)
  * @since 4.3.0
  * @see _WP_Editors::editor()
  *
- * @param  string  $text           The text to be formatted.
- * @param  string  $default_editor The default editor for the current user.
- *                               It is usually either 'html' or 'tinymce'.
+ * @param  string  $text  The text to be formatted.
+ * @param  string  $default_editor  The default editor for the current user.
+ *                                  It is usually either 'html' or 'tinymce'.
  * @return string The formatted text after filter is applied.
  */
 function format_for_editor($text, $default_editor = null)
@@ -4485,9 +4485,9 @@ function format_for_editor($text, $default_editor = null)
      *
      * @since 4.3.0
      *
-     * @param  string  $text           The formatted text.
-     * @param  string  $default_editor The default editor for the current user.
-     *                               It is usually either 'html' or 'tinymce'.
+     * @param  string  $text  The formatted text.
+     * @param  string  $default_editor  The default editor for the current user.
+     *                                  It is usually either 'html' or 'tinymce'.
      */
     return apply_filters('format_for_editor', $text, $default_editor);
 }
@@ -4502,8 +4502,8 @@ function format_for_editor($text, $default_editor = null)
  * @since 2.8.1
  *
  * @param  string|array  $search  The value being searched for, otherwise known as the needle.
- *                              An array may be used to designate multiple needles.
- * @param  string  $subject The string being searched and replaced on, otherwise known as the haystack.
+ *                                An array may be used to designate multiple needles.
+ * @param  string  $subject  The string being searched and replaced on, otherwise known as the haystack.
  * @return string The string with the replaced values.
  */
 function _deep_replace($search, $subject)
@@ -4534,7 +4534,7 @@ function _deep_replace($search, $subject)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string|array  $data Unescaped data.
+ * @param  string|array  $data  Unescaped data.
  * @return string|array Escaped data, in the same type as supplied.
  */
 function esc_sql($data)
@@ -4553,9 +4553,9 @@ function esc_sql($data)
  *
  * @since 2.8.0
  *
- * @param  string  $url       The URL to be cleaned.
- * @param  string[]  $protocols Optional. An array of acceptable protocols.
- *                            Defaults to return value of wp_allowed_protocols().
+ * @param  string  $url  The URL to be cleaned.
+ * @param  string[]  $protocols  Optional. An array of acceptable protocols.
+ *                               Defaults to return value of wp_allowed_protocols().
  * @param  string  $_context  Private. Use sanitize_url() for database usage.
  * @return string The cleaned URL after the {@see 'clean_url'} filter is applied.
  *                An empty string is returned if `$url` specifies a protocol other than
@@ -4654,9 +4654,9 @@ function esc_url($url, $protocols = null, $_context = 'display')
      *
      * @since 2.3.0
      *
-     * @param  string  $good_protocol_url The cleaned URL to be returned.
-     * @param  string  $original_url      The URL prior to cleaning.
-     * @param  string  $_context          If 'display', replace ampersands and single quotes only.
+     * @param  string  $good_protocol_url  The cleaned URL to be returned.
+     * @param  string  $original_url  The URL prior to cleaning.
+     * @param  string  $_context  If 'display', replace ampersands and single quotes only.
      */
     return apply_filters('clean_url', $good_protocol_url, $original_url, $_context);
 }
@@ -4670,9 +4670,9 @@ function esc_url($url, $protocols = null, $_context = 'display')
  * @since 6.1.0 Turned into an alias for sanitize_url().
  * @see sanitize_url()
  *
- * @param  string  $url       The URL to be cleaned.
- * @param  string[]  $protocols Optional. An array of acceptable protocols.
- *                            Defaults to return value of wp_allowed_protocols().
+ * @param  string  $url  The URL to be cleaned.
+ * @param  string[]  $protocols  Optional. An array of acceptable protocols.
+ *                               Defaults to return value of wp_allowed_protocols().
  * @return string The cleaned URL after sanitize_url() is run.
  */
 function esc_url_raw($url, $protocols = null)
@@ -4688,9 +4688,9 @@ function esc_url_raw($url, $protocols = null)
  * @since 5.9.0 Restored (un-deprecated).
  * @see esc_url()
  *
- * @param  string  $url       The URL to be cleaned.
- * @param  string[]  $protocols Optional. An array of acceptable protocols.
- *                            Defaults to return value of wp_allowed_protocols().
+ * @param  string  $url  The URL to be cleaned.
+ * @param  string[]  $protocols  Optional. An array of acceptable protocols.
+ *                               Defaults to return value of wp_allowed_protocols().
  * @return string The cleaned URL after esc_url() is run with the 'db' context.
  */
 function sanitize_url($url, $protocols = null)
@@ -4704,7 +4704,7 @@ function sanitize_url($url, $protocols = null)
  * @link https://www.php.net/htmlentities Borrowed from the PHP Manual user notes.
  * @since 1.2.2
  *
- * @param  string  $text The text to be converted.
+ * @param  string  $text  The text to be converted.
  * @return string Converted text.
  */
 function htmlentities2($text)
@@ -4725,7 +4725,7 @@ function htmlentities2($text)
  *
  * @since 2.8.0
  *
- * @param  string  $text The text to be escaped.
+ * @param  string  $text  The text to be escaped.
  * @return string Escaped text.
  */
 function esc_js($text)
@@ -4744,8 +4744,8 @@ function esc_js($text)
      *
      * @since 2.0.6
      *
-     * @param  string  $safe_text The text after it has been escaped.
-     * @param  string  $text      The text prior to being escaped.
+     * @param  string  $safe_text  The text after it has been escaped.
+     * @param  string  $text  The text prior to being escaped.
      */
     return apply_filters('js_escape', $safe_text, $text);
 }
@@ -4771,8 +4771,8 @@ function esc_html($text)
      *
      * @since 2.8.0
      *
-     * @param  string  $safe_text The text after it has been escaped.
-     * @param  string  $text      The text prior to being escaped.
+     * @param  string  $safe_text  The text after it has been escaped.
+     * @param  string  $text  The text prior to being escaped.
      */
     return apply_filters('esc_html', $safe_text, $text);
 }
@@ -4798,8 +4798,8 @@ function esc_attr($text)
      *
      * @since 2.0.6
      *
-     * @param  string  $safe_text The text after it has been escaped.
-     * @param  string  $text      The text prior to being escaped.
+     * @param  string  $safe_text  The text after it has been escaped.
+     * @param  string  $text  The text prior to being escaped.
      */
     return apply_filters('attribute_escape', $safe_text, $text);
 }
@@ -4821,8 +4821,8 @@ function esc_textarea($text)
      *
      * @since 3.1.0
      *
-     * @param  string  $safe_text The text after it has been escaped.
-     * @param  string  $text      The text prior to being escaped.
+     * @param  string  $safe_text  The text after it has been escaped.
+     * @param  string  $text  The text prior to being escaped.
      */
     return apply_filters('esc_textarea', $safe_text, $text);
 }
@@ -4832,7 +4832,7 @@ function esc_textarea($text)
  *
  * @since 5.5.0
  *
- * @param  string  $text Text to escape.
+ * @param  string  $text  Text to escape.
  * @return string Escaped text.
  */
 function esc_xml($text)
@@ -4879,8 +4879,8 @@ EOF;
      *
      * @since 5.5.0
      *
-     * @param  string  $safe_text The text after it has been escaped.
-     * @param  string  $text      The text prior to being escaped.
+     * @param  string  $safe_text  The text after it has been escaped.
+     * @param  string  $text  The text prior to being escaped.
      */
     return apply_filters('esc_xml', $safe_text, $text);
 }
@@ -4902,8 +4902,8 @@ function tag_escape($tag_name)
      *
      * @since 2.8.0
      *
-     * @param  string  $safe_tag The tag name after it has been escaped.
-     * @param  string  $tag_name The text before it was escaped.
+     * @param  string  $safe_tag  The tag name after it has been escaped.
+     * @param  string  $tag_name  The text before it was escaped.
      */
     return apply_filters('tag_escape', $safe_tag, $tag_name);
 }
@@ -4917,7 +4917,7 @@ function tag_escape($tag_name)
  * @since 2.1.0
  * @since 4.1.0 Support was added for relative URLs.
  *
- * @param  string  $link Full URL path.
+ * @param  string  $link  Full URL path.
  * @return string Absolute path.
  */
 function wp_make_link_relative($link)
@@ -4935,7 +4935,7 @@ function wp_make_link_relative($link)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $option The name of the option.
+ * @param  string  $option  The name of the option.
  * @param  string  $value  The unsanitized value.
  * @return string Sanitized value.
  */
@@ -5210,9 +5210,9 @@ function sanitize_option($option, $value)
      * @since 2.3.0
      * @since 4.3.0 Added the `$original_value` parameter.
      *
-     * @param  string  $value          The sanitized option value.
-     * @param  string  $option         The option name.
-     * @param  string  $original_value The original value passed to the function.
+     * @param  string  $value  The sanitized option value.
+     * @param  string  $option  The option name.
+     * @param  string  $original_value  The original value passed to the function.
      */
     return apply_filters("sanitize_option_{$option}", $value, $option, $original_value);
 }
@@ -5224,8 +5224,8 @@ function sanitize_option($option, $value)
  *
  * @since 4.4.0
  *
- * @param  mixed  $value    The array, object, or scalar.
- * @param  callable  $callback The function to map onto $value.
+ * @param  mixed  $value  The array, object, or scalar.
+ * @param  callable  $callback  The function to map onto $value.
  * @return mixed The value with the callback applied to all non-arrays and non-objects inside it.
  */
 function map_deep($value, $callback)
@@ -5251,8 +5251,8 @@ function map_deep($value, $callback)
  *
  * @since 2.2.1
  *
- * @param  string  $input_string The string to be parsed.
- * @param  array  $result       Variables will be stored in this array.
+ * @param  string  $input_string  The string to be parsed.
+ * @param  array  $result  Variables will be stored in this array.
  */
 function wp_parse_str($input_string, &$result)
 {
@@ -5263,7 +5263,7 @@ function wp_parse_str($input_string, &$result)
      *
      * @since 2.2.1
      *
-     * @param  array  $result The array populated with variables.
+     * @param  array  $result  The array populated with variables.
      */
     $result = apply_filters('wp_parse_str', $result);
 }
@@ -5275,7 +5275,7 @@ function wp_parse_str($input_string, &$result)
  *
  * @since 2.3.0
  *
- * @param  string  $content Text to be converted.
+ * @param  string  $content  Text to be converted.
  * @return string Converted text.
  */
 function wp_pre_kses_less_than($content)
@@ -5288,7 +5288,7 @@ function wp_pre_kses_less_than($content)
  *
  * @since 2.3.0
  *
- * @param  string[]  $matches Populated by matches to preg_replace.
+ * @param  string[]  $matches  Populated by matches to preg_replace.
  * @return string The text returned after esc_html if needed.
  */
 function wp_pre_kses_less_than_callback($matches)
@@ -5306,11 +5306,11 @@ function wp_pre_kses_less_than_callback($matches)
  *
  * @since 5.3.1
  *
- * @param  string  $content           Content to be run through KSES.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements
- *                                          and attributes, or a context name
- *                                          such as 'post'.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $content  Content to be run through KSES.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements
+ *                                        and attributes, or a context name
+ *                                        such as 'post'.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Filtered text to run through KSES.
  */
 function wp_pre_kses_block_attributes($content, $allowed_html, $allowed_protocols)
@@ -5334,8 +5334,8 @@ function wp_pre_kses_block_attributes($content, $allowed_html, $allowed_protocol
  *              by adding it to the function signature.
  * @link https://www.php.net/sprintf
  *
- * @param  string  $pattern The string which formatted args are inserted.
- * @param  mixed  ...$args Arguments to be formatted into the $pattern string.
+ * @param  string  $pattern  The string which formatted args are inserted.
+ * @param  mixed  ...$args  Arguments to be formatted into the $pattern string.
  * @return string The formatted string.
  */
 function wp_sprintf($pattern, ...$args)
@@ -5386,8 +5386,8 @@ function wp_sprintf($pattern, ...$args)
              *
              * @since 2.5.0
              *
-             * @param  string  $fragment A fragment from the pattern.
-             * @param  string  $arg      The argument.
+             * @param  string  $fragment  A fragment from the pattern.
+             * @param  string  $arg  The argument.
              */
             $_fragment = apply_filters('wp_sprintf', $fragment, $arg);
 
@@ -5415,8 +5415,8 @@ function wp_sprintf($pattern, ...$args)
  *
  * @since 2.5.0
  *
- * @param  string  $pattern Content containing '%l' at the beginning.
- * @param  array  $args    List items to prepend to the content and replace '%l'.
+ * @param  string  $pattern  Content containing '%l' at the beginning.
+ * @param  array  $args  List items to prepend to the content and replace '%l'.
  * @return string Localized list items and rest of the content.
  */
 function wp_sprintf_l($pattern, $args)
@@ -5440,7 +5440,7 @@ function wp_sprintf_l($pattern, $args)
      *
      * @since 2.5.0
      *
-     * @param  array  $delimiters An array of translated delimiters.
+     * @param  array  $delimiters  An array of translated delimiters.
      */
     $l = apply_filters(
         'wp_sprintf_l',
@@ -5484,8 +5484,8 @@ function wp_sprintf_l($pattern, $args)
  *
  * @since 2.5.0
  *
- * @param  string  $str   String to get the excerpt from.
- * @param  int  $count Maximum number of characters to take.
+ * @param  string  $str  String to get the excerpt from.
+ * @param  int  $count  Maximum number of characters to take.
  * @param  string  $more  Optional. What to append if $str needs to be trimmed. Defaults to empty string.
  * @return string The excerpt.
  */
@@ -5518,9 +5518,9 @@ function wp_html_excerpt($str, $count, $more = null)
  *
  * @global string $_links_add_base
  *
- * @param  string  $content String to search for links in.
- * @param  string  $base    The base URL to prefix to links.
- * @param  array  $attrs   The attributes which should be processed.
+ * @param  string  $content  String to search for links in.
+ * @param  string  $base  The base URL to prefix to links.
+ * @param  array  $attrs  The attributes which should be processed.
  * @return string The processed content.
  */
 function links_add_base_url($content, $base, $attrs = ['src', 'href'])
@@ -5539,7 +5539,7 @@ function links_add_base_url($content, $base, $attrs = ['src', 'href'])
  *
  * @global string $_links_add_base
  *
- * @param  string  $m The matched link.
+ * @param  string  $m  The matched link.
  * @return string The processed link.
  */
 function _links_add_base($m)
@@ -5567,9 +5567,9 @@ function _links_add_base($m)
  *
  * @global string $_links_add_target
  *
- * @param  string  $content String to search for links in.
+ * @param  string  $content  String to search for links in.
  * @param  string  $target  The target to add to the links.
- * @param  string[]  $tags    An array of tags to apply to.
+ * @param  string[]  $tags  An array of tags to apply to.
  * @return string The processed content.
  */
 function links_add_target($content, $target = '_blank', $tags = ['a'])
@@ -5588,7 +5588,7 @@ function links_add_target($content, $target = '_blank', $tags = ['a'])
  *
  * @global string $_links_add_target
  *
- * @param  string  $m The matched link.
+ * @param  string  $m  The matched link.
  * @return string The processed link.
  */
 function _links_add_target($m)
@@ -5605,7 +5605,7 @@ function _links_add_target($m)
  *
  * @since 2.7.0
  *
- * @param  string  $str The string to normalize.
+ * @param  string  $str  The string to normalize.
  * @return string The normalized string.
  */
 function normalize_whitespace($str)
@@ -5626,8 +5626,8 @@ function normalize_whitespace($str)
  *
  * @since 2.9.0
  *
- * @param  string  $text          String containing HTML tags
- * @param  bool  $remove_breaks Optional. Whether to remove left over line breaks and white space chars
+ * @param  string  $text  String containing HTML tags
+ * @param  bool  $remove_breaks  Optional. Whether to remove left over line breaks and white space chars
  * @return string The processed string.
  */
 function wp_strip_all_tags($text, $remove_breaks = false)
@@ -5682,7 +5682,7 @@ function wp_strip_all_tags($text, $remove_breaks = false)
  * @see wp_check_invalid_utf8()
  * @see wp_strip_all_tags()
  *
- * @param  string  $str String to sanitize.
+ * @param  string  $str  String to sanitize.
  * @return string Sanitized string.
  */
 function sanitize_text_field($str)
@@ -5694,8 +5694,8 @@ function sanitize_text_field($str)
      *
      * @since 2.9.0
      *
-     * @param  string  $filtered The sanitized string.
-     * @param  string  $str      The string prior to being sanitized.
+     * @param  string  $filtered  The sanitized string.
+     * @param  string  $str  The string prior to being sanitized.
      */
     return apply_filters('sanitize_text_field', $filtered, $str);
 }
@@ -5710,7 +5710,7 @@ function sanitize_text_field($str)
  * @see sanitize_text_field()
  * @since 4.7.0
  *
- * @param  string  $str String to sanitize.
+ * @param  string  $str  String to sanitize.
  * @return string Sanitized string.
  */
 function sanitize_textarea_field($str)
@@ -5722,8 +5722,8 @@ function sanitize_textarea_field($str)
      *
      * @since 4.7.0
      *
-     * @param  string  $filtered The sanitized string.
-     * @param  string  $str      The string prior to being sanitized.
+     * @param  string  $filtered  The sanitized string.
+     * @param  string  $str  The string prior to being sanitized.
      */
     return apply_filters('sanitize_textarea_field', $filtered, $str);
 }
@@ -5733,8 +5733,8 @@ function sanitize_textarea_field($str)
  *
  * @since 4.7.0
  *
- * @param  string  $str           String to sanitize.
- * @param  bool  $keep_newlines Optional. Whether to keep newlines. Default: false.
+ * @param  string  $str  String to sanitize.
+ * @param  bool  $keep_newlines  Optional. Whether to keep newlines. Default: false.
  * @return string Sanitized string.
  */
 function _sanitize_text_fields($str, $keep_newlines = false)
@@ -5784,8 +5784,8 @@ function _sanitize_text_fields($str, $keep_newlines = false)
  *
  * @since 3.1.0
  *
- * @param  string  $path   A path.
- * @param  string  $suffix If the filename ends in suffix this will also be cut off.
+ * @param  string  $path  A path.
+ * @param  string  $suffix  If the filename ends in suffix this will also be cut off.
  * @return string
  */
 function wp_basename($path, $suffix = '')
@@ -5801,7 +5801,7 @@ function wp_basename($path, $suffix = '')
  *
  * @since 3.0.0
  *
- * @param  string  $text The text to be modified.
+ * @param  string  $text  The text to be modified.
  * @return string The modified text.
  */
 function capital_P_dangit($text)
@@ -5830,7 +5830,7 @@ function capital_P_dangit($text)
  *
  * @since 3.1.3
  *
- * @param  string  $mime_type Mime type.
+ * @param  string  $mime_type  Mime type.
  * @return string Sanitized mime type.
  */
 function sanitize_mime_type($mime_type)
@@ -5842,8 +5842,8 @@ function sanitize_mime_type($mime_type)
      *
      * @since 3.1.3
      *
-     * @param  string  $sani_mime_type The sanitized mime type.
-     * @param  string  $mime_type      The mime type prior to sanitization.
+     * @param  string  $sani_mime_type  The sanitized mime type.
+     * @param  string  $mime_type  The mime type prior to sanitization.
      */
     return apply_filters('sanitize_mime_type', $sani_mime_type, $mime_type);
 }
@@ -5853,7 +5853,7 @@ function sanitize_mime_type($mime_type)
  *
  * @since 3.4.0
  *
- * @param  string  $to_ping Space or carriage return separated URLs
+ * @param  string  $to_ping  Space or carriage return separated URLs
  * @return string URLs starting with the http or https protocol, separated by a carriage return.
  */
 function sanitize_trackback_urls($to_ping)
@@ -5875,8 +5875,8 @@ function sanitize_trackback_urls($to_ping)
      *
      * @since 3.4.0
      *
-     * @param  string  $urls_to_ping Sanitized space or carriage return separated URLs.
-     * @param  string  $to_ping      Space or carriage return separated URLs before sanitization.
+     * @param  string  $urls_to_ping  Sanitized space or carriage return separated URLs.
+     * @param  string  $to_ping  Space or carriage return separated URLs before sanitization.
      */
     return apply_filters('sanitize_trackback_urls', $urls_to_ping, $to_ping);
 }
@@ -5890,7 +5890,7 @@ function sanitize_trackback_urls($to_ping)
  * @since 3.6.0
  * @since 5.5.0 Non-string values are left untouched.
  *
- * @param  string|array  $value String or array of data to slash.
+ * @param  string|array  $value  String or array of data to slash.
  * @return string|array Slashed `$value`, in the same type as supplied.
  */
 function wp_slash($value)
@@ -5914,7 +5914,7 @@ function wp_slash($value)
  *
  * @since 3.6.0
  *
- * @param  string|array  $value String or array of data to unslash.
+ * @param  string|array  $value  String or array of data to unslash.
  * @return string|array Unslashed `$value`, in the same type as supplied.
  */
 function wp_unslash($value)
@@ -5927,7 +5927,7 @@ function wp_unslash($value)
  *
  * @since 3.6.0
  *
- * @param  string  $content A string which might contain a URL.
+ * @param  string  $content  A string which might contain a URL.
  * @return string|false The found URL.
  */
 function get_url_in_content($content)
@@ -5969,7 +5969,7 @@ function wp_spaces_regexp()
          *
          * @since 4.0.0
          *
-         * @param  string  $spaces Regexp pattern for matching common whitespace characters.
+         * @param  string  $spaces  Regexp pattern for matching common whitespace characters.
          */
         $spaces = apply_filters('wp_spaces_regexp', '[\r\n\t ]|\xC2\xA0|&nbsp;');
     }
@@ -6042,7 +6042,7 @@ function _print_emoji_detection_script()
          *
          * @since 4.2.0
          *
-         * @param  string  $url The emoji base URL for png images.
+         * @param  string  $url  The emoji base URL for png images.
          */
         'baseUrl' => apply_filters('emoji_url', 'https://s.w.org/images/core/emoji/14.0.0/72x72/'),
 
@@ -6051,7 +6051,7 @@ function _print_emoji_detection_script()
          *
          * @since 4.2.0
          *
-         * @param  string  $extension The emoji extension for png files. Default .png.
+         * @param  string  $extension  The emoji extension for png files. Default .png.
          */
         'ext' => apply_filters('emoji_ext', '.png'),
 
@@ -6060,7 +6060,7 @@ function _print_emoji_detection_script()
          *
          * @since 4.6.0
          *
-         * @param  string  $url The emoji base URL for svg images.
+         * @param  string  $url  The emoji base URL for svg images.
          */
         'svgUrl' => apply_filters('emoji_svg_url', 'https://s.w.org/images/core/emoji/14.0.0/svg/'),
 
@@ -6069,7 +6069,7 @@ function _print_emoji_detection_script()
          *
          * @since 4.6.0
          *
-         * @param  string  $extension The emoji extension for svg files. Default .svg.
+         * @param  string  $extension  The emoji extension for svg files. Default .svg.
          */
         'svgExt' => apply_filters('emoji_svg_ext', '.svg'),
     ];
@@ -6103,7 +6103,7 @@ function _print_emoji_detection_script()
  *
  * @since 4.2.0
  *
- * @param  string  $content The content to encode.
+ * @param  string  $content  The content to encode.
  * @return string The encoded content.
  */
 function wp_encode_emoji($content)
@@ -6125,7 +6125,7 @@ function wp_encode_emoji($content)
  *
  * @since 4.2.0
  *
- * @param  string  $text The content to encode.
+ * @param  string  $text  The content to encode.
  * @return string The encoded content.
  */
 function wp_staticize_emoji($text)
@@ -6221,7 +6221,7 @@ function wp_staticize_emoji($text)
  *
  * @since 4.2.0
  *
- * @param  array  $mail The email data array.
+ * @param  array  $mail  The email data array.
  * @return array The email data array, with emoji in the message staticized.
  */
 function wp_staticize_emoji_for_email($mail)
@@ -6292,7 +6292,7 @@ function wp_staticize_emoji_for_email($mail)
  *
  * @since 4.9.0
  *
- * @param  string  $type Optional. Which array type to return. Accepts 'partials' or 'entities', default 'entities'.
+ * @param  string  $type  Optional. Which array type to return. Accepts 'partials' or 'entities', default 'entities'.
  * @return array An array to match all emoji that WordPress recognises.
  */
 function _wp_emoji_list($type = 'entities')
@@ -6317,8 +6317,8 @@ function _wp_emoji_list($type = 'entities')
  * @since 1.2.0
  * @since 4.4.0 Moved to wp-includes/formatting.php from wp-admin/includes/misc.php and added $length param.
  *
- * @param  string  $url    URL to shorten.
- * @param  int  $length Optional. Maximum length of the shortened URL. Default 35 characters.
+ * @param  string  $url  URL to shorten.
+ * @param  int  $length  Optional. Maximum length of the shortened URL. Default 35 characters.
  * @return string Shortened URL.
  */
 function url_shorten($url, $length = 35)

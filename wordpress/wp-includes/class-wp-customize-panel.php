@@ -146,21 +146,21 @@ class WP_Customize_Panel
      *
      * @since 4.0.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
-     * @param  string  $id      A specific ID for the panel.
-     * @param  array  $args    {
-     *     Optional. Array of properties for the new Panel object. Default empty array.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
+     * @param  string  $id  A specific ID for the panel.
+     * @param  array  $args  {
+     *                       Optional. Array of properties for the new Panel object. Default empty array.
      *
-     *     @type int             $priority        Priority of the panel, defining the display order
-     *                                            of panels and sections. Default 160.
-     *     @type string          $capability      Capability required for the panel.
-     *                                            Default `edit_theme_options`.
-     *     @type mixed[]         $theme_supports  Theme features required to support the panel.
-     *     @type string          $title           Title of the panel to show in UI.
-     *     @type string          $description     Description to show in the UI.
-     *     @type string          $type            Type of the panel.
-     *     @type callable        $active_callback Active callback.
-     * }
+     * @type int $priority        Priority of the panel, defining the display order
+     *           of panels and sections. Default 160.
+     * @type string $capability      Capability required for the panel.
+     *              Default `edit_theme_options`.
+     * @type mixed[] $theme_supports  Theme features required to support the panel.
+     * @type string $title           Title of the panel to show in UI.
+     * @type string $description     Description to show in the UI.
+     * @type string $type            Type of the panel.
+     * @type callable $active_callback Active callback.
+     *                }
      */
     public function __construct($manager, $id, $args = [])
     {
@@ -199,7 +199,7 @@ class WP_Customize_Panel
          *
          * @since 4.1.0
          *
-         * @param  bool  $active Whether the Customizer panel is active.
+         * @param  bool  $active  Whether the Customizer panel is active.
          * @param  WP_Customize_Panel  $panel  WP_Customize_Panel instance.
          */
         $active = apply_filters('customize_panel_active', $active, $panel);
@@ -294,7 +294,7 @@ class WP_Customize_Panel
          *
          * @since 4.0.0
          *
-         * @param  WP_Customize_Panel  $panel WP_Customize_Panel instance.
+         * @param  WP_Customize_Panel  $panel  WP_Customize_Panel instance.
          */
         do_action('customize_render_panel', $this);
 

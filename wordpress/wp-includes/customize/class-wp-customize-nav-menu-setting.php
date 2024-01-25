@@ -130,10 +130,10 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      *
      * @since 4.3.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
-     * @param  string  $id      A specific ID of the setting.
-     *                                      Can be a theme mod or option name.
-     * @param  array  $args    Optional. Setting arguments.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
+     * @param  string  $id  A specific ID of the setting.
+     *                      Can be a theme mod or option name.
+     * @param  array  $args  Optional. Setting arguments.
      *
      * @throws Exception If $id is not valid for this setting type.
      */
@@ -238,7 +238,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see wp_get_nav_menus()
      *
-     * @param  WP_Term[]  $menus An array of menu objects.
+     * @param  WP_Term[]  $menus  An array of menu objects.
      * @param  array  $args  An array of arguments used to retrieve menu objects.
      * @return WP_Term[] Array of menu objects.
      */
@@ -340,7 +340,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see wp_get_nav_menu_object()
      *
-     * @param  object|null  $menu_obj Object returned by wp_get_nav_menu_object().
+     * @param  object|null  $menu_obj  Object returned by wp_get_nav_menu_object().
      * @param  string  $menu_id  ID of the nav_menu term. Requests by slug or name will be ignored.
      * @return object|null
      */
@@ -390,7 +390,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      *
      * @since 4.3.0
      *
-     * @param  array  $nav_menu_options Nav menu options including auto_add.
+     * @param  array  $nav_menu_options  Nav menu options including auto_add.
      * @return array (Maybe) modified nav menu options.
      */
     public function filter_nav_menu_options($nav_menu_options)
@@ -417,7 +417,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      *
      * @since 4.3.0
      *
-     * @param  array  $value The menu value to sanitize.
+     * @param  array  $value  The menu value to sanitize.
      * @return array|false|null Null if an input isn't valid. False if it is marked for deletion.
      *                          Otherwise the sanitized value.
      */
@@ -480,15 +480,15 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see wp_update_nav_menu_object()
      *
-     * @param  array|false  $value {
-     *     The value to update. Note that slug cannot be updated via wp_update_nav_menu_object().
-     *     If false, then the menu will be deleted entirely.
+     * @param  array|false  $value  {
+     *                              The value to update. Note that slug cannot be updated via wp_update_nav_menu_object().
+     *                              If false, then the menu will be deleted entirely.
      *
-     *     @type string $name        The name of the menu to save.
-     *     @type string $description The term description. Default empty string.
-     *     @type int    $parent      The id of the parent term. Default 0.
-     *     @type bool   $auto_add    Whether pages will auto_add to this menu. Default false.
-     * }
+     * @type string $name        The name of the menu to save.
+     * @type string $description The term description. Default empty string.
+     * @type int $parent      The id of the parent term. Default 0.
+     * @type bool $auto_add    Whether pages will auto_add to this menu. Default false.
+     *            }
      *
      * @return null|void
      */
@@ -604,9 +604,9 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      * @see WP_Customize_Nav_Menu_Setting::filter_nav_menu_options()
      * @see WP_Customize_Nav_Menu_Setting::update()
      *
-     * @param  array  $nav_menu_options Array as returned by get_option( 'nav_menu_options' ).
-     * @param  int  $menu_id          The term ID for the given menu.
-     * @param  bool  $auto_add         Whether to auto-add or not.
+     * @param  array  $nav_menu_options  Array as returned by get_option( 'nav_menu_options' ).
+     * @param  int  $menu_id  The term ID for the given menu.
+     * @param  bool  $auto_add  Whether to auto-add or not.
      * @return array (Maybe) modified nav_menu_options array.
      */
     protected function filter_nav_menu_options_value($nav_menu_options, $menu_id, $auto_add)
@@ -633,7 +633,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see WP_Customize_Nav_Menu_Setting::update()
      *
-     * @param  array  $data Additional information passed back to the 'saved' event on `wp.customize`.
+     * @param  array  $data  Additional information passed back to the 'saved' event on `wp.customize`.
      * @return array Export data.
      */
     public function amend_customize_save_response($data)

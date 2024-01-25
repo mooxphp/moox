@@ -110,7 +110,7 @@ printf(
  *
  * @since 2.7.0
  *
- * @param  int  $max_depth The maximum depth of threaded comments. Default 10.
+ * @param  int  $max_depth  The maximum depth of threaded comments. Default 10.
  */
 $maxdeep = (int) apply_filters('thread_comments_depth_max', 10);
 
@@ -328,7 +328,7 @@ $avatar_defaults = [
  *
  * @since 2.6.0
  *
- * @param  string[]  $avatar_defaults Associative array of default avatars.
+ * @param  string[]  $avatar_defaults  Associative array of default avatars.
  */
 $avatar_defaults = apply_filters('avatar_defaults', $avatar_defaults);
 $default = get_option('avatar_default', 'mystery');
@@ -352,7 +352,7 @@ remove_filter('pre_option_show_avatars', '__return_true', 100);
  *
  * @since 2.6.0
  *
- * @param  string  $avatar_list HTML markup of the avatar list.
+ * @param  string  $avatar_list  HTML markup of the avatar list.
  */
 echo apply_filters('default_avatar_select', $avatar_list);
 ?>

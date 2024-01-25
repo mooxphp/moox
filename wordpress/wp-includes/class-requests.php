@@ -51,7 +51,7 @@ class Requests extends WpOrg\Requests\Requests
      *
      * @codeCoverageIgnore
      *
-     * @param  string  $class Class name to load
+     * @param  string  $class  Class name to load
      */
     public static function autoloader($class)
     {

@@ -98,7 +98,7 @@ class _WP_Dependency
      * @since 5.3.0 Formalized the existing `...$args` parameter by adding it
      *              to the function signature.
      *
-     * @param  mixed  ...$args Dependency information.
+     * @param  mixed  ...$args  Dependency information.
      */
     public function __construct(...$args)
     {
@@ -113,8 +113,8 @@ class _WP_Dependency
      *
      * @since 2.6.0
      *
-     * @param  string  $name The data key to add.
-     * @param  mixed  $data The data value to add.
+     * @param  string  $name  The data key to add.
+     * @param  mixed  $data  The data value to add.
      * @return bool False if not scalar, true otherwise.
      */
     public function add_data($name, $data)
@@ -132,8 +132,8 @@ class _WP_Dependency
      *
      * @since 5.0.0
      *
-     * @param  string  $domain The translation textdomain.
-     * @param  string  $path   Optional. The full file path to the directory containing translation files.
+     * @param  string  $domain  The translation textdomain.
+     * @param  string  $path  Optional. The full file path to the directory containing translation files.
      * @return bool False if $domain is not a string, true otherwise.
      */
     public function set_translations($domain, $path = '')

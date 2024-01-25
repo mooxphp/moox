@@ -44,7 +44,7 @@ class PackagesBuilder extends Builder
     }
 
     /**
-     * @param  PackageInterface[]  $packages List of packages to dump
+     * @param  PackageInterface[]  $packages  List of packages to dump
      */
     public function dump(array $packages): void
     {
@@ -277,7 +277,7 @@ class PackagesBuilder extends Builder
     }
 
     /**
-     * @param  array  $repo Repository information
+     * @param  array  $repo  Repository information
      */
     private function dumpPackagesJson(array $repo): void
     {

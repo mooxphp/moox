@@ -93,7 +93,7 @@ class IXR_Message
              *
              * @since 4.0.0
              *
-             * @param  int  $element_limit Default elements limit.
+             * @param  int  $element_limit  Default elements limit.
              */
             $element_limit = apply_filters('xmlrpc_element_limit', $element_limit);
         }
@@ -117,7 +117,7 @@ class IXR_Message
          *
          * @since 4.4.0
          *
-         * @param  int  $chunk_size Chunk size to parse in bytes.
+         * @param  int  $chunk_size  Chunk size to parse in bytes.
          */
         $chunk_size = apply_filters('xmlrpc_chunk_parsing_size', $chunk_size);
 

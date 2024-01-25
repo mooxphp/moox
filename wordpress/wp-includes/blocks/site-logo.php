@@ -6,7 +6,7 @@
 /**
  * Renders the `core/site-logo` block on the server.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return string The render.
  */
 function render_block_core_site_logo($attributes)
@@ -114,7 +114,7 @@ add_action('init', 'register_block_core_site_logo');
 /**
  * Overrides the custom logo with a site logo, if the option is set.
  *
- * @param  string  $custom_logo The custom logo set by a theme.
+ * @param  string  $custom_logo  The custom logo set by a theme.
  * @return string The site logo if set.
  */
 function _override_custom_logo_theme_mod($custom_logo)
@@ -129,7 +129,7 @@ add_filter('theme_mod_custom_logo', '_override_custom_logo_theme_mod');
 /**
  * Updates the site_logo option when the custom_logo theme-mod gets updated.
  *
- * @param  mixed  $value Attachment ID of the custom logo or an empty value.
+ * @param  mixed  $value  Attachment ID of the custom logo or an empty value.
  * @return mixed
  */
 function _sync_custom_logo_to_site_logo($value)
@@ -148,8 +148,8 @@ add_filter('pre_set_theme_mod_custom_logo', '_sync_custom_logo_to_site_logo');
 /**
  * Deletes the site_logo when the custom_logo theme mod is removed.
  *
- * @param  array  $old_value Previous theme mod settings.
- * @param  array  $value     Updated theme mod settings.
+ * @param  array  $old_value  Previous theme mod settings.
+ * @param  array  $value  Updated theme mod settings.
  */
 function _delete_site_logo_on_remove_custom_logo($old_value, $value)
 {

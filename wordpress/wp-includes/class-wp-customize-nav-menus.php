@@ -39,7 +39,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
      */
     public function __construct($manager)
     {
@@ -76,7 +76,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.5.0
      *
-     * @param  string[]  $nonces Array of nonces.
+     * @param  string[]  $nonces  Array of nonces.
      * @return string[] Modified array of nonces.
      */
     public function filter_nonces($nonces)
@@ -135,10 +135,10 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  string  $object_type Optional. Accepts any custom object type and has built-in support for
-     *                            'post_type' and 'taxonomy'. Default is 'post_type'.
-     * @param  string  $object_name Optional. Accepts any registered taxonomy or post type name. Default is 'page'.
-     * @param  int  $page        Optional. The page number used to generate the query offset. Default is '0'.
+     * @param  string  $object_type  Optional. Accepts any custom object type and has built-in support for
+     *                               'post_type' and 'taxonomy'. Default is 'post_type'.
+     * @param  string  $object_name  Optional. Accepts any registered taxonomy or post type name. Default is 'page'.
+     * @param  int  $page  Optional. The page number used to generate the query offset. Default is '0'.
      * @return array|WP_Error An array of menu items on success, a WP_Error object on failure.
      */
     public function load_available_items_query($object_type = 'post_type', $object_name = 'page', $page = 0)
@@ -297,10 +297,10 @@ final class WP_Customize_Nav_Menus
          *
          * @since 4.3.0
          *
-         * @param  array  $items       The array of menu items.
-         * @param  string  $object_type The object type.
-         * @param  string  $object_name The object name.
-         * @param  int  $page        The current page number.
+         * @param  array  $items  The array of menu items.
+         * @param  string  $object_type  The object type.
+         * @param  string  $object_name  The object name.
+         * @param  int  $page  The current page number.
          */
         $items = apply_filters('customize_nav_menu_available_items', $items, $object_type, $object_name, $page);
 
@@ -351,7 +351,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  array  $args Optional. Accepts 'pagenum' and 's' (search) arguments.
+     * @param  array  $args  Optional. Accepts 'pagenum' and 's' (search) arguments.
      * @return array Menu items.
      */
     public function search_available_items_query($args = [])
@@ -474,7 +474,7 @@ final class WP_Customize_Nav_Menus
          *
          * @since 4.5.0
          *
-         * @param  array  $items The array of menu items.
+         * @param  array  $items  The array of menu items.
          * @param  array  $args  Includes 'pagenum' and 's' (search) arguments.
          */
         $items = apply_filters('customize_nav_menu_searched_items', $items, $args);
@@ -586,8 +586,8 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  false|array  $setting_args The arguments to the WP_Customize_Setting constructor.
-     * @param  string  $setting_id   ID for dynamic setting, usually coming from `$_POST['customized']`.
+     * @param  false|array  $setting_args  The arguments to the WP_Customize_Setting constructor.
+     * @param  string  $setting_id  ID for dynamic setting, usually coming from `$_POST['customized']`.
      * @return array|false
      */
     public function filter_dynamic_setting_args($setting_args, $setting_id)
@@ -612,8 +612,8 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  string  $setting_class WP_Customize_Setting or a subclass.
-     * @param  string  $setting_id    ID for dynamic setting, usually coming from `$_POST['customized']`.
+     * @param  string  $setting_class  WP_Customize_Setting or a subclass.
+     * @param  string  $setting_id  ID for dynamic setting, usually coming from `$_POST['customized']`.
      * @param  array  $setting_args  WP_Customize_Setting or a subclass.
      * @return string
      */
@@ -883,7 +883,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  mixed  $value Number to convert.
+     * @param  mixed  $value  Number to convert.
      * @return int Integer.
      */
     public function intval_base10($value)
@@ -936,7 +936,7 @@ final class WP_Customize_Nav_Menus
          * @since 4.3.0
          * @since 4.7.0  Each array item now includes a `$type_label` in addition to `$title`, `$type`, and `$object`.
          *
-         * @param  array  $item_types Navigation menu item types.
+         * @param  array  $item_types  Navigation menu item types.
          */
         $item_types = apply_filters('customize_nav_menu_available_item_types', $item_types);
 
@@ -948,14 +948,14 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.7.0
      *
-     * @param  array  $postarr {
-     *     Post array. Note that post_status is overridden to be `auto-draft`.
+     * @param  array  $postarr  {
+     *                          Post array. Note that post_status is overridden to be `auto-draft`.
      *
      * @var string $post_title   Post title. Required.
      * @var string $post_type    Post type. Required.
      * @var string $post_name    Post name.
      * @var string $post_content Post content.
-     * }
+     *             }
      *
      * @return WP_Post|WP_Error Inserted auto-draft post object or error.
      */
@@ -1238,7 +1238,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.7.0
      *
-     * @param  array  $available_item_type Menu item data to output, including title, type, and label.
+     * @param  array  $available_item_type  Menu item data to output, including title, type, and label.
      */
     protected function print_post_type_container($available_item_type)
     {
@@ -1336,8 +1336,8 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.5.0
      *
-     * @param  array|false  $partial_args Partial args.
-     * @param  string  $partial_id   Partial ID.
+     * @param  array|false  $partial_args  Partial args.
+     * @param  string  $partial_id  Partial ID.
      * @return array Partial args.
      */
     public function customize_dynamic_partial_args($partial_args, $partial_id)
@@ -1394,7 +1394,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.7.0
      *
-     * @param  array  $value Post IDs.
+     * @param  array  $value  Post IDs.
      * @return array Post IDs.
      */
     public function sanitize_nav_menus_created_posts($value)
@@ -1431,7 +1431,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.7.0
      *
-     * @param  WP_Customize_Setting  $setting Customizer setting object.
+     * @param  WP_Customize_Setting  $setting  Customizer setting object.
      */
     public function save_nav_menus_created_posts($setting)
     {
@@ -1470,7 +1470,7 @@ final class WP_Customize_Nav_Menus
      * @see wp_nav_menu()
      * @see WP_Customize_Widgets::filter_dynamic_sidebar_params()
      *
-     * @param  array  $args An array containing wp_nav_menu() arguments.
+     * @param  array  $args  An array containing wp_nav_menu() arguments.
      * @return array Arguments.
      */
     public function filter_wp_nav_menu_args($args)
@@ -1538,8 +1538,8 @@ final class WP_Customize_Nav_Menus
      * @since 4.3.0
      * @see wp_nav_menu()
      *
-     * @param  string  $nav_menu_content The HTML content for the navigation menu.
-     * @param  object  $args             An object containing wp_nav_menu() arguments.
+     * @param  string  $nav_menu_content  The HTML content for the navigation menu.
+     * @param  object  $args  An object containing wp_nav_menu() arguments.
      * @return string Nav menu HTML with selective refresh attributes added if partial can be refreshed.
      */
     public function filter_wp_nav_menu($nav_menu_content, $args)
@@ -1562,7 +1562,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.3.0
      *
-     * @param  array  $args The arguments to hash.
+     * @param  array  $args  The arguments to hash.
      * @return string Hashed nav menu arguments.
      */
     public function hash_nav_menu_args($args)
@@ -1600,7 +1600,7 @@ final class WP_Customize_Nav_Menus
      *
      * @since 4.5.0
      *
-     * @param  array  $response Response.
+     * @param  array  $response  Response.
      * @return array Response.
      */
     public function export_partial_rendered_nav_menu_instances($response)
@@ -1616,8 +1616,8 @@ final class WP_Customize_Nav_Menus
      * @since 4.3.0
      * @see wp_nav_menu()
      *
-     * @param  WP_Customize_Partial  $partial       Partial.
-     * @param  array  $nav_menu_args Nav menu args supplied as container context.
+     * @param  WP_Customize_Partial  $partial  Partial.
+     * @param  array  $nav_menu_args  Nav menu args supplied as container context.
      * @return string|false
      */
     public function render_nav_menu_partial($partial, $nav_menu_args)

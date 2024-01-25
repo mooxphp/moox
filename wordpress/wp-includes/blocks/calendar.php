@@ -6,7 +6,7 @@
 /**
  * Renders the `core/calendar` block on server.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return string Returns the block content.
  */
 function render_block_core_calendar($attributes)
@@ -139,7 +139,7 @@ if (! is_multisite()) {
     /**
      * Handler for updating the has published posts flag when a post is deleted.
      *
-     * @param  int  $post_id Deleted post ID.
+     * @param  int  $post_id  Deleted post ID.
      */
     function block_core_calendar_update_has_published_post_on_delete($post_id)
     {
@@ -155,9 +155,9 @@ if (! is_multisite()) {
     /**
      * Handler for updating the has published posts flag when a post status changes.
      *
-     * @param  string  $new_status The status the post is changing to.
-     * @param  string  $old_status The status the post is changing from.
-     * @param  WP_Post  $post       Post object.
+     * @param  string  $new_status  The status the post is changing to.
+     * @param  string  $old_status  The status the post is changing from.
+     * @param  WP_Post  $post  Post object.
      */
     function block_core_calendar_update_has_published_post_on_transition_post_status($new_status, $old_status, $post)
     {

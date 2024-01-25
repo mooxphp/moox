@@ -20,7 +20,7 @@ $redirect_user_admin_request = (strcasecmp($current_blog->domain, $current_site-
  *
  * @since 3.2.0
  *
- * @param  bool  $redirect_user_admin_request Whether the request should be redirected.
+ * @param  bool  $redirect_user_admin_request  Whether the request should be redirected.
  */
 $redirect_user_admin_request = apply_filters('redirect_user_admin_request', $redirect_user_admin_request);
 

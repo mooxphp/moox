@@ -163,8 +163,8 @@ require_once ABSPATH.'wp-admin/admin-header.php';
          *
          * @since 6.3.0
          *
-         * @param  string  $message The message being displayed.
-         * @param  WP_Post  $post    The post being edited.
+         * @param  string  $message  The message being displayed.
+         * @param  WP_Post  $post  The post being edited.
          */
         $message = apply_filters('site_editor_no_javascript_message', __('The site editor requires JavaScript. Please enable JavaScript in your browser settings.'), $post);
 wp_admin_notice(

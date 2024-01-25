@@ -27,7 +27,7 @@ class WP_REST_Post_Meta_Fields extends WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  string  $post_type Post type to register fields for.
+     * @param  string  $post_type  Post type to register fields for.
      */
     public function __construct($post_type)
     {

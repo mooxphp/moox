@@ -27,7 +27,7 @@ class WP_REST_Site_Health_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_Site_Health  $site_health An instance of the site health class.
+     * @param  WP_Site_Health  $site_health  An instance of the site health class.
      */
     public function __construct($site_health)
     {
@@ -180,7 +180,7 @@ class WP_REST_Site_Health_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  string  $check The endpoint check being ran.
+     * @param  string  $check  The endpoint check being ran.
      * @return bool
      */
     protected function validate_request_permission($check)
@@ -192,8 +192,8 @@ class WP_REST_Site_Health_Controller extends WP_REST_Controller
          *
          * @since 5.6.0
          *
-         * @param  string  $default_capability The default capability required for this check.
-         * @param  string  $check              The Site Health check being performed.
+         * @param  string  $default_capability  The default capability required for this check.
+         * @param  string  $check  The Site Health check being performed.
          */
         $capability = apply_filters("site_health_test_rest_capability_{$check}", $default_capability, $check);
 

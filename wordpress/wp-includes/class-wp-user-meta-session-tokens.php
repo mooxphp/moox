@@ -36,7 +36,7 @@ class WP_User_Meta_Session_Tokens extends WP_Session_Tokens
     /**
      * Converts an expiration to an array of session information.
      *
-     * @param  mixed  $session Session or expiration.
+     * @param  mixed  $session  Session or expiration.
      * @return array Session.
      */
     protected function prepare_session($session)
@@ -53,7 +53,7 @@ class WP_User_Meta_Session_Tokens extends WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $verifier Verifier for the session to retrieve.
+     * @param  string  $verifier  Verifier for the session to retrieve.
      * @return array|null The session, or null if it does not exist
      */
     protected function get_session($verifier)
@@ -72,7 +72,7 @@ class WP_User_Meta_Session_Tokens extends WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $verifier Verifier for the session to update.
+     * @param  string  $verifier  Verifier for the session to update.
      * @param  array  $session  Optional. Session. Omitting this argument destroys the session.
      */
     protected function update_session($verifier, $session = null)
@@ -93,7 +93,7 @@ class WP_User_Meta_Session_Tokens extends WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  array  $sessions Sessions.
+     * @param  array  $sessions  Sessions.
      */
     protected function update_sessions($sessions)
     {
@@ -109,7 +109,7 @@ class WP_User_Meta_Session_Tokens extends WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $verifier Verifier of the session to keep.
+     * @param  string  $verifier  Verifier of the session to keep.
      */
     protected function destroy_other_sessions($verifier)
     {

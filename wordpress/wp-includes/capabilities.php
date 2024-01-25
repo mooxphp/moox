@@ -33,9 +33,9 @@
  *
  * @global array $post_type_meta_caps Used to get post type meta capabilities.
  *
- * @param  string  $cap     Capability being checked.
- * @param  int  $user_id User ID.
- * @param  mixed  ...$args Optional further parameters, typically starting with an object ID.
+ * @param  string  $cap  Capability being checked.
+ * @param  int  $user_id  User ID.
+ * @param  mixed  ...$args  Optional further parameters, typically starting with an object ID.
  * @return string[] Primitive capabilities required of the user.
  */
 function map_meta_cap($cap, $user_id, ...$args)
@@ -476,12 +476,12 @@ function map_meta_cap($cap, $user_id, ...$args)
                      *
                      * @since 4.9.8
                      *
-                     * @param  bool  $allowed   Whether the user can add the object meta. Default false.
+                     * @param  bool  $allowed  Whether the user can add the object meta. Default false.
                      * @param  string  $meta_key  The meta key.
-                     * @param  int  $object_id Object ID.
-                     * @param  int  $user_id   User ID.
-                     * @param  string  $cap       Capability name.
-                     * @param  string[]  $caps      Array of the user's capabilities.
+                     * @param  int  $object_id  Object ID.
+                     * @param  int  $user_id  User ID.
+                     * @param  string  $cap  Capability name.
+                     * @param  string[]  $caps  Array of the user's capabilities.
                      */
                     $allowed = apply_filters("auth_{$object_type}_meta_{$meta_key}_for_{$object_subtype}", $allowed, $meta_key, $object_id, $user_id, $cap, $caps);
                 } else {
@@ -497,12 +497,12 @@ function map_meta_cap($cap, $user_id, ...$args)
                      * @since 3.3.0 As `auth_post_meta_{$meta_key}`.
                      * @since 4.6.0
                      *
-                     * @param  bool  $allowed   Whether the user can add the object meta. Default false.
+                     * @param  bool  $allowed  Whether the user can add the object meta. Default false.
                      * @param  string  $meta_key  The meta key.
-                     * @param  int  $object_id Object ID.
-                     * @param  int  $user_id   User ID.
-                     * @param  string  $cap       Capability name.
-                     * @param  string[]  $caps      Array of the user's capabilities.
+                     * @param  int  $object_id  Object ID.
+                     * @param  int  $user_id  User ID.
+                     * @param  string  $cap  Capability name.
+                     * @param  string[]  $caps  Array of the user's capabilities.
                      */
                     $allowed = apply_filters("auth_{$object_type}_meta_{$meta_key}", $allowed, $meta_key, $object_id, $user_id, $cap, $caps);
                 }
@@ -523,12 +523,12 @@ function map_meta_cap($cap, $user_id, ...$args)
                      *              `auth_{$object_type}_{$object_subtype}_meta_{$meta_key}`.
                      * @deprecated 4.9.8 Use {@see 'auth_{$object_type}_meta_{$meta_key}_for_{$object_subtype}'} instead.
                      *
-                     * @param  bool  $allowed   Whether the user can add the object meta. Default false.
+                     * @param  bool  $allowed  Whether the user can add the object meta. Default false.
                      * @param  string  $meta_key  The meta key.
-                     * @param  int  $object_id Object ID.
-                     * @param  int  $user_id   User ID.
-                     * @param  string  $cap       Capability name.
-                     * @param  string[]  $caps      Array of the user's capabilities.
+                     * @param  int  $object_id  Object ID.
+                     * @param  int  $user_id  User ID.
+                     * @param  string  $cap  Capability name.
+                     * @param  string[]  $caps  Array of the user's capabilities.
                      */
                     $allowed = apply_filters_deprecated(
                         "auth_{$object_type}_{$object_subtype}_meta_{$meta_key}",
@@ -831,11 +831,11 @@ function map_meta_cap($cap, $user_id, ...$args)
      *
      * @since 2.8.0
      *
-     * @param  string[]  $caps    Primitive capabilities required of the user.
-     * @param  string  $cap     Capability being checked.
-     * @param  int  $user_id The user ID.
-     * @param  array  $args    Adds context to the capability check, typically
-     *                          starting with an object ID.
+     * @param  string[]  $caps  Primitive capabilities required of the user.
+     * @param  string  $cap  Capability being checked.
+     * @param  int  $user_id  The user ID.
+     * @param  array  $args  Adds context to the capability check, typically
+     *                       starting with an object ID.
      */
     return apply_filters('map_meta_cap', $caps, $cap, $user_id, $args);
 }
@@ -865,8 +865,8 @@ function map_meta_cap($cap, $user_id, ...$args)
  * @see WP_User::has_cap()
  * @see map_meta_cap()
  *
- * @param  string  $capability Capability name.
- * @param  mixed  ...$args    Optional further parameters, typically starting with an object ID.
+ * @param  string  $capability  Capability name.
+ * @param  mixed  ...$args  Optional further parameters, typically starting with an object ID.
  * @return bool Whether the current user has the given capability. If `$capability` is a meta cap and `$object_id` is
  *              passed, whether the current user has the given meta capability for the given object.
  */
@@ -893,9 +893,9 @@ function current_user_can($capability, ...$args)
  *              by adding it to the function signature.
  * @since 5.8.0 Wraps current_user_can() after switching to blog.
  *
- * @param  int  $blog_id    Site ID.
- * @param  string  $capability Capability name.
- * @param  mixed  ...$args    Optional further parameters, typically starting with an object ID.
+ * @param  int  $blog_id  Site ID.
+ * @param  string  $capability  Capability name.
+ * @param  mixed  ...$args  Optional further parameters, typically starting with an object ID.
  * @return bool Whether the user has the given capability.
  */
 function current_user_can_for_blog($blog_id, $capability, ...$args)
@@ -928,9 +928,9 @@ function current_user_can_for_blog($blog_id, $capability, ...$args)
  * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
  *              by adding it to the function signature.
  *
- * @param  int|WP_Post  $post       Post ID or post object.
- * @param  string  $capability Capability name.
- * @param  mixed  ...$args    Optional further parameters, typically starting with an object ID.
+ * @param  int|WP_Post  $post  Post ID or post object.
+ * @param  string  $capability  Capability name.
+ * @param  mixed  ...$args  Optional further parameters, typically starting with an object ID.
  * @return bool Whether the post author has the given capability.
  */
 function author_can($post, $capability, ...$args)
@@ -966,9 +966,9 @@ function author_can($post, $capability, ...$args)
  * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
  *              by adding it to the function signature.
  *
- * @param  int|WP_User  $user       User ID or object.
- * @param  string  $capability Capability name.
- * @param  mixed  ...$args    Optional further parameters, typically starting with an object ID.
+ * @param  int|WP_User  $user  User ID or object.
+ * @param  string  $capability  Capability name.
+ * @param  mixed  ...$args  Optional further parameters, typically starting with an object ID.
  * @return bool Whether the user has the given capability.
  */
 function user_can($user, $capability, ...$args)
@@ -1011,7 +1011,7 @@ function wp_roles()
  *
  * @since 2.0.0
  *
- * @param  string  $role Role name.
+ * @param  string  $role  Role name.
  * @return WP_Role|null WP_Role object if found, null if the role does not exist.
  */
 function get_role($role)
@@ -1024,10 +1024,10 @@ function get_role($role)
  *
  * @since 2.0.0
  *
- * @param  string  $role         Role name.
- * @param  string  $display_name Display name for role.
- * @param  bool[]  $capabilities List of capabilities keyed by the capability name,
- *                             e.g. array( 'edit_posts' => true, 'delete_posts' => false ).
+ * @param  string  $role  Role name.
+ * @param  string  $display_name  Display name for role.
+ * @param  bool[]  $capabilities  List of capabilities keyed by the capability name,
+ *                                e.g. array( 'edit_posts' => true, 'delete_posts' => false ).
  * @return WP_Role|void WP_Role object, if the role is added.
  */
 function add_role($role, $display_name, $capabilities = [])
@@ -1044,7 +1044,7 @@ function add_role($role, $display_name, $capabilities = [])
  *
  * @since 2.0.0
  *
- * @param  string  $role Role name.
+ * @param  string  $role  Role name.
  */
 function remove_role($role)
 {
@@ -1076,7 +1076,7 @@ function get_super_admins()
  *
  * @since 3.0.0
  *
- * @param  int|false  $user_id Optional. The ID of a user. Defaults to false, to check the current user.
+ * @param  int|false  $user_id  Optional. The ID of a user. Defaults to false, to check the current user.
  * @return bool Whether the user is a site admin.
  */
 function is_super_admin($user_id = false)
@@ -1112,7 +1112,7 @@ function is_super_admin($user_id = false)
  *
  * @global array $super_admins
  *
- * @param  int  $user_id ID of the user to be granted Super Admin privileges.
+ * @param  int  $user_id  ID of the user to be granted Super Admin privileges.
  * @return bool True on success, false on failure. This can fail when the user is
  *              already a super admin or when the `$super_admins` global is defined.
  */
@@ -1128,7 +1128,7 @@ function grant_super_admin($user_id)
      *
      * @since 3.0.0
      *
-     * @param  int  $user_id ID of the user that is about to be granted Super Admin privileges.
+     * @param  int  $user_id  ID of the user that is about to be granted Super Admin privileges.
      */
     do_action('grant_super_admin', $user_id);
 
@@ -1145,7 +1145,7 @@ function grant_super_admin($user_id)
          *
          * @since 3.0.0
          *
-         * @param  int  $user_id ID of the user that was granted Super Admin privileges.
+         * @param  int  $user_id  ID of the user that was granted Super Admin privileges.
          */
         do_action('granted_super_admin', $user_id);
 
@@ -1162,7 +1162,7 @@ function grant_super_admin($user_id)
  *
  * @global array $super_admins
  *
- * @param  int  $user_id ID of the user Super Admin privileges to be revoked from.
+ * @param  int  $user_id  ID of the user Super Admin privileges to be revoked from.
  * @return bool True on success, false on failure. This can fail when the user's email
  *              is the network admin email or when the `$super_admins` global is defined.
  */
@@ -1178,7 +1178,7 @@ function revoke_super_admin($user_id)
      *
      * @since 3.0.0
      *
-     * @param  int  $user_id ID of the user Super Admin privileges are being revoked from.
+     * @param  int  $user_id  ID of the user Super Admin privileges are being revoked from.
      */
     do_action('revoke_super_admin', $user_id);
 
@@ -1197,7 +1197,7 @@ function revoke_super_admin($user_id)
              *
              * @since 3.0.0
              *
-             * @param  int  $user_id ID of the user Super Admin privileges were revoked from.
+             * @param  int  $user_id  ID of the user Super Admin privileges were revoked from.
              */
             do_action('revoked_super_admin', $user_id);
 
@@ -1216,7 +1216,7 @@ function revoke_super_admin($user_id)
  *
  * @since 4.9.0
  *
- * @param  bool[]  $allcaps An array of all the user's capabilities.
+ * @param  bool[]  $allcaps  An array of all the user's capabilities.
  * @return bool[] Filtered array of the user's capabilities.
  */
 function wp_maybe_grant_install_languages_cap($allcaps)
@@ -1233,7 +1233,7 @@ function wp_maybe_grant_install_languages_cap($allcaps)
  *
  * @since 5.2.0
  *
- * @param  bool[]  $allcaps An array of all the user's capabilities.
+ * @param  bool[]  $allcaps  An array of all the user's capabilities.
  * @return bool[] Filtered array of the user's capabilities.
  */
 function wp_maybe_grant_resume_extensions_caps($allcaps)
@@ -1256,17 +1256,17 @@ function wp_maybe_grant_resume_extensions_caps($allcaps)
  *
  * @since 5.2.2
  *
- * @param  bool[]  $allcaps An array of all the user's capabilities.
- * @param  string[]  $caps    Required primitive capabilities for the requested capability.
- * @param  array  $args {
- *     Arguments that accompany the requested capability check.
+ * @param  bool[]  $allcaps  An array of all the user's capabilities.
+ * @param  string[]  $caps  Required primitive capabilities for the requested capability.
+ * @param  array  $args  {
+ *                       Arguments that accompany the requested capability check.
  *
- *     @type string    $0 Requested capability.
- *     @type int       $1 Concerned user ID.
- *     @type mixed  ...$2 Optional second and further parameters, typically object ID.
- * }
+ * @type string $0 Requested capability.
+ * @type int $1 Concerned user ID.
+ * @type mixed ...$2 Optional second and further parameters, typically object ID.
+ *             }
  *
- * @param  WP_User  $user    The user object.
+ * @param  WP_User  $user  The user object.
  * @return bool[] Filtered array of the user's capabilities.
  */
 function wp_maybe_grant_site_health_caps($allcaps, $caps, $args, $user)

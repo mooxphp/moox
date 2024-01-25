@@ -88,7 +88,7 @@ class WP_Admin_Bar
      *
      * @since 3.3.0
      *
-     * @param  array  $node The attributes that define the node.
+     * @param  array  $node  The attributes that define the node.
      */
     public function add_menu($node)
     {
@@ -100,7 +100,7 @@ class WP_Admin_Bar
      *
      * @since 3.1.0
      *
-     * @param  string  $id The menu slug to remove.
+     * @param  string  $id  The menu slug to remove.
      */
     public function remove_menu($id)
     {
@@ -113,17 +113,17 @@ class WP_Admin_Bar
      * @since 3.1.0
      * @since 4.5.0 Added the ability to pass 'lang' and 'dir' meta data.
      *
-     * @param  array  $args {
-     *     Arguments for adding a node.
+     * @param  array  $args  {
+     *                       Arguments for adding a node.
      *
-     *     @type string $id     ID of the item.
-     *     @type string $title  Title of the node.
-     *     @type string $parent Optional. ID of the parent node.
-     *     @type string $href   Optional. Link for the item.
-     *     @type bool   $group  Optional. Whether or not the node is a group. Default false.
-     *     @type array  $meta   Meta data including the following keys: 'html', 'class', 'rel', 'lang', 'dir',
-     *                          'onclick', 'target', 'title', 'tabindex'. Default empty.
-     * }
+     * @type string $id     ID of the item.
+     * @type string $title  Title of the node.
+     * @type string $parent Optional. ID of the parent node.
+     * @type string $href   Optional. Link for the item.
+     * @type bool $group  Optional. Whether or not the node is a group. Default false.
+     * @type array $meta   Meta data including the following keys: 'html', 'class', 'rel', 'lang', 'dir',
+     *             'onclick', 'target', 'title', 'tabindex'. Default empty.
+     *             }
      */
     public function add_node($args)
     {
@@ -270,14 +270,14 @@ class WP_Admin_Bar
      *
      * @since 3.3.0
      *
-     * @param  array  $args {
-     *     Array of arguments for adding a group.
+     * @param  array  $args  {
+     *                       Array of arguments for adding a group.
      *
-     *     @type string $id     ID of the item.
-     *     @type string $parent Optional. ID of the parent node. Default 'root'.
-     *     @type array  $meta   Meta data for the group including the following keys:
-     *                         'class', 'onclick', 'target', and 'title'.
-     * }
+     * @type string $id     ID of the item.
+     * @type string $parent Optional. ID of the parent node. Default 'root'.
+     * @type array $meta   Meta data for the group including the following keys:
+     *             'class', 'onclick', 'target', and 'title'.
+     *             }
      */
     final public function add_group($args)
     {
@@ -291,7 +291,7 @@ class WP_Admin_Bar
      *
      * @since 3.1.0
      *
-     * @param  string  $id The ID of the item.
+     * @param  string  $id  The ID of the item.
      */
     public function remove_node($id)
     {
@@ -646,7 +646,7 @@ class WP_Admin_Bar
      * @see WP_Admin_Bar::_render_item()
      * @see WP_Admin_Bar::render()
      *
-     * @param  string  $id    Unused.
+     * @param  string  $id  Unused.
      * @param  object  $node
      */
     public function recursive_render($id, $node)

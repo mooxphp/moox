@@ -205,17 +205,17 @@ class wpdb
      * @since 5.3.0 The fifth element in each query log was added to record custom data.
      *
      * @var array[] {
-     *     Array of arrays containing information about queries that were executed.
+     *              Array of arrays containing information about queries that were executed.
      *
-     *     @type array ...$0 {
-     *         Data for each query.
-     *         @type string $0 The query's SQL.
-     *         @type float  $1 Total time spent on the query, in seconds.
-     *         @type string $2 Comma-separated list of the calling functions.
-     *         @type float  $3 Unix timestamp of the time at the start of the query.
-     *         @type array  $4 Custom query data.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Data for each query.
+     * @type string $0 The query's SQL.
+     * @type float $1 Total time spent on the query, in seconds.
+     * @type string $2 Comma-separated list of the calling functions.
+     * @type float $3 Unix timestamp of the time at the start of the query.
+     * @type array $4 Custom query data.
+     *             }
+     *             }
      */
     public $queries;
 
@@ -740,10 +740,10 @@ class wpdb
      * @since 2.0.8
      * @link https://core.trac.wordpress.org/ticket/3354
      *
-     * @param  string  $dbuser     Database user.
-     * @param  string  $dbpassword Database password.
-     * @param  string  $dbname     Database name.
-     * @param  string  $dbhost     Database host.
+     * @param  string  $dbuser  Database user.
+     * @param  string  $dbpassword  Database password.
+     * @param  string  $dbname  Database name.
+     * @param  string  $dbhost  Database host.
      */
     public function __construct($dbuser, $dbpassword, $dbname, $dbhost)
     {
@@ -769,7 +769,7 @@ class wpdb
      *
      * @since 3.5.0
      *
-     * @param  string  $name The private member to get, and optionally process.
+     * @param  string  $name  The private member to get, and optionally process.
      * @return mixed The private member.
      */
     public function __get($name)
@@ -787,7 +787,7 @@ class wpdb
      * @since 3.5.0
      *
      * @param  string  $name  The private member to set.
-     * @param  mixed  $value The value to set.
+     * @param  mixed  $value  The value to set.
      */
     public function __set($name, $value)
     {
@@ -808,7 +808,7 @@ class wpdb
      *
      * @since 3.5.0
      *
-     * @param  string  $name The private member to check.
+     * @param  string  $name  The private member to check.
      * @return bool If the member is set or not.
      */
     public function __isset($name)
@@ -866,14 +866,14 @@ class wpdb
      *
      * @since 4.6.0
      *
-     * @param  string  $charset The character set to check.
-     * @param  string  $collate The collation to check.
+     * @param  string  $charset  The character set to check.
+     * @param  string  $collate  The collation to check.
      * @return array {
-     *     The most appropriate character set and collation to use.
+     *               The most appropriate character set and collation to use.
      *
-     *     @type string $charset Character set.
-     *     @type string $collate Collation.
-     * }
+     * @type string $charset Character set.
+     * @type string $collate Collation.
+     *              }
      */
     public function determine_charset($charset, $collate)
     {
@@ -912,9 +912,9 @@ class wpdb
      *
      * @since 3.1.0
      *
-     * @param  mysqli  $dbh     The connection returned by `mysqli_connect()`.
-     * @param  string  $charset Optional. The character set. Default null.
-     * @param  string  $collate Optional. The collation. Default null.
+     * @param  mysqli  $dbh  The connection returned by `mysqli_connect()`.
+     * @param  string  $charset  Optional. The character set. Default null.
+     * @param  string  $collate  Optional. The collation. Default null.
      */
     public function set_charset($dbh, $charset = null, $collate = null)
     {
@@ -948,7 +948,7 @@ class wpdb
      *
      * @since 3.9.0
      *
-     * @param  array  $modes Optional. A list of SQL modes to set. Default empty array.
+     * @param  array  $modes  Optional. A list of SQL modes to set. Default empty array.
      */
     public function set_sql_mode($modes = [])
     {
@@ -981,7 +981,7 @@ class wpdb
          *
          * @since 3.9.0
          *
-         * @param  array  $incompatible_modes An array of incompatible modes.
+         * @param  array  $incompatible_modes  An array of incompatible modes.
          */
         $incompatible_modes = (array) apply_filters('incompatible_sql_modes', $this->incompatible_modes);
 
@@ -1001,9 +1001,9 @@ class wpdb
      *
      * @since 2.5.0
      *
-     * @param  string  $prefix          Alphanumeric name for the new prefix.
-     * @param  bool  $set_table_names Optional. Whether the table names, e.g. wpdb::$posts,
-     *                                should be updated or not. Default true.
+     * @param  string  $prefix  Alphanumeric name for the new prefix.
+     * @param  bool  $set_table_names  Optional. Whether the table names, e.g. wpdb::$posts,
+     *                                 should be updated or not. Default true.
      * @return string|WP_Error Old prefix or WP_Error on error.
      */
     public function set_prefix($prefix, $set_table_names = true)
@@ -1050,7 +1050,7 @@ class wpdb
      * @since 3.0.0
      *
      * @param  int  $blog_id
-     * @param  int  $network_id Optional. Network ID. Default 0.
+     * @param  int  $network_id  Optional. Network ID. Default 0.
      * @return int Previous blog ID.
      */
     public function set_blog_id($blog_id, $network_id = 0)
@@ -1080,8 +1080,8 @@ class wpdb
      *
      * @since 3.0.0
      *
-     * @param  int  $blog_id Optional. Blog ID to retrieve the table prefix for.
-     *                     Defaults to the current blog ID.
+     * @param  int  $blog_id  Optional. Blog ID to retrieve the table prefix for.
+     *                        Defaults to the current blog ID.
      * @return string Blog prefix.
      */
     public function get_blog_prefix($blog_id = null)
@@ -1126,11 +1126,11 @@ class wpdb
      * @uses wpdb::$ms_global_tables
      * @uses wpdb::$old_ms_global_tables
      *
-     * @param  string  $scope   Optional. Possible values include 'all', 'global', 'ms_global', 'blog',
-     *                        or 'old' tables. Default 'all'.
+     * @param  string  $scope  Optional. Possible values include 'all', 'global', 'ms_global', 'blog',
+     *                         or 'old' tables. Default 'all'.
      * @param  bool  $prefix  Optional. Whether to include table prefixes. If blog prefix is requested,
      *                        then the custom users and usermeta tables will be mapped. Default true.
-     * @param  int  $blog_id Optional. The blog_id to prefix. Used only when prefix is requested.
+     * @param  int  $blog_id  Optional. The blog_id to prefix. Used only when prefix is requested.
      *                        Defaults to `wpdb::$blogid`.
      * @return string[] Table names. When a prefix is requested, the key is the unprefixed table name.
      */
@@ -1202,8 +1202,8 @@ class wpdb
      * @since 0.71
      *
      * @param  string  $db  Database name.
-     * @param  mysqli  $dbh Optional. Database connection.
-     *                    Defaults to the current database handle.
+     * @param  mysqli  $dbh  Optional. Database connection.
+     *                       Defaults to the current database handle.
      */
     public function select($db, $dbh = null)
     {
@@ -1283,7 +1283,7 @@ class wpdb
      * @since 2.8.0
      * @see mysqli_real_escape_string()
      *
-     * @param  string  $data String to escape.
+     * @param  string  $data  String to escape.
      * @return string Escaped string.
      */
     public function _real_escape($data)
@@ -1314,7 +1314,7 @@ class wpdb
      *
      * @uses wpdb::_real_escape()
      *
-     * @param  string|array  $data Data to escape.
+     * @param  string|array  $data  Data to escape.
      * @return string|array Escaped data, in the same type as supplied.
      */
     public function _escape($data)
@@ -1344,7 +1344,7 @@ class wpdb
      * @see wpdb::prepare()
      * @see esc_sql()
      *
-     * @param  string|array  $data Data to escape.
+     * @param  string|array  $data  Data to escape.
      * @return string|array Escaped data, in the same type as supplied.
      */
     public function escape($data)
@@ -1374,7 +1374,7 @@ class wpdb
      *
      * @since 2.3.0
      *
-     * @param  string  $data String to escape.
+     * @param  string  $data  String to escape.
      */
     public function escape_by_ref(&$data)
     {
@@ -1388,7 +1388,7 @@ class wpdb
      *
      * @since 6.2.0
      *
-     * @param  string  $identifier Identifier to escape.
+     * @param  string  $identifier  Identifier to escape.
      * @return string Escaped identifier.
      */
     public function quote_identifier($identifier)
@@ -1406,7 +1406,7 @@ class wpdb
      * @since 6.2.0
      * @link https://dev.mysql.com/doc/refman/8.0/en/identifiers.html
      *
-     * @param  string  $identifier Identifier to escape.
+     * @param  string  $identifier  Identifier to escape.
      * @return string Escaped identifier.
      */
     private function _escape_identifier_value($identifier)
@@ -1461,13 +1461,13 @@ class wpdb
      *              `%d` and `$i` as a signed integer, whereas PHP only supports `%d`.
      * @link https://www.php.net/sprintf Description of syntax.
      *
-     * @param  string  $query   Query statement with `sprintf()`-like placeholders.
-     * @param  array|mixed  $args    The array of variables to substitute into the query's placeholders
+     * @param  string  $query  Query statement with `sprintf()`-like placeholders.
+     * @param  array|mixed  $args  The array of variables to substitute into the query's placeholders
      *                             if being called with an array of arguments, or the first variable
      *                             to substitute into the query's placeholders if being called with
      *                             individual arguments.
-     * @param  mixed  ...$args Further variables to substitute into the query's placeholders
-     *                             if being called with individual arguments.
+     * @param  mixed  ...$args  Further variables to substitute into the query's placeholders
+     *                          if being called with individual arguments.
      * @return string|void Sanitized query string, if there is a query to prepare.
      */
     public function prepare($query, ...$args)
@@ -1793,8 +1793,8 @@ class wpdb
      *
      * @since 4.0.0
      *
-     * @param  string  $text The raw text to be escaped. The input typed by the user
-     *                     should have no extra or deleted slashes.
+     * @param  string  $text  The raw text to be escaped. The input typed by the user
+     *                        should have no extra or deleted slashes.
      * @return string Text in the form of a LIKE phrase. The output is not SQL safe.
      *                Call wpdb::prepare() or wpdb::_real_escape() next.
      */
@@ -1810,7 +1810,7 @@ class wpdb
      *
      * @global array $EZSQL_ERROR Stores error information of query and error string.
      *
-     * @param  string  $str The error to display.
+     * @param  string  $str  The error to display.
      * @return void|false Void if the showing of errors is enabled, false if disabled.
      */
     public function print_error($str = '')
@@ -1884,7 +1884,7 @@ class wpdb
      * @since 0.71
      * @see wpdb::hide_errors()
      *
-     * @param  bool  $show Optional. Whether to show errors. Default true.
+     * @param  bool  $show  Optional. Whether to show errors. Default true.
      * @return bool Whether showing of errors was previously active.
      */
     public function show_errors($show = true)
@@ -1921,7 +1921,7 @@ class wpdb
      * @since 2.5.0
      * @see wpdb::hide_errors()
      *
-     * @param  bool  $suppress Optional. Whether to suppress errors. Default true.
+     * @param  bool  $suppress  Optional. Whether to suppress errors. Default true.
      * @return bool Whether suppressing of errors was previously active.
      */
     public function suppress_errors($suppress = true)
@@ -1970,7 +1970,7 @@ class wpdb
      * @since 3.0.0
      * @since 3.9.0 $allow_bail parameter added.
      *
-     * @param  bool  $allow_bail Optional. Allows the function to bail. Default true.
+     * @param  bool  $allow_bail  Optional. Allows the function to bail. Default true.
      * @return bool True with a successful connection, false on failure.
      */
     public function db_connect($allow_bail = true)
@@ -2079,17 +2079,17 @@ class wpdb
      *
      * @since 4.9.0
      *
-     * @param  string  $host The DB_HOST setting to parse.
+     * @param  string  $host  The DB_HOST setting to parse.
      * @return array|false {
-     *     Array containing the host, the port, the socket and
-     *     whether it is an IPv6 address, in that order.
-     *     False if the host couldn't be parsed.
+     *                     Array containing the host, the port, the socket and
+     *                     whether it is an IPv6 address, in that order.
+     *                     False if the host couldn't be parsed.
      *
-     *     @type string      $0 Host name.
-     *     @type string|null $1 Port.
-     *     @type string|null $2 Socket.
-     *     @type bool        $3 Whether it is an IPv6 address.
-     * }
+     * @type string $0 Host name.
+     * @type string|null $1 Port.
+     * @type string|null $2 Socket.
+     * @type bool $3 Whether it is an IPv6 address.
+     *            }
      */
     public function parse_db_host($host)
     {
@@ -2140,7 +2140,7 @@ class wpdb
      *
      * @since 3.9.0
      *
-     * @param  bool  $allow_bail Optional. Allows the function to bail. Default true.
+     * @param  bool  $allow_bail  Optional. Allows the function to bail. Default true.
      * @return bool|void True if the connection is up.
      */
     public function check_connection($allow_bail = true)
@@ -2228,7 +2228,7 @@ class wpdb
      * @since 0.71
      * @link https://developer.wordpress.org/reference/classes/wpdb/
      *
-     * @param  string  $query Database query.
+     * @param  string  $query  Database query.
      * @return int|bool Boolean true for CREATE, ALTER, TRUNCATE and DROP queries. Number of rows
      *                  affected/selected for all other queries. Boolean false on error.
      */
@@ -2248,7 +2248,7 @@ class wpdb
          *
          * @since 2.1.0
          *
-         * @param  string  $query Database query.
+         * @param  string  $query  Database query.
          */
         $query = apply_filters('query', $query);
 
@@ -2367,7 +2367,7 @@ class wpdb
      * @since 3.9.0
      * @see wpdb::query()
      *
-     * @param  string  $query The query to run.
+     * @param  string  $query  The query to run.
      */
     private function _do_query($query)
     {
@@ -2397,11 +2397,11 @@ class wpdb
      *
      * @since 5.3.0
      *
-     * @param  string  $query           The query's SQL.
-     * @param  float  $query_time      Total time spent on the query, in seconds.
-     * @param  string  $query_callstack Comma-separated list of the calling functions.
-     * @param  float  $query_start     Unix timestamp of the time at the start of the query.
-     * @param  array  $query_data      Custom query data.
+     * @param  string  $query  The query's SQL.
+     * @param  float  $query_time  Total time spent on the query, in seconds.
+     * @param  string  $query_callstack  Comma-separated list of the calling functions.
+     * @param  float  $query_start  Unix timestamp of the time at the start of the query.
+     * @param  array  $query_data  Custom query data.
      */
     public function log_query($query, $query_time, $query_callstack, $query_start, $query_data)
     {
@@ -2413,11 +2413,11 @@ class wpdb
          *
          * @since 5.3.0
          *
-         * @param  array  $query_data      Custom query data.
-         * @param  string  $query           The query's SQL.
-         * @param  float  $query_time      Total time spent on the query, in seconds.
-         * @param  string  $query_callstack Comma-separated list of the calling functions.
-         * @param  float  $query_start     Unix timestamp of the time at the start of the query.
+         * @param  array  $query_data  Custom query data.
+         * @param  string  $query  The query's SQL.
+         * @param  float  $query_time  Total time spent on the query, in seconds.
+         * @param  string  $query_callstack  Comma-separated list of the calling functions.
+         * @param  float  $query_start  Unix timestamp of the time at the start of the query.
          */
         $query_data = apply_filters('log_query_custom_data', $query_data, $query, $query_time, $query_callstack, $query_start);
 
@@ -2466,7 +2466,7 @@ class wpdb
      *
      * @since 4.8.3
      *
-     * @param  string  $query The query to escape.
+     * @param  string  $query  The query to escape.
      * @return string The query with the placeholder escape string inserted where necessary.
      */
     public function add_placeholder_escape($query)
@@ -2483,7 +2483,7 @@ class wpdb
      *
      * @since 4.8.3
      *
-     * @param  string  $query The query from which the placeholder will be removed.
+     * @param  string  $query  The query from which the placeholder will be removed.
      * @return string The query with the placeholder removed.
      */
     public function remove_placeholder_escape($query)
@@ -2521,15 +2521,15 @@ class wpdb
      * @see wp_set_wpdb_vars()
      *
      * @param  string  $table  Table name.
-     * @param  array  $data   Data to insert (in column => value pairs).
-     *                                Both `$data` columns and `$data` values should be "raw" (neither should be SQL escaped).
-     *                                Sending a null value will cause the column to be set to NULL - the corresponding
-     *                                format is ignored in this case.
-     * @param  string[]|string  $format Optional. An array of formats to be mapped to each of the value in `$data`.
-     *                                If string, that format will be used for all of the values in `$data`.
-     *                                A format is one of '%d', '%f', '%s' (integer, float, string).
-     *                                If omitted, all values in `$data` will be treated as strings unless otherwise
-     *                                specified in wpdb::$field_types. Default null.
+     * @param  array  $data  Data to insert (in column => value pairs).
+     *                       Both `$data` columns and `$data` values should be "raw" (neither should be SQL escaped).
+     *                       Sending a null value will cause the column to be set to NULL - the corresponding
+     *                       format is ignored in this case.
+     * @param  string[]|string  $format  Optional. An array of formats to be mapped to each of the value in `$data`.
+     *                                   If string, that format will be used for all of the values in `$data`.
+     *                                   A format is one of '%d', '%f', '%s' (integer, float, string).
+     *                                   If omitted, all values in `$data` will be treated as strings unless otherwise
+     *                                   specified in wpdb::$field_types. Default null.
      * @return int|false The number of rows inserted, or false on error.
      */
     public function insert($table, $data, $format = null)
@@ -2573,16 +2573,16 @@ class wpdb
      * @see wp_set_wpdb_vars()
      *
      * @param  string  $table  Table name.
-     * @param  array  $data   Data to insert (in column => value pairs).
-     *                                Both `$data` columns and `$data` values should be "raw" (neither should be SQL escaped).
-     *                                A primary key or unique index is required to perform a replace operation.
-     *                                Sending a null value will cause the column to be set to NULL - the corresponding
-     *                                format is ignored in this case.
-     * @param  string[]|string  $format Optional. An array of formats to be mapped to each of the value in `$data`.
-     *                                If string, that format will be used for all of the values in `$data`.
-     *                                A format is one of '%d', '%f', '%s' (integer, float, string).
-     *                                If omitted, all values in `$data` will be treated as strings unless otherwise
-     *                                specified in wpdb::$field_types. Default null.
+     * @param  array  $data  Data to insert (in column => value pairs).
+     *                       Both `$data` columns and `$data` values should be "raw" (neither should be SQL escaped).
+     *                       A primary key or unique index is required to perform a replace operation.
+     *                       Sending a null value will cause the column to be set to NULL - the corresponding
+     *                       format is ignored in this case.
+     * @param  string[]|string  $format  Optional. An array of formats to be mapped to each of the value in `$data`.
+     *                                   If string, that format will be used for all of the values in `$data`.
+     *                                   A format is one of '%d', '%f', '%s' (integer, float, string).
+     *                                   If omitted, all values in `$data` will be treated as strings unless otherwise
+     *                                   specified in wpdb::$field_types. Default null.
      * @return int|false The number of rows affected, or false on error.
      */
     public function replace($table, $data, $format = null)
@@ -2601,17 +2601,17 @@ class wpdb
      * @see wp_set_wpdb_vars()
      *
      * @param  string  $table  Table name.
-     * @param  array  $data   Data to insert (in column => value pairs).
-     *                                Both `$data` columns and `$data` values should be "raw" (neither should be SQL escaped).
-     *                                Sending a null value will cause the column to be set to NULL - the corresponding
-     *                                format is ignored in this case.
-     * @param  string[]|string  $format Optional. An array of formats to be mapped to each of the value in `$data`.
-     *                                If string, that format will be used for all of the values in `$data`.
-     *                                A format is one of '%d', '%f', '%s' (integer, float, string).
-     *                                If omitted, all values in `$data` will be treated as strings unless otherwise
-     *                                specified in wpdb::$field_types. Default null.
-     * @param  string  $type   Optional. Type of operation. Either 'INSERT' or 'REPLACE'.
-     *                                Default 'INSERT'.
+     * @param  array  $data  Data to insert (in column => value pairs).
+     *                       Both `$data` columns and `$data` values should be "raw" (neither should be SQL escaped).
+     *                       Sending a null value will cause the column to be set to NULL - the corresponding
+     *                       format is ignored in this case.
+     * @param  string[]|string  $format  Optional. An array of formats to be mapped to each of the value in `$data`.
+     *                                   If string, that format will be used for all of the values in `$data`.
+     *                                   A format is one of '%d', '%f', '%s' (integer, float, string).
+     *                                   If omitted, all values in `$data` will be treated as strings unless otherwise
+     *                                   specified in wpdb::$field_types. Default null.
+     * @param  string  $type  Optional. Type of operation. Either 'INSERT' or 'REPLACE'.
+     *                        Default 'INSERT'.
      * @return int|false The number of rows affected, or false on error.
      */
     public function _insert_replace_helper($table, $data, $format = null, $type = 'INSERT')
@@ -2688,26 +2688,26 @@ class wpdb
      * @see wpdb::$field_types
      * @see wp_set_wpdb_vars()
      *
-     * @param  string  $table           Table name.
-     * @param  array  $data            Data to update (in column => value pairs).
-     *                                      Both $data columns and $data values should be "raw" (neither should be SQL escaped).
-     *                                      Sending a null value will cause the column to be set to NULL - the corresponding
-     *                                      format is ignored in this case.
-     * @param  array  $where           A named array of WHERE clauses (in column => value pairs).
-     *                                      Multiple clauses will be joined with ANDs.
-     *                                      Both $where columns and $where values should be "raw".
-     *                                      Sending a null value will create an IS NULL comparison - the corresponding
-     *                                      format will be ignored in this case.
-     * @param  string[]|string  $format       Optional. An array of formats to be mapped to each of the values in $data.
-     *                                      If string, that format will be used for all of the values in $data.
-     *                                      A format is one of '%d', '%f', '%s' (integer, float, string).
-     *                                      If omitted, all values in $data will be treated as strings unless otherwise
-     *                                      specified in wpdb::$field_types. Default null.
-     * @param  string[]|string  $where_format Optional. An array of formats to be mapped to each of the values in $where.
-     *                                      If string, that format will be used for all of the items in $where.
-     *                                      A format is one of '%d', '%f', '%s' (integer, float, string).
-     *                                      If omitted, all values in $where will be treated as strings unless otherwise
-     *                                      specified in wpdb::$field_types. Default null.
+     * @param  string  $table  Table name.
+     * @param  array  $data  Data to update (in column => value pairs).
+     *                       Both $data columns and $data values should be "raw" (neither should be SQL escaped).
+     *                       Sending a null value will cause the column to be set to NULL - the corresponding
+     *                       format is ignored in this case.
+     * @param  array  $where  A named array of WHERE clauses (in column => value pairs).
+     *                        Multiple clauses will be joined with ANDs.
+     *                        Both $where columns and $where values should be "raw".
+     *                        Sending a null value will create an IS NULL comparison - the corresponding
+     *                        format will be ignored in this case.
+     * @param  string[]|string  $format  Optional. An array of formats to be mapped to each of the values in $data.
+     *                                   If string, that format will be used for all of the values in $data.
+     *                                   A format is one of '%d', '%f', '%s' (integer, float, string).
+     *                                   If omitted, all values in $data will be treated as strings unless otherwise
+     *                                   specified in wpdb::$field_types. Default null.
+     * @param  string[]|string  $where_format  Optional. An array of formats to be mapped to each of the values in $where.
+     *                                         If string, that format will be used for all of the items in $where.
+     *                                         A format is one of '%d', '%f', '%s' (integer, float, string).
+     *                                         If omitted, all values in $where will be treated as strings unless otherwise
+     *                                         specified in wpdb::$field_types. Default null.
      * @return int|false The number of rows updated, or false on error.
      */
     public function update($table, $data, $where, $format = null, $where_format = null)
@@ -2785,17 +2785,17 @@ class wpdb
      * @see wpdb::$field_types
      * @see wp_set_wpdb_vars()
      *
-     * @param  string  $table        Table name.
-     * @param  array  $where        A named array of WHERE clauses (in column => value pairs).
-     *                                      Multiple clauses will be joined with ANDs.
-     *                                      Both $where columns and $where values should be "raw".
-     *                                      Sending a null value will create an IS NULL comparison - the corresponding
-     *                                      format will be ignored in this case.
-     * @param  string[]|string  $where_format Optional. An array of formats to be mapped to each of the values in $where.
-     *                                      If string, that format will be used for all of the items in $where.
-     *                                      A format is one of '%d', '%f', '%s' (integer, float, string).
-     *                                      If omitted, all values in $data will be treated as strings unless otherwise
-     *                                      specified in wpdb::$field_types. Default null.
+     * @param  string  $table  Table name.
+     * @param  array  $where  A named array of WHERE clauses (in column => value pairs).
+     *                        Multiple clauses will be joined with ANDs.
+     *                        Both $where columns and $where values should be "raw".
+     *                        Sending a null value will create an IS NULL comparison - the corresponding
+     *                        format will be ignored in this case.
+     * @param  string[]|string  $where_format  Optional. An array of formats to be mapped to each of the values in $where.
+     *                                         If string, that format will be used for all of the items in $where.
+     *                                         A format is one of '%d', '%f', '%s' (integer, float, string).
+     *                                         If omitted, all values in $data will be treated as strings unless otherwise
+     *                                         specified in wpdb::$field_types. Default null.
      * @return int|false The number of rows deleted, or false on error.
      */
     public function delete($table, $where, $where_format = null)
@@ -2843,8 +2843,8 @@ class wpdb
      * @since 4.2.0
      *
      * @param  string  $table  Table name.
-     * @param  array  $data   Array of values keyed by their field names.
-     * @param  string[]|string  $format Formats or format to be mapped to the values in the data.
+     * @param  array  $data  Array of values keyed by their field names.
+     * @param  string[]|string  $format  Formats or format to be mapped to the values in the data.
      * @return array|false An array of fields that contain paired value and formats.
      *                     False for invalid values.
      */
@@ -2903,14 +2903,14 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  array  $data   Array of values keyed by their field names.
-     * @param  string[]|string  $format Formats or format to be mapped to the values in the data.
+     * @param  array  $data  Array of values keyed by their field names.
+     * @param  string[]|string  $format  Formats or format to be mapped to the values in the data.
      * @return array {
-     *     Array of values and formats keyed by their field names.
+     *               Array of values and formats keyed by their field names.
      *
-     *     @type mixed  $value  The value to be formatted.
-     *     @type string $format The format to be mapped to the value.
-     * }
+     * @type mixed $value  The value to be formatted.
+     * @type string $format The format to be mapped to the value.
+     *              }
      */
     protected function process_field_formats($data, $format)
     {
@@ -2943,29 +2943,29 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  array  $data {
-     *     Array of values and formats keyed by their field names,
-     *     as it comes from the wpdb::process_field_formats() method.
+     * @param  array  $data  {
+     *                       Array of values and formats keyed by their field names,
+     *                       as it comes from the wpdb::process_field_formats() method.
      *
-     *     @type array ...$0 {
-     *         Value and format for this field.
-     *         @type mixed  $value  The value to be formatted.
-     *         @type string $format The format to be mapped to the value.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Value and format for this field.
+     * @type mixed $value  The value to be formatted.
+     * @type string $format The format to be mapped to the value.
+     *              }
+     *              }
      *
-     * @param  string  $table Table name.
+     * @param  string  $table  Table name.
      * @return array|false {
-     *     The same array of data with additional 'charset' keys, or false if
-     *     the charset for the table cannot be found.
+     *                     The same array of data with additional 'charset' keys, or false if
+     *                     the charset for the table cannot be found.
      *
-     *     @type array ...$0 {
-     *         Value, format, and charset for this field.
-     *         @type mixed        $value   The value to be formatted.
-     *         @type string       $format  The format to be mapped to the value.
-     *         @type string|false $charset The charset to be used for the value.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Value, format, and charset for this field.
+     * @type mixed $value   The value to be formatted.
+     * @type string $format  The format to be mapped to the value.
+     * @type string|false $charset The charset to be used for the value.
+     *                    }
+     *                    }
      */
     protected function process_field_charsets($data, $table)
     {
@@ -2994,36 +2994,36 @@ class wpdb
      *
      * @since 4.2.1
      *
-     * @param  array  $data {
-     *     Array of values, formats, and charsets keyed by their field names,
-     *     as it comes from the wpdb::process_field_charsets() method.
+     * @param  array  $data  {
+     *                       Array of values, formats, and charsets keyed by their field names,
+     *                       as it comes from the wpdb::process_field_charsets() method.
      *
-     *     @type array ...$0 {
-     *         Value, format, and charset for this field.
-     *         @type mixed        $value   The value to be formatted.
-     *         @type string       $format  The format to be mapped to the value.
-     *         @type string|false $charset The charset to be used for the value.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Value, format, and charset for this field.
+     * @type mixed $value   The value to be formatted.
+     * @type string $format  The format to be mapped to the value.
+     * @type string|false $charset The charset to be used for the value.
+     *                    }
+     *                    }
      *
-     * @param  string  $table Table name.
+     * @param  string  $table  Table name.
      * @return array|false {
-     *     The same array of data with additional 'length' keys, or false if
-     *     information for the table cannot be found.
+     *                     The same array of data with additional 'length' keys, or false if
+     *                     information for the table cannot be found.
      *
-     *     @type array ...$0 {
-     *         Value, format, charset, and length for this field.
-     *         @type mixed        $value   The value to be formatted.
-     *         @type string       $format  The format to be mapped to the value.
-     *         @type string|false $charset The charset to be used for the value.
-     *         @type array|false  $length  {
-     *             Information about the maximum length of the value.
-     *             False if the column has no length.
-     *             @type string $type   One of 'byte' or 'char'.
-     *             @type int    $length The column length.
-     *         }
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Value, format, charset, and length for this field.
+     * @type mixed $value   The value to be formatted.
+     * @type string $format  The format to be mapped to the value.
+     * @type string|false $charset The charset to be used for the value.
+     * @type array|false $length  {
+     *                   Information about the maximum length of the value.
+     *                   False if the column has no length.
+     * @type string $type   One of 'byte' or 'char'.
+     * @type int $length The column length.
+     *           }
+     *           }
+     *           }
      */
     protected function process_field_lengths($data, $table)
     {
@@ -3057,9 +3057,9 @@ class wpdb
      *
      * @since 0.71
      *
-     * @param  string|null  $query Optional. SQL query. Defaults to null, use the result from the previous query.
-     * @param  int  $x     Optional. Column of value to return. Indexed from 0. Default 0.
-     * @param  int  $y     Optional. Row of value to return. Indexed from 0. Default 0.
+     * @param  string|null  $query  Optional. SQL query. Defaults to null, use the result from the previous query.
+     * @param  int  $x  Optional. Column of value to return. Indexed from 0. Default 0.
+     * @param  int  $y  Optional. Row of value to return. Indexed from 0. Default 0.
      * @return string|null Database query result (as string), or null on failure.
      */
     public function get_var($query = null, $x = 0, $y = 0)
@@ -3091,10 +3091,10 @@ class wpdb
      * @since 0.71
      *
      * @param  string|null  $query  SQL query.
-     * @param  string  $output Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
-     *                            correspond to an stdClass object, an associative array, or a numeric array,
-     *                            respectively. Default OBJECT.
-     * @param  int  $y      Optional. Row to return. Indexed from 0. Default 0.
+     * @param  string  $output  Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
+     *                          correspond to an stdClass object, an associative array, or a numeric array,
+     *                          respectively. Default OBJECT.
+     * @param  int  $y  Optional. Row to return. Indexed from 0. Default 0.
      * @return array|object|null|void Database query result in format specified by $output or null on failure.
      */
     public function get_row($query = null, $output = OBJECT, $y = 0)
@@ -3138,8 +3138,8 @@ class wpdb
      *
      * @since 0.71
      *
-     * @param  string|null  $query Optional. SQL query. Defaults to previous query.
-     * @param  int  $x     Optional. Column to return. Indexed from 0. Default 0.
+     * @param  string|null  $query  Optional. SQL query. Defaults to previous query.
+     * @param  int  $x  Optional. Column to return. Indexed from 0. Default 0.
      * @return array Database query result. Array indexed from 0 by SQL result row number.
      */
     public function get_col($query = null, $x = 0)
@@ -3171,14 +3171,14 @@ class wpdb
      * @since 0.71
      *
      * @param  string  $query  SQL query.
-     * @param  string  $output Optional. Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
-     *                       With one of the first three, return an array of rows indexed
-     *                       from 0 by SQL result row number. Each row is an associative array
-     *                       (column => value, ...), a numerically indexed array (0 => value, ...),
-     *                       or an object ( ->column = value ), respectively. With OBJECT_K,
-     *                       return an associative array of row objects keyed by the value
-     *                       of each row's first column's value. Duplicate keys are discarded.
-     *                       Default OBJECT.
+     * @param  string  $output  Optional. Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
+     *                          With one of the first three, return an array of rows indexed
+     *                          from 0 by SQL result row number. Each row is an associative array
+     *                          (column => value, ...), a numerically indexed array (0 => value, ...),
+     *                          or an object ( ->column = value ), respectively. With OBJECT_K,
+     *                          return an associative array of row objects keyed by the value
+     *                          of each row's first column's value. Duplicate keys are discarded.
+     *                          Default OBJECT.
      * @return array|object|null Database query results.
      */
     public function get_results($query = null, $output = OBJECT)
@@ -3245,7 +3245,7 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  string  $table Table name.
+     * @param  string  $table  Table name.
      * @return string|WP_Error Table character set, WP_Error object if it couldn't be found.
      */
     protected function get_table_charset($table)
@@ -3260,9 +3260,9 @@ class wpdb
          *
          * @since 4.2.0
          *
-         * @param  string|WP_Error|null  $charset The character set to use, WP_Error object
-         *                                      if it couldn't be found. Default null.
-         * @param  string  $table   The name of the table being checked.
+         * @param  string|WP_Error|null  $charset  The character set to use, WP_Error object
+         *                                         if it couldn't be found. Default null.
+         * @param  string  $table  The name of the table being checked.
          */
         $charset = apply_filters('pre_get_table_charset', null, $table);
         if ($charset !== null) {
@@ -3351,7 +3351,7 @@ class wpdb
      * @since 4.2.0
      *
      * @param  string  $table  Table name.
-     * @param  string  $column Column name.
+     * @param  string  $column  Column name.
      * @return string|false|WP_Error Column character set as a string. False if the column has
      *                               no character set. WP_Error object if there was an error.
      */
@@ -3368,8 +3368,8 @@ class wpdb
          *
          * @since 4.2.0
          *
-         * @param  string|null|false|WP_Error  $charset The character set to use. Default null.
-         * @param  string  $table   The name of the table being checked.
+         * @param  string|null|false|WP_Error  $charset  The character set to use. Default null.
+         * @param  string  $table  The name of the table being checked.
          * @param  string  $column  The name of the column being checked.
          */
         $charset = apply_filters('pre_get_col_charset', null, $table, $column);
@@ -3418,14 +3418,14 @@ class wpdb
      * @since 4.2.1
      *
      * @param  string  $table  Table name.
-     * @param  string  $column Column name.
+     * @param  string  $column  Column name.
      * @return array|false|WP_Error {
-     *     Array of column length information, false if the column has no length (for
-     *     example, numeric column), WP_Error object if there was an error.
+     *                              Array of column length information, false if the column has no length (for
+     *                              example, numeric column), WP_Error object if there was an error.
      *
-     *     @type string $type   One of 'byte' or 'char'.
-     *     @type int    $length The column length.
-     * }
+     * @type string $type   One of 'byte' or 'char'.
+     * @type int $length The column length.
+     *           }
      */
     public function get_col_length($table, $column)
     {
@@ -3514,7 +3514,7 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  string  $input_string String to check.
+     * @param  string  $input_string  String to check.
      * @return bool True if ASCII, false if not.
      */
     protected function check_ascii($input_string)
@@ -3535,7 +3535,7 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  string  $query The query to check.
+     * @param  string  $query  The query to check.
      * @return bool True if the collation is safe, false if it isn't.
      */
     protected function check_safe_collation($query)
@@ -3602,8 +3602,8 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  array  $data Array of value arrays. Each value array has the keys 'value', 'charset', and 'length'.
-     *                    An optional 'ascii' key can be set to false to avoid redundant ASCII checks.
+     * @param  array  $data  Array of value arrays. Each value array has the keys 'value', 'charset', and 'length'.
+     *                       An optional 'ascii' key can be set to false to avoid redundant ASCII checks.
      * @return array|WP_Error The $data parameter, with invalid characters removed from each value.
      *                        This works as a passthrough: any additional keys such as 'field' are
      *                        retained in each value array. If we cannot remove invalid characters,
@@ -3760,7 +3760,7 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  string  $query Query to convert.
+     * @param  string  $query  Query to convert.
      * @return string|WP_Error The converted query, or a WP_Error object if the conversion fails.
      */
     protected function strip_invalid_text_from_query($query)
@@ -3807,7 +3807,7 @@ class wpdb
      * @since 4.2.0
      *
      * @param  string  $table  Table name.
-     * @param  string  $column Column name.
+     * @param  string  $column  Column name.
      * @param  string  $value  The text to check.
      * @return string|WP_Error The converted string, or a WP_Error object if the conversion fails.
      */
@@ -3847,7 +3847,7 @@ class wpdb
      *
      * @since 4.2.0
      *
-     * @param  string  $query The query to search.
+     * @param  string  $query  The query to search.
      * @return string|false The table name found, or false if a table couldn't be found.
      */
     protected function get_table_from_query($query)
@@ -3942,9 +3942,9 @@ class wpdb
      * @since 0.71
      *
      * @param  string  $info_type  Optional. Possible values include 'name', 'table', 'def', 'max_length',
-     *                           'not_null', 'primary_key', 'multiple_key', 'unique_key', 'numeric',
-     *                           'blob', 'type', 'unsigned', 'zerofill'. Default 'name'.
-     * @param  int  $col_offset Optional. 0: col name. 1: which table the col's in. 2: col's max length.
+     *                             'not_null', 'primary_key', 'multiple_key', 'unique_key', 'numeric',
+     *                             'blob', 'type', 'unsigned', 'zerofill'. Default 'name'.
+     * @param  int  $col_offset  Optional. 0: col name. 1: which table the col's in. 2: col's max length.
      *                           3: if the col is numeric. 4: col's type. Default -1.
      * @return mixed Column results.
      */
@@ -4001,9 +4001,9 @@ class wpdb
      *
      * @since 1.5.0
      *
-     * @param  string  $message    The error message.
-     * @param  string  $error_code Optional. A computer-readable string to identify the error.
-     *                           Default '500'.
+     * @param  string  $message  The error message.
+     * @param  string  $error_code  Optional. A computer-readable string to identify the error.
+     *                              Default '500'.
      * @return void|false Void if the showing of errors is enabled, false if disabled.
      */
     public function bail($message, $error_code = '500')
@@ -4135,9 +4135,9 @@ class wpdb
      * @since 6.2.0 Added support for the 'identifier_placeholders' feature.
      * @see wpdb::db_version()
      *
-     * @param  string  $db_cap The feature to check for. Accepts 'collation', 'group_concat',
-     *                       'subqueries', 'set_charset', 'utf8mb4', 'utf8mb4_520',
-     *                       or 'identifier_placeholders'.
+     * @param  string  $db_cap  The feature to check for. Accepts 'collation', 'group_concat',
+     *                          'subqueries', 'set_charset', 'utf8mb4', 'utf8mb4_520',
+     *                          or 'identifier_placeholders'.
      * @return bool True when the database feature is supported, false otherwise.
      */
     public function has_cap($db_cap)

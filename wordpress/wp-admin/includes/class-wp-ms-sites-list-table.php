@@ -28,7 +28,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      * @since 3.1.0
      * @see WP_List_Table::__construct() for more information on default arguments.
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -175,7 +175,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
          *
          * @since 4.6.0
          *
-         * @param  array  $args An array of get_sites() arguments.
+         * @param  array  $args  An array of get_sites() arguments.
          */
         $args = apply_filters('ms_sites_list_table_query_args', $args);
 
@@ -303,7 +303,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
     /**
      * @global string $mode List table view mode.
      *
-     * @param  string  $which The location of the pagination nav markup: 'top' or 'bottom'.
+     * @param  string  $which  The location of the pagination nav markup: 'top' or 'bottom'.
      */
     protected function pagination($which)
     {
@@ -321,7 +321,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @since 5.3.0
      *
-     * @param  string  $which The location of the extra table nav markup: 'top' or 'bottom'.
+     * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
      */
     protected function extra_tablenav($which)
     {
@@ -336,7 +336,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
              *
              * @since 5.3.0
              *
-             * @param  string  $which The location of the extra table nav markup: 'top' or 'bottom'.
+             * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
              */
             do_action('restrict_manage_sites', $which);
 
@@ -356,7 +356,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
          *
          * @since 5.3.0
          *
-         * @param  string  $which The location of the extra table nav markup: 'top' or 'bottom'.
+         * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
          */
         do_action('manage_sites_extra_tablenav', $which);
     }
@@ -383,8 +383,8 @@ class WP_MS_Sites_List_Table extends WP_List_Table
          *
          * @since MU (3.0.0)
          *
-         * @param  string[]  $sites_columns An array of displayed site columns. Default 'cb',
-         *                               'blogname', 'lastupdated', 'registered', 'users'.
+         * @param  string[]  $sites_columns  An array of displayed site columns. Default 'cb',
+         *                                   'blogname', 'lastupdated', 'registered', 'users'.
          */
         return apply_filters('wpmu_blogs_columns', $sites_columns);
     }
@@ -416,7 +416,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$blog` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  array  $item Current site.
+     * @param  array  $item  Current site.
      */
     public function column_cb($item)
     {
@@ -444,7 +444,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @since 4.4.0
      *
-     * @param  array  $blog Current site.
+     * @param  array  $blog  Current site.
      */
     public function column_id($blog)
     {
@@ -458,7 +458,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @global string $mode List table view mode.
      *
-     * @param  array  $blog Current site.
+     * @param  array  $blog  Current site.
      */
     public function column_blogname($blog)
     {
@@ -500,7 +500,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @global string $mode List table view mode.
      *
-     * @param  array  $blog Current site.
+     * @param  array  $blog  Current site.
      */
     public function column_lastupdated($blog)
     {
@@ -526,7 +526,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @global string $mode List table view mode.
      *
-     * @param  array  $blog Current site.
+     * @param  array  $blog  Current site.
      */
     public function column_registered($blog)
     {
@@ -550,7 +550,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  array  $blog Current site.
+     * @param  array  $blog  Current site.
      */
     public function column_users($blog)
     {
@@ -580,7 +580,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  array  $blog Current site.
+     * @param  array  $blog  Current site.
      */
     public function column_plugins($blog)
     {
@@ -592,7 +592,7 @@ class WP_MS_Sites_List_Table extends WP_List_Table
              *
              * @since MU (3.0.0)
              *
-             * @param  int  $blog_id The site ID.
+             * @param  int  $blog_id  The site ID.
              */
             do_action('wpmublogsaction', $blog['blog_id']);
         }
@@ -604,8 +604,8 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$blog` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  array  $item        Current site.
-     * @param  string  $column_name Current column name.
+     * @param  array  $item  Current site.
+     * @param  string  $column_name  Current column name.
      */
     public function column_default($item, $column_name)
     {
@@ -617,8 +617,8 @@ class WP_MS_Sites_List_Table extends WP_List_Table
          *
          * @since 3.1.0
          *
-         * @param  string  $column_name The name of the column to display.
-         * @param  int  $blog_id     The site ID.
+         * @param  string  $column_name  The name of the column to display.
+         * @param  int  $blog_id  The site ID.
          */
         do_action('manage_sites_custom_column', $column_name, $blog['blog_id']);
     }
@@ -679,9 +679,9 @@ class WP_MS_Sites_List_Table extends WP_List_Table
          *
          * @since 5.3.0
          *
-         * @param  string[]  $site_states An array of site states. Default 'Main',
-         *                              'Archived', 'Mature', 'Spam', 'Deleted'.
-         * @param  WP_Site  $site        The current site object.
+         * @param  string[]  $site_states  An array of site states. Default 'Main',
+         *                                 'Archived', 'Mature', 'Spam', 'Deleted'.
+         * @param  WP_Site  $site  The current site object.
          */
         $site_states = apply_filters('display_site_states', $site_states, $_site);
 
@@ -720,9 +720,9 @@ class WP_MS_Sites_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$blog` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  array  $item        Site being acted upon.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  array  $item  Site being acted upon.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for sites in Multisite, or an empty string
      *                if the current column is not the primary column.
      */
@@ -868,8 +868,8 @@ class WP_MS_Sites_List_Table extends WP_List_Table
          *
          * @param  string[]  $actions  An array of action links to be displayed.
          * @param  int  $blog_id  The site ID.
-         * @param  string  $blogname Site path, formatted depending on whether it is a sub-domain
-         *                           or subdirectory multisite installation.
+         * @param  string  $blogname  Site path, formatted depending on whether it is a sub-domain
+         *                            or subdirectory multisite installation.
          */
         $actions = apply_filters('manage_sites_action_links', array_filter($actions), $blog['blog_id'], $blogname);
 

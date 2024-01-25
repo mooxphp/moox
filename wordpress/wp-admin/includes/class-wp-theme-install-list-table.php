@@ -74,8 +74,8 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
          *
          * @since 2.8.0
          *
-         * @param  string[]  $nonmenu_tabs The tabs that don't have a menu item on
-         *                               the Install Themes screen.
+         * @param  string[]  $nonmenu_tabs  The tabs that don't have a menu item on
+         *                                  the Install Themes screen.
          */
         $nonmenu_tabs = apply_filters('install_themes_nonmenu_tabs', $nonmenu_tabs);
 
@@ -143,7 +143,7 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
          *
          * @since 3.7.0
          *
-         * @param  array|false  $args Theme install API arguments.
+         * @param  array|false  $args  Theme install API arguments.
          */
         $args = apply_filters("install_themes_table_api_args_{$tab}", $args);
 
@@ -252,21 +252,21 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
      *
      * @global array $themes_allowedtags
      *
-     * @param  stdClass  $theme {
-     *     An object that contains theme data returned by the WordPress.org API.
+     * @param  stdClass  $theme  {
+     *                           An object that contains theme data returned by the WordPress.org API.
      *
-     *     @type string $name           Theme name, e.g. 'Twenty Twenty-One'.
-     *     @type string $slug           Theme slug, e.g. 'twentytwentyone'.
-     *     @type string $version        Theme version, e.g. '1.1'.
-     *     @type string $author         Theme author username, e.g. 'melchoyce'.
-     *     @type string $preview_url    Preview URL, e.g. 'https://2021.wordpress.net/'.
-     *     @type string $screenshot_url Screenshot URL, e.g. 'https://wordpress.org/themes/twentytwentyone/'.
-     *     @type float  $rating         Rating score.
-     *     @type int    $num_ratings    The number of ratings.
-     *     @type string $homepage       Theme homepage, e.g. 'https://wordpress.org/themes/twentytwentyone/'.
-     *     @type string $description    Theme description.
-     *     @type string $download_link  Theme ZIP download URL.
-     * }
+     * @type string $name           Theme name, e.g. 'Twenty Twenty-One'.
+     * @type string $slug           Theme slug, e.g. 'twentytwentyone'.
+     * @type string $version        Theme version, e.g. '1.1'.
+     * @type string $author         Theme author username, e.g. 'melchoyce'.
+     * @type string $preview_url    Preview URL, e.g. 'https://2021.wordpress.net/'.
+     * @type string $screenshot_url Screenshot URL, e.g. 'https://wordpress.org/themes/twentytwentyone/'.
+     * @type float $rating         Rating score.
+     * @type int $num_ratings    The number of ratings.
+     * @type string $homepage       Theme homepage, e.g. 'https://wordpress.org/themes/twentytwentyone/'.
+     * @type string $description    Theme description.
+     * @type string $download_link  Theme ZIP download URL.
+     *              }
      */
     public function single_row($theme)
     {
@@ -352,10 +352,10 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
          *
          * @since 3.4.0
          *
-         * @param  string[]  $actions An array of theme action links. Defaults are
-         *                          links to Install Now, Preview, and Details.
-         * @param  stdClass  $theme   An object that contains theme data returned by the
-         *                          WordPress.org API.
+         * @param  string[]  $actions  An array of theme action links. Defaults are
+         *                             links to Install Now, Preview, and Details.
+         * @param  stdClass  $theme  An object that contains theme data returned by the
+         *                           WordPress.org API.
          */
         $actions = apply_filters('theme_install_actions', $actions, $theme);
 
@@ -416,7 +416,7 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
      * Prints the wrapper for the theme installer with a provided theme's data.
      * Used to make the theme installer work for no-js.
      *
-     * @param  stdClass  $theme A WordPress.org Theme API object.
+     * @param  stdClass  $theme  A WordPress.org Theme API object.
      */
     public function theme_installer_single($theme)
     {
@@ -437,7 +437,7 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
      *
      * @global array $themes_allowedtags
      *
-     * @param  stdClass  $theme A WordPress.org Theme API object.
+     * @param  stdClass  $theme  A WordPress.org Theme API object.
      */
     public function install_theme_info($theme)
     {
@@ -540,7 +540,7 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
      * @global string $tab  Current tab within Themes->Install screen
      * @global string $type Type of search.
      *
-     * @param  array  $extra_args Unused.
+     * @param  array  $extra_args  Unused.
      */
     public function _js_vars($extra_args = [])
     {
@@ -553,7 +553,7 @@ class WP_Theme_Install_List_Table extends WP_Themes_List_Table
      *
      * @since 3.4.0
      *
-     * @param  stdClass  $theme A WordPress.org Theme API object.
+     * @param  stdClass  $theme  A WordPress.org Theme API object.
      * @return string Theme status.
      */
     private function _get_theme_status($theme)

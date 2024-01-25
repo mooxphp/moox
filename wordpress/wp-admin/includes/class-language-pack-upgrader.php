@@ -42,9 +42,9 @@ class Language_Pack_Upgrader extends WP_Upgrader
      *
      * @since 3.7.0
      *
-     * @param  false|WP_Upgrader  $upgrader Optional. WP_Upgrader instance or false. If `$upgrader` is
-     *                                    a Language_Pack_Upgrader instance, the method will bail to
-     *                                    avoid recursion. Otherwise unused. Default false.
+     * @param  false|WP_Upgrader  $upgrader  Optional. WP_Upgrader instance or false. If `$upgrader` is
+     *                                       a Language_Pack_Upgrader instance, the method will bail to
+     *                                       avoid recursion. Otherwise unused. Default false.
      */
     public static function async_upgrade($upgrader = false)
     {
@@ -76,8 +76,8 @@ class Language_Pack_Upgrader extends WP_Upgrader
              *
              * @since 4.0.0
              *
-             * @param  bool  $update          Whether to update.
-             * @param  object  $language_update The update offer.
+             * @param  bool  $update  Whether to update.
+             * @param  object  $language_update  The update offer.
              */
             $update = apply_filters('async_update_translation', $update, $language_update);
 
@@ -129,9 +129,9 @@ class Language_Pack_Upgrader extends WP_Upgrader
      *
      * @since 3.7.0
      *
-     * @param  string|false  $update Optional. Whether an update offer is available. Default false.
-     * @param  array  $args   Optional. Other optional arguments, see
-     *                             Language_Pack_Upgrader::bulk_upgrade(). Default empty array.
+     * @param  string|false  $update  Optional. Whether an update offer is available. Default false.
+     * @param  array  $args  Optional. Other optional arguments, see
+     *                       Language_Pack_Upgrader::bulk_upgrade(). Default empty array.
      * @return array|bool|WP_Error The result of the upgrade, or a WP_Error object instead.
      */
     public function upgrade($update = false, $args = [])
@@ -156,14 +156,14 @@ class Language_Pack_Upgrader extends WP_Upgrader
      *
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      *
-     * @param  object[]  $language_updates Optional. Array of language packs to update. See {@see wp_get_translation_updates()}.
-     *                                   Default empty array.
-     * @param  array  $args {
-     *     Other arguments for upgrading multiple language packs. Default empty array.
+     * @param  object[]  $language_updates  Optional. Array of language packs to update. See {@see wp_get_translation_updates()}.
+     *                                      Default empty array.
+     * @param  array  $args  {
+     *                       Other arguments for upgrading multiple language packs. Default empty array.
      *
-     *     @type bool $clear_update_cache Whether to clear the update cache when done.
-     *                                    Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the update cache when done.
+     *            Default true.
+     *            }
      *
      * @return array|bool|WP_Error Will return an array of results, or true if there are no updates,
      *                             false or WP_Error for initial errors.
@@ -325,8 +325,8 @@ class Language_Pack_Upgrader extends WP_Upgrader
      *
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      *
-     * @param  string|WP_Error  $source        The path to the downloaded package source.
-     * @param  string  $remote_source Remote file source location.
+     * @param  string|WP_Error  $source  The path to the downloaded package source.
+     * @param  string  $remote_source  Remote file source location.
      * @return string|WP_Error The source as passed, or a WP_Error object on failure.
      */
     public function check_package($source, $remote_source)
@@ -372,7 +372,7 @@ class Language_Pack_Upgrader extends WP_Upgrader
      *
      * @since 3.7.0
      *
-     * @param  object  $update The data for an update.
+     * @param  object  $update  The data for an update.
      * @return string The name of the item being updated.
      */
     public function get_name_for_update($update)
@@ -406,7 +406,7 @@ class Language_Pack_Upgrader extends WP_Upgrader
      *
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      *
-     * @param  string  $remote_destination The location on the remote filesystem to be cleared.
+     * @param  string  $remote_destination  The location on the remote filesystem to be cleared.
      * @return bool|WP_Error True upon success, WP_Error on failure.
      */
     public function clear_destination($remote_destination)

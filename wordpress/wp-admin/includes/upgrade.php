@@ -25,21 +25,21 @@ if (! function_exists('wp_install')) {
      *
      * @since 2.1.0
      *
-     * @param  string  $blog_title    Site title.
-     * @param  string  $user_name     User's username.
-     * @param  string  $user_email    User's email.
-     * @param  bool  $is_public     Whether the site is public.
-     * @param  string  $deprecated    Optional. Not used.
-     * @param  string  $user_password Optional. User's chosen password. Default empty (random password).
-     * @param  string  $language      Optional. Language chosen. Default empty.
+     * @param  string  $blog_title  Site title.
+     * @param  string  $user_name  User's username.
+     * @param  string  $user_email  User's email.
+     * @param  bool  $is_public  Whether the site is public.
+     * @param  string  $deprecated  Optional. Not used.
+     * @param  string  $user_password  Optional. User's chosen password. Default empty (random password).
+     * @param  string  $language  Optional. Language chosen. Default empty.
      * @return array {
-     *     Data for the newly installed site.
+     *               Data for the newly installed site.
      *
-     *     @type string $url              The URL of the site.
-     *     @type int    $user_id          The ID of the site owner.
-     *     @type string $password         The password of the site owner, if their user account didn't already exist.
-     *     @type string $password_message The explanatory message regarding the password.
-     * }
+     * @type string $url              The URL of the site.
+     * @type int $user_id          The ID of the site owner.
+     * @type string $password         The password of the site owner, if their user account didn't already exist.
+     * @type string $password_message The explanatory message regarding the password.
+     *              }
      */
     function wp_install($blog_title, $user_name, $user_email, $is_public, $deprecated = '', $user_password = '', $language = '')
     {
@@ -121,7 +121,7 @@ if (! function_exists('wp_install')) {
          *
          * @since 3.9.0
          *
-         * @param  WP_User  $user The site owner.
+         * @param  WP_User  $user  The site owner.
          */
         do_action('wp_install', $user);
 
@@ -147,7 +147,7 @@ if (! function_exists('wp_install_defaults')) {
      * @global WP_Rewrite $wp_rewrite   WordPress rewrite component.
      * @global string     $table_prefix
      *
-     * @param  int  $user_id User ID.
+     * @param  int  $user_id  User ID.
      */
     function wp_install_defaults($user_id)
     {
@@ -541,11 +541,11 @@ if (! function_exists('wp_new_blog_notification')) {
      *
      * @since 2.1.0
      *
-     * @param  string  $blog_title Site title.
-     * @param  string  $blog_url   Site URL.
-     * @param  int  $user_id    Administrator's user ID.
-     * @param  string  $password   Administrator's password. Note that a placeholder message is
-     *                           usually passed instead of the actual password.
+     * @param  string  $blog_title  Site title.
+     * @param  string  $blog_url  Site URL.
+     * @param  int  $user_id  Administrator's user ID.
+     * @param  string  $password  Administrator's password. Note that a placeholder message is
+     *                            usually passed instead of the actual password.
      */
     function wp_new_blog_notification($blog_title, $blog_url, $user_id, $password)
     {
@@ -591,20 +591,20 @@ https://wordpress.org/
          *
          * @since 5.6.0
          *
-         * @param  array  $installed_email {
-         *     Used to build wp_mail().
+         * @param  array  $installed_email  {
+         *                                  Used to build wp_mail().
          *
-         *     @type string $to      The email address of the recipient.
-         *     @type string $subject The subject of the email.
-         *     @type string $message The content of the email.
-         *     @type string $headers Headers.
-         * }
+         * @type string $to      The email address of the recipient.
+         * @type string $subject The subject of the email.
+         * @type string $message The content of the email.
+         * @type string $headers Headers.
+         *              }
          *
-         * @param  WP_User  $user          The site administrator user object.
-         * @param  string  $blog_title    The site title.
-         * @param  string  $blog_url      The site URL.
-         * @param  string  $password      The site administrator's password. Note that a placeholder message
-         *                               is usually passed instead of the user's actual password.
+         * @param  WP_User  $user  The site administrator user object.
+         * @param  string  $blog_title  The site title.
+         * @param  string  $blog_url  The site URL.
+         * @param  string  $password  The site administrator's password. Note that a placeholder message
+         *                            is usually passed instead of the user's actual password.
          */
         $installed_email = apply_filters('wp_installed_email', $installed_email, $user, $blog_title, $blog_url, $password);
 
@@ -665,8 +665,8 @@ if (! function_exists('wp_upgrade')) {
          *
          * @since 3.9.0
          *
-         * @param  int  $wp_db_version         The new $wp_db_version.
-         * @param  int  $wp_current_db_version The old (current) $wp_db_version.
+         * @param  int  $wp_db_version  The new $wp_db_version.
+         * @param  int  $wp_current_db_version  The old (current) $wp_db_version.
          */
         do_action('wp_upgrade', $wp_db_version, $wp_current_db_version);
     }
@@ -2605,8 +2605,8 @@ function upgrade_network()
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $table_name Database table name.
- * @param  string  $create_ddl SQL statement to create table.
+ * @param  string  $table_name  Database table name.
+ * @param  string  $create_ddl  SQL statement to create table.
  * @return bool True on success or if the table already exists. False on failure.
  */
 function maybe_create_table($table_name, $create_ddl)
@@ -2637,8 +2637,8 @@ function maybe_create_table($table_name, $create_ddl)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $table Database table name.
- * @param  string  $index Index name to drop.
+ * @param  string  $table  Database table name.
+ * @param  string  $index  Index name to drop.
  * @return true True, when finished.
  */
 function drop_index($table, $index)
@@ -2666,8 +2666,8 @@ function drop_index($table, $index)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $table Database table name.
- * @param  string  $index Database table index column.
+ * @param  string  $table  Database table name.
+ * @param  string  $index  Database table index column.
  * @return true True, when done with execution.
  */
 function add_clean_index($table, $index)
@@ -2688,7 +2688,7 @@ function add_clean_index($table, $index)
  * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param  string  $table_name  Database table name.
- * @param  string  $column_name Table column name.
+ * @param  string  $column_name  Table column name.
  * @param  string  $create_ddl  SQL statement to add column.
  * @return bool True on success or if the column already exists. False on failure.
  */
@@ -2722,7 +2722,7 @@ function maybe_add_column($table_name, $column_name, $create_ddl)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $table The table to convert.
+ * @param  string  $table  The table to convert.
  * @return bool True if the table was converted, false if it wasn't.
  */
 function maybe_convert_table_to_utf8mb4($table)
@@ -2794,7 +2794,7 @@ function get_alloptions_110()
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $setting Option name.
+ * @param  string  $setting  Option name.
  * @return mixed
  */
 function __get_option($setting) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
@@ -2827,7 +2827,7 @@ function __get_option($setting) // phpcs:ignore WordPress.NamingConventions.Vali
  *
  * @since 1.5.0
  *
- * @param  string  $content The content to modify.
+ * @param  string  $content  The content to modify.
  * @return string The de-slashed content.
  */
 function deslash($content)
@@ -2863,11 +2863,11 @@ function deslash($content)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string[]|string  $queries Optional. The query to run. Can be multiple queries
- *                                 in an array, or a string of queries separated by
- *                                 semicolons. Default empty string.
- * @param  bool  $execute Optional. Whether or not to execute the query right away.
- *                                 Default true.
+ * @param  string[]|string  $queries  Optional. The query to run. Can be multiple queries
+ *                                    in an array, or a string of queries separated by
+ *                                    semicolons. Default empty string.
+ * @param  bool  $execute  Optional. Whether or not to execute the query right away.
+ *                         Default true.
  * @return array Strings containing the results of the various update queries.
  */
 function dbDelta($queries = '', $execute = true) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
@@ -2889,7 +2889,7 @@ function dbDelta($queries = '', $execute = true) // phpcs:ignore WordPress.Namin
      *
      * @since 3.3.0
      *
-     * @param  string[]  $queries An array of dbDelta SQL queries.
+     * @param  string[]  $queries  An array of dbDelta SQL queries.
      */
     $queries = apply_filters('dbdelta_queries', $queries);
 
@@ -2932,7 +2932,7 @@ function dbDelta($queries = '', $execute = true) // phpcs:ignore WordPress.Namin
      *
      * @since 3.3.0
      *
-     * @param  string[]  $cqueries An array of dbDelta create SQL queries.
+     * @param  string[]  $cqueries  An array of dbDelta create SQL queries.
      */
     $cqueries = apply_filters('dbdelta_create_queries', $cqueries);
 
@@ -2943,7 +2943,7 @@ function dbDelta($queries = '', $execute = true) // phpcs:ignore WordPress.Namin
      *
      * @since 3.3.0
      *
-     * @param  string[]  $iqueries An array of dbDelta insert or update SQL queries.
+     * @param  string[]  $iqueries  An array of dbDelta insert or update SQL queries.
      */
     $iqueries = apply_filters('dbdelta_insert_queries', $iqueries);
 
@@ -3312,7 +3312,7 @@ function dbDelta($queries = '', $execute = true) // phpcs:ignore WordPress.Namin
  *
  * @uses dbDelta
  *
- * @param  string  $tables Optional. Which set of tables to update. Default is 'all'.
+ * @param  string  $tables  Optional. Which set of tables to update. Default is 'all'.
  */
 function make_db_current($tables = 'all')
 {
@@ -3333,7 +3333,7 @@ function make_db_current($tables = 'all')
  * @since 1.5.0
  * @see make_db_current()
  *
- * @param  string  $tables Optional. Which set of tables to update. Default is 'all'.
+ * @param  string  $tables  Optional. Which set of tables to update. Default is 'all'.
  */
 function make_db_current_silent($tables = 'all')
 {
@@ -3347,8 +3347,8 @@ function make_db_current_silent($tables = 'all')
  *
  * @since 1.5.0
  *
- * @param  string  $theme_name The name of the theme.
- * @param  string  $template   The directory name of the theme.
+ * @param  string  $theme_name  The name of the theme.
+ * @param  string  $template  The directory name of the theme.
  * @return bool
  */
 function make_site_theme_from_oldschool($theme_name, $template)
@@ -3456,8 +3456,8 @@ function make_site_theme_from_oldschool($theme_name, $template)
  *
  * @since 1.5.0
  *
- * @param  string  $theme_name The name of the theme.
- * @param  string  $template   The directory name of the theme.
+ * @param  string  $theme_name  The name of the theme.
+ * @param  string  $template  The directory name of the theme.
  * @return void|false
  */
 function make_site_theme_from_default($theme_name, $template)
@@ -3596,7 +3596,7 @@ function make_site_theme()
  *
  * @since 2.0.0
  *
- * @param  int  $level User level.
+ * @param  int  $level  User level.
  * @return string User role name.
  */
 function translate_level_to_role($level)
@@ -3780,7 +3780,7 @@ function wp_should_upgrade_global_tables()
      *
      * @since 4.3.0
      *
-     * @param  bool  $should_upgrade Whether to run the upgrade routines on global tables.
+     * @param  bool  $should_upgrade  Whether to run the upgrade routines on global tables.
      */
     return apply_filters('wp_should_upgrade_global_tables', $should_upgrade);
 }

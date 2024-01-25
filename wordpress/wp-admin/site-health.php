@@ -23,7 +23,7 @@ $tabs = [
  *
  * @since 5.8.0
  *
- * @param  string[]  $tabs An associative array of tab labels keyed by their slug.
+ * @param  string[]  $tabs  An associative array of tab labels keyed by their slug.
  */
 $tabs = apply_filters('site_health_navigation_tabs', $tabs);
 
@@ -211,7 +211,7 @@ if (isset($_GET['tab']) && ! empty($_GET['tab'])) {
      *
      * @since 5.8.0
      *
-     * @param  string  $tab The slug of the tab that was requested.
+     * @param  string  $tab  The slug of the tab that was requested.
      */
     do_action('site_health_tab_content', $_GET['tab']);
 

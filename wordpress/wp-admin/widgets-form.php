@@ -157,8 +157,8 @@ if (isset($_POST['savewidget']) || isset($_POST['removewidget'])) {
          * @since 4.4.0
          *
          * @param  string  $widget_id  ID of the widget marked for deletion.
-         * @param  string  $sidebar_id ID of the sidebar the widget was deleted from.
-         * @param  string  $id_base    ID base for the widget.
+         * @param  string  $sidebar_id  ID of the sidebar the widget was deleted from.
+         * @param  string  $id_base  ID base for the widget.
          */
         do_action('delete_widget', $widget_id, $sidebar_id, $id_base);
     }

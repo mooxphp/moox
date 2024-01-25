@@ -38,7 +38,7 @@ class WP_Privacy_Data_Removal_Requests_List_Table extends WP_Privacy_Requests_Ta
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      * @return string Email column markup.
      */
     public function column_email($item)
@@ -111,7 +111,7 @@ class WP_Privacy_Data_Removal_Requests_List_Table extends WP_Privacy_Requests_Ta
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      */
     public function column_next_steps($item)
     {

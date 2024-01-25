@@ -27,7 +27,7 @@ class WP_Navigation_Fallback
      *
      * @since 6.4.0
      *
-     * @param  array  $schema The schema for the `wp_navigation` post.
+     * @param  array  $schema  The schema for the `wp_navigation` post.
      * @return array The modified schema.
      */
     public static function update_wp_navigation_post_schema($schema)
@@ -73,7 +73,7 @@ class WP_Navigation_Fallback
          *
          * @since 6.3.0
          *
-         * @param  bool  $create Whether to create a fallback navigation menu. Default true.
+         * @param  bool  $create  Whether to create a fallback navigation menu. Default true.
          */
         $should_create_fallback = apply_filters('wp_navigation_should_create_fallback', true);
 
@@ -207,7 +207,7 @@ class WP_Navigation_Fallback
      *
      * @since 6.3.0
      *
-     * @param  WP_Term[]  $classic_nav_menus Array of classic nav menu term objects.
+     * @param  WP_Term[]  $classic_nav_menus  Array of classic nav menu term objects.
      * @return WP_Term The most recently created classic nav menu.
      */
     private static function get_most_recently_created_nav_menu($classic_nav_menus)
@@ -227,7 +227,7 @@ class WP_Navigation_Fallback
      *
      * @since 6.3.0
      *
-     * @param  WP_Term[]  $classic_nav_menus Array of classic nav menu term objects.
+     * @param  WP_Term[]  $classic_nav_menus  Array of classic nav menu term objects.
      * @return WP_Term|null The classic nav menu with the slug `primary` or null.
      */
     private static function get_nav_menu_with_primary_slug($classic_nav_menus)

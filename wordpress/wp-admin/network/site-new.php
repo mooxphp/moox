@@ -113,7 +113,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'add-site') {
          *
          * @since 4.5.0
          *
-         * @param  string  $email Email of the non-existent user.
+         * @param  string  $email  Email of the non-existent user.
          */
         do_action('pre_network_site_new_created_user', $email);
 
@@ -132,7 +132,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'add-site') {
          *
          * @since 4.4.0
          *
-         * @param  int  $user_id ID of the newly created user.
+         * @param  int  $user_id  ID of the newly created user.
          */
         do_action('network_site_new_created_user', $user_id);
     }
@@ -223,7 +223,7 @@ echo ' '.wp_required_field_indicator();
 				<input name="blog[domain]" type="text" class="regular-text ltr" id="site-address" aria-describedby="site-address-desc" autocapitalize="none" autocorrect="off" required />
 				<?php
 			}
-            echo '<p class="description" id="site-address-desc">'.__('Only lowercase letters (a-z), numbers, and hyphens are allowed.').'</p>';
+echo '<p class="description" id="site-address-desc">'.__('Only lowercase letters (a-z), numbers, and hyphens are allowed.').'</p>';
 ?>
 			</td>
 		</tr>

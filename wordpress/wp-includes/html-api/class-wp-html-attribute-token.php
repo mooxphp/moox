@@ -75,12 +75,12 @@ class WP_HTML_Attribute_Token
      *
      * @since 6.2.0
      *
-     * @param  string  $name         Attribute name.
+     * @param  string  $name  Attribute name.
      * @param  int  $value_start  Attribute value.
-     * @param  int  $value_length Number of bytes attribute value spans.
-     * @param  int  $start        The string offset where the attribute name starts.
-     * @param  int  $end          The string offset after the attribute value or its name.
-     * @param  bool  $is_true      Whether the attribute is a boolean attribute with true value.
+     * @param  int  $value_length  Number of bytes attribute value spans.
+     * @param  int  $start  The string offset where the attribute name starts.
+     * @param  int  $end  The string offset after the attribute value or its name.
+     * @param  bool  $is_true  Whether the attribute is a boolean attribute with true value.
      */
     public function __construct($name, $value_start, $value_length, $start, $end, $is_true)
     {

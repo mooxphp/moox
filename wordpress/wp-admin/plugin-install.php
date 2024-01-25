@@ -186,7 +186,7 @@ if ($tab !== 'upload') {
  *
  * @since 2.7.0
  *
- * @param  int  $paged The current page number of the plugins list table.
+ * @param  int  $paged  The current page number of the plugins list table.
  */
 do_action("install_plugins_{$tab}", $paged);
 ?>

@@ -47,13 +47,13 @@ final class Port
     /**
      * Retrieve the port number to use.
      *
-     * @param  string  $type Request type.
-     *                     The following requests types are supported:
-     *                     'acap', 'dict', 'http' and 'https'.
+     * @param  string  $type  Request type.
+     *                        The following requests types are supported:
+     *                        'acap', 'dict', 'http' and 'https'.
      * @return int
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When a non-string input has been passed.
-     * @throws \WpOrg\Requests\Exception                 When a non-supported port is requested ('portnotsupported').
+     * @throws \WpOrg\Requests\Exception When a non-supported port is requested ('portnotsupported').
      */
     public static function get($type)
     {

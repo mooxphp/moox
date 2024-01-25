@@ -46,9 +46,9 @@ class Walker_Page extends Walker
      * @since 2.1.0
      * @see Walker::start_lvl()
      *
-     * @param  string  $output Used to append additional content (passed by reference).
+     * @param  string  $output  Used to append additional content (passed by reference).
      * @param  int  $depth  Optional. Depth of page. Used for padding. Default 0.
-     * @param  array  $args   Optional. Arguments for outputting the next level.
+     * @param  array  $args  Optional. Arguments for outputting the next level.
      *                       Default empty array.
      */
     public function start_lvl(&$output, $depth = 0, $args = [])
@@ -70,9 +70,9 @@ class Walker_Page extends Walker
      * @since 2.1.0
      * @see Walker::end_lvl()
      *
-     * @param  string  $output Used to append additional content (passed by reference).
+     * @param  string  $output  Used to append additional content (passed by reference).
      * @param  int  $depth  Optional. Depth of page. Used for padding. Default 0.
-     * @param  array  $args   Optional. Arguments for outputting the end of the current level.
+     * @param  array  $args  Optional. Arguments for outputting the end of the current level.
      *                       Default empty array.
      */
     public function end_lvl(&$output, $depth = 0, $args = [])
@@ -96,11 +96,11 @@ class Walker_Page extends Walker
      * @since 5.9.0 Renamed `$page` to `$data_object` and `$current_page` to `$current_object_id`
      *              to match parent class for PHP 8 named parameter support.
      *
-     * @param  string  $output            Used to append additional content. Passed by reference.
-     * @param  WP_Post  $data_object       Page data object.
-     * @param  int  $depth             Optional. Depth of page. Used for padding. Default 0.
-     * @param  array  $args              Optional. Array of arguments. Default empty array.
-     * @param  int  $current_object_id Optional. ID of the current page. Default 0.
+     * @param  string  $output  Used to append additional content. Passed by reference.
+     * @param  WP_Post  $data_object  Page data object.
+     * @param  int  $depth  Optional. Depth of page. Used for padding. Default 0.
+     * @param  array  $args  Optional. Array of arguments. Default empty array.
+     * @param  int  $current_object_id  Optional. ID of the current page. Default 0.
      */
     public function start_el(&$output, $data_object, $depth = 0, $args = [], $current_object_id = 0)
     {
@@ -150,11 +150,11 @@ class Walker_Page extends Walker
          * @since 2.8.0
          * @see wp_list_pages()
          *
-         * @param  string[]  $css_class       An array of CSS classes to be applied to each list item.
-         * @param  WP_Post  $page            Page data object.
-         * @param  int  $depth           Depth of page, used for padding.
-         * @param  array  $args            An array of arguments.
-         * @param  int  $current_page_id ID of the current page.
+         * @param  string[]  $css_class  An array of CSS classes to be applied to each list item.
+         * @param  WP_Post  $page  Page data object.
+         * @param  int  $depth  Depth of page, used for padding.
+         * @param  array  $args  An array of arguments.
+         * @param  int  $current_page_id  ID of the current page.
          */
         $css_classes = implode(' ', apply_filters('page_css_class', $css_class, $page, $depth, $args, $current_page_id));
         $css_classes = $css_classes ? ' class="'.esc_attr($css_classes).'"' : '';
@@ -176,17 +176,17 @@ class Walker_Page extends Walker
          *
          * @since 4.8.0
          *
-         * @param  array  $atts {
-         *     The HTML attributes applied to the menu item's `<a>` element, empty strings are ignored.
+         * @param  array  $atts  {
+         *                       The HTML attributes applied to the menu item's `<a>` element, empty strings are ignored.
          *
-         *     @type string $href         The href attribute.
-         *     @type string $aria-current The aria-current attribute.
-         * }
+         * @type string $href         The href attribute.
+         * @type string $aria-current The aria-current attribute.
+         *              }
          *
-         * @param  WP_Post  $page            Page data object.
-         * @param  int  $depth           Depth of page, used for padding.
-         * @param  array  $args            An array of arguments.
-         * @param  int  $current_page_id ID of the current page.
+         * @param  WP_Post  $page  Page data object.
+         * @param  int  $depth  Depth of page, used for padding.
+         * @param  array  $args  An array of arguments.
+         * @param  int  $current_page_id  ID of the current page.
          */
         $atts = apply_filters('page_menu_link_attributes', $atts, $page, $depth, $args, $current_page_id);
 
@@ -227,10 +227,10 @@ class Walker_Page extends Walker
      * @since 5.9.0 Renamed `$page` to `$data_object` to match parent class for PHP 8 named parameter support.
      * @see Walker::end_el()
      *
-     * @param  string  $output      Used to append additional content. Passed by reference.
-     * @param  WP_Post  $data_object Page data object. Not used.
-     * @param  int  $depth       Optional. Depth of page. Default 0 (unused).
-     * @param  array  $args        Optional. Array of arguments. Default empty array.
+     * @param  string  $output  Used to append additional content. Passed by reference.
+     * @param  WP_Post  $data_object  Page data object. Not used.
+     * @param  int  $depth  Optional. Depth of page. Default 0 (unused).
+     * @param  array  $args  Optional. Array of arguments. Default empty array.
      */
     public function end_el(&$output, $data_object, $depth = 0, $args = [])
     {

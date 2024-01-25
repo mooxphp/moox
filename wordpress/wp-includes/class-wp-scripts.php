@@ -174,7 +174,7 @@ class WP_Scripts extends WP_Dependencies
          *
          * @since 2.6.0
          *
-         * @param  WP_Scripts  $wp_scripts WP_Scripts instance (passed by reference).
+         * @param  WP_Scripts  $wp_scripts  WP_Scripts instance (passed by reference).
          */
         do_action_ref_array('wp_default_scripts', [&$this]);
     }
@@ -187,11 +187,11 @@ class WP_Scripts extends WP_Dependencies
      * @since 2.1.0
      * @since 2.8.0 Added the `$group` parameter.
      *
-     * @param  string|string[]|false  $handles Optional. Scripts to be printed: queue (false),
-     *                                       single script (string), or multiple scripts (array of strings).
-     *                                       Default false.
-     * @param  int|false  $group   Optional. Group level: level (int), no groups (false).
-     *                                       Default false.
+     * @param  string|string[]|false  $handles  Optional. Scripts to be printed: queue (false),
+     *                                          single script (string), or multiple scripts (array of strings).
+     *                                          Default false.
+     * @param  int|false  $group  Optional. Group level: level (int), no groups (false).
+     *                            Default false.
      * @return string[] Handles of scripts that have been printed.
      */
     public function print_scripts($handles = false, $group = false)
@@ -208,8 +208,8 @@ class WP_Scripts extends WP_Dependencies
      * @see print_extra_script()
      *
      * @param  string  $handle  The script's registered handle.
-     * @param  bool  $display Optional. Whether to print the extra script
-     *                        instead of just returning it. Default true.
+     * @param  bool  $display  Optional. Whether to print the extra script
+     *                         instead of just returning it. Default true.
      * @return bool|string|void Void if no data exists, extra scripts if `$display` is true,
      *                          true otherwise.
      */
@@ -226,8 +226,8 @@ class WP_Scripts extends WP_Dependencies
      * @since 3.3.0
      *
      * @param  string  $handle  The script's registered handle.
-     * @param  bool  $display Optional. Whether to print the extra script
-     *                        instead of just returning it. Default true.
+     * @param  bool  $display  Optional. Whether to print the extra script
+     *                         instead of just returning it. Default true.
      * @return bool|string|void Void if no data exists, extra scripts if `$display` is true,
      *                          true otherwise.
      */
@@ -254,7 +254,7 @@ class WP_Scripts extends WP_Dependencies
      *
      * @since 6.4.0
      *
-     * @param  string  $handle Script handle.
+     * @param  string  $handle  Script handle.
      * @return bool Whether all dependents are in the footer.
      */
     private function are_all_dependents_in_footer($handle)
@@ -275,9 +275,9 @@ class WP_Scripts extends WP_Dependencies
      * @since 2.8.0 Added the `$group` parameter.
      * @see WP_Dependencies::do_item()
      *
-     * @param  string  $handle The script's registered handle.
+     * @param  string  $handle  The script's registered handle.
      * @param  int|false  $group  Optional. Group level: level (int), no groups (false).
-     *                          Default false.
+     *                            Default false.
      * @return bool True on success, false on failure.
      */
     public function do_item($handle, $group = false)
@@ -370,8 +370,8 @@ class WP_Scripts extends WP_Dependencies
              *
              * @since 2.2.0
              *
-             * @param  string  $src    Script loader source path.
-             * @param  string  $handle Script handle.
+             * @param  string  $src  Script loader source path.
+             * @param  string  $handle  Script handle.
              */
             $srce = apply_filters('script_loader_src', $src, $handle);
 
@@ -455,9 +455,9 @@ class WP_Scripts extends WP_Dependencies
          *
          * @since 4.1.0
          *
-         * @param  string  $tag    The `<script>` tag for the enqueued script.
-         * @param  string  $handle The script's registered handle.
-         * @param  string  $src    The script's source URL.
+         * @param  string  $tag  The `<script>` tag for the enqueued script.
+         * @param  string  $handle  The script's registered handle.
+         * @param  string  $src  The script's source URL.
          */
         $tag = apply_filters('script_loader_tag', $tag, $handle, $src);
 
@@ -475,11 +475,11 @@ class WP_Scripts extends WP_Dependencies
      *
      * @since 4.5.0
      *
-     * @param  string  $handle   Name of the script to add the inline script to.
-     *                         Must be lowercase.
-     * @param  string  $data     String containing the JavaScript to be added.
-     * @param  string  $position Optional. Whether to add the inline script
-     *                         before the handle or after. Default 'after'.
+     * @param  string  $handle  Name of the script to add the inline script to.
+     *                          Must be lowercase.
+     * @param  string  $data  String containing the JavaScript to be added.
+     * @param  string  $position  Optional. Whether to add the inline script
+     *                            before the handle or after. Default 'after'.
      * @return bool True on success, false on failure.
      */
     public function add_inline_script($handle, $data, $position = 'after')
@@ -504,10 +504,10 @@ class WP_Scripts extends WP_Dependencies
      * @since 4.5.0
      * @deprecated 6.3.0 Use methods get_inline_script_tag() or get_inline_script_data() instead.
      *
-     * @param  string  $handle   Name of the script to print inline scripts for.
-     *                         Must be lowercase.
-     * @param  string  $position Optional. Whether to add the inline script
-     *                         before the handle or after. Default 'after'.
+     * @param  string  $handle  Name of the script to print inline scripts for.
+     *                          Must be lowercase.
+     * @param  string  $position  Optional. Whether to add the inline script
+     *                            before the handle or after. Default 'after'.
      * @param  bool  $display  Optional. Whether to print the script tag
      *                         instead of just returning the script data. Default true.
      * @return string|false Script data on success, false otherwise.
@@ -533,10 +533,10 @@ class WP_Scripts extends WP_Dependencies
      *
      * @since 6.3.0
      *
-     * @param  string  $handle   Name of the script to get data for.
-     *                         Must be lowercase.
-     * @param  string  $position Optional. Whether to add the inline script
-     *                         before the handle or after. Default 'after'.
+     * @param  string  $handle  Name of the script to get data for.
+     *                          Must be lowercase.
+     * @param  string  $position  Optional. Whether to add the inline script
+     *                            before the handle or after. Default 'after'.
      * @return string Inline script, which may be empty string.
      */
     public function get_inline_script_data($handle, $position = 'after')
@@ -557,7 +557,7 @@ class WP_Scripts extends WP_Dependencies
      *
      * @since 6.3.0
      *
-     * @param  string[]  $deps Dependency handles.
+     * @param  string[]  $deps  Dependency handles.
      * @return string[] Unaliased handles.
      */
     private function get_unaliased_deps(array $deps)
@@ -583,10 +583,10 @@ class WP_Scripts extends WP_Dependencies
      *
      * @since 6.3.0
      *
-     * @param  string  $handle   Name of the script to get associated inline script tag for.
-     *                         Must be lowercase.
-     * @param  string  $position Optional. Whether to get tag for inline
-     *                         scripts in the before or after position. Default 'after'.
+     * @param  string  $handle  Name of the script to get associated inline script tag for.
+     *                          Must be lowercase.
+     * @param  string  $position  Optional. Whether to get tag for inline
+     *                            scripts in the before or after position. Default 'after'.
      * @return string Inline script, which may be empty string.
      */
     public function get_inline_script_tag($handle, $position = 'after')
@@ -606,9 +606,9 @@ class WP_Scripts extends WP_Dependencies
      *
      * @since 2.1.0
      *
-     * @param  string  $handle      Name of the script to attach data to.
-     * @param  string  $object_name Name of the variable that will contain the data.
-     * @param  array  $l10n        Array of data to localize.
+     * @param  string  $handle  Name of the script to attach data to.
+     * @param  string  $object_name  Name of the variable that will contain the data.
+     * @param  array  $l10n  Array of data to localize.
      * @return bool True on success, false on failure.
      */
     public function localize($handle, $object_name, $l10n)
@@ -673,10 +673,10 @@ class WP_Scripts extends WP_Dependencies
      * @since 2.8.0
      * @see WP_Dependencies::set_group()
      *
-     * @param  string  $handle    Name of the item. Should be unique.
-     * @param  bool  $recursion Internal flag that calling function was called recursively.
-     * @param  int|false  $group     Optional. Group level: level (int), no groups (false).
-     *                             Default false.
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  bool  $recursion  Internal flag that calling function was called recursively.
+     * @param  int|false  $group  Optional. Group level: level (int), no groups (false).
+     *                            Default false.
      * @return bool Not already in the group or a lower group.
      */
     public function set_group($handle, $recursion, $group = false)
@@ -700,9 +700,9 @@ class WP_Scripts extends WP_Dependencies
      * @since 5.0.0
      * @since 5.1.0 The `$domain` parameter was made optional.
      *
-     * @param  string  $handle Name of the script to register a translation domain to.
-     * @param  string  $domain Optional. Text domain. Default 'default'.
-     * @param  string  $path   Optional. The full file path to the directory containing translation files.
+     * @param  string  $handle  Name of the script to register a translation domain to.
+     * @param  string  $domain  Optional. Text domain. Default 'default'.
+     * @param  string  $path  Optional. The full file path to the directory containing translation files.
      * @return bool True if the text domain was registered, false if not.
      */
     public function set_translations($handle, $domain = 'default', $path = '')
@@ -727,9 +727,9 @@ class WP_Scripts extends WP_Dependencies
      * @since 5.0.0
      *
      * @param  string  $handle  Name of the script to add the inline script to.
-     *                        Must be lowercase.
-     * @param  bool  $display Optional. Whether to print the script
-     *                        instead of just returning it. Default true.
+     *                          Must be lowercase.
+     * @param  bool  $display  Optional. Whether to print the script
+     *                         instead of just returning it. Default true.
      * @return string|false Script on success, false otherwise.
      */
     public function print_translations($handle, $display = true)
@@ -772,11 +772,11 @@ JS;
      * @since 2.1.0
      * @see WP_Dependencies::all_deps()
      *
-     * @param  string|string[]  $handles   Item handle (string) or item handles (array of strings).
-     * @param  bool  $recursion Optional. Internal flag that function is calling itself.
-     *                                   Default false.
-     * @param  int|false  $group     Optional. Group level: level (int), no groups (false).
-     *                                   Default false.
+     * @param  string|string[]  $handles  Item handle (string) or item handles (array of strings).
+     * @param  bool  $recursion  Optional. Internal flag that function is calling itself.
+     *                           Default false.
+     * @param  int|false  $group  Optional. Group level: level (int), no groups (false).
+     *                            Default false.
      * @return bool True on success, false on failure.
      */
     public function all_deps($handles, $recursion = false, $group = false)
@@ -788,7 +788,7 @@ JS;
              *
              * @since 2.3.0
              *
-             * @param  string[]  $to_do An array of script dependency handles.
+             * @param  string[]  $to_do  An array of script dependency handles.
              */
             $this->to_do = apply_filters('print_scripts_array', $this->to_do);
         }
@@ -831,7 +831,7 @@ JS;
      *
      * @since 2.8.0
      *
-     * @param  string  $src The source of the enqueued script.
+     * @param  string  $src  The source of the enqueued script.
      * @return bool True if found, false if not.
      */
     public function in_default_dir($src)
@@ -858,8 +858,8 @@ JS;
      *
      * @since 6.3.0
      *
-     * @param  string  $handle Name of the item. Should be unique.
-     * @param  string  $key    The data key.
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  string  $key  The data key.
      * @param  mixed  $value  The data value.
      * @return bool True on success, false on failure.
      */
@@ -907,7 +907,7 @@ JS;
      *
      * @since 6.3.0
      *
-     * @param  string  $handle The script handle.
+     * @param  string  $handle  The script handle.
      * @return string[] Script handles.
      */
     private function get_dependents($handle)
@@ -937,7 +937,7 @@ JS;
      *
      * @since 6.3.0
      *
-     * @param  string  $strategy The strategy to check.
+     * @param  string  $strategy  The strategy to check.
      * @return bool True if $strategy is one of the delayed strategies, otherwise false.
      */
     private function is_delayed_strategy($strategy)
@@ -954,7 +954,7 @@ JS;
      *
      * @since 6.3.0
      *
-     * @param  string  $handle The script handle.
+     * @param  string  $handle  The script handle.
      * @return string The best eligible loading strategy.
      */
     private function get_eligible_loading_strategy($handle)
@@ -987,8 +987,8 @@ JS;
      *
      * @since 6.3.0
      *
-     * @param  string  $handle   The script handle.
-     * @param  string[]|null  $eligible Optional. The list of strategies to filter. Default null.
+     * @param  string  $handle  The script handle.
+     * @param  string[]|null  $eligible  Optional. The list of strategies to filter. Default null.
      * @param  array<string, true>  $checked  Optional. An array of already checked script handles, used to avoid recursive loops.
      * @return string[] A list of eligible loading strategies that could be used.
      */
@@ -1055,8 +1055,8 @@ JS;
      *
      * @since 6.3.0
      *
-     * @param  string  $handle   Name of the script to get data for. Must be lowercase.
-     * @param  string  $position The position of the inline script.
+     * @param  string  $handle  Name of the script to get data for. Must be lowercase.
+     * @param  string  $position  The position of the inline script.
      * @return bool Whether the handle has an inline script (either before or after).
      */
     private function has_inline_script($handle, $position = null)

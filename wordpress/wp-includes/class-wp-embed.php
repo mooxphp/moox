@@ -61,7 +61,7 @@ class WP_Embed
      *
      * @global array $shortcode_tags
      *
-     * @param  string  $content Content to parse.
+     * @param  string  $content  Content to parse.
      * @return string Content with shortcode parsed.
      */
     public function run_shortcode($content)
@@ -110,12 +110,12 @@ class WP_Embed
      *
      * This function should probably also only be used for sites that do not support oEmbed.
      *
-     * @param  string  $id       An internal ID/name for the handler. Needs to be unique.
-     * @param  string  $regex    The regex that will be used to see if this handler should be used for a URL.
-     * @param  callable  $callback The callback function that will be called if the regex is matched.
-     * @param  int  $priority Optional. Used to specify the order in which the registered handlers will be tested.
-     *                           Lower numbers correspond with earlier testing, and handlers with the same priority are
-     *                           tested in the order in which they were added to the action. Default 10.
+     * @param  string  $id  An internal ID/name for the handler. Needs to be unique.
+     * @param  string  $regex  The regex that will be used to see if this handler should be used for a URL.
+     * @param  callable  $callback  The callback function that will be called if the regex is matched.
+     * @param  int  $priority  Optional. Used to specify the order in which the registered handlers will be tested.
+     *                         Lower numbers correspond with earlier testing, and handlers with the same priority are
+     *                         tested in the order in which they were added to the action. Default 10.
      */
     public function register_handler($id, $regex, $callback, $priority = 10)
     {
@@ -130,8 +130,8 @@ class WP_Embed
      *
      * Do not use this function directly, use wp_embed_unregister_handler() instead.
      *
-     * @param  string  $id       The handler ID that should be removed.
-     * @param  int  $priority Optional. The priority of the handler to be removed (default: 10).
+     * @param  string  $id  The handler ID that should be removed.
+     * @param  int  $priority  Optional. The priority of the handler to be removed (default: 10).
      */
     public function unregister_handler($id, $priority = 10)
     {
@@ -146,14 +146,14 @@ class WP_Embed
      *
      * @since 5.5.0
      *
-     * @param  array  $attr {
-     *     Shortcode attributes. Optional.
+     * @param  array  $attr  {
+     *                       Shortcode attributes. Optional.
      *
-     *     @type int $width  Width of the embed in pixels.
-     *     @type int $height Height of the embed in pixels.
-     * }
+     * @type int $width  Width of the embed in pixels.
+     * @type int $height Height of the embed in pixels.
+     *           }
      *
-     * @param  string  $url The URL attempting to be embedded.
+     * @param  string  $url  The URL attempting to be embedded.
      * @return string|false The embed HTML on success, false otherwise.
      */
     public function get_embed_handler_html($attr, $url)
@@ -173,9 +173,9 @@ class WP_Embed
                          * @since 2.9.0
                          * @see WP_Embed::shortcode()
                          *
-                         * @param  string|false  $return The HTML result of the shortcode, or false on failure.
-                         * @param  string  $url    The embed URL.
-                         * @param  array  $attr   An array of shortcode attributes.
+                         * @param  string|false  $return  The HTML result of the shortcode, or false on failure.
+                         * @param  string  $url  The embed URL.
+                         * @param  array  $attr  An array of shortcode attributes.
                          */
                         return apply_filters('embed_handler_html', $return, $url, $attr);
                     }
@@ -193,14 +193,14 @@ class WP_Embed
      * the registered embed handlers. If none of the regex matches and it's enabled, then the URL
      * will be given to the WP_oEmbed class.
      *
-     * @param  array  $attr {
-     *     Shortcode attributes. Optional.
+     * @param  array  $attr  {
+     *                       Shortcode attributes. Optional.
      *
-     *     @type int $width  Width of the embed in pixels.
-     *     @type int $height Height of the embed in pixels.
-     * }
+     * @type int $width  Width of the embed in pixels.
+     * @type int $height Height of the embed in pixels.
+     *           }
      *
-     * @param  string  $url The URL attempting to be embedded.
+     * @param  string  $url  The URL attempting to be embedded.
      * @return string|false The embed HTML on success, otherwise the original URL.
      *                      `->maybe_make_link()` can return false on failure.
      */
@@ -254,10 +254,10 @@ class WP_Embed
          *
          * @since 4.0.0
          *
-         * @param  int  $time    Time to live (in seconds).
-         * @param  string  $url     The attempted embed URL.
-         * @param  array  $attr    An array of shortcode attributes.
-         * @param  int  $post_id Post ID.
+         * @param  int  $time  Time to live (in seconds).
+         * @param  string  $url  The attempted embed URL.
+         * @param  array  $attr  An array of shortcode attributes.
+         * @param  int  $post_id  Post ID.
          */
         $ttl = apply_filters('oembed_ttl', DAY_IN_SECONDS, $url, $attr, $post_id);
 
@@ -295,10 +295,10 @@ class WP_Embed
                  * @since 2.9.0
                  * @see WP_Embed::shortcode()
                  *
-                 * @param  string|false  $cache   The cached HTML result, stored in post meta.
-                 * @param  string  $url     The attempted embed URL.
-                 * @param  array  $attr    An array of shortcode attributes.
-                 * @param  int  $post_id Post ID.
+                 * @param  string|false  $cache  The cached HTML result, stored in post meta.
+                 * @param  string  $url  The attempted embed URL.
+                 * @param  array  $attr  An array of shortcode attributes.
+                 * @param  int  $post_id  Post ID.
                  */
                 return apply_filters('embed_oembed_html', $cache, $url, $attr, $post_id);
             }
@@ -311,7 +311,7 @@ class WP_Embed
          * @since 4.4.0 The default value changed to true.
          * @see WP_oEmbed::discover()
          *
-         * @param  bool  $enable Whether to enable `<link>` tag discovery. Default true.
+         * @param  bool  $enable  Whether to enable `<link>` tag discovery. Default true.
          */
         $attr['discover'] = apply_filters('embed_oembed_discover', true);
 
@@ -392,7 +392,7 @@ class WP_Embed
     /**
      * Deletes all oEmbed caches. Unused by core as of 4.0.0.
      *
-     * @param  int  $post_id Post ID to delete the caches for.
+     * @param  int  $post_id  Post ID to delete the caches for.
      */
     public function delete_oembed_caches($post_id)
     {
@@ -411,7 +411,7 @@ class WP_Embed
     /**
      * Triggers a caching of all oEmbed results.
      *
-     * @param  int  $post_id Post ID to do the caching for.
+     * @param  int  $post_id  Post ID to do the caching for.
      */
     public function cache_oembed($post_id)
     {
@@ -424,7 +424,7 @@ class WP_Embed
          *
          * @since 2.9.0
          *
-         * @param  string[]  $post_types Array of post type names to cache oEmbed results for. Defaults to post types with `show_ui` set to true.
+         * @param  string[]  $post_types  Array of post type names to cache oEmbed results for. Defaults to post types with `show_ui` set to true.
          */
         $cache_oembed_types = apply_filters('embed_cache_oembed_types', $post_types);
 
@@ -449,7 +449,7 @@ class WP_Embed
      *
      * @see WP_Embed::autoembed_callback()
      *
-     * @param  string  $content The content to be searched.
+     * @param  string  $content  The content to be searched.
      * @return string Potentially modified $content.
      */
     public function autoembed($content)
@@ -471,7 +471,7 @@ class WP_Embed
     /**
      * Callback function for WP_Embed::autoembed().
      *
-     * @param  array  $matches A regex match array.
+     * @param  array  $matches  A regex match array.
      * @return string The embed HTML on success, otherwise the original URL.
      */
     public function autoembed_callback($matches)
@@ -487,7 +487,7 @@ class WP_Embed
     /**
      * Conditionally makes a hyperlink based on an internal class variable.
      *
-     * @param  string  $url URL to potentially be linked.
+     * @param  string  $url  URL to potentially be linked.
      * @return string|false Linked URL or the original URL. False if 'return_false_on_fail' is true.
      */
     public function maybe_make_link($url)
@@ -503,8 +503,8 @@ class WP_Embed
          *
          * @since 2.9.0
          *
-         * @param  string  $output The linked or original URL.
-         * @param  string  $url    The original URL.
+         * @param  string  $output  The linked or original URL.
+         * @param  string  $url  The original URL.
          */
         return apply_filters('embed_maybe_make_link', $output, $url);
     }
@@ -514,7 +514,7 @@ class WP_Embed
      *
      * @since 4.9.0
      *
-     * @param  string  $cache_key oEmbed cache key.
+     * @param  string  $cache_key  oEmbed cache key.
      * @return int|null Post ID on success, null on failure.
      */
     public function find_oembed_post_id($cache_key)

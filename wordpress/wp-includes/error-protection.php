@@ -42,7 +42,7 @@ function wp_paused_themes()
  *
  * @since 5.2.0
  *
- * @param  array  $error Error details from `error_get_last()`.
+ * @param  array  $error  Error details from `error_get_last()`.
  * @return string Formatted error description.
  */
 function wp_get_extension_error_description($error)
@@ -138,7 +138,7 @@ function wp_is_fatal_error_handler_enabled()
      *
      * @since 5.2.0
      *
-     * @param  bool  $enabled True if the fatal error handler is enabled, false otherwise.
+     * @param  bool  $enabled  True if the fatal error handler is enabled, false otherwise.
      */
     return apply_filters('wp_fatal_error_handler_enabled', $enabled);
 }

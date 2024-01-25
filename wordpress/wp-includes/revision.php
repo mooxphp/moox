@@ -10,9 +10,9 @@
  * @since 4.5.0 A `WP_Post` object can now be passed to the `$post` parameter.
  * @since 4.5.0 The optional `$autosave` parameter was deprecated and renamed to `$deprecated`.
  *
- * @param  array|WP_Post  $post       Optional. A post array or a WP_Post object being processed
- *                                  for insertion as a post revision. Default empty array.
- * @param  bool  $deprecated Not used.
+ * @param  array|WP_Post  $post  Optional. A post array or a WP_Post object being processed
+ *                               for insertion as a post revision. Default empty array.
+ * @param  bool  $deprecated  Not used.
  * @return string[] Array of fields that can be versioned.
  */
 function _wp_post_revision_fields($post = [], $deprecated = false)
@@ -44,9 +44,9 @@ function _wp_post_revision_fields($post = [], $deprecated = false)
      * @since 2.6.0
      * @since 4.5.0 The `$post` parameter was added.
      *
-     * @param  string[]  $fields List of fields to revision. Contains 'post_title',
-     *                         'post_content', and 'post_excerpt' by default.
-     * @param  array  $post   A post array being processed for insertion as a post revision.
+     * @param  string[]  $fields  List of fields to revision. Contains 'post_title',
+     *                            'post_content', and 'post_excerpt' by default.
+     * @param  array  $post  A post array being processed for insertion as a post revision.
      */
     $fields = apply_filters('_wp_post_revision_fields', $fields, $post);
 
@@ -63,9 +63,9 @@ function _wp_post_revision_fields($post = [], $deprecated = false)
  *
  * @since 4.5.0
  *
- * @param  array|WP_Post  $post     Optional. A post array or a WP_Post object to be processed
- *                                for insertion as a post revision. Default empty array.
- * @param  bool  $autosave Optional. Is the revision an autosave? Default false.
+ * @param  array|WP_Post  $post  Optional. A post array or a WP_Post object to be processed
+ *                               for insertion as a post revision. Default empty array.
+ * @param  bool  $autosave  Optional. Is the revision an autosave? Default false.
  * @return array Post array ready to be inserted as a post revision.
  */
 function _wp_post_revision_data($post = [], $autosave = false)
@@ -97,8 +97,8 @@ function _wp_post_revision_data($post = [], $autosave = false)
  *
  * @since 6.4.0
  *
- * @param  int  $post_id The post id that was inserted.
- * @param  WP_Post  $post    The post object that was inserted.
+ * @param  int  $post_id  The post id that was inserted.
+ * @param  WP_Post  $post  The post object that was inserted.
  * @param  bool  $update  Whether this insert is updating an existing post.
  */
 function wp_save_post_revision_on_insert($post_id, $post, $update)
@@ -122,7 +122,7 @@ function wp_save_post_revision_on_insert($post_id, $post, $update)
  *
  * @since 2.6.0
  *
- * @param  int  $post_id The ID of the post to save as a revision.
+ * @param  int  $post_id  The ID of the post to save as a revision.
  * @return int|WP_Error|void Void or 0 if error, new revision ID, if success.
  */
 function wp_save_post_revision($post_id)
@@ -177,10 +177,10 @@ function wp_save_post_revision($post_id)
          *
          * @since 3.6.0
          *
-         * @param  bool  $check_for_changes Whether to check for changes before saving a new revision.
+         * @param  bool  $check_for_changes  Whether to check for changes before saving a new revision.
          *                                   Default true.
-         * @param  WP_Post  $latest_revision   The latest revision post object.
-         * @param  WP_Post  $post              The post object.
+         * @param  WP_Post  $latest_revision  The latest revision post object.
+         * @param  WP_Post  $post  The post object.
          */
         if (isset($latest_revision) && apply_filters('wp_save_post_revision_check_for_changes', true, $latest_revision, $post)) {
             $post_has_changed = false;
@@ -200,9 +200,9 @@ function wp_save_post_revision($post_id)
              *
              * @since 4.1.0
              *
-             * @param  bool  $post_has_changed Whether the post has changed.
+             * @param  bool  $post_has_changed  Whether the post has changed.
              * @param  WP_Post  $latest_revision  The latest revision post object.
-             * @param  WP_Post  $post             The post object.
+             * @param  WP_Post  $post  The post object.
              */
             $post_has_changed = (bool) apply_filters('wp_save_post_revision_post_has_changed', $post_has_changed, $latest_revision, $post);
 
@@ -232,8 +232,8 @@ function wp_save_post_revision($post_id)
      *
      * @since 6.2.0
      *
-     * @param  WP_Post[]  $revisions Array of revisions, or an empty array if none.
-     * @param  int  $post_id   The ID of the post to save as a revision.
+     * @param  WP_Post[]  $revisions  Array of revisions, or an empty array if none.
+     * @param  int  $post_id  The ID of the post to save as a revision.
      */
     $revisions = apply_filters(
         'wp_save_post_revision_revisions_before_deletion',
@@ -271,8 +271,8 @@ function wp_save_post_revision($post_id)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $post_id The post ID.
- * @param  int  $user_id Optional. The post author ID. Default 0.
+ * @param  int  $post_id  The post ID.
+ * @param  int  $user_id  Optional. The post author ID. Default 0.
  * @return WP_Post|false The autosaved data or false on failure or when no autosave exists.
  */
 function wp_get_post_autosave($post_id, $user_id = 0)
@@ -313,7 +313,7 @@ function wp_get_post_autosave($post_id, $user_id = 0)
  *
  * @since 2.6.0
  *
- * @param  int|WP_Post  $post Post ID or post object.
+ * @param  int|WP_Post  $post  Post ID or post object.
  * @return int|false ID of revision's parent on success, false if not a revision.
  */
 function wp_is_post_revision($post)
@@ -332,7 +332,7 @@ function wp_is_post_revision($post)
  *
  * @since 2.6.0
  *
- * @param  int|WP_Post  $post Post ID or post object.
+ * @param  int|WP_Post  $post  Post ID or post object.
  * @return int|false ID of autosave's parent on success, false if not a revision.
  */
 function wp_is_post_autosave($post)
@@ -355,9 +355,9 @@ function wp_is_post_autosave($post)
  *
  * @since 2.6.0
  *
- * @param  int|WP_Post|array|null  $post     Post ID, post object OR post array.
- * @param  bool  $autosave Optional. Whether the revision is an autosave or not.
- *                                         Default false.
+ * @param  int|WP_Post|array|null  $post  Post ID, post object OR post array.
+ * @param  bool  $autosave  Optional. Whether the revision is an autosave or not.
+ *                          Default false.
  * @return int|WP_Error WP_Error or 0 if error, new revision ID if success.
  */
 function _wp_put_post_revision($post = null, $autosave = false)
@@ -391,8 +391,8 @@ function _wp_put_post_revision($post = null, $autosave = false)
          * @since 2.6.0
          * @since 6.4.0 The post_id parameter was added.
          *
-         * @param  int  $revision_id Post revision ID.
-         * @param  int  $post_id     Post ID.
+         * @param  int  $revision_id  Post revision ID.
+         * @param  int  $post_id  Post ID.
          */
         do_action('_wp_put_post_revision', $revision_id, $post['post_parent']);
     }
@@ -405,8 +405,8 @@ function _wp_put_post_revision($post = null, $autosave = false)
  *
  * @since 6.4.0
  *
- * @param  int  $revision_id The ID of the revision to save the meta to.
- * @param  int  $post_id     The ID of the post the revision is associated with.
+ * @param  int  $revision_id  The ID of the revision to save the meta to.
+ * @param  int  $post_id  The ID of the post the revision is associated with.
  */
 function wp_save_revisioned_meta_fields($revision_id, $post_id)
 {
@@ -427,11 +427,11 @@ function wp_save_revisioned_meta_fields($revision_id, $post_id)
  *
  * @since 2.6.0
  *
- * @param  int|WP_Post  $post   Post ID or post object.
- * @param  string  $output Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
- *                            correspond to a WP_Post object, an associative array, or a numeric array,
- *                            respectively. Default OBJECT.
- * @param  string  $filter Optional sanitization filter. See sanitize_post(). Default 'raw'.
+ * @param  int|WP_Post  $post  Post ID or post object.
+ * @param  string  $output  Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
+ *                          correspond to a WP_Post object, an associative array, or a numeric array,
+ *                          respectively. Default OBJECT.
+ * @param  string  $filter  Optional sanitization filter. See sanitize_post(). Default 'raw'.
  * @return WP_Post|array|null WP_Post (or array) on success, or null on failure.
  */
 function wp_get_post_revision(&$post, $output = OBJECT, $filter = 'raw')
@@ -468,8 +468,8 @@ function wp_get_post_revision(&$post, $output = OBJECT, $filter = 'raw')
  *
  * @since 2.6.0
  *
- * @param  int|WP_Post  $revision Revision ID or revision object.
- * @param  array  $fields   Optional. What fields to restore from. Defaults to all.
+ * @param  int|WP_Post  $revision  Revision ID or revision object.
+ * @param  array  $fields  Optional. What fields to restore from. Defaults to all.
  * @return int|false|null Null if error, false if no fields to restore, (int) post ID if success.
  */
 function wp_restore_post_revision($revision, $fields = null)
@@ -511,8 +511,8 @@ function wp_restore_post_revision($revision, $fields = null)
      *
      * @since 2.6.0
      *
-     * @param  int  $post_id     Post ID.
-     * @param  int  $revision_id Post revision ID.
+     * @param  int  $post_id  Post ID.
+     * @param  int  $revision_id  Post revision ID.
      */
     do_action('wp_restore_post_revision', $post_id, $revision['ID']);
 
@@ -524,8 +524,8 @@ function wp_restore_post_revision($revision, $fields = null)
  *
  * @since 6.4.0
  *
- * @param  int  $post_id     The ID of the post to restore the meta to.
- * @param  int  $revision_id The ID of the revision to restore the meta from.
+ * @param  int  $post_id  The ID of the post to restore the meta to.
+ * @param  int  $revision_id  The ID of the revision to restore the meta from.
  */
 function wp_restore_post_revision_meta($post_id, $revision_id)
 {
@@ -549,9 +549,9 @@ function wp_restore_post_revision_meta($post_id, $revision_id)
  *
  * @since 6.4.0
  *
- * @param  int  $source_post_id Post ID to copy meta value(s) from.
- * @param  int  $target_post_id Post ID to copy meta value(s) to.
- * @param  string  $meta_key       Meta key to copy.
+ * @param  int  $source_post_id  Post ID to copy meta value(s) from.
+ * @param  int  $target_post_id  Post ID to copy meta value(s) to.
+ * @param  string  $meta_key  Meta key to copy.
  */
 function _wp_copy_post_meta($source_post_id, $target_post_id, $meta_key)
 {
@@ -570,7 +570,7 @@ function _wp_copy_post_meta($source_post_id, $target_post_id, $meta_key)
  *
  * @since 6.4.0
  *
- * @param  string  $post_type The post type being revisioned.
+ * @param  string  $post_type  The post type being revisioned.
  * @return array An array of meta keys to be revisioned.
  */
 function wp_post_revision_meta_keys($post_type)
@@ -595,8 +595,8 @@ function wp_post_revision_meta_keys($post_type)
      *
      * @since 6.4.0
      *
-     * @param  array  $keys      An array of meta fields to be revisioned.
-     * @param  string  $post_type The post type being revisioned.
+     * @param  array  $keys  An array of meta fields to be revisioned.
+     * @param  string  $post_type  The post type being revisioned.
      */
     return apply_filters('wp_post_revision_meta_keys', $wp_revisioned_meta_keys, $post_type);
 }
@@ -606,9 +606,9 @@ function wp_post_revision_meta_keys($post_type)
  *
  * @since 6.4.0
  *
- * @param  bool  $post_has_changed Whether the post has changed.
- * @param  WP_Post  $last_revision    The last revision post object.
- * @param  WP_Post  $post             The post object.
+ * @param  bool  $post_has_changed  Whether the post has changed.
+ * @param  WP_Post  $last_revision  The last revision post object.
+ * @param  WP_Post  $post  The post object.
  * @return bool Whether the post has changed.
  */
 function wp_check_revisioned_meta_fields_have_changed($post_has_changed, WP_Post $last_revision, WP_Post $post)
@@ -630,7 +630,7 @@ function wp_check_revisioned_meta_fields_have_changed($post_has_changed, WP_Post
  *
  * @since 2.6.0
  *
- * @param  int|WP_Post  $revision Revision ID or revision object.
+ * @param  int|WP_Post  $revision  Revision ID or revision object.
  * @return WP_Post|false|null Null or false if error, deleted post object if success.
  */
 function wp_delete_post_revision($revision)
@@ -649,8 +649,8 @@ function wp_delete_post_revision($revision)
          *
          * @since 2.6.0
          *
-         * @param  int  $revision_id Post revision ID.
-         * @param  WP_Post  $revision    Post revision object.
+         * @param  int  $revision_id  Post revision ID.
+         * @param  WP_Post  $revision  Post revision object.
          */
         do_action('wp_delete_post_revision', $revision->ID, $revision);
     }
@@ -664,8 +664,8 @@ function wp_delete_post_revision($revision)
  * @since 2.6.0
  * @see get_children()
  *
- * @param  int|WP_Post  $post Optional. Post ID or WP_Post object. Default is global `$post`.
- * @param  array|null  $args Optional. Arguments for retrieving post revisions. Default null.
+ * @param  int|WP_Post  $post  Optional. Post ID or WP_Post object. Default is global `$post`.
+ * @param  array|null  $args  Optional. Arguments for retrieving post revisions. Default null.
  * @return WP_Post[]|int[] Array of revision objects or IDs, or an empty array if none.
  */
 function wp_get_post_revisions($post = 0, $args = null)
@@ -710,14 +710,14 @@ function wp_get_post_revisions($post = 0, $args = null)
  *
  * @since 6.1.0
  *
- * @param  int|WP_Post  $post Optional. Post ID or WP_Post object. Default is global $post.
+ * @param  int|WP_Post  $post  Optional. Post ID or WP_Post object. Default is global $post.
  * @return array|WP_Error {
- *     Returns associative array with latest revision ID and total count,
- *     or a WP_Error if the post does not exist or revisions are not enabled.
+ *                        Returns associative array with latest revision ID and total count,
+ *                        or a WP_Error if the post does not exist or revisions are not enabled.
  *
- *     @type int $latest_id The latest revision post ID or 0 if no revisions exist.
- *     @type int $count     The total count of revisions for the given post.
- * }
+ * @type int $latest_id The latest revision post ID or 0 if no revisions exist.
+ * @type int $count     The total count of revisions for the given post.
+ *           }
  */
 function wp_get_latest_revision_id_and_total_count($post = 0)
 {
@@ -763,7 +763,7 @@ function wp_get_latest_revision_id_and_total_count($post = 0)
  *
  * @since 5.9.0
  *
- * @param  int|WP_Post  $post Optional. Post ID or WP_Post object. Default is global `$post`.
+ * @param  int|WP_Post  $post  Optional. Post ID or WP_Post object. Default is global `$post`.
  * @return string|null The URL for editing revisions on the given post, otherwise null.
  */
 function wp_get_post_revisions_url($post = 0)
@@ -797,7 +797,7 @@ function wp_get_post_revisions_url($post = 0)
  *
  * @since 3.6.0
  *
- * @param  WP_Post  $post The post object.
+ * @param  WP_Post  $post  The post object.
  * @return bool True if number of revisions to keep isn't zero, false otherwise.
  */
 function wp_revisions_enabled($post)
@@ -815,7 +815,7 @@ function wp_revisions_enabled($post)
  *
  * @since 3.6.0
  *
- * @param  WP_Post  $post The post object.
+ * @param  WP_Post  $post  The post object.
  * @return int The number of revisions to keep.
  */
 function wp_revisions_to_keep($post)
@@ -840,7 +840,7 @@ function wp_revisions_to_keep($post)
      * @since 3.6.0
      *
      * @param  int  $num  Number of revisions to store.
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     $num = apply_filters('wp_revisions_to_keep', $num, $post);
 
@@ -860,7 +860,7 @@ function wp_revisions_to_keep($post)
      * @since 5.8.0
      *
      * @param  int  $num  Number of revisions to store.
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     $num = apply_filters("wp_{$post->post_type}_revisions_to_keep", $num, $post);
 
@@ -958,9 +958,9 @@ function _wp_preview_terms_filter($terms, $post_id, $taxonomy)
  *
  * @since 4.6.0
  *
- * @param  null|array|string  $value    The value to return - a single metadata value, or an array of values.
+ * @param  null|array|string  $value  The value to return - a single metadata value, or an array of values.
  * @param  int  $post_id  Post ID.
- * @param  string  $meta_key Meta key.
+ * @param  string  $meta_key  Meta key.
  * @return null|array The default return value or the post thumbnail meta array.
  */
 function _wp_preview_post_thumbnail_filter($value, $post_id, $meta_key)
@@ -1017,8 +1017,8 @@ function _wp_get_post_revision_version($revision)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  WP_Post  $post      Post object.
- * @param  array  $revisions Current revisions of the post.
+ * @param  WP_Post  $post  Post object.
+ * @param  array  $revisions  Current revisions of the post.
  * @return bool true if the revisions were upgraded, false if problems.
  */
 function _wp_upgrade_revisions_of_post($post, $revisions)
@@ -1121,10 +1121,10 @@ function _wp_upgrade_revisions_of_post($post, $revisions)
  *
  * @since 6.4.0
  *
- * @param  mixed  $value     Meta value to filter.
- * @param  int  $object_id Object ID.
+ * @param  mixed  $value  Meta value to filter.
+ * @param  int  $object_id  Object ID.
  * @param  string  $meta_key  Meta key to filter a value for.
- * @param  bool  $single    Whether to return a single value. Default false.
+ * @param  bool  $single  Whether to return a single value. Default false.
  * @return mixed Original meta value if the meta key isn't revisioned, the object doesn't exist,
  *               the post type is a revision or the post ID doesn't match the object ID.
  *               Otherwise, the revisioned meta value is returned for the preview.

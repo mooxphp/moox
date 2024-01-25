@@ -17,7 +17,7 @@ class WP_Classic_To_Block_Menu_Converter
      *
      * @since 6.3.0
      *
-     * @param  WP_Term  $menu The Menu term object of the menu to convert.
+     * @param  WP_Term  $menu  The Menu term object of the menu to convert.
      * @return string|WP_Error The serialized and normalized parsed blocks on success,
      *                         an empty string when there are no menus to convert,
      *                         or WP_Error on invalid menu.
@@ -61,7 +61,7 @@ class WP_Classic_To_Block_Menu_Converter
      *
      * @since 6.3.0
      *
-     * @param  array  $menu_items An array of menu items.
+     * @param  array  $menu_items  An array of menu items.
      * @return array
      */
     private static function group_by_parent_id($menu_items)
@@ -80,12 +80,12 @@ class WP_Classic_To_Block_Menu_Converter
      *
      * @since 6.3.0
      *
-     * @param  array  $menu_items              An array of menu items that represent
-     *                                       an individual level of a menu.
-     * @param  array  $menu_items_by_parent_id An array keyed by the id of the
-     *                                       parent menu where each element is an
-     *                                       array of menu items that belong to
-     *                                       that parent.
+     * @param  array  $menu_items  An array of menu items that represent
+     *                             an individual level of a menu.
+     * @param  array  $menu_items_by_parent_id  An array keyed by the id of the
+     *                                          parent menu where each element is an
+     *                                          array of menu items that belong to
+     *                                          that parent.
      * @return array An array of parsed block data.
      */
     private static function to_blocks($menu_items, $menu_items_by_parent_id)

@@ -162,10 +162,10 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      *
      * @since 4.3.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
-     * @param  string  $id      A specific ID of the setting.
-     *                                      Can be a theme mod or option name.
-     * @param  array  $args    Optional. Setting arguments.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
+     * @param  string  $id  A specific ID of the setting.
+     *                      Can be a theme mod or option name.
+     * @param  array  $args  Optional. Setting arguments.
      *
      * @throws Exception If $id is not valid for this setting type.
      */
@@ -198,7 +198,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      *
      * @since 4.3.0
      *
-     * @param  int  $menu_id       The term ID for the menu.
+     * @param  int  $menu_id  The term ID for the menu.
      * @param  int  $menu_item_id  The post ID for the menu item.
      */
     public function flush_cached_value($menu_id, $menu_item_id)
@@ -270,7 +270,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      *
      * @since 4.7.0
      *
-     * @param  object  $item Nav menu item.
+     * @param  object  $item  Nav menu item.
      * @return string The original title.
      */
     protected function get_original_title($item)
@@ -308,7 +308,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      *
      * @since 4.7.0
      *
-     * @param  object  $item Nav menu item.
+     * @param  object  $item  Nav menu item.
      * @return string The type label.
      */
     protected function get_type_label($item)
@@ -481,7 +481,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see wp_get_nav_menu_items()
      *
-     * @param  WP_Post[]  $items An array of menu item post objects.
+     * @param  WP_Post[]  $items  An array of menu item post objects.
      * @param  WP_Term  $menu  The menu object.
      * @param  array  $args  An array of arguments used to retrieve menu item objects.
      * @return WP_Post[] Array of menu item objects.
@@ -558,7 +558,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see wp_get_nav_menu_items()
      *
-     * @param  WP_Post[]  $items An array of menu item post objects.
+     * @param  WP_Post[]  $items  An array of menu item post objects.
      * @param  WP_Term  $menu  The menu object.
      * @param  array  $args  An array of arguments used to retrieve menu item objects.
      * @return WP_Post[] Array of menu item objects.
@@ -669,7 +669,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @since 5.9.0 Renamed `$menu_item_value` to `$value` for PHP 8 named parameter support.
      *
-     * @param  array  $value The menu item value to sanitize.
+     * @param  array  $value  The menu item value to sanitize.
      * @return array|false|null|WP_Error Null or WP_Error if an input isn't valid. False if it is marked for deletion.
      *                                   Otherwise the sanitized value.
      */
@@ -768,9 +768,9 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see wp_update_nav_menu_item()
      *
-     * @param  array|false  $value The menu item array to update. If false, then the menu item will be deleted
-     *                           entirely. See WP_Customize_Nav_Menu_Item_Setting::$default for what the value
-     *                           should consist of.
+     * @param  array|false  $value  The menu item array to update. If false, then the menu item will be deleted
+     *                              entirely. See WP_Customize_Nav_Menu_Item_Setting::$default for what the value
+     *                              should consist of.
      * @return null|void
      */
     protected function update($value)
@@ -907,7 +907,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
      * @since 4.3.0
      * @see WP_Customize_Nav_Menu_Item_Setting::update()
      *
-     * @param  array  $data Additional information passed back to the 'saved' event on `wp.customize`.
+     * @param  array  $data  Additional information passed back to the 'saved' event on `wp.customize`.
      * @return array Save response data.
      */
     public function amend_customize_save_response($data)

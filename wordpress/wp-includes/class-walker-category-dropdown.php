@@ -48,12 +48,12 @@ class Walker_CategoryDropdown extends Walker
      *              to match parent class for PHP 8 named parameter support.
      * @see Walker::start_el()
      *
-     * @param  string  $output            Used to append additional content (passed by reference).
-     * @param  WP_Term  $data_object       Category data object.
-     * @param  int  $depth             Depth of category. Used for padding.
-     * @param  array  $args              Uses 'selected', 'show_count', and 'value_field' keys, if they exist.
-     *                                   See wp_dropdown_categories().
-     * @param  int  $current_object_id Optional. ID of the current category. Default 0.
+     * @param  string  $output  Used to append additional content (passed by reference).
+     * @param  WP_Term  $data_object  Category data object.
+     * @param  int  $depth  Depth of category. Used for padding.
+     * @param  array  $args  Uses 'selected', 'show_count', and 'value_field' keys, if they exist.
+     *                       See wp_dropdown_categories().
+     * @param  int  $current_object_id  Optional. ID of the current category. Default 0.
      */
     public function start_el(&$output, $data_object, $depth = 0, $args = [], $current_object_id = 0)
     {

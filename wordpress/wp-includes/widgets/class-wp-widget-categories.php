@@ -36,9 +36,9 @@ class WP_Widget_Categories extends WP_Widget
      * @since 4.2.0 Creates a unique HTML ID for the `<select>` element
      *              if more than one instance is displayed on the page.
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Categories widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Categories widget instance.
      */
     public function widget($args, $instance)
     {
@@ -83,8 +83,8 @@ class WP_Widget_Categories extends WP_Widget
              * @since 4.9.0 Added the `$instance` parameter.
              * @see wp_dropdown_categories()
              *
-             * @param  array  $cat_args An array of Categories widget drop-down arguments.
-             * @param  array  $instance Array of settings for the current widget.
+             * @param  array  $cat_args  An array of Categories widget drop-down arguments.
+             * @param  array  $instance  Array of settings for the current widget.
              */
             wp_dropdown_categories(apply_filters('widget_categories_dropdown_args', $cat_args, $instance));
 
@@ -131,8 +131,8 @@ class WP_Widget_Categories extends WP_Widget
              * @since 2.8.0
              * @since 4.9.0 Added the `$instance` parameter.
              *
-             * @param  array  $cat_args An array of Categories widget options.
-             * @param  array  $instance Array of settings for the current widget.
+             * @param  array  $cat_args  An array of Categories widget options.
+             * @param  array  $instance  Array of settings for the current widget.
              */
             wp_list_categories(apply_filters('widget_categories_args', $cat_args, $instance));
             ?>
@@ -152,9 +152,9 @@ class WP_Widget_Categories extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Updated settings to save.
      */
     public function update($new_instance, $old_instance)
@@ -173,7 +173,7 @@ class WP_Widget_Categories extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     public function form($instance)
     {

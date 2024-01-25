@@ -26,11 +26,11 @@ class Text_Diff
     /**
      * Computes diffs between sequences of strings.
      *
-     * @param  string  $engine     Name of the diffing engine to use.  'auto'
-     *                           will automatically select the best.
-     * @param  array  $params      Parameters to pass to the diffing engine.
-     *                           Normally an array of two arrays, each
-     *                           containing the lines from a file.
+     * @param  string  $engine  Name of the diffing engine to use.  'auto'
+     *                          will automatically select the best.
+     * @param  array  $params  Parameters to pass to the diffing engine.
+     *                         Normally an array of two arrays, each
+     *                         containing the lines from a file.
      */
     public function __construct($engine, $params)
     {
@@ -119,10 +119,10 @@ class Text_Diff
      * $rev = $diff->reverse();
      * </code>
      *
-     * @return Text_Diff  A Diff object representing the inverse of the
-     *                    original diff.  Note that we purposely don't return a
-     *                    reference here, since this essentially is a clone()
-     *                    method.
+     * @return Text_Diff A Diff object representing the inverse of the
+     *                   original diff.  Note that we purposely don't return a
+     *                   reference here, since this essentially is a clone()
+     *                   method.
      */
     public function reverse()
     {
@@ -179,7 +179,7 @@ class Text_Diff
      *
      * This reconstructs the $from_lines parameter passed to the constructor.
      *
-     * @return array  The original sequence of strings.
+     * @return array The original sequence of strings.
      */
     public function getOriginal()
     {
@@ -198,7 +198,7 @@ class Text_Diff
      *
      * This reconstructs the $to_lines parameter passed to the constructor.
      *
-     * @return array  The sequence of strings.
+     * @return array The sequence of strings.
      */
     public function getFinal()
     {
@@ -217,7 +217,7 @@ class Text_Diff
      * with array_walk().
      *
      * @param  string  $line  The line to trim.
-     * @param  int  $key   The index of the line in the array. Not used.
+     * @param  int  $key  The index of the line in the array. Not used.
      */
     public static function trimNewlines(&$line, $key)
     {
@@ -228,8 +228,8 @@ class Text_Diff
      * Determines the location of the system temporary directory.
      *
      *
-     * @return string  A directory name which can be used for temp files.
-     *                 Returns false if one could not be found.
+     * @return string A directory name which can be used for temp files.
+     *                Returns false if one could not be found.
      */
     public static function _getTempDir()
     {
@@ -303,14 +303,14 @@ class Text_MappedDiff extends Text_Diff
      * This can be used to compute things like case-insensitve diffs, or diffs
      * which ignore changes in white-space.
      *
-     * @param  array  $from_lines         An array of strings.
-     * @param  array  $to_lines           An array of strings.
+     * @param  array  $from_lines  An array of strings.
+     * @param  array  $to_lines  An array of strings.
      * @param  array  $mapped_from_lines  This array should have the same size
-     *                                  number of elements as $from_lines.  The
-     *                                  elements in $mapped_from_lines and
-     *                                  $mapped_to_lines are what is actually
-     *                                  compared when computing the diff.
-     * @param  array  $mapped_to_lines    This array should have the same number
+     *                                    number of elements as $from_lines.  The
+     *                                    elements in $mapped_from_lines and
+     *                                    $mapped_to_lines are what is actually
+     *                                    compared when computing the diff.
+     * @param  array  $mapped_to_lines  This array should have the same number
      *                                  of elements as $to_lines.
      */
     public function __construct($from_lines, $to_lines,

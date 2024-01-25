@@ -40,7 +40,7 @@ global $hook_suffix;
  *
  * @since 2.8.0
  *
- * @param  string  $text The content that will be printed.
+ * @param  string  $text  The content that will be printed.
  */
 echo apply_filters('admin_footer_text', '<span id="footer-thankyou">'.$text.'</span>');
 ?>
@@ -56,7 +56,7 @@ echo apply_filters('admin_footer_text', '<span id="footer-thankyou">'.$text.'</s
  * @since 2.3.0
  * @see core_update_footer()
  *
- * @param  string  $content The content that will be printed.
+ * @param  string  $content  The content that will be printed.
  */
 echo apply_filters('update_footer', '');
 ?>
@@ -69,7 +69,7 @@ echo apply_filters('update_footer', '');
  *
  * @since 1.2.0
  *
- * @param  string  $data The data to print.
+ * @param  string  $data  The data to print.
  */
 do_action('admin_footer', '');
 

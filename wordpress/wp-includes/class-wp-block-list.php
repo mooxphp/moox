@@ -47,9 +47,9 @@ class WP_Block_List implements ArrayAccess, Countable, Iterator
      *
      * @since 5.5.0
      *
-     * @param  array[]|WP_Block[]  $blocks            Array of parsed block data, or block instances.
-     * @param  array  $available_context Optional array of ancestry context values.
-     * @param  WP_Block_Type_Registry  $registry          Optional block type registry.
+     * @param  array[]|WP_Block[]  $blocks  Array of parsed block data, or block instances.
+     * @param  array  $available_context  Optional array of ancestry context values.
+     * @param  WP_Block_Type_Registry  $registry  Optional block type registry.
      */
     public function __construct($blocks, $available_context = [], $registry = null)
     {
@@ -69,7 +69,7 @@ class WP_Block_List implements ArrayAccess, Countable, Iterator
      * @since 5.5.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetexists.php
      *
-     * @param  string  $offset Offset of block to check for.
+     * @param  string  $offset  Offset of block to check for.
      * @return bool Whether block exists.
      */
     #[ReturnTypeWillChange]
@@ -84,7 +84,7 @@ class WP_Block_List implements ArrayAccess, Countable, Iterator
      * @since 5.5.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetget.php
      *
-     * @param  string  $offset Offset of block value to retrieve.
+     * @param  string  $offset  Offset of block value to retrieve.
      * @return mixed|null Block value if exists, or null.
      */
     #[ReturnTypeWillChange]
@@ -106,8 +106,8 @@ class WP_Block_List implements ArrayAccess, Countable, Iterator
      * @since 5.5.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetset.php
      *
-     * @param  string  $offset Offset of block value to set.
-     * @param  mixed  $value Block value.
+     * @param  string  $offset  Offset of block value to set.
+     * @param  mixed  $value  Block value.
      */
     #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -125,7 +125,7 @@ class WP_Block_List implements ArrayAccess, Countable, Iterator
      * @since 5.5.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetunset.php
      *
-     * @param  string  $offset Offset of block value to unset.
+     * @param  string  $offset  Offset of block value to unset.
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($offset)

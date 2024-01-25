@@ -13,8 +13,8 @@
  *
  * @since 1.5.0
  *
- * @param  string  $type      Filename without extension.
- * @param  string[]  $templates An optional list of template candidates.
+ * @param  string  $type  Filename without extension.
+ * @param  string[]  $templates  An optional list of template candidates.
  * @return string Full path to template file.
  */
 function get_query_template($type, $templates = [])
@@ -55,7 +55,7 @@ function get_query_template($type, $templates = [])
      *
      * @since 4.7.0
      *
-     * @param  string[]  $templates A list of template candidates, in descending order of priority.
+     * @param  string[]  $templates  A list of template candidates, in descending order of priority.
      */
     $templates = apply_filters("{$type}_template_hierarchy", $templates);
 
@@ -95,8 +95,8 @@ function get_query_template($type, $templates = [])
      * @since 4.8.0 The `$type` and `$templates` parameters were added.
      *
      * @param  string  $template  Path to the template. See locate_template().
-     * @param  string  $type      Sanitized filename without extension.
-     * @param  string[]  $templates A list of template candidates, in descending order of priority.
+     * @param  string  $type  Sanitized filename without extension.
+     * @param  string[]  $templates  A list of template candidates, in descending order of priority.
      */
     return apply_filters("{$type}_template", $template, $type, $templates);
 }
@@ -689,12 +689,12 @@ function get_attachment_template()
  * @since 2.7.0
  * @since 5.5.0 The `$args` parameter was added.
  *
- * @param  string|array  $template_names Template file(s) to search for, in order.
- * @param  bool  $load           If true the template file will be loaded if it is found.
- * @param  bool  $load_once      Whether to require_once or require. Has no effect if `$load` is false.
- *                                     Default true.
- * @param  array  $args           Optional. Additional arguments passed to the template.
- *                                     Default empty array.
+ * @param  string|array  $template_names  Template file(s) to search for, in order.
+ * @param  bool  $load  If true the template file will be loaded if it is found.
+ * @param  bool  $load_once  Whether to require_once or require. Has no effect if `$load` is false.
+ *                           Default true.
+ * @param  array  $args  Optional. Additional arguments passed to the template.
+ *                       Default empty array.
  * @return string The template filename if one is located.
  */
 function locate_template($template_names, $load = false, $load_once = true, $args = [])
@@ -749,10 +749,10 @@ function locate_template($template_names, $load = false, $load_once = true, $arg
  * @global WP_Comment $comment       Global comment object.
  * @global int        $user_ID
  *
- * @param  string  $_template_file Path to template file.
- * @param  bool  $load_once      Whether to require_once or require. Default true.
- * @param  array  $args           Optional. Additional arguments passed to the template.
- *                               Default empty array.
+ * @param  string  $_template_file  Path to template file.
+ * @param  bool  $load_once  Whether to require_once or require. Default true.
+ * @param  array  $args  Optional. Additional arguments passed to the template.
+ *                       Default empty array.
  */
 function load_template($_template_file, $load_once = true, $args = [])
 {
@@ -780,9 +780,9 @@ function load_template($_template_file, $load_once = true, $args = [])
      *
      * @since 6.1.0
      *
-     * @param  string  $_template_file The full path to the template file.
-     * @param  bool  $load_once      Whether to require_once or require.
-     * @param  array  $args           Additional arguments passed to the template.
+     * @param  string  $_template_file  The full path to the template file.
+     * @param  bool  $load_once  Whether to require_once or require.
+     * @param  array  $args  Additional arguments passed to the template.
      */
     do_action('wp_before_load_template', $_template_file, $load_once, $args);
 
@@ -797,9 +797,9 @@ function load_template($_template_file, $load_once = true, $args = [])
      *
      * @since 6.1.0
      *
-     * @param  string  $_template_file The full path to the template file.
-     * @param  bool  $load_once      Whether to require_once or require.
-     * @param  array  $args           Additional arguments passed to the template.
+     * @param  string  $_template_file  The full path to the template file.
+     * @param  bool  $load_once  Whether to require_once or require.
+     * @param  array  $args  Additional arguments passed to the template.
      */
     do_action('wp_after_load_template', $_template_file, $load_once, $args);
 }

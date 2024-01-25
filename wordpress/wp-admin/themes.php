@@ -699,39 +699,39 @@ if (! is_multisite() && $broken_themes) {
                 }
             }
 
-            if ($can_delete) {
-                $stylesheet = $broken_theme->get_stylesheet();
-                $delete_url = add_query_arg(
-                    [
-                        'action' => 'delete',
-                        'stylesheet' => urlencode($stylesheet),
-                    ],
-                    admin_url('themes.php')
-                );
-                $delete_url = wp_nonce_url($delete_url, 'delete-theme_'.$stylesheet);
-                ?>
+        if ($can_delete) {
+            $stylesheet = $broken_theme->get_stylesheet();
+            $delete_url = add_query_arg(
+                [
+                    'action' => 'delete',
+                    'stylesheet' => urlencode($stylesheet),
+                ],
+                admin_url('themes.php')
+            );
+            $delete_url = wp_nonce_url($delete_url, 'delete-theme_'.$stylesheet);
+            ?>
 				<td><a href="<?php echo esc_url($delete_url); ?>" class="button delete-theme"><?php _e('Delete'); ?></a></td>
 				<?php
-            }
+        }
 
-            if ($can_install && $broken_theme->errors()->get_error_code() === 'theme_no_parent') {
-                $parent_theme_name = $broken_theme->get('Template');
-                $parent_theme = themes_api('theme_information', ['slug' => urlencode($parent_theme_name)]);
+        if ($can_install && $broken_theme->errors()->get_error_code() === 'theme_no_parent') {
+            $parent_theme_name = $broken_theme->get('Template');
+            $parent_theme = themes_api('theme_information', ['slug' => urlencode($parent_theme_name)]);
 
-                if (! is_wp_error($parent_theme)) {
-                    $install_url = add_query_arg(
-                        [
-                            'action' => 'install-theme',
-                            'theme' => urlencode($parent_theme_name),
-                        ],
-                        admin_url('update.php')
-                    );
-                    $install_url = wp_nonce_url($install_url, 'install-theme_'.$parent_theme_name);
-                    ?>
+            if (! is_wp_error($parent_theme)) {
+                $install_url = add_query_arg(
+                    [
+                        'action' => 'install-theme',
+                        'theme' => urlencode($parent_theme_name),
+                    ],
+                    admin_url('update.php')
+                );
+                $install_url = wp_nonce_url($install_url, 'install-theme_'.$parent_theme_name);
+                ?>
 					<td><a href="<?php echo esc_url($install_url); ?>" class="button install-theme"><?php _e('Install Parent Theme'); ?></a></td>
 					<?php
-                }
             }
+        }
         ?>
 		</tr>
 		<?php
@@ -799,7 +799,7 @@ function wp_theme_auto_update_setting_template()
      *
      * @since 5.5.0
      *
-     * @param  string  $template The template for displaying the auto-update setting link.
+     * @param  string  $template  The template for displaying the auto-update setting link.
      */
     return apply_filters('theme_auto_update_setting_template', $template);
 }

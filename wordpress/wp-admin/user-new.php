@@ -101,9 +101,9 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'adduser') {
              *
              * @since 4.4.0
              *
-             * @param  int  $user_id     The invited user's ID.
-             * @param  array  $role        Array containing role information for the invited user.
-             * @param  string  $newuser_key The key of the invitation.
+             * @param  int  $user_id  The invited user's ID.
+             * @param  array  $role  Array containing role information for the invited user.
+             * @param  string  $newuser_key  The key of the invitation.
              */
             do_action('invite_user', $user_id, $role, $newuser_key);
 
@@ -146,18 +146,18 @@ Please click the following link to confirm the invite:
              *
              * @since 5.6.0
              *
-             * @param  array  $new_user_email {
-             *     Used to build wp_mail().
+             * @param  array  $new_user_email  {
+             *                                 Used to build wp_mail().
              *
-             *     @type string $to      The email address of the invited user.
-             *     @type string $subject The subject of the email.
-             *     @type string $message The content of the email.
-             *     @type string $headers Headers.
-             * }
+             * @type string $to      The email address of the invited user.
+             * @type string $subject The subject of the email.
+             * @type string $message The content of the email.
+             * @type string $headers Headers.
+             *              }
              *
-             * @param  int  $user_id     The invited user's ID.
-             * @param  array  $role        Array containing role information for the invited user.
-             * @param  string  $newuser_key The key of the invitation.
+             * @param  int  $user_id  The invited user's ID.
+             * @param  array  $role  Array containing role information for the invited user.
+             * @param  string  $newuser_key  The key of the invitation.
              */
             $new_user_email = apply_filters('invited_user_email', $new_user_email, $user_id, $role, $newuser_key);
 
@@ -307,7 +307,7 @@ wp_enqueue_script('user-profile');
  *
  * @since 3.4.0
  *
- * @param  bool  $enable Whether to enable auto-complete for non-super admins. Default false.
+ * @param  bool  $enable  Whether to enable auto-complete for non-super admins. Default false.
  */
 if (is_multisite() && current_user_can('promote_users') && ! wp_is_large_network('users')
     && (current_user_can('manage_network_users') || apply_filters('autocomplete_users_for_site_admins', false))
@@ -484,7 +484,7 @@ if (is_multisite() && current_user_can('promote_users')) {
      *
      * @since 3.7.0
      *
-     * @param  string  $type A contextual string specifying which type of new user form the hook follows.
+     * @param  string  $type  A contextual string specifying which type of new user form the hook follows.
      */
     do_action('user_new_form', 'add-existing-user');
     ?>
@@ -625,7 +625,7 @@ if (current_user_can('create_users')) {
 	        if (! $new_user_role) {
 	            $new_user_role = get_option('default_role');
 	        }
-	        wp_dropdown_roles($new_user_role);
+	    wp_dropdown_roles($new_user_role);
 	    ?>
 			</select>
 		</td>

@@ -68,7 +68,7 @@ class Plugin_Installer_Skin extends WP_Upgrader_Skin
      *
      * @since 5.5.0
      *
-     * @param  WP_Error  $wp_error WP_Error object.
+     * @param  WP_Error  $wp_error  WP_Error object.
      * @return bool True if the error should be hidden, false otherwise.
      */
     public function hide_process_failed($wp_error)
@@ -168,11 +168,11 @@ class Plugin_Installer_Skin extends WP_Upgrader_Skin
          *
          * @since 2.7.0
          *
-         * @param  string[]  $install_actions Array of plugin action links.
-         * @param  object  $api             Object containing WordPress.org API plugin data. Empty
-         *                                  for non-API installs, such as when a plugin is installed
-         *                                  via upload.
-         * @param  string  $plugin_file     Path to the plugin file relative to the plugins directory.
+         * @param  string[]  $install_actions  Array of plugin action links.
+         * @param  object  $api  Object containing WordPress.org API plugin data. Empty
+         *                       for non-API installs, such as when a plugin is installed
+         *                       via upload.
+         * @param  string  $plugin_file  Path to the plugin file relative to the plugins directory.
          */
         $install_actions = apply_filters('install_plugin_complete_actions', $install_actions, $this->api, $plugin_file);
 
@@ -253,9 +253,9 @@ class Plugin_Installer_Skin extends WP_Upgrader_Skin
          *
          * @since 5.5.0
          *
-         * @param  string  $table               The output table with Name, Version, Author, RequiresWP, and RequiresPHP info.
-         * @param  array  $current_plugin_data Array with current plugin data.
-         * @param  array  $new_plugin_data     Array with uploaded plugin data.
+         * @param  string  $table  The output table with Name, Version, Author, RequiresWP, and RequiresPHP info.
+         * @param  array  $current_plugin_data  Array with current plugin data.
+         * @param  array  $new_plugin_data  Array with uploaded plugin data.
          */
         echo apply_filters('install_plugin_overwrite_comparison', $table, $current_plugin_data, $new_plugin_data);
 
@@ -336,9 +336,9 @@ class Plugin_Installer_Skin extends WP_Upgrader_Skin
          *
          * @since 5.5.0
          *
-         * @param  string[]  $install_actions Array of plugin action links.
-         * @param  object  $api             Object containing WordPress.org API plugin data.
-         * @param  array  $new_plugin_data Array with uploaded plugin data.
+         * @param  string[]  $install_actions  Array of plugin action links.
+         * @param  object  $api  Object containing WordPress.org API plugin data.
+         * @param  array  $new_plugin_data  Array with uploaded plugin data.
          */
         $install_actions = apply_filters('install_plugin_overwrite_actions', $install_actions, $this->api, $new_plugin_data);
 

@@ -10,8 +10,8 @@
  *
  * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
  *
- * @param  string  $stylesheet Stylesheet of the theme to delete.
- * @param  string  $redirect   Redirect to page when complete.
+ * @param  string  $stylesheet  Stylesheet of the theme to delete.
+ * @param  string  $redirect  Redirect to page when complete.
  * @return bool|null|WP_Error True on success, false if `$stylesheet` is empty, WP_Error on failure.
  *                            Null if filesystem credentials are required to proceed.
  */
@@ -77,7 +77,7 @@ function delete_theme($stylesheet, $redirect = '')
      *
      * @since 5.8.0
      *
-     * @param  string  $stylesheet Stylesheet of the theme to delete.
+     * @param  string  $stylesheet  Stylesheet of the theme to delete.
      */
     do_action('delete_theme', $stylesheet);
 
@@ -92,8 +92,8 @@ function delete_theme($stylesheet, $redirect = '')
      *
      * @since 5.8.0
      *
-     * @param  string  $stylesheet Stylesheet of the theme to delete.
-     * @param  bool  $deleted    Whether the theme deletion was successful.
+     * @param  string  $stylesheet  Stylesheet of the theme to delete.
+     * @param  bool  $deleted  Whether the theme deletion was successful.
      */
     do_action('deleted_theme', $stylesheet, $deleted);
 
@@ -142,8 +142,8 @@ function delete_theme($stylesheet, $redirect = '')
  * @since 1.5.0
  * @since 4.7.0 Added the `$post_type` parameter.
  *
- * @param  WP_Post|null  $post      Optional. The post being edited, provided for context.
- * @param  string  $post_type Optional. Post type to get the templates for. Default 'page'.
+ * @param  WP_Post|null  $post  Optional. The post being edited, provided for context.
+ * @param  string  $post_type  Optional. Post type to get the templates for. Default 'page'.
  * @return string[] Array of template file names keyed by the template header name.
  */
 function get_page_templates($post = null, $post_type = 'page')
@@ -156,8 +156,8 @@ function get_page_templates($post = null, $post_type = 'page')
  *
  * @since 2.9.0
  *
- * @param  string  $fullpath Full path to the theme file
- * @param  string  $containingfolder Path of the theme parent folder
+ * @param  string  $fullpath  Full path to the theme file
+ * @param  string  $containingfolder  Path of the theme parent folder
  * @return string
  */
 function _get_template_edit_filename($fullpath, $containingfolder)
@@ -173,7 +173,7 @@ function _get_template_edit_filename($fullpath, $containingfolder)
  * @since 2.7.0
  * @see get_theme_update_available()
  *
- * @param  WP_Theme  $theme Theme data object.
+ * @param  WP_Theme  $theme  Theme data object.
  */
 function theme_update_available($theme)
 {
@@ -187,7 +187,7 @@ function theme_update_available($theme)
  *
  * @since 3.8.0
  *
- * @param  WP_Theme  $theme WP_Theme object.
+ * @param  WP_Theme  $theme  WP_Theme object.
  * @return string|false HTML for the update link, or false if invalid info was passed.
  */
 function get_theme_update_available($theme)
@@ -309,7 +309,7 @@ function get_theme_update_available($theme)
  * @since 6.1.1 Replaced 'Full Site Editing' feature name with 'Site Editor'.
  * @since 6.2.0 Added 'Style Variations' feature.
  *
- * @param  bool  $api Optional. Whether try to fetch tags from the WordPress.org API. Defaults to true.
+ * @param  bool  $api  Optional. Whether try to fetch tags from the WordPress.org API. Defaults to true.
  * @return array Array of features keyed by category with translations keyed by slug.
  */
 function get_theme_feature_list($api = true)
@@ -450,49 +450,49 @@ function get_theme_feature_list($api = true)
  *
  * @since 2.8.0
  *
- * @param  string  $action API action to perform: 'query_themes', 'theme_information',
- *                             'hot_tags' or 'feature_list'.
- * @param  array|object  $args   {
- *     Optional. Array or object of arguments to serialize for the Themes API. Default empty array.
+ * @param  string  $action  API action to perform: 'query_themes', 'theme_information',
+ *                          'hot_tags' or 'feature_list'.
+ * @param  array|object  $args  {
+ *                              Optional. Array or object of arguments to serialize for the Themes API. Default empty array.
  *
- *     @type string  $slug     The theme slug. Default empty.
- *     @type int     $per_page Number of themes per page. Default 24.
- *     @type int     $page     Number of current page. Default 1.
- *     @type int     $number   Number of tags to be queried.
- *     @type string  $search   A search term. Default empty.
- *     @type string  $tag      Tag to filter themes. Default empty.
- *     @type string  $author   Username of an author to filter themes. Default empty.
- *     @type string  $user     Username to query for their favorites. Default empty.
- *     @type string  $browse   Browse view: 'featured', 'popular', 'updated', 'favorites'.
- *     @type string  $locale   Locale to provide context-sensitive results. Default is the value of get_locale().
- *     @type array   $fields   {
- *         Array of fields which should or should not be returned.
- *         @type bool $description        Whether to return the theme full description. Default false.
- *         @type bool $sections           Whether to return the theme readme sections: description, installation,
- *                                        FAQ, screenshots, other notes, and changelog. Default false.
- *         @type bool $rating             Whether to return the rating in percent and total number of ratings.
- *                                        Default false.
- *         @type bool $ratings            Whether to return the number of rating for each star (1-5). Default false.
- *         @type bool $downloaded         Whether to return the download count. Default false.
- *         @type bool $downloadlink       Whether to return the download link for the package. Default false.
- *         @type bool $last_updated       Whether to return the date of the last update. Default false.
- *         @type bool $tags               Whether to return the assigned tags. Default false.
- *         @type bool $homepage           Whether to return the theme homepage link. Default false.
- *         @type bool $screenshots        Whether to return the screenshots. Default false.
- *         @type int  $screenshot_count   Number of screenshots to return. Default 1.
- *         @type bool $screenshot_url     Whether to return the URL of the first screenshot. Default false.
- *         @type bool $photon_screenshots Whether to return the screenshots via Photon. Default false.
- *         @type bool $template           Whether to return the slug of the parent theme. Default false.
- *         @type bool $parent             Whether to return the slug, name and homepage of the parent theme. Default false.
- *         @type bool $versions           Whether to return the list of all available versions. Default false.
- *         @type bool $theme_url          Whether to return theme's URL. Default false.
- *         @type bool $extended_author    Whether to return nicename or nicename and display name. Default false.
- *     }
- * }
+ * @type string $slug     The theme slug. Default empty.
+ * @type int $per_page Number of themes per page. Default 24.
+ * @type int $page     Number of current page. Default 1.
+ * @type int $number   Number of tags to be queried.
+ * @type string $search   A search term. Default empty.
+ * @type string $tag      Tag to filter themes. Default empty.
+ * @type string $author   Username of an author to filter themes. Default empty.
+ * @type string $user     Username to query for their favorites. Default empty.
+ * @type string $browse   Browse view: 'featured', 'popular', 'updated', 'favorites'.
+ * @type string $locale   Locale to provide context-sensitive results. Default is the value of get_locale().
+ * @type array $fields   {
+ *             Array of fields which should or should not be returned.
+ * @type bool $description        Whether to return the theme full description. Default false.
+ * @type bool $sections           Whether to return the theme readme sections: description, installation,
+ *            FAQ, screenshots, other notes, and changelog. Default false.
+ * @type bool $rating             Whether to return the rating in percent and total number of ratings.
+ *            Default false.
+ * @type bool $ratings            Whether to return the number of rating for each star (1-5). Default false.
+ * @type bool $downloaded         Whether to return the download count. Default false.
+ * @type bool $downloadlink       Whether to return the download link for the package. Default false.
+ * @type bool $last_updated       Whether to return the date of the last update. Default false.
+ * @type bool $tags               Whether to return the assigned tags. Default false.
+ * @type bool $homepage           Whether to return the theme homepage link. Default false.
+ * @type bool $screenshots        Whether to return the screenshots. Default false.
+ * @type int $screenshot_count   Number of screenshots to return. Default 1.
+ * @type bool $screenshot_url     Whether to return the URL of the first screenshot. Default false.
+ * @type bool $photon_screenshots Whether to return the screenshots via Photon. Default false.
+ * @type bool $template           Whether to return the slug of the parent theme. Default false.
+ * @type bool $parent             Whether to return the slug, name and homepage of the parent theme. Default false.
+ * @type bool $versions           Whether to return the list of all available versions. Default false.
+ * @type bool $theme_url          Whether to return theme's URL. Default false.
+ * @type bool $extended_author    Whether to return nicename or nicename and display name. Default false.
+ *            }
+ *            }
  *
  * @return object|array|WP_Error Response object or array on success, WP_Error on failure. See the
- *         {@link https://developer.wordpress.org/reference/functions/themes_api/ function reference article}
- *         for more information on the make-up of possible return objects depending on the value of `$action`.
+ *                               {@link https://developer.wordpress.org/reference/functions/themes_api/ function reference article}
+ *                               for more information on the make-up of possible return objects depending on the value of `$action`.
  */
 function themes_api($action, $args = [])
 {
@@ -524,9 +524,9 @@ function themes_api($action, $args = [])
      *
      * @since 2.8.0
      *
-     * @param  object  $args   Arguments used to query for installer pages from the WordPress.org Themes API.
-     * @param  string  $action Requested action. Likely values are 'theme_information',
-     *                       'feature_list', or 'query_themes'.
+     * @param  object  $args  Arguments used to query for installer pages from the WordPress.org Themes API.
+     * @param  string  $action  Requested action. Likely values are 'theme_information',
+     *                          'feature_list', or 'query_themes'.
      */
     $args = apply_filters('themes_api_args', $args, $action);
 
@@ -540,10 +540,10 @@ function themes_api($action, $args = [])
      *
      * @since 2.8.0
      *
-     * @param  false|object|array  $override Whether to override the WordPress.org Themes API. Default false.
-     * @param  string  $action   Requested action. Likely values are 'theme_information',
-     *                                    'feature_list', or 'query_themes'.
-     * @param  object  $args     Arguments used to query for installer pages from the Themes API.
+     * @param  false|object|array  $override  Whether to override the WordPress.org Themes API. Default false.
+     * @param  string  $action  Requested action. Likely values are 'theme_information',
+     *                          'feature_list', or 'query_themes'.
+     * @param  object  $args  Arguments used to query for installer pages from the Themes API.
      */
     $res = apply_filters('themes_api', false, $action, $args);
 
@@ -635,10 +635,10 @@ function themes_api($action, $args = [])
      *
      * @since 2.8.0
      *
-     * @param  array|stdClass|WP_Error  $res    WordPress.org Themes API response.
-     * @param  string  $action Requested action. Likely values are 'theme_information',
-     *                                        'feature_list', or 'query_themes'.
-     * @param  stdClass  $args   Arguments used to query for installer pages from the WordPress.org Themes API.
+     * @param  array|stdClass|WP_Error  $res  WordPress.org Themes API response.
+     * @param  string  $action  Requested action. Likely values are 'theme_information',
+     *                          'feature_list', or 'query_themes'.
+     * @param  stdClass  $args  Arguments used to query for installer pages from the WordPress.org Themes API.
      */
     return apply_filters('themes_api_result', $res, $action, $args);
 }
@@ -648,8 +648,8 @@ function themes_api($action, $args = [])
  *
  * @since 3.8.0
  *
- * @param  WP_Theme[]  $themes Optional. Array of theme objects to prepare.
- *                           Defaults to all allowed themes.
+ * @param  WP_Theme[]  $themes  Optional. Array of theme objects to prepare.
+ *                              Defaults to all allowed themes.
  * @return array An associative array of theme data, sorted by name.
  */
 function wp_prepare_themes_for_js($themes = null)
@@ -664,9 +664,9 @@ function wp_prepare_themes_for_js($themes = null)
      *
      * @since 4.2.0
      *
-     * @param  array  $prepared_themes An associative array of theme data. Default empty array.
-     * @param  WP_Theme[]|null  $themes          An array of theme objects to prepare, if any.
-     * @param  string  $current_theme   The active theme slug.
+     * @param  array  $prepared_themes  An associative array of theme data. Default empty array.
+     * @param  WP_Theme[]|null  $themes  An array of theme objects to prepare, if any.
+     * @param  string  $current_theme  The active theme slug.
      */
     $prepared_themes = (array) apply_filters('pre_prepare_themes_for_js', [], $themes, $current_theme);
 
@@ -816,7 +816,7 @@ function wp_prepare_themes_for_js($themes = null)
      *
      * @since 3.8.0
      *
-     * @param  array  $prepared_themes Array of theme data.
+     * @param  array  $prepared_themes  Array of theme data.
      */
     $prepared_themes = apply_filters('wp_prepare_themes_for_js', $prepared_themes);
     $prepared_themes = array_values($prepared_themes);
@@ -1116,7 +1116,7 @@ function customize_themes_print_templates()
  *
  * @since 5.2.0
  *
- * @param  string  $theme Path to the theme directory relative to the themes directory.
+ * @param  string  $theme  Path to the theme directory relative to the themes directory.
  * @return bool True, if in the list of paused themes. False, not in the list.
  */
 function is_theme_paused($theme)
@@ -1137,8 +1137,8 @@ function is_theme_paused($theme)
  *
  * @since 5.2.0
  *
- * @param  string  $theme Path to the theme directory relative to the themes
- *                      directory.
+ * @param  string  $theme  Path to the theme directory relative to the themes
+ *                         directory.
  * @return array|false Array of error information as it was returned by
  *                     `error_get_last()`, or false if none was recorded.
  */
@@ -1167,8 +1167,8 @@ function wp_get_theme_error($theme)
  *
  * @since 5.2.0
  *
- * @param  string  $theme    Single theme to resume.
- * @param  string  $redirect Optional. URL to redirect to. Default empty string.
+ * @param  string  $theme  Single theme to resume.
+ * @param  string  $redirect  Optional. URL to redirect to. Default empty string.
  * @return bool|WP_Error True on success, false if `$theme` was not paused,
  *                       `WP_Error` on failure.
  */

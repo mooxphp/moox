@@ -53,7 +53,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'update-site' && is_ar
      * @since 3.0.0
      * @since 4.4.0 Added `$id` parameter.
      *
-     * @param  int  $id The ID of the site being updated.
+     * @param  int  $id  The ID of the site being updated.
      */
     do_action('wpmu_update_blog_options', $id);
 
@@ -173,7 +173,7 @@ foreach ($options as $option) {
  *
  * @since 3.0.0
  *
- * @param  int  $id Site ID.
+ * @param  int  $id  Site ID.
  */
 do_action('wpmueditblogaction', $id);
 ?>

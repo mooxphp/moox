@@ -69,7 +69,7 @@ class WP_Posts_List_Table extends WP_List_Table
      * @global WP_Post_Type $post_type_object
      * @global wpdb         $wpdb             WordPress database abstraction object.
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -134,7 +134,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @since 4.2.0
      *
-     * @param  bool  $display Whether the table layout should be hierarchical.
+     * @param  bool  $display  Whether the table layout should be hierarchical.
      */
     public function set_hierarchical_display($display)
     {
@@ -256,9 +256,9 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @since 4.4.0
      *
-     * @param  string[]  $args      Associative array of URL parameters for the link.
-     * @param  string  $link_text Link text.
-     * @param  string  $css_class Optional. Class attribute. Default empty string.
+     * @param  string[]  $args  Associative array of URL parameters for the link.
+     * @param  string  $link_text  Link text.
+     * @param  string  $css_class  Optional. Class attribute. Default empty string.
      * @return string The formatted link string.
      */
     protected function get_edit_link($args, $link_text, $css_class = '')
@@ -469,7 +469,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @global int $cat Currently selected category.
      *
-     * @param  string  $post_type Post type slug.
+     * @param  string  $post_type  Post type slug.
      */
     protected function categories_dropdown($post_type)
     {
@@ -480,8 +480,8 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 4.6.0
          *
-         * @param  bool  $disable   Whether to disable the categories drop-down. Default false.
-         * @param  string  $post_type Post type slug.
+         * @param  bool  $disable  Whether to disable the categories drop-down. Default false.
+         * @param  string  $post_type  Post type slug.
          */
         if (apply_filters('disable_categories_dropdown', false, $post_type) !== false) {
             return;
@@ -508,7 +508,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @since 5.2.0
      *
-     * @param  string  $post_type Post type slug.
+     * @param  string  $post_type  Post type slug.
      */
     protected function formats_dropdown($post_type)
     {
@@ -518,8 +518,8 @@ class WP_Posts_List_Table extends WP_List_Table
          * @since 5.2.0
          * @since 5.5.0 The `$post_type` parameter was added.
          *
-         * @param  bool  $disable   Whether to disable the drop-down. Default false.
-         * @param  string  $post_type Post type slug.
+         * @param  bool  $disable  Whether to disable the drop-down. Default false.
+         * @param  string  $post_type  Post type slug.
          */
         if (apply_filters('disable_formats_dropdown', false, $post_type)) {
             return;
@@ -598,10 +598,10 @@ class WP_Posts_List_Table extends WP_List_Table
              * @since 4.4.0 The `$post_type` parameter was added.
              * @since 4.6.0 The `$which` parameter was added.
              *
-             * @param  string  $post_type The post type slug.
-             * @param  string  $which     The location of the extra table nav markup:
-             *                          'top' or 'bottom' for WP_Posts_List_Table,
-             *                          'bar' for WP_Media_List_Table.
+             * @param  string  $post_type  The post type slug.
+             * @param  string  $which  The location of the extra table nav markup:
+             *                         'top' or 'bottom' for WP_Posts_List_Table,
+             *                         'bar' for WP_Media_List_Table.
              */
             do_action('restrict_manage_posts', $this->screen->post_type, $which);
 
@@ -627,7 +627,7 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 4.4.0
          *
-         * @param  string  $which The location of the extra table nav markup: 'top' or 'bottom'.
+         * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
          */
         do_action('manage_posts_extra_tablenav', $which);
     }
@@ -698,7 +698,7 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 3.5.0
          *
-         * @param  string[]  $taxonomies Array of taxonomy names to show columns for.
+         * @param  string[]  $taxonomies  Array of taxonomy names to show columns for.
          * @param  string  $post_type  The post type.
          */
         $taxonomies = apply_filters("manage_taxonomies_for_{$post_type}_columns", $taxonomies, $post_type);
@@ -738,7 +738,7 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 2.5.0
              *
-             * @param  string[]  $post_columns An associative array of column headings.
+             * @param  string[]  $post_columns  An associative array of column headings.
              */
             $posts_columns = apply_filters('manage_pages_columns', $posts_columns);
         } else {
@@ -748,8 +748,8 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 1.5.0
              *
-             * @param  string[]  $post_columns An associative array of column headings.
-             * @param  string  $post_type    The post type slug.
+             * @param  string[]  $post_columns  An associative array of column headings.
+             * @param  string  $post_type  The post type slug.
              */
             $posts_columns = apply_filters('manage_posts_columns', $posts_columns, $post_type);
         }
@@ -766,7 +766,7 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 3.0.0
          *
-         * @param  string[]  $post_columns An associative array of column headings.
+         * @param  string[]  $post_columns  An associative array of column headings.
          */
         return apply_filters("manage_{$post_type}_posts_columns", $posts_columns);
     }
@@ -971,7 +971,7 @@ class WP_Posts_List_Table extends WP_List_Table
      * @param  int  $level
      * @param  int  $pagenum
      * @param  int  $per_page
-     * @param  array  $to_display List of pages to be displayed. Passed by reference.
+     * @param  array  $to_display  List of pages to be displayed. Passed by reference.
      */
     private function _page_rows(&$children_pages, &$count, $parent_page, $level, $pagenum, $per_page, &$to_display)
     {
@@ -1036,7 +1036,7 @@ class WP_Posts_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item The current WP_Post object.
+     * @param  WP_Post  $item  The current WP_Post object.
      */
     public function column_cb($item)
     {
@@ -1052,8 +1052,8 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 5.7.0
          *
-         * @param  bool  $show Whether to show the checkbox.
-         * @param  WP_Post  $post The current WP_Post object.
+         * @param  bool  $show  Whether to show the checkbox.
+         * @param  WP_Post  $post  The current WP_Post object.
          */
         if (apply_filters('wp_list_table_show_post_checkbox', $show, $post)) {
             ?>
@@ -1105,7 +1105,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @global string $mode List table view mode.
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_title($post)
     {
@@ -1208,7 +1208,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @global string $mode List table view mode.
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_date($post)
     {
@@ -1248,10 +1248,10 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 4.8.0
          *
-         * @param  string  $status      The status text.
-         * @param  WP_Post  $post        Post object.
-         * @param  string  $column_name The column name.
-         * @param  string  $mode        The list display mode ('excerpt' or 'list').
+         * @param  string  $status  The status text.
+         * @param  WP_Post  $post  Post object.
+         * @param  string  $column_name  The column name.
+         * @param  string  $mode  The list display mode ('excerpt' or 'list').
          */
         $status = apply_filters('post_date_column_status', $status, $post, 'date', $mode);
 
@@ -1267,10 +1267,10 @@ class WP_Posts_List_Table extends WP_List_Table
          *              The published time and date are both displayed now,
          *              which is equivalent to the previous 'excerpt' mode.
          *
-         * @param  string  $t_time      The published time.
-         * @param  WP_Post  $post        Post object.
-         * @param  string  $column_name The column name.
-         * @param  string  $mode        The list display mode ('excerpt' or 'list').
+         * @param  string  $t_time  The published time.
+         * @param  WP_Post  $post  Post object.
+         * @param  string  $column_name  The column name.
+         * @param  string  $mode  The list display mode ('excerpt' or 'list').
          */
         echo apply_filters('post_date_column_time', $t_time, $post, 'date', $mode);
     }
@@ -1280,7 +1280,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_comments($post)
     {
@@ -1300,7 +1300,7 @@ class WP_Posts_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_author($post)
     {
@@ -1317,8 +1317,8 @@ class WP_Posts_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item        The current WP_Post object.
-     * @param  string  $column_name The current column name.
+     * @param  WP_Post  $item  The current WP_Post object.
+     * @param  string  $column_name  The current column name.
      */
     public function column_default($item, $column_name)
     {
@@ -1366,9 +1366,9 @@ class WP_Posts_List_Table extends WP_List_Table
                  *
                  * @since 5.2.0
                  *
-                 * @param  string[]  $term_links Array of term editing links.
-                 * @param  string  $taxonomy   Taxonomy name.
-                 * @param  WP_Term[]  $terms      Array of term objects appearing in the post row.
+                 * @param  string[]  $term_links  Array of term editing links.
+                 * @param  string  $taxonomy  Taxonomy name.
+                 * @param  WP_Term[]  $terms  Array of term objects appearing in the post row.
                  */
                 $term_links = apply_filters('post_column_taxonomy_links', $term_links, $taxonomy, $terms);
 
@@ -1390,8 +1390,8 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 2.5.0
              *
-             * @param  string  $column_name The name of the column to display.
-             * @param  int  $post_id     The current post ID.
+             * @param  string  $column_name  The name of the column to display.
+             * @param  int  $post_id  The current post ID.
              */
             do_action('manage_pages_custom_column', $column_name, $post->ID);
         } else {
@@ -1404,8 +1404,8 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 1.5.0
              *
-             * @param  string  $column_name The name of the column to display.
-             * @param  int  $post_id     The current post ID.
+             * @param  string  $column_name  The name of the column to display.
+             * @param  int  $post_id  The current post ID.
              */
             do_action('manage_posts_custom_column', $column_name, $post->ID);
         }
@@ -1422,8 +1422,8 @@ class WP_Posts_List_Table extends WP_List_Table
          *
          * @since 3.1.0
          *
-         * @param  string  $column_name The name of the column to display.
-         * @param  int  $post_id     The current post ID.
+         * @param  string  $column_name  The name of the column to display.
+         * @param  int  $post_id  The current post ID.
          */
         do_action("manage_{$post->post_type}_posts_custom_column", $column_name, $post->ID);
     }
@@ -1484,9 +1484,9 @@ class WP_Posts_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item        Post being acted upon.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  WP_Post  $item  Post being acted upon.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for posts, or an empty string
      *                if the current column is not the primary column.
      */
@@ -1518,8 +1518,8 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 6.4.0
              *
-             * @param  bool  $enable    Whether to enable the Quick Edit functionality. Default true.
-             * @param  string  $post_type Post type name.
+             * @param  bool  $enable  Whether to enable the Quick Edit functionality. Default true.
+             * @param  string  $post_type  Post type name.
              */
             $quick_edit_enabled = apply_filters('quick_edit_enabled_for_post_type', true, $post->post_type);
 
@@ -1605,10 +1605,10 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 2.8.0
              *
-             * @param  string[]  $actions An array of row action links. Defaults are
-             *                          'Edit', 'Quick Edit', 'Restore', 'Trash',
-             *                          'Delete Permanently', 'Preview', and 'View'.
-             * @param  WP_Post  $post    The post object.
+             * @param  string[]  $actions  An array of row action links. Defaults are
+             *                             'Edit', 'Quick Edit', 'Restore', 'Trash',
+             *                             'Delete Permanently', 'Preview', and 'View'.
+             * @param  WP_Post  $post  The post object.
              */
             $actions = apply_filters('page_row_actions', $actions, $post);
         } else {
@@ -1620,10 +1620,10 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 2.8.0
              *
-             * @param  string[]  $actions An array of row action links. Defaults are
-             *                          'Edit', 'Quick Edit', 'Restore', 'Trash',
-             *                          'Delete Permanently', 'Preview', and 'View'.
-             * @param  WP_Post  $post    The post object.
+             * @param  string[]  $actions  An array of row action links. Defaults are
+             *                             'Edit', 'Quick Edit', 'Restore', 'Trash',
+             *                             'Delete Permanently', 'Preview', and 'View'.
+             * @param  WP_Post  $post  The post object.
              */
             $actions = apply_filters('post_row_actions', $actions, $post);
         }
@@ -1661,9 +1661,9 @@ class WP_Posts_List_Table extends WP_List_Table
              *
              * @since 4.2.0
              *
-             * @param  bool  $show_in_quick_edit Whether to show the current taxonomy in Quick Edit.
-             * @param  string  $taxonomy_name      Taxonomy name.
-             * @param  string  $post_type          Post type of current Quick Edit post.
+             * @param  bool  $show_in_quick_edit  Whether to show the current taxonomy in Quick Edit.
+             * @param  string  $taxonomy_name  Taxonomy name.
+             * @param  string  $post_type  Post type of current Quick Edit post.
              */
             if (! apply_filters('quick_edit_show_taxonomy', $show_in_quick_edit, $taxonomy_name, $screen->post_type)) {
                 continue;
@@ -1776,8 +1776,8 @@ class WP_Posts_List_Table extends WP_List_Table
                              * @since 5.6.0
                              * @see wp_dropdown_users()
                              *
-                             * @param  array  $users_opt An array of arguments passed to wp_dropdown_users().
-                             * @param  bool  $bulk A flag to denote if it's a bulk action.
+                             * @param  array  $users_opt  An array of arguments passed to wp_dropdown_users().
+                             * @param  bool  $bulk  A flag to denote if it's a bulk action.
                              */
                             $users_opt = apply_filters('quick_edit_dropdown_authors_args', $users_opt, $bulk);
 
@@ -1879,8 +1879,8 @@ class WP_Posts_List_Table extends WP_List_Table
 					     * @since 5.6.0 The `$bulk` parameter was added.
 					     * @see wp_dropdown_pages()
 					     *
-					     * @param  array  $dropdown_args An array of arguments passed to wp_dropdown_pages().
-					     * @param  bool  $bulk          A flag to denote if it's a bulk action.
+					     * @param  array  $dropdown_args  An array of arguments passed to wp_dropdown_pages().
+					     * @param  bool  $bulk  A flag to denote if it's a bulk action.
 					     */
 					    $dropdown_args = apply_filters('quick_edit_dropdown_pages_args', $dropdown_args, $bulk);
 
@@ -2085,8 +2085,8 @@ class WP_Posts_List_Table extends WP_List_Table
                      *
                      * @since 2.7.0
                      *
-                     * @param  string  $column_name Name of the column to edit.
-                     * @param  string  $post_type   The post type slug.
+                     * @param  string  $column_name  Name of the column to edit.
+                     * @param  string  $post_type  The post type slug.
                      */
                     do_action('bulk_edit_custom_box', $column_name, $screen->post_type);
                 } else {
@@ -2096,9 +2096,9 @@ class WP_Posts_List_Table extends WP_List_Table
                      *
                      * @since 2.7.0
                      *
-                     * @param  string  $column_name Name of the column to edit.
-                     * @param  string  $post_type   The post type slug, or current screen name if this is a taxonomy list table.
-                     * @param  string  $taxonomy    The taxonomy name, if any.
+                     * @param  string  $column_name  Name of the column to edit.
+                     * @param  string  $post_type  The post type slug, or current screen name if this is a taxonomy list table.
+                     * @param  string  $taxonomy  The taxonomy name, if any.
                      */
                     do_action('quick_edit_custom_box', $column_name, $screen->post_type, '');
                 }

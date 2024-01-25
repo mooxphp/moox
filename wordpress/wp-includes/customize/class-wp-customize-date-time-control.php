@@ -254,11 +254,11 @@ class WP_Customize_Date_Time_Control extends WP_Customize_Control
      * @since 4.9.0
      *
      * @return array {
-     *     Timezone info. All properties are optional.
+     *               Timezone info. All properties are optional.
      *
-     *     @type string $abbr        Timezone abbreviation. Examples: PST or CEST.
-     *     @type string $description Human-readable timezone description as HTML.
-     * }
+     * @type string $abbr        Timezone abbreviation. Examples: PST or CEST.
+     * @type string $description Human-readable timezone description as HTML.
+     *              }
      */
     public function get_timezone_info()
     {
@@ -309,7 +309,7 @@ class WP_Customize_Date_Time_Control extends WP_Customize_Control
      * @since 4.9.0
      * @see wp_timezone_choice()
      *
-     * @param  float  $offset Offset in hours.
+     * @param  float  $offset  Offset in hours.
      * @return string Formatted offset.
      */
     public function format_gmt_offset($offset)

@@ -39,14 +39,14 @@ final class WP_Recovery_Mode_Email_Service
      *
      * @since 5.2.0
      *
-     * @param  int  $rate_limit Number of seconds before another email can be sent.
-     * @param  array  $error      Error details from `error_get_last()`.
-     * @param  array  $extension {
-     *     The extension that caused the error.
+     * @param  int  $rate_limit  Number of seconds before another email can be sent.
+     * @param  array  $error  Error details from `error_get_last()`.
+     * @param  array  $extension  {
+     *                            The extension that caused the error.
      *
-     *     @type string $slug The extension slug. The plugin or theme's directory.
-     *     @type string $type The extension type. Either 'plugin' or 'theme'.
-     * }
+     * @type string $slug The extension slug. The plugin or theme's directory.
+     * @type string $type The extension type. Either 'plugin' or 'theme'.
+     *              }
      *
      * @return true|WP_Error True if email sent, WP_Error otherwise.
      */
@@ -103,14 +103,14 @@ final class WP_Recovery_Mode_Email_Service
      *
      * @since 5.2.0
      *
-     * @param  int  $rate_limit Number of seconds before another email can be sent.
-     * @param  array  $error      Error details from `error_get_last()`.
-     * @param  array  $extension {
-     *     The extension that caused the error.
+     * @param  int  $rate_limit  Number of seconds before another email can be sent.
+     * @param  array  $error  Error details from `error_get_last()`.
+     * @param  array  $extension  {
+     *                            The extension that caused the error.
      *
-     *     @type string $slug The extension slug. The directory of the plugin or theme.
-     *     @type string $type The extension type. Either 'plugin' or 'theme'.
-     * }
+     * @type string $slug The extension slug. The directory of the plugin or theme.
+     * @type string $type The extension type. Either 'plugin' or 'theme'.
+     *              }
      *
      * @return bool Whether the email was sent successfully.
      */
@@ -140,7 +140,7 @@ final class WP_Recovery_Mode_Email_Service
          *
          * @since 5.2.0
          *
-         * @param  string  $message The Message to include in the email.
+         * @param  string  $message  The Message to include in the email.
          */
         $support = apply_filters('recovery_email_support_info', __('Please contact your host for assistance with investigating this issue further.'));
 
@@ -149,7 +149,7 @@ final class WP_Recovery_Mode_Email_Service
          *
          * @since 5.3.0
          *
-         * @param  array  $message An associative array of debug information.
+         * @param  array  $message  An associative array of debug information.
          */
         $debug = apply_filters('recovery_email_debug_info', $this->get_debug($extension));
 
@@ -213,17 +213,17 @@ When seeking help with this issue, you may be asked for some of the following in
          * @since 5.2.0
          * @since 5.6.0 The `$email` argument includes the `attachments` key.
          *
-         * @param  array  $email {
-         *     Used to build a call to wp_mail().
+         * @param  array  $email  {
+         *                        Used to build a call to wp_mail().
          *
-         *     @type string|array $to          Array or comma-separated list of email addresses to send message.
-         *     @type string       $subject     Email subject
-         *     @type string       $message     Message contents
-         *     @type string|array $headers     Optional. Additional headers.
-         *     @type string|array $attachments Optional. Files to attach.
-         * }
+         * @type string|array $to          Array or comma-separated list of email addresses to send message.
+         * @type string $subject     Email subject
+         * @type string $message     Message contents
+         * @type string|array $headers     Optional. Additional headers.
+         * @type string|array $attachments Optional. Files to attach.
+         *                    }
          *
-         * @param  string  $url   URL to enter recovery mode.
+         * @param  string  $url  URL to enter recovery mode.
          */
         $email = apply_filters('recovery_mode_email', $email, $url);
 
@@ -263,12 +263,12 @@ When seeking help with this issue, you may be asked for some of the following in
      *
      * @since 5.2.0
      *
-     * @param  array  $extension {
-     *     The extension that caused the error.
+     * @param  array  $extension  {
+     *                            The extension that caused the error.
      *
-     *     @type string $slug The extension slug. The directory of the plugin or theme.
-     *     @type string $type The extension type. Either 'plugin' or 'theme'.
-     * }
+     * @type string $slug The extension slug. The directory of the plugin or theme.
+     * @type string $type The extension type. Either 'plugin' or 'theme'.
+     *              }
      *
      * @return string Message about which extension caused the error.
      */
@@ -302,12 +302,12 @@ When seeking help with this issue, you may be asked for some of the following in
      *
      * @since 5.3.0
      *
-     * @param  array  $extension {
-     *     The extension that caused the error.
+     * @param  array  $extension  {
+     *                            The extension that caused the error.
      *
-     *     @type string $slug The extension slug. The directory of the plugin or theme.
-     *     @type string $type The extension type. Either 'plugin' or 'theme'.
-     * }
+     * @type string $slug The extension slug. The directory of the plugin or theme.
+     * @type string $type The extension type. Either 'plugin' or 'theme'.
+     *              }
      *
      * @return array|false A plugin array {@see get_plugins()} or `false` if no plugin was found.
      */
@@ -338,12 +338,12 @@ When seeking help with this issue, you may be asked for some of the following in
      *
      * @since 5.3.0
      *
-     * @param  array  $extension {
-     *     The extension that caused the error.
+     * @param  array  $extension  {
+     *                            The extension that caused the error.
      *
-     *     @type string $slug The extension slug. The directory of the plugin or theme.
-     *     @type string $type The extension type. Either 'plugin' or 'theme'.
-     * }
+     * @type string $slug The extension slug. The directory of the plugin or theme.
+     * @type string $type The extension type. Either 'plugin' or 'theme'.
+     *              }
      *
      * @return array An associative array of debug information.
      */

@@ -128,7 +128,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -141,7 +141,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -160,7 +160,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -205,7 +205,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  string  $id The widget type id.
+     * @param  string  $id  The widget type id.
      * @return array|WP_Error The array of widget data if the name is valid, WP_Error otherwise.
      */
     public function get_widget($id)
@@ -275,7 +275,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -296,8 +296,8 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      * @since 5.8.0
      * @since 5.9.0 Renamed `$widget_type` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  array  $item    Widget type data.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  array  $item  Widget type data.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Widget type data.
      */
     public function prepare_item_for_response($item, $request)
@@ -352,9 +352,9 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  WP_REST_Response  $response    The response object.
-         * @param  array  $widget_type The array of widget data.
-         * @param  WP_REST_Request  $request     The request object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  array  $widget_type  The array of widget data.
+         * @param  WP_REST_Request  $request  The request object.
          */
         return apply_filters('rest_prepare_widget_type', $response, $widget_type, $request);
     }
@@ -364,7 +364,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  array  $widget_type Widget type data.
+     * @param  array  $widget_type  Widget type data.
      * @return array Links for the given widget type.
      */
     protected function prepare_links($widget_type)
@@ -457,7 +457,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @global WP_Widget_Factory $wp_widget_factory
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function encode_form_data($request)
@@ -555,8 +555,8 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  string  $widget   The widget's PHP class name (see class-wp-widget.php).
-     * @param  array  $instance Widget instance settings.
+     * @param  string  $widget  The widget's PHP class name (see class-wp-widget.php).
+     * @param  array  $instance  Widget instance settings.
      * @return string
      */
     private function get_widget_preview($widget, $instance)
@@ -573,8 +573,8 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_Widget  $widget_object Widget object to call widget() on.
-     * @param  array  $instance Widget instance settings.
+     * @param  WP_Widget  $widget_object  Widget object to call widget() on.
+     * @param  array  $instance  Widget instance settings.
      * @return string
      */
     private function get_widget_form($widget_object, $instance)
@@ -606,7 +606,7 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return array An array with rendered Legacy Widget HTML.
      */
     public function render($request)
@@ -624,8 +624,8 @@ class WP_REST_Widget_Types_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  string  $id_base The id base of the requested widget.
-     * @param  array  $instance The widget instance attributes.
+     * @param  string  $id_base  The id base of the requested widget.
+     * @param  array  $instance  The widget instance attributes.
      * @return string Rendered Legacy Widget block preview.
      */
     private function render_legacy_widget_preview_iframe($id_base, $instance)

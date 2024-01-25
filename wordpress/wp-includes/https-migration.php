@@ -32,7 +32,7 @@ function wp_should_replace_insecure_home_url()
      *
      * @since 5.7.0
      *
-     * @param  bool  $should_replace_insecure_home_url Whether insecure HTTP URLs to the site should be replaced.
+     * @param  bool  $should_replace_insecure_home_url  Whether insecure HTTP URLs to the site should be replaced.
      */
     return apply_filters('wp_should_replace_insecure_home_url', $should_replace_insecure_home_url);
 }
@@ -45,7 +45,7 @@ function wp_should_replace_insecure_home_url()
  *
  * @since 5.7.0
  *
- * @param  string  $content Content to replace URLs in.
+ * @param  string  $content  Content to replace URLs in.
  * @return string Filtered content.
  */
 function wp_replace_insecure_home_url($content)
@@ -122,8 +122,8 @@ function wp_update_urls_to_https()
  *
  * @since 5.7.0
  *
- * @param  mixed  $old_url Previous value of the URL option.
- * @param  mixed  $new_url New value of the URL option.
+ * @param  mixed  $old_url  Previous value of the URL option.
+ * @param  mixed  $new_url  New value of the URL option.
  */
 function wp_update_https_migration_required($old_url, $new_url)
 {

@@ -70,7 +70,7 @@ class WP_Site_Health
      *
      * @since 5.8.0
      *
-     * @param  string  $tab Slug of the current tab being displayed.
+     * @param  string  $tab  Slug of the current tab being displayed.
      */
     public function show_site_health_tab($tab)
     {
@@ -189,20 +189,20 @@ class WP_Site_Health
          *
          * @since 5.3.0
          *
-         * @param  array  $test_result {
-         *     An associative array of test result data.
+         * @param  array  $test_result  {
+         *                              An associative array of test result data.
          *
-         *     @type string $label       A label describing the test, and is used as a header in the output.
-         *     @type string $status      The status of the test, which can be a value of `good`, `recommended` or `critical`.
-         *     @type array  $badge {
-         *         Tests are put into categories which have an associated badge shown, these can be modified and assigned here.
-         *         @type string $label The test label, for example `Performance`.
-         *         @type string $color Default `blue`. A string representing a color to use for the label.
-         *     }
-         *     @type string $description A more descriptive explanation of what the test looks for, and why it is important for the end user.
-         *     @type string $actions     An action to direct the user to where they can resolve the issue, if one exists.
-         *     @type string $test        The name of the test being ran, used as a reference point.
-         * }
+         * @type string $label       A label describing the test, and is used as a header in the output.
+         * @type string $status      The status of the test, which can be a value of `good`, `recommended` or `critical`.
+         * @type array $badge {
+         *             Tests are put into categories which have an associated badge shown, these can be modified and assigned here.
+         * @type string $label The test label, for example `Performance`.
+         * @type string $color Default `blue`. A string representing a color to use for the label.
+         *              }
+         * @type string $description A more descriptive explanation of what the test looks for, and why it is important for the end user.
+         * @type string $actions     An action to direct the user to where they can resolve the issue, if one exists.
+         * @type string $test        The name of the test being ran, used as a reference point.
+         *              }
          */
         return apply_filters('site_status_test_result', call_user_func($callback));
     }
@@ -854,10 +854,10 @@ class WP_Site_Health
      * @since 5.2.0
      * @since 5.3.0 The `$constant_name` and `$class_name` parameters were added.
      *
-     * @param  string  $extension_name Optional. The extension name to test. Default null.
+     * @param  string  $extension_name  Optional. The extension name to test. Default null.
      * @param  string  $function_name  Optional. The function name to test. Default null.
      * @param  string  $constant_name  Optional. The constant name to test for. Default null.
-     * @param  string  $class_name     Optional. The class name to test for. Default null.
+     * @param  string  $class_name  Optional. The class name to test for. Default null.
      * @return bool Whether or not the extension and function are available.
      */
     private function test_php_extension_availability($extension_name = null, $function_name = null, $constant_name = null, $class_name = null)
@@ -1028,20 +1028,20 @@ class WP_Site_Health
          * @since 5.2.0
          * @since 5.3.0 The `$constant` and `$class` parameters were added.
          *
-         * @param  array  $modules {
-         *     An associative array of modules to test for.
+         * @param  array  $modules  {
+         *                          An associative array of modules to test for.
          *
-         *     @type array ...$0 {
-         *         An associative array of module properties used during testing.
-         *         One of either `$function` or `$extension` must be provided, or they will fail by default.
-         *         @type string $function     Optional. A function name to test for the existence of.
-         *         @type string $extension    Optional. An extension to check if is loaded in PHP.
-         *         @type string $constant     Optional. A constant name to check for to verify an extension exists.
-         *         @type string $class        Optional. A class name to check for to verify an extension exists.
-         *         @type bool   $required     Is this a required feature or not.
-         *         @type string $fallback_for Optional. The module this module replaces as a fallback.
-         *     }
-         * }
+         * @type array ...$0 {
+         *             An associative array of module properties used during testing.
+         *             One of either `$function` or `$extension` must be provided, or they will fail by default.
+         * @type string $function     Optional. A function name to test for the existence of.
+         * @type string $extension    Optional. An extension to check if is loaded in PHP.
+         * @type string $constant     Optional. A constant name to check for to verify an extension exists.
+         * @type string $class        Optional. A class name to check for to verify an extension exists.
+         * @type bool $required     Is this a required feature or not.
+         * @type string $fallback_for Optional. The module this module replaces as a fallback.
+         *              }
+         *              }
          */
         $modules = apply_filters('site_status_test_php_modules', $modules);
 
@@ -2664,7 +2664,7 @@ class WP_Site_Health
          *
          * @since 6.1.0
          *
-         * @param  string  $action_url Learn more link for persistent object cache health check.
+         * @param  string  $action_url  Learn more link for persistent object cache health check.
          */
         $action_url = apply_filters(
             'site_status_persistent_object_cache_url',
@@ -2725,8 +2725,8 @@ class WP_Site_Health
          *
          * @since 6.1.0
          *
-         * @param  string  $notes              The notes appended to the health check description.
-         * @param  string[]  $available_services The list of available persistent object cache services.
+         * @param  string  $notes  The notes appended to the health check description.
+         * @param  string[]  $available_services  The list of available persistent object cache services.
          */
         $notes = apply_filters('site_status_persistent_object_cache_notes', $notes, $available_services);
 
@@ -2909,36 +2909,36 @@ class WP_Site_Health
          * @since 5.6.0 Added the `async_direct_test` array key for asynchronous tests.
          *              Added the `skip_cron` array key for all tests.
          *
-         * @param  array[]  $tests {
-         *     An associative array of direct and asynchronous tests.
+         * @param  array[]  $tests  {
+         *                          An associative array of direct and asynchronous tests.
          *
-         *     @type array[] $direct {
-         *         An array of direct tests.
-         *         @type array ...$identifier {
+         * @type array[] $direct {
+         *               An array of direct tests.
+         * @type array ...$identifier {
          *             `$identifier` should be a unique identifier for the test. Plugins and themes are encouraged to
          *             prefix test identifiers with their slug to avoid collisions between tests.
-         *             @type string   $label     The friendly label to identify the test.
-         *             @type callable $test      The callback function that runs the test and returns its result.
-         *             @type bool     $skip_cron Whether to skip this test when running as cron.
-         *         }
-         *     }
-         *     @type array[] $async {
-         *         An array of asynchronous tests.
-         *         @type array ...$identifier {
+         * @type string $label     The friendly label to identify the test.
+         * @type callable $test      The callback function that runs the test and returns its result.
+         * @type bool $skip_cron Whether to skip this test when running as cron.
+         *            }
+         *            }
+         * @type array[] $async {
+         *               An array of asynchronous tests.
+         * @type array ...$identifier {
          *             `$identifier` should be a unique identifier for the test. Plugins and themes are encouraged to
          *             prefix test identifiers with their slug to avoid collisions between tests.
-         *             @type string   $label             The friendly label to identify the test.
-         *             @type string   $test              An admin-ajax.php action to be called to perform the test, or
-         *                                               if `$has_rest` is true, a URL to a REST API endpoint to perform
-         *                                               the test.
-         *             @type bool     $has_rest          Whether the `$test` property points to a REST API endpoint.
-         *             @type bool     $skip_cron         Whether to skip this test when running as cron.
-         *             @type callable $async_direct_test A manner of directly calling the test marked as asynchronous,
-         *                                               as the scheduled event can not authenticate, and endpoints
-         *                                               may require authentication.
-         *         }
-         *     }
-         * }
+         * @type string $label             The friendly label to identify the test.
+         * @type string $test              An admin-ajax.php action to be called to perform the test, or
+         *              if `$has_rest` is true, a URL to a REST API endpoint to perform
+         *              the test.
+         * @type bool $has_rest          Whether the `$test` property points to a REST API endpoint.
+         * @type bool $skip_cron         Whether to skip this test when running as cron.
+         * @type callable $async_direct_test A manner of directly calling the test marked as asynchronous,
+         *                as the scheduled event can not authenticate, and endpoints
+         *                may require authentication.
+         *                }
+         *                }
+         *                }
          */
         $tests = apply_filters('site_status_tests', $tests);
 
@@ -2961,7 +2961,7 @@ class WP_Site_Health
      *
      * @since 5.2.0
      *
-     * @param  string  $body_class The body class string.
+     * @param  string  $body_class  The body class string.
      * @return string The modified body class string.
      */
     public function admin_body_class($body_class)
@@ -3422,7 +3422,7 @@ class WP_Site_Health
          *
          * @since 6.1.0
          *
-         * @param  array  $cache_headers Array of supported cache headers.
+         * @param  array  $cache_headers  Array of supported cache headers.
          */
         return apply_filters('site_status_page_cache_supported_cache_headers', $cache_headers);
     }
@@ -3433,12 +3433,12 @@ class WP_Site_Health
      * @since 6.1.0
      *
      * @return WP_Error|array {
-     *     Page cache detection details or else error information.
+     *                        Page cache detection details or else error information.
      *
-     *     @type bool    $advanced_cache_present        Whether a page cache plugin is present.
-     *     @type array[] $page_caching_response_headers Sets of client caching headers for the responses.
-     *     @type float[] $response_timing               Response timings.
-     * }
+     * @type bool $advanced_cache_present        Whether a page cache plugin is present.
+     * @type array[] $page_caching_response_headers Sets of client caching headers for the responses.
+     * @type float[] $response_timing               Response timings.
+     *               }
      */
     private function check_for_page_caching()
     {
@@ -3513,13 +3513,13 @@ class WP_Site_Health
      * @since 6.1.0
      *
      * @return WP_Error|array {
-     *    Page cache detail or else a WP_Error if unable to determine.
+     *                        Page cache detail or else a WP_Error if unable to determine.
      *
-     *    @type string   $status                 Page cache status. Good, Recommended or Critical.
-     *    @type bool     $advanced_cache_present Whether page cache plugin is available or not.
-     *    @type string[] $headers                Client caching response headers detected.
-     *    @type float    $response_time          Response time of site.
-     * }
+     * @type string $status                 Page cache status. Good, Recommended or Critical.
+     * @type bool $advanced_cache_present Whether page cache plugin is available or not.
+     * @type string[] $headers                Client caching response headers detected.
+     * @type float $response_time          Response time of site.
+     *             }
      */
     private function get_page_cache_detail()
     {
@@ -3571,7 +3571,7 @@ class WP_Site_Health
          *
          * The default is based on https://web.dev/time-to-first-byte/.
          *
-         * @param  int  $threshold Threshold in milliseconds. Default 600.
+         * @param  int  $threshold  Threshold in milliseconds. Default 600.
          *
          * @since 6.1.0
          */
@@ -3598,8 +3598,8 @@ class WP_Site_Health
          *
          * @since 6.1.0
          *
-         * @param  bool|null  $suggest Boolean to short-circuit, for whether to suggest using a persistent object cache.
-         *                           Default null.
+         * @param  bool|null  $suggest  Boolean to short-circuit, for whether to suggest using a persistent object cache.
+         *                              Default null.
          */
         $short_circuit = apply_filters('site_status_should_suggest_persistent_object_cache', null);
         if (is_bool($short_circuit)) {
@@ -3615,7 +3615,7 @@ class WP_Site_Health
          *
          * @since 6.1.0
          *
-         * @param  int[]  $thresholds The list of threshold numbers keyed by threshold name.
+         * @param  int[]  $thresholds  The list of threshold numbers keyed by threshold name.
          */
         $thresholds = apply_filters(
             'site_status_persistent_object_cache_thresholds',
@@ -3698,7 +3698,7 @@ class WP_Site_Health
          *
          * @since 6.1.0
          *
-         * @param  string[]  $services The list of available persistent object cache services.
+         * @param  string[]  $services  The list of available persistent object cache services.
          */
         return apply_filters('site_status_available_object_cache_services', $services);
     }

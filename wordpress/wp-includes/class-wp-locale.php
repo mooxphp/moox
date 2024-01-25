@@ -273,7 +273,7 @@ class WP_Locale
      *
      * @since 2.1.0
      *
-     * @param  int  $weekday_number 0 for Sunday through 6 Saturday.
+     * @param  int  $weekday_number  0 for Sunday through 6 Saturday.
      * @return string Full translated weekday.
      */
     public function get_weekday($weekday_number)
@@ -291,7 +291,7 @@ class WP_Locale
      *
      * @since 2.1.0
      *
-     * @param  string  $weekday_name Full translated weekday word.
+     * @param  string  $weekday_name  Full translated weekday word.
      * @return string Translated weekday initial.
      */
     public function get_weekday_initial($weekday_name)
@@ -307,7 +307,7 @@ class WP_Locale
      *
      * @since 2.1.0
      *
-     * @param  string  $weekday_name Full translated weekday word.
+     * @param  string  $weekday_name  Full translated weekday word.
      * @return string Translated weekday abbreviation.
      */
     public function get_weekday_abbrev($weekday_name)
@@ -328,7 +328,7 @@ class WP_Locale
      *
      * @since 2.1.0
      *
-     * @param  string|int  $month_number '01' through '12'.
+     * @param  string|int  $month_number  '01' through '12'.
      * @return string Translated full month name.
      */
     public function get_month($month_number)
@@ -344,7 +344,7 @@ class WP_Locale
      *
      * @since 2.1.0
      *
-     * @param  string  $month_name Translated month to get abbreviated version.
+     * @param  string  $month_name  Translated month to get abbreviated version.
      * @return string Translated abbreviated month.
      */
     public function get_month_abbrev($month_name)
@@ -359,7 +359,7 @@ class WP_Locale
      *
      * @since 2.1.0
      *
-     * @param  string  $meridiem Either 'am', 'pm', 'AM', or 'PM'. Not translated version.
+     * @param  string  $meridiem  Either 'am', 'pm', 'AM', or 'PM'. Not translated version.
      * @return string Translated version
      */
     public function get_meridiem($meridiem)

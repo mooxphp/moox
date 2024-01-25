@@ -262,7 +262,7 @@ if (isset($_GET['action'])) {
              *
              * @since MU (3.0.0)
              *
-             * @param  int  $id The ID of the activated site.
+             * @param  int  $id  The ID of the activated site.
              */
             do_action('activate_blog', $id);
             break;
@@ -273,7 +273,7 @@ if (isset($_GET['action'])) {
              *
              * @since MU (3.0.0)
              *
-             * @param  int  $id The ID of the site being deactivated.
+             * @param  int  $id  The ID of the site being deactivated.
              */
             do_action('deactivate_blog', $id);
 
@@ -348,7 +348,7 @@ if (isset($_GET['updated'])) {
              *
              * @since 3.1.0
              *
-             * @param  string  $msg The update message. Default 'Settings saved'.
+             * @param  string  $msg  The update message. Default 'Settings saved'.
              */
             $msg = apply_filters("network_sites_updated_message_{$action}", __('Settings saved.'));
             break;

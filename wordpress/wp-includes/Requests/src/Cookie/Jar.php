@@ -31,7 +31,7 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Create a new jar
      *
-     * @param  array  $cookies Existing cookie values
+     * @param  array  $cookies  Existing cookie values
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not an array.
      */
@@ -47,8 +47,8 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Normalise cookie data into a \WpOrg\Requests\Cookie
      *
-     * @param  string|\WpOrg\Requests\Cookie  $cookie Cookie header value, possibly pre-parsed (object).
-     * @param  string  $key    Optional. The name for this cookie.
+     * @param  string|\WpOrg\Requests\Cookie  $cookie  Cookie header value, possibly pre-parsed (object).
+     * @param  string  $key  Optional. The name for this cookie.
      * @return \WpOrg\Requests\Cookie
      */
     public function normalize_cookie($cookie, $key = '')
@@ -63,7 +63,7 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Check if the given item exists
      *
-     * @param  string  $offset Item key
+     * @param  string  $offset  Item key
      * @return bool Does the item exist?
      */
     #[ReturnTypeWillChange]
@@ -75,7 +75,7 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Get the value for the item
      *
-     * @param  string  $offset Item key
+     * @param  string  $offset  Item key
      * @return string|null Item value (null if offsetExists is false)
      */
     #[ReturnTypeWillChange]
@@ -91,8 +91,8 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Set the given item
      *
-     * @param  string  $offset Item name
-     * @param  string  $value Item value
+     * @param  string  $offset  Item name
+     * @param  string  $value  Item value
      *
      * @throws \WpOrg\Requests\Exception On attempting to use dictionary as list (`invalidset`)
      */
@@ -109,7 +109,7 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Unset the given header
      *
-     * @param  string  $offset The key for the item to unset.
+     * @param  string  $offset  The key for the item to unset.
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($offset)
@@ -131,7 +131,7 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Register the cookie handler with the request's hooking system
      *
-     * @param  \WpOrg\Requests\HookManager  $hooks Hooking system
+     * @param  \WpOrg\Requests\HookManager  $hooks  Hooking system
      */
     public function register(HookManager $hooks)
     {
@@ -178,7 +178,7 @@ class Jar implements ArrayAccess, IteratorAggregate
     /**
      * Parse all cookies from a response and attach them to the response
      *
-     * @param  \WpOrg\Requests\Response  $response Response as received.
+     * @param  \WpOrg\Requests\Response  $response  Response as received.
      */
     public function before_redirect_check(Response $response)
     {

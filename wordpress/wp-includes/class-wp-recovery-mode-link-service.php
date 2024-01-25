@@ -40,8 +40,8 @@ class WP_Recovery_Mode_Link_Service
      *
      * @since 5.2.0
      *
-     * @param  WP_Recovery_Mode_Cookie_Service  $cookie_service Service to handle setting the recovery mode cookie.
-     * @param  WP_Recovery_Mode_Key_Service  $key_service    Service to handle generating recovery mode keys.
+     * @param  WP_Recovery_Mode_Cookie_Service  $cookie_service  Service to handle setting the recovery mode cookie.
+     * @param  WP_Recovery_Mode_Key_Service  $key_service  Service to handle generating recovery mode keys.
      */
     public function __construct(WP_Recovery_Mode_Cookie_Service $cookie_service, WP_Recovery_Mode_Key_Service $key_service)
     {
@@ -73,7 +73,7 @@ class WP_Recovery_Mode_Link_Service
      *
      * @global string $pagenow The filename of the current screen.
      *
-     * @param  int  $ttl Number of seconds the link should be valid for.
+     * @param  int  $ttl  Number of seconds the link should be valid for.
      */
     public function handle_begin_link($ttl)
     {
@@ -107,8 +107,8 @@ class WP_Recovery_Mode_Link_Service
      *
      * @since 5.2.0
      *
-     * @param  string  $token Recovery Mode token created by {@see generate_recovery_mode_token()}.
-     * @param  string  $key   Recovery Mode key created by {@see generate_and_store_recovery_mode_key()}.
+     * @param  string  $token  Recovery Mode token created by {@see generate_recovery_mode_token()}.
+     * @param  string  $key  Recovery Mode key created by {@see generate_and_store_recovery_mode_key()}.
      * @return string Recovery mode begin URL.
      */
     private function get_recovery_mode_begin_url($token, $key)
@@ -128,9 +128,9 @@ class WP_Recovery_Mode_Link_Service
          *
          * @since 5.2.0
          *
-         * @param  string  $url   The generated recovery mode begin URL.
-         * @param  string  $token The token used to identify the key.
-         * @param  string  $key   The recovery mode key.
+         * @param  string  $url  The generated recovery mode begin URL.
+         * @param  string  $token  The token used to identify the key.
+         * @param  string  $key  The recovery mode key.
          */
         return apply_filters('recovery_mode_begin_url', $url, $token, $key);
     }

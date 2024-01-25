@@ -107,8 +107,8 @@ while (have_comments()) {
      *
      * @since 2.1.0
      *
-     * @param  int  $comment_id      The ID of the comment being displayed.
-     * @param  int  $comment_post_id The ID of the post the comment is connected to.
+     * @param  int  $comment_id  The ID of the comment being displayed.
+     * @param  int  $comment_post_id  The ID of the post the comment is connected to.
      */
     do_action('commentrss2_item', $comment->comment_ID, $comment_post->ID);
     ?>

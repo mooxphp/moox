@@ -59,7 +59,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return bool True if the request has read access for the item, otherwise false.
      */
     public function get_item_permissions_check($request)
@@ -72,7 +72,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return array|WP_Error Array on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -89,11 +89,11 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
              *
              * @since 4.7.0
              *
-             * @param  mixed  $result Value to use for the requested setting. Can be a scalar
-             *                       matching the registered schema for the setting, or null to
-             *                       follow the default get_option() behavior.
-             * @param  string  $name   Setting name (as shown in REST API responses).
-             * @param  array  $args   Arguments passed to register_setting() for this setting.
+             * @param  mixed  $result  Value to use for the requested setting. Can be a scalar
+             *                         matching the registered schema for the setting, or null to
+             *                         follow the default get_option() behavior.
+             * @param  string  $name  Setting name (as shown in REST API responses).
+             * @param  array  $args  Arguments passed to register_setting() for this setting.
              */
             $response[$name] = apply_filters('rest_pre_get_setting', null, $name, $args);
 
@@ -118,7 +118,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
      * @since 4.7.0
      *
      * @param  mixed  $value  Value to prepare.
-     * @param  array  $schema Schema to match.
+     * @param  array  $schema  Schema to match.
      * @return mixed The prepared value.
      */
     protected function prepare_value($value, $schema)
@@ -140,7 +140,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return array|WP_Error Array on success, or error object on failure.
      */
     public function update_item($request)
@@ -162,11 +162,11 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
              *
              * @since 4.7.0
              *
-             * @param  bool  $result Whether to override the default behavior for updating the
-             *                       value of a setting.
-             * @param  string  $name   Setting name (as shown in REST API responses).
+             * @param  bool  $result  Whether to override the default behavior for updating the
+             *                        value of a setting.
+             * @param  string  $name  Setting name (as shown in REST API responses).
              * @param  mixed  $value  Updated setting value.
-             * @param  array  $args   Arguments passed to register_setting() for this setting.
+             * @param  array  $args  Arguments passed to register_setting() for this setting.
              */
             $updated = apply_filters('rest_pre_update_setting', false, $name, $request[$name], $args);
 
@@ -311,9 +311,9 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  mixed  $value   The value for the setting.
-     * @param  WP_REST_Request  $request The request object.
-     * @param  string  $param   The parameter name.
+     * @param  mixed  $value  The value for the setting.
+     * @param  WP_REST_Request  $request  The request object.
+     * @param  string  $param  The parameter name.
      * @return mixed|WP_Error
      */
     public function sanitize_callback($value, $request, $param)
@@ -336,7 +336,7 @@ class WP_REST_Settings_Controller extends WP_REST_Controller
      * @since 4.9.0
      * @deprecated 6.1.0 Use {@see rest_default_additional_properties_to_false()} instead.
      *
-     * @param  array  $schema The schema array.
+     * @param  array  $schema  The schema array.
      * @return array
      */
     protected function set_additional_properties_to_false($schema)

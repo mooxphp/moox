@@ -108,13 +108,13 @@ class Plugin_Upgrader extends WP_Upgrader
      * @since 2.8.0
      * @since 3.7.0 The `$args` parameter was added, making clearing the plugin update cache optional.
      *
-     * @param  string  $package The full local path or URI of the package.
-     * @param  array  $args {
-     *     Optional. Other arguments for installing a plugin package. Default empty array.
+     * @param  string  $package  The full local path or URI of the package.
+     * @param  array  $args  {
+     *                       Optional. Other arguments for installing a plugin package. Default empty array.
      *
-     *     @type bool $clear_update_cache Whether to clear the plugin updates cache if successful.
-     *                                    Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the plugin updates cache if successful.
+     *            Default true.
+     *            }
      *
      * @return bool|WP_Error True if the installation was successful, false or a WP_Error otherwise.
      */
@@ -166,9 +166,9 @@ class Plugin_Upgrader extends WP_Upgrader
              *
              * @since 5.5.0
              *
-             * @param  string  $package      The package file.
-             * @param  array  $data         The new plugin or theme data.
-             * @param  string  $package_type The package type ('plugin' or 'theme').
+             * @param  string  $package  The package file.
+             * @param  array  $data  The new plugin or theme data.
+             * @param  string  $package_type  The package type ('plugin' or 'theme').
              */
             do_action('upgrader_overwrote_package', $package, $this->new_plugin_data, 'plugin');
         }
@@ -182,13 +182,13 @@ class Plugin_Upgrader extends WP_Upgrader
      * @since 2.8.0
      * @since 3.7.0 The `$args` parameter was added, making clearing the plugin update cache optional.
      *
-     * @param  string  $plugin Path to the plugin file relative to the plugins directory.
-     * @param  array  $args {
-     *     Optional. Other arguments for upgrading a plugin package. Default empty array.
+     * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+     * @param  array  $args  {
+     *                       Optional. Other arguments for upgrading a plugin package. Default empty array.
      *
-     *     @type bool $clear_update_cache Whether to clear the plugin updates cache if successful.
-     *                                    Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the plugin updates cache if successful.
+     *            Default true.
+     *            }
      *
      * @return bool|WP_Error True if the upgrade was successful, false or a WP_Error object otherwise.
      */
@@ -283,12 +283,12 @@ class Plugin_Upgrader extends WP_Upgrader
      *
      * @global string $wp_version The WordPress version string.
      *
-     * @param  string[]  $plugins Array of paths to plugin files relative to the plugins directory.
-     * @param  array  $args {
-     *     Optional. Other arguments for upgrading several plugins at once.
+     * @param  string[]  $plugins  Array of paths to plugin files relative to the plugins directory.
+     * @param  array  $args  {
+     *                       Optional. Other arguments for upgrading several plugins at once.
      *
-     *     @type bool $clear_update_cache Whether to clear the plugin updates cache if successful. Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the plugin updates cache if successful. Default true.
+     *            }
      *
      * @return array|false An array of results indexed by plugin file, or false if unable to connect to the filesystem.
      */
@@ -470,7 +470,7 @@ class Plugin_Upgrader extends WP_Upgrader
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      * @global string             $wp_version    The WordPress version string.
      *
-     * @param  string  $source The path to the downloaded package source.
+     * @param  string  $source  The path to the downloaded package source.
      * @return string|WP_Error The source as passed, or a WP_Error object on failure.
      */
     public function check_package($source)
@@ -570,8 +570,8 @@ class Plugin_Upgrader extends WP_Upgrader
      * @since 2.8.0
      * @since 4.1.0 Added a return value.
      *
-     * @param  bool|WP_Error  $response The installation response before the installation has started.
-     * @param  array  $plugin   Plugin package arguments.
+     * @param  bool|WP_Error  $response  The installation response before the installation has started.
+     * @param  array  $plugin  Plugin package arguments.
      * @return bool|WP_Error The original `$response` parameter or WP_Error.
      */
     public function deactivate_plugin_before_upgrade($response, $plugin)
@@ -606,8 +606,8 @@ class Plugin_Upgrader extends WP_Upgrader
      *
      * @since 5.4.0
      *
-     * @param  bool|WP_Error  $response The installation response before the installation has started.
-     * @param  array  $plugin   Plugin package arguments.
+     * @param  bool|WP_Error  $response  The installation response before the installation has started.
+     * @param  array  $plugin  Plugin package arguments.
      * @return bool|WP_Error The original `$response` parameter or WP_Error.
      */
     public function active_before($response, $plugin)
@@ -643,8 +643,8 @@ class Plugin_Upgrader extends WP_Upgrader
      *
      * @since 5.4.0
      *
-     * @param  bool|WP_Error  $response The installation response after the installation has finished.
-     * @param  array  $plugin   Plugin package arguments.
+     * @param  bool|WP_Error  $response  The installation response after the installation has finished.
+     * @param  array  $plugin  Plugin package arguments.
      * @return bool|WP_Error The original `$response` parameter or WP_Error.
      */
     public function active_after($response, $plugin)
@@ -683,11 +683,11 @@ class Plugin_Upgrader extends WP_Upgrader
      *
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      *
-     * @param  bool|WP_Error  $removed            Whether the destination was cleared.
-     *                                          True on success, WP_Error on failure.
+     * @param  bool|WP_Error  $removed  Whether the destination was cleared.
+     *                                  True on success, WP_Error on failure.
      * @param  string  $local_destination  The local package destination.
-     * @param  string  $remote_destination The remote package destination.
-     * @param  array  $plugin             Extra arguments passed to hooked filters.
+     * @param  string  $remote_destination  The remote package destination.
+     * @param  array  $plugin  Extra arguments passed to hooked filters.
      * @return bool|WP_Error
      */
     public function delete_old_plugin($removed, $local_destination, $remote_destination, $plugin)

@@ -15,7 +15,7 @@
  *
  * @global WP_Network $current_site
  *
- * @param  WP_Network|int|null  $network Optional. Network to retrieve. Default is the current network.
+ * @param  WP_Network|int|null  $network  Optional. Network to retrieve. Default is the current network.
  * @return WP_Network|null The network object or null if not found.
  */
 function get_network($network = null)
@@ -42,7 +42,7 @@ function get_network($network = null)
      *
      * @since 4.6.0
      *
-     * @param  WP_Network  $_network Network data.
+     * @param  WP_Network  $_network  Network data.
      */
     $_network = apply_filters('get_network', $_network);
 
@@ -54,8 +54,8 @@ function get_network($network = null)
  *
  * @since 4.6.0
  *
- * @param  string|array  $args Optional. Array or string of arguments. See WP_Network_Query::parse_query()
- *                           for information on accepted arguments. Default empty array.
+ * @param  string|array  $args  Optional. Array or string of arguments. See WP_Network_Query::parse_query()
+ *                              for information on accepted arguments. Default empty array.
  * @return array|int List of WP_Network objects, a list of network IDs when 'fields' is set to 'ids',
  *                   or the number of networks when 'count' is passed as a query var.
  */
@@ -73,7 +73,7 @@ function get_networks($args = [])
  *
  * @global bool $_wp_suspend_cache_invalidation
  *
- * @param  int|array  $ids Network ID or an array of network IDs to remove from cache.
+ * @param  int|array  $ids  Network ID or an array of network IDs to remove from cache.
  */
 function clean_network_cache($ids)
 {
@@ -92,7 +92,7 @@ function clean_network_cache($ids)
          *
          * @since 4.6.0
          *
-         * @param  int  $id Network ID.
+         * @param  int  $id  Network ID.
          */
         do_action('clean_network_cache', $id);
     }
@@ -109,7 +109,7 @@ function clean_network_cache($ids)
  *
  * @since 4.6.0
  *
- * @param  array  $networks Array of network row objects.
+ * @param  array  $networks  Array of network row objects.
  */
 function update_network_cache($networks)
 {
@@ -129,7 +129,7 @@ function update_network_cache($networks)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  array  $network_ids Array of network IDs.
+ * @param  array  $network_ids  Array of network IDs.
  */
 function _prime_network_caches($network_ids)
 {

@@ -44,8 +44,8 @@ class WP_MatchesMapRegex
     /**
      * constructor
      *
-     * @param  string  $subject subject if regex
-     * @param  array  $matches data to use in map
+     * @param  string  $subject  subject if regex
+     * @param  array  $matches  data to use in map
      */
     public function __construct($subject, $matches)
     {
@@ -59,8 +59,8 @@ class WP_MatchesMapRegex
      *
      * static helper function to ease use
      *
-     * @param  string  $subject subject
-     * @param  array  $matches data used for substitution
+     * @param  string  $subject  subject
+     * @param  array  $matches  data used for substitution
      * @return string
      */
     public static function apply($subject, $matches)
@@ -85,7 +85,7 @@ class WP_MatchesMapRegex
     /**
      * preg_replace_callback hook
      *
-     * @param  array  $matches preg_replace regexp matches
+     * @param  array  $matches  preg_replace regexp matches
      * @return string
      */
     public function callback($matches)

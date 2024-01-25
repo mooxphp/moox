@@ -31,10 +31,10 @@ if (force_ssl_admin() && ! is_ssl()) {
  *                                    upon successful login.
  * @global string      $action        The action that brought the visitor to the login page.
  *
- * @param  string  $title    Optional. WordPress login Page title to display in the `<title>` element.
- *                           Default 'Log In'.
+ * @param  string  $title  Optional. WordPress login Page title to display in the `<title>` element.
+ *                         Default 'Log In'.
  * @param  string  $message  Optional. Message to display in header. Default empty.
- * @param  WP_Error  $wp_error Optional. The error to pass. Default is a WP_Error instance.
+ * @param  WP_Error  $wp_error  Optional. The error to pass. Default is a WP_Error instance.
  */
 function login_header($title = 'Log In', $message = '', $wp_error = null)
 {
@@ -57,7 +57,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      *
      * @since 3.0.0
      *
-     * @param  string[]  $shake_error_codes Error codes that shake the login form.
+     * @param  string[]  $shake_error_codes  Error codes that shake the login form.
      */
     $shake_error_codes = apply_filters('shake_error_codes', $shake_error_codes);
 
@@ -80,8 +80,8 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      *
      * @since 4.9.0
      *
-     * @param  string  $login_title The page title, with extra context added.
-     * @param  string  $title       The original page title.
+     * @param  string  $login_title  The page title, with extra context added.
+     * @param  string  $title  The original page title.
      */
     $login_title = apply_filters('login_title', $login_title, $title);
 
@@ -128,7 +128,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      *
      * @since 2.1.0
      *
-     * @param  string  $login_header_url Login header logo URL.
+     * @param  string  $login_header_url  Login header logo URL.
      */
     $login_header_url = apply_filters('login_headerurl', $login_header_url);
 
@@ -140,7 +140,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      * @since 2.1.0
      * @deprecated 5.2.0 Use {@see 'login_headertext'} instead.
      *
-     * @param  string  $login_header_title Login header logo title attribute.
+     * @param  string  $login_header_title  Login header logo title attribute.
      */
     $login_header_title = apply_filters_deprecated(
         'login_headertitle',
@@ -157,7 +157,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      *
      * @since 5.2.0
      *
-     * @param  string  $login_header_text The login header logo link text.
+     * @param  string  $login_header_text  The login header logo link text.
      */
     $login_header_text = apply_filters('login_headertext', $login_header_text);
 
@@ -186,7 +186,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      *
      * @since 3.5.0
      *
-     * @param  string[]  $classes An array of body classes.
+     * @param  string[]  $classes  An array of body classes.
      * @param  string  $action  The action that brought the visitor to the login page.
      */
     $classes = apply_filters('login_body_class', $classes, $action);
@@ -215,7 +215,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
      *
      * @since 2.1.0
      *
-     * @param  string  $message Login message text.
+     * @param  string  $message  Login message text.
      */
     $message = apply_filters('login_message', $message);
 
@@ -264,7 +264,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
              *
              * @since 2.1.0
              *
-             * @param  string  $errors Login error message.
+             * @param  string  $errors  Login error message.
              */
             $errors = apply_filters('login_errors', $errors);
             wp_admin_notice(
@@ -283,7 +283,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
              *
              * @since 2.5.0
              *
-             * @param  string  $messages Login messages.
+             * @param  string  $messages  Login messages.
              */
             $messages = apply_filters('login_messages', $messages);
             wp_admin_notice(
@@ -307,7 +307,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
  * @global bool|string $interim_login Whether interim login modal is being displayed. String 'success'
  *                                    upon successful login.
  *
- * @param  string  $input_id Which input to auto-focus.
+ * @param  string  $input_id  Which input to auto-focus.
  */
 function login_footer($input_id = '')
 {
@@ -332,7 +332,7 @@ function login_footer($input_id = '')
          *
          * @since 5.7.0
          *
-         * @param  string  $link HTML link to the home URL of the current site.
+         * @param  string  $link  HTML link to the home URL of the current site.
          */
         echo apply_filters('login_site_html_link', $html_link);
         ?>
@@ -353,7 +353,7 @@ function login_footer($input_id = '')
          *
          * @since 5.9.0
          *
-         * @param  bool  $display Whether to display the Language selector on the login screen.
+         * @param  bool  $display  Whether to display the Language selector on the login screen.
          */
         apply_filters('login_display_language_dropdown', true)
     ) {
@@ -391,7 +391,7 @@ function login_footer($input_id = '')
              *
              * @since 5.9.0
              *
-             * @param  array  $args Arguments for the Languages select input on the login screen.
+             * @param  array  $args  Arguments for the Languages select input on the login screen.
              */
             wp_dropdown_languages(apply_filters('login_language_dropdown_args', $args));
             ?>
@@ -567,7 +567,7 @@ $interim_login = isset($_REQUEST['interim-login']);
  *
  * @since 4.9.0
  *
- * @param  string  $login_link_separator The separator used between login form navigation links.
+ * @param  string  $login_link_separator  The separator used between login form navigation links.
  */
 $login_link_separator = apply_filters('login_link_separator', ' | ');
 
@@ -604,7 +604,7 @@ switch ($action) {
          *
          * @since 5.3.1
          *
-         * @param  int  $interval Interval time (in seconds). Default is 3 days.
+         * @param  int  $interval  Interval time (in seconds). Default is 3 days.
          */
         $remind_interval = (int) apply_filters('admin_email_remind_interval', 3 * DAY_IN_SECONDS);
 
@@ -636,7 +636,7 @@ switch ($action) {
              *
              * @since 5.3.0
              *
-             * @param  int  $interval Interval time (in seconds). Default is 6 months.
+             * @param  int  $interval  Interval time (in seconds). Default is 6 months.
              */
             $admin_email_check_interval = (int) apply_filters('admin_email_check_interval', 6 * MONTH_IN_SECONDS);
 
@@ -655,8 +655,8 @@ switch ($action) {
          *
          * @since 5.3.0
          *
-         * @param  WP_Error  $errors A `WP_Error` object containing any errors generated by using invalid
-         *                         credentials. Note that the error object may not contain any errors.
+         * @param  WP_Error  $errors  A `WP_Error` object containing any errors generated by using invalid
+         *                            credentials. Note that the error object may not contain any errors.
          */
         do_action('admin_email_confirm', $errors);
 
@@ -769,7 +769,7 @@ switch ($action) {
          *
          * @since 3.7.0
          *
-         * @param  int  $expires The expiry time, as passed to setcookie().
+         * @param  int  $expires  The expiry time, as passed to setcookie().
          */
         $expire = apply_filters('post_password_expires', time() + 10 * DAY_IN_SECONDS);
         $referer = wp_get_referer();
@@ -812,9 +812,9 @@ switch ($action) {
          *
          * @since 4.2.0
          *
-         * @param  string  $redirect_to           The redirect destination URL.
-         * @param  string  $requested_redirect_to The requested redirect destination URL passed as a parameter.
-         * @param  WP_User  $user                  The WP_User object for the user that's logging out.
+         * @param  string  $redirect_to  The redirect destination URL.
+         * @param  string  $requested_redirect_to  The requested redirect destination URL passed as a parameter.
+         * @param  WP_User  $user  The WP_User object for the user that's logging out.
          */
         $redirect_to = apply_filters('logout_redirect', $redirect_to, $requested_redirect_to, $user);
 
@@ -847,7 +847,7 @@ switch ($action) {
          *
          * @since 3.0.0
          *
-         * @param  string  $lostpassword_redirect The redirect destination URL.
+         * @param  string  $lostpassword_redirect  The redirect destination URL.
          */
         $redirect_to = apply_filters('lostpassword_redirect', $lostpassword_redirect);
 
@@ -857,8 +857,8 @@ switch ($action) {
          * @since 1.5.1
          * @since 5.1.0 Added the `$errors` parameter.
          *
-         * @param  WP_Error  $errors A `WP_Error` object containing any errors generated by using invalid
-         *                         credentials. Note that the error object may not contain any errors.
+         * @param  WP_Error  $errors  A `WP_Error` object containing any errors generated by using invalid
+         *                            credentials. Note that the error object may not contain any errors.
          */
         do_action('lost_password', $errors);
 
@@ -981,8 +981,8 @@ switch ($action) {
          *
          * @since 3.5.0
          *
-         * @param  WP_Error  $errors WP Error object.
-         * @param  WP_User|WP_Error  $user   WP_User object if the login and reset key match. WP_Error object otherwise.
+         * @param  WP_Error  $errors  WP Error object.
+         * @param  WP_User|WP_Error  $user  WP_User object if the login and reset key match. WP_Error object otherwise.
          */
         do_action('validate_password_reset', $errors, $user);
 
@@ -1055,7 +1055,7 @@ switch ($action) {
              *
              * @since 3.9.0
              *
-             * @param  WP_User  $user User object of the user whose password is being reset.
+             * @param  WP_User  $user  User object of the user whose password is being reset.
              */
             do_action('resetpass_form', $user);
 
@@ -1094,7 +1094,7 @@ switch ($action) {
              *
              * @since 3.0.0
              *
-             * @param  string  $sign_up_url The sign up URL.
+             * @param  string  $sign_up_url  The sign up URL.
              */
             wp_redirect(apply_filters('wp_signup_location', network_site_url('wp-signup.php')));
             exit;
@@ -1134,9 +1134,9 @@ switch ($action) {
          * @since 3.0.0
          * @since 5.9.0 Added the `$errors` parameter.
          *
-         * @param  string  $registration_redirect The redirect destination URL.
-         * @param  int|WP_Error  $errors                User id if registration was successful,
-         *                                            WP_Error object otherwise.
+         * @param  string  $registration_redirect  The redirect destination URL.
+         * @param  int|WP_Error  $errors  User id if registration was successful,
+         *                                WP_Error object otherwise.
          */
         $redirect_to = apply_filters('registration_redirect', $registration_redirect, $errors);
 
@@ -1260,7 +1260,7 @@ switch ($action) {
          *
          * @since 4.9.6
          *
-         * @param  int  $request_id Request ID.
+         * @param  int  $request_id  Request ID.
          */
         do_action('user_request_action_confirmed', $request_id);
 
@@ -1340,9 +1340,9 @@ switch ($action) {
          *
          * @since 3.0.0
          *
-         * @param  string  $redirect_to           The redirect destination URL.
-         * @param  string  $requested_redirect_to The requested redirect destination URL passed as a parameter.
-         * @param  WP_User|WP_Error  $user                  WP_User object if login was successful, WP_Error object otherwise.
+         * @param  string  $redirect_to  The redirect destination URL.
+         * @param  string  $requested_redirect_to  The requested redirect destination URL passed as a parameter.
+         * @param  WP_User|WP_Error  $user  WP_User object if login was successful, WP_Error object otherwise.
          */
         $redirect_to = apply_filters('login_redirect', $redirect_to, $requested_redirect_to, $user);
 
@@ -1462,8 +1462,8 @@ switch ($action) {
          *
          * @since 3.6.0
          *
-         * @param  WP_Error  $errors      WP Error object.
-         * @param  string  $redirect_to Redirect destination URL.
+         * @param  WP_Error  $errors  WP Error object.
+         * @param  string  $redirect_to  Redirect destination URL.
          */
         $errors = apply_filters('wp_login_errors', $errors, $redirect_to);
 
@@ -1534,11 +1534,11 @@ switch ($action) {
 					<?php
             }
 
-            if ($customize_login) {
-                ?>
+        if ($customize_login) {
+            ?>
 					<input type="hidden" name="customize-login" value="1" />
 					<?php
-            }
+        }
 
         ?>
 				<input type="hidden" name="testcookie" value="1" />
@@ -1561,14 +1561,14 @@ switch ($action) {
                     echo esc_html($login_link_separator);
                 }
 
-                $html_link = sprintf('<a class="wp-login-lost-password" href="%s">%s</a>', esc_url(wp_lostpassword_url()), __('Lost your password?'));
+            $html_link = sprintf('<a class="wp-login-lost-password" href="%s">%s</a>', esc_url(wp_lostpassword_url()), __('Lost your password?'));
 
             /**
              * Filters the link that allows the user to reset the lost password.
              *
              * @since 6.1.0
              *
-             * @param  string  $html_link HTML link to the lost password form.
+             * @param  string  $html_link  HTML link to the lost password form.
              */
             echo apply_filters('lost_password_html_link', $html_link);
 
@@ -1601,7 +1601,7 @@ switch ($action) {
          *
          * @since 4.8.0
          *
-         * @param  bool  $print Whether to print the function call. Default true.
+         * @param  bool  $print  Whether to print the function call. Default true.
          */
         if (apply_filters('enable_login_autofocus', true) && ! $error) {
             $login_script .= "wp_attempt_focus();\n";

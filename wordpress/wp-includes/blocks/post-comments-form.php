@@ -6,9 +6,9 @@
 /**
  * Renders the `core/post-comments-form` block on the server.
  *
- * @param  array  $attributes Block attributes.
- * @param  string  $content    Block default content.
- * @param  WP_Block  $block      Block instance.
+ * @param  array  $attributes  Block attributes.
+ * @param  string  $content  Block default content.
+ * @param  WP_Block  $block  Block instance.
  * @return string Returns the filtered post comments form for the current post.
  */
 function render_block_core_post_comments_form($attributes, $content, $block)
@@ -68,7 +68,7 @@ add_action('init', 'register_block_core_post_comments_form');
 /**
  * Use the button block classes for the form-submit button.
  *
- * @param  array  $fields The default comment form arguments.
+ * @param  array  $fields  The default comment form arguments.
  * @return array Returns the modified fields.
  */
 function post_comments_form_block_form_defaults($fields)

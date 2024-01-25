@@ -75,7 +75,7 @@ All at ###SITENAME###
      *
      * @since 3.0.0
      *
-     * @param  string  $content The email text.
+     * @param  string  $content  The email text.
      */
     $content = apply_filters('delete_site_email_content', $content);
 

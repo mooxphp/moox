@@ -48,8 +48,8 @@ class Plugin_Upgrader_Skin extends WP_Upgrader_Skin
      *
      * @since 2.8.0
      *
-     * @param  array  $args Optional. The plugin upgrader skin arguments to
-     *                    override default options. Default empty array.
+     * @param  array  $args  Optional. The plugin upgrader skin arguments to
+     *                       override default options. Default empty array.
      */
     public function __construct($args = [])
     {
@@ -110,8 +110,8 @@ class Plugin_Upgrader_Skin extends WP_Upgrader_Skin
          *
          * @since 2.7.0
          *
-         * @param  string[]  $update_actions Array of plugin action links.
-         * @param  string  $plugin         Path to the plugin file relative to the plugins directory.
+         * @param  string[]  $update_actions  Array of plugin action links.
+         * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
          */
         $update_actions = apply_filters('update_plugin_complete_actions', $update_actions, $this->plugin);
 

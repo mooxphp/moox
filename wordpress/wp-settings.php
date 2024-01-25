@@ -87,8 +87,8 @@ wp_debug_mode();
  *
  * @since 4.6.0
  *
- * @param  bool  $enable_advanced_cache Whether to enable loading advanced-cache.php (if present).
- *                                    Default true.
+ * @param  bool  $enable_advanced_cache  Whether to enable loading advanced-cache.php (if present).
+ *                                       Default true.
  */
 if (WP_CACHE && apply_filters('enable_loading_advanced_cache_dropin', true) && file_exists(WP_CONTENT_DIR.'/advanced-cache.php')) {
     // For an advanced caching plugin to use. Uses a static drop-in because you would only want one.
@@ -403,7 +403,7 @@ foreach (wp_get_mu_plugins() as $mu_plugin) {
      *
      * @since 5.1.0
      *
-     * @param  string  $mu_plugin Full path to the plugin's main file.
+     * @param  string  $mu_plugin  Full path to the plugin's main file.
      */
     do_action('mu_plugin_loaded', $mu_plugin);
 }
@@ -423,7 +423,7 @@ if (is_multisite()) {
          *
          * @since 5.1.0
          *
-         * @param  string  $network_plugin Full path to the plugin's main file.
+         * @param  string  $network_plugin  Full path to the plugin's main file.
          */
         do_action('network_plugin_loaded', $network_plugin);
     }
@@ -478,7 +478,7 @@ foreach (wp_get_active_and_valid_plugins() as $plugin) {
      *
      * @since 5.1.0
      *
-     * @param  string  $plugin Full path to the plugin's main file.
+     * @param  string  $plugin  Full path to the plugin's main file.
      */
     do_action('plugin_loaded', $plugin);
 }

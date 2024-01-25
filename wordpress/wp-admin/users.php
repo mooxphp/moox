@@ -306,8 +306,8 @@ switch ($wp_list_table->current_action()) {
          *
          * @since 5.2.0
          *
-         * @param  bool  $users_have_additional_content Whether the users have additional content. Default false.
-         * @param  int[]  $user_ids                      Array of IDs for users being deleted.
+         * @param  bool  $users_have_additional_content  Whether the users have additional content. Default false.
+         * @param  int[]  $user_ids  Array of IDs for users being deleted.
          */
         $users_have_content = (bool) apply_filters('users_have_additional_content', false, $user_ids);
 
@@ -436,8 +436,8 @@ switch ($wp_list_table->current_action()) {
              * @since 4.0.0
              * @since 4.5.0 The `$user_ids` parameter was added.
              *
-             * @param  WP_User  $current_user WP_User object for the current user.
-             * @param  int[]  $user_ids     Array of IDs for users being deleted.
+             * @param  WP_User  $current_user  WP_User object for the current user.
+             * @param  int[]  $user_ids  Array of IDs for users being deleted.
              */
             do_action('delete_user_form', $current_user, $user_ids);
             ?>

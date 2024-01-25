@@ -135,7 +135,7 @@ if (is_network_admin()) {
      *
      * @since 3.1.0
      *
-     * @param  string  $context Empty context.
+     * @param  string  $context  Empty context.
      */
     do_action('network_admin_menu', '');
 } elseif (is_user_admin()) {
@@ -145,7 +145,7 @@ if (is_network_admin()) {
      *
      * @since 3.1.0
      *
-     * @param  string  $context Empty context.
+     * @param  string  $context  Empty context.
      */
     do_action('user_admin_menu', '');
 } else {
@@ -155,7 +155,7 @@ if (is_network_admin()) {
      *
      * @since 1.5.0
      *
-     * @param  string  $context Empty context.
+     * @param  string  $context  Empty context.
      */
     do_action('admin_menu', '');
 }
@@ -197,8 +197,8 @@ unset($id, $data, $subs, $first_sub);
  *
  * @since 2.7.0
  *
- * @param  string  $class_to_add The CSS class to add.
- * @param  string  $classes      The string to add the CSS class to.
+ * @param  string  $class_to_add  The CSS class to add.
+ * @param  string  $classes  The string to add the CSS class to.
  * @return string The string with the CSS class added.
  */
 function add_cssclass($class_to_add, $classes)
@@ -217,7 +217,7 @@ function add_cssclass($class_to_add, $classes)
  *
  * @since 2.7.0
  *
- * @param  array  $menu The array of administration menu items.
+ * @param  array  $menu  The array of administration menu items.
  * @return array The array of administration menu items with the CSS classes added.
  */
 function add_menu_classes($menu)
@@ -268,7 +268,7 @@ function add_menu_classes($menu)
      *
      * @since 2.7.0
      *
-     * @param  array  $menu Associative array of administration menu items.
+     * @param  array  $menu  Associative array of administration menu items.
      */
     return apply_filters('add_menu_classes', $menu);
 }
@@ -282,7 +282,7 @@ uksort($menu, 'strnatcasecmp'); // Make it all pretty.
  *
  * @since 2.8.0
  *
- * @param  bool  $custom Whether custom ordering is enabled. Default false.
+ * @param  bool  $custom  Whether custom ordering is enabled. Default false.
  */
 if (apply_filters('custom_menu_order', false)) {
     $menu_order = [];
@@ -304,7 +304,7 @@ if (apply_filters('custom_menu_order', false)) {
      *
      * @since 2.8.0
      *
-     * @param  array  $menu_order An ordered array of menu items.
+     * @param  array  $menu_order  An ordered array of menu items.
      */
     $menu_order = apply_filters('menu_order', $menu_order);
     $menu_order = array_flip($menu_order);

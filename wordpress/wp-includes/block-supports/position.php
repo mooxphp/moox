@@ -10,7 +10,7 @@
  *
  * @since 6.2.0
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_position_support($block_type)
 {
@@ -33,9 +33,9 @@ function wp_register_position_support($block_type)
  *
  * @since 6.2.0
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
- * @return string                Filtered block content.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
+ * @return string Filtered block content.
  */
 function wp_render_position_support($block_content, $block)
 {

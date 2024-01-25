@@ -56,7 +56,7 @@ if (isset($_REQUEST['action']) && $_REQUEST['action'] === 'add-user') {
              *
              * @since 4.4.0
              *
-             * @param  int  $user_id ID of the newly created user.
+             * @param  int  $user_id  ID of the newly created user.
              */
             do_action('network_user_new_created_user', $user_id);
 

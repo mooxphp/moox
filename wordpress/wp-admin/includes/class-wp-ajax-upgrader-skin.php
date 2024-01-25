@@ -53,9 +53,9 @@ class WP_Ajax_Upgrader_Skin extends Automatic_Upgrader_Skin
      * @since 4.6.0
      * @see WP_Upgrader_Skin::__construct()
      *
-     * @param  array  $args Optional. The WordPress Ajax upgrader skin arguments to
-     *                    override default options. See WP_Upgrader_Skin::__construct().
-     *                    Default empty array.
+     * @param  array  $args  Optional. The WordPress Ajax upgrader skin arguments to
+     *                       override default options. See WP_Upgrader_Skin::__construct().
+     *                       Default empty array.
      */
     public function __construct($args = [])
     {
@@ -108,7 +108,7 @@ class WP_Ajax_Upgrader_Skin extends Automatic_Upgrader_Skin
      *              to the function signature.
      *
      * @param  string|WP_Error  $errors  Errors.
-     * @param  mixed  ...$args Optional text replacements.
+     * @param  mixed  ...$args  Optional text replacements.
      */
     public function error($errors, ...$args)
     {
@@ -144,7 +144,7 @@ class WP_Ajax_Upgrader_Skin extends Automatic_Upgrader_Skin
      *              to the function signature.
      * @since 5.9.0 Renamed `$data` to `$feedback` for PHP 8 named parameter support.
      *
-     * @param  string|array|WP_Error  $feedback Message data.
+     * @param  string|array|WP_Error  $feedback  Message data.
      * @param  mixed  ...$args  Optional text replacements.
      */
     public function feedback($feedback, ...$args)

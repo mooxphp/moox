@@ -76,7 +76,7 @@ $post_default_title = '';
  *
  * @since 3.1.0
  *
- * @param  string  $class The name of the XML-RPC server class.
+ * @param  string  $class  The name of the XML-RPC server class.
  */
 $wp_xmlrpc_server_class = apply_filters('wp_xmlrpc_server_class', 'wp_xmlrpc_server');
 $wp_xmlrpc_server = new $wp_xmlrpc_server_class();
@@ -92,8 +92,8 @@ exit;
  * @deprecated 3.4.0 Use error_log()
  * @see error_log()
  *
- * @param  string  $io Whether input or output
- * @param  string  $msg Information describing logging reason.
+ * @param  string  $io  Whether input or output
+ * @param  string  $msg  Information describing logging reason.
  */
 function logIO($io, $msg)
 {

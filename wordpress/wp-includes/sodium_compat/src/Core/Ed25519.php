@@ -197,9 +197,9 @@ abstract class ParagonIE_Sodium_Core_Ed25519 extends ParagonIE_Sodium_Core_Curve
     /**
      * @internal You should not use this directly from another application
      *
-     * @param  string  $message A signed message
-     * @param  string  $pk      Public key
-     * @return string         Message (without signature)
+     * @param  string  $message  A signed message
+     * @param  string  $pk  Public key
+     * @return string Message (without signature)
      *
      * @throws SodiumException
      * @throws TypeError

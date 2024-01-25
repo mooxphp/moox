@@ -90,7 +90,7 @@ $user_can_edit = current_user_can('edit_posts') || current_user_can('edit_pages'
  *
  * @since 3.0.0
  *
- * @param  bool  $allow Whether to allow editing of any user. Default true.
+ * @param  bool  $allow  Whether to allow editing of any user. Default true.
  */
 if (is_multisite()
     && ! current_user_can('manage_network_users')
@@ -140,7 +140,7 @@ switch ($action) {
              *
              * @since 2.0.0
              *
-             * @param  int  $user_id The user ID.
+             * @param  int  $user_id  The user ID.
              */
             do_action('personal_options_update', $user_id);
         } else {
@@ -149,7 +149,7 @@ switch ($action) {
              *
              * @since 2.7.0
              *
-             * @param  int  $user_id The user ID.
+             * @param  int  $user_id  The user ID.
              */
             do_action('edit_user_profile_update', $user_id);
         }
@@ -336,7 +336,7 @@ switch ($action) {
                  * @since 3.0.0
                  * @since 3.8.1 Added `$user_id` parameter.
                  *
-                 * @param  int  $user_id The user ID.
+                 * @param  int  $user_id  The user ID.
                  */
                 do_action('admin_color_scheme_picker', $user_id);
 					    ?>
@@ -408,7 +408,7 @@ switch ($action) {
                      *
                      * @since 2.7.0
                      *
-                     * @param  WP_User  $profile_user The current WP_User object.
+                     * @param  WP_User  $profile_user  The current WP_User object.
                      */
                     do_action('personal_options', $profile_user);
         ?>
@@ -423,7 +423,7 @@ switch ($action) {
                      *
                      * @since 2.0.0
                      *
-                     * @param  WP_User  $profile_user The current WP_User object.
+                     * @param  WP_User  $profile_user  The current WP_User object.
                      */
                     do_action('profile_personal_options', $profile_user);
                 }
@@ -586,7 +586,7 @@ switch ($action) {
          *
          * @since 2.9.0
          *
-         * @param  string  $desc The translatable label for the contact method.
+         * @param  string  $desc  The translatable label for the contact method.
          */
         echo apply_filters("user_{$name}_label", $desc);
 					    ?>
@@ -625,16 +625,16 @@ switch ($action) {
 					                $description = '';
 					            }
 
-					            /**
-					             * Filters the user profile picture description displayed under the Gravatar.
-					             *
-					             * @since 4.4.0
-					             * @since 4.7.0 Added the `$profile_user` parameter.
-					             *
-					             * @param  string  $description  The description that will be printed.
-					             * @param  WP_User  $profile_user The current WP_User object.
-					             */
-					            echo apply_filters('user_profile_picture_description', $description, $profile_user);
+					    /**
+					     * Filters the user profile picture description displayed under the Gravatar.
+					     *
+					     * @since 4.4.0
+					     * @since 4.7.0 Added the `$profile_user` parameter.
+					     *
+					     * @param  string  $description  The description that will be printed.
+					     * @param  WP_User  $profile_user  The current WP_User object.
+					     */
+					    echo apply_filters('user_profile_picture_description', $description, $profile_user);
 					    ?>
 								</p>
 							</td>
@@ -648,8 +648,8 @@ switch ($action) {
                      * @since 2.8.0 Added the `$profile_user` parameter.
                      * @since 4.4.0 Now evaluated only in user-edit.php.
                      *
-                     * @param  bool  $show         Whether to show the password fields. Default true.
-                     * @param  WP_User  $profile_user User object for the current user to edit.
+                     * @param  bool  $show  Whether to show the password fields. Default true.
+                     * @param  WP_User  $profile_user  User object for the current user to edit.
                      */
                     $show_password_fields = apply_filters('show_password_fields', true, $profile_user);
         ?>
@@ -817,7 +817,7 @@ switch ($action) {
 							             *
 							             * @since 5.6.0
 							             *
-							             * @param  WP_User  $profile_user The current WP_User object.
+							             * @param  WP_User  $profile_user  The current WP_User object.
 							             */
 							            do_action('wp_create_application_password_form', $profile_user);
 								    ?>
@@ -867,7 +867,7 @@ switch ($action) {
                          *
                          * @since 2.0.0
                          *
-                         * @param  WP_User  $profile_user The current WP_User object.
+                         * @param  WP_User  $profile_user  The current WP_User object.
                          */
                         do_action('show_user_profile', $profile_user);
                     } else {
@@ -876,7 +876,7 @@ switch ($action) {
                          *
                          * @since 2.0.0
                          *
-                         * @param  WP_User  $profile_user The current WP_User object.
+                         * @param  WP_User  $profile_user  The current WP_User object.
                          */
                         do_action('edit_user_profile', $profile_user);
                     }
@@ -892,8 +892,8 @@ switch ($action) {
          *
          * @since 2.8.0
          *
-         * @param  bool  $enable      Whether to display the capabilities. Default true.
-         * @param  WP_User  $profile_user The current WP_User object.
+         * @param  bool  $enable  Whether to display the capabilities. Default true.
+         * @param  WP_User  $profile_user  The current WP_User object.
          */
         $display_additional_caps = apply_filters('additional_capabilities_display', true, $profile_user);
         ?>

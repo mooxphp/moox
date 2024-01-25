@@ -44,7 +44,7 @@ class WP_HTML_Active_Formatting_Elements
      *
      * @since 6.4.0
      *
-     * @param  WP_HTML_Token  $token Look for this node in the stack.
+     * @param  WP_HTML_Token  $token  Look for this node in the stack.
      * @return bool Whether the referenced node is in the stack of active formatting elements.
      */
     public function contains_node($token)
@@ -91,7 +91,7 @@ class WP_HTML_Active_Formatting_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#push-onto-the-list-of-active-formatting-elements
      *
-     * @param  WP_HTML_Token  $token Push this node onto the stack.
+     * @param  WP_HTML_Token  $token  Push this node onto the stack.
      */
     public function push($token)
     {
@@ -115,7 +115,7 @@ class WP_HTML_Active_Formatting_Elements
      *
      * @since 6.4.0
      *
-     * @param  WP_HTML_Token  $token Remove this node from the stack, if it's there already.
+     * @param  WP_HTML_Token  $token  Remove this node from the stack, if it's there already.
      * @return bool Whether the node was found and removed from the stack of active formatting elements.
      */
     public function remove_node($token)

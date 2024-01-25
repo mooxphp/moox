@@ -444,13 +444,13 @@ function core_auto_updates_settings()
      *
      * @since 5.6.0
      *
-     * @param  array  $auto_update_settings {
-     *     Array of core auto-update settings.
+     * @param  array  $auto_update_settings  {
+     *                                       Array of core auto-update settings.
      *
-     *     @type bool $dev   Whether to enable automatic updates for development versions.
-     *     @type bool $minor Whether to enable minor automatic core updates.
-     *     @type bool $major Whether to enable major automatic core updates.
-     * }
+     * @type bool $dev   Whether to enable automatic updates for development versions.
+     * @type bool $minor Whether to enable minor automatic core updates.
+     * @type bool $major Whether to enable major automatic core updates.
+     *            }
      */
     do_action('after_core_auto_updates_settings', $auto_update_settings);
 }

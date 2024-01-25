@@ -59,8 +59,8 @@ class WP_Widget_Custom_HTML extends WP_Widget
      *
      * @since 4.9.0
      *
-     * @param  int  $number Optional. The unique order number of this widget instance
-     *                    compared to other instances of the same class. Default -1.
+     * @param  int  $number  Optional. The unique order number of this widget instance
+     *                       compared to other instances of the same class. Default -1.
      */
     public function _register_one($number = -1)
     {
@@ -94,7 +94,7 @@ class WP_Widget_Custom_HTML extends WP_Widget
      *
      * @since 4.9.0
      *
-     * @param  array  $attrs Attributes.
+     * @param  array  $attrs  Attributes.
      * @return array Attributes.
      */
     public function _filter_gallery_shortcode_attrs($attrs)
@@ -113,9 +113,9 @@ class WP_Widget_Custom_HTML extends WP_Widget
      *
      * @global WP_Post $post Global post object.
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Custom HTML widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Custom HTML widget instance.
      */
     public function widget($args, $instance)
     {
@@ -162,8 +162,8 @@ class WP_Widget_Custom_HTML extends WP_Widget
          * @since 4.8.1
          *
          * @param  string  $content  The widget content.
-         * @param  array  $instance Array of settings for the current widget.
-         * @param  WP_Widget_Custom_HTML  $widget   Current Custom HTML widget instance.
+         * @param  array  $instance  Array of settings for the current widget.
+         * @param  WP_Widget_Custom_HTML  $widget  Current Custom HTML widget instance.
          */
         $content = apply_filters('widget_custom_html_content', $content, $instance, $this);
 
@@ -189,9 +189,9 @@ class WP_Widget_Custom_HTML extends WP_Widget
      *
      * @since 4.8.1
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Settings to save or bool false to cancel saving.
      */
     public function update($new_instance, $old_instance)
@@ -253,7 +253,7 @@ class WP_Widget_Custom_HTML extends WP_Widget
      * @since 4.9.0 The form contains only hidden sync inputs. For the control UI, see `WP_Widget_Custom_HTML::render_control_template_scripts()`.
      * @see WP_Widget_Custom_HTML::render_control_template_scripts()
      *
-     * @param  array  $instance Current instance.
+     * @param  array  $instance  Current instance.
      */
     public function form($instance)
     {

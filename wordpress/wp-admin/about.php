@@ -339,11 +339,11 @@ printf(
                 );
             }
 
-            printf(
-                '<a href="%1$s">%2$s</a>',
-                esc_url(self_admin_url()),
-                is_blog_admin() ? __('Go to Dashboard &rarr; Home') : __('Go to Dashboard')
-            );
+printf(
+    '<a href="%1$s">%2$s</a>',
+    esc_url(self_admin_url()),
+    is_blog_admin() ? __('Go to Dashboard &rarr; Home') : __('Go to Dashboard')
+);
 ?>
 		</div>
 	</div>

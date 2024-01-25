@@ -74,13 +74,13 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  string  $hook_name     The name of the filter to add the callback to.
-     * @param  callable  $callback      The callback to be run when the filter is applied.
-     * @param  int  $priority      The order in which the functions associated with a particular filter
-     *                                are executed. Lower numbers correspond with earlier execution,
-     *                                and functions with the same priority are executed in the order
-     *                                in which they were added to the filter.
-     * @param  int  $accepted_args The number of arguments the function accepts.
+     * @param  string  $hook_name  The name of the filter to add the callback to.
+     * @param  callable  $callback  The callback to be run when the filter is applied.
+     * @param  int  $priority  The order in which the functions associated with a particular filter
+     *                         are executed. Lower numbers correspond with earlier execution,
+     *                         and functions with the same priority are executed in the order
+     *                         in which they were added to the filter.
+     * @param  int  $accepted_args  The number of arguments the function accepts.
      */
     public function add_filter($hook_name, $callback, $priority, $accepted_args)
     {
@@ -110,10 +110,10 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  false|int  $new_priority     Optional. The priority of the new filter being added. Default false,
-     *                                    for no priority being added.
-     * @param  bool  $priority_existed Optional. Flag for whether the priority already existed before the new
-     *                                    filter was added. Default false.
+     * @param  false|int  $new_priority  Optional. The priority of the new filter being added. Default false,
+     *                                   for no priority being added.
+     * @param  bool  $priority_existed  Optional. Flag for whether the priority already existed before the new
+     *                                  filter was added. Default false.
      */
     private function resort_active_iterations($new_priority = false, $priority_existed = false)
     {
@@ -185,10 +185,10 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  string  $hook_name The filter hook to which the function to be removed is hooked.
+     * @param  string  $hook_name  The filter hook to which the function to be removed is hooked.
      * @param  callable|string|array  $callback  The callback to be removed from running when the filter is applied.
-     *                                         This method can be called unconditionally to speculatively remove
-     *                                         a callback that may or may not exist.
+     *                                           This method can be called unconditionally to speculatively remove
+     *                                           a callback that may or may not exist.
      * @param  int  $priority  The exact priority used when adding the original filter callback.
      * @return bool Whether the callback existed before it was removed.
      */
@@ -223,10 +223,10 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  string  $hook_name Optional. The name of the filter hook. Default empty.
+     * @param  string  $hook_name  Optional. The name of the filter hook. Default empty.
      * @param  callable|string|array|false  $callback  Optional. The callback to check for.
-     *                                               This method can be called unconditionally to speculatively check
-     *                                               a callback that may or may not exist. Default false.
+     *                                                 This method can be called unconditionally to speculatively check
+     *                                                 a callback that may or may not exist. Default false.
      * @return bool|int If `$callback` is omitted, returns boolean for whether the hook has
      *                  anything registered. When checking a specific function, the priority
      *                  of that hook is returned, or false if the function is not attached.
@@ -275,7 +275,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  int|false  $priority Optional. The priority number to remove. Default false.
+     * @param  int|false  $priority  Optional. The priority number to remove. Default false.
      */
     public function remove_all_filters($priority = false)
     {
@@ -301,9 +301,9 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  mixed  $value The value to filter.
+     * @param  mixed  $value  The value to filter.
      * @param  array  $args  Additional parameters to pass to the callback functions.
-     *                     This array is expected to include $value at index 0.
+     *                       This array is expected to include $value at index 0.
      * @return mixed The filtered value after all hooked functions are applied to it.
      */
     public function apply_filters($value, $args)
@@ -352,7 +352,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  array  $args Parameters to pass to the callback functions.
+     * @param  array  $args  Parameters to pass to the callback functions.
      */
     public function do_action($args)
     {
@@ -370,7 +370,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  array  $args Arguments to pass to the hook callbacks. Passed by reference.
+     * @param  array  $args  Arguments to pass to the hook callbacks. Passed by reference.
      */
     public function do_all_hook(&$args)
     {
@@ -432,7 +432,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      *
      * @since 4.7.0
      *
-     * @param  array  $filters Filters to normalize. See documentation above for details.
+     * @param  array  $filters  Filters to normalize. See documentation above for details.
      * @return WP_Hook[] Array of normalized filters.
      */
     public static function build_preinitialized_hooks($filters)
@@ -470,7 +470,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      * @since 4.7.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetexists.php
      *
-     * @param  mixed  $offset An offset to check for.
+     * @param  mixed  $offset  An offset to check for.
      * @return bool True if the offset exists, false otherwise.
      */
     #[ReturnTypeWillChange]
@@ -485,7 +485,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      * @since 4.7.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetget.php
      *
-     * @param  mixed  $offset The offset to retrieve.
+     * @param  mixed  $offset  The offset to retrieve.
      * @return mixed If set, the value at the specified offset, null otherwise.
      */
     #[ReturnTypeWillChange]
@@ -500,8 +500,8 @@ final class WP_Hook implements ArrayAccess, Iterator
      * @since 4.7.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetset.php
      *
-     * @param  mixed  $offset The offset to assign the value to.
-     * @param  mixed  $value The value to set.
+     * @param  mixed  $offset  The offset to assign the value to.
+     * @param  mixed  $value  The value to set.
      */
     #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
@@ -521,7 +521,7 @@ final class WP_Hook implements ArrayAccess, Iterator
      * @since 4.7.0
      * @link https://www.php.net/manual/en/arrayaccess.offsetunset.php
      *
-     * @param  mixed  $offset The offset to unset.
+     * @param  mixed  $offset  The offset to unset.
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($offset)

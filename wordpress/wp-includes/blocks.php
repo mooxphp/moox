@@ -10,7 +10,7 @@
  *
  * @since 5.5.0
  *
- * @param  string  $asset_handle_or_path Asset handle or prefixed path.
+ * @param  string  $asset_handle_or_path  Asset handle or prefixed path.
  * @return string Path without the prefix or the original value.
  */
 function remove_block_asset_path_prefix($asset_handle_or_path)
@@ -37,10 +37,10 @@ function remove_block_asset_path_prefix($asset_handle_or_path)
  * @since 5.5.0
  * @since 6.1.0 Added `$index` parameter.
  *
- * @param  string  $block_name Name of the block.
- * @param  string  $field_name Name of the metadata field.
- * @param  int  $index      Optional. Index of the asset when multiple items passed.
- *                           Default 0.
+ * @param  string  $block_name  Name of the block.
+ * @param  string  $field_name  Name of the metadata field.
+ * @param  int  $index  Optional. Index of the asset when multiple items passed.
+ *                      Default 0.
  * @return string Generated asset name for the block's field.
  */
 function generate_block_asset_handle($block_name, $field_name, $index = 0)
@@ -81,7 +81,7 @@ function generate_block_asset_handle($block_name, $field_name, $index = 0)
  *
  * @since 6.4.0
  *
- * @param  string  $path A normalized path to a block asset.
+ * @param  string  $path  A normalized path to a block asset.
  * @return string|false The URL to the block asset or false on failure.
  */
 function get_block_asset_url($path)
@@ -134,10 +134,10 @@ function get_block_asset_url($path)
  * @since 5.5.0
  * @since 6.1.0 Added `$index` parameter.
  *
- * @param  array  $metadata   Block metadata.
- * @param  string  $field_name Field name to pick from metadata.
- * @param  int  $index      Optional. Index of the script to register when multiple items passed.
- *                           Default 0.
+ * @param  array  $metadata  Block metadata.
+ * @param  string  $field_name  Field name to pick from metadata.
+ * @param  int  $index  Optional. Index of the script to register when multiple items passed.
+ *                      Default 0.
  * @return string|false Script handle provided directly or created through
  *                      script's registration, or false on failure.
  */
@@ -219,10 +219,10 @@ function register_block_script_handle($metadata, $field_name, $index = 0)
  * @since 5.5.0
  * @since 6.1.0 Added `$index` parameter.
  *
- * @param  array  $metadata   Block metadata.
- * @param  string  $field_name Field name to pick from metadata.
- * @param  int  $index      Optional. Index of the style to register when multiple items passed.
- *                           Default 0.
+ * @param  array  $metadata  Block metadata.
+ * @param  string  $field_name  Field name to pick from metadata.
+ * @param  int  $index  Optional. Index of the style to register when multiple items passed.
+ *                      Default 0.
  * @return string|false Style handle provided directly or created through
  *                      style's registration, or false on failure.
  */
@@ -335,12 +335,12 @@ function get_block_metadata_i18n_schema()
  * @since 6.3.0 Added `selectors` field.
  * @since 6.4.0 Added support for `blockHooks` field.
  *
- * @param  string  $file_or_folder Path to the JSON file with metadata definition for
- *                               the block or path to the folder where the `block.json` file is located.
- *                               If providing the path to a JSON file, the filename must end with `block.json`.
- * @param  array  $args           Optional. Array of block type arguments. Accepts any public property
- *                               of `WP_Block_Type`. See WP_Block_Type::__construct() for information
- *                               on accepted arguments. Default empty array.
+ * @param  string  $file_or_folder  Path to the JSON file with metadata definition for
+ *                                  the block or path to the folder where the `block.json` file is located.
+ *                                  If providing the path to a JSON file, the filename must end with `block.json`.
+ * @param  array  $args  Optional. Array of block type arguments. Accepts any public property
+ *                       of `WP_Block_Type`. See WP_Block_Type::__construct() for information
+ *                       on accepted arguments. Default empty array.
  * @return WP_Block_Type|false The registered block type on success, or false on failure.
  */
 function register_block_type_from_metadata($file_or_folder, $args = [])
@@ -390,7 +390,7 @@ function register_block_type_from_metadata($file_or_folder, $args = [])
      *
      * @since 5.7.0
      *
-     * @param  array  $metadata Metadata for registering a block type.
+     * @param  array  $metadata  Metadata for registering a block type.
      */
     $metadata = apply_filters('block_type_metadata', $metadata);
 
@@ -553,9 +553,9 @@ function register_block_type_from_metadata($file_or_folder, $args = [])
              *
              * @since 6.1.0
              *
-             * @param  array  $attributes Block attributes.
-             * @param  string  $content    Block default content.
-             * @param  WP_Block  $block      Block instance.
+             * @param  array  $attributes  Block attributes.
+             * @param  string  $content  Block default content.
+             * @param  WP_Block  $block  Block instance.
              * @return string Returns the block content.
              */
             $settings['render_callback'] = static function ($attributes, $content, $block) use ($template_path) {
@@ -572,8 +572,8 @@ function register_block_type_from_metadata($file_or_folder, $args = [])
      *
      * @since 5.7.0
      *
-     * @param  array  $settings Array of determined settings for registering a block type.
-     * @param  array  $metadata Metadata provided for registering a block type.
+     * @param  array  $settings  Array of determined settings for registering a block type.
+     * @param  array  $metadata  Metadata provided for registering a block type.
      */
     $settings = apply_filters(
         'block_type_metadata_settings',
@@ -597,14 +597,14 @@ function register_block_type_from_metadata($file_or_folder, $args = [])
  * @since 5.0.0
  * @since 5.8.0 First parameter now accepts a path to the `block.json` file.
  *
- * @param  string|WP_Block_Type  $block_type Block type name including namespace, or alternatively
- *                                         a path to the JSON file with metadata definition for the block,
- *                                         or a path to the folder where the `block.json` file is located,
- *                                         or a complete WP_Block_Type instance.
- *                                         In case a WP_Block_Type is provided, the $args parameter will be ignored.
- * @param  array  $args       Optional. Array of block type arguments. Accepts any public property
- *                                         of `WP_Block_Type`. See WP_Block_Type::__construct() for information
- *                                         on accepted arguments. Default empty array.
+ * @param  string|WP_Block_Type  $block_type  Block type name including namespace, or alternatively
+ *                                            a path to the JSON file with metadata definition for the block,
+ *                                            or a path to the folder where the `block.json` file is located,
+ *                                            or a complete WP_Block_Type instance.
+ *                                            In case a WP_Block_Type is provided, the $args parameter will be ignored.
+ * @param  array  $args  Optional. Array of block type arguments. Accepts any public property
+ *                       of `WP_Block_Type`. See WP_Block_Type::__construct() for information
+ *                       on accepted arguments. Default empty array.
  * @return WP_Block_Type|false The registered block type on success, or false on failure.
  */
 function register_block_type($block_type, $args = [])
@@ -621,8 +621,8 @@ function register_block_type($block_type, $args = [])
  *
  * @since 5.0.0
  *
- * @param  string|WP_Block_Type  $name Block type name including namespace, or alternatively
- *                                   a complete WP_Block_Type instance.
+ * @param  string|WP_Block_Type  $name  Block type name including namespace, or alternatively
+ *                                      a complete WP_Block_Type instance.
  * @return WP_Block_Type|false The unregistered block type on success, or false on failure.
  */
 function unregister_block_type($name)
@@ -640,8 +640,8 @@ function unregister_block_type($name)
  * @since 5.0.0
  * @see parse_blocks()
  *
- * @param  int|string|WP_Post|null  $post Optional. Post content, post ID, or post object.
- *                                      Defaults to global $post.
+ * @param  int|string|WP_Post|null  $post  Optional. Post content, post ID, or post object.
+ *                                         Defaults to global $post.
  * @return bool Whether the post has blocks.
  */
 function has_blocks($post = null)
@@ -670,9 +670,9 @@ function has_blocks($post = null)
  * @since 5.0.0
  * @see parse_blocks()
  *
- * @param  string  $block_name Full block type to look for.
- * @param  int|string|WP_Post|null  $post       Optional. Post content, post ID, or post object.
- *                                            Defaults to global $post.
+ * @param  string  $block_name  Full block type to look for.
+ * @param  int|string|WP_Post|null  $post  Optional. Post content, post ID, or post object.
+ *                                         Defaults to global $post.
  * @return bool Whether the post content contains the specified block.
  */
 function has_block($block_name, $post = null)
@@ -775,8 +775,8 @@ function get_hooked_blocks()
  *
  * @since 6.4.0
  *
- * @param  array  $hooked_blocks An array of blocks hooked to another given block.
- * @param  WP_Block_Template|array  $context       A block template, template part, or pattern that the blocks belong to.
+ * @param  array  $hooked_blocks  An array of blocks hooked to another given block.
+ * @param  WP_Block_Template|array  $context  A block template, template part, or pattern that the blocks belong to.
  * @return callable A function that returns the serialized markup for the given block,
  *                  including the markup for any hooked blocks before it.
  */
@@ -789,9 +789,9 @@ function make_before_block_visitor($hooked_blocks, $context)
      * Furthermore, prepend the markup for any blocks hooked `before` the given block and as its parent's
      * `first_child`, respectively, to the serialized markup for the given block.
      *
-     * @param  array  $block        The block to inject the theme attribute into, and hooked blocks before. Passed by reference.
-     * @param  array  $parent_block The parent block of the given block. Passed by reference. Default null.
-     * @param  array  $prev         The previous sibling block of the given block. Default null.
+     * @param  array  $block  The block to inject the theme attribute into, and hooked blocks before. Passed by reference.
+     * @param  array  $parent_block  The parent block of the given block. Passed by reference. Default null.
+     * @param  array  $prev  The previous sibling block of the given block. Default null.
      * @return string The serialized markup for the given block, with the markup for any hooked blocks prepended to it.
      */
     return function (&$block, &$parent_block = null, $prev = null) use ($hooked_blocks, $context) {
@@ -813,10 +813,10 @@ function make_before_block_visitor($hooked_blocks, $context)
              * @since 6.4.0
              *
              * @param  string[]  $hooked_block_types  The list of hooked block types.
-             * @param  string  $relative_position   The relative position of the hooked blocks.
-             *                                                     Can be one of 'before', 'after', 'first_child', or 'last_child'.
-             * @param  string  $anchor_block_type   The anchor block type.
-             * @param  WP_Block_Template|array  $context             The block template, template part, or pattern that the anchor block belongs to.
+             * @param  string  $relative_position  The relative position of the hooked blocks.
+             *                                     Can be one of 'before', 'after', 'first_child', or 'last_child'.
+             * @param  string  $anchor_block_type  The anchor block type.
+             * @param  WP_Block_Template|array  $context  The block template, template part, or pattern that the anchor block belongs to.
              */
             $hooked_block_types = apply_filters('hooked_block_types', $hooked_block_types, $relative_position, $anchor_block_type, $context);
             foreach ($hooked_block_types as $hooked_block_type) {
@@ -851,8 +851,8 @@ function make_before_block_visitor($hooked_blocks, $context)
  *
  * @since 6.4.0
  *
- * @param  array  $hooked_blocks An array of blocks hooked to another block.
- * @param  WP_Block_Template|array  $context       A block template, template part, or pattern that the blocks belong to.
+ * @param  array  $hooked_blocks  An array of blocks hooked to another block.
+ * @param  WP_Block_Template|array  $context  A block template, template part, or pattern that the blocks belong to.
  * @return callable A function that returns the serialized markup for the given block,
  *                  including the markup for any hooked blocks after it.
  */
@@ -864,9 +864,9 @@ function make_after_block_visitor($hooked_blocks, $context)
      * Append the markup for any blocks hooked `after` the given block and as its parent's
      * `last_child`, respectively, to the serialized markup for the given block.
      *
-     * @param  array  $block        The block to inject the hooked blocks after. Passed by reference.
-     * @param  array  $parent_block The parent block of the given block. Passed by reference. Default null.
-     * @param  array  $next         The next sibling block of the given block. Default null.
+     * @param  array  $block  The block to inject the hooked blocks after. Passed by reference.
+     * @param  array  $parent_block  The parent block of the given block. Passed by reference. Default null.
+     * @param  array  $next  The next sibling block of the given block. Default null.
      * @return string The serialized markup for the given block, with the markup for any hooked blocks appended to it.
      */
     return function (&$block, &$parent_block = null, $next = null) use ($hooked_blocks, $context) {
@@ -917,7 +917,7 @@ function make_after_block_visitor($hooked_blocks, $context)
  *
  * @since 5.3.1
  *
- * @param  array  $block_attributes Attributes object.
+ * @param  array  $block_attributes  Attributes object.
  * @return string Serialized attributes.
  */
 function serialize_block_attributes($block_attributes)
@@ -939,8 +939,8 @@ function serialize_block_attributes($block_attributes)
  *
  * @since 5.3.1
  *
- * @param  string|null  $block_name Optional. Original block name. Null if the block name is unknown,
- *                                e.g. Classic blocks have their name set to null. Default null.
+ * @param  string|null  $block_name  Optional. Original block name. Null if the block name is unknown,
+ *                                   e.g. Classic blocks have their name set to null. Default null.
  * @return string Block name to use for serialization.
  */
 function strip_core_block_namespace($block_name = null)
@@ -957,10 +957,10 @@ function strip_core_block_namespace($block_name = null)
  *
  * @since 5.3.1
  *
- * @param  string|null  $block_name       Block name. Null if the block name is unknown,
- *                                      e.g. Classic blocks have their name set to null.
- * @param  array  $block_attributes Block attributes.
- * @param  string  $block_content    Block save content.
+ * @param  string|null  $block_name  Block name. Null if the block name is unknown,
+ *                                   e.g. Classic blocks have their name set to null.
+ * @param  array  $block_attributes  Block attributes.
+ * @param  string  $block_content  Block save content.
  * @return string Comment-delimited block content.
  */
 function get_comment_delimited_block_content($block_name, $block_attributes, $block_content)
@@ -996,7 +996,7 @@ function get_comment_delimited_block_content($block_name, $block_attributes, $bl
  *
  * @since 5.3.1
  *
- * @param  array  $block A representative array of a single parsed block object. See WP_Block_Parser_Block.
+ * @param  array  $block  A representative array of a single parsed block object. See WP_Block_Parser_Block.
  * @return string String of rendered HTML.
  */
 function serialize_block($block)
@@ -1025,7 +1025,7 @@ function serialize_block($block)
  *
  * @since 5.3.1
  *
- * @param  array[]  $blocks An array of representative arrays of parsed block objects. See serialize_block().
+ * @param  array[]  $blocks  An array of representative arrays of parsed block objects. See serialize_block().
  * @return string String of rendered HTML.
  */
 function serialize_blocks($blocks)
@@ -1056,13 +1056,13 @@ function serialize_blocks($blocks)
  * @since 6.4.0
  * @see serialize_block()
  *
- * @param  array  $block         A representative array of a single parsed block object. See WP_Block_Parser_Block.
+ * @param  array  $block  A representative array of a single parsed block object. See WP_Block_Parser_Block.
  * @param  callable  $pre_callback  Callback to run on each block in the tree before it is traversed and serialized.
- *                                It is called with the following arguments: &$block, $parent_block, $previous_block.
- *                                Its string return value will be prepended to the serialized block markup.
- * @param  callable  $post_callback Callback to run on each block in the tree after it is traversed and serialized.
- *                                It is called with the following arguments: &$block, $parent_block, $next_block.
- *                                Its string return value will be appended to the serialized block markup.
+ *                                  It is called with the following arguments: &$block, $parent_block, $previous_block.
+ *                                  Its string return value will be prepended to the serialized block markup.
+ * @param  callable  $post_callback  Callback to run on each block in the tree after it is traversed and serialized.
+ *                                   It is called with the following arguments: &$block, $parent_block, $next_block.
+ *                                   Its string return value will be appended to the serialized block markup.
  * @return string Serialized block markup.
  */
 function traverse_and_serialize_block($block, $pre_callback = null, $post_callback = null)
@@ -1140,13 +1140,13 @@ function traverse_and_serialize_block($block, $pre_callback = null, $post_callba
  * @since 6.4.0
  * @see serialize_blocks()
  *
- * @param  array[]  $blocks        An array of parsed blocks. See WP_Block_Parser_Block.
+ * @param  array[]  $blocks  An array of parsed blocks. See WP_Block_Parser_Block.
  * @param  callable  $pre_callback  Callback to run on each block in the tree before it is traversed and serialized.
- *                                It is called with the following arguments: &$block, $parent_block, $previous_block.
- *                                Its string return value will be prepended to the serialized block markup.
- * @param  callable  $post_callback Callback to run on each block in the tree after it is traversed and serialized.
- *                                It is called with the following arguments: &$block, $parent_block, $next_block.
- *                                Its string return value will be appended to the serialized block markup.
+ *                                  It is called with the following arguments: &$block, $parent_block, $previous_block.
+ *                                  Its string return value will be prepended to the serialized block markup.
+ * @param  callable  $post_callback  Callback to run on each block in the tree after it is traversed and serialized.
+ *                                   It is called with the following arguments: &$block, $parent_block, $next_block.
+ *                                   Its string return value will be appended to the serialized block markup.
  * @return string Serialized block markup.
  */
 function traverse_and_serialize_blocks($blocks, $pre_callback = null, $post_callback = null)
@@ -1190,12 +1190,12 @@ function traverse_and_serialize_blocks($blocks, $pre_callback = null, $post_call
  *
  * @since 5.3.1
  *
- * @param  string  $text              Text that may contain block content.
- * @param  array[]|string  $allowed_html      Optional. An array of allowed HTML elements and attributes,
- *                                          or a context name such as 'post'. See wp_kses_allowed_html()
- *                                          for the list of accepted context names. Default 'post'.
- * @param  string[]  $allowed_protocols Optional. Array of allowed URL protocols.
- *                                          Defaults to the result of wp_allowed_protocols().
+ * @param  string  $text  Text that may contain block content.
+ * @param  array[]|string  $allowed_html  Optional. An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names. Default 'post'.
+ * @param  string[]  $allowed_protocols  Optional. Array of allowed URL protocols.
+ *                                       Defaults to the result of wp_allowed_protocols().
  * @return string The filtered and sanitized content result.
  */
 function filter_block_content($text, $allowed_html = 'post', $allowed_protocols = [])
@@ -1222,7 +1222,7 @@ function filter_block_content($text, $allowed_html = 'post', $allowed_protocols 
  *
  * @since 6.2.1
  *
- * @param  array  $matches Array of preg_replace_callback matches.
+ * @param  array  $matches  Array of preg_replace_callback matches.
  * @return string Replacement string.
  */
 function _filter_block_content_callback($matches)
@@ -1236,12 +1236,12 @@ function _filter_block_content_callback($matches)
  *
  * @since 5.3.1
  *
- * @param  WP_Block_Parser_Block  $block             The parsed block object.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                                 or a context name such as 'post'. See wp_kses_allowed_html()
- *                                                 for the list of accepted context names.
- * @param  string[]  $allowed_protocols Optional. Array of allowed URL protocols.
- *                                                 Defaults to the result of wp_allowed_protocols().
+ * @param  WP_Block_Parser_Block  $block  The parsed block object.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Optional. Array of allowed URL protocols.
+ *                                       Defaults to the result of wp_allowed_protocols().
  * @return array The filtered and sanitized block object result.
  */
 function filter_block_kses($block, $allowed_html, $allowed_protocols = [])
@@ -1263,12 +1263,12 @@ function filter_block_kses($block, $allowed_html, $allowed_protocols = [])
  *
  * @since 5.3.1
  *
- * @param  string[]|string  $value             The attribute value to filter.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                           or a context name such as 'post'. See wp_kses_allowed_html()
- *                                           for the list of accepted context names.
- * @param  string[]  $allowed_protocols Optional. Array of allowed URL protocols.
- *                                           Defaults to the result of wp_allowed_protocols().
+ * @param  string[]|string  $value  The attribute value to filter.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Optional. Array of allowed URL protocols.
+ *                                       Defaults to the result of wp_allowed_protocols().
  * @return string[]|string The filtered and sanitized result.
  */
 function filter_block_kses_value($value, $allowed_html, $allowed_protocols = [])
@@ -1299,7 +1299,7 @@ function filter_block_kses_value($value, $allowed_html, $allowed_protocols = [])
  *
  * @since 5.0.0
  *
- * @param  string  $content The content to parse.
+ * @param  string  $content  The content to parse.
  * @return string The parsed and filtered content.
  */
 function excerpt_remove_blocks($content)
@@ -1336,7 +1336,7 @@ function excerpt_remove_blocks($content)
      *
      * @since 5.8.0
      *
-     * @param  string[]  $allowed_wrapper_blocks The list of names of allowed wrapper blocks.
+     * @param  string[]  $allowed_wrapper_blocks  The list of names of allowed wrapper blocks.
      */
     $allowed_wrapper_blocks = apply_filters('excerpt_allowed_wrapper_blocks', $allowed_wrapper_blocks);
 
@@ -1350,7 +1350,7 @@ function excerpt_remove_blocks($content)
      *
      * @since 5.0.0
      *
-     * @param  string[]  $allowed_blocks The list of names of allowed blocks.
+     * @param  string[]  $allowed_blocks  The list of names of allowed blocks.
      */
     $allowed_blocks = apply_filters('excerpt_allowed_blocks', $allowed_blocks);
     $blocks = parse_blocks($content);
@@ -1389,7 +1389,7 @@ function excerpt_remove_blocks($content)
  *
  * @since 6.3.0
  *
- * @param  string  $content The content to parse.
+ * @param  string  $content  The content to parse.
  * @return string The parsed and filtered content.
  */
 function excerpt_remove_footnotes($content)
@@ -1411,8 +1411,8 @@ function excerpt_remove_footnotes($content)
  *
  * @since 5.8.0
  *
- * @param  array  $parsed_block   The parsed block.
- * @param  array  $allowed_blocks The list of allowed inner blocks.
+ * @param  array  $parsed_block  The parsed block.
+ * @param  array  $allowed_blocks  The list of allowed inner blocks.
  * @return string The rendered inner blocks.
  */
 function _excerpt_render_inner_blocks($parsed_block, $allowed_blocks)
@@ -1441,7 +1441,7 @@ function _excerpt_render_inner_blocks($parsed_block, $allowed_blocks)
  *
  * @global WP_Post $post The post to edit.
  *
- * @param  array  $parsed_block A single parsed block object.
+ * @param  array  $parsed_block  A single parsed block object.
  * @return string String of rendered HTML.
  */
 function render_block($parsed_block)
@@ -1455,9 +1455,9 @@ function render_block($parsed_block)
      * @since 5.1.0
      * @since 5.9.0 The `$parent_block` parameter was added.
      *
-     * @param  string|null  $pre_render   The pre-rendered content. Default null.
-     * @param  array  $parsed_block The block being rendered.
-     * @param  WP_Block|null  $parent_block If this is a nested block, a reference to the parent block.
+     * @param  string|null  $pre_render  The pre-rendered content. Default null.
+     * @param  array  $parsed_block  The block being rendered.
+     * @param  WP_Block|null  $parent_block  If this is a nested block, a reference to the parent block.
      */
     $pre_render = apply_filters('pre_render_block', null, $parsed_block, $parent_block);
     if (! is_null($pre_render)) {
@@ -1472,9 +1472,9 @@ function render_block($parsed_block)
      * @since 5.1.0
      * @since 5.9.0 The `$parent_block` parameter was added.
      *
-     * @param  array  $parsed_block The block being rendered.
-     * @param  array  $source_block An un-modified copy of $parsed_block, as it appeared in the source content.
-     * @param  WP_Block|null  $parent_block If this is a nested block, a reference to the parent block.
+     * @param  array  $parsed_block  The block being rendered.
+     * @param  array  $source_block  An un-modified copy of $parsed_block, as it appeared in the source content.
+     * @param  WP_Block|null  $parent_block  If this is a nested block, a reference to the parent block.
      */
     $parsed_block = apply_filters('render_block_data', $parsed_block, $source_block, $parent_block);
 
@@ -1498,9 +1498,9 @@ function render_block($parsed_block)
      * @since 5.5.0
      * @since 5.9.0 The `$parent_block` parameter was added.
      *
-     * @param  array  $context      Default context.
-     * @param  array  $parsed_block Block being rendered, filtered by `render_block_data`.
-     * @param  WP_Block|null  $parent_block If this is a nested block, a reference to the parent block.
+     * @param  array  $context  Default context.
+     * @param  array  $parsed_block  Block being rendered, filtered by `render_block_data`.
+     * @param  WP_Block|null  $parent_block  If this is a nested block, a reference to the parent block.
      */
     $context = apply_filters('render_block_context', $context, $parsed_block, $parent_block);
 
@@ -1514,7 +1514,7 @@ function render_block($parsed_block)
  *
  * @since 5.0.0
  *
- * @param  string  $content Post content.
+ * @param  string  $content  Post content.
  * @return array[] Array of parsed block objects.
  */
 function parse_blocks($content)
@@ -1524,7 +1524,7 @@ function parse_blocks($content)
      *
      * @since 5.0.0
      *
-     * @param  string  $parser_class Name of block parser class.
+     * @param  string  $parser_class  Name of block parser class.
      */
     $parser_class = apply_filters('block_parser_class', 'WP_Block_Parser');
 
@@ -1538,7 +1538,7 @@ function parse_blocks($content)
  *
  * @since 5.0.0
  *
- * @param  string  $content Post content.
+ * @param  string  $content  Post content.
  * @return string Updated post content.
  */
 function do_blocks($content)
@@ -1566,7 +1566,7 @@ function do_blocks($content)
  *
  * @since 5.0.0
  *
- * @param  string  $content The post content running through this filter.
+ * @param  string  $content  The post content running through this filter.
  * @return string The unmodified content.
  */
 function _restore_wpautop_hook($content)
@@ -1586,7 +1586,7 @@ function _restore_wpautop_hook($content)
  *
  * @since 5.0.0
  *
- * @param  string  $content Content to test.
+ * @param  string  $content  Content to test.
  * @return int The block format version is 1 if the content contains one or more blocks, 0 otherwise.
  */
 function block_version($content)
@@ -1600,10 +1600,10 @@ function block_version($content)
  * @since 5.3.0
  * @link https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/
  *
- * @param  string  $block_name       Block type name including namespace.
- * @param  array  $style_properties Array containing the properties of the style name, label,
- *                                 style_handle (name of the stylesheet to be enqueued),
- *                                 inline_style (string containing the CSS to be added).
+ * @param  string  $block_name  Block type name including namespace.
+ * @param  array  $style_properties  Array containing the properties of the style name, label,
+ *                                   style_handle (name of the stylesheet to be enqueued),
+ *                                   inline_style (string containing the CSS to be added).
  * @return bool True if the block style was registered with success and false otherwise.
  */
 function register_block_style($block_name, $style_properties)
@@ -1616,8 +1616,8 @@ function register_block_style($block_name, $style_properties)
  *
  * @since 5.3.0
  *
- * @param  string  $block_name       Block type name including namespace.
- * @param  string  $block_style_name Block style name.
+ * @param  string  $block_name  Block type name including namespace.
+ * @param  string  $block_style_name  Block style name.
  * @return bool True if the block style was unregistered with success and false otherwise.
  */
 function unregister_block_style($block_name, $block_style_name)
@@ -1631,9 +1631,9 @@ function unregister_block_style($block_name, $block_style_name)
  * @since 5.8.0
  * @since 6.4.0 The `$feature` parameter now supports a string.
  *
- * @param  WP_Block_Type  $block_type    Block type to check for support.
- * @param  string|array  $feature       Feature slug, or path to a specific feature to check support for.
- * @param  mixed  $default_value Optional. Fallback value for feature support. Default false.
+ * @param  WP_Block_Type  $block_type  Block type to check for support.
+ * @param  string|array  $feature  Feature slug, or path to a specific feature to check support for.
+ * @param  mixed  $default_value  Optional. Fallback value for feature support. Default false.
  * @return bool Whether the feature is supported.
  */
 function block_has_support($block_type, $feature, $default_value = false)
@@ -1661,7 +1661,7 @@ function block_has_support($block_type, $feature, $default_value = false)
  *
  * @since 5.8.0
  *
- * @param  array  $metadata Metadata for registering a block type.
+ * @param  array  $metadata  Metadata for registering a block type.
  * @return array Filtered metadata for registering a block type.
  */
 function wp_migrate_old_typography_shape($metadata)
@@ -1716,7 +1716,7 @@ function wp_migrate_old_typography_shape($metadata)
  * @since 5.8.0
  * @since 6.1.0 Added `query_loop_block_query_vars` filter and `parents` support in query.
  *
- * @param  WP_Block  $block Block instance.
+ * @param  WP_Block  $block  Block instance.
  * @param  int  $page  Current query's page.
  * @return array Returns the constructed WP_Query arguments.
  */
@@ -1849,8 +1849,8 @@ function build_query_vars_from_query_block($block, $page)
      *
      * @since 6.1.0
      *
-     * @param  array  $query Array containing parameters for `WP_Query` as parsed by the block context.
-     * @param  WP_Block  $block Block instance.
+     * @param  array  $query  Array containing parameters for `WP_Query` as parsed by the block context.
+     * @param  WP_Block  $block  Block instance.
      * @param  int  $page  Current query's page.
      */
     return apply_filters('query_loop_block_query_vars', $query, $block, $page);
@@ -1865,8 +1865,8 @@ function build_query_vars_from_query_block($block, $page)
  *
  * @since 5.9.0
  *
- * @param  WP_Block  $block   Block instance.
- * @param  bool  $is_next Flag for handling `next/previous` blocks.
+ * @param  WP_Block  $block  Block instance.
+ * @param  bool  $is_next  Flag for handling `next/previous` blocks.
  * @return string|null The pagination arrow HTML or null if there is none.
  */
 function get_query_pagination_arrow($block, $is_next)
@@ -1902,7 +1902,7 @@ function get_query_pagination_arrow($block, $is_next)
  *
  * @since 6.0.0
  *
- * @param  WP_Block  $block Block instance.
+ * @param  WP_Block  $block  Block instance.
  * @return array Returns the comment query parameters to use with the
  *               WP_Comment_Query constructor.
  */
@@ -1973,9 +1973,9 @@ function build_comment_query_vars_from_block($block)
  *
  * @since 6.0.0
  *
- * @param  WP_Block  $block           Block instance.
- * @param  string  $pagination_type Optional. Type of the arrow we will be rendering.
- *                                  Accepts 'next' or 'previous'. Default 'next'.
+ * @param  WP_Block  $block  Block instance.
+ * @param  string  $pagination_type  Optional. Type of the arrow we will be rendering.
+ *                                   Accepts 'next' or 'previous'. Default 'next'.
  * @return string|null The pagination arrow HTML or null if there is none.
  */
 function get_comments_pagination_arrow($block, $pagination_type = 'next')
@@ -2008,7 +2008,7 @@ function get_comments_pagination_arrow($block, $pagination_type = 'next')
  *
  * @since 6.3.2
  *
- * @param  string  $footnotes JSON encoded string of an array containing the content and ID of each footnote.
+ * @param  string  $footnotes  JSON encoded string of an array containing the content and ID of each footnote.
  * @return string Filtered content without any HTML on the footnote content and with the sanitized id.
  */
 function _wp_filter_post_meta_footnotes($footnotes)
@@ -2073,7 +2073,7 @@ function _wp_footnotes_kses_init()
  *
  * @since 6.3.2
  *
- * @param  string  $arg Input argument of the filter.
+ * @param  string  $arg  Input argument of the filter.
  * @return string Input argument of the filter.
  */
 function _wp_footnotes_force_filtered_html_on_import_filter($arg)

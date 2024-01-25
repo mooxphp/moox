@@ -25,7 +25,7 @@ final class WP_Customize_Background_Image_Setting extends WP_Customize_Setting
     /**
      * @since 3.4.0
      *
-     * @param  mixed  $value The value to update. Not used.
+     * @param  mixed  $value  The value to update. Not used.
      */
     public function update($value)
     {

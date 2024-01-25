@@ -51,8 +51,8 @@ if (post_type_supports($post_type, 'editor')
      * @since 4.0.0
      * @since 4.1.0 Added the `$post_type` parameter.
      *
-     * @param  bool  $expand    Whether to enable the 'expand' functionality. Default true.
-     * @param  string  $post_type Post type.
+     * @param  bool  $expand  Whether to enable the 'expand' functionality. Default true.
+     * @param  string  $post_type  Post type.
      */
     if (apply_filters('wp_editor_expand', true, $post_type)) {
         wp_enqueue_script('editor-expand');
@@ -212,7 +212,7 @@ $messages['attachment'] = array_fill(1, 10, __('Media file updated.')); // Hack,
  *
  * @since 3.0.0
  *
- * @param  array[]  $messages Post updated messages. For defaults see `$messages` declarations above.
+ * @param  array[]  $messages  Post updated messages. For defaults see `$messages` declarations above.
  */
 $messages = apply_filters('post_updated_messages', $messages);
 
@@ -481,7 +481,7 @@ wp_admin_notice(
  *
  * @since 3.0.0
  *
- * @param  WP_Post  $post Post object.
+ * @param  WP_Post  $post  Post object.
  */
 do_action('post_edit_form_tag', $post);
 
@@ -518,7 +518,7 @@ wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
  *
  * @since 3.7.0
  *
- * @param  WP_Post  $post Post object.
+ * @param  WP_Post  $post  Post object.
  */
 do_action('edit_form_top', $post);
 ?>
@@ -536,8 +536,8 @@ do_action('edit_form_top', $post);
      *
      * @since 3.1.0
      *
-     * @param  string  $text Placeholder text. Default 'Add title'.
-     * @param  WP_Post  $post Post object.
+     * @param  string  $text  Placeholder text. Default 'Add title'.
+     * @param  WP_Post  $post  Post object.
      */
     $title_placeholder = apply_filters('enter_title_here', __('Add title'), $post);
     ?>
@@ -550,7 +550,7 @@ do_action('edit_form_top', $post);
      *
      * @since 4.1.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action('edit_form_before_permalink', $post);
     ?>
@@ -599,7 +599,7 @@ do_action('edit_form_top', $post);
  *
  * @since 3.5.0
  *
- * @param  WP_Post  $post Post object.
+ * @param  WP_Post  $post  Post object.
  */
 do_action('edit_form_after_title', $post);
 
@@ -667,7 +667,7 @@ if (post_type_supports($post_type, 'editor')) {
  *
  * @since 3.5.0
  *
- * @param  WP_Post  $post Post object.
+ * @param  WP_Post  $post  Post object.
  */
 do_action('edit_form_after_editor', $post);
 ?>
@@ -684,7 +684,7 @@ if ($post_type === 'page') {
      *
      * @since 2.5.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action('submitpage_box', $post);
 } else {
@@ -695,7 +695,7 @@ if ($post_type === 'page') {
      *
      * @since 2.5.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action('submitpost_box', $post);
 }
@@ -715,7 +715,7 @@ if ($post_type === 'page') {
      *
      * @since 1.5.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action('edit_page_form', $post);
 } else {
@@ -724,7 +724,7 @@ if ($post_type === 'page') {
      *
      * @since 1.5.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action('edit_form_advanced', $post);
 }
@@ -739,7 +739,7 @@ do_meta_boxes(null, 'advanced', $post);
  *
  * @since 2.1.0
  *
- * @param  WP_Post  $post Post object.
+ * @param  WP_Post  $post  Post object.
  */
 do_action('dbx_post_sidebar', $post);
 

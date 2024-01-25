@@ -8,9 +8,9 @@
  *
  * @since 2.9.0
  *
- * @param  int  $post_id Attachment post ID.
- * @param  false|object  $msg     Optional. Message to display for image editor updates or errors.
- *                              Default false.
+ * @param  int  $post_id  Attachment post ID.
+ * @param  false|object  $msg  Optional. Message to display for image editor updates or errors.
+ *                             Default false.
  */
 function wp_image_editor($post_id, $msg = false)
 {
@@ -48,7 +48,7 @@ function wp_image_editor($post_id, $msg = false)
      *
      * @since 6.3.0
      *
-     * @param  bool  $show Whether to show the settings in the Image Editor. Default false.
+     * @param  bool  $show  Whether to show the settings in the Image Editor. Default false.
      */
     $edit_thumbnails_separately = (bool) apply_filters('image_edit_thumbnails_separately', false);
 
@@ -334,9 +334,9 @@ function wp_image_editor($post_id, $msg = false)
  *
  * @since 2.9.0
  *
- * @param  WP_Image_Editor  $image         The image editor instance.
- * @param  string  $mime_type     The mime type of the image.
- * @param  int  $attachment_id The image's attachment post ID.
+ * @param  WP_Image_Editor  $image  The image editor instance.
+ * @param  string  $mime_type  The mime type of the image.
+ * @param  int  $attachment_id  The image's attachment post ID.
  * @return bool True on success, false on failure.
  */
 function wp_stream_image($image, $mime_type, $attachment_id)
@@ -348,8 +348,8 @@ function wp_stream_image($image, $mime_type, $attachment_id)
          *
          * @since 3.5.0
          *
-         * @param  WP_Image_Editor  $image         The image editor instance.
-         * @param  int  $attachment_id The attachment post ID.
+         * @param  WP_Image_Editor  $image  The image editor instance.
+         * @param  int  $attachment_id  The attachment post ID.
          */
         $image = apply_filters('image_editor_save_pre', $image, $attachment_id);
 
@@ -368,8 +368,8 @@ function wp_stream_image($image, $mime_type, $attachment_id)
          * @since 2.9.0
          * @deprecated 3.5.0 Use {@see 'image_editor_save_pre'} instead.
          *
-         * @param  resource|GdImage  $image         Image resource to be streamed.
-         * @param  int  $attachment_id The attachment post ID.
+         * @param  resource|GdImage  $image  Image resource to be streamed.
+         * @param  int  $attachment_id  The attachment post ID.
          */
         $image = apply_filters_deprecated('image_save_pre', [$image, $attachment_id], '3.5.0', 'image_editor_save_pre');
 
@@ -408,22 +408,22 @@ function wp_stream_image($image, $mime_type, $attachment_id)
  * @since 6.0.0 The `$filesize` value was added to the returned array.
  *
  * @param  string  $filename  Name of the file to be saved.
- * @param  WP_Image_Editor  $image     The image editor instance.
- * @param  string  $mime_type The mime type of the image.
- * @param  int  $post_id   Attachment post ID.
+ * @param  WP_Image_Editor  $image  The image editor instance.
+ * @param  string  $mime_type  The mime type of the image.
+ * @param  int  $post_id  Attachment post ID.
  * @return array|WP_Error|bool {
- *     Array on success or WP_Error if the file failed to save.
- *     When called with a deprecated value for the `$image` parameter,
- *     i.e. a non-`WP_Image_Editor` image resource or `GdImage` instance,
- *     the function will return true on success, false on failure.
+ *                             Array on success or WP_Error if the file failed to save.
+ *                             When called with a deprecated value for the `$image` parameter,
+ *                             i.e. a non-`WP_Image_Editor` image resource or `GdImage` instance,
+ *                             the function will return true on success, false on failure.
  *
- *     @type string $path      Path to the image file.
- *     @type string $file      Name of the image file.
- *     @type int    $width     Image width.
- *     @type int    $height    Image height.
- *     @type string $mime-type The mime type of the image.
- *     @type int    $filesize  File size of the image.
- * }
+ * @type string $path      Path to the image file.
+ * @type string $file      Name of the image file.
+ * @type int $width     Image width.
+ * @type int $height    Image height.
+ * @type string $mime-type The mime type of the image.
+ * @type int $filesize  File size of the image.
+ *           }
  */
 function wp_save_image_file($filename, $image, $mime_type, $post_id)
 {
@@ -442,9 +442,9 @@ function wp_save_image_file($filename, $image, $mime_type, $post_id)
          *
          * @param  bool|null  $override  Value to return instead of saving. Default null.
          * @param  string  $filename  Name of the file to be saved.
-         * @param  WP_Image_Editor  $image     The image editor instance.
-         * @param  string  $mime_type The mime type of the image.
-         * @param  int  $post_id   Attachment post ID.
+         * @param  WP_Image_Editor  $image  The image editor instance.
+         * @param  string  $mime_type  The mime type of the image.
+         * @param  int  $post_id  Attachment post ID.
          */
         $saved = apply_filters('wp_save_image_editor_file', null, $filename, $image, $mime_type, $post_id);
 
@@ -471,9 +471,9 @@ function wp_save_image_file($filename, $image, $mime_type, $post_id)
          *
          * @param  bool|null  $override  Value to return instead of saving. Default null.
          * @param  string  $filename  Name of the file to be saved.
-         * @param  resource|GdImage  $image     Image resource or GdImage instance.
-         * @param  string  $mime_type The mime type of the image.
-         * @param  int  $post_id   Attachment post ID.
+         * @param  resource|GdImage  $image  Image resource or GdImage instance.
+         * @param  string  $mime_type  The mime type of the image.
+         * @param  int  $post_id  Attachment post ID.
          */
         $saved = apply_filters_deprecated(
             'wp_save_image_file',
@@ -513,8 +513,8 @@ function wp_save_image_file($filename, $image, $mime_type, $post_id)
  *
  * @ignore
  *
- * @param  int  $w Image width in pixels.
- * @param  int  $h Image height in pixels.
+ * @param  int  $w  Image width in pixels.
+ * @param  int  $h  Image height in pixels.
  * @return float|int Image preview ratio.
  */
 function _image_get_preview_ratio($w, $h)
@@ -533,8 +533,8 @@ function _image_get_preview_ratio($w, $h)
  *
  * @ignore
  *
- * @param  resource|GdImage  $img   Image resource.
- * @param  float|int  $angle Image rotation angle, in degrees.
+ * @param  resource|GdImage  $img  Image resource.
+ * @param  float|int  $angle  Image rotation angle, in degrees.
  * @return resource|GdImage|false GD image resource or GdImage instance, false otherwise.
  */
 function _rotate_image_resource($img, $angle)
@@ -563,8 +563,8 @@ function _rotate_image_resource($img, $angle)
  * @ignore
  *
  * @param  resource|GdImage  $img  Image resource or GdImage instance.
- * @param  bool  $horz Whether to flip horizontally.
- * @param  bool  $vert Whether to flip vertically.
+ * @param  bool  $horz  Whether to flip horizontally.
+ * @param  bool  $vert  Whether to flip vertically.
  * @return resource|GdImage (maybe) flipped image resource or GdImage instance.
  */
 function _flip_image_resource($img, $horz, $vert)
@@ -597,11 +597,11 @@ function _flip_image_resource($img, $horz, $vert)
  *
  * @ignore
  *
- * @param  resource|GdImage  $img Image resource or GdImage instance.
- * @param  float  $x   Source point x-coordinate.
- * @param  float  $y   Source point y-coordinate.
- * @param  float  $w   Source width.
- * @param  float  $h   Source height.
+ * @param  resource|GdImage  $img  Image resource or GdImage instance.
+ * @param  float  $x  Source point x-coordinate.
+ * @param  float  $y  Source point y-coordinate.
+ * @param  float  $w  Source width.
+ * @param  float  $h  Source height.
  * @return resource|GdImage (maybe) cropped image resource or GdImage instance.
  */
 function _crop_image_resource($img, $x, $y, $w, $h)
@@ -623,8 +623,8 @@ function _crop_image_resource($img, $x, $y, $w, $h)
  *
  * @since 2.9.0
  *
- * @param  WP_Image_Editor  $image   WP_Image_Editor instance.
- * @param  array  $changes Array of change operations.
+ * @param  WP_Image_Editor  $image  WP_Image_Editor instance.
+ * @param  array  $changes  Array of change operations.
  * @return WP_Image_Editor WP_Image_Editor instance with changes applied.
  */
 function image_edit_apply_changes($image, $changes)
@@ -694,8 +694,8 @@ function image_edit_apply_changes($image, $changes)
          *
          * @since 3.5.0
          *
-         * @param  WP_Image_Editor  $image   WP_Image_Editor instance.
-         * @param  array  $changes Array of change operations.
+         * @param  WP_Image_Editor  $image  WP_Image_Editor instance.
+         * @param  array  $changes  Array of change operations.
          */
         $image = apply_filters('wp_image_editor_before_change', $image, $changes);
     } elseif (is_gd_image($image)) {
@@ -706,8 +706,8 @@ function image_edit_apply_changes($image, $changes)
          * @since 2.9.0
          * @deprecated 3.5.0 Use {@see 'wp_image_editor_before_change'} instead.
          *
-         * @param  resource|GdImage  $image   GD image resource or GdImage instance.
-         * @param  array  $changes Array of change operations.
+         * @param  resource|GdImage  $image  GD image resource or GdImage instance.
+         * @param  array  $changes  Array of change operations.
          */
         $image = apply_filters_deprecated('image_edit_before_change', [$image, $changes], '3.5.0', 'wp_image_editor_before_change');
     }
@@ -759,7 +759,7 @@ function image_edit_apply_changes($image, $changes)
  *
  * @since 2.9.0
  *
- * @param  int  $post_id Attachment post ID.
+ * @param  int  $post_id  Attachment post ID.
  * @return bool True on success, false on failure.
  */
 function stream_preview_image($post_id)
@@ -800,7 +800,7 @@ function stream_preview_image($post_id)
  *
  * @since 2.9.0
  *
- * @param  int  $post_id Attachment post ID.
+ * @param  int  $post_id  Attachment post ID.
  * @return stdClass Image restoration message object.
  */
 function wp_restore_image($post_id)
@@ -897,7 +897,7 @@ function wp_restore_image($post_id)
  *
  * @since 2.9.0
  *
- * @param  int  $post_id Attachment post ID.
+ * @param  int  $post_id  Attachment post ID.
  * @return stdClass
  */
 function wp_save_image($post_id)

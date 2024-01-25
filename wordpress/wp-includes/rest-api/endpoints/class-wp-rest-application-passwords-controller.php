@@ -105,7 +105,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -132,7 +132,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -160,7 +160,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -187,7 +187,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -206,7 +206,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create items, WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -233,7 +233,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -271,9 +271,9 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
          *
          * @since 5.6.0
          *
-         * @param  array  $item     Inserted or updated password item.
+         * @param  array  $item  Inserted or updated password item.
          * @param  WP_REST_Request  $request  Request object.
-         * @param  bool  $creating True when creating an application password, false when updating.
+         * @param  bool  $creating  True when creating an application password, false when updating.
          */
         do_action('rest_after_insert_application_password', $item, $request, true);
 
@@ -291,7 +291,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create items, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -318,7 +318,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -368,7 +368,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
      */
     public function delete_items_permissions_check($request)
@@ -395,7 +395,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_items($request)
@@ -425,7 +425,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -452,7 +452,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -490,7 +490,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_current_item_permissions_check($request)
@@ -517,7 +517,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_current_item($request)
@@ -586,7 +586,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return object|WP_Error The prepared item, or WP_Error object on failure.
      */
     protected function prepare_item_for_database($request)
@@ -604,7 +604,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
          *
          * @since 5.6.0
          *
-         * @param  stdClass  $prepared An object representing a single application password prepared for inserting or updating the database.
+         * @param  stdClass  $prepared  An object representing a single application password prepared for inserting or updating the database.
          * @param  WP_REST_Request  $request  Request object.
          */
         return apply_filters('rest_pre_insert_application_password', $prepared, $request);
@@ -615,8 +615,8 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  array  $item    WordPress representation of the item.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  array  $item  WordPress representation of the item.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)
@@ -656,8 +656,8 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
          *
          * @since 5.6.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  array  $item     The application password array.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  array  $item  The application password array.
          * @param  WP_REST_Request  $request  The request object.
          */
         return apply_filters('rest_prepare_application_password', $response, $item, $request);
@@ -668,8 +668,8 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_User  $user The requested user.
-     * @param  array  $item The application password.
+     * @param  WP_User  $user  The requested user.
+     * @param  array  $item  The application password.
      * @return array The list of links.
      */
     protected function prepare_links(WP_User $user, $item)
@@ -693,7 +693,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request The request object.
+     * @param  WP_REST_Request  $request  The request object.
      * @return WP_User|WP_Error The WordPress user associated with the request, or a WP_Error if none found.
      */
     protected function get_user($request)
@@ -758,7 +758,7 @@ class WP_REST_Application_Passwords_Controller extends WP_REST_Controller
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request The request object.
+     * @param  WP_REST_Request  $request  The request object.
      * @return array|WP_Error The application password details if found, a WP_Error otherwise.
      */
     protected function get_application_password($request)

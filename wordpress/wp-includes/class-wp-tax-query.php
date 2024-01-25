@@ -97,24 +97,24 @@ class WP_Tax_Query
      * @since 3.1.0
      * @since 4.1.0 Added support for `$operator` 'NOT EXISTS' and 'EXISTS' values.
      *
-     * @param  array  $tax_query {
-     *     Array of taxonomy query clauses.
+     * @param  array  $tax_query  {
+     *                            Array of taxonomy query clauses.
      *
-     *     @type string $relation Optional. The MySQL keyword used to join
-     *                            the clauses of the query. Accepts 'AND', or 'OR'. Default 'AND'.
-     *     @type array  ...$0 {
-     *         An array of first-order clause parameters, or another fully-formed tax query.
-     *         @type string           $taxonomy         Taxonomy being queried. Optional when field=term_taxonomy_id.
-     *         @type string|int|array $terms            Term or terms to filter by.
-     *         @type string           $field            Field to match $terms against. Accepts 'term_id', 'slug',
-     *                                                 'name', or 'term_taxonomy_id'. Default: 'term_id'.
-     *         @type string           $operator         MySQL operator to be used with $terms in the WHERE clause.
-     *                                                  Accepts 'AND', 'IN', 'NOT IN', 'EXISTS', 'NOT EXISTS'.
-     *                                                  Default: 'IN'.
-     *         @type bool             $include_children Optional. Whether to include child terms.
-     *                                                  Requires a $taxonomy. Default: true.
-     *     }
-     * }
+     * @type string $relation Optional. The MySQL keyword used to join
+     *              the clauses of the query. Accepts 'AND', or 'OR'. Default 'AND'.
+     * @type array ...$0 {
+     *             An array of first-order clause parameters, or another fully-formed tax query.
+     * @type string $taxonomy         Taxonomy being queried. Optional when field=term_taxonomy_id.
+     * @type string|int|array $terms            Term or terms to filter by.
+     * @type string $field            Field to match $terms against. Accepts 'term_id', 'slug',
+     *              'name', or 'term_taxonomy_id'. Default: 'term_id'.
+     * @type string $operator         MySQL operator to be used with $terms in the WHERE clause.
+     *              Accepts 'AND', 'IN', 'NOT IN', 'EXISTS', 'NOT EXISTS'.
+     *              Default: 'IN'.
+     * @type bool $include_children Optional. Whether to include child terms.
+     *            Requires a $taxonomy. Default: true.
+     *            }
+     *            }
      */
     public function __construct($tax_query)
     {
@@ -135,7 +135,7 @@ class WP_Tax_Query
      *
      * @since 4.1.0
      *
-     * @param  array  $queries Array of queries clauses.
+     * @param  array  $queries  Array of queries clauses.
      * @return array Sanitized array of query clauses.
      */
     public function sanitize_query($queries)
@@ -207,7 +207,7 @@ class WP_Tax_Query
      *
      * @since 4.1.0
      *
-     * @param  string  $relation Raw relation key from the query argument.
+     * @param  string  $relation  Raw relation key from the query argument.
      * @return string Sanitized relation ('AND' or 'OR').
      */
     public function sanitize_relation($relation)
@@ -230,7 +230,7 @@ class WP_Tax_Query
      *
      * @since 4.1.0
      *
-     * @param  array  $query Tax query arguments.
+     * @param  array  $query  Tax query arguments.
      * @return bool Whether the query clause is a first-order clause.
      */
     protected static function is_first_order_clause($query)
@@ -243,14 +243,14 @@ class WP_Tax_Query
      *
      * @since 3.1.0
      *
-     * @param  string  $primary_table     Database table where the object being filtered is stored (eg wp_users).
-     * @param  string  $primary_id_column ID column for the filtered object in $primary_table.
+     * @param  string  $primary_table  Database table where the object being filtered is stored (eg wp_users).
+     * @param  string  $primary_id_column  ID column for the filtered object in $primary_table.
      * @return string[] {
-     *     Array containing JOIN and WHERE SQL clauses to append to the main query.
+     *                  Array containing JOIN and WHERE SQL clauses to append to the main query.
      *
-     *     @type string $join  SQL fragment to append to the main JOIN clause.
-     *     @type string $where SQL fragment to append to the main WHERE clause.
-     * }
+     * @type string $join  SQL fragment to append to the main JOIN clause.
+     * @type string $where SQL fragment to append to the main WHERE clause.
+     *              }
      */
     public function get_sql($primary_table, $primary_id_column)
     {
@@ -269,11 +269,11 @@ class WP_Tax_Query
      * @since 4.1.0
      *
      * @return string[] {
-     *     Array containing JOIN and WHERE SQL clauses to append to the main query.
+     *                  Array containing JOIN and WHERE SQL clauses to append to the main query.
      *
-     *     @type string $join  SQL fragment to append to the main JOIN clause.
-     *     @type string $where SQL fragment to append to the main WHERE clause.
-     * }
+     * @type string $join  SQL fragment to append to the main JOIN clause.
+     * @type string $where SQL fragment to append to the main WHERE clause.
+     *              }
      */
     protected function get_sql_clauses()
     {
@@ -299,15 +299,15 @@ class WP_Tax_Query
      *
      * @since 4.1.0
      *
-     * @param  array  $query Query to parse (passed by reference).
-     * @param  int  $depth Optional. Number of tree levels deep we currently are.
-     *                     Used to calculate indentation. Default 0.
+     * @param  array  $query  Query to parse (passed by reference).
+     * @param  int  $depth  Optional. Number of tree levels deep we currently are.
+     *                      Used to calculate indentation. Default 0.
      * @return string[] {
-     *     Array containing JOIN and WHERE SQL clauses to append to a single query array.
+     *                  Array containing JOIN and WHERE SQL clauses to append to a single query array.
      *
-     *     @type string $join  SQL fragment to append to the main JOIN clause.
-     *     @type string $where SQL fragment to append to the main WHERE clause.
-     * }
+     * @type string $join  SQL fragment to append to the main JOIN clause.
+     * @type string $where SQL fragment to append to the main WHERE clause.
+     *              }
      */
     protected function get_sql_for_query(&$query, $depth = 0)
     {
@@ -383,14 +383,14 @@ class WP_Tax_Query
      *
      * @global wpdb $wpdb The WordPress database abstraction object.
      *
-     * @param  array  $clause       Query clause (passed by reference).
-     * @param  array  $parent_query Parent query array.
+     * @param  array  $clause  Query clause (passed by reference).
+     * @param  array  $parent_query  Parent query array.
      * @return array {
-     *     Array containing JOIN and WHERE SQL clauses to append to a first-order query.
+     *               Array containing JOIN and WHERE SQL clauses to append to a first-order query.
      *
-     *     @type string[] $join  Array of SQL fragments to append to the main JOIN clause.
-     *     @type string[] $where Array of SQL fragments to append to the main WHERE clause.
-     * }
+     * @type string[] $join  Array of SQL fragments to append to the main JOIN clause.
+     * @type string[] $where Array of SQL fragments to append to the main WHERE clause.
+     *                }
      */
     public function get_sql_for_clause(&$clause, $parent_query)
     {
@@ -511,8 +511,8 @@ class WP_Tax_Query
      *
      * @since 4.1.0
      *
-     * @param  array  $clause       Query clause.
-     * @param  array  $parent_query Parent query of $clause.
+     * @param  array  $clause  Query clause.
+     * @param  array  $parent_query  Parent query of $clause.
      * @return string|false Table alias if found, otherwise false.
      */
     protected function find_compatible_table_alias($clause, $parent_query)
@@ -555,7 +555,7 @@ class WP_Tax_Query
      *
      * @since 3.2.0
      *
-     * @param  array  $query The single query. Passed by reference.
+     * @param  array  $query  The single query. Passed by reference.
      */
     private function clean_query(&$query)
     {
@@ -606,9 +606,9 @@ class WP_Tax_Query
      *
      * @since 3.2.0
      *
-     * @param  array  $query           The single query. Passed by reference.
-     * @param  string  $resulting_field The resulting field. Accepts 'slug', 'name', 'term_taxonomy_id',
-     *                                or 'term_id'. Default 'term_id'.
+     * @param  array  $query  The single query. Passed by reference.
+     * @param  string  $resulting_field  The resulting field. Accepts 'slug', 'name', 'term_taxonomy_id',
+     *                                   or 'term_id'. Default 'term_id'.
      */
     public function transform_query(&$query, $resulting_field)
     {

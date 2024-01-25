@@ -30,7 +30,7 @@ global $menu, $submenu, $parent_file, $submenu_file;
  *
  * @since MU (3.0.0)
  *
- * @param  string  $parent_file The parent file.
+ * @param  string  $parent_file  The parent file.
  */
 $parent_file = apply_filters('parent_file', $parent_file);
 
@@ -39,7 +39,7 @@ $parent_file = apply_filters('parent_file', $parent_file);
  *
  * @since 4.4.0
  *
- * @param  string  $submenu_file The submenu file.
+ * @param  string  $submenu_file  The submenu file.
  * @param  string  $parent_file  The submenu item's parent file.
  */
 $submenu_file = apply_filters('submenu_file', $submenu_file, $parent_file);

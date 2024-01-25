@@ -418,7 +418,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      * @return string Checkbox column markup.
      */
     public function column_cb($item)
@@ -437,7 +437,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      * @return string Status column markup.
      */
     public function column_status($item)
@@ -475,7 +475,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 4.9.6
      *
-     * @param  int  $timestamp Event timestamp.
+     * @param  int  $timestamp  Event timestamp.
      * @return string Human readable date.
      */
     protected function get_timestamp_as_date($timestamp)
@@ -500,8 +500,8 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      * @since 4.9.6
      * @since 5.7.0 Added `manage_{$this->screen->id}_custom_column` action.
      *
-     * @param  WP_User_Request  $item        Item being shown.
-     * @param  string  $column_name Name of column being shown.
+     * @param  WP_User_Request  $item  Item being shown.
+     * @param  string  $column_name  Name of column being shown.
      */
     public function column_default($item, $column_name)
     {
@@ -513,8 +513,8 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
          *
          * @since 5.7.0
          *
-         * @param  string  $column_name The name of the column to display.
-         * @param  WP_User_Request  $item        The item being shown.
+         * @param  string  $column_name  The name of the column to display.
+         * @param  WP_User_Request  $item  The item being shown.
          */
         do_action("manage_{$this->screen->id}_custom_column", $column_name, $item);
     }
@@ -524,7 +524,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 5.7.0
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      * @return string Human readable date.
      */
     public function column_created_timestamp($item)
@@ -537,7 +537,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      * @return string Email column markup.
      */
     public function column_email($item)
@@ -550,7 +550,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item Item being shown.
+     * @param  WP_User_Request  $item  Item being shown.
      */
     public function column_next_steps($item)
     {
@@ -561,7 +561,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table
      *
      * @since 4.9.6
      *
-     * @param  WP_User_Request  $item The current item.
+     * @param  WP_User_Request  $item  The current item.
      */
     public function single_row($item)
     {

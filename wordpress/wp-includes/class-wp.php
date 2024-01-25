@@ -97,7 +97,7 @@ class WP
      *
      * @since 2.1.0
      *
-     * @param  string  $qv Query variable name.
+     * @param  string  $qv  Query variable name.
      */
     public function add_query_var($qv)
     {
@@ -111,7 +111,7 @@ class WP
      *
      * @since 4.5.0
      *
-     * @param  string  $name Query variable name.
+     * @param  string  $name  Query variable name.
      */
     public function remove_query_var($name)
     {
@@ -123,8 +123,8 @@ class WP
      *
      * @since 2.3.0
      *
-     * @param  string  $key   Query variable name.
-     * @param  mixed  $value Query variable value.
+     * @param  string  $key  Query variable name.
+     * @param  mixed  $value  Query variable value.
      */
     public function set_query_var($key, $value)
     {
@@ -142,7 +142,7 @@ class WP
      *
      * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
      *
-     * @param  array|string  $extra_query_vars Set the extra query variables.
+     * @param  array|string  $extra_query_vars  Set the extra query variables.
      * @return bool Whether the request was parsed.
      */
     public function parse_request($extra_query_vars = '')
@@ -154,9 +154,9 @@ class WP
          *
          * @since 3.5.0
          *
-         * @param  bool  $bool             Whether or not to parse the request. Default true.
-         * @param  WP  $wp               Current WordPress environment instance.
-         * @param  array|string  $extra_query_vars Extra passed query variables.
+         * @param  bool  $bool  Whether or not to parse the request. Default true.
+         * @param  WP  $wp  Current WordPress environment instance.
+         * @param  array|string  $extra_query_vars  Extra passed query variables.
          */
         if (! apply_filters('do_parse_request', true, $this, $extra_query_vars)) {
             return false;
@@ -319,7 +319,7 @@ class WP
          *
          * @since 1.5.0
          *
-         * @param  string[]  $public_query_vars The array of allowed query variable names.
+         * @param  string[]  $public_query_vars  The array of allowed query variable names.
          */
         $this->public_query_vars = apply_filters('query_vars', $this->public_query_vars);
 
@@ -417,7 +417,7 @@ class WP
          *
          * @since 2.1.0
          *
-         * @param  array  $query_vars The array of requested query variables.
+         * @param  array  $query_vars  The array of requested query variables.
          */
         $this->query_vars = apply_filters('request', $this->query_vars);
 
@@ -426,7 +426,7 @@ class WP
          *
          * @since 2.1.0
          *
-         * @param  WP  $wp Current WordPress environment instance (passed by reference).
+         * @param  WP  $wp  Current WordPress environment instance (passed by reference).
          */
         do_action_ref_array('parse_request', [&$this]);
 
@@ -566,8 +566,8 @@ class WP
          *
          * @since 2.8.0
          *
-         * @param  string[]  $headers Associative array of headers to be sent.
-         * @param  WP  $wp      Current WordPress environment instance.
+         * @param  string[]  $headers  Associative array of headers to be sent.
+         * @param  WP  $wp  Current WordPress environment instance.
          */
         $headers = apply_filters('wp_headers', $headers, $this);
 
@@ -599,7 +599,7 @@ class WP
          *
          * @since 2.1.0
          *
-         * @param  WP  $wp Current WordPress environment instance (passed by reference).
+         * @param  WP  $wp  Current WordPress environment instance (passed by reference).
          */
         do_action_ref_array('send_headers', [&$this]);
     }
@@ -635,7 +635,7 @@ class WP
              * @since 1.5.0
              * @deprecated 2.1.0 Use {@see 'query_vars'} or {@see 'request'} filters instead.
              *
-             * @param  string  $query_string The query string to modify.
+             * @param  string  $query_string  The query string to modify.
              */
             $this->query_string = apply_filters_deprecated(
                 'query_string',
@@ -744,7 +744,7 @@ class WP
          * @since 4.5.0
          *
          * @param  bool  $preempt  Whether to short-circuit default header status handling. Default false.
-         * @param  WP_Query  $wp_query WordPress Query object.
+         * @param  WP_Query  $wp_query  WordPress Query object.
          */
         if (apply_filters('pre_handle_404', false, $wp_query) !== false) {
             return;
@@ -824,7 +824,7 @@ class WP
      *
      * @since 2.0.0
      *
-     * @param  string|array  $query_args Passed to parse_request().
+     * @param  string|array  $query_args  Passed to parse_request().
      */
     public function main($query_args = '')
     {
@@ -845,7 +845,7 @@ class WP
          *
          * @since 2.1.0
          *
-         * @param  WP  $wp Current WordPress environment instance (passed by reference).
+         * @param  WP  $wp  Current WordPress environment instance (passed by reference).
          */
         do_action_ref_array('wp', [&$this]);
     }

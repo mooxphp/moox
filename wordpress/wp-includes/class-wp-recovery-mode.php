@@ -171,7 +171,7 @@ class WP_Recovery_Mode
      *
      * @since 5.2.0
      *
-     * @param  array  $error Error details from `error_get_last()`.
+     * @param  array  $error  Error details from `error_get_last()`.
      * @return true|WP_Error True if the error was handled and headers have already been sent.
      *                       Or the request will exit to try and catch multiple errors at once.
      *                       WP_Error if an error occurred preventing it from being handled.
@@ -319,7 +319,7 @@ class WP_Recovery_Mode
          *
          * @since 5.2.0
          *
-         * @param  int  $rate_limit Time to wait in seconds. Defaults to 1 day.
+         * @param  int  $rate_limit  Time to wait in seconds. Defaults to 1 day.
          */
         return apply_filters('recovery_mode_email_rate_limit', DAY_IN_SECONDS);
     }
@@ -344,7 +344,7 @@ class WP_Recovery_Mode
          *
          * @since 5.2.0
          *
-         * @param  int  $valid_for The number of seconds the link is valid for.
+         * @param  int  $valid_for  The number of seconds the link is valid for.
          */
         $valid_for = apply_filters('recovery_mode_email_link_ttl', $valid_for);
 
@@ -358,13 +358,13 @@ class WP_Recovery_Mode
      *
      * @global array $wp_theme_directories
      *
-     * @param  array  $error Error details from `error_get_last()`.
+     * @param  array  $error  Error details from `error_get_last()`.
      * @return array|false {
-     *     Extension details.
+     *                     Extension details.
      *
-     *     @type string $slug The extension slug. This is the plugin or theme's directory.
-     *     @type string $type The extension type. Either 'plugin' or 'theme'.
-     * }
+     * @type string $slug The extension slug. This is the plugin or theme's directory.
+     * @type string $type The extension type. Either 'plugin' or 'theme'.
+     *              }
      */
     protected function get_extension_for_error($error)
     {
@@ -417,7 +417,7 @@ class WP_Recovery_Mode
      *
      * @since 5.2.0
      *
-     * @param  array  $extension Extension data.
+     * @param  array  $extension  Extension data.
      * @return bool True if network plugin, false otherwise.
      */
     protected function is_network_plugin($extension)
@@ -446,7 +446,7 @@ class WP_Recovery_Mode
      *
      * @since 5.2.0
      *
-     * @param  array  $error Error details from `error_get_last()`.
+     * @param  array  $error  Error details from `error_get_last()`.
      * @return bool True if the error was stored successfully, false otherwise.
      */
     protected function store_error($error)

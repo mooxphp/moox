@@ -51,12 +51,12 @@ $shortcode_tags = [];
  *
  * @global array $shortcode_tags
  *
- * @param  string  $tag      Shortcode tag to be searched in post content.
- * @param  callable  $callback The callback function to run when the shortcode is found.
- *                           Every shortcode callback is passed three parameters by default,
- *                           including an array of attributes (`$atts`), the shortcode content
- *                           or null if not set (`$content`), and finally the shortcode tag
- *                           itself (`$shortcode_tag`), in that order.
+ * @param  string  $tag  Shortcode tag to be searched in post content.
+ * @param  callable  $callback  The callback function to run when the shortcode is found.
+ *                              Every shortcode callback is passed three parameters by default,
+ *                              including an array of attributes (`$atts`), the shortcode content
+ *                              or null if not set (`$content`), and finally the shortcode tag
+ *                              itself (`$shortcode_tag`), in that order.
  */
 function add_shortcode($tag, $callback)
 {
@@ -97,7 +97,7 @@ function add_shortcode($tag, $callback)
  *
  * @global array $shortcode_tags
  *
- * @param  string  $tag Shortcode tag to remove hook for.
+ * @param  string  $tag  Shortcode tag to remove hook for.
  */
 function remove_shortcode($tag)
 {
@@ -130,7 +130,7 @@ function remove_all_shortcodes()
  *
  * @global array $shortcode_tags List of shortcode tags and their callback hooks.
  *
- * @param  string  $tag Shortcode tag to check.
+ * @param  string  $tag  Shortcode tag to check.
  * @return bool Whether the given shortcode exists.
  */
 function shortcode_exists($tag)
@@ -147,8 +147,8 @@ function shortcode_exists($tag)
  *
  * @global array $shortcode_tags
  *
- * @param  string  $content Content to search for shortcodes.
- * @param  string  $tag     Shortcode tag to check.
+ * @param  string  $content  Content to search for shortcodes.
+ * @param  string  $tag  Shortcode tag to check.
  * @return bool Whether the passed content contains the given shortcode.
  */
 function has_shortcode($content, $tag)
@@ -185,7 +185,7 @@ function has_shortcode($content, $tag)
  *
  * @since 6.3.2
  *
- * @param  string  $content The content to check.
+ * @param  string  $content  The content to check.
  * @return string[] An array of registered shortcode names found in the content.
  */
 function get_shortcode_tags_in_content($content)
@@ -222,9 +222,9 @@ function get_shortcode_tags_in_content($content)
  * @since 5.4.0
  * @see do_shortcode()
  *
- * @param  string  $content     Content to search for shortcodes.
- * @param  bool  $ignore_html When true, shortcodes inside HTML elements will be skipped.
- *                            Default false.
+ * @param  string  $content  Content to search for shortcodes.
+ * @param  bool  $ignore_html  When true, shortcodes inside HTML elements will be skipped.
+ *                             Default false.
  * @return string Content with shortcodes filtered out.
  */
 function apply_shortcodes($content, $ignore_html = false)
@@ -243,9 +243,9 @@ function apply_shortcodes($content, $ignore_html = false)
  *
  * @global array $shortcode_tags List of shortcode tags and their callback hooks.
  *
- * @param  string  $content     Content to search for shortcodes.
- * @param  bool  $ignore_html When true, shortcodes inside HTML elements will be skipped.
- *                            Default false.
+ * @param  string  $content  Content to search for shortcodes.
+ * @param  bool  $ignore_html  When true, shortcodes inside HTML elements will be skipped.
+ *                             Default false.
  * @return string Content with shortcodes filtered out.
  */
 function do_shortcode($content, $ignore_html = false)
@@ -327,7 +327,7 @@ function _filter_do_shortcode_context()
  *
  * @global array $shortcode_tags
  *
- * @param  array  $tagnames Optional. List of shortcodes to find. Defaults to all registered shortcodes.
+ * @param  array  $tagnames  Optional. List of shortcodes to find. Defaults to all registered shortcodes.
  * @return string The shortcode search regular expression
  */
 function get_shortcode_regex($tagnames = null)
@@ -384,17 +384,17 @@ function get_shortcode_regex($tagnames = null)
  *
  * @global array $shortcode_tags
  *
- * @param  array  $m {
- *     Regular expression match array.
+ * @param  array  $m  {
+ *                    Regular expression match array.
  *
- *     @type string $0 Entire matched shortcode text.
- *     @type string $1 Optional second opening bracket for escaping shortcodes.
- *     @type string $2 Shortcode name.
- *     @type string $3 Shortcode arguments list.
- *     @type string $4 Optional self closing slash.
- *     @type string $5 Content of a shortcode when it wraps some content.
- *     @type string $6 Optional second closing brocket for escaping shortcodes.
- * }
+ * @type string $0 Entire matched shortcode text.
+ * @type string $1 Optional second opening bracket for escaping shortcodes.
+ * @type string $2 Shortcode name.
+ * @type string $3 Shortcode arguments list.
+ * @type string $4 Optional self closing slash.
+ * @type string $5 Content of a shortcode when it wraps some content.
+ * @type string $6 Optional second closing brocket for escaping shortcodes.
+ *              }
  *
  * @return string Shortcode output.
  */
@@ -429,10 +429,10 @@ function do_shortcode_tag($m)
      *
      * @since 4.7.0
      *
-     * @param  false|string  $output Short-circuit return value. Either false or the value to replace the shortcode with.
-     * @param  string  $tag    Shortcode name.
-     * @param  array|string  $attr   Shortcode attributes array or the original arguments string if it cannot be parsed.
-     * @param  array  $m      Regular expression match array.
+     * @param  false|string  $output  Short-circuit return value. Either false or the value to replace the shortcode with.
+     * @param  string  $tag  Shortcode name.
+     * @param  array|string  $attr  Shortcode attributes array or the original arguments string if it cannot be parsed.
+     * @param  array  $m  Regular expression match array.
      */
     $return = apply_filters('pre_do_shortcode_tag', false, $tag, $attr, $m);
     if ($return !== false) {
@@ -448,10 +448,10 @@ function do_shortcode_tag($m)
      *
      * @since 4.7.0
      *
-     * @param  string  $output Shortcode output.
-     * @param  string  $tag    Shortcode name.
-     * @param  array|string  $attr   Shortcode attributes array or the original arguments string if it cannot be parsed.
-     * @param  array  $m      Regular expression match array.
+     * @param  string  $output  Shortcode output.
+     * @param  string  $tag  Shortcode name.
+     * @param  array|string  $attr  Shortcode attributes array or the original arguments string if it cannot be parsed.
+     * @param  array  $m  Regular expression match array.
      */
     return apply_filters('do_shortcode_tag', $output, $tag, $attr, $m);
 }
@@ -466,9 +466,9 @@ function do_shortcode_tag($m)
  *
  * @since 4.2.3
  *
- * @param  string  $content     Content to search for shortcodes.
- * @param  bool  $ignore_html When true, all square braces inside elements will be encoded.
- * @param  array  $tagnames    List of shortcodes to find.
+ * @param  string  $content  Content to search for shortcodes.
+ * @param  bool  $ignore_html  When true, all square braces inside elements will be encoded.
+ * @param  array  $tagnames  List of shortcodes to find.
  * @return string Content with shortcodes filtered out.
  */
 function do_shortcodes_in_html_tags($content, $ignore_html, $tagnames)
@@ -581,7 +581,7 @@ function do_shortcodes_in_html_tags($content, $ignore_html, $tagnames)
  *
  * @since 4.2.3
  *
- * @param  string  $content Content to search for placeholders.
+ * @param  string  $content  Content to search for placeholders.
  * @return string Content with placeholders removed.
  */
 function unescape_invalid_shortcodes($content)
@@ -618,7 +618,7 @@ function get_shortcode_atts_regex()
  *
  * @since 2.5.0
  *
- * @param  string  $text Shortcode arguments list.
+ * @param  string  $text  Shortcode arguments list.
  * @return array|string Array of attribute values keyed by attribute name.
  *                      Returns empty array if there are no attributes.
  *                      Returns the original arguments string if it cannot be parsed.
@@ -672,9 +672,9 @@ function shortcode_parse_atts($text)
  *
  * @since 2.5.0
  *
- * @param  array  $pairs     Entire list of supported attributes and their defaults.
- * @param  array  $atts      User defined attributes in shortcode tag.
- * @param  string  $shortcode Optional. The name of the shortcode, provided for context to enable filtering
+ * @param  array  $pairs  Entire list of supported attributes and their defaults.
+ * @param  array  $atts  User defined attributes in shortcode tag.
+ * @param  string  $shortcode  Optional. The name of the shortcode, provided for context to enable filtering
  * @return array Combined and filtered attribute list.
  */
 function shortcode_atts($pairs, $atts, $shortcode = '')
@@ -699,10 +699,10 @@ function shortcode_atts($pairs, $atts, $shortcode = '')
          * @since 3.6.0
          * @since 4.4.0 Added the `$shortcode` parameter.
          *
-         * @param  array  $out       The output array of shortcode attributes.
-         * @param  array  $pairs     The supported attributes and their defaults.
-         * @param  array  $atts      The user defined shortcode attributes.
-         * @param  string  $shortcode The shortcode name.
+         * @param  array  $out  The output array of shortcode attributes.
+         * @param  array  $pairs  The supported attributes and their defaults.
+         * @param  array  $atts  The user defined shortcode attributes.
+         * @param  string  $shortcode  The shortcode name.
          */
         $out = apply_filters("shortcode_atts_{$shortcode}", $out, $pairs, $atts, $shortcode);
     }
@@ -717,7 +717,7 @@ function shortcode_atts($pairs, $atts, $shortcode = '')
  *
  * @global array $shortcode_tags
  *
- * @param  string  $content Content to remove shortcode tags.
+ * @param  string  $content  Content to remove shortcode tags.
  * @return string Content without shortcode tags.
  */
 function strip_shortcodes($content)
@@ -742,8 +742,8 @@ function strip_shortcodes($content)
      *
      * @since 4.7.0
      *
-     * @param  array  $tags_to_remove Array of shortcode tags to remove.
-     * @param  string  $content        Content shortcodes are being removed from.
+     * @param  array  $tags_to_remove  Array of shortcode tags to remove.
+     * @param  string  $content  Content shortcodes are being removed from.
      */
     $tags_to_remove = apply_filters('strip_shortcodes_tagnames', $tags_to_remove, $content);
 
@@ -769,7 +769,7 @@ function strip_shortcodes($content)
  *
  * @since 3.3.0
  *
- * @param  array  $m RegEx matches against post content.
+ * @param  array  $m  RegEx matches against post content.
  * @return string|false The content stripped of the tag, otherwise false.
  */
 function strip_shortcode_tag($m)

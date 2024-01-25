@@ -24,9 +24,9 @@ global $opml;
  * @global array $descriptions
  * @global array $feeds
  *
- * @param  resource  $parser   XML Parser resource.
- * @param  string  $tag_name XML element name.
- * @param  array  $attrs    XML element attributes.
+ * @param  resource  $parser  XML Parser resource.
+ * @param  string  $tag_name  XML element name.
+ * @param  array  $attrs  XML element attributes.
  */
 function startElement($parser, $tag_name, $attrs) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 {
@@ -64,8 +64,8 @@ function startElement($parser, $tag_name, $attrs) // phpcs:ignore WordPress.Nami
  *
  * @since 0.71
  *
- * @param  resource  $parser   XML Parser resource.
- * @param  string  $tag_name XML tag name.
+ * @param  resource  $parser  XML Parser resource.
+ * @param  string  $tag_name  XML tag name.
  */
 function endElement($parser, $tag_name) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 {// Nothing to do.

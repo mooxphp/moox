@@ -45,7 +45,7 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
          *
          * @since 5.5.0
          *
-         * @param  WP_Post_Type[]  $post_types Array of registered post type objects keyed by their name.
+         * @param  WP_Post_Type[]  $post_types  Array of registered post type objects keyed by their name.
          */
         return apply_filters('wp_sitemaps_post_types', $post_types);
     }
@@ -57,8 +57,8 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
      * @since 5.9.0 Renamed `$post_type` to `$object_subtype` to match parent class
      *              for PHP 8 named parameter support.
      *
-     * @param  int  $page_num       Page of results.
-     * @param  string  $object_subtype Optional. Post type name. Default empty.
+     * @param  int  $page_num  Page of results.
+     * @param  string  $object_subtype  Optional. Post type name. Default empty.
      * @return array[] Array of URL information for a sitemap.
      */
     public function get_url_list($page_num, $object_subtype = '')
@@ -82,7 +82,7 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
          * @since 5.5.0
          *
          * @param  array[]|null  $url_list  The URL list. Default null.
-         * @param  string  $post_type Post type name.
+         * @param  string  $post_type  Post type name.
          * @param  int  $page_num  Page of results.
          */
         $url_list = apply_filters(
@@ -118,7 +118,7 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
              *
              * @since 5.5.0
              *
-             * @param  array  $sitemap_entry Sitemap entry for the home page.
+             * @param  array  $sitemap_entry  Sitemap entry for the home page.
              */
             $sitemap_entry = apply_filters('wp_sitemaps_posts_show_on_front_entry', $sitemap_entry);
             $url_list[] = $sitemap_entry;
@@ -134,9 +134,9 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
              *
              * @since 5.5.0
              *
-             * @param  array  $sitemap_entry Sitemap entry for the post.
-             * @param  WP_Post  $post          Post object.
-             * @param  string  $post_type     Name of the post_type.
+             * @param  array  $sitemap_entry  Sitemap entry for the post.
+             * @param  WP_Post  $post  Post object.
+             * @param  string  $post_type  Name of the post_type.
              */
             $sitemap_entry = apply_filters('wp_sitemaps_posts_entry', $sitemap_entry, $post, $post_type);
             $url_list[] = $sitemap_entry;
@@ -152,7 +152,7 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
      * @since 5.9.0 Renamed `$post_type` to `$object_subtype` to match parent class
      *              for PHP 8 named parameter support.
      *
-     * @param  string  $object_subtype Optional. Post type name. Default empty.
+     * @param  string  $object_subtype  Optional. Post type name. Default empty.
      * @return int Total number of pages.
      */
     public function get_max_num_pages($object_subtype = '')
@@ -172,8 +172,8 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
          *
          * @since 5.5.0
          *
-         * @param  int|null  $max_num_pages The maximum number of pages. Default null.
-         * @param  string  $post_type     Post type name.
+         * @param  int|null  $max_num_pages  The maximum number of pages. Default null.
+         * @param  string  $post_type  Post type name.
          */
         $max_num_pages = apply_filters('wp_sitemaps_posts_pre_max_num_pages', null, $post_type);
 
@@ -198,7 +198,7 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
      * @since 5.5.0
      * @since 6.1.0 Added `ignore_sticky_posts` default parameter.
      *
-     * @param  string  $post_type Post type name.
+     * @param  string  $post_type  Post type name.
      * @return array Array of WP_Query arguments.
      */
     protected function get_posts_query_args($post_type)
@@ -210,8 +210,8 @@ class WP_Sitemaps_Posts extends WP_Sitemaps_Provider
          * @since 5.5.0
          * @since 6.1.0 Added `ignore_sticky_posts` default parameter.
          *
-         * @param  array  $args      Array of WP_Query arguments.
-         * @param  string  $post_type Post type name.
+         * @param  array  $args  Array of WP_Query arguments.
+         * @param  string  $post_type  Post type name.
          */
         $args = apply_filters(
             'wp_sitemaps_posts_query_args',

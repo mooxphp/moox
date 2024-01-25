@@ -64,8 +64,8 @@ function wp_list_widgets()
  *
  * @since 3.1.0
  *
- * @param  array  $a First array.
- * @param  array  $b Second array.
+ * @param  array  $a  First array.
+ * @param  array  $b  Second array.
  * @return int
  */
 function _sort_name_callback($a, $b)
@@ -79,8 +79,8 @@ function _sort_name_callback($a, $b)
  *
  * @since 2.5.0
  *
- * @param  string  $sidebar      Sidebar ID.
- * @param  string  $sidebar_name Optional. Sidebar name. Default empty.
+ * @param  string  $sidebar  Sidebar ID.
+ * @param  string  $sidebar_name  Optional. Sidebar name. Default empty.
  */
 function wp_list_widget_controls($sidebar, $sidebar_name = '')
 {

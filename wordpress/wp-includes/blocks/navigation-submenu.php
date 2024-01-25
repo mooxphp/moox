@@ -7,7 +7,7 @@
  * Build an array with CSS classes and inline styles defining the font sizes
  * which will be applied to the navigation markup in the front-end.
  *
- * @param  array  $context Navigation block context.
+ * @param  array  $context  Navigation block context.
  * @return array Font size CSS classes and inline styles.
  */
 function block_core_navigation_submenu_build_css_font_sizes($context)
@@ -52,9 +52,9 @@ function block_core_navigation_submenu_render_submenu_icon()
 /**
  * Renders the `core/navigation-submenu` block.
  *
- * @param  array  $attributes The block attributes.
- * @param  string  $content    The saved content.
- * @param  WP_Block  $block      The parsed block.
+ * @param  array  $attributes  The block attributes.
+ * @param  string  $content  The saved content.
+ * @param  WP_Block  $block  The parsed block.
  * @return string Returns the post content with the legacy widget added.
  */
 function render_block_core_navigation_submenu($attributes, $content, $block)

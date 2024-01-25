@@ -346,7 +346,7 @@ printf(
      * @since 2.7.0
      * @since 4.0.0 Added ISO date standard YYYY-MM-DD format.
      *
-     * @param  string[]  $default_date_formats Array of default date formats.
+     * @param  string[]  $default_date_formats  Array of default date formats.
      */
     $date_formats = array_unique(apply_filters('date_formats', [__('F j, Y'), 'Y-m-d', 'm/d/Y', 'd/m/Y']));
 
@@ -394,7 +394,7 @@ echo '/> <span class="date-time-text date-time-custom-text">'.__('Custom:').'<sp
      *
      * @since 2.7.0
      *
-     * @param  string[]  $default_time_formats Array of default time formats.
+     * @param  string[]  $default_time_formats  Array of default time formats.
      */
     $time_formats = array_unique(apply_filters('time_formats', [__('g:i a'), 'g:i A', 'H:i']));
 

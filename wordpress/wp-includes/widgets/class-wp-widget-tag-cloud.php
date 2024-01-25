@@ -33,9 +33,9 @@ class WP_Widget_Tag_Cloud extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Tag Cloud widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Tag Cloud widget instance.
      */
     public function widget($args, $instance)
     {
@@ -65,8 +65,8 @@ class WP_Widget_Tag_Cloud extends WP_Widget
              * @since 4.9.0 Added the `$instance` parameter.
              * @see wp_tag_cloud()
              *
-             * @param  array  $args     Args used for the tag cloud widget.
-             * @param  array  $instance Array of settings for the current widget.
+             * @param  array  $args  Args used for the tag cloud widget.
+             * @param  array  $instance  Array of settings for the current widget.
              */
             apply_filters(
                 'widget_tag_cloud_args',
@@ -121,9 +121,9 @@ class WP_Widget_Tag_Cloud extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Settings to save or bool false to cancel saving.
      */
     public function update($new_instance, $old_instance)
@@ -141,7 +141,7 @@ class WP_Widget_Tag_Cloud extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     public function form($instance)
     {
@@ -208,7 +208,7 @@ class WP_Widget_Tag_Cloud extends WP_Widget
      *
      * @since 4.4.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      * @return string Name of the current taxonomy if set, otherwise 'post_tag'.
      */
     public function _get_current_taxonomy($instance)

@@ -63,7 +63,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $taxonomy Taxonomy key.
+     * @param  string  $taxonomy  Taxonomy key.
      */
     public function __construct($taxonomy)
     {
@@ -152,8 +152,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 6.0.3
      *
-     * @param  WP_Post  $post    Post object.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_Post  $post  Post object.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return bool Whether the terms for the post can be read.
      */
     public function check_read_terms_permission_for_post($post, $request)
@@ -182,7 +182,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return bool|WP_Error True if the request has read access, otherwise false or WP_Error object.
      */
     public function get_items_permissions_check($request)
@@ -233,7 +233,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -317,8 +317,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          * @since 4.7.0
          * @link https://developer.wordpress.org/reference/functions/get_terms/
          *
-         * @param  array  $prepared_args Array of arguments for get_terms().
-         * @param  WP_REST_Request  $request       The REST API request.
+         * @param  array  $prepared_args  Array of arguments for get_terms().
+         * @param  WP_REST_Request  $request  The REST API request.
          */
         $prepared_args = apply_filters("rest_{$this->taxonomy}_query", $prepared_args, $request);
 
@@ -390,7 +390,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.2
      *
-     * @param  int  $id Supplied ID.
+     * @param  int  $id  Supplied ID.
      * @return WP_Term|WP_Error Term object if ID is valid, WP_Error otherwise.
      */
     protected function get_term($id)
@@ -422,7 +422,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, otherwise WP_Error object.
      */
     public function get_item_permissions_check($request)
@@ -449,7 +449,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -469,7 +469,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create items, false or WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -500,7 +500,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -562,9 +562,9 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_Term  $term     Inserted or updated term object.
+         * @param  WP_Term  $term  Inserted or updated term object.
          * @param  WP_REST_Request  $request  Request object.
-         * @param  bool  $creating True when creating a term, false when updating.
+         * @param  bool  $creating  True when creating a term, false when updating.
          */
         do_action("rest_insert_{$this->taxonomy}", $term, $request, true);
 
@@ -597,9 +597,9 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          *
          * @since 5.0.0
          *
-         * @param  WP_Term  $term     Inserted or updated term object.
+         * @param  WP_Term  $term  Inserted or updated term object.
          * @param  WP_REST_Request  $request  Request object.
-         * @param  bool  $creating True when creating a term, false when updating.
+         * @param  bool  $creating  True when creating a term, false when updating.
          */
         do_action("rest_after_insert_{$this->taxonomy}", $term, $request, true);
 
@@ -617,7 +617,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to update the item, false or WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -644,7 +644,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -720,7 +720,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, otherwise false or WP_Error object.
      */
     public function delete_item_permissions_check($request)
@@ -747,7 +747,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -803,8 +803,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_Term  $term     The deleted term.
-         * @param  WP_REST_Response  $response The response data.
+         * @param  WP_Term  $term  The deleted term.
+         * @param  WP_REST_Response  $response  The response data.
          * @param  WP_REST_Request  $request  The request sent to the API.
          */
         do_action("rest_delete_{$this->taxonomy}", $term, $response, $request);
@@ -817,7 +817,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return object Term object.
      */
     public function prepare_item_for_database($request)
@@ -868,8 +868,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  object  $prepared_term Term object.
-         * @param  WP_REST_Request  $request       Request object.
+         * @param  object  $prepared_term  Term object.
+         * @param  WP_REST_Request  $request  Request object.
          */
         return apply_filters("rest_pre_insert_{$this->taxonomy}", $prepared_term, $request);
     }
@@ -879,8 +879,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_Term  $item    Term object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Term  $item  Term object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -950,8 +950,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          * @since 4.7.0
          *
          * @param  WP_REST_Response  $response  The response object.
-         * @param  WP_Term  $item      The original term object.
-         * @param  WP_REST_Request  $request   Request used to generate the response.
+         * @param  WP_Term  $item  The original term object.
+         * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters("rest_prepare_{$this->taxonomy}", $response, $item, $request);
     }
@@ -961,7 +961,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_Term  $term Term object.
+     * @param  WP_Term  $term  Term object.
      * @return array Links for the given term.
      */
     protected function prepare_links($term)
@@ -1206,8 +1206,8 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  array  $query_params JSON Schema-formatted collection parameters.
-         * @param  WP_Taxonomy  $taxonomy     Taxonomy object.
+         * @param  array  $query_params  JSON Schema-formatted collection parameters.
+         * @param  WP_Taxonomy  $taxonomy  Taxonomy object.
          */
         return apply_filters("rest_{$this->taxonomy}_collection_params", $query_params, $taxonomy);
     }
@@ -1217,7 +1217,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $taxonomy Taxonomy to check.
+     * @param  string  $taxonomy  Taxonomy to check.
      * @return bool Whether the taxonomy is allowed for REST management.
      */
     protected function check_is_taxonomy_allowed($taxonomy)

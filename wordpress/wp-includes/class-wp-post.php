@@ -247,7 +247,7 @@ final class WP_Post
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int  $post_id Post ID.
+     * @param  int  $post_id  Post ID.
      * @return WP_Post|false Post object, false otherwise.
      */
     public static function get_instance($post_id)
@@ -282,7 +282,7 @@ final class WP_Post
      *
      * @since 3.5.0
      *
-     * @param  WP_Post|object  $post Post object.
+     * @param  WP_Post|object  $post  Post object.
      */
     public function __construct($post)
     {
@@ -296,7 +296,7 @@ final class WP_Post
      *
      * @since 3.5.0
      *
-     * @param  string  $key Property to check if set.
+     * @param  string  $key  Property to check if set.
      * @return bool
      */
     public function __isset($key)
@@ -325,7 +325,7 @@ final class WP_Post
      *
      * @since 3.5.0
      *
-     * @param  string  $key Key to get.
+     * @param  string  $key  Key to get.
      * @return mixed
      */
     public function __get($key)
@@ -377,7 +377,7 @@ final class WP_Post
      *
      * @since 3.5.0
      *
-     * @param  string  $filter Filter.
+     * @param  string  $filter  Filter.
      * @return WP_Post
      */
     public function filter($filter)

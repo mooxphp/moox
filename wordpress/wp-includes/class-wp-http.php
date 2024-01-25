@@ -155,45 +155,45 @@ class WP_Http
      * @since 2.7.0
      *
      * @param  string  $url  The request URL.
-     * @param  string|array  $args {
-     *     Optional. Array or string of HTTP request arguments.
+     * @param  string|array  $args  {
+     *                              Optional. Array or string of HTTP request arguments.
      *
-     *     @type string       $method              Request method. Accepts 'GET', 'POST', 'HEAD', 'PUT', 'DELETE',
-     *                                             'TRACE', 'OPTIONS', or 'PATCH'.
-     *                                             Some transports technically allow others, but should not be
-     *                                             assumed. Default 'GET'.
-     *     @type float        $timeout             How long the connection should stay open in seconds. Default 5.
-     *     @type int          $redirection         Number of allowed redirects. Not supported by all transports.
-     *                                             Default 5.
-     *     @type string       $httpversion         Version of the HTTP protocol to use. Accepts '1.0' and '1.1'.
-     *                                             Default '1.0'.
-     *     @type string       $user-agent          User-agent value sent.
-     *                                             Default 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ).
-     *     @type bool         $reject_unsafe_urls  Whether to pass URLs through wp_http_validate_url().
-     *                                             Default false.
-     *     @type bool         $blocking            Whether the calling code requires the result of the request.
-     *                                             If set to false, the request will be sent to the remote server,
-     *                                             and processing returned to the calling code immediately, the caller
-     *                                             will know if the request succeeded or failed, but will not receive
-     *                                             any response from the remote server. Default true.
-     *     @type string|array $headers             Array or string of headers to send with the request.
-     *                                             Default empty array.
-     *     @type array        $cookies             List of cookies to send with the request. Default empty array.
-     *     @type string|array $body                Body to send with the request. Default null.
-     *     @type bool         $compress            Whether to compress the $body when sending the request.
-     *                                             Default false.
-     *     @type bool         $decompress          Whether to decompress a compressed response. If set to false and
-     *                                             compressed content is returned in the response anyway, it will
-     *                                             need to be separately decompressed. Default true.
-     *     @type bool         $sslverify           Whether to verify SSL for the request. Default true.
-     *     @type string       $sslcertificates     Absolute path to an SSL certificate .crt file.
-     *                                             Default ABSPATH . WPINC . '/certificates/ca-bundle.crt'.
-     *     @type bool         $stream              Whether to stream to a file. If set to true and no filename was
-     *                                             given, it will be dropped it in the WP temp dir and its name will
-     *                                             be set using the basename of the URL. Default false.
-     *     @type string       $filename            Filename of the file to write to when streaming. $stream must be
-     *                                             set to true. Default null.
-     *     @type int          $limit_response_size Size in bytes to limit the response to. Default null.
+     * @type string $method              Request method. Accepts 'GET', 'POST', 'HEAD', 'PUT', 'DELETE',
+     *              'TRACE', 'OPTIONS', or 'PATCH'.
+     *              Some transports technically allow others, but should not be
+     *              assumed. Default 'GET'.
+     * @type float $timeout             How long the connection should stay open in seconds. Default 5.
+     * @type int $redirection         Number of allowed redirects. Not supported by all transports.
+     *           Default 5.
+     * @type string $httpversion         Version of the HTTP protocol to use. Accepts '1.0' and '1.1'.
+     *              Default '1.0'.
+     * @type string $user-agent          User-agent value sent.
+     *              Default 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ).
+     * @type bool $reject_unsafe_urls  Whether to pass URLs through wp_http_validate_url().
+     *            Default false.
+     * @type bool $blocking            Whether the calling code requires the result of the request.
+     *            If set to false, the request will be sent to the remote server,
+     *            and processing returned to the calling code immediately, the caller
+     *            will know if the request succeeded or failed, but will not receive
+     *            any response from the remote server. Default true.
+     * @type string|array $headers             Array or string of headers to send with the request.
+     *                    Default empty array.
+     * @type array $cookies             List of cookies to send with the request. Default empty array.
+     * @type string|array $body                Body to send with the request. Default null.
+     * @type bool $compress            Whether to compress the $body when sending the request.
+     *            Default false.
+     * @type bool $decompress          Whether to decompress a compressed response. If set to false and
+     *            compressed content is returned in the response anyway, it will
+     *            need to be separately decompressed. Default true.
+     * @type bool $sslverify           Whether to verify SSL for the request. Default true.
+     * @type string $sslcertificates     Absolute path to an SSL certificate .crt file.
+     *              Default ABSPATH . WPINC . '/certificates/ca-bundle.crt'.
+     * @type bool $stream              Whether to stream to a file. If set to true and no filename was
+     *            given, it will be dropped it in the WP temp dir and its name will
+     *            be set using the basename of the URL. Default false.
+     * @type string $filename            Filename of the file to write to when streaming. $stream must be
+     *              set to true. Default null.
+     * @type int $limit_response_size Size in bytes to limit the response to. Default null.
      *
      * }
      *
@@ -210,8 +210,8 @@ class WP_Http
              * @since 2.7.0
              * @since 5.1.0 The `$url` parameter was added.
              *
-             * @param  float  $timeout_value Time in seconds until a request times out. Default 5.
-             * @param  string  $url           The request URL.
+             * @param  float  $timeout_value  Time in seconds until a request times out. Default 5.
+             * @param  string  $url  The request URL.
              */
             'timeout' => apply_filters('http_request_timeout', 5, $url),
             /**
@@ -220,8 +220,8 @@ class WP_Http
              * @since 2.7.0
              * @since 5.1.0 The `$url` parameter was added.
              *
-             * @param  int  $redirect_count Number of redirects allowed. Default 5.
-             * @param  string  $url            The request URL.
+             * @param  int  $redirect_count  Number of redirects allowed. Default 5.
+             * @param  string  $url  The request URL.
              */
             'redirection' => apply_filters('http_request_redirection_count', 5, $url),
             /**
@@ -230,8 +230,8 @@ class WP_Http
              * @since 2.7.0
              * @since 5.1.0 The `$url` parameter was added.
              *
-             * @param  string  $version Version of HTTP used. Accepts '1.0' and '1.1'. Default '1.0'.
-             * @param  string  $url     The request URL.
+             * @param  string  $version  Version of HTTP used. Accepts '1.0' and '1.1'. Default '1.0'.
+             * @param  string  $url  The request URL.
              */
             'httpversion' => apply_filters('http_request_version', '1.0', $url),
             /**
@@ -240,8 +240,8 @@ class WP_Http
              * @since 2.7.0
              * @since 5.1.0 The `$url` parameter was added.
              *
-             * @param  string  $user_agent WordPress user agent string.
-             * @param  string  $url        The request URL.
+             * @param  string  $user_agent  WordPress user agent string.
+             * @param  string  $url  The request URL.
              */
             'user-agent' => apply_filters('http_headers_useragent', 'WordPress/'.get_bloginfo('version').'; '.get_bloginfo('url'), $url),
             /**
@@ -250,8 +250,8 @@ class WP_Http
              * @since 3.6.0
              * @since 5.1.0 The `$url` parameter was added.
              *
-             * @param  bool  $pass_url Whether to pass URLs through wp_http_validate_url(). Default false.
-             * @param  string  $url      The request URL.
+             * @param  bool  $pass_url  Whether to pass URLs through wp_http_validate_url(). Default false.
+             * @param  string  $url  The request URL.
              */
             'reject_unsafe_urls' => apply_filters('http_request_reject_unsafe_urls', false, $url),
             'blocking' => true,
@@ -281,8 +281,8 @@ class WP_Http
          *
          * @since 2.7.0
          *
-         * @param  array  $parsed_args An array of HTTP request arguments.
-         * @param  string  $url         The request URL.
+         * @param  array  $parsed_args  An array of HTTP request arguments.
+         * @param  string  $url  The request URL.
          */
         $parsed_args = apply_filters('http_request_args', $parsed_args, $url);
 
@@ -305,9 +305,9 @@ class WP_Http
          *
          * @since 2.9.0
          *
-         * @param  false|array|WP_Error  $response    A preemptive return value of an HTTP request. Default false.
-         * @param  array  $parsed_args HTTP request arguments.
-         * @param  string  $url         The request URL.
+         * @param  false|array|WP_Error  $response  A preemptive return value of an HTTP request. Default false.
+         * @param  array  $parsed_args  HTTP request arguments.
+         * @param  string  $url  The request URL.
          */
         $pre = apply_filters('pre_http_request', false, $parsed_args, $url);
 
@@ -428,9 +428,9 @@ class WP_Http
          * @since 2.8.0
          * @since 5.1.0 The `$url` parameter was added.
          *
-         * @param  bool|string  $ssl_verify Boolean to control whether to verify the SSL connection
-         *                                or path to an SSL certificate.
-         * @param  string  $url        The request URL.
+         * @param  bool|string  $ssl_verify  Boolean to control whether to verify the SSL connection
+         *                                   or path to an SSL certificate.
+         * @param  string  $url  The request URL.
          */
         $options['verify'] = apply_filters('https_ssl_verify', $options['verify'], $url);
 
@@ -469,11 +469,11 @@ class WP_Http
          *
          * @since 2.8.0
          *
-         * @param  array|WP_Error  $response    HTTP response or WP_Error object.
-         * @param  string  $context     Context under which the hook is fired.
-         * @param  string  $class       HTTP transport used.
-         * @param  array  $parsed_args HTTP request arguments.
-         * @param  string  $url         The request URL.
+         * @param  array|WP_Error  $response  HTTP response or WP_Error object.
+         * @param  string  $context  Context under which the hook is fired.
+         * @param  string  $class  HTTP transport used.
+         * @param  array  $parsed_args  HTTP request arguments.
+         * @param  string  $url  The request URL.
          */
         do_action('http_api_debug', $response, 'response', 'WpOrg\Requests\Requests', $parsed_args, $url);
         if (is_wp_error($response)) {
@@ -498,9 +498,9 @@ class WP_Http
          *
          * @since 2.9.0
          *
-         * @param  array  $response    HTTP response.
-         * @param  array  $parsed_args HTTP request arguments.
-         * @param  string  $url         The request URL.
+         * @param  array  $response  HTTP response.
+         * @param  array  $parsed_args  HTTP request arguments.
+         * @param  string  $url  The request URL.
          */
         return apply_filters('http_response', $response, $parsed_args, $url);
     }
@@ -510,7 +510,7 @@ class WP_Http
      *
      * @since 4.6.0
      *
-     * @param  array  $cookies Array of cookies to send with the request.
+     * @param  array  $cookies  Array of cookies to send with the request.
      * @return WpOrg\Requests\Cookie\Jar Cookie holder object.
      */
     public static function normalize_cookies($cookies)
@@ -543,11 +543,11 @@ class WP_Http
      *
      * @since 4.6.0
      *
-     * @param  string  $location URL to redirect to.
+     * @param  string  $location  URL to redirect to.
      * @param  array  $headers  Headers for the redirect.
-     * @param  string|array  $data     Body to send with the request.
+     * @param  string|array  $data  Body to send with the request.
      * @param  array  $options  Redirect request options.
-     * @param  WpOrg\Requests\Response  $original Response object.
+     * @param  WpOrg\Requests\Response  $original  Response object.
      */
     public static function browser_redirect_compatibility($location, $headers, $data, &$options, $original)
     {
@@ -562,7 +562,7 @@ class WP_Http
      *
      * @since 4.7.5
      *
-     * @param  string  $location URL to redirect to.
+     * @param  string  $location  URL to redirect to.
      *
      * @throws WpOrg\Requests\Exception On unsuccessful URL validation.
      */
@@ -580,7 +580,7 @@ class WP_Http
      * @deprecated 6.4.0 Use WpOrg\Requests\Requests::get_transport_class()
      * @see WpOrg\Requests\Requests::get_transport_class()
      *
-     * @param  array  $args Request arguments.
+     * @param  array  $args  Request arguments.
      * @param  string  $url  URL to request.
      * @return string|false Class name for the first transport that claims to support the request.
      *                      False if no transport claims to support the request.
@@ -595,10 +595,10 @@ class WP_Http
          * @since 3.7.0
          * @deprecated 6.4.0 Use WpOrg\Requests\Requests::get_transport_class()
          *
-         * @param  string[]  $transports Array of HTTP transports to check. Default array contains
-         *                             'curl' and 'streams', in that order.
-         * @param  array  $args       HTTP request arguments.
-         * @param  string  $url        The URL to request.
+         * @param  string[]  $transports  Array of HTTP transports to check. Default array contains
+         *                                'curl' and 'streams', in that order.
+         * @param  array  $args  HTTP request arguments.
+         * @param  string  $url  The URL to request.
          */
         $request_order = apply_filters_deprecated('http_api_transports', [$transports, $args, $url], '6.4.0');
 
@@ -633,7 +633,7 @@ class WP_Http
      * @see WP_Http::request()
      *
      * @param  string  $url  URL to request.
-     * @param  array  $args Request arguments.
+     * @param  array  $args  Request arguments.
      * @return array|WP_Error Array containing 'headers', 'body', 'response', 'cookies', 'filename'.
      *                        A WP_Error instance upon error.
      */
@@ -672,7 +672,7 @@ class WP_Http
      * @since 2.7.0
      *
      * @param  string  $url  The request URL.
-     * @param  string|array  $args Optional. Override the defaults.
+     * @param  string|array  $args  Optional. Override the defaults.
      * @return array|WP_Error Array containing 'headers', 'body', 'response', 'cookies', 'filename'.
      *                        A WP_Error instance upon error.
      */
@@ -692,7 +692,7 @@ class WP_Http
      * @since 2.7.0
      *
      * @param  string  $url  The request URL.
-     * @param  string|array  $args Optional. Override the defaults.
+     * @param  string|array  $args  Optional. Override the defaults.
      * @return array|WP_Error Array containing 'headers', 'body', 'response', 'cookies', 'filename'.
      *                        A WP_Error instance upon error.
      */
@@ -712,7 +712,7 @@ class WP_Http
      * @since 2.7.0
      *
      * @param  string  $url  The request URL.
-     * @param  string|array  $args Optional. Override the defaults.
+     * @param  string|array  $args  Optional. Override the defaults.
      * @return array|WP_Error Array containing 'headers', 'body', 'response', 'cookies', 'filename'.
      *                        A WP_Error instance upon error.
      */
@@ -729,13 +729,13 @@ class WP_Http
      *
      * @since 2.7.0
      *
-     * @param  string  $response The full response string.
+     * @param  string  $response  The full response string.
      * @return array {
-     *     Array with response headers and body.
+     *               Array with response headers and body.
      *
-     *     @type string $headers HTTP response headers.
-     *     @type string $body    HTTP response body.
-     * }
+     * @type string $headers HTTP response headers.
+     * @type string $body    HTTP response body.
+     *              }
      */
     public static function processResponse($response) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
     {
@@ -752,23 +752,23 @@ class WP_Http
      *
      * @since 2.7.0
      *
-     * @param  string|array  $headers The original headers. If a string is passed, it will be converted
-     *                              to an array. If an array is passed, then it is assumed to be
-     *                              raw header data with numeric keys with the headers as the values.
-     *                              No headers must be passed that were already processed.
-     * @param  string  $url     Optional. The URL that was requested. Default empty.
+     * @param  string|array  $headers  The original headers. If a string is passed, it will be converted
+     *                                 to an array. If an array is passed, then it is assumed to be
+     *                                 raw header data with numeric keys with the headers as the values.
+     *                                 No headers must be passed that were already processed.
+     * @param  string  $url  Optional. The URL that was requested. Default empty.
      * @return array {
-     *     Processed string headers. If duplicate headers are encountered,
-     *     then a numbered array is returned as the value of that header-key.
+     *               Processed string headers. If duplicate headers are encountered,
+     *               then a numbered array is returned as the value of that header-key.
      *
-     *     @type array            $response {
-     *         @type int    $code    The response status code. Default 0.
-     *         @type string $message The response message. Default empty.
-     *     }
-     *     @type array            $newheaders The processed header data as a multidimensional array.
-     *     @type WP_Http_Cookie[] $cookies    If the original headers contain the 'Set-Cookie' key,
-     *                                        an array containing `WP_Http_Cookie` objects is returned.
-     * }
+     * @type array $response {
+     * @type int $code    The response status code. Default 0.
+     * @type string $message The response message. Default empty.
+     *              }
+     * @type array $newheaders The processed header data as a multidimensional array.
+     * @type WP_Http_Cookie[] $cookies    If the original headers contain the 'Set-Cookie' key,
+     *                        an array containing `WP_Http_Cookie` objects is returned.
+     *                        }
      */
     public static function processHeaders($headers, $url = '') // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
     {// Split headers, one per array element.
@@ -852,7 +852,7 @@ class WP_Http
      *
      * @since 2.8.0
      *
-     * @param  array  $r Full array of args passed into ::request()
+     * @param  array  $r  Full array of args passed into ::request()
      */
     public static function buildCookieHeader(&$r) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
     {
@@ -887,7 +887,7 @@ class WP_Http
      * @link https://tools.ietf.org/html/rfc2616#section-19.4.6 Process for chunked decoding.
      * @since 2.7.0
      *
-     * @param  string  $body Body content.
+     * @param  string  $body  Body content.
      * @return string Chunked decoded body on success or raw body on failure.
      */
     public static function chunkTransferDecode($body) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
@@ -939,7 +939,7 @@ class WP_Http
      * @link https://core.trac.wordpress.org/ticket/8927 Allow preventing external requests.
      * @link https://core.trac.wordpress.org/ticket/14636 Allow wildcard domains in WP_ACCESSIBLE_HOSTS
      *
-     * @param  string  $uri URI of url.
+     * @param  string  $uri  URI of url.
      * @return bool True to block, false to allow.
      */
     public function block_request($uri)
@@ -965,7 +965,7 @@ class WP_Http
              *
              * @since 2.8.0
              *
-             * @param  bool  $block Whether to block local requests. Default false.
+             * @param  bool  $block  Whether to block local requests. Default false.
              */
             return apply_filters('block_local_requests', false);
         }
@@ -1001,7 +1001,7 @@ class WP_Http
      * @deprecated 4.4.0 Use wp_parse_url()
      * @see wp_parse_url()
      *
-     * @param  string  $url The URL to parse.
+     * @param  string  $url  The URL to parse.
      * @return bool|array False on failure; Array of URL components on success;
      *                    See parse_url()'s return values.
      */
@@ -1019,8 +1019,8 @@ class WP_Http
      *
      * @since 3.4.0
      *
-     * @param  string  $maybe_relative_path The URL which might be relative.
-     * @param  string  $url                 The URL which $maybe_relative_path is relative to.
+     * @param  string  $maybe_relative_path  The URL which might be relative.
+     * @param  string  $url  The URL which $maybe_relative_path is relative to.
      * @return string An Absolute URL, in a failure condition where the URL cannot be parsed, the relative URL will be returned.
      */
     public static function make_absolute_url($maybe_relative_path, $url)
@@ -1102,9 +1102,9 @@ class WP_Http
      *
      * @since 3.7.0
      *
-     * @param  string  $url      The URL which was requested.
-     * @param  array  $args     The arguments which were used to make the request.
-     * @param  array  $response The response of the HTTP request.
+     * @param  string  $url  The URL which was requested.
+     * @param  array  $args  The arguments which were used to make the request.
+     * @param  array  $response  The response of the HTTP request.
      * @return array|false|WP_Error An HTTP API response array if the redirect is successfully followed,
      *                              false if no redirect is present, or a WP_Error object if there's an error.
      */
@@ -1164,7 +1164,7 @@ class WP_Http
      * @link http://home.deds.nl/~aeron/regex/ for IPv6 regex.
      * @since 3.7.0
      *
-     * @param  string  $maybe_ip A suspected IP address.
+     * @param  string  $maybe_ip  A suspected IP address.
      * @return int|false Upon success, '4' or '6' to represent an IPv4 or IPv6 address, false upon failure.
      */
     public static function is_ip_address($maybe_ip)

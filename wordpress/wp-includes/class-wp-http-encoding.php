@@ -22,10 +22,10 @@ class WP_Http_Encoding
      *
      * @since 2.8.0
      *
-     * @param  string  $raw      String to compress.
-     * @param  int  $level    Optional. Compression level, 9 is highest. Default 9.
-     * @param  string  $supports Optional, not used. When implemented it will choose
-     *                         the right compression based on what the server supports.
+     * @param  string  $raw  String to compress.
+     * @param  int  $level  Optional. Compression level, 9 is highest. Default 9.
+     * @param  string  $supports  Optional, not used. When implemented it will choose
+     *                            the right compression based on what the server supports.
      * @return string|false Compressed string on success, false on failure.
      */
     public static function compress($raw, $level = 9, $supports = null)
@@ -43,8 +43,8 @@ class WP_Http_Encoding
      *
      * @since 2.8.0
      *
-     * @param  string  $compressed String to decompress.
-     * @param  int  $length     The optional length of the compressed data.
+     * @param  string  $compressed  String to decompress.
+     * @param  int  $length  The optional length of the compressed data.
      * @return string|false Decompressed string on success, false on failure.
      */
     public static function decompress($compressed, $length = null)
@@ -97,7 +97,7 @@ class WP_Http_Encoding
      * @link https://www.php.net/manual/en/function.gzinflate.php#70875
      * @link https://www.php.net/manual/en/function.gzinflate.php#77336
      *
-     * @param  string  $gz_data String to decompress.
+     * @param  string  $gz_data  String to decompress.
      * @return string|false Decompressed string on success, false on failure.
      */
     public static function compatible_gzinflate($gz_data)
@@ -178,9 +178,9 @@ class WP_Http_Encoding
          *
          * @since 3.6.0
          *
-         * @param  string[]  $type Array of what encoding types to accept and their priority values.
+         * @param  string[]  $type  Array of what encoding types to accept and their priority values.
          * @param  string  $url  URL of the HTTP request.
-         * @param  array  $args HTTP request arguments.
+         * @param  array  $args  HTTP request arguments.
          */
         $type = apply_filters('wp_http_accept_encoding', $type, $url, $args);
 
@@ -204,7 +204,7 @@ class WP_Http_Encoding
      *
      * @since 2.8.0
      *
-     * @param  array|string  $headers All of the available headers.
+     * @param  array|string  $headers  All of the available headers.
      * @return bool
      */
     public static function should_decode($headers)

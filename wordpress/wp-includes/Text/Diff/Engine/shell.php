@@ -26,8 +26,8 @@ class Text_Diff_Engine_shell
     /**
      * Returns the array of differences.
      *
-     * @param  array  $from_lines lines of text from old file
-     * @param  array  $to_lines   lines of text from new file
+     * @param  array  $from_lines  lines of text from old file
+     * @param  array  $to_lines  lines of text from new file
      * @return array all changes made (array with Text_Diff_Op_* objects)
      */
     public function diff($from_lines, $to_lines)
@@ -133,10 +133,10 @@ class Text_Diff_Engine_shell
      * Get lines from either the old or new text
      *
      *
-     * @param  array  $text_lines Either $from_lines or $to_lines (passed by reference).
-     * @param  int  $line_no    Current line number (passed by reference).
-     * @param  int  $end        Optional end line, when we want to chop more
-     *                          than one line.
+     * @param  array  $text_lines  Either $from_lines or $to_lines (passed by reference).
+     * @param  int  $line_no  Current line number (passed by reference).
+     * @param  int  $end  Optional end line, when we want to chop more
+     *                    than one line.
      * @return array The chopped lines
      */
     public function _getLines(&$text_lines, &$line_no, $end = false)

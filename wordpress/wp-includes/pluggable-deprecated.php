@@ -23,8 +23,8 @@ if (! function_exists('set_current_user')) {
      * @deprecated 3.0.0 Use wp_set_current_user()
      * @see wp_set_current_user()
      *
-     * @param  int|null  $id User ID.
-     * @param  string  $name Optional. The user's username
+     * @param  int|null  $id  User ID.
+     * @param  string  $name  Optional. The user's username
      * @return WP_User returns wp_set_current_user()
      */
     function set_current_user($id, $name = '')
@@ -61,7 +61,7 @@ if (! function_exists('get_userdatabylogin')) {
      * @deprecated 3.3.0 Use get_user_by()
      * @see get_user_by()
      *
-     * @param  string  $user_login User's username
+     * @param  string  $user_login  User's username
      * @return bool|object False on failure, User DB row object
      */
     function get_userdatabylogin($user_login)
@@ -80,7 +80,7 @@ if (! function_exists('get_user_by_email')) {
      * @deprecated 3.3.0 Use get_user_by()
      * @see get_user_by()
      *
-     * @param  string  $email User's email address
+     * @param  string  $email  User's email address
      * @return bool|object False on failure, User DB row object
      */
     function get_user_by_email($email)
@@ -99,12 +99,12 @@ if (! function_exists('wp_setcookie')) {
      * @deprecated 2.5.0 Use wp_set_auth_cookie()
      * @see wp_set_auth_cookie()
      *
-     * @param  string  $username The user's username
-     * @param  string  $password Optional. The user's password
-     * @param  bool  $already_md5 Optional. Whether the password has already been through MD5
-     * @param  string  $home Optional. Will be used instead of COOKIEPATH if set
-     * @param  string  $siteurl Optional. Will be used instead of SITECOOKIEPATH if set
-     * @param  bool  $remember Optional. Remember that the user is logged in
+     * @param  string  $username  The user's username
+     * @param  string  $password  Optional. The user's password
+     * @param  bool  $already_md5  Optional. Whether the password has already been through MD5
+     * @param  string  $home  Optional. Will be used instead of COOKIEPATH if set
+     * @param  string  $siteurl  Optional. Will be used instead of SITECOOKIEPATH if set
+     * @param  bool  $remember  Optional. Remember that the user is logged in
      */
     function wp_setcookie($username, $password = '', $already_md5 = false, $home = '', $siteurl = '', $remember = false)
     {
@@ -172,9 +172,9 @@ if (! function_exists('wp_login')) {
      *
      * @global string $error Error when false is returned
      *
-     * @param  string  $username   User's username
-     * @param  string  $password   User's password
-     * @param  string  $deprecated Not used
+     * @param  string  $username  User's username
+     * @param  string  $password  User's password
+     * @param  string  $deprecated  Not used
      * @return bool True on successful check, false on login failure.
      */
     function wp_login($username, $password, $deprecated = '')

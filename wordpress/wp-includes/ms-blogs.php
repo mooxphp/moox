@@ -24,7 +24,7 @@ function wpmu_update_blogs_date()
      *
      * @since MU (3.0.0)
      *
-     * @param  int  $blog_id Site ID.
+     * @param  int  $blog_id  Site ID.
      */
     do_action('wpmu_blog_updated', $site_id);
 }
@@ -34,7 +34,7 @@ function wpmu_update_blogs_date()
  *
  * @since MU (3.0.0)
  *
- * @param  int  $blog_id Site ID.
+ * @param  int  $blog_id  Site ID.
  * @return string Full site URL if found. Empty string if not.
  */
 function get_blogaddress_by_id($blog_id)
@@ -56,7 +56,7 @@ function get_blogaddress_by_id($blog_id)
  *
  * @since MU (3.0.0)
  *
- * @param  string  $blogname Name of the subdomain or directory.
+ * @param  string  $blogname  Name of the subdomain or directory.
  * @return string
  */
 function get_blogaddress_by_name($blogname)
@@ -82,7 +82,7 @@ function get_blogaddress_by_name($blogname)
  * @since MU (3.0.0)
  * @since 4.7.0 Converted to use `get_sites()`.
  *
- * @param  string  $slug A site's slug.
+ * @param  string  $slug  A site's slug.
  * @return int|null The site ID, or null if no site is found for the given slug.
  */
 function get_id_from_blogname($slug)
@@ -123,9 +123,9 @@ function get_id_from_blogname($slug)
  * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param  int|string|array  $fields  Optional. A blog ID, a blog slug, or an array of fields to query against.
- *                                  Defaults to the current blog ID.
- * @param  bool  $get_all Whether to retrieve all details or only the details in the blogs table.
- *                                  Default is true.
+ *                                    Defaults to the current blog ID.
+ * @param  bool  $get_all  Whether to retrieve all details or only the details in the blogs table.
+ *                         Default is true.
  * @return WP_Site|false Blog details on success. False on failure.
  */
 function get_blog_details($fields = null, $get_all = true)
@@ -266,7 +266,7 @@ function get_blog_details($fields = null, $get_all = true)
      * @since MU (3.0.0)
      * @deprecated 4.7.0 Use {@see 'site_details'} instead.
      *
-     * @param  WP_Site  $details The blog details.
+     * @param  WP_Site  $details  The blog details.
      */
     $details = apply_filters_deprecated('blog_details', [$details], '4.7.0', 'site_details');
 
@@ -283,7 +283,7 @@ function get_blog_details($fields = null, $get_all = true)
  *
  * @since MU (3.0.0)
  *
- * @param  int  $blog_id Optional. Blog ID. Defaults to current blog.
+ * @param  int  $blog_id  Optional. Blog ID. Defaults to current blog.
  */
 function refresh_blog_details($blog_id = 0)
 {
@@ -302,8 +302,8 @@ function refresh_blog_details($blog_id = 0)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $blog_id Blog ID.
- * @param  array  $details Array of details keyed by blogs table field names.
+ * @param  int  $blog_id  Blog ID.
+ * @param  array  $details  Array of details keyed by blogs table field names.
  * @return bool True if update succeeds, false otherwise.
  */
 function update_blog_details($blog_id, $details = [])
@@ -332,7 +332,7 @@ function update_blog_details($blog_id, $details = [])
  *
  * @since 4.7.4
  *
- * @param  int  $site_id Optional. Site ID. Default is the current site ID.
+ * @param  int  $site_id  Optional. Site ID. Default is the current site ID.
  */
 function clean_site_details_cache($site_id = 0)
 {
@@ -357,9 +357,9 @@ function clean_site_details_cache($site_id = 0)
  *
  * @since MU (3.0.0)
  *
- * @param  int  $id            A blog ID. Can be null to refer to the current blog.
- * @param  string  $option        Name of option to retrieve. Expected to not be SQL-escaped.
- * @param  mixed  $default_value Optional. Default value to return if the option does not exist.
+ * @param  int  $id  A blog ID. Can be null to refer to the current blog.
+ * @param  string  $option  Name of option to retrieve. Expected to not be SQL-escaped.
+ * @param  mixed  $default_value  Optional. Default value to return if the option does not exist.
  * @return mixed Value set for the option.
  */
 function get_blog_option($id, $option, $default_value = false)
@@ -385,8 +385,8 @@ function get_blog_option($id, $option, $default_value = false)
      *
      * @since 3.5.0
      *
-     * @param  string  $value The option value.
-     * @param  int  $id    Blog ID.
+     * @param  string  $value  The option value.
+     * @param  int  $id  Blog ID.
      */
     return apply_filters("blog_option_{$option}", $value, $id);
 }
@@ -405,8 +405,8 @@ function get_blog_option($id, $option, $default_value = false)
  *
  * @since MU (3.0.0)
  *
- * @param  int  $id     A blog ID. Can be null to refer to the current blog.
- * @param  string  $option Name of option to add. Expected to not be SQL-escaped.
+ * @param  int  $id  A blog ID. Can be null to refer to the current blog.
+ * @param  string  $option  Name of option to add. Expected to not be SQL-escaped.
  * @param  mixed  $value  Option value, can be anything. Expected to not be SQL-escaped.
  * @return bool True if the option was added, false otherwise.
  */
@@ -434,8 +434,8 @@ function add_blog_option($id, $option, $value)
  *
  * @since MU (3.0.0)
  *
- * @param  int  $id     A blog ID. Can be null to refer to the current blog.
- * @param  string  $option Name of option to remove. Expected to not be SQL-escaped.
+ * @param  int  $id  A blog ID. Can be null to refer to the current blog.
+ * @param  string  $option  Name of option to remove. Expected to not be SQL-escaped.
  * @return bool True if the option was deleted, false otherwise.
  */
 function delete_blog_option($id, $option)
@@ -462,10 +462,10 @@ function delete_blog_option($id, $option)
  *
  * @since MU (3.0.0)
  *
- * @param  int  $id         The blog ID.
- * @param  string  $option     The option key.
- * @param  mixed  $value      The option value.
- * @param  mixed  $deprecated Not used.
+ * @param  int  $id  The blog ID.
+ * @param  string  $option  The option key.
+ * @param  mixed  $value  The option value.
+ * @param  mixed  $deprecated  Not used.
  * @return bool True if the value was updated, false otherwise.
  */
 function update_blog_option($id, $option, $value, $deprecated = null)
@@ -506,7 +506,7 @@ function update_blog_option($id, $option, $value, $deprecated = null)
  * @global string          $table_prefix
  * @global WP_Object_Cache $wp_object_cache
  *
- * @param  int  $new_blog_id The ID of the blog to switch to. Default: current blog.
+ * @param  int  $new_blog_id  The ID of the blog to switch to. Default: current blog.
  * @param  bool  $deprecated  Not used.
  * @return true Always returns true.
  */
@@ -534,9 +534,9 @@ function switch_to_blog($new_blog_id, $deprecated = null)
          * @since 5.4.0 The `$context` parameter was added.
          *
          * @param  int  $new_blog_id  New blog ID.
-         * @param  int  $prev_blog_id Previous blog ID.
-         * @param  string  $context      Additional context. Accepts 'switch' when called from switch_to_blog()
-         *                             or 'restore' when called from restore_current_blog().
+         * @param  int  $prev_blog_id  Previous blog ID.
+         * @param  string  $context  Additional context. Accepts 'switch' when called from switch_to_blog()
+         *                           or 'restore' when called from restore_current_blog().
          */
         do_action('switch_blog', $new_blog_id, $prev_blog_id, 'switch');
 
@@ -703,8 +703,8 @@ function restore_current_blog()
  *
  * @since 4.9.0
  *
- * @param  int  $new_site_id New site ID.
- * @param  int  $old_site_id Old site ID.
+ * @param  int  $new_site_id  New site ID.
+ * @param  int  $old_site_id  Old site ID.
  */
 function wp_switch_roles_and_user($new_site_id, $old_site_id)
 {
@@ -739,7 +739,7 @@ function ms_is_switched()
  *
  * @since MU (3.0.0)
  *
- * @param  int  $id Blog ID.
+ * @param  int  $id  Blog ID.
  * @return string Whether the blog is archived or not.
  */
 function is_archived($id)
@@ -752,8 +752,8 @@ function is_archived($id)
  *
  * @since MU (3.0.0)
  *
- * @param  int  $id       Blog ID.
- * @param  string  $archived The new status.
+ * @param  int  $id  Blog ID.
+ * @param  string  $archived  The new status.
  * @return string $archived
  */
 function update_archived($id, $archived)
@@ -771,10 +771,10 @@ function update_archived($id, $archived)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $blog_id    Blog ID.
- * @param  string  $pref       Field name.
- * @param  string  $value      Field value.
- * @param  null  $deprecated Not used.
+ * @param  int  $blog_id  Blog ID.
+ * @param  string  $pref  Field name.
+ * @param  string  $value  Field value.
+ * @param  null  $deprecated  Not used.
  * @return string|false $value
  */
 function update_blog_status($blog_id, $pref, $value, $deprecated = null)
@@ -812,8 +812,8 @@ function update_blog_status($blog_id, $pref, $value, $deprecated = null)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $id   Blog ID.
- * @param  string  $pref Field name.
+ * @param  int  $id  Blog ID.
+ * @param  string  $pref  Field name.
  * @return bool|string|null $value
  */
 function get_blog_status($id, $pref)
@@ -835,10 +835,10 @@ function get_blog_status($id, $pref)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  mixed  $deprecated Not used.
- * @param  int  $start      Optional. Number of blogs to offset the query. Used to build LIMIT clause.
- *                          Can be used for pagination. Default 0.
- * @param  int  $quantity   Optional. The maximum number of blogs to retrieve. Default 40.
+ * @param  mixed  $deprecated  Not used.
+ * @param  int  $start  Optional. Number of blogs to offset the query. Used to build LIMIT clause.
+ *                      Can be used for pagination. Default 0.
+ * @param  int  $quantity  Optional. The maximum number of blogs to retrieve. Default 40.
  * @return array The list of blogs.
  */
 function get_last_updated($deprecated = '', $start = 0, $quantity = 40)
@@ -858,9 +858,9 @@ function get_last_updated($deprecated = '', $start = 0, $quantity = 40)
  *
  * @since 3.3.0
  *
- * @param  string  $new_status The new post status.
- * @param  string  $old_status The old post status.
- * @param  WP_Post  $post       Post object.
+ * @param  string  $new_status  The new post status.
+ * @param  string  $old_status  The old post status.
+ * @param  WP_Post  $post  Post object.
  */
 function _update_blog_date_on_post_publish($new_status, $old_status, $post)
 {
@@ -884,7 +884,7 @@ function _update_blog_date_on_post_publish($new_status, $old_status, $post)
  *
  * @since 3.4.0
  *
- * @param  int  $post_id Post ID
+ * @param  int  $post_id  Post ID
  */
 function _update_blog_date_on_post_delete($post_id)
 {
@@ -908,8 +908,8 @@ function _update_blog_date_on_post_delete($post_id)
  * @since 4.0.0
  * @since 6.2.0 Added the `$post` parameter.
  *
- * @param  int  $post_id Post ID.
- * @param  WP_Post  $post    Post object.
+ * @param  int  $post_id  Post ID.
+ * @param  WP_Post  $post  Post object.
  */
 function _update_posts_count_on_delete($post_id, $post)
 {
@@ -926,9 +926,9 @@ function _update_posts_count_on_delete($post_id, $post)
  * @since 4.0.0
  * @since 4.9.0 Added the `$post` parameter.
  *
- * @param  string  $new_status The status the post is changing to.
- * @param  string  $old_status The status the post is changing from.
- * @param  WP_Post  $post       Post object
+ * @param  string  $new_status  The status the post is changing to.
+ * @param  string  $old_status  The status the post is changing from.
+ * @param  WP_Post  $post  Post object
  */
 function _update_posts_count_on_transition_post_status($new_status, $old_status, $post = null)
 {
@@ -952,17 +952,17 @@ function _update_posts_count_on_transition_post_status($new_status, $old_status,
  *
  * @since 5.3.0
  *
- * @param  int  $network_id Optional. The network to get counts for. Default is the current network ID.
+ * @param  int  $network_id  Optional. The network to get counts for. Default is the current network ID.
  * @return int[] {
- *     Numbers of sites grouped by site status.
+ *               Numbers of sites grouped by site status.
  *
- *     @type int $all      The total number of sites.
- *     @type int $public   The number of public sites.
- *     @type int $archived The number of archived sites.
- *     @type int $mature   The number of mature sites.
- *     @type int $spam     The number of spam sites.
- *     @type int $deleted  The number of deleted sites.
- * }
+ * @type int $all      The total number of sites.
+ * @type int $public   The number of public sites.
+ * @type int $archived The number of archived sites.
+ * @type int $mature   The number of mature sites.
+ * @type int $spam     The number of spam sites.
+ * @type int $deleted  The number of deleted sites.
+ *           }
  */
 function wp_count_sites($network_id = null)
 {

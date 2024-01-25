@@ -33,7 +33,7 @@ class WP_Theme_JSON_Schema
      *
      * @since 5.9.0
      *
-     * @param  array  $theme_json The structure to migrate.
+     * @param  array  $theme_json  The structure to migrate.
      * @return array The structure in the last version.
      */
     public static function migrate($theme_json)
@@ -62,7 +62,7 @@ class WP_Theme_JSON_Schema
      *
      * @since 5.9.0
      *
-     * @param  array  $old Data to migrate.
+     * @param  array  $old  Data to migrate.
      * @return array Data without the custom prefixes.
      */
     private static function migrate_v1_to_v2($old)
@@ -86,8 +86,8 @@ class WP_Theme_JSON_Schema
      *
      * @since 5.9.0
      *
-     * @param  array  $settings        Array to process.
-     * @param  array  $paths_to_rename Paths to rename.
+     * @param  array  $settings  Array to process.
+     * @param  array  $paths_to_rename  Paths to rename.
      * @return array The settings in the new format.
      */
     private static function rename_paths($settings, $paths_to_rename)
@@ -112,8 +112,8 @@ class WP_Theme_JSON_Schema
      *
      * @since 5.9.0
      *
-     * @param  array  $settings        Reference to settings either defaults or an individual block's.
-     * @param  array  $paths_to_rename Paths to rename.
+     * @param  array  $settings  Reference to settings either defaults or an individual block's.
+     * @param  array  $paths_to_rename  Paths to rename.
      */
     private static function rename_settings(&$settings, $paths_to_rename)
     {
@@ -134,8 +134,8 @@ class WP_Theme_JSON_Schema
      *
      * @since 5.9.0
      *
-     * @param  array  $settings Reference to the current settings array.
-     * @param  array  $path Path to the property to be removed.
+     * @param  array  $settings  Reference to the current settings array.
+     * @param  array  $path  Path to the property to be removed.
      */
     private static function unset_setting_by_path(&$settings, $path)
     {

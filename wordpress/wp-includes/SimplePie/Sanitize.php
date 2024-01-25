@@ -216,7 +216,7 @@ class SimplePie_Sanitize
      *
      * @since 1.0
      *
-     * @param  array|null  $element_attribute Element/attribute key/value pairs, null for default
+     * @param  array|null  $element_attribute  Element/attribute key/value pairs, null for default
      */
     public function set_url_replacements($element_attribute = null)
     {

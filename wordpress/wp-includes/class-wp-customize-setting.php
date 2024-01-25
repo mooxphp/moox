@@ -167,26 +167,26 @@ class WP_Customize_Setting
      *
      * @since 3.4.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
-     * @param  string  $id      A specific ID of the setting.
-     *                                      Can be a theme mod or option name.
-     * @param  array  $args    {
-     *     Optional. Array of properties for the new Setting object. Default empty array.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
+     * @param  string  $id  A specific ID of the setting.
+     *                      Can be a theme mod or option name.
+     * @param  array  $args  {
+     *                       Optional. Array of properties for the new Setting object. Default empty array.
      *
-     *     @type string          $type                 Type of the setting. Default 'theme_mod'.
-     *     @type string          $capability           Capability required for the setting. Default 'edit_theme_options'
-     *     @type string|string[] $theme_supports       Theme features required to support the panel. Default is none.
-     *     @type string          $default              Default value for the setting. Default is empty string.
-     *     @type string          $transport            Options for rendering the live preview of changes in Customizer.
-     *                                                 Using 'refresh' makes the change visible by reloading the whole preview.
-     *                                                 Using 'postMessage' allows a custom JavaScript to handle live changes.
-     *                                                 Default is 'refresh'.
-     *     @type callable        $validate_callback    Server-side validation callback for the setting's value.
-     *     @type callable        $sanitize_callback    Callback to filter a Customize setting value in un-slashed form.
-     *     @type callable        $sanitize_js_callback Callback to convert a Customize PHP setting value to a value that is
-     *                                                 JSON serializable.
-     *     @type bool            $dirty                Whether or not the setting is initially dirty when created.
-     * }
+     * @type string $type                 Type of the setting. Default 'theme_mod'.
+     * @type string $capability           Capability required for the setting. Default 'edit_theme_options'
+     * @type string|string[] $theme_supports       Theme features required to support the panel. Default is none.
+     * @type string $default              Default value for the setting. Default is empty string.
+     * @type string $transport            Options for rendering the live preview of changes in Customizer.
+     *              Using 'refresh' makes the change visible by reloading the whole preview.
+     *              Using 'postMessage' allows a custom JavaScript to handle live changes.
+     *              Default is 'refresh'.
+     * @type callable $validate_callback    Server-side validation callback for the setting's value.
+     * @type callable $sanitize_callback    Callback to filter a Customize setting value in un-slashed form.
+     * @type callable $sanitize_js_callback Callback to convert a Customize PHP setting value to a value that is
+     *                JSON serializable.
+     * @type bool $dirty                Whether or not the setting is initially dirty when created.
+     *            }
      */
     public function __construct($manager, $id, $args = [])
     {
@@ -237,11 +237,11 @@ class WP_Customize_Setting
      * @since 4.4.0
      *
      * @return array {
-     *     ID data for multidimensional setting.
+     *               ID data for multidimensional setting.
      *
-     *     @type string $base ID base
-     *     @type array  $keys Keys for multidimensional array.
-     * }
+     * @type string $base ID base
+     * @type array $keys Keys for multidimensional array.
+     *             }
      */
     final public function id_data()
     {
@@ -419,7 +419,7 @@ class WP_Customize_Setting
                  *
                  * @since 3.4.0
                  *
-                 * @param  WP_Customize_Setting  $setting WP_Customize_Setting instance.
+                 * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
                  */
                 do_action("customize_preview_{$this->id}", $this);
 
@@ -431,7 +431,7 @@ class WP_Customize_Setting
                  *
                  * @since 4.1.0
                  *
-                 * @param  WP_Customize_Setting  $setting WP_Customize_Setting instance.
+                 * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
                  */
                 do_action("customize_preview_{$this->type}", $this);
         }
@@ -466,7 +466,7 @@ class WP_Customize_Setting
      *
      * @since 3.4.0
      *
-     * @param  mixed  $original Old value.
+     * @param  mixed  $original  Old value.
      * @return mixed New or old value.
      */
     public function _preview_filter($original)
@@ -500,7 +500,7 @@ class WP_Customize_Setting
      * @since 4.4.0
      * @see WP_Customize_Setting::$aggregated_multidimensionals
      *
-     * @param  mixed  $original Original root value.
+     * @param  mixed  $original  Original root value.
      * @return mixed New or old value.
      */
     final public function _multidimensional_preview_filter($original)
@@ -562,7 +562,7 @@ class WP_Customize_Setting
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Setting  $setting WP_Customize_Setting instance.
+         * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
          */
         do_action("customize_save_{$id_base}", $this);
 
@@ -576,7 +576,7 @@ class WP_Customize_Setting
      *
      * @since 3.4.0
      *
-     * @param  mixed  $default_value A default value which is used as a fallback. Default null.
+     * @param  mixed  $default_value  A default value which is used as a fallback. Default null.
      * @return mixed The default value on failure, otherwise the sanitized and validated value.
      */
     final public function post_value($default_value = null)
@@ -589,7 +589,7 @@ class WP_Customize_Setting
      *
      * @since 3.4.0
      *
-     * @param  string|array  $value The value to sanitize.
+     * @param  string|array  $value  The value to sanitize.
      * @return string|array|null|WP_Error Sanitized value, or `null`/`WP_Error` if invalid.
      */
     public function sanitize($value)
@@ -600,8 +600,8 @@ class WP_Customize_Setting
          *
          * @since 3.4.0
          *
-         * @param  mixed  $value   Value of the setting.
-         * @param  WP_Customize_Setting  $setting WP_Customize_Setting instance.
+         * @param  mixed  $value  Value of the setting.
+         * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
          */
         return apply_filters("customize_sanitize_{$this->id}", $value, $this);
     }
@@ -612,7 +612,7 @@ class WP_Customize_Setting
      * @since 4.6.0
      * @see WP_REST_Request::has_valid_params()
      *
-     * @param  mixed  $value Value to validate.
+     * @param  mixed  $value  Value to validate.
      * @return true|WP_Error True if the input was validated, otherwise WP_Error.
      */
     public function validate($value)
@@ -635,8 +635,8 @@ class WP_Customize_Setting
          *
          * @since 4.6.0
          *
-         * @param  WP_Error  $validity Filtered from `true` to `WP_Error` when invalid.
-         * @param  mixed  $value    Value of the setting.
+         * @param  WP_Error  $validity  Filtered from `true` to `WP_Error` when invalid.
+         * @param  mixed  $value  Value of the setting.
          * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
          */
         $validity = apply_filters("customize_validate_{$this->id}", $validity, $value, $this);
@@ -653,7 +653,7 @@ class WP_Customize_Setting
      *
      * @since 4.4.0
      *
-     * @param  mixed  $default_value Value to return if root does not exist.
+     * @param  mixed  $default_value  Value to return if root does not exist.
      * @return mixed
      */
     protected function get_root_value($default_value = null)
@@ -678,7 +678,7 @@ class WP_Customize_Setting
      *
      * @since 4.4.0
      *
-     * @param  mixed  $value Value to set as root of multidimensional setting.
+     * @param  mixed  $value  Value to set as root of multidimensional setting.
      * @return bool Whether the multidimensional root was updated successfully.
      */
     protected function set_root_value($value)
@@ -710,7 +710,7 @@ class WP_Customize_Setting
      *
      * @since 3.4.0
      *
-     * @param  mixed  $value The value to update.
+     * @param  mixed  $value  The value to update.
      * @return bool The result of saving the value.
      */
     protected function update($value)
@@ -735,8 +735,8 @@ class WP_Customize_Setting
              *
              * @since 3.4.0
              *
-             * @param  mixed  $value   Value of the setting.
-             * @param  WP_Customize_Setting  $setting WP_Customize_Setting instance.
+             * @param  mixed  $value  Value of the setting.
+             * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
              */
             do_action("customize_update_{$this->type}", $value, $this);
 
@@ -802,8 +802,8 @@ class WP_Customize_Setting
              * @since 3.4.0
              * @since 4.6.0 Added the `$this` setting instance as the second parameter.
              *
-             * @param  mixed  $default_value The setting default value. Default empty.
-             * @param  WP_Customize_Setting  $setting       The setting instance.
+             * @param  mixed  $default_value  The setting default value. Default empty.
+             * @param  WP_Customize_Setting  $setting  The setting instance.
              */
             $value = apply_filters("customize_value_{$id_base}", $value, $this);
         } elseif ($this->is_multidimensional_aggregated) {
@@ -838,8 +838,8 @@ class WP_Customize_Setting
          *
          * @since 3.4.0
          *
-         * @param  mixed  $value   The setting value.
-         * @param  WP_Customize_Setting  $setting WP_Customize_Setting instance.
+         * @param  mixed  $value  The setting value.
+         * @param  WP_Customize_Setting  $setting  WP_Customize_Setting instance.
          */
         $value = apply_filters("customize_sanitize_js_{$this->id}", $this->value(), $this);
 
@@ -894,7 +894,7 @@ class WP_Customize_Setting
      *
      * @param  array  $root
      * @param  array  $keys
-     * @param  bool  $create Default false.
+     * @param  bool  $create  Default false.
      * @return array|void Keys are 'root', 'node', and 'key'.
      */
     final protected function multidimensional(&$root, $keys, $create = false)
@@ -950,7 +950,7 @@ class WP_Customize_Setting
      *
      * @param  array  $root
      * @param  array  $keys
-     * @param  mixed  $value The value to update.
+     * @param  mixed  $value  The value to update.
      * @return mixed
      */
     final protected function multidimensional_replace($root, $keys, $value)
@@ -977,7 +977,7 @@ class WP_Customize_Setting
      *
      * @param  array  $root
      * @param  array  $keys
-     * @param  mixed  $default_value A default value which is used as a fallback. Default null.
+     * @param  mixed  $default_value  A default value which is used as a fallback. Default null.
      * @return mixed The requested value or the default value.
      */
     final protected function multidimensional_get($root, $keys, $default_value = null)

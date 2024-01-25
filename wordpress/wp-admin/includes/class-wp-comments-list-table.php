@@ -29,7 +29,7 @@ class WP_Comments_List_Table extends WP_List_Table
      *
      * @global int $post_id
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -56,8 +56,8 @@ class WP_Comments_List_Table extends WP_List_Table
      *
      * @since 3.1.0
      *
-     * @param  string  $name       Comment author name.
-     * @param  int  $comment_id Comment ID.
+     * @param  string  $name  Comment author name.
+     * @param  int  $comment_id  Comment ID.
      * @return string Avatar with the user name.
      */
     public function floated_admin_avatar($name, $comment_id)
@@ -159,7 +159,7 @@ class WP_Comments_List_Table extends WP_List_Table
          *
          * @since 5.1.0
          *
-         * @param  array  $args An array of get_comments() arguments.
+         * @param  array  $args  An array of get_comments() arguments.
          */
         $args = apply_filters('comments_list_table_query_args', $args);
 
@@ -207,8 +207,8 @@ class WP_Comments_List_Table extends WP_List_Table
          *
          * @since 2.6.0
          *
-         * @param  int  $comments_per_page The number of comments to list per page.
-         * @param  string  $comment_status    The comment status name. Default 'All'.
+         * @param  int  $comments_per_page  The number of comments to list per page.
+         * @param  string  $comment_status  The comment status name. Default 'All'.
          */
         return apply_filters('comments_per_page', $comments_per_page, $comment_status);
     }
@@ -347,8 +347,8 @@ class WP_Comments_List_Table extends WP_List_Table
          * @since 2.5.0
          * @since 5.1.0 The 'Mine' link was added.
          *
-         * @param  string[]  $status_links An associative array of fully-formed comment status links. Includes 'All', 'Mine',
-         *                              'Pending', 'Approved', 'Spam', and 'Trash'.
+         * @param  string[]  $status_links  An associative array of fully-formed comment status links. Includes 'All', 'Mine',
+         *                                  'Pending', 'Approved', 'Spam', and 'Trash'.
          */
         return apply_filters('comment_status_links', $this->get_views_links($status_links));
     }
@@ -442,8 +442,8 @@ class WP_Comments_List_Table extends WP_List_Table
          * @since 2.5.0
          * @since 5.6.0 The `$which` parameter was added.
          *
-         * @param  string  $comment_status The comment status name. Default 'All'.
-         * @param  string  $which          The location of the extra table nav markup: 'top' or 'bottom'.
+         * @param  string  $comment_status  The comment status name. Default 'All'.
+         * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
          */
         do_action('manage_comments_nav', $comment_status, $which);
 
@@ -496,7 +496,7 @@ class WP_Comments_List_Table extends WP_List_Table
      * @since 5.5.0
      * @since 5.6.0 Renamed from `comment_status_dropdown()` to `comment_type_dropdown()`.
      *
-     * @param  string  $comment_type The current comment type slug.
+     * @param  string  $comment_type  The current comment type slug.
      */
     protected function comment_type_dropdown($comment_type)
     {
@@ -505,7 +505,7 @@ class WP_Comments_List_Table extends WP_List_Table
          *
          * @since 2.7.0
          *
-         * @param  string[]  $comment_types Array of comment type labels keyed by their name.
+         * @param  string[]  $comment_types  Array of comment type labels keyed by their name.
          */
         $comment_types = apply_filters(
             'admin_comment_types_dropdown',
@@ -695,9 +695,9 @@ class WP_Comments_List_Table extends WP_List_Table
      *
      * @global string $comment_status Status for the current listed comments.
      *
-     * @param  WP_Comment  $item        The comment object.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  WP_Comment  $item  The comment object.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for comments. An empty string
      *                if the current column is not the primary column,
      *                or if the current user cannot edit the comment.
@@ -918,7 +918,7 @@ class WP_Comments_List_Table extends WP_List_Table
     /**
      * @since 5.9.0 Renamed `$comment` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Comment  $item The comment object.
+     * @param  WP_Comment  $item  The comment object.
      */
     public function column_cb($item)
     {
@@ -941,7 +941,7 @@ class WP_Comments_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Comment  $comment The comment object.
+     * @param  WP_Comment  $comment  The comment object.
      */
     public function column_comment($comment)
     {
@@ -983,7 +983,7 @@ class WP_Comments_List_Table extends WP_List_Table
     /**
      * @global string $comment_status
      *
-     * @param  WP_Comment  $comment The comment object.
+     * @param  WP_Comment  $comment  The comment object.
      */
     public function column_author($comment)
     {
@@ -1041,7 +1041,7 @@ class WP_Comments_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Comment  $comment The comment object.
+     * @param  WP_Comment  $comment  The comment object.
      */
     public function column_date($comment)
     {
@@ -1070,7 +1070,7 @@ class WP_Comments_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Comment  $comment The comment object.
+     * @param  WP_Comment  $comment  The comment object.
      */
     public function column_response($comment)
     {
@@ -1119,8 +1119,8 @@ class WP_Comments_List_Table extends WP_List_Table
     /**
      * @since 5.9.0 Renamed `$comment` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Comment  $item        The comment object.
-     * @param  string  $column_name The custom column's name.
+     * @param  WP_Comment  $item  The comment object.
+     * @param  string  $column_name  The custom column's name.
      */
     public function column_default($item, $column_name)
     {
@@ -1132,7 +1132,7 @@ class WP_Comments_List_Table extends WP_List_Table
          *
          * @since 2.8.0
          *
-         * @param  string  $column_name The custom column's name.
+         * @param  string  $column_name  The custom column's name.
          * @param  string  $comment_id  The comment ID as a numeric string.
          */
         do_action('manage_comments_custom_column', $column_name, $comment->comment_ID);

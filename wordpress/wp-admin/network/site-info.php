@@ -219,7 +219,7 @@ $attribute_fields['mature'] = __('Mature');
      *
      * @since 5.6.0
      *
-     * @param  int  $id The site ID.
+     * @param  int  $id  The site ID.
      */
     do_action('network_site_info_form', $id);
 

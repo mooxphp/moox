@@ -90,7 +90,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -116,7 +116,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Response object on success.
      */
     public function get_items($request)
@@ -150,7 +150,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -170,7 +170,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  array  $sidebar The registered sidebar configuration.
+     * @param  array  $sidebar  The registered sidebar configuration.
      * @return bool Whether the side can be read.
      */
     protected function check_read_permission($sidebar)
@@ -183,7 +183,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -203,7 +203,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -216,7 +216,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -252,8 +252,8 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  array  $sidebar The updated sidebar.
-         * @param  WP_REST_Request  $request Request object.
+         * @param  array  $sidebar  The updated sidebar.
+         * @param  WP_REST_Request  $request  Request object.
          */
         do_action('rest_save_sidebar', $sidebar, $request);
 
@@ -289,7 +289,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  string|int  $id ID of the sidebar.
+     * @param  string|int  $id  ID of the sidebar.
      * @return array|null The discovered sidebar, or null if it is not registered.
      */
     protected function get_sidebar($id)
@@ -320,8 +320,8 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      * @global array $wp_registered_sidebars The registered sidebars.
      * @global array $wp_registered_widgets  The registered widgets.
      *
-     * @param  array  $item    Sidebar instance.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  array  $item  Sidebar instance.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Prepared response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -394,9 +394,9 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  WP_REST_Response  $response    The response object.
-         * @param  array  $raw_sidebar The raw sidebar data.
-         * @param  WP_REST_Request  $request     The request object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  array  $raw_sidebar  The raw sidebar data.
+         * @param  WP_REST_Request  $request  The request object.
          */
         return apply_filters('rest_prepare_sidebar', $response, $raw_sidebar, $request);
     }
@@ -406,7 +406,7 @@ class WP_REST_Sidebars_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  array  $sidebar Sidebar.
+     * @param  array  $sidebar  Sidebar.
      * @return array Links for the given widget.
      */
     protected function prepare_links($sidebar)

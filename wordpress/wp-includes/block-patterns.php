@@ -163,7 +163,7 @@ function _register_core_block_patterns_and_categories()
  *
  * @since 6.2.0
  *
- * @param  array  $pattern Pattern as returned from the Pattern Directory API.
+ * @param  array  $pattern  Pattern as returned from the Pattern Directory API.
  * @return array Normalized pattern.
  */
 function wp_normalize_remote_block_pattern($pattern)
@@ -190,7 +190,7 @@ function wp_normalize_remote_block_pattern($pattern)
  *              format expected by `register_block_pattern` (camelCase).
  * @since 6.3.0 Add 'pattern-directory/core' to the pattern's 'source'.
  *
- * @param  WP_Screen  $deprecated Unused. Formerly the screen that the current request was triggered from.
+ * @param  WP_Screen  $deprecated  Unused. Formerly the screen that the current request was triggered from.
  */
 function _load_remote_block_patterns($deprecated = null)
 {

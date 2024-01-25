@@ -75,7 +75,7 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -104,7 +104,7 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -132,7 +132,7 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -165,7 +165,7 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  object  $status Post status.
+     * @param  object  $status  Post status.
      * @return bool True if the post status is visible, otherwise false.
      */
     protected function check_read_permission($status)
@@ -192,7 +192,7 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -218,8 +218,8 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
      * @since 4.7.0
      * @since 5.9.0 Renamed `$status` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  stdClass  $item    Post status data.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  stdClass  $item  Post status data.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Post status data.
      */
     public function prepare_item_for_response($item, $request)
@@ -282,8 +282,8 @@ class WP_REST_Post_Statuses_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  object  $status   The original post status object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  object  $status  The original post status object.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_status', $response, $status, $request);

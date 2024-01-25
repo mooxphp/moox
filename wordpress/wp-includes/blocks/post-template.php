@@ -6,7 +6,7 @@
 /**
  * Determines whether a block list contains a block that uses the featured image.
  *
- * @param  WP_Block_List  $inner_blocks Inner block instance.
+ * @param  WP_Block_List  $inner_blocks  Inner block instance.
  * @return bool Whether the block list contains a block that uses the featured image.
  */
 function block_core_post_template_uses_featured_image($inner_blocks)
@@ -34,9 +34,9 @@ function block_core_post_template_uses_featured_image($inner_blocks)
  *
  * @since 6.3.0 Changed render_block_context priority to `1`.
  *
- * @param  array  $attributes Block attributes.
- * @param  string  $content    Block default content.
- * @param  WP_Block  $block      Block instance.
+ * @param  array  $attributes  Block attributes.
+ * @param  string  $content  Block default content.
+ * @param  WP_Block  $block  Block instance.
  * @return string Returns the output of the query, structured using the layout defined by the block's inner blocks.
  */
 function render_block_core_post_template($attributes, $content, $block)

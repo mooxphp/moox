@@ -77,7 +77,7 @@ function ms_site_check()
      *
      * @since 3.0.0
      *
-     * @param  bool|null  $check Whether to skip the blog status check. Default null.
+     * @param  bool|null  $check  Whether to skip the blog status check. Default null.
      */
     $check = apply_filters('ms_site_check', null);
     if ($check !== null) {
@@ -132,9 +132,9 @@ function ms_site_check()
  *
  * @internal In 4.4.0, converted to a wrapper for WP_Network::get_by_path()
  *
- * @param  string  $domain   Domain to check.
- * @param  string  $path     Path to check.
- * @param  int|null  $segments Path segments to use. Defaults to null, or the full path.
+ * @param  string  $domain  Domain to check.
+ * @param  string  $path  Path to check.
+ * @param  int|null  $segments  Path segments to use. Defaults to null, or the full path.
  * @return WP_Network|false Network object if successful. False when no network is found.
  */
 function get_network_by_path($domain, $path, $segments = null)
@@ -155,9 +155,9 @@ function get_network_by_path($domain, $path, $segments = null)
  * @since 3.9.0
  * @since 4.7.0 Updated to always return a `WP_Site` object.
  *
- * @param  string  $domain   Domain to check.
- * @param  string  $path     Path to check.
- * @param  int|null  $segments Path segments to use. Defaults to null, or the full path.
+ * @param  string  $domain  Domain to check.
+ * @param  string  $path  Path to check.
+ * @param  int|null  $segments  Path segments to use. Defaults to null, or the full path.
  * @return WP_Site|false Site object if successful. False when no site is found.
  */
 function get_site_by_path($domain, $path, $segments = null)
@@ -169,11 +169,11 @@ function get_site_by_path($domain, $path, $segments = null)
      *
      * @since 3.9.0
      *
-     * @param  int|null  $segments The number of path segments to consider. WordPress by default looks at
-     *                           one path segment following the network path. The function default of
-     *                           null only makes sense when you know the requested path should match a site.
-     * @param  string  $domain   The requested domain.
-     * @param  string  $path     The requested path, in full.
+     * @param  int|null  $segments  The number of path segments to consider. WordPress by default looks at
+     *                              one path segment following the network path. The function default of
+     *                              null only makes sense when you know the requested path should match a site.
+     * @param  string  $domain  The requested domain.
+     * @param  string  $path  The requested path, in full.
      */
     $segments = apply_filters('site_by_path_segments_count', $segments, $domain, $path);
 
@@ -202,13 +202,13 @@ function get_site_by_path($domain, $path, $segments = null)
      *
      * @since 3.9.0
      *
-     * @param  null|false|WP_Site  $site     Site value to return by path. Default null
-     *                                     to continue retrieving the site.
-     * @param  string  $domain   The requested domain.
-     * @param  string  $path     The requested path, in full.
-     * @param  int|null  $segments The suggested number of paths to consult.
-     *                                     Default null, meaning the entire path was to be consulted.
-     * @param  string[]  $paths    The paths to search for, based on $path and $segments.
+     * @param  null|false|WP_Site  $site  Site value to return by path. Default null
+     *                                    to continue retrieving the site.
+     * @param  string  $domain  The requested domain.
+     * @param  string  $path  The requested path, in full.
+     * @param  int|null  $segments  The suggested number of paths to consult.
+     *                              Default null, meaning the entire path was to be consulted.
+     * @param  string[]  $paths  The paths to search for, based on $path and $segments.
      */
     $pre = apply_filters('pre_get_site_by_path', null, $domain, $path, $segments, $paths);
     if ($pre !== null) {
@@ -287,10 +287,10 @@ function get_site_by_path($domain, $path, $segments = null)
  * @global WP_Network $current_site The current network.
  * @global WP_Site    $current_blog The current site.
  *
- * @param  string  $domain    The requested domain.
- * @param  string  $path      The requested path.
- * @param  bool  $subdomain Optional. Whether a subdomain (true) or subdirectory (false) configuration.
- *                          Default false.
+ * @param  string  $domain  The requested domain.
+ * @param  string  $path  The requested path.
+ * @param  bool  $subdomain  Optional. Whether a subdomain (true) or subdirectory (false) configuration.
+ *                           Default false.
  * @return bool|string True if bootstrap successfully populated `$current_blog` and `$current_site`.
  *                     False if bootstrap could not be properly completed.
  *                     Redirect URL if parts exist, but the request as a whole can not be fulfilled.
@@ -355,8 +355,8 @@ function ms_load_current_site_and_network($domain, $path, $subdomain = false)
              *
              * @since 4.4.0
              *
-             * @param  string  $domain       The domain used to search for a network.
-             * @param  string  $path         The path used to search for a path.
+             * @param  string  $domain  The domain used to search for a network.
+             * @param  string  $path  The path used to search for a path.
              */
             do_action('ms_network_not_found', $domain, $path);
 
@@ -413,9 +413,9 @@ function ms_load_current_site_and_network($domain, $path, $subdomain = false)
          *
          * @since 3.9.0
          *
-         * @param  WP_Network  $current_site The network that had been determined.
-         * @param  string  $domain       The domain used to search for a site.
-         * @param  string  $path         The path used to search for a site.
+         * @param  WP_Network  $current_site  The network that had been determined.
+         * @param  string  $domain  The domain used to search for a site.
+         * @param  string  $path  The path used to search for a site.
          */
         do_action('ms_site_not_found', $current_site, $domain, $path);
 
@@ -461,8 +461,8 @@ function ms_load_current_site_and_network($domain, $path, $subdomain = false)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $domain The requested domain for the error to reference.
- * @param  string  $path   The requested path for the error to reference.
+ * @param  string  $domain  The requested domain for the error to reference.
+ * @param  string  $path  The requested path for the error to reference.
  */
 function ms_not_installed($domain, $path)
 {
@@ -562,7 +562,7 @@ function wpmu_current_site()
  *
  * @internal In 4.6.0, converted to use get_network()
  *
- * @param  object|int  $network The network's database row or ID.
+ * @param  object|int  $network  The network's database row or ID.
  * @return WP_Network|false Object containing network information if found, false if not.
  */
 function wp_get_network($network)

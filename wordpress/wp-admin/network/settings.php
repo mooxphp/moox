@@ -202,7 +202,7 @@ if ($new_admin_email && get_site_option('admin_email') !== $new_admin_email) {
                 if (! get_site_option('registration')) {
                     update_site_option('registration', 'none');
                 }
-                $reg = get_site_option('registration');
+$reg = get_site_option('registration');
 ?>
 				<td>
 					<fieldset>
@@ -499,7 +499,7 @@ $menu_perms = get_site_option('menu_items');
  *
  * @since MU (3.0.0)
  *
- * @param  string[]  $admin_menus Associative array of the menu items available.
+ * @param  string[]  $admin_menus  Associative array of the menu items available.
  */
 $menu_items = apply_filters('mu_menu_items', ['plugins' => __('Plugins')]);
 

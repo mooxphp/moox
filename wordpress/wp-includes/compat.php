@@ -18,10 +18,10 @@ if (! function_exists('_')) {
  *
  * @since 4.2.2
  *
- * @param  bool  $set - Used for testing only
- *             null   : default - get PCRE/u capability
- *             false  : Used for testing - return false for future calls to this function
- *             'reset': Used for testing - restore default behavior of this function
+ * @param  bool  $set  - Used for testing only
+ *                     null   : default - get PCRE/u capability
+ *                     false  : Used for testing - return false for future calls to this function
+ *                     'reset': Used for testing - restore default behavior of this function
  */
 function _wp_can_use_pcre_u($set = null)
 {
@@ -48,11 +48,11 @@ if (! function_exists('mb_substr')) {
      * @since 3.2.0
      * @see _mb_substr()
      *
-     * @param  string  $string   The string to extract the substring from.
-     * @param  int  $start    Position to being extraction from in `$string`.
-     * @param  int|null  $length   Optional. Maximum number of characters to extract from `$string`.
-     *                              Default null.
-     * @param  string|null  $encoding Optional. Character encoding to use. Default null.
+     * @param  string  $string  The string to extract the substring from.
+     * @param  int  $start  Position to being extraction from in `$string`.
+     * @param  int|null  $length  Optional. Maximum number of characters to extract from `$string`.
+     *                            Default null.
+     * @param  string|null  $encoding  Optional. Character encoding to use. Default null.
      * @return string Extracted substring.
      */
     function mb_substr($string, $start, $length = null, $encoding = null) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.stringFound
@@ -72,11 +72,11 @@ if (! function_exists('mb_substr')) {
  *
  * @since 3.2.0
  *
- * @param  string  $str      The string to extract the substring from.
- * @param  int  $start    Position to being extraction from in `$str`.
- * @param  int|null  $length   Optional. Maximum number of characters to extract from `$str`.
- *                              Default null.
- * @param  string|null  $encoding Optional. Character encoding to use. Default null.
+ * @param  string  $str  The string to extract the substring from.
+ * @param  int  $start  Position to being extraction from in `$str`.
+ * @param  int|null  $length  Optional. Maximum number of characters to extract from `$str`.
+ *                            Default null.
+ * @param  string|null  $encoding  Optional. Character encoding to use. Default null.
  * @return string Extracted substring.
  */
 function _mb_substr($str, $start, $length = null, $encoding = null)
@@ -147,8 +147,8 @@ if (! function_exists('mb_strlen')) {
      * @since 4.2.0
      * @see _mb_strlen()
      *
-     * @param  string  $string   The string to retrieve the character length from.
-     * @param  string|null  $encoding Optional. Character encoding to use. Default null.
+     * @param  string  $string  The string to retrieve the character length from.
+     * @param  string|null  $encoding  Optional. Character encoding to use. Default null.
      * @return int String length of `$string`.
      */
     function mb_strlen($string, $encoding = null) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.stringFound
@@ -168,8 +168,8 @@ if (! function_exists('mb_strlen')) {
  *
  * @since 4.2.0
  *
- * @param  string  $str      The string to retrieve the character length from.
- * @param  string|null  $encoding Optional. Character encoding to use. Default null.
+ * @param  string  $str  The string to retrieve the character length from.
+ * @param  string|null  $encoding  Optional. Character encoding to use. Default null.
  * @return int String length of `$str`.
  */
 function _mb_strlen($str, $encoding = null)
@@ -244,11 +244,11 @@ if (! function_exists('hash_hmac')) {
      * @since 3.2.0
      * @see _hash_hmac()
      *
-     * @param  string  $algo   Hash algorithm. Accepts 'md5' or 'sha1'.
-     * @param  string  $data   Data to be hashed.
-     * @param  string  $key    Secret key to use for generating the hash.
-     * @param  bool  $binary Optional. Whether to output raw binary data (true),
-     *                       or lowercase hexits (false). Default false.
+     * @param  string  $algo  Hash algorithm. Accepts 'md5' or 'sha1'.
+     * @param  string  $data  Data to be hashed.
+     * @param  string  $key  Secret key to use for generating the hash.
+     * @param  bool  $binary  Optional. Whether to output raw binary data (true),
+     *                        or lowercase hexits (false). Default false.
      * @return string|false The hash in output determined by `$binary`.
      *                      False if `$algo` is unknown or invalid.
      */
@@ -265,11 +265,11 @@ if (! function_exists('hash_hmac')) {
  *
  * @since 3.2.0
  *
- * @param  string  $algo   Hash algorithm. Accepts 'md5' or 'sha1'.
- * @param  string  $data   Data to be hashed.
- * @param  string  $key    Secret key to use for generating the hash.
- * @param  bool  $binary Optional. Whether to output raw binary data (true),
- *                       or lowercase hexits (false). Default false.
+ * @param  string  $algo  Hash algorithm. Accepts 'md5' or 'sha1'.
+ * @param  string  $data  Data to be hashed.
+ * @param  string  $key  Secret key to use for generating the hash.
+ * @param  bool  $binary  Optional. Whether to output raw binary data (true),
+ *                        or lowercase hexits (false). Default false.
  * @return string|false The hash in output determined by `$binary`.
  *                      False if `$algo` is unknown or invalid.
  */
@@ -321,7 +321,7 @@ if (! function_exists('hash_equals')) {
      *
      * @since 3.9.2
      *
-     * @param  string  $known_string Expected string.
+     * @param  string  $known_string  Expected string.
      * @param  string  $user_string  Actual, user supplied, string.
      * @return bool Whether strings are equal.
      */
@@ -358,7 +358,7 @@ if (! function_exists('is_countable')) {
      *
      * @since 4.9.6
      *
-     * @param  mixed  $value The value to check.
+     * @param  mixed  $value  The value to check.
      * @return bool True if `$value` is countable, false otherwise.
      */
     function is_countable($value)
@@ -379,7 +379,7 @@ if (! function_exists('is_iterable')) {
      *
      * @since 4.9.6
      *
-     * @param  mixed  $value The value to check.
+     * @param  mixed  $value  The value to check.
      * @return bool True if `$value` is iterable, false otherwise.
      */
     function is_iterable($value)
@@ -397,7 +397,7 @@ if (! function_exists('array_key_first')) {
      *
      * @since 5.9.0
      *
-     * @param  array  $array An array.
+     * @param  array  $array  An array.
      * @return string|int|null The first key of array if the array
      *                         is not empty; `null` otherwise.
      */
@@ -418,7 +418,7 @@ if (! function_exists('array_key_last')) {
      *
      * @since 5.9.0
      *
-     * @param  array  $array An array.
+     * @param  array  $array  An array.
      * @return string|int|null The last key of array if the array
      *.                        is not empty; `null` otherwise.
      */
@@ -443,8 +443,8 @@ if (! function_exists('str_contains')) {
      *
      * @since 5.9.0
      *
-     * @param  string  $haystack The string to search in.
-     * @param  string  $needle   The substring to search for in the `$haystack`.
+     * @param  string  $haystack  The string to search in.
+     * @param  string  $needle  The substring to search for in the `$haystack`.
      * @return bool True if `$needle` is in `$haystack`, otherwise false.
      */
     function str_contains($haystack, $needle)
@@ -466,8 +466,8 @@ if (! function_exists('str_starts_with')) {
      *
      * @since 5.9.0
      *
-     * @param  string  $haystack The string to search in.
-     * @param  string  $needle   The substring to search for in the `$haystack`.
+     * @param  string  $haystack  The string to search in.
+     * @param  string  $needle  The substring to search for in the `$haystack`.
      * @return bool True if `$haystack` starts with `$needle`, otherwise false.
      */
     function str_starts_with($haystack, $needle)
@@ -489,8 +489,8 @@ if (! function_exists('str_ends_with')) {
      *
      * @since 5.9.0
      *
-     * @param  string  $haystack The string to search in.
-     * @param  string  $needle   The substring to search for in the `$haystack`.
+     * @param  string  $haystack  The string to search in.
+     * @param  string  $needle  The substring to search for in the `$haystack`.
      * @return bool True if `$haystack` ends with `$needle`, otherwise false.
      */
     function str_ends_with($haystack, $needle)

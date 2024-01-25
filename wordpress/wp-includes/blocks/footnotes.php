@@ -8,9 +8,9 @@
  *
  * @since 6.3.0
  *
- * @param  array  $attributes Block attributes.
- * @param  string  $content    Block default content.
- * @param  WP_Block  $block      Block instance.
+ * @param  array  $attributes  Block attributes.
+ * @param  string  $content  Block default content.
+ * @param  WP_Block  $block  Block instance.
  * @return string Returns the HTML representing the footnotes.
  */
 function render_block_core_footnotes($attributes, $content, $block)
@@ -93,7 +93,7 @@ add_action('init', 'register_block_core_footnotes');
  *
  * @since 6.3.0
  *
- * @param  array  $fields The revision fields.
+ * @param  array  $fields  The revision fields.
  * @return array The revision fields.
  */
 function wp_add_footnotes_to_revision($fields)
@@ -109,10 +109,10 @@ add_filter('_wp_post_revision_fields', 'wp_add_footnotes_to_revision');
  *
  * @since 6.3.0
  *
- * @param  string  $revision_field The field value, but $revision->$field
- *                               (footnotes) does not exist.
- * @param  string  $field          The field name, in this case "footnotes".
- * @param  object  $revision       The revision object to compare against.
+ * @param  string  $revision_field  The field value, but $revision->$field
+ *                                  (footnotes) does not exist.
+ * @param  string  $field  The field name, in this case "footnotes".
+ * @param  object  $revision  The revision object to compare against.
  * @return string The field value.
  */
 function wp_get_footnotes_from_revision($revision_field, $field, $revision)

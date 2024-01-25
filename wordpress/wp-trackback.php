@@ -19,9 +19,9 @@ wp_set_current_user(0);
  *
  * @since 0.71
  *
- * @param  int|bool  $error         Whether there was an error.
- *                                Default '0'. Accepts '0' or '1', true or false.
- * @param  string  $error_message Error message if an error occurred. Default empty string.
+ * @param  int|bool  $error  Whether there was an error.
+ *                           Default '0'. Accepts '0' or '1', true or false.
+ * @param  string  $error_message  Error message if an error occurred. Default empty string.
  */
 function trackback_response($error = 0, $error_message = '')
 {
@@ -98,12 +98,12 @@ if (! empty($trackback_url) && ! empty($title)) {
      *
      * @since 4.7.0
      *
-     * @param  int  $post_id       Post ID related to the trackback.
-     * @param  string  $trackback_url Trackback URL.
-     * @param  string  $charset       Character set.
-     * @param  string  $title         Trackback title.
-     * @param  string  $excerpt       Trackback excerpt.
-     * @param  string  $blog_name     Site name.
+     * @param  int  $post_id  Post ID related to the trackback.
+     * @param  string  $trackback_url  Trackback URL.
+     * @param  string  $charset  Character set.
+     * @param  string  $title  Trackback title.
+     * @param  string  $excerpt  Trackback excerpt.
+     * @param  string  $blog_name  Site name.
      */
     do_action('pre_trackback_post', $post_id, $trackback_url, $charset, $title, $excerpt, $blog_name);
 
@@ -160,7 +160,7 @@ if (! empty($trackback_url) && ! empty($title)) {
      *
      * @since 1.2.0
      *
-     * @param  int  $trackback_id Trackback ID.
+     * @param  int  $trackback_id  Trackback ID.
      */
     do_action('trackback_post', $trackback_id);
 

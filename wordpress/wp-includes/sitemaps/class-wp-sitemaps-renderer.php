@@ -80,7 +80,7 @@ class WP_Sitemaps_Renderer
          *
          * @since 5.5.0
          *
-         * @param  string  $sitemap_url Full URL for the sitemaps XSL file.
+         * @param  string  $sitemap_url  Full URL for the sitemaps XSL file.
          */
         return apply_filters('wp_sitemaps_stylesheet_url', $sitemap_url);
     }
@@ -112,7 +112,7 @@ class WP_Sitemaps_Renderer
          *
          * @since 5.5.0
          *
-         * @param  string  $sitemap_url Full URL for the sitemaps index XSL file.
+         * @param  string  $sitemap_url  Full URL for the sitemaps index XSL file.
          */
         return apply_filters('wp_sitemaps_stylesheet_index_url', $sitemap_url);
     }
@@ -122,7 +122,7 @@ class WP_Sitemaps_Renderer
      *
      * @since 5.5.0
      *
-     * @param  array  $sitemaps Array of sitemap URLs.
+     * @param  array  $sitemaps  Array of sitemap URLs.
      */
     public function render_index($sitemaps)
     {
@@ -143,7 +143,7 @@ class WP_Sitemaps_Renderer
      *
      * @since 5.5.0
      *
-     * @param  array  $sitemaps Array of sitemap URLs.
+     * @param  array  $sitemaps  Array of sitemap URLs.
      * @return string|false A well-formed XML string for a sitemap index. False on error.
      */
     public function get_sitemap_index_xml($sitemaps)
@@ -188,7 +188,7 @@ class WP_Sitemaps_Renderer
      *
      * @since 5.5.0
      *
-     * @param  array  $url_list Array of URLs for a sitemap.
+     * @param  array  $url_list  Array of URLs for a sitemap.
      */
     public function render_sitemap($url_list)
     {
@@ -209,7 +209,7 @@ class WP_Sitemaps_Renderer
      *
      * @since 5.5.0
      *
-     * @param  array  $url_list Array of URLs for a sitemap.
+     * @param  array  $url_list  Array of URLs for a sitemap.
      * @return string|false A well-formed XML string for a sitemap index. False on error.
      */
     public function get_sitemap_xml($url_list)

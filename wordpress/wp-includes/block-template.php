@@ -27,8 +27,8 @@ function _add_template_loader_filters()
  * @global string $_wp_current_template_id
  *
  * @param  string  $template  Path to the template. See locate_template().
- * @param  string  $type      Sanitized filename without extension.
- * @param  string[]  $templates A list of template candidates, in descending order of priority.
+ * @param  string  $type  Sanitized filename without extension.
+ * @param  string[]  $templates  A list of template candidates, in descending order of priority.
  * @return string The path to the Site Editor template canvas file, or the fallback PHP template.
  */
 function locate_block_template($template, $type, array $templates)
@@ -112,8 +112,8 @@ function locate_block_template($template, $type, array $templates)
  * @since 5.8.0
  * @since 5.9.0 Added the `$fallback_template` parameter.
  *
- * @param  string  $template_type      The current template type.
- * @param  string[]  $template_hierarchy The current template hierarchy, ordered by priority.
+ * @param  string  $template_type  The current template type.
+ * @param  string[]  $template_hierarchy  The current template hierarchy, ordered by priority.
  * @param  string  $fallback_template  A PHP fallback template to use if no matching block template is found.
  * @return WP_Block_Template|null template A template object, or null if none could be found.
  */
@@ -289,7 +289,7 @@ function _block_template_viewport_meta_tag()
  *
  * @since 5.8.0
  *
- * @param  string  $template_file Template file name.
+ * @param  string  $template_file  Template file name.
  * @return string Template file name without extension.
  */
 function _strip_template_file_suffix($template_file)
@@ -302,7 +302,7 @@ function _strip_template_file_suffix($template_file)
  *
  * @since 5.8.0
  *
- * @param  array  $context Default context.
+ * @param  array  $context  Default context.
  * @return array Filtered context.
  */
 function _block_template_render_without_post_block_context($context)
@@ -329,7 +329,7 @@ function _block_template_render_without_post_block_context($context)
  *
  * @since 5.9.0
  *
- * @param  WP_Query  $wp_query Current WP_Query instance, passed by reference.
+ * @param  WP_Query  $wp_query  Current WP_Query instance, passed by reference.
  */
 function _resolve_template_for_new_post($wp_query)
 {

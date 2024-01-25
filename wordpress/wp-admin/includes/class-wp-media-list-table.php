@@ -32,7 +32,7 @@ class WP_Media_List_Table extends WP_List_Table
      * @since 3.1.0
      * @see WP_List_Table::__construct() for more information on default arguments.
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -216,8 +216,8 @@ class WP_Media_List_Table extends WP_List_Table
                 $this->months_dropdown('attachment');
             }
 
-            /** This action is documented in wp-admin/includes/class-wp-posts-list-table.php */
-            do_action('restrict_manage_posts', $this->screen->post_type, $which);
+        /** This action is documented in wp-admin/includes/class-wp-posts-list-table.php */
+        do_action('restrict_manage_posts', $this->screen->post_type, $which);
 
         submit_button(__('Filter'), '', 'filter_action', false, ['id' => 'post-query-submit']);
 
@@ -353,7 +353,7 @@ class WP_Media_List_Table extends WP_List_Table
          *
          * @since 3.5.0
          *
-         * @param  string[]  $taxonomies An array of registered taxonomy names to show for attachments.
+         * @param  string[]  $taxonomies  An array of registered taxonomy names to show for attachments.
          * @param  string  $post_type  The post type. Default 'attachment'.
          */
         $taxonomies = apply_filters('manage_taxonomies_for_attachment_columns', $taxonomies, 'attachment');
@@ -393,9 +393,9 @@ class WP_Media_List_Table extends WP_List_Table
          *
          * @since 2.5.0
          *
-         * @param  string[]  $posts_columns An array of columns displayed in the Media list table.
-         * @param  bool  $detached      Whether the list table contains media not attached
-         *                                to any posts. Default true.
+         * @param  string[]  $posts_columns  An array of columns displayed in the Media list table.
+         * @param  bool  $detached  Whether the list table contains media not attached
+         *                          to any posts. Default true.
          */
         return apply_filters('manage_media_columns', $posts_columns, $this->detached);
     }
@@ -420,7 +420,7 @@ class WP_Media_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item The current WP_Post object.
+     * @param  WP_Post  $item  The current WP_Post object.
      */
     public function column_cb($item)
     {
@@ -447,7 +447,7 @@ class WP_Media_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_title($post)
     {
@@ -515,7 +515,7 @@ class WP_Media_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_author($post)
     {
@@ -532,7 +532,7 @@ class WP_Media_List_Table extends WP_List_Table
      * @since 4.3.0
      * @deprecated 6.2.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_desc($post)
     {
@@ -546,7 +546,7 @@ class WP_Media_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_date($post)
     {
@@ -569,9 +569,9 @@ class WP_Media_List_Table extends WP_List_Table
          *
          * @since 6.0.0
          *
-         * @param  string  $h_time      The published time.
-         * @param  WP_Post  $post        Attachment object.
-         * @param  string  $column_name The column name.
+         * @param  string  $h_time  The published time.
+         * @param  WP_Post  $post  Attachment object.
+         * @param  string  $column_name  The column name.
          */
         echo apply_filters('media_date_column_time', $h_time, $post, 'date');
     }
@@ -581,7 +581,7 @@ class WP_Media_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_parent($post)
     {
@@ -644,7 +644,7 @@ class WP_Media_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Post  $post The current WP_Post object.
+     * @param  WP_Post  $post  The current WP_Post object.
      */
     public function column_comments($post)
     {
@@ -667,8 +667,8 @@ class WP_Media_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item        The current WP_Post object.
-     * @param  string  $column_name Current column name.
+     * @param  WP_Post  $item  The current WP_Post object.
+     * @param  string  $column_name  Current column name.
      */
     public function column_default($item, $column_name)
     {
@@ -718,8 +718,8 @@ class WP_Media_List_Table extends WP_List_Table
          *
          * @since 2.5.0
          *
-         * @param  string  $column_name Name of the custom column.
-         * @param  int  $post_id     Attachment ID.
+         * @param  string  $column_name  Name of the custom column.
+         * @param  int  $post_id  Attachment ID.
          */
         do_action('manage_media_custom_column', $column_name, $post->ID);
     }
@@ -874,11 +874,11 @@ class WP_Media_List_Table extends WP_List_Table
          * @since 2.8.0
          *
          * @param  string[]  $actions  An array of action links for each attachment.
-         *                           Includes 'Edit', 'Delete Permanently', 'View',
-         *                           'Copy URL' and 'Download file'.
-         * @param  WP_Post  $post     WP_Post object for the current attachment.
-         * @param  bool  $detached Whether the list table contains media not attached
-         *                           to any posts. Default true.
+         *                             Includes 'Edit', 'Delete Permanently', 'View',
+         *                             'Copy URL' and 'Download file'.
+         * @param  WP_Post  $post  WP_Post object for the current attachment.
+         * @param  bool  $detached  Whether the list table contains media not attached
+         *                          to any posts. Default true.
          */
         return apply_filters('media_row_actions', $actions, $post, $this->detached);
     }
@@ -889,9 +889,9 @@ class WP_Media_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item        Attachment being acted upon.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  WP_Post  $item  Attachment being acted upon.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for media attachments, or an empty string
      *                if the current column is not the primary column.
      */

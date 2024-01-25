@@ -224,8 +224,8 @@ if ($comment->comment_parent) {
      *
      * @since 4.3.0
      *
-     * @param  string  $html    Output HTML to display miscellaneous action.
-     * @param  WP_Comment  $comment Current comment object.
+     * @param  string  $html  Output HTML to display miscellaneous action.
+     * @param  WP_Comment  $comment  Current comment object.
      */
     echo apply_filters('edit_comment_misc_actions', '', $comment);
 ?>
@@ -258,7 +258,7 @@ do_action('add_meta_boxes', 'comment', $comment);
  *
  * @since 3.0.0
  *
- * @param  WP_Comment  $comment Comment object.
+ * @param  WP_Comment  $comment  Comment object.
  */
 do_action('add_meta_boxes_comment', $comment);
 

@@ -105,7 +105,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -126,7 +126,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -157,7 +157,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -184,7 +184,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -208,7 +208,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $plugin The plugin file to check.
+     * @param  string  $plugin  The plugin file to check.
      * @return true|WP_Error True if can read, a WP_Error instance otherwise.
      */
     protected function check_read_permission($plugin)
@@ -239,7 +239,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create items, WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -272,7 +272,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -423,7 +423,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to update the item, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -462,7 +462,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -497,7 +497,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -532,7 +532,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -581,8 +581,8 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  array  $item    Unmarked up and untranslated plugin data from {@see get_plugin_data()}.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  array  $item  Unmarked up and untranslated plugin data from {@see get_plugin_data()}.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)
@@ -623,8 +623,8 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
          *
          * @since 5.5.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  array  $item     The plugin item from {@see get_plugin_data()}.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  array  $item  The plugin item from {@see get_plugin_data()}.
          * @param  WP_REST_Request  $request  The request object.
          */
         return apply_filters('rest_prepare_plugin', $response, $item, $request);
@@ -635,7 +635,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  array  $item The plugin item.
+     * @param  array  $item  The plugin item.
      * @return array[]
      */
     protected function prepare_links($item)
@@ -659,7 +659,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $plugin The plugin file to get data for.
+     * @param  string  $plugin  The plugin file to get data for.
      * @return array|WP_Error The plugin data, or a WP_Error if the plugin is not installed.
      */
     protected function get_plugin_data($plugin)
@@ -681,7 +681,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $plugin The plugin file to check.
+     * @param  string  $plugin  The plugin file to check.
      * @return string Either 'network-active', 'active' or 'inactive'.
      */
     protected function get_plugin_status($plugin)
@@ -702,9 +702,9 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $plugin         The plugin file to update.
-     * @param  string  $new_status     The plugin's new status.
-     * @param  string  $current_status The plugin's current status.
+     * @param  string  $plugin  The plugin file to update.
+     * @param  string  $new_status  The plugin's new status.
+     * @param  string  $current_status  The plugin's current status.
      * @return true|WP_Error
      */
     protected function plugin_status_permission_check($plugin, $new_status, $current_status)
@@ -741,9 +741,9 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $plugin         The plugin file to update.
-     * @param  string  $new_status     The plugin's new status.
-     * @param  string  $current_status The plugin's current status.
+     * @param  string  $plugin  The plugin file to update.
+     * @param  string  $new_status  The plugin's new status.
+     * @param  string  $current_status  The plugin's current status.
      * @return true|WP_Error
      */
     protected function handle_plugin_status($plugin, $new_status, $current_status)
@@ -784,7 +784,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $file The plugin file parameter.
+     * @param  string  $file  The plugin file parameter.
      * @return bool
      */
     public function validate_plugin_param($file)
@@ -803,7 +803,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $file The plugin file parameter.
+     * @param  string  $file  The plugin file parameter.
      * @return string
      */
     public function sanitize_plugin_param($file)
@@ -816,8 +816,8 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request The request to require the plugin matches against.
-     * @param  array  $item    The plugin item.
+     * @param  WP_REST_Request  $request  The request to require the plugin matches against.
+     * @param  array  $item  The plugin item.
      * @return bool
      */
     protected function does_plugin_match_request($request, $item)
@@ -853,7 +853,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $plugin The plugin file.
+     * @param  string  $plugin  The plugin file.
      * @return bool
      */
     protected function is_plugin_installed($plugin)

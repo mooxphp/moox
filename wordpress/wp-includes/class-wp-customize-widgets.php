@@ -99,7 +99,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
      */
     public function __construct($manager)
     {
@@ -169,7 +169,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  string  $id_base Widget ID Base.
+     * @param  string  $id_base  Widget ID Base.
      * @return bool Whether the widget can be selective refreshed.
      */
     public function is_widget_selective_refreshable($id_base)
@@ -184,7 +184,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.2.0
      *
-     * @param  string  $setting_id Setting ID.
+     * @param  string  $setting_id  Setting ID.
      * @return string|void Setting type.
      */
     protected function get_setting_type($setting_id)
@@ -235,8 +235,8 @@ final class WP_Customize_Widgets
      *
      * @since 4.2.0
      *
-     * @param  false|array  $args       The arguments to the WP_Customize_Setting constructor.
-     * @param  string  $setting_id ID for dynamic setting, usually coming from `$_POST['customized']`.
+     * @param  false|array  $args  The arguments to the WP_Customize_Setting constructor.
+     * @param  string  $setting_id  ID for dynamic setting, usually coming from `$_POST['customized']`.
      * @return array|false Setting arguments, false otherwise.
      */
     public function filter_customize_dynamic_setting_args($args, $setting_id)
@@ -253,8 +253,8 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $name          Post value.
-     * @param  mixed  $default_value Default post value.
+     * @param  string  $name  Post value.
+     * @param  mixed  $default_value  Default post value.
      * @return mixed Unslashed post value or default value.
      */
     protected function get_post_value($name, $default_value = null)
@@ -489,9 +489,9 @@ final class WP_Customize_Widgets
                      *
                      * @since 3.9.0
                      *
-                     * @param  array  $section_args Array of Customizer widget section arguments.
-                     * @param  string  $section_id   Customizer section ID.
-                     * @param  int|string  $sidebar_id   Sidebar ID.
+                     * @param  array  $section_args  Array of Customizer widget section arguments.
+                     * @param  string  $section_id  Customizer section ID.
+                     * @param  int|string  $sidebar_id  Sidebar ID.
                      */
                     $section_args = apply_filters('customizer_widgets_section_args', $section_args, $section_id, $sidebar_id);
 
@@ -589,7 +589,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $widget_id Widget ID.
+     * @param  string  $widget_id  Widget ID.
      * @return string Maybe-parsed widget ID.
      */
     public function get_setting_id($widget_id)
@@ -618,7 +618,7 @@ final class WP_Customize_Widgets
      *
      * @global array $wp_registered_widget_controls
      *
-     * @param  string  $widget_id Widget ID.
+     * @param  string  $widget_id  Widget ID.
      * @return bool Whether or not the widget is a "wide" widget.
      */
     public function is_wide_widget($widget_id)
@@ -635,8 +635,8 @@ final class WP_Customize_Widgets
          *
          * @since 3.9.0
          *
-         * @param  bool  $is_wide   Whether the widget is wide, Default false.
-         * @param  string  $widget_id Widget ID.
+         * @param  bool  $is_wide  Whether the widget is wide, Default false.
+         * @param  string  $widget_id  Widget ID.
          */
         return apply_filters('is_wide_widget_in_customizer', $is_wide, $widget_id);
     }
@@ -646,7 +646,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $widget_id Widget ID.
+     * @param  string  $widget_id  Widget ID.
      * @return array Array containing a widget's id_base and number components.
      */
     public function parse_widget_id($widget_id)
@@ -672,7 +672,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $setting_id Widget setting ID.
+     * @param  string  $setting_id  Widget setting ID.
      * @return array|WP_Error Array containing a widget's id_base and number components,
      *                        or a WP_Error object.
      */
@@ -999,8 +999,8 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $id        Widget setting ID.
-     * @param  array  $overrides Array of setting overrides.
+     * @param  string  $id  Widget setting ID.
+     * @param  array  $overrides  Array of setting overrides.
      * @return array Possibly modified setting arguments.
      */
     public function get_setting_args($id, $overrides = [])
@@ -1034,8 +1034,8 @@ final class WP_Customize_Widgets
          * @since 3.9.0
          * @see WP_Customize_Setting
          *
-         * @param  array  $args Array of Customizer setting arguments.
-         * @param  string  $id   Widget setting ID.
+         * @param  array  $args  Array of Customizer setting arguments.
+         * @param  string  $id  Widget setting ID.
          */
         return apply_filters('widget_customizer_setting_args', $args, $id);
     }
@@ -1047,7 +1047,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string[]  $widget_ids Array of widget IDs.
+     * @param  string[]  $widget_ids  Array of widget IDs.
      * @return string[] Array of sanitized widget IDs.
      */
     public function sanitize_sidebar_widgets($widget_ids)
@@ -1160,8 +1160,8 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  array  $widget_a The first widget to compare.
-     * @param  array  $widget_b The second widget to compare.
+     * @param  array  $widget_a  The first widget to compare.
+     * @param  array  $widget_b  The second widget to compare.
      * @return int Reorder position for the current widget comparison.
      */
     protected function _sort_name_callback($widget_a, $widget_b)
@@ -1174,7 +1174,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  array  $args Widget control arguments.
+     * @param  array  $args  Widget control arguments.
      * @return string Widget control form HTML markup.
      */
     public function get_widget_control($args)
@@ -1195,12 +1195,12 @@ final class WP_Customize_Widgets
      *
      * @since 4.4.0
      *
-     * @param  array  $args Widget control arguments.
+     * @param  array  $args  Widget control arguments.
      * @return array {
      *
-     *     @type string $control Markup for widget control wrapping form.
-     *     @type string $content The contents of the widget form itself.
-     * }
+     * @type string $control Markup for widget control wrapping form.
+     * @type string $content The contents of the widget form itself.
+     *              }
      */
     public function get_widget_control_parts($args)
     {
@@ -1241,7 +1241,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.2.0
      *
-     * @param  array  $nonces Array of nonces.
+     * @param  array  $nonces  Array of nonces.
      * @return array Array of nonces.
      */
     public function refresh_nonces($nonces)
@@ -1257,7 +1257,7 @@ final class WP_Customize_Widgets
      *
      * @since 5.8.0
      *
-     * @param  bool  $is_block_editor_screen Current decision about loading block assets.
+     * @param  bool  $is_block_editor_screen  Current decision about loading block assets.
      * @return bool Filtered decision about loading block assets.
      */
     public function should_load_block_editor_scripts_and_styles($is_block_editor_screen)
@@ -1279,7 +1279,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  array  $sidebars_widgets List of widgets for the current sidebar.
+     * @param  array  $sidebars_widgets  List of widgets for the current sidebar.
      * @return array
      */
     public function preview_sidebars_widgets($sidebars_widgets)
@@ -1371,7 +1371,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  array  $widget Rendered widget to tally.
+     * @param  array  $widget  Rendered widget to tally.
      */
     public function tally_rendered_widgets($widget)
     {
@@ -1383,7 +1383,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.0.0
      *
-     * @param  string  $widget_id Widget ID to check.
+     * @param  string  $widget_id  Widget ID to check.
      * @return bool Whether the widget is rendered.
      */
     public function is_widget_rendered($widget_id)
@@ -1396,7 +1396,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.0.0
      *
-     * @param  string  $sidebar_id Sidebar ID to check.
+     * @param  string  $sidebar_id  Sidebar ID to check.
      * @return bool Whether the sidebar is rendered.
      */
     public function is_sidebar_rendered($sidebar_id)
@@ -1414,7 +1414,7 @@ final class WP_Customize_Widgets
      * @since 3.9.0
      *
      * @param  bool  $is_active  Whether the sidebar is active.
-     * @param  string  $sidebar_id Sidebar ID.
+     * @param  string  $sidebar_id  Sidebar ID.
      * @return bool Whether the sidebar is active.
      */
     public function tally_sidebars_via_is_active_sidebar_calls($is_active, $sidebar_id)
@@ -1440,7 +1440,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  bool  $has_widgets Whether the current sidebar has widgets.
+     * @param  bool  $has_widgets  Whether the current sidebar has widgets.
      * @param  string  $sidebar_id  Sidebar ID.
      * @return bool Whether the current sidebar has widgets.
      */
@@ -1466,7 +1466,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $serialized_instance Widget instance.
+     * @param  string  $serialized_instance  Widget instance.
      * @return string MAC for serialized widget instance.
      */
     protected function get_instance_hash_key($serialized_instance)
@@ -1485,8 +1485,8 @@ final class WP_Customize_Widgets
      *
      * @global WP_Widget_Factory $wp_widget_factory
      *
-     * @param  array  $value   Widget instance to sanitize.
-     * @param  string  $id_base Optional. Base of the ID of the widget being sanitized. Default null.
+     * @param  array  $value  Widget instance to sanitize.
+     * @param  string  $id_base  Optional. Base of the ID of the widget being sanitized. Default null.
      * @return array|void Sanitized widget instance.
      */
     public function sanitize_widget_instance($value, $id_base = null)
@@ -1545,8 +1545,8 @@ final class WP_Customize_Widgets
      *
      * @global WP_Widget_Factory $wp_widget_factory
      *
-     * @param  array  $value   Widget instance to convert to JSON.
-     * @param  string  $id_base Optional. Base of the ID of the widget being sanitized. Default null.
+     * @param  array  $value  Widget instance to convert to JSON.
+     * @param  string  $id_base  Optional. Base of the ID of the widget being sanitized. Default null.
      * @return array JSON-converted widget instance.
      */
     public function sanitize_widget_js_instance($value, $id_base = null)
@@ -1586,7 +1586,7 @@ final class WP_Customize_Widgets
      *
      * @global array $wp_registered_widgets
      *
-     * @param  array  $widget_ids List of widget IDs.
+     * @param  array  $widget_ids  List of widget IDs.
      * @return array Parsed list of widget IDs.
      */
     public function sanitize_sidebar_widgets_js_instance($widget_ids)
@@ -1607,7 +1607,7 @@ final class WP_Customize_Widgets
      * @global array $wp_registered_widget_updates
      * @global array $wp_registered_widget_controls
      *
-     * @param  string  $widget_id Widget ID.
+     * @param  string  $widget_id  Widget ID.
      * @return array|WP_Error Array containing the updated widget information.
      *                        A WP_Error object, otherwise.
      */
@@ -1802,8 +1802,8 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  array|false  $partial_args Partial arguments.
-     * @param  string  $partial_id   Partial ID.
+     * @param  array|false  $partial_args  Partial arguments.
+     * @param  string  $partial_id  Partial ID.
      * @return array (Maybe) modified partial arguments.
      */
     public function customize_dynamic_partial_args($partial_args, $partial_id)
@@ -1852,12 +1852,12 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  array  $params {
-     *     Dynamic sidebar params.
+     * @param  array  $params  {
+     *                         Dynamic sidebar params.
      *
-     *     @type array $args        Sidebar args.
-     *     @type array $widget_args Widget args.
-     * }
+     * @type array $args        Sidebar args.
+     * @type array $widget_args Widget args.
+     *             }
      *
      * @see WP_Customize_Nav_Menus::filter_wp_nav_menu_args()
      *
@@ -1928,7 +1928,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  array  $allowed_html Allowed HTML.
+     * @param  array  $allowed_html  Allowed HTML.
      * @return array (Maybe) modified allowed HTML.
      */
     public function filter_wp_kses_allowed_data_attributes($allowed_html)
@@ -1991,7 +1991,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  int|string  $index Index, name, or ID of the dynamic sidebar.
+     * @param  int|string  $index  Index, name, or ID of the dynamic sidebar.
      */
     public function start_dynamic_sidebar($index)
     {
@@ -2012,7 +2012,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  int|string  $index Index, name, or ID of the dynamic sidebar.
+     * @param  int|string  $index  Index, name, or ID of the dynamic sidebar.
      */
     public function end_dynamic_sidebar($index)
     {
@@ -2045,7 +2045,7 @@ final class WP_Customize_Widgets
      *
      * @since 4.5.0
      *
-     * @param  array  $sidebars_widgets Sidebars widgets.
+     * @param  array  $sidebars_widgets  Sidebars widgets.
      * @return array Filtered sidebars widgets.
      */
     public function filter_sidebars_widgets_for_rendering_widget($sidebars_widgets)
@@ -2061,13 +2061,13 @@ final class WP_Customize_Widgets
      * @since 4.5.0
      * @see dynamic_sidebar()
      *
-     * @param  WP_Customize_Partial  $partial Partial.
-     * @param  array  $context {
-     *     Sidebar args supplied as container context.
+     * @param  WP_Customize_Partial  $partial  Partial.
+     * @param  array  $context  {
+     *                          Sidebar args supplied as container context.
      *
-     *     @type string $sidebar_id              ID for sidebar for widget to render into.
-     *     @type int    $sidebar_instance_number Disambiguating instance number.
-     * }
+     * @type string $sidebar_id              ID for sidebar for widget to render into.
+     * @type int $sidebar_instance_number Disambiguating instance number.
+     *           }
      *
      * @return string|false
      */
@@ -2138,7 +2138,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  string  $option_name Option name.
+     * @param  string  $option_name  Option name.
      * @return bool Whether the option capture is ignored.
      */
     protected function is_option_capture_ignored($option_name)
@@ -2163,8 +2163,8 @@ final class WP_Customize_Widgets
      *
      * @since 4.2.0
      *
-     * @param  string  $option_name   Option name.
-     * @param  mixed  $default_value Optional. Default value to return if the option does not exist. Default false.
+     * @param  string  $option_name  Option name.
+     * @param  mixed  $default_value  Optional. Default value to return if the option does not exist. Default false.
      * @return mixed Value set for the option.
      */
     protected function get_captured_option($option_name, $default_value = false)
@@ -2211,9 +2211,9 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  mixed  $new_value   The new option value.
-     * @param  string  $option_name Name of the option.
-     * @param  mixed  $old_value   The old option value.
+     * @param  mixed  $new_value  The new option value.
+     * @param  string  $option_name  Name of the option.
+     * @param  mixed  $old_value  The old option value.
      * @return mixed Filtered option value.
      */
     public function capture_filter_pre_update_option($new_value, $option_name, $old_value)
@@ -2236,7 +2236,7 @@ final class WP_Customize_Widgets
      *
      * @since 3.9.0
      *
-     * @param  mixed  $value Value to return instead of the option value.
+     * @param  mixed  $value  Value to return instead of the option value.
      * @return mixed Filtered option value.
      */
     public function capture_filter_pre_get_option($value)

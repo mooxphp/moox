@@ -170,7 +170,7 @@ require_once ABSPATH.'wp-admin/admin-header.php';
      *
      * @since 2.8.0
      *
-     * @param  string[]  $tabs Associative array of the tabs shown on the Add Themes screen. Default is 'upload'.
+     * @param  string[]  $tabs  Associative array of the tabs shown on the Add Themes screen. Default is 'upload'.
      */
     $tabs = apply_filters('install_themes_tabs', ['upload' => __('Upload Theme')]);
 if (! empty($tabs['upload']) && current_user_can('upload_themes')) {
@@ -303,7 +303,7 @@ if ($tab) {
      * @since 2.8.0
      * @since 6.1.0 Added the `install_themes_block-themes` hook name.
      *
-     * @param  int  $paged Number of the current page of results being viewed.
+     * @param  int  $paged  Number of the current page of results being viewed.
      */
     do_action("install_themes_{$tab}", $paged);
 }

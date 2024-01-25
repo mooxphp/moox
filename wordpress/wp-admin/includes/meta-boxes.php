@@ -14,15 +14,15 @@
  *
  * @global string $action
  *
- * @param  WP_Post  $post Current post object.
- * @param  array  $args {
- *     Array of arguments for building the post submit meta box.
+ * @param  WP_Post  $post  Current post object.
+ * @param  array  $args  {
+ *                       Array of arguments for building the post submit meta box.
  *
- *     @type string   $id       Meta box 'id' attribute.
- *     @type string   $title    Meta box title.
- *     @type callable $callback Meta box display callback.
- *     @type array    $args     Extra meta box arguments.
- * }
+ * @type string $id       Meta box 'id' attribute.
+ * @type string $title    Meta box title.
+ * @type callable $callback Meta box display callback.
+ * @type array $args     Extra meta box arguments.
+ *             }
  */
 function post_submit_meta_box($post, $args = [])
 {
@@ -84,15 +84,15 @@ function post_submit_meta_box($post, $args = [])
 			<?php
         }
 
-        /**
-         * Fires after the Save Draft (or Save as Pending) and Preview (or Preview Changes) buttons
-         * in the Publish meta box.
-         *
-         * @since 4.4.0
-         *
-         * @param  WP_Post  $post WP_Post object for the current post.
-         */
-        do_action('post_submitbox_minor_actions', $post);
+    /**
+     * Fires after the Save Draft (or Save as Pending) and Preview (or Preview Changes) buttons
+     * in the Publish meta box.
+     *
+     * @since 4.4.0
+     *
+     * @param  WP_Post  $post  WP_Post object for the current post.
+     */
+    do_action('post_submitbox_minor_actions', $post);
     ?>
 		<div class="clear"></div>
 	</div>
@@ -187,7 +187,7 @@ function post_submit_meta_box($post, $args = [])
             $visibility_trans = __('Public');
         }
 
-        echo esc_html($visibility_trans);
+    echo esc_html($visibility_trans);
     ?>
 			</span>
 
@@ -335,7 +335,7 @@ function post_submit_meta_box($post, $args = [])
      * @since 2.9.0
      * @since 4.4.0 Added the `$post` parameter.
      *
-     * @param  WP_Post  $post WP_Post object for the current post.
+     * @param  WP_Post  $post  WP_Post object for the current post.
      */
     do_action('post_submitbox_misc_actions', $post);
     ?>
@@ -351,8 +351,8 @@ function post_submit_meta_box($post, $args = [])
      * @since 2.7.0
      * @since 4.9.0 Added the `$post` parameter.
      *
-     * @param  WP_Post|null  $post WP_Post object for the current post on Edit Post screen,
-     *                           null on Edit Link screen.
+     * @param  WP_Post|null  $post  WP_Post object for the current post on Edit Post screen,
+     *                              null on Edit Link screen.
      */
     do_action('post_submitbox_start', $post);
     ?>
@@ -413,7 +413,7 @@ function post_submit_meta_box($post, $args = [])
  *
  * @since 3.5.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function attachment_submit_meta_box($post)
 {
@@ -454,7 +454,7 @@ function attachment_submit_meta_box($post)
      * @since 3.5.0
      * @since 4.9.0 Added the `$post` parameter.
      *
-     * @param  WP_Post  $post WP_Post object for the current attachment.
+     * @param  WP_Post  $post  WP_Post object for the current attachment.
      */
     do_action('attachment_submitbox_misc_actions', $post);
     ?>
@@ -504,15 +504,15 @@ function attachment_submit_meta_box($post)
  *
  * @since 3.1.0
  *
- * @param  WP_Post  $post Current post object.
- * @param  array  $box {
- *     Post formats meta box arguments.
+ * @param  WP_Post  $post  Current post object.
+ * @param  array  $box  {
+ *                      Post formats meta box arguments.
  *
- *     @type string   $id       Meta box 'id' attribute.
- *     @type string   $title    Meta box title.
- *     @type callable $callback Meta box display callback.
- *     @type array    $args     Extra meta box arguments.
- * }
+ * @type string $id       Meta box 'id' attribute.
+ * @type string $title    Meta box title.
+ * @type callable $callback Meta box display callback.
+ * @type array $args     Extra meta box arguments.
+ *             }
  */
 function post_format_meta_box($post, $box)
 {
@@ -555,18 +555,18 @@ function post_format_meta_box($post, $box)
  *
  * @todo Create taxonomy-agnostic wrapper for this.
  *
- * @param  WP_Post  $post Current post object.
- * @param  array  $box {
- *     Tags meta box arguments.
+ * @param  WP_Post  $post  Current post object.
+ * @param  array  $box  {
+ *                      Tags meta box arguments.
  *
- *     @type string   $id       Meta box 'id' attribute.
- *     @type string   $title    Meta box title.
- *     @type callable $callback Meta box display callback.
- *     @type array    $args {
- *         Extra meta box arguments.
- *         @type string $taxonomy Taxonomy. Default 'post_tag'.
- *     }
- * }
+ * @type string $id       Meta box 'id' attribute.
+ * @type string $title    Meta box title.
+ * @type callable $callback Meta box display callback.
+ * @type array $args {
+ *             Extra meta box arguments.
+ * @type string $taxonomy Taxonomy. Default 'post_tag'.
+ *              }
+ *              }
  */
 function post_tags_meta_box($post, $box)
 {
@@ -618,18 +618,18 @@ function post_tags_meta_box($post, $box)
  *
  * @todo Create taxonomy-agnostic wrapper for this.
  *
- * @param  WP_Post  $post Current post object.
- * @param  array  $box {
- *     Categories meta box arguments.
+ * @param  WP_Post  $post  Current post object.
+ * @param  array  $box  {
+ *                      Categories meta box arguments.
  *
- *     @type string   $id       Meta box 'id' attribute.
- *     @type string   $title    Meta box title.
- *     @type callable $callback Meta box display callback.
- *     @type array    $args {
- *         Extra meta box arguments.
- *         @type string $taxonomy Taxonomy. Default 'category'.
- *     }
- * }
+ * @type string $id       Meta box 'id' attribute.
+ * @type string $title    Meta box title.
+ * @type callable $callback Meta box display callback.
+ * @type array $args {
+ *             Extra meta box arguments.
+ * @type string $taxonomy Taxonomy. Default 'category'.
+ *              }
+ *              }
  */
 function post_categories_meta_box($post, $box)
 {
@@ -702,24 +702,24 @@ function post_categories_meta_box($post, $box)
 	     *
 	     * @since 4.4.0
 	     *
-	     * @param  array  $parent_dropdown_args {
-	     *     Optional. Array of arguments to generate parent dropdown.
+	     * @param  array  $parent_dropdown_args  {
+	     *                                       Optional. Array of arguments to generate parent dropdown.
 	     *
-	     *     @type string   $taxonomy         Name of the taxonomy to retrieve.
-	     *     @type bool     $hide_if_empty    True to skip generating markup if no
-	     *                                      categories are found. Default 0.
-	     *     @type string   $name             Value for the 'name' attribute
-	     *                                      of the select element.
-	     *                                      Default "new{$tax_name}_parent".
-	     *     @type string   $orderby          Which column to use for ordering
-	     *                                      terms. Default 'name'.
-	     *     @type bool|int $hierarchical     Whether to traverse the taxonomy
-	     *                                      hierarchy. Default 1.
-	     *     @type string   $show_option_none Text to display for the "none" option.
-	     *                                      Default "&mdash; {$parent} &mdash;",
-	     *                                      where `$parent` is 'parent_item'
-	     *                                      taxonomy label.
-	     * }
+	     * @type string $taxonomy         Name of the taxonomy to retrieve.
+	     * @type bool $hide_if_empty    True to skip generating markup if no
+	     *            categories are found. Default 0.
+	     * @type string $name             Value for the 'name' attribute
+	     *              of the select element.
+	     *              Default "new{$tax_name}_parent".
+	     * @type string $orderby          Which column to use for ordering
+	     *              terms. Default 'name'.
+	     * @type bool|int $hierarchical     Whether to traverse the taxonomy
+	     *                hierarchy. Default 1.
+	     * @type string $show_option_none Text to display for the "none" option.
+	     *              Default "&mdash; {$parent} &mdash;",
+	     *              where `$parent` is 'parent_item'
+	     *              taxonomy label.
+	     *              }
 	     */
 	    $parent_dropdown_args = apply_filters('post_edit_category_parent_dropdown_args', $parent_dropdown_args);
 
@@ -740,7 +740,7 @@ function post_categories_meta_box($post, $box)
  *
  * @since 2.6.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_excerpt_meta_box($post)
 {
@@ -768,7 +768,7 @@ function post_excerpt_meta_box($post)
  *
  * @since 2.6.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_trackback_meta_box($post)
 {
@@ -810,7 +810,7 @@ function post_trackback_meta_box($post)
  *
  * @since 2.6.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_custom_meta_box($post)
 {
@@ -845,7 +845,7 @@ function post_custom_meta_box($post)
  *
  * @since 2.6.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_comment_status_meta_box($post)
 {
@@ -868,7 +868,7 @@ function post_comment_status_meta_box($post)
      *
      * @since 3.1.0
      *
-     * @param  WP_Post  $post WP_Post object for the current post.
+     * @param  WP_Post  $post  WP_Post object for the current post.
      */
     do_action('post_comment_status_meta_box-options', $post); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
     ?>
@@ -881,7 +881,7 @@ function post_comment_status_meta_box($post)
  *
  * @since 3.0.0
  *
- * @param  array  $result Table header rows.
+ * @param  array  $result  Table header rows.
  * @return array
  */
 function post_comment_meta_box_thead($result)
@@ -896,7 +896,7 @@ function post_comment_meta_box_thead($result)
  *
  * @since 2.8.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_comment_meta_box($post)
 {
@@ -938,7 +938,7 @@ function post_comment_meta_box($post)
  *
  * @since 2.6.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_slug_meta_box($post)
 {
@@ -961,7 +961,7 @@ function post_slug_meta_box($post)
  *
  * @global int $user_ID
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_author_meta_box($post)
 {
@@ -992,7 +992,7 @@ function post_author_meta_box($post)
  *
  * @since 2.6.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_revisions_meta_box($post)
 {
@@ -1008,7 +1008,7 @@ function post_revisions_meta_box($post)
  *
  * @since 2.7.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function page_attributes_meta_box($post)
 {
@@ -1029,8 +1029,8 @@ function page_attributes_meta_box($post)
          * @since 3.3.0
          * @see wp_dropdown_pages()
          *
-         * @param  array  $dropdown_args Array of arguments used to generate the pages drop-down.
-         * @param  WP_Post  $post          The current post.
+         * @param  array  $dropdown_args  Array of arguments used to generate the pages drop-down.
+         * @param  WP_Post  $post  The current post.
          */
         $dropdown_args = apply_filters('page_attributes_dropdown_pages_args', $dropdown_args, $post);
         $pages = wp_dropdown_pages($dropdown_args);
@@ -1053,8 +1053,8 @@ function page_attributes_meta_box($post)
          *
          * @since 4.4.0
          *
-         * @param  string|false  $template The template used for the current post.
-         * @param  WP_Post  $post     The current post.
+         * @param  string|false  $template  The template used for the current post.
+         * @param  WP_Post  $post  The current post.
          */
         do_action('page_attributes_meta_box_template', $template, $post);
         ?>
@@ -1066,9 +1066,9 @@ function page_attributes_meta_box($post)
          *
          * @since 4.1.0
          *
-         * @param  string  $label   The display value for the default page template title.
-         * @param  string  $context Where the option label is displayed. Possible values
-         *                        include 'meta-box' or 'quick-edit'.
+         * @param  string  $label  The display value for the default page template title.
+         * @param  string  $context  Where the option label is displayed. Possible values
+         *                           include 'meta-box' or 'quick-edit'.
          */
         $default_title = apply_filters('default_page_template_title', __('Default template'), 'meta-box');
         ?>
@@ -1085,7 +1085,7 @@ function page_attributes_meta_box($post)
          *
          * @since 4.9.0
          *
-         * @param  WP_Post  $post The current post.
+         * @param  WP_Post  $post  The current post.
          */
         do_action('page_attributes_misc_attributes', $post);
 	    ?>
@@ -1105,7 +1105,7 @@ function page_attributes_meta_box($post)
  *
  * @since 2.7.0
  *
- * @param  object  $link Current link object.
+ * @param  object  $link  Current link object.
  */
 function link_submit_meta_box($link)
 {
@@ -1182,7 +1182,7 @@ function link_submit_meta_box($link)
  *
  * @since 2.6.0
  *
- * @param  object  $link Current link object.
+ * @param  object  $link  Current link object.
  */
 function link_categories_meta_box($link)
 {
@@ -1235,7 +1235,7 @@ function link_categories_meta_box($link)
  *
  * @since 2.6.0
  *
- * @param  object  $link Current link object.
+ * @param  object  $link  Current link object.
  */
 function link_target_meta_box($link)
 {
@@ -1268,13 +1268,13 @@ function link_target_meta_box($link)
  *
  * @global object $link Current link object.
  *
- * @param  string  $xfn_relationship XFN relationship category. Possible values are:
- *                                 'friendship', 'physical', 'professional',
- *                                 'geographical', 'family', 'romantic', 'identity'.
- * @param  string  $xfn_value        Optional. The XFN value to mark as checked
- *                                 if it matches the current link's relationship.
- *                                 Default empty string.
- * @param  mixed  $deprecated       Deprecated. Not used.
+ * @param  string  $xfn_relationship  XFN relationship category. Possible values are:
+ *                                    'friendship', 'physical', 'professional',
+ *                                    'geographical', 'family', 'romantic', 'identity'.
+ * @param  string  $xfn_value  Optional. The XFN value to mark as checked
+ *                             if it matches the current link's relationship.
+ *                             Default empty string.
+ * @param  mixed  $deprecated  Deprecated. Not used.
  */
 function xfn_check($xfn_relationship, $xfn_value = '', $deprecated = '')
 {
@@ -1326,7 +1326,7 @@ function xfn_check($xfn_relationship, $xfn_value = '', $deprecated = '')
  *
  * @since 2.6.0
  *
- * @param  object  $link Current link object.
+ * @param  object  $link  Current link object.
  */
 function link_xfn_meta_box($link)
 {
@@ -1487,7 +1487,7 @@ function link_xfn_meta_box($link)
  *
  * @since 2.6.0
  *
- * @param  object  $link Current link object.
+ * @param  object  $link  Current link object.
  */
 function link_advanced_meta_box($link)
 {
@@ -1529,7 +1529,7 @@ function link_advanced_meta_box($link)
  *
  * @since 2.9.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function post_thumbnail_meta_box($post)
 {
@@ -1542,7 +1542,7 @@ function post_thumbnail_meta_box($post)
  *
  * @since 3.9.0
  *
- * @param  WP_Post  $post Current post object.
+ * @param  WP_Post  $post  Current post object.
  */
 function attachment_id3_data_meta_box($post)
 {
@@ -1570,7 +1570,7 @@ function attachment_id3_data_meta_box($post)
  *
  * @since 5.0.0
  *
- * @param  WP_Post  $post The post object that these meta boxes are being generated for.
+ * @param  WP_Post  $post  The post object that these meta boxes are being generated for.
  */
 function register_and_do_post_meta_boxes($post)
 {
@@ -1686,7 +1686,7 @@ function register_and_do_post_meta_boxes($post)
      * @since 2.1.0
      * @deprecated 3.7.0 Use {@see 'add_meta_boxes'} instead.
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action_deprecated('dbx_post_advanced', [$post], '3.7.0', 'add_meta_boxes');
 
@@ -1727,8 +1727,8 @@ function register_and_do_post_meta_boxes($post)
      *
      * @since 3.0.0
      *
-     * @param  string  $post_type Post type.
-     * @param  WP_Post  $post      Post object.
+     * @param  string  $post_type  Post type.
+     * @param  WP_Post  $post  Post object.
      */
     do_action('add_meta_boxes', $post_type, $post);
 
@@ -1745,7 +1745,7 @@ function register_and_do_post_meta_boxes($post)
      *
      * @since 3.0.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      */
     do_action("add_meta_boxes_{$post_type}", $post);
 
@@ -1756,11 +1756,11 @@ function register_and_do_post_meta_boxes($post)
      *
      * @since 3.0.0
      *
-     * @param  string  $post_type Post type of the post on Edit Post screen, 'link' on Edit Link screen,
-     *                                         'dashboard' on Dashboard screen.
-     * @param  string  $context   Meta box context. Possible values include 'normal', 'advanced', 'side'.
-     * @param  WP_Post|object|string  $post      Post object on Edit Post screen, link object on Edit Link screen,
-     *                                         an empty string on Dashboard screen.
+     * @param  string  $post_type  Post type of the post on Edit Post screen, 'link' on Edit Link screen,
+     *                             'dashboard' on Dashboard screen.
+     * @param  string  $context  Meta box context. Possible values include 'normal', 'advanced', 'side'.
+     * @param  WP_Post|object|string  $post  Post object on Edit Post screen, link object on Edit Link screen,
+     *                                       an empty string on Dashboard screen.
      */
     do_action('do_meta_boxes', $post_type, 'normal', $post);
     /** This action is documented in wp-admin/includes/meta-boxes.php */

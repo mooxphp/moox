@@ -103,7 +103,7 @@ function wp_dashboard_setup()
          *
          * @since 3.1.0
          *
-         * @param  string[]  $dashboard_widgets An array of dashboard widget IDs.
+         * @param  string[]  $dashboard_widgets  An array of dashboard widget IDs.
          */
         $dashboard_widgets = apply_filters('wp_network_dashboard_widgets', []);
     } elseif (is_user_admin()) {
@@ -120,7 +120,7 @@ function wp_dashboard_setup()
          *
          * @since 3.1.0
          *
-         * @param  string[]  $dashboard_widgets An array of dashboard widget IDs.
+         * @param  string[]  $dashboard_widgets  An array of dashboard widget IDs.
          */
         $dashboard_widgets = apply_filters('wp_user_dashboard_widgets', []);
     } else {
@@ -137,7 +137,7 @@ function wp_dashboard_setup()
          *
          * @since 2.5.0
          *
-         * @param  string[]  $dashboard_widgets An array of dashboard widget IDs.
+         * @param  string[]  $dashboard_widgets  An array of dashboard widget IDs.
          */
         $dashboard_widgets = apply_filters('wp_dashboard_widgets', []);
     }
@@ -171,17 +171,17 @@ function wp_dashboard_setup()
  *
  * @global callable[] $wp_dashboard_control_callbacks
  *
- * @param  string  $widget_id        Widget ID  (used in the 'id' attribute for the widget).
- * @param  string  $widget_name      Title of the widget.
- * @param  callable  $callback         Function that fills the widget with the desired content.
- *                                   The function should echo its output.
- * @param  callable  $control_callback Optional. Function that outputs controls for the widget. Default null.
- * @param  array  $callback_args    Optional. Data that should be set as the $args property of the widget array
- *                                   (which is the second parameter passed to your callback). Default null.
- * @param  string  $context          Optional. The context within the screen where the box should display.
- *                                   Accepts 'normal', 'side', 'column3', or 'column4'. Default 'normal'.
- * @param  string  $priority         Optional. The priority within the context where the box should show.
- *                                   Accepts 'high', 'core', 'default', or 'low'. Default 'core'.
+ * @param  string  $widget_id  Widget ID  (used in the 'id' attribute for the widget).
+ * @param  string  $widget_name  Title of the widget.
+ * @param  callable  $callback  Function that fills the widget with the desired content.
+ *                              The function should echo its output.
+ * @param  callable  $control_callback  Optional. Function that outputs controls for the widget. Default null.
+ * @param  array  $callback_args  Optional. Data that should be set as the $args property of the widget array
+ *                                (which is the second parameter passed to your callback). Default null.
+ * @param  string  $context  Optional. The context within the screen where the box should display.
+ *                           Accepts 'normal', 'side', 'column3', or 'column4'. Default 'normal'.
+ * @param  string  $priority  Optional. The priority within the context where the box should show.
+ *                            Accepts 'high', 'core', 'default', or 'low'. Default 'core'.
  */
 function wp_add_dashboard_widget($widget_id, $widget_name, $callback, $control_callback = null, $callback_args = null, $context = 'normal', $priority = 'core')
 {
@@ -357,7 +357,7 @@ function wp_dashboard_right_now()
      *
      * @since 3.8.0
      *
-     * @param  string[]  $items Array of extra 'At a Glance' widget items.
+     * @param  string[]  $items  Array of extra 'At a Glance' widget items.
      */
     $elements = apply_filters('dashboard_glance_items', []);
 
@@ -384,7 +384,7 @@ function wp_dashboard_right_now()
          * @since 3.0.0
          * @since 4.5.0 The default for `$title` was updated to an empty string.
          *
-         * @param  string  $title Default attribute text.
+         * @param  string  $title  Default attribute text.
          */
         $title = apply_filters('privacy_on_link_title', '');
 
@@ -396,7 +396,7 @@ function wp_dashboard_right_now()
          *
          * @since 3.0.0
          *
-         * @param  string  $content Default text.
+         * @param  string  $content  Default text.
          */
         $content = apply_filters('privacy_on_link_text', __('Search engines discouraged'));
 
@@ -539,7 +539,7 @@ function wp_network_dashboard_right_now()
  *
  * @global int $post_ID
  *
- * @param  string|false  $error_msg Optional. Error message. Default false.
+ * @param  string|false  $error_msg  Optional. Error message. Default false.
  */
 function wp_dashboard_quick_press($error_msg = false)
 {
@@ -621,7 +621,7 @@ function wp_dashboard_quick_press($error_msg = false)
  *
  * @since 2.7.0
  *
- * @param  WP_Post[]|false  $drafts Optional. Array of posts to display. Default false.
+ * @param  WP_Post[]|false  $drafts  Optional. Array of posts to display. Default false.
  */
 function wp_dashboard_recent_drafts($drafts = false)
 {
@@ -640,7 +640,7 @@ function wp_dashboard_recent_drafts($drafts = false)
          *
          * @since 4.4.0
          *
-         * @param  array  $query_args The query arguments for the 'Recent Drafts' dashboard widget.
+         * @param  array  $query_args  The query arguments for the 'Recent Drafts' dashboard widget.
          */
         $query_args = apply_filters('dashboard_recent_drafts_query_args', $query_args);
 
@@ -701,8 +701,8 @@ function wp_dashboard_recent_drafts($drafts = false)
  *
  * @global WP_Comment $comment Global comment object.
  *
- * @param  WP_Comment  $comment   The current comment.
- * @param  bool  $show_date Optional. Whether to display the date.
+ * @param  WP_Comment  $comment  The current comment.
+ * @param  bool  $show_date  Optional. Whether to display the date.
  */
 function _wp_dashboard_recent_comments_row(&$comment, $show_date = true)
 {
@@ -810,10 +810,10 @@ function _wp_dashboard_recent_comments_row(&$comment, $show_date = true)
          *
          * @since 2.6.0
          *
-         * @param  string[]  $actions An array of comment actions. Default actions include:
-         *                            'Approve', 'Unapprove', 'Edit', 'Reply', 'Spam',
-         *                            'Delete', and 'Trash'.
-         * @param  WP_Comment  $comment The comment object.
+         * @param  string[]  $actions  An array of comment actions. Default actions include:
+         *                             'Approve', 'Unapprove', 'Edit', 'Reply', 'Spam',
+         *                             'Delete', and 'Trash'.
+         * @param  WP_Comment  $comment  The comment object.
          */
         $actions = apply_filters('comment_row_actions', array_filter($actions), $comment);
 
@@ -976,15 +976,15 @@ function wp_dashboard_site_activity()
  *
  * @since 3.8.0
  *
- * @param  array  $args {
- *     An array of query and display arguments.
+ * @param  array  $args  {
+ *                       An array of query and display arguments.
  *
- *     @type int    $max     Number of posts to display.
- *     @type string $status  Post status.
- *     @type string $order   Designates ascending ('ASC') or descending ('DESC') order.
- *     @type string $title   Section title.
- *     @type string $id      The container id.
- * }
+ * @type int $max     Number of posts to display.
+ * @type string $status  Post status.
+ * @type string $order   Designates ascending ('ASC') or descending ('DESC') order.
+ * @type string $title   Section title.
+ * @type string $id      The container id.
+ *              }
  *
  * @return bool False if no posts were found. True otherwise.
  */
@@ -1006,7 +1006,7 @@ function wp_dashboard_recent_posts($args)
      *
      * @since 4.2.0
      *
-     * @param  array  $query_args The arguments passed to WP_Query to produce the list of posts.
+     * @param  array  $query_args  The arguments passed to WP_Query to produce the list of posts.
      */
     $query_args = apply_filters('dashboard_recent_posts_query_args', $query_args);
 
@@ -1073,7 +1073,7 @@ function wp_dashboard_recent_posts($args)
  *
  * @since 3.8.0
  *
- * @param  int  $total_items Optional. Number of comments to query. Default 5.
+ * @param  int  $total_items  Optional. Number of comments to query. Default 5.
  * @return bool False if no comments were found. True otherwise.
  */
 function wp_dashboard_recent_comments($total_items = 5)
@@ -1177,9 +1177,9 @@ function wp_dashboard_rss_output($widget_id)
  *              by adding it to the function signature.
  *
  * @param  string  $widget_id  The widget ID.
- * @param  callable  $callback   The callback function used to display each feed.
- * @param  array  $check_urls RSS feeds.
- * @param  mixed  ...$args    Optional additional parameters to pass to the callback function.
+ * @param  callable  $callback  The callback function used to display each feed.
+ * @param  array  $check_urls  RSS feeds.
+ * @param  mixed  ...$args  Optional additional parameters to pass to the callback function.
  * @return bool True on success, false on failure.
  */
 function wp_dashboard_cached_rss_widget($widget_id, $callback, $check_urls = [], ...$args)
@@ -1244,7 +1244,7 @@ function wp_dashboard_cached_rss_widget($widget_id, $callback, $check_urls = [],
  *
  * @global callable[] $wp_dashboard_control_callbacks
  *
- * @param  int|false  $widget_control_id Optional. Registered widget ID. Default false.
+ * @param  int|false  $widget_control_id  Optional. Registered widget ID. Default false.
  */
 function wp_dashboard_trigger_widget_control($widget_control_id = false)
 {
@@ -1561,7 +1561,7 @@ function wp_dashboard_primary()
              *
              * @since 2.5.0
              *
-             * @param  string  $link The widget's primary link URL.
+             * @param  string  $link  The widget's primary link URL.
              */
             'link' => apply_filters('dashboard_primary_link', __('https://wordpress.org/news/')),
 
@@ -1570,7 +1570,7 @@ function wp_dashboard_primary()
              *
              * @since 2.3.0
              *
-             * @param  string  $url The widget's primary feed URL.
+             * @param  string  $url  The widget's primary feed URL.
              */
             'url' => apply_filters('dashboard_primary_feed', __('https://wordpress.org/news/feed/')),
 
@@ -1579,7 +1579,7 @@ function wp_dashboard_primary()
              *
              * @since 2.3.0
              *
-             * @param  string  $title Title attribute for the widget's primary link.
+             * @param  string  $title  Title attribute for the widget's primary link.
              */
             'title' => apply_filters('dashboard_primary_title', __('WordPress Blog')),
             'items' => 2,
@@ -1594,7 +1594,7 @@ function wp_dashboard_primary()
              *
              * @since 2.3.0
              *
-             * @param  string  $link The widget's secondary link URL.
+             * @param  string  $link  The widget's secondary link URL.
              */
             'link' => apply_filters('dashboard_secondary_link', __('https://planet.wordpress.org/')),
 
@@ -1603,7 +1603,7 @@ function wp_dashboard_primary()
              *
              * @since 2.3.0
              *
-             * @param  string  $url The widget's secondary feed URL.
+             * @param  string  $url  The widget's secondary feed URL.
              */
             'url' => apply_filters('dashboard_secondary_feed', __('https://planet.wordpress.org/feed/')),
 
@@ -1612,7 +1612,7 @@ function wp_dashboard_primary()
              *
              * @since 2.3.0
              *
-             * @param  string  $title Title attribute for the widget's secondary link.
+             * @param  string  $title  Title attribute for the widget's secondary link.
              */
             'title' => apply_filters('dashboard_secondary_title', __('Other WordPress News')),
 
@@ -1621,7 +1621,7 @@ function wp_dashboard_primary()
              *
              * @since 4.4.0
              *
-             * @param  string  $items How many items to show in the secondary feed.
+             * @param  string  $items  How many items to show in the secondary feed.
              */
             'items' => apply_filters('dashboard_secondary_items', 3),
             'show_summary' => 0,
@@ -1639,8 +1639,8 @@ function wp_dashboard_primary()
  * @since 3.8.0
  * @since 4.8.0 Removed popular plugins feed.
  *
- * @param  string  $widget_id Widget ID.
- * @param  array  $feeds     Array of RSS feeds.
+ * @param  string  $widget_id  Widget ID.
+ * @param  array  $feeds  Array of RSS feeds.
  */
 function wp_dashboard_primary_output($widget_id, $feeds)
 {
@@ -1796,9 +1796,9 @@ function wp_dashboard_browser_nag()
      *
      * @since 3.2.0
      *
-     * @param  string  $notice   The notice content.
-     * @param  array|false  $response An array containing web browser information, or
-     *                              false on failure. See wp_check_browser_version().
+     * @param  string  $notice  The notice content.
+     * @param  array|false  $response  An array containing web browser information, or
+     *                                 false on failure. See wp_check_browser_version().
      */
     echo apply_filters('browse-happy-notice', $notice, $response); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 }
@@ -1808,7 +1808,7 @@ function wp_dashboard_browser_nag()
  *
  * @since 3.2.0
  *
- * @param  string[]  $classes Array of meta box classes.
+ * @param  string[]  $classes  Array of meta box classes.
  * @return string[] Modified array of meta box classes.
  */
 function dashboard_browser_nag_class($classes)
@@ -1964,7 +1964,7 @@ function wp_dashboard_php_nag()
  *
  * @since 5.1.0
  *
- * @param  string[]  $classes Array of meta box classes.
+ * @param  string[]  $classes  Array of meta box classes.
  * @return string[] Modified array of meta box classes.
  */
 function dashboard_php_nag_class($classes)

@@ -10,7 +10,7 @@
  *
  * @since 3.0.0
  *
- * @param  array  $file An element from the `$_FILES` array for a given file.
+ * @param  array  $file  An element from the `$_FILES` array for a given file.
  * @return array The `$_FILES` array element with 'error' key set if file exceeds quota. 'error' is empty otherwise.
  */
 function check_upload_size($file)
@@ -57,8 +57,8 @@ function check_upload_size($file)
  * @since 3.0.0
  * @since 5.1.0 Use wp_delete_site() internally to delete the site row from the database.
  *
- * @param  int  $blog_id Site ID.
- * @param  bool  $drop    True if site's database tables should be dropped. Default false.
+ * @param  int  $blog_id  Site ID.
+ * @param  bool  $drop  True if site's database tables should be dropped. Default false.
  */
 function wpmu_delete_blog($blog_id, $drop = false)
 {
@@ -139,7 +139,7 @@ function wpmu_delete_blog($blog_id, $drop = false)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $id The user ID.
+ * @param  int  $id  The user ID.
  * @return bool True if the user was deleted, false otherwise.
  */
 function wpmu_delete_user($id)
@@ -169,8 +169,8 @@ function wpmu_delete_user($id)
      * @since MU (3.0.0)
      * @since 5.5.0 Added the `$user` parameter.
      *
-     * @param  int  $id   ID of the user about to be deleted from the network.
-     * @param  WP_User  $user WP_User object of the user about to be deleted from the network.
+     * @param  int  $id  ID of the user about to be deleted from the network.
+     * @param  WP_User  $user  WP_User object of the user about to be deleted from the network.
      */
     do_action('wpmu_delete_user', $id, $user);
 
@@ -219,8 +219,8 @@ function wpmu_delete_user($id)
  *
  * @since MU (3.0.0)
  *
- * @param  bool  $display_message Optional. If set to true and the quota is exceeded,
- *                              a warning message is displayed. Default true.
+ * @param  bool  $display_message  Optional. If set to true and the quota is exceeded,
+ *                                 a warning message is displayed. Default true.
  * @return bool True if user is over upload space quota, otherwise false.
  */
 function upload_is_user_over_quota($display_message = true)
@@ -278,7 +278,7 @@ function display_space_usage()
  *
  * @since MU (3.0.0)
  *
- * @param  int  $size Current max size in bytes.
+ * @param  int  $size  Current max size in bytes.
  * @return int Max size in bytes.
  */
 function fix_import_form_size($size)
@@ -296,7 +296,7 @@ function fix_import_form_size($size)
  *
  * @since 3.0.0
  *
- * @param  int  $id The ID of the site to display the setting for.
+ * @param  int  $id  The ID of the site to display the setting for.
  */
 function upload_space_setting($id)
 {
@@ -329,7 +329,7 @@ function upload_space_setting($id)
  *
  * @since 3.0.0
  *
- * @param  int  $id The user ID.
+ * @param  int  $id  The user ID.
  * @return int|false The ID of the refreshed user or false if the user does not exist.
  */
 function refresh_user_details($id)
@@ -351,7 +351,7 @@ function refresh_user_details($id)
  *
  * @since 3.0.0
  *
- * @param  string  $code Optional. The two-letter language code. Default empty.
+ * @param  string  $code  Optional. The two-letter language code. Default empty.
  * @return string The language corresponding to $code if it exists. If it does not exist,
  *                then the first two letters of $code is returned.
  */
@@ -551,8 +551,8 @@ function format_code_lang($code = '')
      *
      * @since MU (3.0.0)
      *
-     * @param  string[]  $lang_codes Array of key/value pairs of language codes where key is the short version.
-     * @param  string  $code       A two-letter designation of the language.
+     * @param  string[]  $lang_codes  Array of key/value pairs of language codes where key is the short version.
+     * @param  string  $code  A two-letter designation of the language.
      */
     $lang_codes = apply_filters('lang_codes', $lang_codes, $code);
 
@@ -618,7 +618,7 @@ function _access_denied_splash()
  *
  * @since 3.0.0
  *
- * @param  string  $permission A permission to be checked. Currently not used.
+ * @param  string  $permission  A permission to be checked. Currently not used.
  * @return bool True if the user has proper permissions, false if they do not.
  */
 function check_import_new_users($permission)
@@ -636,8 +636,8 @@ function check_import_new_users($permission)
  *
  * @since 3.0.0
  *
- * @param  string[]  $lang_files Optional. An array of the language files. Default empty array.
- * @param  string  $current    Optional. The current language code. Default empty.
+ * @param  string[]  $lang_files  Optional. An array of the language files. Default empty array.
+ * @param  string  $current  Optional. The current language code. Default empty.
  */
 function mu_dropdown_languages($lang_files = [], $current = '')
 {
@@ -673,9 +673,9 @@ function mu_dropdown_languages($lang_files = [], $current = '')
      *
      * @since MU (3.0.0)
      *
-     * @param  string[]  $output     Array of HTML output for the dropdown.
-     * @param  string[]  $lang_files Array of available language files.
-     * @param  string  $current    The current language code.
+     * @param  string[]  $output  Array of HTML output for the dropdown.
+     * @param  string[]  $lang_files  Array of available language files.
+     * @param  string  $current  The current language code.
      */
     $output = apply_filters('mu_dropdown_languages', $output, $lang_files, $current);
 
@@ -730,8 +730,8 @@ function site_admin_notice()
  *
  * @since 3.0.0
  *
- * @param  array  $data    An array of post data.
- * @param  array  $postarr An array of posts. Not currently used.
+ * @param  array  $data  An array of post data.
+ * @param  array  $postarr  An array of posts. Not currently used.
  * @return array The new array of post data after checking for collisions.
  */
 function avoid_blog_page_permalink_collision($data, $postarr)
@@ -830,7 +830,7 @@ function choose_primary_blog()
  *
  * @since 3.1.0
  *
- * @param  int  $network_id The network ID to check.
+ * @param  int  $network_id  The network ID to check.
  * @return bool True if network can be edited, false otherwise.
  */
 function can_edit_network($network_id)
@@ -846,8 +846,8 @@ function can_edit_network($network_id)
      *
      * @since 3.1.0
      *
-     * @param  bool  $result     Whether the network can be edited from this page.
-     * @param  int  $network_id The network ID to check.
+     * @param  bool  $result  Whether the network can be edited from this page.
+     * @param  int  $network_id  The network ID to check.
      */
     return apply_filters('can_edit_network', $result, $network_id);
 }
@@ -1047,13 +1047,13 @@ jQuery( function($) {
  *
  * @global string $pagenow The filename of the current screen.
  *
- * @param  array  $args {
- *     Optional. Array or string of Query parameters. Default empty array.
+ * @param  array  $args  {
+ *                       Optional. Array or string of Query parameters. Default empty array.
  *
- *     @type int    $blog_id  The site ID. Default is the current site.
- *     @type array  $links    The tabs to include with (label|url|cap) keys.
- *     @type string $selected The ID of the selected link.
- * }
+ * @type int $blog_id  The site ID. Default is the current site.
+ * @type array $links    The tabs to include with (label|url|cap) keys.
+ * @type string $selected The ID of the selected link.
+ *              }
  */
 function network_edit_site_nav($args = [])
 {
@@ -1065,11 +1065,11 @@ function network_edit_site_nav($args = [])
      *
      * @since 4.6.0
      *
-     * @param  array  $links {
-     *     An array of link data representing individual network admin pages.
+     * @param  array  $links  {
+     *                        An array of link data representing individual network admin pages.
      *
-     *     @type array $link_slug {
-     *         An array of information about the individual link to a page.
+     * @type array $link_slug {
+     *             An array of information about the individual link to a page.
      *
      *         $type string $label Label to use for the link.
      *         $type string $url   URL, relative to `network_admin_url()` to use for the link.

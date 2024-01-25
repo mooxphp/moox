@@ -44,17 +44,17 @@ class Core_Upgrader extends WP_Upgrader
      * @global WP_Filesystem_Base $wp_filesystem                WordPress filesystem subclass.
      * @global callable           $_wp_filesystem_direct_method
      *
-     * @param  object  $current Response object for whether WordPress is current.
-     * @param  array  $args {
-     *     Optional. Arguments for upgrading WordPress core. Default empty array.
+     * @param  object  $current  Response object for whether WordPress is current.
+     * @param  array  $args  {
+     *                       Optional. Arguments for upgrading WordPress core. Default empty array.
      *
-     *     @type bool $pre_check_md5    Whether to check the file checksums before
-     *                                  attempting the upgrade. Default true.
-     *     @type bool $attempt_rollback Whether to attempt to rollback the chances if
-     *                                  there is a problem. Default false.
-     *     @type bool $do_rollback      Whether to perform this "upgrade" as a rollback.
-     *                                  Default false.
-     * }
+     * @type bool $pre_check_md5    Whether to check the file checksums before
+     *            attempting the upgrade. Default true.
+     * @type bool $attempt_rollback Whether to attempt to rollback the chances if
+     *            there is a problem. Default false.
+     * @type bool $do_rollback      Whether to perform this "upgrade" as a rollback.
+     *            Default false.
+     *            }
      *
      * @return string|false|WP_Error New WordPress version on success, false or WP_Error on failure.
      */
@@ -273,7 +273,7 @@ class Core_Upgrader extends WP_Upgrader
      *
      * @since 3.7.0
      *
-     * @param  string  $offered_ver The offered version, of the format x.y.z.
+     * @param  string  $offered_ver  The offered version, of the format x.y.z.
      * @return bool True if we should update to the offered version, otherwise false.
      */
     public static function should_update_to_version($offered_ver)
@@ -352,8 +352,8 @@ class Core_Upgrader extends WP_Upgrader
              *
              * @since 3.7.0
              *
-             * @param  bool  $upgrade_dev Whether to enable automatic updates for
-             *                          development versions.
+             * @param  bool  $upgrade_dev  Whether to enable automatic updates for
+             *                             development versions.
              */
             if (! apply_filters('allow_dev_auto_core_updates', $upgrade_dev)) {
                 return false;
@@ -369,7 +369,7 @@ class Core_Upgrader extends WP_Upgrader
              *
              * @since 3.7.0
              *
-             * @param  bool  $upgrade_minor Whether to enable minor automatic core updates.
+             * @param  bool  $upgrade_minor  Whether to enable minor automatic core updates.
              */
             return apply_filters('allow_minor_auto_core_updates', $upgrade_minor);
         }
@@ -382,7 +382,7 @@ class Core_Upgrader extends WP_Upgrader
              *
              * @since 3.7.0
              *
-             * @param  bool  $upgrade_major Whether to enable major automatic core updates.
+             * @param  bool  $upgrade_major  Whether to enable major automatic core updates.
              */
             return apply_filters('allow_major_auto_core_updates', $upgrade_major);
         }

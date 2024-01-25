@@ -43,58 +43,58 @@
  *
  * @since 2.7.0
  *
- * @param  string  $action API action to perform: 'query_plugins', 'plugin_information',
- *                             'hot_tags' or 'hot_categories'.
- * @param  array|object  $args   {
- *     Optional. Array or object of arguments to serialize for the Plugin Info API.
+ * @param  string  $action  API action to perform: 'query_plugins', 'plugin_information',
+ *                          'hot_tags' or 'hot_categories'.
+ * @param  array|object  $args  {
+ *                              Optional. Array or object of arguments to serialize for the Plugin Info API.
  *
- *     @type string  $slug              The plugin slug. Default empty.
- *     @type int     $per_page          Number of plugins per page. Default 24.
- *     @type int     $page              Number of current page. Default 1.
- *     @type int     $number            Number of tags or categories to be queried.
- *     @type string  $search            A search term. Default empty.
- *     @type string  $tag               Tag to filter plugins. Default empty.
- *     @type string  $author            Username of an plugin author to filter plugins. Default empty.
- *     @type string  $user              Username to query for their favorites. Default empty.
- *     @type string  $browse            Browse view: 'popular', 'new', 'beta', 'recommended'.
- *     @type string  $locale            Locale to provide context-sensitive results. Default is the value
- *                                      of get_locale().
- *     @type string  $installed_plugins Installed plugins to provide context-sensitive results.
- *     @type bool    $is_ssl            Whether links should be returned with https or not. Default false.
- *     @type array   $fields            {
- *         Array of fields which should or should not be returned.
- *         @type bool $short_description Whether to return the plugin short description. Default true.
- *         @type bool $description       Whether to return the plugin full description. Default false.
- *         @type bool $sections          Whether to return the plugin readme sections: description, installation,
- *                                       FAQ, screenshots, other notes, and changelog. Default false.
- *         @type bool $tested            Whether to return the 'Compatible up to' value. Default true.
- *         @type bool $requires          Whether to return the required WordPress version. Default true.
- *         @type bool $requires_php      Whether to return the required PHP version. Default true.
- *         @type bool $rating            Whether to return the rating in percent and total number of ratings.
- *                                       Default true.
- *         @type bool $ratings           Whether to return the number of rating for each star (1-5). Default true.
- *         @type bool $downloaded        Whether to return the download count. Default true.
- *         @type bool $downloadlink      Whether to return the download link for the package. Default true.
- *         @type bool $last_updated      Whether to return the date of the last update. Default true.
- *         @type bool $added             Whether to return the date when the plugin was added to the wordpress.org
- *                                       repository. Default true.
- *         @type bool $tags              Whether to return the assigned tags. Default true.
- *         @type bool $compatibility     Whether to return the WordPress compatibility list. Default true.
- *         @type bool $homepage          Whether to return the plugin homepage link. Default true.
- *         @type bool $versions          Whether to return the list of all available versions. Default false.
- *         @type bool $donate_link       Whether to return the donation link. Default true.
- *         @type bool $reviews           Whether to return the plugin reviews. Default false.
- *         @type bool $banners           Whether to return the banner images links. Default false.
- *         @type bool $icons             Whether to return the icon links. Default false.
- *         @type bool $active_installs   Whether to return the number of active installations. Default false.
- *         @type bool $group             Whether to return the assigned group. Default false.
- *         @type bool $contributors      Whether to return the list of contributors. Default false.
- *     }
- * }
+ * @type string $slug              The plugin slug. Default empty.
+ * @type int $per_page          Number of plugins per page. Default 24.
+ * @type int $page              Number of current page. Default 1.
+ * @type int $number            Number of tags or categories to be queried.
+ * @type string $search            A search term. Default empty.
+ * @type string $tag               Tag to filter plugins. Default empty.
+ * @type string $author            Username of an plugin author to filter plugins. Default empty.
+ * @type string $user              Username to query for their favorites. Default empty.
+ * @type string $browse            Browse view: 'popular', 'new', 'beta', 'recommended'.
+ * @type string $locale            Locale to provide context-sensitive results. Default is the value
+ *              of get_locale().
+ * @type string $installed_plugins Installed plugins to provide context-sensitive results.
+ * @type bool $is_ssl            Whether links should be returned with https or not. Default false.
+ * @type array $fields            {
+ *             Array of fields which should or should not be returned.
+ * @type bool $short_description Whether to return the plugin short description. Default true.
+ * @type bool $description       Whether to return the plugin full description. Default false.
+ * @type bool $sections          Whether to return the plugin readme sections: description, installation,
+ *            FAQ, screenshots, other notes, and changelog. Default false.
+ * @type bool $tested            Whether to return the 'Compatible up to' value. Default true.
+ * @type bool $requires          Whether to return the required WordPress version. Default true.
+ * @type bool $requires_php      Whether to return the required PHP version. Default true.
+ * @type bool $rating            Whether to return the rating in percent and total number of ratings.
+ *            Default true.
+ * @type bool $ratings           Whether to return the number of rating for each star (1-5). Default true.
+ * @type bool $downloaded        Whether to return the download count. Default true.
+ * @type bool $downloadlink      Whether to return the download link for the package. Default true.
+ * @type bool $last_updated      Whether to return the date of the last update. Default true.
+ * @type bool $added             Whether to return the date when the plugin was added to the wordpress.org
+ *            repository. Default true.
+ * @type bool $tags              Whether to return the assigned tags. Default true.
+ * @type bool $compatibility     Whether to return the WordPress compatibility list. Default true.
+ * @type bool $homepage          Whether to return the plugin homepage link. Default true.
+ * @type bool $versions          Whether to return the list of all available versions. Default false.
+ * @type bool $donate_link       Whether to return the donation link. Default true.
+ * @type bool $reviews           Whether to return the plugin reviews. Default false.
+ * @type bool $banners           Whether to return the banner images links. Default false.
+ * @type bool $icons             Whether to return the icon links. Default false.
+ * @type bool $active_installs   Whether to return the number of active installations. Default false.
+ * @type bool $group             Whether to return the assigned group. Default false.
+ * @type bool $contributors      Whether to return the list of contributors. Default false.
+ *            }
+ *            }
  *
  * @return object|array|WP_Error Response object or array on success, WP_Error on failure. See the
- *         {@link https://developer.wordpress.org/reference/functions/plugins_api/ function reference article}
- *         for more information on the make-up of possible return values depending on the value of `$action`.
+ *                               {@link https://developer.wordpress.org/reference/functions/plugins_api/ function reference article}
+ *                               for more information on the make-up of possible return values depending on the value of `$action`.
  */
 function plugins_api($action, $args = [])
 {
@@ -126,8 +126,8 @@ function plugins_api($action, $args = [])
      *
      * @since 2.7.0
      *
-     * @param  object  $args   Plugin API arguments.
-     * @param  string  $action The type of information being requested from the Plugin Installation API.
+     * @param  object  $args  Plugin API arguments.
+     * @param  string  $action  The type of information being requested from the Plugin Installation API.
      */
     $args = apply_filters('plugins_api_args', $args, $action);
 
@@ -141,9 +141,9 @@ function plugins_api($action, $args = [])
      *
      * @since 2.7.0
      *
-     * @param  false|object|array  $result The result object or array. Default false.
-     * @param  string  $action The type of information being requested from the Plugin Installation API.
-     * @param  object  $args   Plugin API arguments.
+     * @param  false|object|array  $result  The result object or array. Default false.
+     * @param  string  $action  The type of information being requested from the Plugin Installation API.
+     * @param  object  $args  Plugin API arguments.
      */
     $res = apply_filters('plugins_api', false, $action, $args);
 
@@ -225,9 +225,9 @@ function plugins_api($action, $args = [])
      *
      * @since 2.7.0
      *
-     * @param  object|WP_Error  $res    Response object or WP_Error.
-     * @param  string  $action The type of information being requested from the Plugin Installation API.
-     * @param  object  $args   Plugin API arguments.
+     * @param  object|WP_Error  $res  Response object or WP_Error.
+     * @param  string  $action  The type of information being requested from the Plugin Installation API.
+     * @param  object  $args  Plugin API arguments.
      */
     return apply_filters('plugins_api_result', $res, $action, $args);
 }
@@ -312,7 +312,7 @@ function install_dashboard()
  * @since 2.7.0
  * @since 4.6.0 The `$type_selector` parameter was deprecated.
  *
- * @param  bool  $deprecated Not used.
+ * @param  bool  $deprecated  Not used.
  */
 function install_search_form($deprecated = true)
 {
@@ -440,15 +440,15 @@ function display_plugins_table()
  * @since 3.0.0
  *
  * @param  array|object  $api  Data about the plugin retrieved from the API.
- * @param  bool  $loop Optional. Disable further loops. Default false.
+ * @param  bool  $loop  Optional. Disable further loops. Default false.
  * @return array {
- *     Plugin installation status data.
+ *               Plugin installation status data.
  *
- *     @type string $status  Status of a plugin. Could be one of 'install', 'update_available', 'latest_installed' or 'newer_installed'.
- *     @type string $url     Plugin installation URL.
- *     @type string $version The most recent version of the plugin.
- *     @type string $file    Plugin filename relative to the plugins directory.
- * }
+ * @type string $status  Status of a plugin. Could be one of 'install', 'update_available', 'latest_installed' or 'newer_installed'.
+ * @type string $url     Plugin installation URL.
+ * @type string $version The most recent version of the plugin.
+ * @type string $file    Plugin filename relative to the plugins directory.
+ *              }
  */
 function install_plugin_install_status($api, $loop = false)
 {
@@ -750,38 +750,38 @@ function install_plugin_information()
 			<?php
 		}
 
-        if (! empty($api->ratings) && array_sum((array) $api->ratings) > 0) {
-            ?>
+    if (! empty($api->ratings) && array_sum((array) $api->ratings) > 0) {
+        ?>
 			<h3><?php _e('Reviews'); ?></h3>
 			<p class="fyi-description"><?php _e('Read all reviews on WordPress.org or write your own!'); ?></p>
 			<?php
-            foreach ($api->ratings as $key => $ratecount) {
-                // Avoid div-by-zero.
-                $_rating = $api->num_ratings ? ($ratecount / $api->num_ratings) : 0;
-                $aria_label = esc_attr(
-                    sprintf(
-                        /* translators: 1: Number of stars (used to determine singular/plural), 2: Number of reviews. */
-                        _n(
-                            'Reviews with %1$d star: %2$s. Opens in a new tab.',
-                            'Reviews with %1$d stars: %2$s. Opens in a new tab.',
-                            $key
-                        ),
-                        $key,
-                        number_format_i18n($ratecount)
-                    )
-                );
-                ?>
+        foreach ($api->ratings as $key => $ratecount) {
+            // Avoid div-by-zero.
+            $_rating = $api->num_ratings ? ($ratecount / $api->num_ratings) : 0;
+            $aria_label = esc_attr(
+                sprintf(
+                    /* translators: 1: Number of stars (used to determine singular/plural), 2: Number of reviews. */
+                    _n(
+                        'Reviews with %1$d star: %2$s. Opens in a new tab.',
+                        'Reviews with %1$d stars: %2$s. Opens in a new tab.',
+                        $key
+                    ),
+                    $key,
+                    number_format_i18n($ratecount)
+                )
+            );
+            ?>
 				<div class="counter-container">
 						<span class="counter-label">
 							<?php
-                            printf(
-                                '<a href="%s" target="_blank" aria-label="%s">%s</a>',
-                                "https://wordpress.org/support/plugin/{$api->slug}/reviews/?filter={$key}",
-                                $aria_label,
-                                /* translators: %s: Number of stars. */
-                                sprintf(_n('%d star', '%d stars', $key), $key)
-                            );
-                ?>
+                        printf(
+                            '<a href="%s" target="_blank" aria-label="%s">%s</a>',
+                            "https://wordpress.org/support/plugin/{$api->slug}/reviews/?filter={$key}",
+                            $aria_label,
+                            /* translators: %s: Number of stars. */
+                            sprintf(_n('%d star', '%d stars', $key), $key)
+                        );
+            ?>
 						</span>
 						<span class="counter-back">
 							<span class="counter-bar" style="width: <?php echo 92 * $_rating; ?>px;"></span>
@@ -789,26 +789,26 @@ function install_plugin_information()
 					<span class="counter-count" aria-hidden="true"><?php echo number_format_i18n($ratecount); ?></span>
 				</div>
 				<?php
-            }
         }
-        if (! empty($api->contributors)) {
-            ?>
+    }
+    if (! empty($api->contributors)) {
+        ?>
 			<h3><?php _e('Contributors'); ?></h3>
 			<ul class="contributors">
 				<?php
-                foreach ((array) $api->contributors as $contrib_username => $contrib_details) {
-                    $contrib_name = $contrib_details['display_name'];
-                    if (! $contrib_name) {
-                        $contrib_name = $contrib_username;
-                    }
-                    $contrib_name = esc_html($contrib_name);
-
-                    $contrib_profile = esc_url($contrib_details['profile']);
-                    $contrib_avatar = esc_url(add_query_arg('s', '36', $contrib_details['avatar']));
-
-                    echo "<li><a href='{$contrib_profile}' target='_blank'><img src='{$contrib_avatar}' width='18' height='18' alt='' />{$contrib_name}</a></li>";
+            foreach ((array) $api->contributors as $contrib_username => $contrib_details) {
+                $contrib_name = $contrib_details['display_name'];
+                if (! $contrib_name) {
+                    $contrib_name = $contrib_username;
                 }
-            ?>
+                $contrib_name = esc_html($contrib_name);
+
+                $contrib_profile = esc_url($contrib_details['profile']);
+                $contrib_avatar = esc_url(add_query_arg('s', '36', $contrib_details['avatar']));
+
+                echo "<li><a href='{$contrib_profile}' target='_blank'><img src='{$contrib_avatar}' width='18' height='18' alt='' />{$contrib_name}</a></li>";
+            }
+        ?>
 			</ul>
 					<?php if (! empty($api->donate_link)) { ?>
 				<a target="_blank" href="<?php echo esc_url($api->donate_link); ?>"><?php _e('Donate to this plugin &#187;'); ?></a>

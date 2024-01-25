@@ -10,7 +10,7 @@
  *
  * @since 6.3.0
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_shadow_support($block_type)
 {
@@ -43,8 +43,8 @@ function wp_register_shadow_support($block_type)
  *
  * @since 6.3.0
  *
- * @param  WP_Block_Type  $block_type       Block type.
- * @param  array  $block_attributes Block attributes.
+ * @param  WP_Block_Type  $block_type  Block type.
+ * @param  array  $block_attributes  Block attributes.
  * @return array Shadow CSS classes and inline styles.
  */
 function wp_apply_shadow_support($block_type, $block_attributes)

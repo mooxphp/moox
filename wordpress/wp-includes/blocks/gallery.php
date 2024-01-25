@@ -11,7 +11,7 @@
  * we add a custom `data-id` attribute before rendering the gallery
  * so that the Image Block can pick it up in its render_callback.
  *
- * @param  array  $parsed_block The block being rendered.
+ * @param  array  $parsed_block  The block being rendered.
  * @return array The migrated block object.
  */
 function block_core_gallery_data_id_backcompatibility($parsed_block)
@@ -38,8 +38,8 @@ add_filter('render_block_data', 'block_core_gallery_data_id_backcompatibility');
  * the current gap setting in order to maintain the number of flex columns
  * so a css var is added to allow this.
  *
- * @param  array  $attributes Attributes of the block being rendered.
- * @param  string  $content Content of the block being rendered.
+ * @param  array  $attributes  Attributes of the block being rendered.
+ * @param  string  $content  Content of the block being rendered.
  * @return string The content of the block being rendered.
  */
 function block_core_gallery_render($attributes, $content)

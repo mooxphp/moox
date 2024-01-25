@@ -56,9 +56,9 @@ final class Http implements Proxy
      *
      * @since 1.6
      *
-     * @param  array|string|null  $args Proxy as a string or an array of proxy, user and password.
-     *                                When passed as an array, must have exactly one (proxy)
-     *                                or three elements (proxy, user, password).
+     * @param  array|string|null  $args  Proxy as a string or an array of proxy, user and password.
+     *                                   When passed as an array, must have exactly one (proxy)
+     *                                   or three elements (proxy, user, password).
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not an array, a string or null.
      * @throws \WpOrg\Requests\Exception\ArgumentCount On incorrect number of arguments (`proxyhttpbadargs`)
@@ -94,7 +94,7 @@ final class Http implements Proxy
      * @see \WpOrg\Requests\Proxy\Http::fsockopen_remote_host_path()
      * @see \WpOrg\Requests\Proxy\Http::fsockopen_header()
      *
-     * @param  \WpOrg\Requests\Hooks  $hooks Hook system
+     * @param  \WpOrg\Requests\Hooks  $hooks  Hook system
      */
     public function register(Hooks $hooks)
     {
@@ -112,7 +112,7 @@ final class Http implements Proxy
      *
      * @since 1.6
      *
-     * @param  resource|\CurlHandle  $handle cURL handle
+     * @param  resource|\CurlHandle  $handle  cURL handle
      */
     public function curl_before_send(&$handle)
     {
@@ -130,7 +130,7 @@ final class Http implements Proxy
      *
      * @since 1.6
      *
-     * @param  string  $remote_socket Socket connection string
+     * @param  string  $remote_socket  Socket connection string
      */
     public function fsockopen_remote_socket(&$remote_socket)
     {
@@ -142,8 +142,8 @@ final class Http implements Proxy
      *
      * @since 1.6
      *
-     * @param  string  $path Path to send in HTTP request string ("GET ...")
-     * @param  string  $url Full URL we're requesting
+     * @param  string  $path  Path to send in HTTP request string ("GET ...")
+     * @param  string  $url  Full URL we're requesting
      */
     public function fsockopen_remote_host_path(&$path, $url)
     {
@@ -155,7 +155,7 @@ final class Http implements Proxy
      *
      * @since 1.6
      *
-     * @param  string  $out HTTP header string
+     * @param  string  $out  HTTP header string
      */
     public function fsockopen_header(&$out)
     {

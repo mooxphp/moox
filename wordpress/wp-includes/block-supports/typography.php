@@ -11,7 +11,7 @@
  * @since 5.6.0
  * @since 6.3.0 Added support for text-columns.
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_typography_support($block_type)
 {
@@ -78,8 +78,8 @@ function wp_register_typography_support($block_type)
  * @since 6.1.0 Used the style engine to generate CSS and classnames.
  * @since 6.3.0 Added support for text-columns.
  *
- * @param  WP_Block_Type  $block_type       Block type.
- * @param  array  $block_attributes Block attributes.
+ * @param  WP_Block_Type  $block_type  Block type.
+ * @param  array  $block_attributes  Block attributes.
  * @return array Typography CSS classes and inline styles.
  */
 function wp_apply_typography_support($block_type, $block_attributes)
@@ -253,7 +253,7 @@ function wp_apply_typography_support($block_type, $block_attributes)
  * @since 6.1.0
  *
  * @param  string  $style_value  A raw style value for a single typography feature from a block's style attribute.
- * @param  string  $css_property Slug for the CSS property the inline style sets.
+ * @param  string  $css_property  Slug for the CSS property the inline style sets.
  * @return string A CSS inline style value.
  */
 function wp_typography_get_preset_inline_style_value($style_value, $css_property)
@@ -282,8 +282,8 @@ function wp_typography_get_preset_inline_style_value($style_value, $css_property
  *
  * @since 6.1.0
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
  * @return string Filtered block content.
  */
 function wp_render_typography_support($block_content, $block)
@@ -313,14 +313,14 @@ function wp_render_typography_support($block_content, $block)
  *
  * @since 6.1.0
  *
- * @param  string|int|float  $raw_value Raw size value from theme.json.
- * @param  array  $options   {
- *     Optional. An associative array of options. Default is empty array.
+ * @param  string|int|float  $raw_value  Raw size value from theme.json.
+ * @param  array  $options  {
+ *                          Optional. An associative array of options. Default is empty array.
  *
- *     @type string   $coerce_to        Coerce the value to rem or px. Default `'rem'`.
- *     @type int      $root_size_value  Value of root font size for rem|em <-> px conversion. Default `16`.
- *     @type string[] $acceptable_units An array of font size units. Default `array( 'rem', 'px', 'em' )`;
- * }
+ * @type string $coerce_to        Coerce the value to rem or px. Default `'rem'`.
+ * @type int $root_size_value  Value of root font size for rem|em <-> px conversion. Default `16`.
+ * @type string[] $acceptable_units An array of font size units. Default `array( 'rem', 'px', 'em' )`;
+ *                }
  *
  * @return array|null An array consisting of `'value'` and `'unit'` properties on success.
  *                    `null` on failure.
@@ -403,16 +403,16 @@ function wp_get_typography_value_and_unit($raw_value, $options = [])
  * @since 6.1.0
  * @since 6.3.0 Checks for unsupported min/max viewport values that cause invalid clamp values.
  *
- * @param  array  $args {
- *     Optional. An associative array of values to calculate a fluid formula
- *     for font size. Default is empty array.
+ * @param  array  $args  {
+ *                       Optional. An associative array of values to calculate a fluid formula
+ *                       for font size. Default is empty array.
  *
- *     @type string $maximum_viewport_width Maximum size up to which type will have fluidity.
- *     @type string $minimum_viewport_width Minimum viewport size from which type will have fluidity.
- *     @type string $maximum_font_size      Maximum font size for any clamp() calculation.
- *     @type string $minimum_font_size      Minimum font size for any clamp() calculation.
- *     @type int    $scale_factor           A scale factor to determine how fast a font scales within boundaries.
- * }
+ * @type string $maximum_viewport_width Maximum size up to which type will have fluidity.
+ * @type string $minimum_viewport_width Minimum viewport size from which type will have fluidity.
+ * @type string $maximum_font_size      Maximum font size for any clamp() calculation.
+ * @type string $minimum_font_size      Minimum font size for any clamp() calculation.
+ * @type int $scale_factor           A scale factor to determine how fast a font scales within boundaries.
+ *           }
  *
  * @return string|null A font-size value using clamp() on success, otherwise null.
  */
@@ -497,16 +497,16 @@ function wp_get_computed_fluid_typography_value($args = [])
  * @since 6.3.0 Using layout.wideSize as max viewport width, and logarithmic scale factor to calculate minimum font scale.
  * @since 6.4.0 Added configurable min and max viewport width values to the typography.fluid theme.json schema.
  *
- * @param  array  $preset                     {
- *     Required. fontSizes preset value as seen in theme.json.
+ * @param  array  $preset  {
+ *                         Required. fontSizes preset value as seen in theme.json.
  *
- *     @type string           $name Name of the font size preset.
- *     @type string           $slug Kebab-case, unique identifier for the font size preset.
- *     @type string|int|float $size CSS font-size value, including units if applicable.
- * }
+ * @type string $name Name of the font size preset.
+ * @type string $slug Kebab-case, unique identifier for the font size preset.
+ * @type string|int|float $size CSS font-size value, including units if applicable.
+ *                        }
  *
- * @param  bool  $should_use_fluid_typography An override to switch fluid typography "on". Can be used for unit testing.
- *                                           Default is false.
+ * @param  bool  $should_use_fluid_typography  An override to switch fluid typography "on". Can be used for unit testing.
+ *                                             Default is false.
  * @return string|null Font-size value or null if a size is not passed in $preset.
  */
 function wp_get_typography_font_size_value($preset, $should_use_fluid_typography = false)

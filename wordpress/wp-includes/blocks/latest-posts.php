@@ -29,7 +29,7 @@ function block_core_latest_posts_get_excerpt_length()
 /**
  * Renders the `core/latest-posts` block on server.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return string Returns the post content with latest posts added.
  */
 function render_block_core_latest_posts($attributes)
@@ -242,7 +242,7 @@ add_action('init', 'register_block_core_latest_posts');
  * TODO: Remove when and if the bottom client-side deprecation for this block
  * is removed.
  *
- * @param  array  $block A single parsed block object.
+ * @param  array  $block  A single parsed block object.
  * @return array The migrated block object.
  */
 function block_core_latest_posts_migrate_categories($block)

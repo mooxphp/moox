@@ -38,15 +38,15 @@ class WP_REST_Term_Search_Handler extends WP_REST_Search_Handler
      *
      * @since 5.6.0
      *
-     * @param  WP_REST_Request  $request Full REST request.
+     * @param  WP_REST_Request  $request  Full REST request.
      * @return array {
-     *     Associative array containing found IDs and total count for the matching search results.
+     *               Associative array containing found IDs and total count for the matching search results.
      *
-     *     @type int[]               $ids   Found IDs.
-     *     @type string|int|WP_Error $total Numeric string containing the number of terms in that
-     *                                      taxonomy, 0 if there are no results, or WP_Error if
-     *                                      the requested taxonomy does not exist.
-     * }
+     * @type int[] $ids   Found IDs.
+     * @type string|int|WP_Error $total Numeric string containing the number of terms in that
+     *                           taxonomy, 0 if there are no results, or WP_Error if
+     *                           the requested taxonomy does not exist.
+     *                           }
      */
     public function search_items(WP_REST_Request $request)
     {
@@ -84,8 +84,8 @@ class WP_REST_Term_Search_Handler extends WP_REST_Search_Handler
          *
          * @since 5.6.0
          *
-         * @param  array  $query_args Key value array of query var to query value.
-         * @param  WP_REST_Request  $request    The request used.
+         * @param  array  $query_args  Key value array of query var to query value.
+         * @param  WP_REST_Request  $request  The request used.
          */
         $query_args = apply_filters('rest_term_search_query', $query_args, $request);
 
@@ -113,8 +113,8 @@ class WP_REST_Term_Search_Handler extends WP_REST_Search_Handler
      *
      * @since 5.6.0
      *
-     * @param  int  $id     Item ID.
-     * @param  array  $fields Fields to include for the item.
+     * @param  int  $id  Item ID.
+     * @param  array  $fields  Fields to include for the item.
      * @return array Associative array containing all fields for the item.
      */
     public function prepare_item($id, array $fields)
@@ -144,7 +144,7 @@ class WP_REST_Term_Search_Handler extends WP_REST_Search_Handler
      *
      * @since 5.6.0
      *
-     * @param  int  $id Item ID.
+     * @param  int  $id  Item ID.
      * @return array[] Array of link arrays for the given item.
      */
     public function prepare_item_links($id)

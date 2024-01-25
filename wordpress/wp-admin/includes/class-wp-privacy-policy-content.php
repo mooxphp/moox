@@ -29,8 +29,8 @@ final class WP_Privacy_Policy_Content
      *
      * @since 4.9.6
      *
-     * @param  string  $plugin_name The name of the plugin or theme that is suggesting content for the site's privacy policy.
-     * @param  string  $policy_text The suggested content for inclusion in the policy.
+     * @param  string  $plugin_name  The name of the plugin or theme that is suggesting content for the site's privacy policy.
+     * @param  string  $policy_text  The suggested content for inclusion in the policy.
      */
     public static function add($plugin_name, $policy_text)
     {
@@ -162,7 +162,7 @@ final class WP_Privacy_Policy_Content
      *
      * @since 4.9.6
      *
-     * @param  int  $post_id The ID of the updated post.
+     * @param  int  $post_id  The ID of the updated post.
      */
     public static function _policy_page_updated($post_id)
     {
@@ -315,7 +315,7 @@ final class WP_Privacy_Policy_Content
      *
      * @global WP_Post $post Global post object.
      *
-     * @param  WP_Post|null  $post The currently edited post. Default null.
+     * @param  WP_Post|null  $post  The currently edited post. Default null.
      */
     public static function notice($post = null)
     {
@@ -459,8 +459,8 @@ final class WP_Privacy_Policy_Content
      * @since 4.9.6
      * @since 5.0.0 Added the `$blocks` parameter.
      *
-     * @param  bool  $description Whether to include the descriptions under the section headings. Default false.
-     * @param  bool  $blocks      Whether to format the content for the block editor. Default true.
+     * @param  bool  $description  Whether to include the descriptions under the section headings. Default false.
+     * @param  bool  $blocks  Whether to format the content for the block editor. Default true.
      * @return string The default policy content.
      */
     public static function get_default_content($description = false, $blocks = true)
@@ -690,10 +690,10 @@ final class WP_Privacy_Policy_Content
          * @since 5.0.0 Added the `$strings`, `$description`, and `$blocks` parameters.
          * @deprecated 5.7.0 Use wp_add_privacy_policy_content() instead.
          *
-         * @param  string  $content     The default policy content.
-         * @param  string[]  $strings     An array of privacy policy content strings.
-         * @param  bool  $description Whether policy descriptions should be included.
-         * @param  bool  $blocks      Whether the content should be formatted for the block editor.
+         * @param  string  $content  The default policy content.
+         * @param  string[]  $strings  An array of privacy policy content strings.
+         * @param  bool  $description  Whether policy descriptions should be included.
+         * @param  bool  $blocks  Whether the content should be formatted for the block editor.
          */
         return apply_filters_deprecated(
             'wp_get_default_privacy_policy_content',

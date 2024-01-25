@@ -37,7 +37,7 @@ class WP_Users_List_Table extends WP_List_Table
      * @since 3.1.0
      * @see WP_List_Table::__construct() for more information on default arguments.
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -132,8 +132,8 @@ class WP_Users_List_Table extends WP_List_Table
          *
          * @since 4.4.0
          *
-         * @param  array  $args Arguments passed to WP_User_Query to retrieve items for the current
-         *                    users list table.
+         * @param  array  $args  Arguments passed to WP_User_Query to retrieve items for the current
+         *                       users list table.
          */
         $args = apply_filters('users_list_table_query_args', $args);
 
@@ -298,8 +298,8 @@ class WP_Users_List_Table extends WP_List_Table
      *
      * @since 3.1.0
      *
-     * @param  string  $which Whether this is being invoked above ("top")
-     *                      or below the table ("bottom").
+     * @param  string  $which  Whether this is being invoked above ("top")
+     *                         or below the table ("bottom").
      */
     protected function extra_tablenav($which)
     {
@@ -324,14 +324,14 @@ class WP_Users_List_Table extends WP_List_Table
 		}
 
         /**
-		 * Fires just before the closing div containing the bulk role-change controls
-		 * in the Users list table.
-		 *
-		 * @since 3.5.0
-		 * @since 4.6.0 The `$which` parameter was added.
-		 *
-		 * @param  string  $which The location of the extra table nav markup: 'top' or 'bottom'.
-		 */
+         * Fires just before the closing div containing the bulk role-change controls
+         * in the Users list table.
+         *
+         * @since 3.5.0
+         * @since 4.6.0 The `$which` parameter was added.
+         *
+         * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
+         */
         do_action('restrict_manage_users', $which);
         ?>
 		</div>
@@ -342,7 +342,7 @@ class WP_Users_List_Table extends WP_List_Table
          *
          * @since 4.9.0
          *
-         * @param  string  $which The location of the extra table nav markup: 'top' or 'bottom'.
+         * @param  string  $which  The location of the extra table nav markup: 'top' or 'bottom'.
          */
         do_action('manage_users_extra_tablenav', $which);
     }
@@ -432,11 +432,11 @@ class WP_Users_List_Table extends WP_List_Table
      * @since 4.2.0 The `$style` parameter was deprecated.
      * @since 4.4.0 The `$role` parameter was deprecated.
      *
-     * @param  WP_User  $user_object The current user object.
-     * @param  string  $style       Deprecated. Not used.
-     * @param  string  $role        Deprecated. Not used.
-     * @param  int  $numposts    Optional. Post count to display for this user. Defaults
-     *                             to zero, as in, a new user has made zero posts.
+     * @param  WP_User  $user_object  The current user object.
+     * @param  string  $style  Deprecated. Not used.
+     * @param  string  $role  Deprecated. Not used.
+     * @param  int  $numposts  Optional. Post count to display for this user. Defaults
+     *                         to zero, as in, a new user has made zero posts.
      * @return string Output for a single row.
      */
     public function single_row($user_object, $style = '', $role = '', $numposts = 0)
@@ -522,10 +522,10 @@ class WP_Users_List_Table extends WP_List_Table
              *
              * @since 2.8.0
              *
-             * @param  string[]  $actions     An array of action links to be displayed.
-             *                              Default 'Edit', 'Delete' for single site, and
-             *                              'Edit', 'Remove' for Multisite.
-             * @param  WP_User  $user_object WP_User object for the currently listed user.
+             * @param  string[]  $actions  An array of action links to be displayed.
+             *                             Default 'Edit', 'Delete' for single site, and
+             *                             'Edit', 'Remove' for Multisite.
+             * @param  WP_User  $user_object  WP_User object for the currently listed user.
              */
             $actions = apply_filters('user_row_actions', $actions, $user_object);
 
@@ -628,9 +628,9 @@ class WP_Users_List_Table extends WP_List_Table
                          *
                          * @since 2.8.0
                          *
-                         * @param  string  $output      Custom column output. Default empty.
-                         * @param  string  $column_name Column name.
-                         * @param  int  $user_id     ID of the currently-listed user.
+                         * @param  string  $output  Custom column output. Default empty.
+                         * @param  string  $column_name  Column name.
+                         * @param  int  $user_id  ID of the currently-listed user.
                          */
                         $row .= apply_filters('manage_users_custom_column', '', $column_name, $user_object->ID);
                 }
@@ -663,7 +663,7 @@ class WP_Users_List_Table extends WP_List_Table
      *
      * @since 4.4.0
      *
-     * @param  WP_User  $user_object The WP_User object.
+     * @param  WP_User  $user_object  The WP_User object.
      * @return string[] An array of user role names keyed by role.
      */
     protected function get_role_list($user_object)
@@ -687,8 +687,8 @@ class WP_Users_List_Table extends WP_List_Table
          *
          * @since 4.4.0
          *
-         * @param  string[]  $role_list   An array of translated user role names keyed by role.
-         * @param  WP_User  $user_object A WP_User object.
+         * @param  string[]  $role_list  An array of translated user role names keyed by role.
+         * @param  WP_User  $user_object  A WP_User object.
          */
         return apply_filters('get_role_list', $role_list, $user_object);
     }

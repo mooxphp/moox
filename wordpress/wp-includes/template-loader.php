@@ -19,7 +19,7 @@ if (wp_using_themes()) {
  *
  * @since 3.5.0
  *
- * @param  bool  $exit Whether to exit without generating any content for 'HEAD' requests. Default true.
+ * @param  bool  $exit  Whether to exit without generating any content for 'HEAD' requests. Default true.
  */
 if ($_SERVER['REQUEST_METHOD'] === 'HEAD' && apply_filters('exit_on_http_head', true)) {
     exit;
@@ -101,7 +101,7 @@ if (wp_using_themes()) {
      *
      * @since 3.0.0
      *
-     * @param  string  $template The path of the template to include.
+     * @param  string  $template  The path of the template to include.
      */
     $template = apply_filters('template_include', $template);
     if ($template) {

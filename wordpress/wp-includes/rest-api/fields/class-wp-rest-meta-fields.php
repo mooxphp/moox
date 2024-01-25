@@ -71,8 +71,8 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  int  $object_id Object ID to fetch meta for.
-     * @param  WP_REST_Request  $request   Full details about the request.
+     * @param  int  $object_id  Object ID to fetch meta for.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return array Array containing the meta values keyed by name.
      */
     public function get_value($object_id, $request)
@@ -117,9 +117,9 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  mixed  $value   Meta value to prepare.
-     * @param  WP_REST_Request  $request Current request object.
-     * @param  array  $args    Options for the field.
+     * @param  mixed  $value  Meta value to prepare.
+     * @param  WP_REST_Request  $request  Current request object.
+     * @param  array  $args  Options for the field.
      * @return mixed Prepared value.
      */
     protected function prepare_value_for_response($value, $request, $args)
@@ -136,8 +136,8 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  array  $meta      Array of meta parsed from the request.
-     * @param  int  $object_id Object ID to fetch meta for.
+     * @param  array  $meta  Array of meta parsed from the request.
+     * @param  int  $object_id  Object ID to fetch meta for.
      * @return null|WP_Error Null on success, WP_Error object on failure.
      */
     public function update_value($meta, $object_id)
@@ -219,9 +219,9 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  int  $object_id Object ID the field belongs to.
+     * @param  int  $object_id  Object ID the field belongs to.
      * @param  string  $meta_key  Key for the field.
-     * @param  string  $name      Name for the field that is exposed in the REST API.
+     * @param  string  $name  Name for the field that is exposed in the REST API.
      * @return true|WP_Error True if meta field is deleted, WP_Error otherwise.
      */
     protected function delete_meta_value($object_id, $meta_key, $name)
@@ -265,10 +265,10 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  int  $object_id Object ID to update.
+     * @param  int  $object_id  Object ID to update.
      * @param  string  $meta_key  Key for the custom field.
-     * @param  string  $name      Name for the field that is exposed in the REST API.
-     * @param  array  $values    List of values to update to.
+     * @param  string  $name  Name for the field that is exposed in the REST API.
+     * @param  array  $values  List of values to update to.
      * @return true|WP_Error True if meta fields are updated, WP_Error otherwise.
      */
     protected function update_multi_meta_value($object_id, $meta_key, $name, $values)
@@ -365,10 +365,10 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  int  $object_id Object ID to update.
+     * @param  int  $object_id  Object ID to update.
      * @param  string  $meta_key  Key for the custom field.
-     * @param  string  $name      Name for the field that is exposed in the REST API.
-     * @param  mixed  $value     Updated value.
+     * @param  string  $name  Name for the field that is exposed in the REST API.
+     * @param  mixed  $value  Updated value.
      * @return true|WP_Error True if the meta field was updated, WP_Error otherwise.
      */
     protected function update_meta_value($object_id, $meta_key, $name, $value)
@@ -417,10 +417,10 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 5.5.0
      *
-     * @param  string  $meta_key     The meta key being checked.
-     * @param  string  $subtype      The object subtype.
-     * @param  mixed  $stored_value The currently stored value retrieved from get_metadata().
-     * @param  mixed  $user_value   The value provided by the user.
+     * @param  string  $meta_key  The meta key being checked.
+     * @param  string  $subtype  The object subtype.
+     * @param  mixed  $stored_value  The currently stored value retrieved from get_metadata().
+     * @param  mixed  $user_value  The value provided by the user.
      * @return bool
      */
     protected function is_meta_value_same_as_stored_value($meta_key, $subtype, $stored_value, $user_value)
@@ -546,9 +546,9 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  mixed  $value   Meta value from the database.
-     * @param  WP_REST_Request  $request Request object.
-     * @param  array  $args    REST-specific options for the meta key.
+     * @param  mixed  $value  Meta value from the database.
+     * @param  WP_REST_Request  $request  Request object.
+     * @param  array  $args  REST-specific options for the meta key.
      * @return mixed Value prepared for output. If a non-JsonSerializable object, null.
      */
     public static function prepare_value($value, $request, $args)
@@ -575,9 +575,9 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 4.7.0
      *
-     * @param  mixed  $value   The meta value submitted in the request.
-     * @param  WP_REST_Request  $request Full details about the request.
-     * @param  string  $param   The parameter name.
+     * @param  mixed  $value  The meta value submitted in the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
+     * @param  string  $param  The parameter name.
      * @return array|false The meta array, if valid, false otherwise.
      */
     public function check_meta_is_array($value, $request, $param)
@@ -600,7 +600,7 @@ abstract class WP_REST_Meta_Fields
      * @since 5.3.0
      * @deprecated 5.6.0 Use rest_default_additional_properties_to_false() instead.
      *
-     * @param  array  $schema The schema array.
+     * @param  array  $schema  The schema array.
      * @return array
      */
     protected function default_additional_properties_to_false($schema)
@@ -615,7 +615,7 @@ abstract class WP_REST_Meta_Fields
      *
      * @since 5.3.0
      *
-     * @param  string  $type The schema type.
+     * @param  string  $type  The schema type.
      * @return mixed
      */
     protected static function get_empty_value_for_type($type)

@@ -38,17 +38,17 @@ class WP_Community_Events
      *
      * @since 4.8.0
      *
-     * @param  int  $user_id       WP user ID.
-     * @param  false|array  $user_location {
-     *     Stored location data for the user. false to pass no location.
+     * @param  int  $user_id  WP user ID.
+     * @param  false|array  $user_location  {
+     *                                      Stored location data for the user. false to pass no location.
      *
-     *     @type string $description The name of the location
-     *     @type string $latitude    The latitude in decimal degrees notation, without the degree
-     *                               symbol. e.g.: 47.615200.
-     *     @type string $longitude   The longitude in decimal degrees notation, without the degree
-     *                               symbol. e.g.: -122.341100.
-     *     @type string $country     The ISO 3166-1 alpha-2 country code. e.g.: BR
-     * }
+     * @type string $description The name of the location
+     * @type string $latitude    The latitude in decimal degrees notation, without the degree
+     *              symbol. e.g.: 47.615200.
+     * @type string $longitude   The longitude in decimal degrees notation, without the degree
+     *              symbol. e.g.: -122.341100.
+     * @type string $country     The ISO 3166-1 alpha-2 country code. e.g.: BR
+     *              }
      */
     public function __construct($user_id, $user_location = false)
     {
@@ -81,10 +81,10 @@ class WP_Community_Events
      * @since 5.5.2 Response no longer contains formatted date field. They're added
      *              in `wp.communityEvents.populateDynamicEventFields()` now.
      *
-     * @param  string  $location_search Optional. City name to help determine the location.
-     *                                e.g., "Seattle". Default empty string.
-     * @param  string  $timezone        Optional. Timezone to help determine the location.
-     *                                Default empty string.
+     * @param  string  $location_search  Optional. City name to help determine the location.
+     *                                   e.g., "Seattle". Default empty string.
+     * @param  string  $timezone  Optional. Timezone to help determine the location.
+     *                            Default empty string.
      * @return array|WP_Error A WP_Error on failure; an array with location and events on
      *                        success.
      */
@@ -179,8 +179,8 @@ class WP_Community_Events
      *
      * @since 4.8.0
      *
-     * @param  string  $search   Optional. City search string. Default empty string.
-     * @param  string  $timezone Optional. Timezone string. Default empty string.
+     * @param  string  $search  Optional. City search string. Default empty string.
+     * @param  string  $timezone  Optional. Timezone string. Default empty string.
      * @return array The request args.
      */
     protected function get_request_args($search = '', $timezone = '')
@@ -287,8 +287,8 @@ class WP_Community_Events
      *
      * @since 4.8.0
      *
-     * @param  array  $a The first pair, with indexes 'latitude' and 'longitude'.
-     * @param  array  $b The second pair, with indexes 'latitude' and 'longitude'.
+     * @param  array  $a  The first pair, with indexes 'latitude' and 'longitude'.
+     * @param  array  $b  The second pair, with indexes 'latitude' and 'longitude'.
      * @return bool True if they match, false if they don't.
      */
     protected function coordinates_match($a, $b)
@@ -310,7 +310,7 @@ class WP_Community_Events
      *
      * @since 4.8.0
      *
-     * @param  array  $location Should contain 'latitude' and 'longitude' indexes.
+     * @param  array  $location  Should contain 'latitude' and 'longitude' indexes.
      * @return string|false Transient key on success, false on failure.
      */
     protected function get_events_transient_key($location)
@@ -331,8 +331,8 @@ class WP_Community_Events
      *
      * @since 4.8.0
      *
-     * @param  array  $events     Response body from the API request.
-     * @param  int|false  $expiration Optional. Amount of time to cache the events. Defaults to false.
+     * @param  array  $events  Response body from the API request.
+     * @param  int|false  $expiration  Optional. Amount of time to cache the events. Defaults to false.
      * @return bool true if events were cached; false if not.
      */
     protected function cache_events($events, $expiration = false)
@@ -384,7 +384,7 @@ class WP_Community_Events
      * @since 4.8.0
      * @deprecated 5.6.0 No longer used in core.
      *
-     * @param  array  $response_body The response which contains the events.
+     * @param  array  $response_body  The response which contains the events.
      * @return array The response with dates and times formatted.
      */
     protected function format_event_data_time($response_body)
@@ -468,7 +468,7 @@ class WP_Community_Events
      * @since 5.5.2 Accepts and returns only the events, rather than an entire HTTP response.
      * @since 6.0.0 Decode HTML entities from the event title.
      *
-     * @param  array  $events The events that will be prepared.
+     * @param  array  $events  The events that will be prepared.
      * @return array The response body with events trimmed.
      */
     protected function trim_events(array $events)
@@ -516,9 +516,9 @@ class WP_Community_Events
      * @since 4.8.0
      * @deprecated 4.9.0 Use a plugin instead. See #41217 for an example.
      *
-     * @param  string  $message A description of what occurred.
-     * @param  array  $details Details that provide more context for the
-     *                        log entry.
+     * @param  string  $message  A description of what occurred.
+     * @param  array  $details  Details that provide more context for the
+     *                          log entry.
      */
     protected function maybe_log_events_response($message, $details)
     {

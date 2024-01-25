@@ -19,9 +19,9 @@ class Walker_Nav_Menu_Edit extends Walker_Nav_Menu
      * @see Walker_Nav_Menu::start_lvl()
      * @since 3.0.0
      *
-     * @param  string  $output Passed by reference.
+     * @param  string  $output  Passed by reference.
      * @param  int  $depth  Depth of menu item. Used for padding.
-     * @param  stdClass  $args   Not used.
+     * @param  stdClass  $args  Not used.
      */
     public function start_lvl(&$output, $depth = 0, $args = null)
     {
@@ -33,9 +33,9 @@ class Walker_Nav_Menu_Edit extends Walker_Nav_Menu
      * @see Walker_Nav_Menu::end_lvl()
      * @since 3.0.0
      *
-     * @param  string  $output Passed by reference.
+     * @param  string  $output  Passed by reference.
      * @param  int  $depth  Depth of menu item. Used for padding.
-     * @param  stdClass  $args   Not used.
+     * @param  stdClass  $args  Not used.
      */
     public function end_lvl(&$output, $depth = 0, $args = null)
     {
@@ -51,11 +51,11 @@ class Walker_Nav_Menu_Edit extends Walker_Nav_Menu
      *
      * @global int $_wp_nav_menu_max_depth
      *
-     * @param  string  $output            Used to append additional content (passed by reference).
-     * @param  WP_Post  $data_object       Menu item data object.
-     * @param  int  $depth             Depth of menu item. Used for padding.
-     * @param  stdClass  $args              Not used.
-     * @param  int  $current_object_id Optional. ID of the current menu item. Default 0.
+     * @param  string  $output  Used to append additional content (passed by reference).
+     * @param  WP_Post  $data_object  Menu item data object.
+     * @param  int  $depth  Depth of menu item. Used for padding.
+     * @param  stdClass  $args  Not used.
+     * @param  int  $current_object_id  Optional. ID of the current menu item. Default 0.
      */
     public function start_el(&$output, $data_object, $depth = 0, $args = null, $current_object_id = 0)
     {
@@ -179,14 +179,14 @@ class Walker_Nav_Menu_Edit extends Walker_Nav_Menu
                             );
                         }
 
-                        printf(
-                            '<a class="item-edit" id="edit-%s" href="%s" aria-label="%s"><span class="screen-reader-text">%s</span></a>',
-                            $item_id,
-                            esc_url($edit_url),
-                            esc_attr__('Edit menu item'),
-                            /* translators: Hidden accessibility text. */
-                            __('Edit')
-                        );
+        printf(
+            '<a class="item-edit" id="edit-%s" href="%s" aria-label="%s"><span class="screen-reader-text">%s</span></a>',
+            $item_id,
+            esc_url($edit_url),
+            esc_attr__('Edit menu item'),
+            /* translators: Hidden accessibility text. */
+            __('Edit')
+        );
         ?>
 					</span>
 				</div>
@@ -245,11 +245,11 @@ class Walker_Nav_Menu_Edit extends Walker_Nav_Menu
                  *
                  * @since 5.4.0
                  *
-                 * @param  string  $item_id           Menu item ID as a numeric string.
-                 * @param  WP_Post  $menu_item         Menu item data object.
-                 * @param  int  $depth             Depth of menu item. Used for padding.
-                 * @param  stdClass|null  $args              An object of menu item arguments.
-                 * @param  int  $current_object_id Nav menu ID.
+                 * @param  string  $item_id  Menu item ID as a numeric string.
+                 * @param  WP_Post  $menu_item  Menu item data object.
+                 * @param  int  $depth  Depth of menu item. Used for padding.
+                 * @param  stdClass|null  $args  An object of menu item arguments.
+                 * @param  int  $current_object_id  Nav menu ID.
                  */
                 do_action('wp_nav_menu_item_custom_fields', $item_id, $menu_item, $depth, $args, $current_object_id);
         ?>

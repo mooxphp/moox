@@ -13,11 +13,11 @@
  *
  * @since 4.5.0
  *
- * @property int    $id
- * @property int    $network_id
+ * @property int $id
+ * @property int $network_id
  * @property string $blogname
  * @property string $siteurl
- * @property int    $post_count
+ * @property int $post_count
  * @property string $home
  */
 #[AllowDynamicProperties]
@@ -162,7 +162,7 @@ final class WP_Site
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int  $site_id The ID of the site to retrieve.
+     * @param  int  $site_id  The ID of the site to retrieve.
      * @return WP_Site|false The site's object if found. False if not.
      */
     public static function get_instance($site_id)
@@ -201,7 +201,7 @@ final class WP_Site
      *
      * @since 4.5.0
      *
-     * @param  WP_Site|object  $site A site object.
+     * @param  WP_Site|object  $site  A site object.
      */
     public function __construct($site)
     {
@@ -230,7 +230,7 @@ final class WP_Site
      *
      * @since 4.6.0
      *
-     * @param  string  $key Property to get.
+     * @param  string  $key  Property to get.
      * @return mixed Value of the property. Null if not available.
      */
     public function __get($key)
@@ -266,7 +266,7 @@ final class WP_Site
      *
      * @since 4.6.0
      *
-     * @param  string  $key Property to check if set.
+     * @param  string  $key  Property to check if set.
      * @return bool Whether the property is set.
      */
     public function __isset($key)
@@ -305,8 +305,8 @@ final class WP_Site
      *
      * @since 4.6.0
      *
-     * @param  string  $key   Property to set.
-     * @param  mixed  $value Value to assign to the property.
+     * @param  string  $key  Property to set.
+     * @param  mixed  $value  Value to assign to the property.
      */
     public function __set($key, $value)
     {
@@ -361,7 +361,7 @@ final class WP_Site
          *
          * @since 4.6.0
          *
-         * @param  stdClass  $details The site details.
+         * @param  stdClass  $details  The site details.
          */
         $details = apply_filters('site_details', $details);
 

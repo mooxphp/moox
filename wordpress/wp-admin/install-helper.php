@@ -44,8 +44,8 @@ if (! function_exists('maybe_create_table')) {
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  string  $table_name Database table name.
-     * @param  string  $create_ddl SQL statement to create table.
+     * @param  string  $table_name  Database table name.
+     * @param  string  $create_ddl  SQL statement to create table.
      * @return bool True on success or if the table already exists. False on failure.
      */
     function maybe_create_table($table_name, $create_ddl)
@@ -82,7 +82,7 @@ if (! function_exists('maybe_add_column')) {
      * @global wpdb $wpdb WordPress database abstraction object.
      *
      * @param  string  $table_name  Database table name.
-     * @param  string  $column_name Table column name.
+     * @param  string  $column_name  Table column name.
      * @param  string  $create_ddl  SQL statement to add column.
      * @return bool True on success or if the column already exists. False on failure.
      */
@@ -121,8 +121,8 @@ if (! function_exists('maybe_add_column')) {
  * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param  string  $table_name  Database table name.
- * @param  string  $column_name Table column name.
- * @param  string  $drop_ddl    SQL statement to drop column.
+ * @param  string  $column_name  Table column name.
+ * @param  string  $drop_ddl  SQL statement to drop column.
  * @return bool True on success or if the column doesn't exist. False on failure.
  */
 function maybe_drop_column($table_name, $column_name, $drop_ddl)
@@ -171,13 +171,13 @@ function maybe_drop_column($table_name, $column_name, $drop_ddl)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $table_name    Database table name.
- * @param  string  $col_name      Table column name.
- * @param  string  $col_type      Table column type.
- * @param  bool  $is_null       Optional. Check is null.
- * @param  mixed  $key           Optional. Key info.
- * @param  mixed  $default_value Optional. Default value.
- * @param  mixed  $extra         Optional. Extra value.
+ * @param  string  $table_name  Database table name.
+ * @param  string  $col_name  Table column name.
+ * @param  string  $col_type  Table column type.
+ * @param  bool  $is_null  Optional. Check is null.
+ * @param  mixed  $key  Optional. Key info.
+ * @param  mixed  $default_value  Optional. Default value.
+ * @param  mixed  $extra  Optional. Extra value.
  * @return bool True, if matches. False, if not matching.
  */
 function check_column($table_name, $col_name, $col_type, $is_null = null, $key = null, $default_value = null, $extra = null)

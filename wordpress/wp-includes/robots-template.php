@@ -24,9 +24,9 @@ function wp_robots()
      *
      * @since 5.7.0
      *
-     * @param  array  $robots Associative array of directives. Every key must be the name of the directive, and the
-     *                      corresponding value must either be a string to provide as value for the directive or a
-     *                      boolean `true` if it is a boolean directive, i.e. without a value.
+     * @param  array  $robots  Associative array of directives. Every key must be the name of the directive, and the
+     *                         corresponding value must either be a string to provide as value for the directive or a
+     *                         boolean `true` if it is a boolean directive, i.e. without a value.
      */
     $robots = apply_filters('wp_robots', []);
 
@@ -62,7 +62,7 @@ function wp_robots()
  * @since 5.7.0
  * @see wp_robots_no_robots()
  *
- * @param  array  $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
 function wp_robots_noindex(array $robots)
@@ -84,7 +84,7 @@ function wp_robots_noindex(array $robots)
  * @since 5.7.0
  * @see wp_robots_no_robots()
  *
- * @param  array  $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
 function wp_robots_noindex_embeds(array $robots)
@@ -110,7 +110,7 @@ function wp_robots_noindex_embeds(array $robots)
  * @since 5.7.0
  * @see wp_robots_no_robots()
  *
- * @param  array  $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
 function wp_robots_noindex_search(array $robots)
@@ -133,7 +133,7 @@ function wp_robots_noindex_search(array $robots)
  *
  * @since 5.7.0
  *
- * @param  array  $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
 function wp_robots_no_robots(array $robots)
@@ -161,7 +161,7 @@ function wp_robots_no_robots(array $robots)
  *
  * @since 5.7.0
  *
- * @param  array  $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
 function wp_robots_sensitive_page(array $robots)
@@ -184,7 +184,7 @@ function wp_robots_sensitive_page(array $robots)
  *
  * @since 5.7.0
  *
- * @param  array  $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
 function wp_robots_max_image_preview_large(array $robots)

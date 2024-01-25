@@ -61,7 +61,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -79,7 +79,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -97,7 +97,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -115,7 +115,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -133,7 +133,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create items, WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -151,7 +151,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -169,7 +169,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to update the item, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -187,7 +187,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -205,7 +205,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -223,7 +223,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -241,7 +241,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return object|WP_Error The prepared item, or WP_Error object on failure.
      */
     protected function prepare_item_for_database($request)
@@ -259,8 +259,8 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  mixed  $item    WordPress representation of the item.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  mixed  $item  WordPress representation of the item.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)
@@ -278,7 +278,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Response  $response Response object.
+     * @param  WP_REST_Response  $response  Response object.
      * @return array|mixed Response data, ready for insertion into collection data.
      */
     public function prepare_response_for_collection($response)
@@ -303,8 +303,8 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  array  $response_data Response data to filter.
-     * @param  string  $context       Context defined in the schema.
+     * @param  array  $response_data  Response data to filter.
+     * @param  string  $context  Context defined in the schema.
      * @return array Filtered response.
      */
     public function filter_response_by_context($response_data, $context)
@@ -392,7 +392,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  array  $args Optional. Additional arguments for context parameter. Default empty array.
+     * @param  array  $args  Optional. Additional arguments for context parameter. Default empty array.
      * @return array Context parameter details.
      */
     public function get_context_param($args = [])
@@ -431,8 +431,8 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  array  $response_data Prepared response array.
-     * @param  WP_REST_Request  $request       Full details about the request.
+     * @param  array  $response_data  Prepared response array.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return array Modified data object with additional fields.
      */
     protected function add_additional_fields_to_object($response_data, $request)
@@ -468,8 +468,8 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  object  $data_object Data model like WP_Term or WP_Post.
-     * @param  WP_REST_Request  $request     Full details about the request.
+     * @param  object  $data_object  Data model like WP_Term or WP_Post.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True on success, WP_Error object if a field cannot be updated.
      */
     protected function update_additional_fields_for_object($data_object, $request)
@@ -510,7 +510,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  array  $schema Schema array.
+     * @param  array  $schema  Schema array.
      * @return array Modified Schema array.
      */
     protected function add_additional_fields_schema($schema)
@@ -542,7 +542,7 @@ abstract class WP_REST_Controller
      *
      * @global array $wp_rest_additional_fields Holds registered fields, organized by object type.
      *
-     * @param  string  $object_type Optional. The object type.
+     * @param  string  $object_type  Optional. The object type.
      * @return array Registered additional fields (if any), empty array if none or if the object type
      *               could not be inferred.
      */
@@ -590,7 +590,7 @@ abstract class WP_REST_Controller
      *
      * @since 4.9.6
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return string[] Fields to be included in the response.
      */
     public function get_fields_for_response($request)
@@ -678,9 +678,9 @@ abstract class WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $method Optional. HTTP method of the request. The arguments for `CREATABLE` requests are
-     *                       checked for required values and may fall-back to a given default, this is not done
-     *                       on `EDITABLE` requests. Default WP_REST_Server::CREATABLE.
+     * @param  string  $method  Optional. HTTP method of the request. The arguments for `CREATABLE` requests are
+     *                          checked for required values and may fall-back to a given default, this is not done
+     *                          on `EDITABLE` requests. Default WP_REST_Server::CREATABLE.
      * @return array Endpoint arguments.
      */
     public function get_endpoint_args_for_item_schema($method = WP_REST_Server::CREATABLE)
@@ -701,7 +701,7 @@ abstract class WP_REST_Controller
      *
      * @todo Remove this in favour of https://core.trac.wordpress.org/ticket/34659
      *
-     * @param  string  $slug Slug value passed in request.
+     * @param  string  $slug  Slug value passed in request.
      * @return string Sanitized value for the slug.
      */
     public function sanitize_slug($slug)

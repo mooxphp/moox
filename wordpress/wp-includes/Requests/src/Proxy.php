@@ -29,7 +29,7 @@ interface Proxy
      *
      * @see \WpOrg\Requests\Hooks::register()
      *
-     * @param  \WpOrg\Requests\Hooks  $hooks Hook system
+     * @param  \WpOrg\Requests\Hooks  $hooks  Hook system
      */
     public function register(Hooks $hooks);
 }

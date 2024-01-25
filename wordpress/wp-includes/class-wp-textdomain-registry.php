@@ -68,8 +68,8 @@ class WP_Textdomain_Registry
      *
      * @since 6.1.0
      *
-     * @param  string  $domain Text domain.
-     * @param  string  $locale Locale.
+     * @param  string  $domain  Text domain.
+     * @param  string  $locale  Locale.
      * @return string|false MO file path or false if there is none available.
      */
     public function get($domain, $locale)
@@ -90,7 +90,7 @@ class WP_Textdomain_Registry
      *
      * @since 6.1.0
      *
-     * @param  string  $domain Text domain.
+     * @param  string  $domain  Text domain.
      * @return bool Whether any MO file paths are available for the domain.
      */
     public function has($domain)
@@ -109,9 +109,9 @@ class WP_Textdomain_Registry
      *
      * @since 6.1.0
      *
-     * @param  string  $domain Text domain.
-     * @param  string  $locale Locale.
-     * @param  string|false  $path   Language directory path or false if there is none available.
+     * @param  string  $domain  Text domain.
+     * @param  string  $locale  Locale.
+     * @param  string|false  $path  Language directory path or false if there is none available.
      */
     public function set($domain, $locale, $path)
     {
@@ -126,8 +126,8 @@ class WP_Textdomain_Registry
      *
      * @since 6.1.0
      *
-     * @param  string  $domain Text domain.
-     * @param  string  $path   Language directory path.
+     * @param  string  $domain  Text domain.
+     * @param  string  $path  Language directory path.
      */
     public function set_custom_path($domain, $path)
     {
@@ -139,7 +139,7 @@ class WP_Textdomain_Registry
      *
      * @since 6.2.0
      *
-     * @param  string  $domain Text domain.
+     * @param  string  $domain  Text domain.
      * @return string[] Array of language directory paths.
      */
     private function get_paths_for_domain($domain)
@@ -165,8 +165,8 @@ class WP_Textdomain_Registry
      * @since 6.1.0
      * @see _get_path_to_translation_from_lang_dir()
      *
-     * @param  string  $domain Text domain.
-     * @param  string  $locale Locale.
+     * @param  string  $domain  Text domain.
+     * @param  string  $locale  Locale.
      * @return string|false Language directory path or false if there is none available.
      */
     private function get_path_from_lang_dir($domain, $locale)
@@ -223,7 +223,7 @@ class WP_Textdomain_Registry
      *
      * @since 6.1.0
      *
-     * @param  string  $path Language directory path.
+     * @param  string  $path  Language directory path.
      */
     private function set_cached_mo_files($path)
     {

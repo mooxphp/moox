@@ -22,8 +22,8 @@ class _WP_List_Table_Compat extends WP_List_Table
      * @since 3.1.0
      *
      * @param  string|WP_Screen  $screen  The screen hook name or screen object.
-     * @param  string[]  $columns An array of columns with column IDs as the keys
-     *                                  and translated column names as the values.
+     * @param  string[]  $columns  An array of columns with column IDs as the keys
+     *                             and translated column names as the values.
      */
     public function __construct($screen, $columns = [])
     {

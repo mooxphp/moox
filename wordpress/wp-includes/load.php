@@ -329,7 +329,7 @@ function wp_get_development_mode()
  *
  * @since 6.3.0
  *
- * @param  string  $mode Development mode to check for. Either 'core', 'plugin', 'theme', or 'all'.
+ * @param  string  $mode  Development mode to check for. Either 'core', 'plugin', 'theme', or 'all'.
  * @return bool True if the given mode is covered by the current development mode, false otherwise.
  */
 function wp_is_development_mode($mode)
@@ -435,8 +435,8 @@ function wp_is_maintenance_mode()
      *
      * @since 4.6.0
      *
-     * @param  bool  $enable_checks Whether to enable maintenance mode. Default true.
-     * @param  int  $upgrading     The timestamp set in the .maintenance file.
+     * @param  bool  $enable_checks  Whether to enable maintenance mode. Default true.
+     * @param  int  $upgrading  The timestamp set in the .maintenance file.
      */
     if (! apply_filters('enable_maintenance_mode', true, $upgrading)) {
         return false;
@@ -487,10 +487,10 @@ function timer_start()
  * @global float   $timestart Seconds from when timer_start() is called.
  * @global float   $timeend   Seconds from when function is called.
  *
- * @param  int|bool  $display   Whether to echo or return the results. Accepts 0|false for return,
- *                            1|true for echo. Default 0|false.
- * @param  int  $precision The number of digits from the right of the decimal to display.
- *                            Default 3.
+ * @param  int|bool  $display  Whether to echo or return the results. Accepts 0|false for return,
+ *                             1|true for echo. Default 0|false.
+ * @param  int  $precision  The number of digits from the right of the decimal to display.
+ *                          Default 3.
  * @return string The "second.microsecond" finished time calculation. The number is formatted
  *                for human consumption, both localized and rounded.
  */
@@ -575,7 +575,7 @@ function wp_debug_mode()
      *
      * @since 4.6.0
      *
-     * @param  bool  $enable_debug_mode Whether to enable debug mode checks to occur. Default true.
+     * @param  bool  $enable_debug_mode  Whether to enable debug mode checks to occur. Default true.
      */
     if (! apply_filters('enable_wp_debug_mode_checks', true)) {
         return;
@@ -772,7 +772,7 @@ function wp_set_wpdb_vars()
  *
  * @global bool $_wp_using_ext_object_cache
  *
- * @param  bool  $using Whether external object cache is being used.
+ * @param  bool  $using  Whether external object cache is being used.
  * @return bool The current 'using' setting.
  */
 function wp_using_ext_object_cache($using = null)
@@ -813,8 +813,8 @@ function wp_start_object_cache()
      *
      * @since 5.8.0
      *
-     * @param  bool  $enable_object_cache Whether to enable loading object-cache.php (if present).
-     *                                  Default true.
+     * @param  bool  $enable_object_cache  Whether to enable loading object-cache.php (if present).
+     *                                     Default true.
      */
     if ($first_init && apply_filters('enable_loading_object_cache_dropin', true)) {
         if (! function_exists('wp_cache_init')) {
@@ -1019,7 +1019,7 @@ function wp_get_active_and_valid_plugins()
  *
  * @since 5.2.0
  *
- * @param  string[]  $plugins Array of absolute plugin main file paths.
+ * @param  string[]  $plugins  Array of absolute plugin main file paths.
  * @return string[] Filtered array of plugins, without any paused plugins.
  */
 function wp_skip_paused_plugins(array $plugins)
@@ -1095,7 +1095,7 @@ function wp_get_active_and_valid_themes()
  *
  * @since 5.2.0
  *
- * @param  string[]  $themes Array of absolute theme directory paths.
+ * @param  string[]  $themes  Array of absolute theme directory paths.
  * @return string[] Filtered array of absolute paths to themes, without any paused themes.
  */
 function wp_skip_paused_themes(array $themes)
@@ -1169,8 +1169,8 @@ function is_protected_endpoint()
      *
      * @since 5.2.0
      *
-     * @param  bool  $is_protected_endpoint Whether the currently requested endpoint is protected.
-     *                                    Default false.
+     * @param  bool  $is_protected_endpoint  Whether the currently requested endpoint is protected.
+     *                                       Default false.
      */
     return (bool) apply_filters('is_protected_endpoint', false);
 }
@@ -1210,7 +1210,7 @@ function is_protected_ajax_action()
      *
      * @since 5.2.0
      *
-     * @param  string[]  $actions_to_protect Array of strings with Ajax actions to protect.
+     * @param  string[]  $actions_to_protect  Array of strings with Ajax actions to protect.
      */
     $actions_to_protect = (array) apply_filters('wp_protected_ajax_actions', $actions_to_protect);
 
@@ -1283,7 +1283,7 @@ function shutdown_action_hook()
  * @since 2.7.0
  * @deprecated 3.2.0
  *
- * @param  object  $input_object The object to clone.
+ * @param  object  $input_object  The object to clone.
  * @return object The cloned object.
  */
 function wp_clone($input_object)
@@ -1583,8 +1583,8 @@ function wp_load_translations_early()
  *
  * @since 4.4.0
  *
- * @param  bool  $is_installing Optional. True to set WP into Installing mode, false to turn Installing mode off.
- *                            Omit this parameter if you only want to fetch the current status.
+ * @param  bool  $is_installing  Optional. True to set WP into Installing mode, false to turn Installing mode off.
+ *                               Omit this parameter if you only want to fetch the current status.
  * @return bool True if WP is installing, otherwise false. When a `$is_installing` is passed, the function will
  *              report whether WP was in installing mode prior to the change to `$is_installing`.
  */
@@ -1640,7 +1640,7 @@ function is_ssl()
  * @link https://www.php.net/manual/en/function.ini-get.php
  * @link https://www.php.net/manual/en/faq.using.php#faq.using.shorthandbytes
  *
- * @param  string  $value A (PHP ini) byte value, either shorthand or ordinary.
+ * @param  string  $value  A (PHP ini) byte value, either shorthand or ordinary.
  * @return int An integer byte value.
  */
 function wp_convert_hr_to_bytes($value)
@@ -1666,7 +1666,7 @@ function wp_convert_hr_to_bytes($value)
  * @since 4.6.0
  * @link https://www.php.net/manual/en/function.ini-get-all.php
  *
- * @param  string  $setting The name of the ini setting to check.
+ * @param  string  $setting  The name of the ini setting to check.
  * @return bool True if the value is changeable at runtime. False otherwise.
  */
 function wp_is_ini_value_changeable($setting)
@@ -1710,7 +1710,7 @@ function wp_doing_ajax()
      *
      * @since 4.7.0
      *
-     * @param  bool  $wp_doing_ajax Whether the current request is a WordPress Ajax request.
+     * @param  bool  $wp_doing_ajax  Whether the current request is a WordPress Ajax request.
      */
     return apply_filters('wp_doing_ajax', defined('DOING_AJAX') && DOING_AJAX);
 }
@@ -1729,7 +1729,7 @@ function wp_using_themes()
      *
      * @since 5.1.0
      *
-     * @param  bool  $wp_using_themes Whether the current request should use themes.
+     * @param  bool  $wp_using_themes  Whether the current request should use themes.
      */
     return apply_filters('wp_using_themes', defined('WP_USE_THEMES') && WP_USE_THEMES);
 }
@@ -1748,7 +1748,7 @@ function wp_doing_cron()
      *
      * @since 4.8.0
      *
-     * @param  bool  $wp_doing_cron Whether the current request is a WordPress cron request.
+     * @param  bool  $wp_doing_cron  Whether the current request is a WordPress cron request.
      */
     return apply_filters('wp_doing_cron', defined('DOING_CRON') && DOING_CRON);
 }
@@ -1760,7 +1760,7 @@ function wp_doing_cron()
  *
  * @since 2.1.0
  *
- * @param  mixed  $thing The variable to check.
+ * @param  mixed  $thing  The variable to check.
  * @return bool Whether the variable is an instance of WP_Error.
  */
 function is_wp_error($thing)
@@ -1773,7 +1773,7 @@ function is_wp_error($thing)
          *
          * @since 5.6.0
          *
-         * @param  WP_Error  $thing The error object passed to `is_wp_error()`.
+         * @param  WP_Error  $thing  The error object passed to `is_wp_error()`.
          */
         do_action('is_wp_error_instance', $thing);
     }
@@ -1786,7 +1786,7 @@ function is_wp_error($thing)
  *
  * @since 4.8.0
  *
- * @param  string  $context The usage context.
+ * @param  string  $context  The usage context.
  * @return bool True if file modification is allowed, false otherwise.
  */
 function wp_is_file_mod_allowed($context)
@@ -1796,8 +1796,8 @@ function wp_is_file_mod_allowed($context)
      *
      * @since 4.8.0
      *
-     * @param  bool  $file_mod_allowed Whether file modifications are allowed.
-     * @param  string  $context          The usage context.
+     * @param  bool  $file_mod_allowed  Whether file modifications are allowed.
+     * @param  string  $context  The usage context.
      */
     return apply_filters('file_mod_allowed', ! defined('DISALLOW_FILE_MODS') || ! DISALLOW_FILE_MODS, $context);
 }
@@ -1840,7 +1840,7 @@ function wp_start_scraping_edited_file_errors()
  *
  * @since 4.9.0
  *
- * @param  string  $scrape_key Scrape key.
+ * @param  string  $scrape_key  Scrape key.
  */
 function wp_finalize_scraping_edited_file_errors($scrape_key)
 {
@@ -1914,7 +1914,7 @@ function wp_is_jsonp_request()
  *
  * @since 5.6.0
  *
- * @param  string  $media_type A Media Type string to check.
+ * @param  string  $media_type  A Media Type string to check.
  * @return bool True if string is a valid JSON Media Type.
  */
 function wp_is_json_media_type($media_type)
@@ -1976,8 +1976,8 @@ function wp_is_xml_request()
  *
  * @global string $pagenow The filename of the current screen.
  *
- * @param  string  $context The context to check for protection. Accepts 'login', 'admin', and 'front'.
- *                        Defaults to the current context.
+ * @param  string  $context  The context to check for protection. Accepts 'login', 'admin', and 'front'.
+ *                           Defaults to the current context.
  * @return bool Whether the site is protected by Basic Auth.
  */
 function wp_is_site_protected_by_basic_auth($context = '')
@@ -2001,8 +2001,8 @@ function wp_is_site_protected_by_basic_auth($context = '')
      *
      * @since 5.6.1
      *
-     * @param  bool  $is_protected Whether the site is protected by Basic Auth.
-     * @param  string  $context    The context to check for protection. One of 'login', 'admin', or 'front'.
+     * @param  bool  $is_protected  Whether the site is protected by Basic Auth.
+     * @param  string  $context  The context to check for protection. One of 'login', 'admin', or 'front'.
      */
     return apply_filters('wp_is_site_protected_by_basic_auth', $is_protected, $context);
 }

@@ -55,7 +55,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  string  $parent_post_type Post type of the parent.
+     * @param  string  $parent_post_type  Post type of the parent.
      */
     public function __construct($parent_post_type)
     {
@@ -145,7 +145,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  int  $parent_id Supplied ID.
+     * @param  int  $parent_id  Supplied ID.
      * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
      */
     protected function get_parent($parent_id)
@@ -158,7 +158,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -187,7 +187,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create the item, WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -210,7 +210,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -267,7 +267,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_Post|WP_Error Revision post object if ID is valid, WP_Error otherwise.
      */
     public function get_item($request)
@@ -304,7 +304,7 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -364,8 +364,8 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      * @since 5.0.0
      * @since 6.4.0 The `$meta` parameter was added.
      *
-     * @param  array  $post_data Associative array containing the post data.
-     * @param  array  $meta      Associative array containing the post meta data.
+     * @param  array  $post_data  Associative array containing the post data.
+     * @param  array  $meta  Associative array containing the post meta data.
      * @return mixed The autosave revision ID or WP_Error.
      */
     public function create_post_autosave($post_data, array $meta = [])
@@ -450,8 +450,8 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
      * @since 5.0.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item    Post revision object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $item  Post revision object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -486,8 +486,8 @@ class WP_REST_Autosaves_Controller extends WP_REST_Revisions_Controller
          *
          * @since 5.0.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  WP_Post  $post     The original revision object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  WP_Post  $post  The original revision object.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_autosave', $response, $post, $request);

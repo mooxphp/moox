@@ -272,7 +272,7 @@ _e('<a href="https://wordpress.org/documentation/article/customizer/">Documentat
                         if (empty($settings['label'])) {
                             continue;
                         }
-                        $active = ! empty($settings['default']);
+					    $active = ! empty($settings['default']);
 					    $class = 'preview-'.$device;
 					    if ($active) {
 					        $class .= ' active';

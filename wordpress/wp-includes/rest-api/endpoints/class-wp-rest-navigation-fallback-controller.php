@@ -64,7 +64,7 @@ class WP_REST_Navigation_Fallback_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -97,7 +97,7 @@ class WP_REST_Navigation_Fallback_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -148,8 +148,8 @@ class WP_REST_Navigation_Fallback_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_Post  $item    The wp_navigation Post object whose response is being prepared.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $item  The wp_navigation Post object whose response is being prepared.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response $response The response data.
      */
     public function prepare_item_for_response($item, $request)
@@ -181,7 +181,7 @@ class WP_REST_Navigation_Fallback_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_Post  $post the Navigation Menu post object.
+     * @param  WP_Post  $post  the Navigation Menu post object.
      * @return array Links for the given request.
      */
     private function prepare_links($post)

@@ -47,7 +47,7 @@ class WP_REST_Block_Directory_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has permission, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -68,7 +68,7 @@ class WP_REST_Block_Directory_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -112,8 +112,8 @@ class WP_REST_Block_Directory_Controller extends WP_REST_Controller
      * @since 5.5.0
      * @since 5.9.0 Renamed `$plugin` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  array  $item    The plugin metadata.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  array  $item  The plugin metadata.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)
@@ -163,7 +163,7 @@ class WP_REST_Block_Directory_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  array  $plugin The plugin data from WordPress.org.
+     * @param  array  $plugin  The plugin data from WordPress.org.
      * @return array
      */
     protected function prepare_links($plugin)
@@ -191,7 +191,7 @@ class WP_REST_Block_Directory_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $slug The WordPress.org directory slug for a plugin.
+     * @param  string  $slug  The WordPress.org directory slug for a plugin.
      * @return string The plugin file found matching it.
      */
     protected function find_plugin_for_slug($slug)
@@ -327,7 +327,7 @@ class WP_REST_Block_Directory_Controller extends WP_REST_Controller
          *
          * @since 5.5.0
          *
-         * @param  array  $query_params JSON Schema-formatted collection parameters.
+         * @param  array  $query_params  JSON Schema-formatted collection parameters.
          */
         return apply_filters('rest_block_directory_collection_params', $query_params);
     }

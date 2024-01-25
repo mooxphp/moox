@@ -46,7 +46,7 @@ if (! class_exists('POMO_Reader', false)) {
         /**
          * Sets the endianness of the file.
          *
-         * @param  string  $endian Set the endianness of the file. Accepts 'big', or 'little'.
+         * @param  string  $endian  Set the endianness of the file. Accepts 'big', or 'little'.
          */
         public function setEndian($endian) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
         {
@@ -57,7 +57,7 @@ if (! class_exists('POMO_Reader', false)) {
          * Reads a 32bit Integer from the Stream
          *
          * @return mixed The integer, corresponding to the next 32 bits from
-         *  the stream of false if there are not enough bytes or on error
+         *               the stream of false if there are not enough bytes or on error
          */
         public function readint32()
         {
@@ -74,9 +74,9 @@ if (! class_exists('POMO_Reader', false)) {
         /**
          * Reads an array of 32-bit Integers from the Stream
          *
-         * @param  int  $count How many elements should be read
+         * @param  int  $count  How many elements should be read
          * @return mixed Array of integers or false if there isn't
-         *  enough data or on error
+         *               enough data or on error
          */
         public function readint32array($count)
         {

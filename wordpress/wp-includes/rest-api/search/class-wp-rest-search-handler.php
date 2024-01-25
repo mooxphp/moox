@@ -70,7 +70,7 @@ abstract class WP_REST_Search_Handler
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full REST request.
+     * @param  WP_REST_Request  $request  Full REST request.
      * @return array Associative array containing an `WP_REST_Search_Handler::RESULT_IDS` containing
      *               an array of found IDs and `WP_REST_Search_Handler::RESULT_TOTAL` containing the
      *               total count for the matching search results.
@@ -83,8 +83,8 @@ abstract class WP_REST_Search_Handler
      * @since 5.0.0
      * @since 5.6.0 The `$id` parameter can accept a string.
      *
-     * @param  int|string  $id     Item ID.
-     * @param  array  $fields Fields to include for the item.
+     * @param  int|string  $id  Item ID.
+     * @param  array  $fields  Fields to include for the item.
      * @return array Associative array containing all fields for the item.
      */
     abstract public function prepare_item($id, array $fields);
@@ -95,7 +95,7 @@ abstract class WP_REST_Search_Handler
      * @since 5.0.0
      * @since 5.6.0 The `$id` parameter can accept a string.
      *
-     * @param  int|string  $id Item ID.
+     * @param  int|string  $id  Item ID.
      * @return array Links for the given item.
      */
     abstract public function prepare_item_links($id);

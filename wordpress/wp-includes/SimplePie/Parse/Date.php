@@ -618,7 +618,7 @@ class SimplePie_Parse_Date
      *
      * @final
      *
-     * @param  string  $date Date to parse
+     * @param  string  $date  Date to parse
      * @return int Timestamp corresponding to date string, or false on failure
      */
     public function parse($date)
@@ -719,7 +719,7 @@ class SimplePie_Parse_Date
     /**
      * Remove RFC822 comments
      *
-     * @param  string  $data Data to strip comments from
+     * @param  string  $data  Data to strip comments from
      * @return string Comment stripped string
      */
     public function remove_rfc2822_comments($string)

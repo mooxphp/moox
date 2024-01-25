@@ -63,12 +63,12 @@ abstract class WP_Widget_Media extends WP_Widget
      *
      * @since 4.8.0
      *
-     * @param  string  $id_base         Base ID for the widget, lowercase and unique.
-     * @param  string  $name            Name for the widget displayed on the configuration page.
+     * @param  string  $id_base  Base ID for the widget, lowercase and unique.
+     * @param  string  $name  Name for the widget displayed on the configuration page.
      * @param  array  $widget_options  Optional. Widget options. See wp_register_sidebar_widget() for
-     *                                information on accepted arguments. Default empty array.
-     * @param  array  $control_options Optional. Widget control options. See wp_register_widget_control()
-     *                                for information on accepted arguments. Default empty array.
+     *                                 information on accepted arguments. Default empty array.
+     * @param  array  $control_options  Optional. Widget control options. See wp_register_widget_control()
+     *                                  for information on accepted arguments. Default empty array.
      */
     public function __construct($id_base, $name, $widget_options = [], $control_options = [])
     {
@@ -99,8 +99,8 @@ abstract class WP_Widget_Media extends WP_Widget
      *
      * @since 4.8.0
      *
-     * @param  int  $number Optional. The unique order number of this widget instance
-     *                    compared to other instances of the same class. Default -1.
+     * @param  int  $number  Optional. The unique order number of this widget instance
+     *                       compared to other instances of the same class. Default -1.
      */
     public function _register_one($number = -1)
     {
@@ -169,8 +169,8 @@ abstract class WP_Widget_Media extends WP_Widget
          *
          * @since 4.9.0
          *
-         * @param  array  $schema Instance schema.
-         * @param  WP_Widget_Media  $widget Widget object.
+         * @param  array  $schema  Instance schema.
+         * @param  WP_Widget_Media  $widget  Widget object.
          */
         $schema = apply_filters("widget_{$this->id_base}_instance_schema", $schema, $this);
 
@@ -182,7 +182,7 @@ abstract class WP_Widget_Media extends WP_Widget
      *
      * @since 4.8.0
      *
-     * @param  int|WP_Post  $attachment Attachment post ID or object.
+     * @param  int|WP_Post  $attachment  Attachment post ID or object.
      * @param  string  $mime_type  MIME type.
      * @return bool Is matching MIME type.
      */
@@ -209,7 +209,7 @@ abstract class WP_Widget_Media extends WP_Widget
      * @link http://w3c.github.io/html/infrastructure.html#space-separated-tokens
      * @link https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
      *
-     * @param  string|array  $tokens List of tokens separated by spaces, or an array of tokens.
+     * @param  string|array  $tokens  List of tokens separated by spaces, or an array of tokens.
      * @return string Sanitized token string list.
      */
     public function sanitize_token_list($tokens)
@@ -229,8 +229,8 @@ abstract class WP_Widget_Media extends WP_Widget
      * @since 4.8.0
      * @see WP_Widget::widget()
      *
-     * @param  array  $args     Display arguments including before_title, after_title, before_widget, and after_widget.
-     * @param  array  $instance Saved setting from the database.
+     * @param  array  $args  Display arguments including before_title, after_title, before_widget, and after_widget.
+     * @param  array  $instance  Saved setting from the database.
      */
     public function widget($args, $instance)
     {
@@ -255,9 +255,9 @@ abstract class WP_Widget_Media extends WP_Widget
          *
          * @since 4.8.0
          *
-         * @param  array  $instance Instance data.
-         * @param  array  $args     Widget args.
-         * @param  WP_Widget_Media  $widget   Widget object.
+         * @param  array  $instance  Instance data.
+         * @param  array  $args  Widget args.
+         * @param  WP_Widget_Media  $widget  Widget object.
          */
         $instance = apply_filters("widget_{$this->id_base}_instance", $instance, $args, $this);
 
@@ -276,8 +276,8 @@ abstract class WP_Widget_Media extends WP_Widget
      * @see WP_REST_Request::has_valid_params()
      * @see WP_REST_Request::sanitize_params()
      *
-     * @param  array  $new_instance Values just sent to be saved.
-     * @param  array  $old_instance Previously saved values from database.
+     * @param  array  $new_instance  Values just sent to be saved.
+     * @param  array  $old_instance  Previously saved values from database.
      * @return array Updated safe values to be saved.
      */
     public function update($new_instance, $old_instance)
@@ -327,7 +327,7 @@ abstract class WP_Widget_Media extends WP_Widget
      *
      * @since 4.8.0
      *
-     * @param  array  $instance Widget instance props.
+     * @param  array  $instance  Widget instance props.
      */
     abstract public function render_media($instance);
 
@@ -339,7 +339,7 @@ abstract class WP_Widget_Media extends WP_Widget
      * @since 4.8.0
      * @see \WP_Widget_Media::render_control_template_scripts() Where the JS template is located.
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     final public function form($instance)
     {
@@ -367,8 +367,8 @@ abstract class WP_Widget_Media extends WP_Widget
      *
      * @since 4.8.0
      *
-     * @param  array  $states An array of media states.
-     * @param  WP_Post  $post   The current attachment object.
+     * @param  array  $states  An array of media states.
+     * @param  WP_Post  $post  The current attachment object.
      * @return array
      */
     public function display_media_state($states, $post = null)
@@ -472,7 +472,7 @@ abstract class WP_Widget_Media extends WP_Widget
      *
      * @since 4.8.0
      *
-     * @param  array  $instance Widget instance props.
+     * @param  array  $instance  Widget instance props.
      * @return bool Whether widget has content.
      */
     protected function has_content($instance)

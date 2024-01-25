@@ -75,7 +75,7 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Create an instance of the class with the input data
      *
-     * @param  string  $data Input data
+     * @param  string  $data  Input data
      */
     public function __construct($data)
     {
@@ -117,7 +117,7 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Consume a range of characters
      *
-     * @param  string  $chars Characters to consume
+     * @param  string  $chars  Characters to consume
      * @return mixed A series of characters that match the range, or false
      */
     public function consume_range($chars)

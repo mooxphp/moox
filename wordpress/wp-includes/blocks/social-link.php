@@ -6,9 +6,9 @@
 /**
  * Renders the `core/social-link` block on server.
  *
- * @param  array  $attributes The block attributes.
- * @param  string  $content    InnerBlocks content of the Block.
- * @param  WP_Block  $block      Block object.
+ * @param  array  $attributes  The block attributes.
+ * @param  string  $content  InnerBlocks content of the Block.
+ * @param  WP_Block  $block  Block object.
  * @return string Rendered HTML of the referenced block.
  */
 function render_block_core_social_link($attributes, $content, $block)
@@ -86,7 +86,7 @@ add_action('init', 'register_block_core_social_link');
 /**
  * Returns the SVG for social link.
  *
- * @param  string  $service The service icon.
+ * @param  string  $service  The service icon.
  * @return string SVG Element for service icon.
  */
 function block_core_social_link_get_icon($service)
@@ -102,7 +102,7 @@ function block_core_social_link_get_icon($service)
 /**
  * Returns the brand name for social link.
  *
- * @param  string  $service The service icon.
+ * @param  string  $service  The service icon.
  * @return string Brand label.
  */
 function block_core_social_link_get_name($service)
@@ -118,8 +118,8 @@ function block_core_social_link_get_name($service)
 /**
  * Returns the SVG for social link.
  *
- * @param  string  $service The service slug to extract data from.
- * @param  string  $field The field ('name', 'icon', etc) to extract for a service.
+ * @param  string  $service  The service slug to extract data from.
+ * @param  string  $field  The field ('name', 'icon', etc) to extract for a service.
  * @return array|string
  */
 function block_core_social_link_services($service = '', $field = '')
@@ -327,7 +327,7 @@ function block_core_social_link_services($service = '', $field = '')
 /**
  * Returns CSS styles for icon and icon background colors.
  *
- * @param  array  $context Block context passed to Social Link.
+ * @param  array  $context  Block context passed to Social Link.
  * @return string Inline CSS styles for link's icon and background colors.
  */
 function block_core_social_link_get_color_styles($context)
@@ -348,7 +348,7 @@ function block_core_social_link_get_color_styles($context)
 /**
  * Returns CSS classes for icon and icon background colors.
  *
- * @param  array  $context Block context passed to Social Sharing Link.
+ * @param  array  $context  Block context passed to Social Sharing Link.
  * @return string CSS classes for link's icon and background colors.
  */
 function block_core_social_link_get_color_classes($context)

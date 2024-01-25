@@ -61,8 +61,8 @@ function allow_subdirectory_install()
      *
      * @since 3.0.0
      *
-     * @param  bool  $allow Whether to enable the subdirectory installation feature in Multisite.
-     *                    Default false.
+     * @param  bool  $allow  Whether to enable the subdirectory installation feature in Multisite.
+     *                       Default false.
      */
     if (apply_filters('allow_subdirectory_install', false)) {
         return true;
@@ -113,7 +113,7 @@ function get_clean_basedomain()
  *
  * @global bool $is_apache
  *
- * @param  false|WP_Error  $errors Optional. Error object. Default false.
+ * @param  false|WP_Error  $errors  Optional. Error object. Default false.
  */
 function network_step1($errors = false)
 {
@@ -428,7 +428,7 @@ function network_step1($errors = false)
  * @global wpdb $wpdb     WordPress database abstraction object.
  * @global bool $is_nginx Whether the server software is Nginx or something else.
  *
- * @param  false|WP_Error  $errors Optional. Error object. Default false.
+ * @param  false|WP_Error  $errors  Optional. Error object. Default false.
  */
 function network_step2($errors = false)
 {

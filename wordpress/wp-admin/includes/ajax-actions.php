@@ -36,8 +36,8 @@ function wp_ajax_nopriv_heartbeat()
          * @since 3.6.0
          *
          * @param  array  $response  The no-priv Heartbeat response.
-         * @param  array  $data      The $_POST data sent.
-         * @param  string  $screen_id The screen ID.
+         * @param  array  $data  The $_POST data sent.
+         * @param  string  $screen_id  The screen ID.
          */
         $response = apply_filters('heartbeat_nopriv_received', $response, $data, $screen_id);
     }
@@ -48,7 +48,7 @@ function wp_ajax_nopriv_heartbeat()
      * @since 3.6.0
      *
      * @param  array  $response  The no-priv Heartbeat response.
-     * @param  string  $screen_id The screen ID.
+     * @param  string  $screen_id  The screen ID.
      */
     $response = apply_filters('heartbeat_nopriv_send', $response, $screen_id);
 
@@ -60,7 +60,7 @@ function wp_ajax_nopriv_heartbeat()
      * @since 3.6.0
      *
      * @param  array  $response  The no-priv Heartbeat response.
-     * @param  string  $screen_id The screen ID.
+     * @param  string  $screen_id  The screen ID.
      */
     do_action('heartbeat_nopriv_tick', $response, $screen_id);
 
@@ -139,9 +139,9 @@ function wp_ajax_ajax_tag_search()
      *
      * @since 4.0.0
      *
-     * @param  int  $characters      The minimum number of characters required. Default 2.
-     * @param  WP_Taxonomy  $taxonomy_object The taxonomy object.
-     * @param  string  $search          The search term.
+     * @param  int  $characters  The minimum number of characters required. Default 2.
+     * @param  WP_Taxonomy  $taxonomy_object  The taxonomy object.
+     * @param  string  $search  The search term.
      */
     $term_search_min_chars = (int) apply_filters('term_search_min_chars', 2, $taxonomy_object, $search);
 
@@ -168,9 +168,9 @@ function wp_ajax_ajax_tag_search()
      *
      * @since 6.1.0
      *
-     * @param  string[]  $results         Array of term names.
-     * @param  WP_Taxonomy  $taxonomy_object The taxonomy object.
-     * @param  string  $search          The search term.
+     * @param  string[]  $results  Array of term names.
+     * @param  WP_Taxonomy  $taxonomy_object  The taxonomy object.
+     * @param  string  $search  The search term.
      */
     $results = apply_filters('ajax_term_search_results', $results, $taxonomy_object, $search);
 
@@ -877,7 +877,7 @@ function wp_ajax_delete_meta()
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_delete_post($action)
 {
@@ -908,7 +908,7 @@ function wp_ajax_delete_post($action)
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_trash_post($action)
 {
@@ -945,7 +945,7 @@ function wp_ajax_trash_post($action)
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_untrash_post($action)
 {
@@ -961,7 +961,7 @@ function wp_ajax_untrash_post($action)
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_delete_page($action)
 {
@@ -1049,7 +1049,7 @@ function wp_ajax_dim_comment()
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_add_link_category($action)
 {
@@ -1259,7 +1259,7 @@ function wp_ajax_get_tagcloud()
  *
  * @global int $post_id
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_get_comments($action)
 {
@@ -1321,7 +1321,7 @@ function wp_ajax_get_comments($action)
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_replyto_comment($action)
 {
@@ -1752,7 +1752,7 @@ function wp_ajax_add_meta()
  *
  * @since 3.1.0
  *
- * @param  string  $action Action to perform.
+ * @param  string  $action  Action to perform.
  */
 function wp_ajax_add_user($action)
 {
@@ -2981,8 +2981,8 @@ function wp_ajax_wp_remove_post_lock()
      *
      * @since 3.3.0
      *
-     * @param  int  $interval The interval in seconds the post lock duration
-     *                      should last, plus 5 seconds. Default 150.
+     * @param  int  $interval  The interval in seconds the post lock duration
+     *                         should last, plus 5 seconds. Default 150.
      */
     $new_lock = (time() - apply_filters('wp_check_post_lock_window', 150) + 5).':'.$active_lock[1];
     update_post_meta($post_id, '_edit_lock', $new_lock, implode(':', $active_lock));
@@ -3116,7 +3116,7 @@ function wp_ajax_query_attachments()
      * @since 3.7.0
      * @see WP_Query::parse_query()
      *
-     * @param  array  $query An array of query variables.
+     * @param  array  $query  An array of query variables.
      */
     $query = apply_filters('ajax_query_attachments_args', $query);
     $attachments_query = new WP_Query($query);
@@ -3528,8 +3528,8 @@ function wp_ajax_heartbeat()
          * @since 4.3.0
          *
          * @param  array  $response  The Heartbeat response.
-         * @param  array  $data      The $_POST data sent.
-         * @param  string  $screen_id The screen ID.
+         * @param  array  $data  The $_POST data sent.
+         * @param  string  $screen_id  The screen ID.
          */
         $response = apply_filters('wp_refresh_nonces', $response, $data, $screen_id);
 
@@ -3547,8 +3547,8 @@ function wp_ajax_heartbeat()
          * @since 3.6.0
          *
          * @param  array  $response  The Heartbeat response.
-         * @param  array  $data      The $_POST data sent.
-         * @param  string  $screen_id The screen ID.
+         * @param  array  $data  The $_POST data sent.
+         * @param  string  $screen_id  The screen ID.
          */
         $response = apply_filters('heartbeat_received', $response, $data, $screen_id);
     }
@@ -3559,7 +3559,7 @@ function wp_ajax_heartbeat()
      * @since 3.6.0
      *
      * @param  array  $response  The Heartbeat response.
-     * @param  string  $screen_id The screen ID.
+     * @param  string  $screen_id  The screen ID.
      */
     $response = apply_filters('heartbeat_send', $response, $screen_id);
 
@@ -3571,7 +3571,7 @@ function wp_ajax_heartbeat()
      * @since 3.6.0
      *
      * @param  array  $response  The Heartbeat response.
-     * @param  string  $screen_id The screen ID.
+     * @param  string  $screen_id  The screen ID.
      */
     do_action('heartbeat_tick', $response, $screen_id);
 
@@ -4117,9 +4117,9 @@ function wp_ajax_crop_image()
              *
              * @since 4.3.0
              *
-             * @param  string  $context       The Customizer control requesting the cropped image.
-             * @param  int  $attachment_id The attachment ID of the original image.
-             * @param  string  $cropped       Path to the cropped image file.
+             * @param  string  $context  The Customizer control requesting the cropped image.
+             * @param  int  $attachment_id  The attachment ID of the original image.
+             * @param  string  $cropped  Path to the cropped image file.
              */
             do_action('wp_ajax_crop_image_pre_save', $context, $attachment_id, $cropped);
 
@@ -4176,7 +4176,7 @@ function wp_ajax_crop_image()
              * @since 4.3.0
              * @see wp_generate_attachment_metadata()
              *
-             * @param  array  $metadata Attachment metadata.
+             * @param  array  $metadata  Attachment metadata.
              */
             $metadata = apply_filters('wp_ajax_cropped_attachment_metadata', $metadata);
             wp_update_attachment_metadata($attachment_id, $metadata);
@@ -4186,8 +4186,8 @@ function wp_ajax_crop_image()
              *
              * @since 4.3.0
              *
-             * @param  int  $attachment_id The attachment ID of the cropped image.
-             * @param  string  $context       The Customizer control requesting the cropped image.
+             * @param  int  $attachment_id  The attachment ID of the cropped image.
+             * @param  string  $context  The Customizer control requesting the cropped image.
              */
             $attachment_id = apply_filters('wp_ajax_cropped_attachment_id', $attachment_id, $context);
     }
@@ -5019,18 +5019,18 @@ function wp_ajax_wp_privacy_export_personal_data()
      *
      * @since 4.9.6
      *
-     * @param  array  $args {
-     *     An array of callable exporters of personal data. Default empty array.
+     * @param  array  $args  {
+     *                       An array of callable exporters of personal data. Default empty array.
      *
-     *     @type array ...$0 {
-     *         Array of personal data exporters.
-     *         @type callable $callback               Callable exporter function that accepts an
-     *                                                email address and a page number and returns an
-     *                                                array of name => value pairs of personal data.
-     *         @type string   $exporter_friendly_name Translated user facing friendly name for the
-     *                                                exporter.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Array of personal data exporters.
+     * @type callable $callback               Callable exporter function that accepts an
+     *                email address and a page number and returns an
+     *                array of name => value pairs of personal data.
+     * @type string $exporter_friendly_name Translated user facing friendly name for the
+     *              exporter.
+     *              }
+     *              }
      */
     $exporters = apply_filters('wp_privacy_personal_data_exporters', []);
 
@@ -5137,13 +5137,13 @@ function wp_ajax_wp_privacy_export_personal_data()
      *
      * @since 4.9.6
      *
-     * @param  array  $response        The personal data for the given exporter and page number.
+     * @param  array  $response  The personal data for the given exporter and page number.
      * @param  int  $exporter_index  The index of the exporter that provided this data.
-     * @param  string  $email_address   The email address associated with this personal data.
-     * @param  int  $page            The page number for this response.
-     * @param  int  $request_id      The privacy request post ID associated with this request.
-     * @param  bool  $send_as_email   Whether the final results of the export should be emailed to the user.
-     * @param  string  $exporter_key    The key (slug) of the exporter that provided this data.
+     * @param  string  $email_address  The email address associated with this personal data.
+     * @param  int  $page  The page number for this response.
+     * @param  int  $request_id  The privacy request post ID associated with this request.
+     * @param  bool  $send_as_email  Whether the final results of the export should be emailed to the user.
+     * @param  string  $exporter_key  The key (slug) of the exporter that provided this data.
      */
     $response = apply_filters('wp_privacy_personal_data_export_page', $response, $exporter_index, $email_address, $page, $request_id, $send_as_email, $exporter_key);
 
@@ -5209,19 +5209,19 @@ function wp_ajax_wp_privacy_erase_personal_data()
      *
      * @since 4.9.6
      *
-     * @param  array  $args {
-     *     An array of callable erasers of personal data. Default empty array.
+     * @param  array  $args  {
+     *                       An array of callable erasers of personal data. Default empty array.
      *
-     *     @type array ...$0 {
-     *         Array of personal data exporters.
-     *         @type callable $callback               Callable eraser that accepts an email address and a page
-     *                                                number, and returns an array with boolean values for
-     *                                                whether items were removed or retained and any messages
-     *                                                from the eraser, as well as if additional pages are
-     *                                                available.
-     *         @type string   $exporter_friendly_name Translated user facing friendly name for the eraser.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Array of personal data exporters.
+     * @type callable $callback               Callable eraser that accepts an email address and a page
+     *                number, and returns an array with boolean values for
+     *                whether items were removed or retained and any messages
+     *                from the eraser, as well as if additional pages are
+     *                available.
+     * @type string $exporter_friendly_name Translated user facing friendly name for the eraser.
+     *              }
+     *              }
      */
     $erasers = apply_filters('wp_privacy_personal_data_erasers', []);
 
@@ -5367,20 +5367,20 @@ function wp_ajax_wp_privacy_erase_personal_data()
      *
      * @since 4.9.6
      *
-     * @param  array  $response        {
-     *     The personal data for the given exporter and page number.
+     * @param  array  $response  {
+     *                           The personal data for the given exporter and page number.
      *
-     *     @type bool     $items_removed  Whether items were actually removed or not.
-     *     @type bool     $items_retained Whether items were retained or not.
-     *     @type string[] $messages       An array of messages to add to the personal data export file.
-     *     @type bool     $done           Whether the eraser is finished or not.
-     * }
+     * @type bool $items_removed  Whether items were actually removed or not.
+     * @type bool $items_retained Whether items were retained or not.
+     * @type string[] $messages       An array of messages to add to the personal data export file.
+     * @type bool $done           Whether the eraser is finished or not.
+     *            }
      *
-     * @param  int  $eraser_index    The index of the eraser that provided this data.
-     * @param  string  $email_address   The email address associated with this personal data.
-     * @param  int  $page            The page number for this response.
-     * @param  int  $request_id      The privacy request post ID associated with this request.
-     * @param  string  $eraser_key      The key (slug) of the eraser that provided this data.
+     * @param  int  $eraser_index  The index of the eraser that provided this data.
+     * @param  string  $email_address  The email address associated with this personal data.
+     * @param  int  $page  The page number for this response.
+     * @param  int  $request_id  The privacy request post ID associated with this request.
+     * @param  string  $eraser_key  The key (slug) of the eraser that provided this data.
      */
     $response = apply_filters('wp_privacy_personal_data_erasure_page', $response, $eraser_index, $email_address, $page, $request_id, $eraser_key);
 

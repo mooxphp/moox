@@ -62,9 +62,9 @@ class WP_Site_Health_Auto_Updates
      * @since 5.2.0
      * @since 5.5.1 The `$value` parameter can accept an array.
      *
-     * @param  string  $constant         The name of the constant to check.
-     * @param  bool|string|array  $value The value that the constant should be, if set,
-     *                                 or an array of acceptable values.
+     * @param  string  $constant  The name of the constant to check.
+     * @param  bool|string|array  $value  The value that the constant should be, if set,
+     *                                    or an array of acceptable values.
      * @return array The test results.
      */
     public function test_constants($constant, $value)

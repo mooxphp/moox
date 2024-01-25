@@ -43,28 +43,28 @@
  * @since 5.3.0 Added support for `Requires at least` and `Requires PHP` headers.
  * @since 5.8.0 Added support for `Update URI` header.
  *
- * @param  string  $plugin_file Absolute path to the main plugin file.
- * @param  bool  $markup      Optional. If the returned data should have HTML markup applied.
- *                            Default true.
- * @param  bool  $translate   Optional. If the returned data should be translated. Default true.
+ * @param  string  $plugin_file  Absolute path to the main plugin file.
+ * @param  bool  $markup  Optional. If the returned data should have HTML markup applied.
+ *                        Default true.
+ * @param  bool  $translate  Optional. If the returned data should be translated. Default true.
  * @return array {
- *     Plugin data. Values will be empty if not supplied by the plugin.
+ *               Plugin data. Values will be empty if not supplied by the plugin.
  *
- *     @type string $Name        Name of the plugin. Should be unique.
- *     @type string $PluginURI   Plugin URI.
- *     @type string $Version     Plugin version.
- *     @type string $Description Plugin description.
- *     @type string $Author      Plugin author's name.
- *     @type string $AuthorURI   Plugin author's website address (if set).
- *     @type string $TextDomain  Plugin textdomain.
- *     @type string $DomainPath  Plugin's relative directory path to .mo files.
- *     @type bool   $Network     Whether the plugin can only be activated network-wide.
- *     @type string $RequiresWP  Minimum required version of WordPress.
- *     @type string $RequiresPHP Minimum required version of PHP.
- *     @type string $UpdateURI   ID of the plugin for update purposes, should be a URI.
- *     @type string $Title       Title of the plugin and link to the plugin's site (if set).
- *     @type string $AuthorName  Plugin author's name.
- * }
+ * @type string $Name        Name of the plugin. Should be unique.
+ * @type string $PluginURI   Plugin URI.
+ * @type string $Version     Plugin version.
+ * @type string $Description Plugin description.
+ * @type string $Author      Plugin author's name.
+ * @type string $AuthorURI   Plugin author's website address (if set).
+ * @type string $TextDomain  Plugin textdomain.
+ * @type string $DomainPath  Plugin's relative directory path to .mo files.
+ * @type bool $Network     Whether the plugin can only be activated network-wide.
+ * @type string $RequiresWP  Minimum required version of WordPress.
+ * @type string $RequiresPHP Minimum required version of PHP.
+ * @type string $UpdateURI   ID of the plugin for update purposes, should be a URI.
+ * @type string $Title       Title of the plugin and link to the plugin's site (if set).
+ * @type string $AuthorName  Plugin author's name.
+ *              }
  */
 function get_plugin_data($plugin_file, $markup = true, $translate = true)
 {
@@ -121,11 +121,11 @@ function get_plugin_data($plugin_file, $markup = true, $translate = true)
  * @since 2.7.0
  * @see get_plugin_data()
  *
- * @param  string  $plugin_file Path to the main plugin file.
- * @param  array  $plugin_data An array of plugin data. See get_plugin_data().
- * @param  bool  $markup      Optional. If the returned data should have HTML markup applied.
- *                            Default true.
- * @param  bool  $translate   Optional. If the returned data should be translated. Default true.
+ * @param  string  $plugin_file  Path to the main plugin file.
+ * @param  array  $plugin_data  An array of plugin data. See get_plugin_data().
+ * @param  bool  $markup  Optional. If the returned data should have HTML markup applied.
+ *                        Default true.
+ * @param  bool  $translate  Optional. If the returned data should be translated. Default true.
  * @return array Plugin data. Values will be empty if not supplied by the plugin.
  *               See get_plugin_data() for the list of possible values.
  */
@@ -219,7 +219,7 @@ function _get_plugin_data_markup_translate($plugin_file, $plugin_data, $markup =
  *
  * @since 2.8.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return string[] Array of file names relative to the plugin root.
  */
 function get_plugin_files($plugin)
@@ -236,7 +236,7 @@ function get_plugin_files($plugin)
          *
          * @since 4.9.0
          *
-         * @param  string[]  $exclusions Array of excluded directories and files.
+         * @param  string[]  $exclusions  Array of excluded directories and files.
          */
         $exclusions = (array) apply_filters('plugin_files_exclusions', ['CVS', 'node_modules', 'vendor', 'bower_components']);
 
@@ -267,7 +267,7 @@ function get_plugin_files($plugin)
  *
  * @since 1.5.0
  *
- * @param  string  $plugin_folder Optional. Relative path to single plugin folder.
+ * @param  string  $plugin_folder  Optional. Relative path to single plugin folder.
  * @return array[] Array of arrays of plugin data, keyed by plugin file name. See get_plugin_data().
  */
 function get_plugins($plugin_folder = '')
@@ -417,8 +417,8 @@ function get_mu_plugins()
  *
  * @since 3.1.0
  *
- * @param  array  $a array with 'Name' key.
- * @param  array  $b array with 'Name' key.
+ * @param  array  $a  array with 'Name' key.
+ * @param  array  $b  array with 'Name' key.
  * @return int Return 0 or 1 based on two string comparison.
  */
 function _sort_uname_callback($a, $b)
@@ -486,8 +486,8 @@ function get_dropins()
  * @since 3.0.0
  *
  * @return array[] Key is file name. The value is an array, with the first value the
- *  purpose of the drop-in and the second value the name of the constant that must be
- *  true for the drop-in to be used, or true if no constant is required.
+ *                 purpose of the drop-in and the second value the name of the constant that must be
+ *                 true for the drop-in to be used, or true if no constant is required.
  */
 function _get_dropins()
 {
@@ -526,7 +526,7 @@ function _get_dropins()
  *
  * @since 2.5.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return bool True, if in the active plugins list. False, not in the list.
  */
 function is_plugin_active($plugin)
@@ -546,7 +546,7 @@ function is_plugin_active($plugin)
  * @since 3.1.0
  * @see is_plugin_active()
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return bool True if inactive. False if active.
  */
 function is_plugin_inactive($plugin)
@@ -568,7 +568,7 @@ function is_plugin_inactive($plugin)
  *
  * @since 3.0.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return bool True if active for the network, otherwise false.
  */
 function is_plugin_active_for_network($plugin)
@@ -594,7 +594,7 @@ function is_plugin_active_for_network($plugin)
  *
  * @since 3.0.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return bool True if plugin is network only, false otherwise.
  */
 function is_network_only_plugin($plugin)
@@ -628,11 +628,11 @@ function is_network_only_plugin($plugin)
  * @since 2.5.0
  * @since 5.2.0 Test for WordPress version and PHP version compatibility.
  *
- * @param  string  $plugin       Path to the plugin file relative to the plugins directory.
- * @param  string  $redirect     Optional. URL to redirect to.
- * @param  bool  $network_wide Optional. Whether to enable the plugin for all sites in the network
- *                             or just the current site. Multisite only. Default false.
- * @param  bool  $silent       Optional. Whether to prevent calling activation hooks. Default false.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+ * @param  string  $redirect  Optional. URL to redirect to.
+ * @param  bool  $network_wide  Optional. Whether to enable the plugin for all sites in the network
+ *                              or just the current site. Multisite only. Default false.
+ * @param  bool  $silent  Optional. Whether to prevent calling activation hooks. Default false.
  * @return null|WP_Error Null on success, WP_Error on invalid file.
  */
 function activate_plugin($plugin, $redirect = '', $network_wide = false, $silent = false)
@@ -679,9 +679,9 @@ function activate_plugin($plugin, $redirect = '', $network_wide = false, $silent
              *
              * @since 2.9.0
              *
-             * @param  string  $plugin       Path to the plugin file relative to the plugins directory.
-             * @param  bool  $network_wide Whether to enable the plugin for all sites in the network
-             *                             or just the current site. Multisite only. Default false.
+             * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+             * @param  bool  $network_wide  Whether to enable the plugin for all sites in the network
+             *                              or just the current site. Multisite only. Default false.
              */
             do_action('activate_plugin', $plugin, $network_wide);
 
@@ -695,8 +695,8 @@ function activate_plugin($plugin, $redirect = '', $network_wide = false, $silent
              *
              * @since 2.0.0
              *
-             * @param  bool  $network_wide Whether to enable the plugin for all sites in the network
-             *                           or just the current site. Multisite only. Default false.
+             * @param  bool  $network_wide  Whether to enable the plugin for all sites in the network
+             *                              or just the current site. Multisite only. Default false.
              */
             do_action("activate_{$plugin}", $network_wide);
         }
@@ -721,9 +721,9 @@ function activate_plugin($plugin, $redirect = '', $network_wide = false, $silent
              *
              * @since 2.9.0
              *
-             * @param  string  $plugin       Path to the plugin file relative to the plugins directory.
-             * @param  bool  $network_wide Whether to enable the plugin for all sites in the network
-             *                             or just the current site. Multisite only. Default false.
+             * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+             * @param  bool  $network_wide  Whether to enable the plugin for all sites in the network
+             *                              or just the current site. Multisite only. Default false.
              */
             do_action('activated_plugin', $plugin, $network_wide);
         }
@@ -748,11 +748,11 @@ function activate_plugin($plugin, $redirect = '', $network_wide = false, $silent
  *
  * @since 2.5.0
  *
- * @param  string|string[]  $plugins      Single plugin or list of plugins to deactivate.
- * @param  bool  $silent       Prevent calling deactivation hooks. Default false.
- * @param  bool|null  $network_wide Whether to deactivate the plugin for all sites in the network.
- *                                      A value of null will deactivate plugins for both the network
- *                                      and the current site. Multisite only. Default null.
+ * @param  string|string[]  $plugins  Single plugin or list of plugins to deactivate.
+ * @param  bool  $silent  Prevent calling deactivation hooks. Default false.
+ * @param  bool|null  $network_wide  Whether to deactivate the plugin for all sites in the network.
+ *                                   A value of null will deactivate plugins for both the network
+ *                                   and the current site. Multisite only. Default null.
  */
 function deactivate_plugins($plugins, $silent = false, $network_wide = null)
 {
@@ -780,9 +780,9 @@ function deactivate_plugins($plugins, $silent = false, $network_wide = null)
              *
              * @since 2.9.0
              *
-             * @param  string  $plugin               Path to the plugin file relative to the plugins directory.
-             * @param  bool  $network_deactivating Whether the plugin is deactivated for all sites in the network
-             *                                     or just the current site. Multisite only. Default false.
+             * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+             * @param  bool  $network_deactivating  Whether the plugin is deactivated for all sites in the network
+             *                                      or just the current site. Multisite only. Default false.
              */
             do_action('deactivate_plugin', $plugin, $network_deactivating);
         }
@@ -820,8 +820,8 @@ function deactivate_plugins($plugins, $silent = false, $network_wide = null)
              *
              * @since 2.0.0
              *
-             * @param  bool  $network_deactivating Whether the plugin is deactivated for all sites in the network
-             *                                   or just the current site. Multisite only. Default false.
+             * @param  bool  $network_deactivating  Whether the plugin is deactivated for all sites in the network
+             *                                      or just the current site. Multisite only. Default false.
              */
             do_action("deactivate_{$plugin}", $network_deactivating);
 
@@ -833,9 +833,9 @@ function deactivate_plugins($plugins, $silent = false, $network_wide = null)
              *
              * @since 2.9.0
              *
-             * @param  string  $plugin               Path to the plugin file relative to the plugins directory.
-             * @param  bool  $network_deactivating Whether the plugin is deactivated for all sites in the network
-             *                                     or just the current site. Multisite only. Default false.
+             * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+             * @param  bool  $network_deactivating  Whether the plugin is deactivated for all sites in the network
+             *                                      or just the current site. Multisite only. Default false.
              */
             do_action('deactivated_plugin', $plugin, $network_deactivating);
         }
@@ -859,11 +859,11 @@ function deactivate_plugins($plugins, $silent = false, $network_wide = null)
  *
  * @since 2.6.0
  *
- * @param  string|string[]  $plugins      Single plugin or list of plugins to activate.
- * @param  string  $redirect     Redirect to page after successful activation.
- * @param  bool  $network_wide Whether to enable the plugin for all sites in the network.
- *                                      Default false.
- * @param  bool  $silent       Prevent calling activation hooks. Default false.
+ * @param  string|string[]  $plugins  Single plugin or list of plugins to activate.
+ * @param  string  $redirect  Redirect to page after successful activation.
+ * @param  bool  $network_wide  Whether to enable the plugin for all sites in the network.
+ *                              Default false.
+ * @param  bool  $silent  Prevent calling activation hooks. Default false.
  * @return true|WP_Error True when finished or WP_Error if there were errors during a plugin activation.
  */
 function activate_plugins($plugins, $redirect = '', $network_wide = false, $silent = false)
@@ -897,8 +897,8 @@ function activate_plugins($plugins, $redirect = '', $network_wide = false, $sile
  *
  * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
  *
- * @param  string[]  $plugins    List of plugin paths to delete, relative to the plugins directory.
- * @param  string  $deprecated Not used.
+ * @param  string[]  $plugins  List of plugin paths to delete, relative to the plugins directory.
+ * @param  string  $deprecated  Not used.
  * @return bool|null|WP_Error True on success, false if `$plugins` is empty, `WP_Error` on failure.
  *                            `null` if filesystem credentials are required to proceed.
  */
@@ -979,7 +979,7 @@ function delete_plugins($plugins, $deprecated = '')
          *
          * @since 4.4.0
          *
-         * @param  string  $plugin_file Path to the plugin file relative to the plugins directory.
+         * @param  string  $plugin_file  Path to the plugin file relative to the plugins directory.
          */
         do_action('delete_plugin', $plugin_file);
 
@@ -1000,8 +1000,8 @@ function delete_plugins($plugins, $deprecated = '')
          *
          * @since 4.4.0
          *
-         * @param  string  $plugin_file Path to the plugin file relative to the plugins directory.
-         * @param  bool  $deleted     Whether the plugin deletion was successful.
+         * @param  string  $plugin_file  Path to the plugin file relative to the plugins directory.
+         * @param  bool  $deleted  Whether the plugin deletion was successful.
          */
         do_action('deleted_plugin', $plugin_file, $deleted);
 
@@ -1110,7 +1110,7 @@ function validate_active_plugins()
  *
  * @since 2.5.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return int|WP_Error 0 on success, WP_Error on failure.
  */
 function validate_plugin($plugin)
@@ -1141,7 +1141,7 @@ function validate_plugin($plugin)
  *              main PHP file, with `readme.txt` as a fallback.
  * @since 5.8.0 Removed support for using `readme.txt` as a fallback.
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return true|WP_Error True if requirements are met, WP_Error on failure.
  */
 function validate_plugin_requirements($plugin)
@@ -1213,7 +1213,7 @@ function validate_plugin_requirements($plugin)
  *
  * @since 2.7.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return bool Whether plugin can be uninstalled.
  */
 function is_uninstallable_plugin($plugin)
@@ -1235,7 +1235,7 @@ function is_uninstallable_plugin($plugin)
  *
  * @since 2.7.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return true|void True if a plugin's uninstall.php file has been found and included.
  *                   Void otherwise.
  */
@@ -1250,8 +1250,8 @@ function uninstall_plugin($plugin)
      *
      * @since 4.5.0
      *
-     * @param  string  $plugin                Path to the plugin file relative to the plugins directory.
-     * @param  array  $uninstallable_plugins Uninstallable plugins.
+     * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
+     * @param  array  $uninstallable_plugins  Uninstallable plugins.
      */
     do_action('pre_uninstall_plugin', $plugin, $uninstallable_plugins);
 
@@ -1313,20 +1313,20 @@ function uninstall_plugin($plugin)
  * @global array $_registered_pages
  * @global array $_parent_pages
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by. Should be unique for this menu page and only
- *                              include lowercase alphanumeric, dashes, and underscores characters to be compatible
- *                              with sanitize_key().
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  string  $icon_url   Optional. The URL to the icon to be used for this menu.
- *                              * Pass a base64-encoded SVG using a data URI, which will be colored to match
- *                                the color scheme. This should begin with 'data:image/svg+xml;base64,'.
- *                              * Pass the name of a Dashicons helper class to use a font icon,
- *                                e.g. 'dashicons-chart-pie'.
- *                              * Pass 'none' to leave div.wp-menu-image empty so an icon can be added via CSS.
- * @param  int|float  $position   Optional. The position in the menu order this item should appear.
+ *                             include lowercase alphanumeric, dashes, and underscores characters to be compatible
+ *                             with sanitize_key().
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  string  $icon_url  Optional. The URL to the icon to be used for this menu.
+ *                            * Pass a base64-encoded SVG using a data URI, which will be colored to match
+ *                            the color scheme. This should begin with 'data:image/svg+xml;base64,'.
+ *                            * Pass the name of a Dashicons helper class to use a font icon,
+ *                            e.g. 'dashicons-chart-pie'.
+ *                            * Pass 'none' to leave div.wp-menu-image empty so an icon can be added via CSS.
+ * @param  int|float  $position  Optional. The position in the menu order this item should appear.
  * @return string The resulting page's hook_suffix.
  */
 function add_menu_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $icon_url = '', $position = null)
@@ -1412,17 +1412,17 @@ function add_menu_page($page_title, $menu_title, $capability, $menu_slug, $callb
  * @global array $_registered_pages
  * @global array $_parent_pages
  *
- * @param  string  $parent_slug The slug name for the parent menu (or the file name of a standard
+ * @param  string  $parent_slug  The slug name for the parent menu (or the file name of a standard
  *                               WordPress admin page).
  * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu
- *                               is selected.
+ *                              is selected.
  * @param  string  $menu_title  The text to be used for the menu.
  * @param  string  $capability  The capability required for this menu to be displayed to the user.
- * @param  string  $menu_slug   The slug name to refer to this menu by. Should be unique for this menu
- *                               and only include lowercase alphanumeric, dashes, and underscores characters
- *                               to be compatible with sanitize_key().
- * @param  callable  $callback    Optional. The function to be called to output the content for this page.
- * @param  int|float  $position    Optional. The position in the menu order this item should appear.
+ * @param  string  $menu_slug  The slug name to refer to this menu by. Should be unique for this menu
+ *                             and only include lowercase alphanumeric, dashes, and underscores characters
+ *                             to be compatible with sanitize_key().
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int|float  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_submenu_page($parent_slug, $page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1532,12 +1532,12 @@ function add_submenu_page($parent_slug, $page_title, $menu_title, $capability, $
  * @since 1.5.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_management_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1557,12 +1557,12 @@ function add_management_page($page_title, $menu_title, $capability, $menu_slug, 
  * @since 1.5.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_options_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1582,12 +1582,12 @@ function add_options_page($page_title, $menu_title, $capability, $menu_slug, $ca
  * @since 2.0.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_theme_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1607,12 +1607,12 @@ function add_theme_page($page_title, $menu_title, $capability, $menu_slug, $call
  * @since 3.0.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_plugins_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1632,12 +1632,12 @@ function add_plugins_page($page_title, $menu_title, $capability, $menu_slug, $ca
  * @since 2.1.3
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_users_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1663,12 +1663,12 @@ function add_users_page($page_title, $menu_title, $capability, $menu_slug, $call
  * @since 2.7.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_dashboard_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1688,12 +1688,12 @@ function add_dashboard_page($page_title, $menu_title, $capability, $menu_slug, $
  * @since 2.7.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_posts_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1713,12 +1713,12 @@ function add_posts_page($page_title, $menu_title, $capability, $menu_slug, $call
  * @since 2.7.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_media_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1738,12 +1738,12 @@ function add_media_page($page_title, $menu_title, $capability, $menu_slug, $call
  * @since 2.7.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_links_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1763,12 +1763,12 @@ function add_links_page($page_title, $menu_title, $capability, $menu_slug, $call
  * @since 2.7.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_pages_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1788,12 +1788,12 @@ function add_pages_page($page_title, $menu_title, $capability, $menu_slug, $call
  * @since 2.7.0
  * @since 5.3.0 Added the `$position` parameter.
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  int  $position   Optional. The position in the menu order this item should appear.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  int  $position  Optional. The position in the menu order this item should appear.
  * @return string|false The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
 function add_comments_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $position = null)
@@ -1813,7 +1813,7 @@ function add_comments_page($page_title, $menu_title, $capability, $menu_slug, $c
  *
  * @global array $menu
  *
- * @param  string  $menu_slug The slug of the menu.
+ * @param  string  $menu_slug  The slug of the menu.
  * @return array|false The removed menu on success, false if not found.
  */
 function remove_menu_page($menu_slug)
@@ -1844,8 +1844,8 @@ function remove_menu_page($menu_slug)
  *
  * @global array $submenu
  *
- * @param  string  $menu_slug    The slug for the parent menu.
- * @param  string  $submenu_slug The slug of the submenu.
+ * @param  string  $menu_slug  The slug for the parent menu.
+ * @param  string  $submenu_slug  The slug of the submenu.
  * @return array|false The removed submenu on success, false if not found.
  */
 function remove_submenu_page($menu_slug, $submenu_slug)
@@ -1876,8 +1876,8 @@ function remove_submenu_page($menu_slug, $submenu_slug)
  *
  * @global array $_parent_pages
  *
- * @param  string  $menu_slug The slug name to refer to this menu by (should be unique for this menu).
- * @param  bool  $display   Optional. Whether or not to display the URL. Default true.
+ * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
+ * @param  bool  $display  Optional. Whether or not to display the URL. Default true.
  * @return string The menu page URL.
  */
 function menu_page_url($menu_slug, $display = true)
@@ -1923,8 +1923,8 @@ function menu_page_url($menu_slug, $display = true)
  * @global array  $_wp_menu_nopriv
  * @global array  $_wp_submenu_nopriv
  *
- * @param  string  $parent_page Optional. The slug name for the parent menu (or the file name
- *                            of a standard WordPress admin page). Default empty string.
+ * @param  string  $parent_page  Optional. The slug name for the parent menu (or the file name
+ *                               of a standard WordPress admin page). Default empty string.
  * @return string The parent file of the current admin page.
  */
 function get_admin_page_parent($parent_page = '')
@@ -2103,9 +2103,9 @@ function get_admin_page_title()
  *
  * @since 1.5.0
  *
- * @param  string  $plugin_page The slug name of the plugin page.
- * @param  string  $parent_page The slug name for the parent menu (or the file name of a standard
- *                            WordPress admin page).
+ * @param  string  $plugin_page  The slug name of the plugin page.
+ * @param  string  $parent_page  The slug name for the parent menu (or the file name of a standard
+ *                               WordPress admin page).
  * @return string|null Hook attached to the plugin page, null otherwise.
  */
 function get_plugin_page_hook($plugin_page, $parent_page)
@@ -2125,9 +2125,9 @@ function get_plugin_page_hook($plugin_page, $parent_page)
  *
  * @global array $admin_page_hooks
  *
- * @param  string  $plugin_page The slug name of the plugin page.
- * @param  string  $parent_page The slug name for the parent menu (or the file name of a standard
- *                            WordPress admin page).
+ * @param  string  $plugin_page  The slug name of the plugin page.
+ * @param  string  $parent_page  The slug name for the parent menu (or the file name of a standard
+ *                               WordPress admin page).
  * @return string Hook name for the plugin page.
  */
 function get_plugin_page_hookname($plugin_page, $parent_page)
@@ -2340,8 +2340,8 @@ function remove_allowed_options($del_options, $options = '')
  *
  * @since 2.7.0
  *
- * @param  string  $option_group A settings group name. This should match the group name
- *                             used in register_setting().
+ * @param  string  $option_group  A settings group name. This should match the group name
+ *                                used in register_setting().
  */
 function settings_fields($option_group)
 {
@@ -2355,7 +2355,7 @@ function settings_fields($option_group)
  *
  * @since 3.7.0
  *
- * @param  bool  $clear_update_cache Whether to clear the plugin updates cache. Default true.
+ * @param  bool  $clear_update_cache  Whether to clear the plugin updates cache. Default true.
  */
 function wp_clean_plugins_cache($clear_update_cache = true)
 {
@@ -2371,7 +2371,7 @@ function wp_clean_plugins_cache($clear_update_cache = true)
  * @since 3.0.0
  * @since 4.4.0 Function was moved into the `wp-admin/includes/plugin.php` file.
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  */
 function plugin_sandbox_scrape($plugin)
 {
@@ -2405,9 +2405,9 @@ function plugin_sandbox_scrape($plugin)
  *
  * @since 4.9.6
  *
- * @param  string  $plugin_name The name of the plugin or theme that is suggesting content
- *                            for the site's privacy policy.
- * @param  string  $policy_text The suggested content for inclusion in the policy.
+ * @param  string  $plugin_name  The name of the plugin or theme that is suggesting content
+ *                               for the site's privacy policy.
+ * @param  string  $policy_text  The suggested content for inclusion in the policy.
  */
 function wp_add_privacy_policy_content($plugin_name, $policy_text)
 {
@@ -2454,7 +2454,7 @@ function wp_add_privacy_policy_content($plugin_name, $policy_text)
  *
  * @since 5.2.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return bool True, if in the list of paused plugins. False, if not in the list.
  */
 function is_plugin_paused($plugin)
@@ -2477,7 +2477,7 @@ function is_plugin_paused($plugin)
  *
  * @since 5.2.0
  *
- * @param  string  $plugin Path to the plugin file relative to the plugins directory.
+ * @param  string  $plugin  Path to the plugin file relative to the plugins directory.
  * @return array|false Array of error information as returned by `error_get_last()`,
  *                     or false if none was recorded.
  */
@@ -2508,8 +2508,8 @@ function wp_get_plugin_error($plugin)
  *
  * @since 5.2.0
  *
- * @param  string  $plugin   Single plugin to resume.
- * @param  string  $redirect Optional. URL to redirect to. Default empty string.
+ * @param  string  $plugin  Single plugin to resume.
+ * @param  string  $redirect  Optional. URL to redirect to. Default empty string.
  * @return true|WP_Error True on success, false if `$plugin` was not paused,
  *                       `WP_Error` on failure.
  */

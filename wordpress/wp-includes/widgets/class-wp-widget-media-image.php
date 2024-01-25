@@ -170,7 +170,7 @@ class WP_Widget_Media_Image extends WP_Widget_Media
      *
      * @since 4.8.0
      *
-     * @param  array  $instance Widget instance props.
+     * @param  array  $instance  Widget instance props.
      */
     public function render_media($instance)
     {

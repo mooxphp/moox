@@ -26,8 +26,8 @@ $charset_collate = $wpdb->get_charset_collate();
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $scope   Optional. The tables for which to retrieve SQL. Can be all, global, ms_global, or blog tables. Defaults to all.
- * @param  int  $blog_id Optional. The site ID for which to retrieve SQL. Default is the current site ID.
+ * @param  string  $scope  Optional. The tables for which to retrieve SQL. Can be all, global, ms_global, or blog tables. Defaults to all.
+ * @param  int  $blog_id  Optional. The site ID for which to retrieve SQL. Default is the current site ID.
  * @return string The SQL needed to create the requested tables.
  */
 function wp_get_db_schema($scope = 'all', $blog_id = null)
@@ -354,7 +354,7 @@ $wp_queries = wp_get_db_schema('all');
  * @global int  $wp_db_version         WordPress database version.
  * @global int  $wp_current_db_version The old (current) database version.
  *
- * @param  array  $options Optional. Custom option $key => $value pairs to use. Default empty array.
+ * @param  array  $options  Optional. Custom option $key => $value pairs to use. Default empty array.
  */
 function populate_options(array $options = [])
 {
@@ -984,13 +984,13 @@ if (! function_exists('install_network')) {
  * @global object     $current_site
  * @global WP_Rewrite $wp_rewrite   WordPress rewrite component.
  *
- * @param  int  $network_id        ID of network to populate.
- * @param  string  $domain            The domain name for the network. Example: "example.com".
- * @param  string  $email             Email address for the network administrator.
- * @param  string  $site_name         The name of the network.
- * @param  string  $path              Optional. The path to append to the network's domain name. Default '/'.
- * @param  bool  $subdomain_install Optional. Whether the network is a subdomain installation or a subdirectory installation.
- *                                  Default false, meaning the network is a subdirectory installation.
+ * @param  int  $network_id  ID of network to populate.
+ * @param  string  $domain  The domain name for the network. Example: "example.com".
+ * @param  string  $email  Email address for the network administrator.
+ * @param  string  $site_name  The name of the network.
+ * @param  string  $path  Optional. The path to append to the network's domain name. Default '/'.
+ * @param  bool  $subdomain_install  Optional. Whether the network is a subdomain installation or a subdirectory installation.
+ *                                   Default false, meaning the network is a subdirectory installation.
  * @return true|WP_Error True on success, or WP_Error on warning (with the installation otherwise successful,
  *                       so the error code must be checked) or failure.
  */
@@ -1171,8 +1171,8 @@ function populate_network($network_id = 1, $domain = '', $email = '', $site_name
  * @global wpdb $wpdb          WordPress database abstraction object.
  * @global int  $wp_db_version WordPress database version.
  *
- * @param  int  $network_id Network ID to populate meta for.
- * @param  array  $meta       Optional. Custom meta $key => $value pairs to use. Default empty array.
+ * @param  int  $network_id  Network ID to populate meta for.
+ * @param  array  $meta  Optional. Custom meta $key => $value pairs to use. Default empty array.
  */
 function populate_network_meta($network_id, array $meta = [])
 {
@@ -1326,8 +1326,8 @@ We hope you enjoy your new site. Thanks!
      *
      * @since 3.7.0
      *
-     * @param  array  $sitemeta   Associative array of network meta keys and values to be inserted.
-     * @param  int  $network_id ID of network to populate.
+     * @param  array  $sitemeta  Associative array of network meta keys and values to be inserted.
+     * @param  int  $network_id  ID of network to populate.
      */
     $sitemeta = apply_filters('populate_network_meta', $sitemeta, $network_id);
 
@@ -1351,8 +1351,8 @@ We hope you enjoy your new site. Thanks!
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $site_id Site ID to populate meta for.
- * @param  array  $meta    Optional. Custom meta $key => $value pairs to use. Default empty array.
+ * @param  int  $site_id  Site ID to populate meta for.
+ * @param  array  $meta  Optional. Custom meta $key => $value pairs to use. Default empty array.
  */
 function populate_site_meta($site_id, array $meta = [])
 {
@@ -1373,8 +1373,8 @@ function populate_site_meta($site_id, array $meta = [])
      *
      * @since 5.2.0
      *
-     * @param  array  $meta    Associative array of site meta keys and values to be inserted.
-     * @param  int  $site_id ID of site to populate.
+     * @param  array  $meta  Associative array of site meta keys and values to be inserted.
+     * @param  int  $site_id  ID of site to populate.
      */
     $site_meta = apply_filters('populate_site_meta', $meta, $site_id);
 

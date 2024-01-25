@@ -197,7 +197,7 @@ function wp_get_layout_definitions()
  * @since 5.8.0
  * @since 6.3.0 Check for layout support via the `layout` key with fallback to `__experimentalLayout`.
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_layout_support($block_type)
 {
@@ -222,14 +222,14 @@ function wp_register_layout_support($block_type)
  * @since 6.1.0 Added `$block_spacing` param, use style engine to enqueue styles.
  * @since 6.3.0 Added grid layout type.
  *
- * @param  string  $selector                      CSS selector.
- * @param  array  $layout                        Layout object. The one that is passed has already checked
- *                                                            the existence of default block layout.
- * @param  bool  $has_block_gap_support         Optional. Whether the theme has support for the block gap. Default false.
- * @param  string|string[]|null  $gap_value                     Optional. The block gap value to apply. Default null.
- * @param  bool  $should_skip_gap_serialization Optional. Whether to skip applying the user-defined value set in the editor. Default false.
- * @param  string  $fallback_gap_value            Optional. The block gap value to apply. Default '0.5em'.
- * @param  array|null  $block_spacing                 Optional. Custom spacing set on the block. Default null.
+ * @param  string  $selector  CSS selector.
+ * @param  array  $layout  Layout object. The one that is passed has already checked
+ *                         the existence of default block layout.
+ * @param  bool  $has_block_gap_support  Optional. Whether the theme has support for the block gap. Default false.
+ * @param  string|string[]|null  $gap_value  Optional. The block gap value to apply. Default null.
+ * @param  bool  $should_skip_gap_serialization  Optional. Whether to skip applying the user-defined value set in the editor. Default false.
+ * @param  string  $fallback_gap_value  Optional. The block gap value to apply. Default '0.5em'.
+ * @param  array|null  $block_spacing  Optional. Custom spacing set on the block. Default null.
  * @return string CSS styles on success. Else, empty string.
  */
 function wp_get_layout_style($selector, $layout, $has_block_gap_support = false, $gap_value = null, $should_skip_gap_serialization = false, $fallback_gap_value = '0.5em', $block_spacing = null)
@@ -546,8 +546,8 @@ function wp_get_layout_style($selector, $layout, $has_block_gap_support = false,
  * @since 6.3.0 Adds compound class to layout wrapper for global spacing styles.
  * @since 6.3.0 Check for layout support via the `layout` key with fallback to `__experimentalLayout`.
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
  * @return string Filtered block content.
  */
 function wp_render_layout_support_flag($block_content, $block)
@@ -863,8 +863,8 @@ add_filter('render_block', 'wp_render_layout_support_flag', 10, 2);
  *
  * @since 5.8.0
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
  * @return string Filtered block content.
  */
 function wp_restore_group_inner_container($block_content, $block)
@@ -907,8 +907,8 @@ add_filter('render_block_core/group', 'wp_restore_group_inner_container', 10, 2)
  *
  * @since 6.0.0
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block        Block object.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
  * @return string Filtered block content.
  */
 function wp_restore_image_outer_container($block_content, $block)

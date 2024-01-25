@@ -35,7 +35,7 @@ function _wp_admin_bar_init()
      *
      * @since 3.1.0
      *
-     * @param  string  $wp_admin_bar_class Admin bar class to use. Default 'WP_Admin_Bar'.
+     * @param  string  $wp_admin_bar_class  Admin bar class to use. Default 'WP_Admin_Bar'.
      */
     $admin_bar_class = apply_filters('wp_admin_bar_class', 'WP_Admin_Bar');
     if (class_exists($admin_bar_class)) {
@@ -89,7 +89,7 @@ function wp_admin_bar_render()
      *
      * @since 3.1.0
      *
-     * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance, passed by reference.
+     * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance, passed by reference.
      */
     do_action_ref_array('admin_bar_menu', [&$wp_admin_bar]);
 
@@ -117,7 +117,7 @@ function wp_admin_bar_render()
  *
  * @since 3.3.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_wp_menu($wp_admin_bar)
 {
@@ -230,7 +230,7 @@ function wp_admin_bar_wp_menu($wp_admin_bar)
  *
  * @since 3.8.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_sidebar_toggle($wp_admin_bar)
 {
@@ -253,7 +253,7 @@ function wp_admin_bar_sidebar_toggle($wp_admin_bar)
  *
  * @since 3.3.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_my_account_item($wp_admin_bar)
 {
@@ -295,7 +295,7 @@ function wp_admin_bar_my_account_item($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_my_account_menu($wp_admin_bar)
 {
@@ -366,7 +366,7 @@ function wp_admin_bar_my_account_menu($wp_admin_bar)
  *
  * @since 3.3.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_site_menu($wp_admin_bar)
 {
@@ -452,7 +452,7 @@ function wp_admin_bar_site_menu($wp_admin_bar)
  *
  * @since 6.3.0 Added `$_wp_current_template_id` global for editing of current template directly from the admin bar.
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_edit_site_menu($wp_admin_bar)
 {
@@ -488,7 +488,7 @@ function wp_admin_bar_edit_site_menu($wp_admin_bar)
  *
  * @since 4.3.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  *
  * @global WP_Customize_Manager $wp_customize
  */
@@ -541,7 +541,7 @@ function wp_admin_bar_customize_menu($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_my_sites_menu($wp_admin_bar)
 {
@@ -670,7 +670,7 @@ function wp_admin_bar_my_sites_menu($wp_admin_bar)
      *
      * @since 6.0.0
      *
-     * @param  bool  $show_site_icons Whether site icons should be shown in the toolbar. Default true.
+     * @param  bool  $show_site_icons  Whether site icons should be shown in the toolbar. Default true.
      */
     $show_site_icons = apply_filters('wp_admin_bar_show_site_icons', true);
 
@@ -765,7 +765,7 @@ function wp_admin_bar_my_sites_menu($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_shortlink_menu($wp_admin_bar)
 {
@@ -800,7 +800,7 @@ function wp_admin_bar_shortlink_menu($wp_admin_bar)
  *                                global $user_ID, which contains the ID of the current user.
  * @global int      $post_id      The ID of the post when editing comments for a single post.
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_edit_menu($wp_admin_bar)
 {
@@ -938,7 +938,7 @@ function wp_admin_bar_edit_menu($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_new_content_menu($wp_admin_bar)
 {
@@ -1015,7 +1015,7 @@ function wp_admin_bar_new_content_menu($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_comments_menu($wp_admin_bar)
 {
@@ -1049,7 +1049,7 @@ function wp_admin_bar_comments_menu($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_appearance_menu($wp_admin_bar)
 {
@@ -1131,7 +1131,7 @@ function wp_admin_bar_appearance_menu($wp_admin_bar)
  *
  * @since 3.1.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_updates_menu($wp_admin_bar)
 {
@@ -1166,7 +1166,7 @@ function wp_admin_bar_updates_menu($wp_admin_bar)
  *
  * @since 3.3.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_search_menu($wp_admin_bar)
 {
@@ -1201,7 +1201,7 @@ function wp_admin_bar_search_menu($wp_admin_bar)
  *
  * @since 5.2.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_recovery_mode_menu($wp_admin_bar)
 {
@@ -1228,7 +1228,7 @@ function wp_admin_bar_recovery_mode_menu($wp_admin_bar)
  *
  * @since 3.3.0
  *
- * @param  WP_Admin_Bar  $wp_admin_bar The WP_Admin_Bar instance.
+ * @param  WP_Admin_Bar  $wp_admin_bar  The WP_Admin_Bar instance.
  */
 function wp_admin_bar_add_secondary_groups($wp_admin_bar)
 {
@@ -1312,7 +1312,7 @@ function wp_enqueue_admin_bar_bump_styles()
  *
  * @global bool $show_admin_bar
  *
- * @param  bool  $show Whether to allow the admin bar to show.
+ * @param  bool  $show  Whether to allow the admin bar to show.
  */
 function show_admin_bar($show)
 {
@@ -1368,7 +1368,7 @@ function is_admin_bar_showing()
      *
      * @since 3.1.0
      *
-     * @param  bool  $show_admin_bar Whether the admin bar should be shown. Default false.
+     * @param  bool  $show_admin_bar  Whether the admin bar should be shown. Default false.
      */
     $show_admin_bar = apply_filters('show_admin_bar', $show_admin_bar);
 
@@ -1380,9 +1380,9 @@ function is_admin_bar_showing()
  *
  * @since 3.1.0
  *
- * @param  string  $context Context of this preference check. Defaults to 'front'. The 'admin'
- *                        preference is no longer used.
- * @param  int  $user    Optional. ID of the user to check, defaults to 0 for current user.
+ * @param  string  $context  Context of this preference check. Defaults to 'front'. The 'admin'
+ *                           preference is no longer used.
+ * @param  int  $user  Optional. ID of the user to check, defaults to 0 for current user.
  * @return bool Whether the admin bar should be showing for this user.
  */
 function _get_admin_bar_pref($context = 'front', $user = 0)

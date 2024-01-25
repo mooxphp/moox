@@ -65,7 +65,7 @@ if (get_option('db_upgraded')) {
      *
      * @since MU (3.0.0)
      *
-     * @param  bool  $do_mu_upgrade Whether to perform the Multisite upgrade routine. Default true.
+     * @param  bool  $do_mu_upgrade  Whether to perform the Multisite upgrade routine. Default true.
      */
     if (apply_filters('do_mu_upgrade', true)) {
         $c = get_blog_count();
@@ -349,7 +349,7 @@ if (isset($plugin_page)) {
      *
      * @since 3.1.0
      *
-     * @param  bool  $force Whether to force data to be filtered through kses. Default false.
+     * @param  bool  $force  Whether to force data to be filtered through kses. Default false.
      */
     if (apply_filters('force_filtered_html_on_import', false)) {
         kses_init_filters();  // Always filter imported data with kses on multisite.

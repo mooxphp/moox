@@ -61,13 +61,13 @@ class Cookie
     /**
      * Create a new cookie object
      *
-     * @param  string  $name           The name of the cookie.
-     * @param  string  $value          The value for the cookie.
-     * @param  array|\WpOrg\Requests\Utility\CaseInsensitiveDictionary  $attributes Associative array of attribute data
-     * @param  array  $flags          The flags for the cookie.
-     *                                                                                Valid keys are `'creation'`, `'last-access'`,
-     *                                                                                `'persistent'` and `'host-only'`.
-     * @param  int|null  $reference_time Reference time for relative calculations.
+     * @param  string  $name  The name of the cookie.
+     * @param  string  $value  The value for the cookie.
+     * @param  array|\WpOrg\Requests\Utility\CaseInsensitiveDictionary  $attributes  Associative array of attribute data
+     * @param  array  $flags  The flags for the cookie.
+     *                        Valid keys are `'creation'`, `'last-access'`,
+     *                        `'persistent'` and `'host-only'`.
+     * @param  int|null  $reference_time  Reference time for relative calculations.
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $name argument is not a string.
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $value argument is not a string.
@@ -158,7 +158,7 @@ class Cookie
     /**
      * Check if a cookie is valid for a given URI
      *
-     * @param  \WpOrg\Requests\Iri  $uri URI to check
+     * @param  \WpOrg\Requests\Iri  $uri  URI to check
      * @return bool Whether the cookie is valid for the given URI
      */
     public function uri_matches(Iri $uri)
@@ -177,7 +177,7 @@ class Cookie
     /**
      * Check if a cookie is valid for a given domain
      *
-     * @param  string  $domain Domain to check
+     * @param  string  $domain  Domain to check
      * @return bool Whether the cookie is valid for the given domain
      */
     public function domain_matches($domain)
@@ -231,7 +231,7 @@ class Cookie
      *
      * From the path-match check in RFC 6265 section 5.1.4
      *
-     * @param  string  $request_path Path to check
+     * @param  string  $request_path  Path to check
      * @return bool Whether the cookie is valid for the given path
      */
     public function path_matches($request_path)
@@ -309,8 +309,8 @@ class Cookie
      *
      * Handles parsing individual attributes from the cookie values.
      *
-     * @param  string  $name Attribute name
-     * @param  string|int|bool  $value Attribute value (string/integer value, or true if empty/flag)
+     * @param  string  $name  Attribute name
+     * @param  string|int|bool  $value  Attribute value (string/integer value, or true if empty/flag)
      * @return mixed Value if available, or null if the attribute value is invalid (and should be skipped)
      */
     protected function normalize_attribute($name, $value)
@@ -414,7 +414,7 @@ class Cookie
      * is an intentional deviation from RFC 2109 and RFC 2616. RFC 6265
      * specifies some of this handling, but not in a thorough manner.
      *
-     * @param  string  $cookie_header Cookie header value (from a Set-Cookie header)
+     * @param  string  $cookie_header  Cookie header value (from a Set-Cookie header)
      * @param  string  $name
      * @param  int|null  $reference_time
      * @return \WpOrg\Requests\Cookie Parsed cookie object
@@ -476,9 +476,9 @@ class Cookie
     /**
      * Parse all Set-Cookie headers from request headers
      *
-     * @param  \WpOrg\Requests\Response\Headers  $headers Headers to parse from
-     * @param  \WpOrg\Requests\Iri|null  $origin URI for comparing cookie origins
-     * @param  int|null  $time Reference time for expiration calculation
+     * @param  \WpOrg\Requests\Response\Headers  $headers  Headers to parse from
+     * @param  \WpOrg\Requests\Iri|null  $origin  URI for comparing cookie origins
+     * @param  int|null  $time  Reference time for expiration calculation
      * @return array
      */
     public static function parse_from_headers(Headers $headers, ?Iri $origin = null, $time = null)

@@ -33,7 +33,7 @@ function wp_sitemaps_get_server()
          *
          * @since 5.5.0
          *
-         * @param  WP_Sitemaps  $wp_sitemaps Sitemaps object.
+         * @param  WP_Sitemaps  $wp_sitemaps  Sitemaps object.
          */
         do_action('wp_sitemaps_init', $wp_sitemaps);
     }
@@ -60,8 +60,8 @@ function wp_get_sitemap_providers()
  *
  * @since 5.5.0
  *
- * @param  string  $name     Unique name for the sitemap provider.
- * @param  WP_Sitemaps_Provider  $provider The `Sitemaps_Provider` instance implementing the sitemap.
+ * @param  string  $name  Unique name for the sitemap provider.
+ * @param  WP_Sitemaps_Provider  $provider  The `Sitemaps_Provider` instance implementing the sitemap.
  * @return bool Whether the sitemap was added.
  */
 function wp_register_sitemap_provider($name, WP_Sitemaps_Provider $provider)
@@ -76,7 +76,7 @@ function wp_register_sitemap_provider($name, WP_Sitemaps_Provider $provider)
  *
  * @since 5.5.0
  *
- * @param  string  $object_type Object type for sitemap to be filtered (e.g. 'post', 'term', 'user').
+ * @param  string  $object_type  Object type for sitemap to be filtered (e.g. 'post', 'term', 'user').
  * @return int The maximum number of URLs.
  */
 function wp_sitemaps_get_max_urls($object_type)
@@ -86,8 +86,8 @@ function wp_sitemaps_get_max_urls($object_type)
      *
      * @since 5.5.0
      *
-     * @param  int  $max_urls    The maximum number of URLs included in a sitemap. Default 2000.
-     * @param  string  $object_type Object type for sitemap to be filtered (e.g. 'post', 'term', 'user').
+     * @param  int  $max_urls  The maximum number of URLs included in a sitemap. Default 2000.
+     * @param  string  $object_type  Object type for sitemap to be filtered (e.g. 'post', 'term', 'user').
      */
     return apply_filters('wp_sitemaps_max_urls', 2000, $object_type);
 }
@@ -97,9 +97,9 @@ function wp_sitemaps_get_max_urls($object_type)
  *
  * @since 5.5.1
  *
- * @param  string  $name         The sitemap name.
- * @param  string  $subtype_name The sitemap subtype name. Default empty string.
- * @param  int  $page         The page of the sitemap. Default 1.
+ * @param  string  $name  The sitemap name.
+ * @param  string  $subtype_name  The sitemap subtype name. Default empty string.
+ * @param  int  $page  The page of the sitemap. Default 1.
  * @return string|false The sitemap URL or false if the sitemap doesn't exist.
  */
 function get_sitemap_url($name, $subtype_name = '', $page = 1)

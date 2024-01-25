@@ -54,8 +54,8 @@ if (isset($_GET['type'])) {
      *
      * @since 2.5.0
      *
-     * @param  string  $type The default media upload type. Possible values include
-     *                     'image', 'audio', 'video', 'file', etc. Default 'file'.
+     * @param  string  $type  The default media upload type. Possible values include
+     *                        'image', 'audio', 'video', 'file', etc. Default 'file'.
      */
     $type = apply_filters('media_upload_default_type', 'file');
 }
@@ -69,7 +69,7 @@ if (isset($_GET['tab'])) {
      *
      * @since 2.5.0
      *
-     * @param  string  $tab The default media popup tab. Default 'type' (From Computer).
+     * @param  string  $tab  The default media popup tab. Default 'type' (From Computer).
      */
     $tab = apply_filters('media_upload_default_tab', 'type');
 }
