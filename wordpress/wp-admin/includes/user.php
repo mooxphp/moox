@@ -22,7 +22,7 @@ function add_user()
  *
  * @since 2.0.0
  *
- * @param  int  $user_id Optional. User ID.
+ * @param  int  $user_id  Optional. User ID.
  * @return int|WP_Error User ID of the updated user or WP_Error on failure.
  */
 function edit_user($user_id = 0)
@@ -161,9 +161,9 @@ function edit_user($user_id = 0)
      *
      * @since 1.5.1
      *
-     * @param  string  $user_login The username.
-     * @param  string  $pass1     The password (passed by reference).
-     * @param  string  $pass2     The confirmed password (passed by reference).
+     * @param  string  $user_login  The username.
+     * @param  string  $pass1  The password (passed by reference).
+     * @param  string  $pass2  The confirmed password (passed by reference).
      */
     do_action_ref_array('check_passwords', [$user->user_login, &$pass1, &$pass2]);
 
@@ -218,9 +218,9 @@ function edit_user($user_id = 0)
      *
      * @since 2.8.0
      *
-     * @param  WP_Error  $errors WP_Error object (passed by reference).
-     * @param  bool  $update Whether this is a user update.
-     * @param  stdClass  $user   User object (passed by reference).
+     * @param  WP_Error  $errors  WP_Error object (passed by reference).
+     * @param  bool  $update  Whether this is a user update.
+     * @param  stdClass  $user  User object (passed by reference).
      */
     do_action_ref_array('user_profile_update_errors', [&$errors, $update, &$user]);
 
@@ -239,9 +239,9 @@ function edit_user($user_id = 0)
          *
          * @since 4.4.0
          *
-         * @param  int|WP_Error  $user_id ID of the newly created user or WP_Error on failure.
+         * @param  int|WP_Error  $user_id  ID of the newly created user or WP_Error on failure.
          * @param  string  $notify  Type of notification that should happen. See
-         *                              wp_send_new_user_notifications() for more information.
+         *                          wp_send_new_user_notifications() for more information.
          */
         do_action('edit_user_created_user', $user_id, $notify);
     }
@@ -274,7 +274,7 @@ function get_editable_roles()
      *
      * @since 2.8.0
      *
-     * @param  array[]  $all_roles Array of arrays containing role information.
+     * @param  array[]  $all_roles  Array of arrays containing role information.
      */
     $editable_roles = apply_filters('editable_roles', $all_roles);
 
@@ -286,7 +286,7 @@ function get_editable_roles()
  *
  * @since 2.0.5
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  * @return WP_User|false WP_User object on success, false on failure.
  */
 function get_user_to_edit($user_id)
@@ -307,7 +307,7 @@ function get_user_to_edit($user_id)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  * @return array
  */
 function get_users_drafts($user_id)
@@ -320,7 +320,7 @@ function get_users_drafts($user_id)
      *
      * @since 2.0.0
      *
-     * @param  string  $query The user's drafts query string.
+     * @param  string  $query  The user's drafts query string.
      */
     $query = apply_filters('get_users_drafts', $query);
 
@@ -342,8 +342,8 @@ function get_users_drafts($user_id)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $id       User ID.
- * @param  int  $reassign Optional. Reassign posts and links to new User ID.
+ * @param  int  $id  User ID.
+ * @param  int  $reassign  Optional. Reassign posts and links to new User ID.
  * @return bool True when finished.
  */
 function wp_delete_user($id, $reassign = null)
@@ -377,10 +377,10 @@ function wp_delete_user($id, $reassign = null)
      * @since 2.0.0
      * @since 5.5.0 Added the `$user` parameter.
      *
-     * @param  int  $id       ID of the user to delete.
-     * @param  int|null  $reassign ID of the user to reassign posts and links to.
-     *                           Default null, for no reassignment.
-     * @param  WP_User  $user     WP_User object of the user to delete.
+     * @param  int  $id  ID of the user to delete.
+     * @param  int|null  $reassign  ID of the user to reassign posts and links to.
+     *                              Default null, for no reassignment.
+     * @param  WP_User  $user  WP_User object of the user to delete.
      */
     do_action('delete_user', $id, $reassign, $user);
 
@@ -399,8 +399,8 @@ function wp_delete_user($id, $reassign = null)
          *
          * @since 3.4.0
          *
-         * @param  string[]  $post_types_to_delete Array of post types to delete.
-         * @param  int  $id                   User ID.
+         * @param  string[]  $post_types_to_delete  Array of post types to delete.
+         * @param  int  $id  User ID.
          */
         $post_types_to_delete = apply_filters('post_types_to_delete_with_user', $post_types_to_delete, $id);
         $post_types_to_delete = implode("', '", $post_types_to_delete);
@@ -460,10 +460,10 @@ function wp_delete_user($id, $reassign = null)
      * @since 2.9.0
      * @since 5.5.0 Added the `$user` parameter.
      *
-     * @param  int  $id       ID of the deleted user.
-     * @param  int|null  $reassign ID of the user to reassign posts and links to.
-     *                           Default null, for no reassignment.
-     * @param  WP_User  $user     WP_User object of the deleted user.
+     * @param  int  $id  ID of the deleted user.
+     * @param  int|null  $reassign  ID of the user to reassign posts and links to.
+     *                              Default null, for no reassignment.
+     * @param  WP_User  $user  WP_User object of the deleted user.
      */
     do_action('deleted_user', $id, $reassign, $user);
 
@@ -475,7 +475,7 @@ function wp_delete_user($id, $reassign = null)
  *
  * @since 2.1.0
  *
- * @param  int  $id User ID.
+ * @param  int  $id  User ID.
  */
 function wp_revoke_user($id)
 {
@@ -490,7 +490,7 @@ function wp_revoke_user($id)
  *
  * @global int $user_ID
  *
- * @param  false  $errors Deprecated.
+ * @param  false  $errors  Deprecated.
  */
 function default_password_nag_handler($errors = false)
 {
@@ -597,7 +597,7 @@ jQuery( function($) {
  *
  * @since 2.7.0
  *
- * @param  WP_User  $user User data object.
+ * @param  WP_User  $user  User data object.
  */
 function use_ssl_preference($user)
 {
@@ -651,16 +651,16 @@ Please click the following link to activate your user account:
  * @since 6.2.0 Allow insecure HTTP connections for the local environment.
  * @since 6.3.2 Validates the success and reject URLs to prevent javascript pseudo protocol being executed.
  *
- * @param  array  $request {
- *     The array of request data. All arguments are optional and may be empty.
+ * @param  array  $request  {
+ *                          The array of request data. All arguments are optional and may be empty.
  *
- *     @type string $app_name    The suggested name of the application.
- *     @type string $app_id      A UUID provided by the application to uniquely identify it.
- *     @type string $success_url The URL the user will be redirected to after approving the application.
- *     @type string $reject_url  The URL the user will be redirected to after rejecting the application.
- * }
+ * @type string $app_name    The suggested name of the application.
+ * @type string $app_id      A UUID provided by the application to uniquely identify it.
+ * @type string $success_url The URL the user will be redirected to after approving the application.
+ * @type string $reject_url  The URL the user will be redirected to after rejecting the application.
+ *              }
  *
- * @param  WP_User  $user The user authorizing the application.
+ * @param  WP_User  $user  The user authorizing the application.
  * @return true|WP_Error True if the request is valid, a WP_Error object contains errors if not.
  */
 function wp_is_authorize_application_password_request_valid($request, $user)
@@ -699,9 +699,9 @@ function wp_is_authorize_application_password_request_valid($request, $user)
      *
      * @since 5.6.0
      *
-     * @param  WP_Error  $error   The error object.
-     * @param  array  $request The array of request data.
-     * @param  WP_User  $user    The user authorizing the application.
+     * @param  WP_Error  $error  The error object.
+     * @param  array  $request  The array of request data.
+     * @param  WP_User  $user  The user authorizing the application.
      */
     do_action('wp_authorize_application_password_request_errors', $error, $request, $user);
 
@@ -717,7 +717,7 @@ function wp_is_authorize_application_password_request_valid($request, $user)
  *
  * @since 6.3.2
  *
- * @param  string  $url - The redirect URL to be validated.
+ * @param  string  $url  - The redirect URL to be validated.
  * @return true|WP_Error True if the redirect URL is valid, a WP_Error object otherwise.
  */
 function wp_is_authorize_application_redirect_url_valid($url)
@@ -741,8 +741,8 @@ function wp_is_authorize_application_redirect_url_valid($url)
      *
      * @since 6.3.2
      *
-     * @param  string[]  $bad_protocols Array of invalid protocols.
-     * @param  string  $url The redirect URL to be validated.
+     * @param  string[]  $bad_protocols  Array of invalid protocols.
+     * @param  string  $url  The redirect URL to be validated.
      */
     $invalid_protocols = array_map('strtolower', apply_filters('wp_authorize_application_redirect_url_invalid_protocols', $bad_protocols, $url));
 

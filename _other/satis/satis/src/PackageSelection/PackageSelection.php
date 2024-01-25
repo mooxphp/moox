@@ -546,10 +546,10 @@ class PackageSelection
     /**
      * Test if two addresses have the same prefix
      *
-     * @param  int[]  $addr1 Chunked addr
-     * @param  int[]  $addr2 Chunked addr
-     * @param  int  $len Length of the test
-     * @param  int  $chunklen Length of each chunk
+     * @param  int[]  $addr1  Chunked addr
+     * @param  int[]  $addr2  Chunked addr
+     * @param  int  $len  Length of the test
+     * @param  int  $chunklen  Length of each chunk
      */
     private function matchAddr($addr1, $addr2, $len = 0, $chunklen = 32): bool
     {

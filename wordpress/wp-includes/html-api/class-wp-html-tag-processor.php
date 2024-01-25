@@ -531,7 +531,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $html HTML to process.
+     * @param  string  $html  HTML to process.
      */
     public function __construct($html)
     {
@@ -543,16 +543,16 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  array|string|null  $query {
-     *     Optional. Which tag name to find, having which class, etc. Default is to find any tag.
+     * @param  array|string|null  $query  {
+     *                                    Optional. Which tag name to find, having which class, etc. Default is to find any tag.
      *
-     *     @type string|null $tag_name     Which tag to find, or `null` for "any tag."
-     *     @type int|null    $match_offset Find the Nth tag matching all search criteria.
-     *                                     1 for "first" tag, 3 for "third," etc.
-     *                                     Defaults to first tag.
-     *     @type string|null $class_name   Tag must contain this whole class name to match.
-     *     @type string|null $tag_closers  "visit" or "skip": whether to stop on tag closers, e.g. </div>.
-     * }
+     * @type string|null $tag_name     Which tag to find, or `null` for "any tag."
+     * @type int|null $match_offset Find the Nth tag matching all search criteria.
+     *                1 for "first" tag, 3 for "third," etc.
+     *                Defaults to first tag.
+     * @type string|null $class_name   Tag must contain this whole class name to match.
+     * @type string|null $tag_closers  "visit" or "skip": whether to stop on tag closers, e.g. </div>.
+     *                   }
      *
      * @return bool Whether a tag was matched.
      */
@@ -717,7 +717,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  string  $wanted_class Look for this CSS class name, ASCII case-insensitive.
+     * @param  string  $wanted_class  Look for this CSS class name, ASCII case-insensitive.
      * @return bool|null Whether the matched tag contains the given class name, or null if not matched.
      */
     public function has_class($wanted_class)
@@ -814,7 +814,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $name Identifies this particular bookmark.
+     * @param  string  $name  Identifies this particular bookmark.
      * @return bool Whether the bookmark was successfully created.
      */
     public function set_bookmark($name)
@@ -847,7 +847,7 @@ class WP_HTML_Tag_Processor
      * Releasing a bookmark frees up the small
      * performance overhead it requires.
      *
-     * @param  string  $name Name of the bookmark to remove.
+     * @param  string  $name  Name of the bookmark to remove.
      * @return bool Whether the bookmark already existed before removal.
      */
     public function release_bookmark($name)
@@ -867,7 +867,7 @@ class WP_HTML_Tag_Processor
      * @since 6.3.2
      * @see https://html.spec.whatwg.org/#generic-raw-text-element-parsing-algorithm
      *
-     * @param  string  $tag_name The uppercase tag name which will close the RAWTEXT region.
+     * @param  string  $tag_name  The uppercase tag name which will close the RAWTEXT region.
      * @return bool Whether an end to the RAWTEXT region was found before the end of the document.
      */
     private function skip_rawtext($tag_name)
@@ -886,7 +886,7 @@ class WP_HTML_Tag_Processor
      * @since 6.2.0
      * @see https://html.spec.whatwg.org/multipage/parsing.html#rcdata-state
      *
-     * @param  string  $tag_name The uppercase tag name which will close the RCDATA region.
+     * @param  string  $tag_name  The uppercase tag name which will close the RCDATA region.
      * @return bool Whether an end to the RCDATA region was found before the end of the document.
      */
     private function skip_rcdata($tag_name)
@@ -1633,7 +1633,7 @@ class WP_HTML_Tag_Processor
      * @since 6.2.1 Accumulates shift for internal cursor and passed pointer.
      * @since 6.3.0 Invalidate any bookmarks whose targets are overwritten.
      *
-     * @param  int  $shift_this_point Accumulate and return shift for this position.
+     * @param  int  $shift_this_point  Accumulate and return shift for this position.
      * @return int How many bytes the given pointer moved in response to the updates.
      */
     private function apply_attributes_updates($shift_this_point = 0)
@@ -1728,7 +1728,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.3.0
      *
-     * @param  string  $bookmark_name Name to identify a bookmark that potentially exists.
+     * @param  string  $bookmark_name  Name to identify a bookmark that potentially exists.
      * @return bool Whether that bookmark exists.
      */
     public function has_bookmark($bookmark_name)
@@ -1744,7 +1744,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $bookmark_name Jump to the place in the document identified by this bookmark name.
+     * @param  string  $bookmark_name  Jump to the place in the document identified by this bookmark name.
      * @return bool Whether the internal cursor was successfully moved to the bookmark's location.
      */
     public function seek($bookmark_name)
@@ -1783,8 +1783,8 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  WP_HTML_Text_Replacement  $a First attribute update.
-     * @param  WP_HTML_Text_Replacement  $b Second attribute update.
+     * @param  WP_HTML_Text_Replacement  $a  First attribute update.
+     * @param  WP_HTML_Text_Replacement  $b  Second attribute update.
      * @return int Comparison value for string order.
      */
     private static function sort_start_ascending($a, $b)
@@ -1817,7 +1817,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $comparable_name The attribute name in its comparable form.
+     * @param  string  $comparable_name  The attribute name in its comparable form.
      * @return string|bool|null Value of enqueued update if present, otherwise false.
      */
     private function get_enqueued_attribute_value($comparable_name)
@@ -1886,7 +1886,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $name Name of attribute whose value is requested.
+     * @param  string  $name  Name of attribute whose value is requested.
      * @return string|true|null Value of attribute or `null` if not available. Boolean attributes return `true`.
      */
     public function get_attribute($name)
@@ -1966,7 +1966,7 @@ class WP_HTML_Tag_Processor
      * @since 6.2.0
      * @see https://html.spec.whatwg.org/multipage/syntax.html#attributes-2:ascii-case-insensitive
      *
-     * @param  string  $prefix Prefix of requested attribute names.
+     * @param  string  $prefix  Prefix of requested attribute names.
      * @return array|null List of attribute names, or `null` when no tag opener is matched.
      */
     public function get_attribute_names_with_prefix($prefix)
@@ -2074,7 +2074,7 @@ class WP_HTML_Tag_Processor
      * @since 6.2.1 Fix: Only create a single update for multiple calls with case-variant attribute names.
      *
      * @param  string  $name  The attribute name to target.
-     * @param  string|bool  $value The new attribute value.
+     * @param  string|bool  $value  The new attribute value.
      * @return bool Whether an attribute value was set.
      */
     public function set_attribute($name, $value)
@@ -2208,7 +2208,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $name The attribute name to remove.
+     * @param  string  $name  The attribute name to remove.
      * @return bool Whether an attribute was removed.
      */
     public function remove_attribute($name)
@@ -2287,7 +2287,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $class_name The class name to add.
+     * @param  string  $class_name  The class name to add.
      * @return bool Whether the class was set to be added.
      */
     public function add_class($class_name)
@@ -2308,7 +2308,7 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  string  $class_name The class name to remove.
+     * @param  string  $class_name  The class name to remove.
      * @return bool Whether the class was set to be removed.
      */
     public function remove_class($class_name)
@@ -2409,16 +2409,16 @@ class WP_HTML_Tag_Processor
      *
      * @since 6.2.0
      *
-     * @param  array|string|null  $query {
-     *     Optional. Which tag name to find, having which class, etc. Default is to find any tag.
+     * @param  array|string|null  $query  {
+     *                                    Optional. Which tag name to find, having which class, etc. Default is to find any tag.
      *
-     *     @type string|null $tag_name     Which tag to find, or `null` for "any tag."
-     *     @type int|null    $match_offset Find the Nth tag matching all search criteria.
-     *                                     1 for "first" tag, 3 for "third," etc.
-     *                                     Defaults to first tag.
-     *     @type string|null $class_name   Tag must contain this class name to match.
-     *     @type string      $tag_closers  "visit" or "skip": whether to stop on tag closers, e.g. </div>.
-     * }
+     * @type string|null $tag_name     Which tag to find, or `null` for "any tag."
+     * @type int|null $match_offset Find the Nth tag matching all search criteria.
+     *                1 for "first" tag, 3 for "third," etc.
+     *                Defaults to first tag.
+     * @type string|null $class_name   Tag must contain this class name to match.
+     * @type string $tag_closers  "visit" or "skip": whether to stop on tag closers, e.g. </div>.
+     *              }
      */
     private function parse_query($query)
     {

@@ -74,7 +74,7 @@ foreach ((array) $cats as $cat) {
          *
          * @since 2.2.0
          *
-         * @param  string  $title The OPML outline title text.
+         * @param  string  $title  The OPML outline title text.
          */
         $title = apply_filters('link_title', $bookmark->link_name);
         ?>

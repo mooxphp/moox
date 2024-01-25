@@ -21,17 +21,17 @@ require_once ABSPATH.'wp-admin/includes/class-wp-internal-pointers.php';
  * @since 2.5.1
  * @see wp_terms_checklist()
  *
- * @param  int  $post_id              Optional. Post to generate a categories checklist for. Default 0.
- *                                          $selected_cats must not be an array. Default 0.
- * @param  int  $descendants_and_self Optional. ID of the category to output along with its descendants.
- *                                          Default 0.
- * @param  int[]|false  $selected_cats        Optional. Array of category IDs to mark as checked. Default false.
- * @param  int[]|false  $popular_cats         Optional. Array of category IDs to receive the "popular-category" class.
- *                                          Default false.
- * @param  Walker  $walker               Optional. Walker object to use to build the output.
- *                                          Default is a Walker_Category_Checklist instance.
- * @param  bool  $checked_ontop        Optional. Whether to move checked items out of the hierarchy and to
- *                                          the top of the list. Default true.
+ * @param  int  $post_id  Optional. Post to generate a categories checklist for. Default 0.
+ *                        $selected_cats must not be an array. Default 0.
+ * @param  int  $descendants_and_self  Optional. ID of the category to output along with its descendants.
+ *                                     Default 0.
+ * @param  int[]|false  $selected_cats  Optional. Array of category IDs to mark as checked. Default false.
+ * @param  int[]|false  $popular_cats  Optional. Array of category IDs to receive the "popular-category" class.
+ *                                     Default false.
+ * @param  Walker  $walker  Optional. Walker object to use to build the output.
+ *                          Default is a Walker_Category_Checklist instance.
+ * @param  bool  $checked_ontop  Optional. Whether to move checked items out of the hierarchy and to
+ *                               the top of the list. Default true.
  */
 function wp_category_checklist($post_id = 0, $descendants_and_self = 0, $selected_cats = false, $popular_cats = false, $walker = null, $checked_ontop = true)
 {
@@ -56,23 +56,23 @@ function wp_category_checklist($post_id = 0, $descendants_and_self = 0, $selecte
  * @since 3.0.0
  * @since 4.4.0 Introduced the `$echo` argument.
  *
- * @param  int  $post_id Optional. Post ID. Default 0.
- * @param  array|string  $args {
- *     Optional. Array or string of arguments for generating a terms checklist. Default empty array.
+ * @param  int  $post_id  Optional. Post ID. Default 0.
+ * @param  array|string  $args  {
+ *                              Optional. Array or string of arguments for generating a terms checklist. Default empty array.
  *
- *     @type int    $descendants_and_self ID of the category to output along with its descendants.
- *                                        Default 0.
- *     @type int[]  $selected_cats        Array of category IDs to mark as checked. Default false.
- *     @type int[]  $popular_cats         Array of category IDs to receive the "popular-category" class.
- *                                        Default false.
- *     @type Walker $walker               Walker object to use to build the output. Default empty which
- *                                        results in a Walker_Category_Checklist instance being used.
- *     @type string $taxonomy             Taxonomy to generate the checklist for. Default 'category'.
- *     @type bool   $checked_ontop        Whether to move checked items out of the hierarchy and to
- *                                        the top of the list. Default true.
- *     @type bool   $echo                 Whether to echo the generated markup. False to return the markup instead
- *                                        of echoing it. Default true.
- * }
+ * @type int $descendants_and_self ID of the category to output along with its descendants.
+ *           Default 0.
+ * @type int[] $selected_cats        Array of category IDs to mark as checked. Default false.
+ * @type int[] $popular_cats         Array of category IDs to receive the "popular-category" class.
+ *             Default false.
+ * @type Walker $walker               Walker object to use to build the output. Default empty which
+ *              results in a Walker_Category_Checklist instance being used.
+ * @type string $taxonomy             Taxonomy to generate the checklist for. Default 'category'.
+ * @type bool $checked_ontop        Whether to move checked items out of the hierarchy and to
+ *            the top of the list. Default true.
+ * @type bool $echo                 Whether to echo the generated markup. False to return the markup instead
+ *            of echoing it. Default true.
+ *            }
  *
  * @return string HTML list of input elements.
  */
@@ -94,8 +94,8 @@ function wp_terms_checklist($post_id = 0, $args = [])
      * @since 3.4.0
      * @see wp_terms_checklist()
      *
-     * @param  array|string  $args    An array or string of arguments.
-     * @param  int  $post_id The post ID.
+     * @param  array|string  $args  An array or string of arguments.
+     * @param  int  $post_id  The post ID.
      */
     $params = apply_filters('wp_terms_checklist_args', $args, $post_id);
 
@@ -200,10 +200,10 @@ function wp_terms_checklist($post_id = 0, $args = [])
  *
  * @since 2.5.0
  *
- * @param  string  $taxonomy     Taxonomy to retrieve terms from.
- * @param  int  $default_term Optional. Not used.
- * @param  int  $number       Optional. Number of terms to retrieve. Default 10.
- * @param  bool  $display      Optional. Whether to display the list as well. Default true.
+ * @param  string  $taxonomy  Taxonomy to retrieve terms from.
+ * @param  int  $default_term  Optional. Not used.
+ * @param  int  $number  Optional. Number of terms to retrieve. Default 10.
+ * @param  bool  $display  Optional. Whether to display the list as well. Default true.
  * @return int[] Array of popular term IDs.
  */
 function wp_popular_terms_checklist($taxonomy, $default_term = 0, $number = 10, $display = true)
@@ -262,7 +262,7 @@ function wp_popular_terms_checklist($taxonomy, $default_term = 0, $number = 10, 
  *
  * @since 2.5.1
  *
- * @param  int  $link_id Optional. The link ID. Default 0.
+ * @param  int  $link_id  Optional. The link ID. Default 0.
  */
 function wp_link_category_checklist($link_id = 0)
 {
@@ -307,7 +307,7 @@ function wp_link_category_checklist($link_id = 0)
  *
  * @since 2.7.0
  *
- * @param  WP_Post  $post Post object.
+ * @param  WP_Post  $post  Post object.
  */
 function get_inline_data($post)
 {
@@ -391,8 +391,8 @@ function get_inline_data($post)
      *
      * @since 4.9.8
      *
-     * @param  WP_Post  $post             The current post object.
-     * @param  WP_Post_Type  $post_type_object The current post's post type object.
+     * @param  WP_Post  $post  The current post object.
+     * @param  WP_Post_Type  $post_type_object  The current post's post type object.
      */
     do_action('add_inline_data', $post, $post_type_object);
 
@@ -408,9 +408,9 @@ function get_inline_data($post)
  *
  * @param  int  $position  Optional. The value of the 'position' input field. Default 1.
  * @param  bool  $checkbox  Optional. The value of the 'checkbox' input field. Default false.
- * @param  string  $mode      Optional. If set to 'single', will use WP_Post_Comments_List_Table,
- *                          otherwise WP_Comments_List_Table. Default 'single'.
- * @param  bool  $table_row Optional. Whether to use a table instead of a div element. Default true.
+ * @param  string  $mode  Optional. If set to 'single', will use WP_Post_Comments_List_Table,
+ *                        otherwise WP_Comments_List_Table. Default 'single'.
+ * @param  bool  $table_row  Optional. Whether to use a table instead of a div element. Default true.
  */
 function wp_comment_reply($position = 1, $checkbox = false, $mode = 'single', $table_row = true)
 {
@@ -426,8 +426,8 @@ function wp_comment_reply($position = 1, $checkbox = false, $mode = 'single', $t
      * @since 2.7.0
      * @see wp_comment_reply()
      *
-     * @param  string  $content The reply-to form content.
-     * @param  array  $args    An array of default args.
+     * @param  string  $content  The reply-to form content.
+     * @param  array  $args  An array of default args.
      */
     $content = apply_filters(
         'wp_comment_reply',
@@ -584,7 +584,7 @@ function wp_comment_trashnotice()
  *
  * @since 1.2.0
  *
- * @param  array[]  $meta An array of meta data arrays keyed on 'meta_key' and 'meta_value'.
+ * @param  array[]  $meta  An array of meta data arrays keyed on 'meta_key' and 'meta_value'.
  */
 function list_meta($meta)
 {
@@ -630,8 +630,8 @@ function list_meta($meta)
  *
  * @since 2.5.0
  *
- * @param  array  $entry An array of meta data keyed on 'meta_key' and 'meta_value'.
- * @param  int  $count Reference to the row number.
+ * @param  array  $entry  An array of meta data keyed on 'meta_key' and 'meta_value'.
+ * @param  int  $count  Reference to the row number.
  * @return string A single row of public meta data.
  */
 function _list_meta_row($entry, &$count)
@@ -696,7 +696,7 @@ function _list_meta_row($entry, &$count)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  WP_Post  $post Optional. The post being edited.
+ * @param  WP_Post  $post  Optional. The post being edited.
  */
 function meta_form($post = null)
 {
@@ -711,8 +711,8 @@ function meta_form($post = null)
      *
      * @since 4.4.0
      *
-     * @param  array|null  $keys Pre-defined meta keys to be used in place of a postmeta query. Default null.
-     * @param  WP_Post  $post The current post object.
+     * @param  array|null  $keys  Pre-defined meta keys to be used in place of a postmeta query. Default null.
+     * @param  WP_Post  $post  The current post object.
      */
     $keys = apply_filters('postmeta_form_keys', null, $post);
 
@@ -723,7 +723,7 @@ function meta_form($post = null)
          *
          * @since 2.1.0
          *
-         * @param  int  $limit Number of custom fields to retrieve. Default 30.
+         * @param  int  $limit  Number of custom fields to retrieve. Default 30.
          */
         $limit = apply_filters('postmeta_form_limit', 30);
 
@@ -808,11 +808,11 @@ function meta_form($post = null)
  *
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
- * @param  int|bool  $edit      Accepts 1|true for editing the date, 0|false for adding the date.
+ * @param  int|bool  $edit  Accepts 1|true for editing the date, 0|false for adding the date.
  * @param  int|bool  $for_post  Accepts 1|true for applying the date to a post, 0|false for a comment.
- * @param  int  $tab_index The tabindex attribute to add. Default 0.
- * @param  int|bool  $multi     Optional. Whether the additional fields and buttons should be added.
- *                            Default 0|false.
+ * @param  int  $tab_index  The tabindex attribute to add. Default 0.
+ * @param  int|bool  $multi  Optional. Whether the additional fields and buttons should be added.
+ *                           Default 0|false.
  */
 function touch_time($edit = 1, $for_post = 1, $tab_index = 0, $multi = 0)
 {
@@ -917,8 +917,8 @@ function touch_time($edit = 1, $for_post = 1, $tab_index = 0, $multi = 0)
  * @since 1.5.0
  * @since 4.7.0 Added the `$post_type` parameter.
  *
- * @param  string  $default_template Optional. The template file name. Default empty.
- * @param  string  $post_type        Optional. Post type to get templates for. Default 'page'.
+ * @param  string  $default_template  Optional. The template file name. Default empty.
+ * @param  string  $post_type  Optional. Post type to get templates for. Default 'page'.
  */
 function page_template_dropdown($default_template = '', $post_type = 'page')
 {
@@ -940,10 +940,10 @@ function page_template_dropdown($default_template = '', $post_type = 'page')
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $default_page Optional. The default page ID to be pre-selected. Default 0.
+ * @param  int  $default_page  Optional. The default page ID to be pre-selected. Default 0.
  * @param  int  $parent_page  Optional. The parent page ID. Default 0.
- * @param  int  $level        Optional. Page depth level. Default 0.
- * @param  int|WP_Post  $post         Post ID or WP_Post object.
+ * @param  int  $level  Optional. Page depth level. Default 0.
+ * @param  int|WP_Post  $post  Post ID or WP_Post object.
  * @return void|false Void on success, false if the page has no children.
  */
 function parent_dropdown($default_page = 0, $parent_page = 0, $level = 0, $post = null)
@@ -984,7 +984,7 @@ function parent_dropdown($default_page = 0, $parent_page = 0, $level = 0, $post 
  *
  * @since 2.1.0
  *
- * @param  string  $selected Slug for the role that should be already selected.
+ * @param  string  $selected  Slug for the role that should be already selected.
  */
 function wp_dropdown_roles($selected = '')
 {
@@ -1010,7 +1010,7 @@ function wp_dropdown_roles($selected = '')
  *
  * @since 2.0.0
  *
- * @param  string  $action The action attribute for the form.
+ * @param  string  $action  The action attribute for the form.
  */
 function wp_import_upload_form($action)
 {
@@ -1021,7 +1021,7 @@ function wp_import_upload_form($action)
      * @since 2.3.0
      * @see wp_max_upload_size()
      *
-     * @param  int  $max_upload_size Allowed upload size. Default 1 MB.
+     * @param  int  $max_upload_size  Allowed upload size. Default 1 MB.
      */
     $bytes = apply_filters('import_upload_size_limit', wp_max_upload_size());
     $size = size_format($bytes);
@@ -1066,28 +1066,28 @@ function wp_import_upload_form($action)
  *
  * @global array $wp_meta_boxes
  *
- * @param  string  $id            Meta box ID (used in the 'id' attribute for the meta box).
- * @param  string  $title         Title of the meta box.
- * @param  callable  $callback      Function that fills the box with the desired content.
- *                                              The function should echo its output.
- * @param  string|array|WP_Screen  $screen        Optional. The screen or screens on which to show the box
- *                                              (such as a post type, 'link', or 'comment'). Accepts a single
- *                                              screen ID, WP_Screen object, or array of screen IDs. Default
- *                                              is the current screen.  If you have used add_menu_page() or
- *                                              add_submenu_page() to create a new screen (and hence screen_id),
- *                                              make sure your menu slug conforms to the limits of sanitize_key()
- *                                              otherwise the 'screen' menu may not correctly render on your page.
- * @param  string  $context       Optional. The context within the screen where the box
- *                                              should display. Available contexts vary from screen to
- *                                              screen. Post edit screen contexts include 'normal', 'side',
- *                                              and 'advanced'. Comments screen contexts include 'normal'
- *                                              and 'side'. Menus meta boxes (accordion sections) all use
- *                                              the 'side' context. Global default is 'advanced'.
- * @param  string  $priority      Optional. The priority within the context where the box should show.
- *                                              Accepts 'high', 'core', 'default', or 'low'. Default 'default'.
- * @param  array  $callback_args Optional. Data that should be set as the $args property
- *                                              of the box array (which is the second parameter passed
- *                                              to your callback). Default null.
+ * @param  string  $id  Meta box ID (used in the 'id' attribute for the meta box).
+ * @param  string  $title  Title of the meta box.
+ * @param  callable  $callback  Function that fills the box with the desired content.
+ *                              The function should echo its output.
+ * @param  string|array|WP_Screen  $screen  Optional. The screen or screens on which to show the box
+ *                                          (such as a post type, 'link', or 'comment'). Accepts a single
+ *                                          screen ID, WP_Screen object, or array of screen IDs. Default
+ *                                          is the current screen.  If you have used add_menu_page() or
+ *                                          add_submenu_page() to create a new screen (and hence screen_id),
+ *                                          make sure your menu slug conforms to the limits of sanitize_key()
+ *                                          otherwise the 'screen' menu may not correctly render on your page.
+ * @param  string  $context  Optional. The context within the screen where the box
+ *                           should display. Available contexts vary from screen to
+ *                           screen. Post edit screen contexts include 'normal', 'side',
+ *                           and 'advanced'. Comments screen contexts include 'normal'
+ *                           and 'side'. Menus meta boxes (accordion sections) all use
+ *                           the 'side' context. Global default is 'advanced'.
+ * @param  string  $priority  Optional. The priority within the context where the box should show.
+ *                            Accepts 'high', 'core', 'default', or 'low'. Default 'default'.
+ * @param  array  $callback_args  Optional. Data that should be set as the $args property
+ *                                of the box array (which is the second parameter passed
+ *                                to your callback). Default null.
  */
 function add_meta_box($id, $title, $callback, $screen = null, $context = 'advanced', $priority = 'default', $callback_args = null)
 {
@@ -1188,15 +1188,15 @@ function add_meta_box($id, $title, $callback, $screen = null, $context = 'advanc
  *
  * @since 5.0.0
  *
- * @param  mixed  $data_object The data object being rendered on this screen.
- * @param  array  $box         {
- *     Custom formats meta box arguments.
+ * @param  mixed  $data_object  The data object being rendered on this screen.
+ * @param  array  $box  {
+ *                      Custom formats meta box arguments.
  *
- *     @type string   $id           Meta box 'id' attribute.
- *     @type string   $title        Meta box title.
- *     @type callable $old_callback The original callback for this meta box.
- *     @type array    $args         Extra meta box arguments.
- * }
+ * @type string $id           Meta box 'id' attribute.
+ * @type string $title        Meta box title.
+ * @type callable $old_callback The original callback for this meta box.
+ * @type array $args         Extra meta box arguments.
+ *             }
  */
 function do_block_editor_incompatible_meta_box($data_object, $box)
 {
@@ -1255,7 +1255,7 @@ function do_block_editor_incompatible_meta_box($data_object, $box)
  *
  * @since 5.0.0
  *
- * @param  callable  $callback The callback function to check.
+ * @param  callable  $callback  The callback function to check.
  * @return array|null The plugin that the callback belongs to, or null if it doesn't belong to a plugin.
  */
 function _get_plugin_from_callback($callback)
@@ -1304,14 +1304,14 @@ function _get_plugin_from_callback($callback)
  *
  * @global array $wp_meta_boxes
  *
- * @param  string|WP_Screen  $screen      The screen identifier. If you have used add_menu_page() or
- *                                      add_submenu_page() to create a new screen (and hence screen_id)
- *                                      make sure your menu slug conforms to the limits of sanitize_key()
- *                                      otherwise the 'screen' menu may not correctly render on your page.
- * @param  string  $context     The screen context for which to display meta boxes.
- * @param  mixed  $data_object Gets passed to the meta box callback function as the first parameter.
- *                                      Often this is the object that's the focus of the current screen,
- *                                      for example a `WP_Post` or `WP_Comment` object.
+ * @param  string|WP_Screen  $screen  The screen identifier. If you have used add_menu_page() or
+ *                                    add_submenu_page() to create a new screen (and hence screen_id)
+ *                                    make sure your menu slug conforms to the limits of sanitize_key()
+ *                                    otherwise the 'screen' menu may not correctly render on your page.
+ * @param  string  $context  The screen context for which to display meta boxes.
+ * @param  mixed  $data_object  Gets passed to the meta box callback function as the first parameter.
+ *                              Often this is the object that's the focus of the current screen,
+ *                              for example a `WP_Post` or `WP_Comment` object.
  * @return int Number of meta_boxes.
  */
 function do_meta_boxes($screen, $context, $data_object)
@@ -1490,15 +1490,15 @@ function do_meta_boxes($screen, $context, $data_object)
  *
  * @global array $wp_meta_boxes
  *
- * @param  string  $id      Meta box ID (used in the 'id' attribute for the meta box).
+ * @param  string  $id  Meta box ID (used in the 'id' attribute for the meta box).
  * @param  string|array|WP_Screen  $screen  The screen or screens on which the meta box is shown (such as a
- *                                        post type, 'link', or 'comment'). Accepts a single screen ID,
- *                                        WP_Screen object, or array of screen IDs.
- * @param  string  $context The context within the screen where the box is set to display.
- *                                        Contexts vary from screen to screen. Post edit screen contexts
- *                                        include 'normal', 'side', and 'advanced'. Comments screen contexts
- *                                        include 'normal' and 'side'. Menus meta boxes (accordion sections)
- *                                        all use the 'side' context.
+ *                                          post type, 'link', or 'comment'). Accepts a single screen ID,
+ *                                          WP_Screen object, or array of screen IDs.
+ * @param  string  $context  The context within the screen where the box is set to display.
+ *                           Contexts vary from screen to screen. Post edit screen contexts
+ *                           include 'normal', 'side', and 'advanced'. Comments screen contexts
+ *                           include 'normal' and 'side'. Menus meta boxes (accordion sections)
+ *                           all use the 'side' context.
  */
 function remove_meta_box($id, $screen, $context)
 {
@@ -1546,9 +1546,9 @@ function remove_meta_box($id, $screen, $context)
  *
  * @uses global $wp_meta_boxes Used to retrieve registered meta boxes.
  *
- * @param  string|object  $screen      The screen identifier.
- * @param  string  $context     The screen context for which to display accordion sections.
- * @param  mixed  $data_object Gets passed to the section callback function as the first parameter.
+ * @param  string|object  $screen  The screen identifier.
+ * @param  string  $context  The screen context for which to display accordion sections.
+ * @param  mixed  $data_object  Gets passed to the section callback function as the first parameter.
  * @return int Number of meta boxes as accordion sections.
  */
 function do_accordion_sections($screen, $context, $data_object)
@@ -1634,20 +1634,20 @@ function do_accordion_sections($screen, $context, $data_object)
  *
  * @global array $wp_settings_sections Storage array of all settings sections added to admin pages.
  *
- * @param  string  $id       Slug-name to identify the section. Used in the 'id' attribute of tags.
- * @param  string  $title    Formatted title of the section. Shown as the heading for the section.
- * @param  callable  $callback Function that echos out any content at the top of the section (between heading and fields).
- * @param  string  $page     The slug-name of the settings page on which to show the section. Built-in pages include
- *                           'general', 'reading', 'writing', 'discussion', 'media', etc. Create your own using
- *                           add_options_page();
- * @param  array  $args     {
- *     Arguments used to create the settings section.
+ * @param  string  $id  Slug-name to identify the section. Used in the 'id' attribute of tags.
+ * @param  string  $title  Formatted title of the section. Shown as the heading for the section.
+ * @param  callable  $callback  Function that echos out any content at the top of the section (between heading and fields).
+ * @param  string  $page  The slug-name of the settings page on which to show the section. Built-in pages include
+ *                        'general', 'reading', 'writing', 'discussion', 'media', etc. Create your own using
+ *                        add_options_page();
+ * @param  array  $args  {
+ *                       Arguments used to create the settings section.
  *
- *     @type string $before_section HTML content to prepend to the section's HTML output.
- *                                  Receives the section's class name as `%s`. Default empty.
- *     @type string $after_section  HTML content to append to the section's HTML output. Default empty.
- *     @type string $section_class  The class name to use for the section. Default empty.
- * }
+ * @type string $before_section HTML content to prepend to the section's HTML output.
+ *              Receives the section's class name as `%s`. Default empty.
+ * @type string $after_section  HTML content to append to the section's HTML output. Default empty.
+ * @type string $section_class  The class name to use for the section. Default empty.
+ *              }
  */
 function add_settings_section($id, $title, $callback, $page, $args = [])
 {
@@ -1709,24 +1709,24 @@ function add_settings_section($id, $title, $callback, $page, $args = [])
  *
  * @global array $wp_settings_fields Storage array of settings fields and info about their pages/sections.
  *
- * @param  string  $id       Slug-name to identify the field. Used in the 'id' attribute of tags.
- * @param  string  $title    Formatted title of the field. Shown as the label for the field
- *                           during output.
- * @param  callable  $callback Function that fills the field with the desired form inputs. The
- *                           function should echo its output.
- * @param  string  $page     The slug-name of the settings page on which to show the section
- *                           (general, reading, writing, ...).
+ * @param  string  $id  Slug-name to identify the field. Used in the 'id' attribute of tags.
+ * @param  string  $title  Formatted title of the field. Shown as the label for the field
+ *                         during output.
+ * @param  callable  $callback  Function that fills the field with the desired form inputs. The
+ *                              function should echo its output.
+ * @param  string  $page  The slug-name of the settings page on which to show the section
+ *                        (general, reading, writing, ...).
  * @param  string  $section  Optional. The slug-name of the section of the settings page
  *                           in which to show the box. Default 'default'.
- * @param  array  $args {
- *     Optional. Extra arguments that get passed to the callback function.
+ * @param  array  $args  {
+ *                       Optional. Extra arguments that get passed to the callback function.
  *
- *     @type string $label_for When supplied, the setting title will be wrapped
- *                             in a `<label>` element, its `for` attribute populated
- *                             with this value.
- *     @type string $class     CSS Class to be added to the `<tr>` element when the
- *                             field is output.
- * }
+ * @type string $label_for When supplied, the setting title will be wrapped
+ *              in a `<label>` element, its `for` attribute populated
+ *              with this value.
+ * @type string $class     CSS Class to be added to the `<tr>` element when the
+ *              field is output.
+ *              }
  */
 function add_settings_field($id, $title, $callback, $page, $section = 'default', $args = [])
 {
@@ -1778,7 +1778,7 @@ function add_settings_field($id, $title, $callback, $page, $section = 'default',
  *
  * @since 2.7.0
  *
- * @param  string  $page The slug name of the page whose settings sections you want to output.
+ * @param  string  $page  The slug name of the page whose settings sections you want to output.
  */
 function do_settings_sections($page)
 {
@@ -1829,8 +1829,8 @@ function do_settings_sections($page)
  *
  * @since 2.7.0
  *
- * @param  string  $page Slug title of the admin page whose settings fields you want to show.
- * @param  string  $section Slug title of the settings section whose fields you want to show.
+ * @param  string  $page  Slug title of the admin page whose settings fields you want to show.
+ * @param  string  $section  Slug title of the settings section whose fields you want to show.
  */
 function do_settings_fields($page, $section)
 {
@@ -1880,11 +1880,11 @@ function do_settings_fields($page, $section)
  *
  * @global array[] $wp_settings_errors Storage array of errors registered during this pageload
  *
- * @param  string  $setting Slug title of the setting to which this error applies.
- * @param  string  $code    Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
- * @param  string  $message The formatted message text to display to the user (will be shown inside styled
- *                        `<div>` and `<p>` tags).
- * @param  string  $type    Optional. Message type, controls HTML class. Possible values include 'error',
+ * @param  string  $setting  Slug title of the setting to which this error applies.
+ * @param  string  $code  Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
+ * @param  string  $message  The formatted message text to display to the user (will be shown inside styled
+ *                           `<div>` and `<p>` tags).
+ * @param  string  $type  Optional. Message type, controls HTML class. Possible values include 'error',
  *                        'success', 'warning', 'info'. Default 'error'.
  */
 function add_settings_error($setting, $code, $message, $type = 'error')
@@ -1919,20 +1919,20 @@ function add_settings_error($setting, $code, $message, $type = 'error')
  * @global array[] $wp_settings_errors Storage array of errors registered during this pageload
  *
  * @param  string  $setting  Optional. Slug title of a specific setting whose errors you want.
- * @param  bool  $sanitize Optional. Whether to re-sanitize the setting value before returning errors.
+ * @param  bool  $sanitize  Optional. Whether to re-sanitize the setting value before returning errors.
  * @return array[] {
- *     Array of settings error arrays.
+ *                 Array of settings error arrays.
  *
- *     @type array ...$0 {
- *         Associative array of setting error data.
- *         @type string $setting Slug title of the setting to which this error applies.
- *         @type string $code    Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
- *         @type string $message The formatted message text to display to the user (will be shown inside styled
- *                               `<div>` and `<p>` tags).
- *         @type string $type    Optional. Message type, controls HTML class. Possible values include 'error',
- *                               'success', 'warning', 'info'. Default 'error'.
- *     }
- * }
+ * @type array ...$0 {
+ *             Associative array of setting error data.
+ * @type string $setting Slug title of the setting to which this error applies.
+ * @type string $code    Slug-name to identify the error. Used as part of 'id' attribute in HTML output.
+ * @type string $message The formatted message text to display to the user (will be shown inside styled
+ *              `<div>` and `<p>` tags).
+ * @type string $type    Optional. Message type, controls HTML class. Possible values include 'error',
+ *              'success', 'warning', 'info'. Default 'error'.
+ *              }
+ *              }
  */
 function get_settings_errors($setting = '', $sanitize = false)
 {
@@ -1998,10 +1998,10 @@ function get_settings_errors($setting = '', $sanitize = false)
  * @since 5.3.0 Legacy `error` and `updated` CSS classes are mapped to
  *              `notice-error` and `notice-success`.
  *
- * @param  string  $setting        Optional slug title of a specific setting whose errors you want.
- * @param  bool  $sanitize       Whether to re-sanitize the setting value before returning errors.
- * @param  bool  $hide_on_update If set to true errors will not be shown if the settings page has
- *                               already been submitted.
+ * @param  string  $setting  Optional slug title of a specific setting whose errors you want.
+ * @param  bool  $sanitize  Whether to re-sanitize the setting value before returning errors.
+ * @param  bool  $hide_on_update  If set to true errors will not be shown if the settings page has
+ *                                already been submitted.
  */
 function settings_errors($setting = '', $sanitize = false, $hide_on_update = false)
 {
@@ -2049,7 +2049,7 @@ function settings_errors($setting = '', $sanitize = false, $hide_on_update = fal
  *
  * @since 2.7.0
  *
- * @param  string  $found_action Optional. The value of the 'found_action' input field. Default empty string.
+ * @param  string  $found_action  Optional. The value of the 'found_action' input field. Default empty string.
  */
 function find_posts_div($found_action = '')
 {
@@ -2115,7 +2115,7 @@ function the_post_password()
  *
  * @since 2.7.0
  *
- * @param  int|WP_Post  $post Optional. Post ID or WP_Post object. Default is global $post.
+ * @param  int|WP_Post  $post  Optional. Post ID or WP_Post object. Default is global $post.
  * @return string The post title if set.
  */
 function _draft_or_post_title($post = 0)
@@ -2150,8 +2150,8 @@ function _admin_search_query()
  * @global string    $admin_body_class
  * @global WP_Locale $wp_locale        WordPress date and time locale object.
  *
- * @param  string  $title      Optional. Title of the Iframe page. Default empty.
- * @param  bool  $deprecated Not used.
+ * @param  string  $title  Optional. Title of the Iframe page. Default empty.
+ * @param  bool  $deprecated  Not used.
  */
 function iframe_header($title = '', $deprecated = false)
 {
@@ -2273,8 +2273,8 @@ function iframe_footer()
  * @since 5.3.0 Added the `$display` parameter and a return value.
  * @see get_post_states()
  *
- * @param  WP_Post  $post    The post to retrieve states for.
- * @param  bool  $display Optional. Whether to display the post states as an HTML string.
+ * @param  WP_Post  $post  The post to retrieve states for.
+ * @param  bool  $display  Optional. Whether to display the post states as an HTML string.
  *                         Default true.
  * @return string Post states string.
  */
@@ -2311,7 +2311,7 @@ function _post_states($post, $display = true)
  *
  * @since 5.3.0
  *
- * @param  WP_Post  $post The post to retrieve states for.
+ * @param  WP_Post  $post  The post to retrieve states for.
  * @return string[] Array of post state labels keyed by their state.
  */
 function get_post_states($post)
@@ -2377,8 +2377,8 @@ function get_post_states($post)
      *              are used within the filter, their existence should be checked
      *              with `function_exists()` before being used.
      *
-     * @param  string[]  $post_states An array of post display states.
-     * @param  WP_Post  $post        The current post object.
+     * @param  string[]  $post_states  An array of post display states.
+     * @param  WP_Post  $post  The current post object.
      */
     return apply_filters('display_post_states', $post_states, $post);
 }
@@ -2389,8 +2389,8 @@ function get_post_states($post)
  * @since 3.2.0
  * @since 5.6.0 Added the `$display` parameter and a return value.
  *
- * @param  WP_Post  $post    The attachment post to retrieve states for.
- * @param  bool  $display Optional. Whether to display the post states as an HTML string.
+ * @param  WP_Post  $post  The attachment post to retrieve states for.
+ * @param  bool  $display  Optional. Whether to display the post states as an HTML string.
  *                         Default true.
  * @return string Media states string.
  */
@@ -2427,7 +2427,7 @@ function _media_states($post, $display = true)
  *
  * @since 5.6.0
  *
- * @param  WP_Post  $post The attachment to retrieve states for.
+ * @param  WP_Post  $post  The attachment to retrieve states for.
  * @return string[] Array of media state labels keyed by their state.
  */
 function get_media_states($post)
@@ -2497,9 +2497,9 @@ function get_media_states($post)
      * @since 3.2.0
      * @since 4.8.0 Added the `$post` parameter.
      *
-     * @param  string[]  $media_states An array of media states. Default 'Header Image',
-     *                               'Background Image', 'Site Icon', 'Logo'.
-     * @param  WP_Post  $post         The current attachment object.
+     * @param  string[]  $media_states  An array of media states. Default 'Header Image',
+     *                                  'Background Image', 'Site Icon', 'Logo'.
+     * @param  WP_Post  $post  The current attachment object.
      */
     return apply_filters('display_media_states', $media_states, $post);
 }
@@ -2575,20 +2575,20 @@ function compression_test()
  * @since 3.1.0
  * @see get_submit_button()
  *
- * @param  string  $text             The text of the button (defaults to 'Save Changes')
- * @param  string  $type             Optional. The type and CSS class(es) of the button. Core values
- *                                       include 'primary', 'small', and 'large'. Default 'primary'.
- * @param  string  $name             The HTML name of the submit button. Defaults to "submit". If no
- *                                       id attribute is given in $other_attributes below, $name will be
- *                                       used as the button's id.
- * @param  bool  $wrap             True if the output button should be wrapped in a paragraph tag,
- *                                       false otherwise. Defaults to true.
- * @param  array|string  $other_attributes Other attributes that should be output with the button, mapping
- *                                       attributes to their values, such as setting tabindex to 1, etc.
- *                                       These key/value attribute pairs will be output as attribute="value",
- *                                       where attribute is the key. Other attributes can also be provided
- *                                       as a string such as 'tabindex="1"', though the array format is
- *                                       preferred. Default null.
+ * @param  string  $text  The text of the button (defaults to 'Save Changes')
+ * @param  string  $type  Optional. The type and CSS class(es) of the button. Core values
+ *                        include 'primary', 'small', and 'large'. Default 'primary'.
+ * @param  string  $name  The HTML name of the submit button. Defaults to "submit". If no
+ *                        id attribute is given in $other_attributes below, $name will be
+ *                        used as the button's id.
+ * @param  bool  $wrap  True if the output button should be wrapped in a paragraph tag,
+ *                      false otherwise. Defaults to true.
+ * @param  array|string  $other_attributes  Other attributes that should be output with the button, mapping
+ *                                          attributes to their values, such as setting tabindex to 1, etc.
+ *                                          These key/value attribute pairs will be output as attribute="value",
+ *                                          where attribute is the key. Other attributes can also be provided
+ *                                          as a string such as 'tabindex="1"', though the array format is
+ *                                          preferred. Default null.
  */
 function submit_button($text = null, $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null)
 {
@@ -2600,20 +2600,20 @@ function submit_button($text = null, $type = 'primary', $name = 'submit', $wrap 
  *
  * @since 3.1.0
  *
- * @param  string  $text             Optional. The text of the button. Default 'Save Changes'.
- * @param  string  $type             Optional. The type and CSS class(es) of the button. Core values
- *                                       include 'primary', 'small', and 'large'. Default 'primary large'.
- * @param  string  $name             Optional. The HTML name of the submit button. Defaults to "submit".
- *                                       If no id attribute is given in $other_attributes below, `$name` will
- *                                       be used as the button's id. Default 'submit'.
- * @param  bool  $wrap             Optional. True if the output button should be wrapped in a paragraph
- *                                       tag, false otherwise. Default true.
- * @param  array|string  $other_attributes Optional. Other attributes that should be output with the button,
- *                                       mapping attributes to their values, such as `array( 'tabindex' => '1' )`.
- *                                       These attributes will be output as `attribute="value"`, such as
- *                                       `tabindex="1"`. Other attributes can also be provided as a string such
- *                                       as `tabindex="1"`, though the array format is typically cleaner.
- *                                       Default empty.
+ * @param  string  $text  Optional. The text of the button. Default 'Save Changes'.
+ * @param  string  $type  Optional. The type and CSS class(es) of the button. Core values
+ *                        include 'primary', 'small', and 'large'. Default 'primary large'.
+ * @param  string  $name  Optional. The HTML name of the submit button. Defaults to "submit".
+ *                        If no id attribute is given in $other_attributes below, `$name` will
+ *                        be used as the button's id. Default 'submit'.
+ * @param  bool  $wrap  Optional. True if the output button should be wrapped in a paragraph
+ *                      tag, false otherwise. Default true.
+ * @param  array|string  $other_attributes  Optional. Other attributes that should be output with the button,
+ *                                          mapping attributes to their values, such as `array( 'tabindex' => '1' )`.
+ *                                          These attributes will be output as `attribute="value"`, such as
+ *                                          `tabindex="1"`. Other attributes can also be provided as a string such
+ *                                          as `tabindex="1"`, though the array format is typically cleaner.
+ *                                          Default empty.
  * @return string Submit button HTML.
  */
 function get_submit_button($text = '', $type = 'primary large', $name = 'submit', $wrap = true, $other_attributes = '')
@@ -2707,7 +2707,7 @@ function _wp_admin_html_begin()
  *
  * @since 3.0.0
  *
- * @param  string  $hook_name The hook name (also known as the hook suffix) used to determine the screen.
+ * @param  string  $hook_name  The hook name (also known as the hook suffix) used to determine the screen.
  * @return WP_Screen Screen object.
  */
 function convert_to_screen($hook_name)
@@ -2769,17 +2769,17 @@ function _local_storage_notice()
  * @since 3.8.0
  * @since 4.4.0 Introduced the `echo` parameter.
  *
- * @param  array  $args {
- *     Optional. Array of star ratings arguments.
+ * @param  array  $args  {
+ *                       Optional. Array of star ratings arguments.
  *
- *     @type int|float $rating The rating to display, expressed in either a 0.5 rating increment,
- *                             or percentage. Default 0.
- *     @type string    $type   Format that the $rating is in. Valid values are 'rating' (default),
- *                             or, 'percent'. Default 'rating'.
- *     @type int       $number The number of ratings that makes up this rating. Default 0.
- *     @type bool      $echo   Whether to echo the generated markup. False to return the markup instead
- *                             of echoing it. Default true.
- * }
+ * @type int|float $rating The rating to display, expressed in either a 0.5 rating increment,
+ *                 or percentage. Default 0.
+ * @type string $type   Format that the $rating is in. Valid values are 'rating' (default),
+ *              or, 'percent'. Default 'rating'.
+ * @type int $number The number of ratings that makes up this rating. Default 0.
+ * @type bool $echo   Whether to echo the generated markup. False to return the markup instead
+ *            of echoing it. Default true.
+ *            }
  *
  * @return string Star rating HTML.
  */

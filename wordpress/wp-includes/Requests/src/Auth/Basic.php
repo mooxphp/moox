@@ -38,10 +38,10 @@ class Basic implements Auth
      * @since 2.0 Throws an `InvalidArgument` exception.
      * @since 2.0 Throws an `ArgumentCount` exception instead of the Requests base `Exception.
      *
-     * @param  array|null  $args Array of user and password. Must have exactly two elements
+     * @param  array|null  $args  Array of user and password. Must have exactly two elements
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not an array or null.
-     * @throws \WpOrg\Requests\Exception\ArgumentCount   On incorrect number of array elements (`authbasicbadargs`).
+     * @throws \WpOrg\Requests\Exception\ArgumentCount On incorrect number of array elements (`authbasicbadargs`).
      */
     public function __construct($args = null)
     {
@@ -66,7 +66,7 @@ class Basic implements Auth
      * @see \WpOrg\Requests\Auth\Basic::curl_before_send()
      * @see \WpOrg\Requests\Auth\Basic::fsockopen_header()
      *
-     * @param  \WpOrg\Requests\Hooks  $hooks Hook system
+     * @param  \WpOrg\Requests\Hooks  $hooks  Hook system
      */
     public function register(Hooks $hooks)
     {
@@ -77,7 +77,7 @@ class Basic implements Auth
     /**
      * Set cURL parameters before the data is sent
      *
-     * @param  resource|\CurlHandle  $handle cURL handle
+     * @param  resource|\CurlHandle  $handle  cURL handle
      */
     public function curl_before_send(&$handle)
     {
@@ -88,7 +88,7 @@ class Basic implements Auth
     /**
      * Add extra headers to the request before sending
      *
-     * @param  string  $out HTTP header string
+     * @param  string  $out  HTTP header string
      */
     public function fsockopen_header(&$out)
     {

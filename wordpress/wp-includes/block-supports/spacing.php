@@ -13,7 +13,7 @@
  *
  * @since 5.8.0
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_spacing_support($block_type)
 {
@@ -38,8 +38,8 @@ function wp_register_spacing_support($block_type)
  * @since 5.8.0
  * @since 6.1.0 Implemented the style engine to generate CSS and classnames.
  *
- * @param  WP_Block_Type  $block_type       Block Type.
- * @param  array  $block_attributes Block attributes.
+ * @param  WP_Block_Type  $block_type  Block Type.
+ * @param  array  $block_attributes  Block attributes.
  * @return array Block spacing CSS classes and inline styles.
  */
 function wp_apply_spacing_support($block_type, $block_attributes)

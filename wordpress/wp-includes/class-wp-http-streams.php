@@ -24,7 +24,7 @@ class WP_Http_Streams
      * @since 3.7.0 Combined with the fsockopen transport and switched to stream_socket_client().
      *
      * @param  string  $url  The request URL.
-     * @param  string|array  $args Optional. Override the defaults.
+     * @param  string|array  $args  Optional. Override the defaults.
      * @return array|WP_Error Array containing 'headers', 'body', 'response', 'cookies', 'filename'. A WP_Error instance upon error
      */
     public function request($url, $args = [])
@@ -105,9 +105,9 @@ class WP_Http_Streams
              * @since 2.8.0
              * @since 5.1.0 The `$url` parameter was added.
              *
-             * @param  bool|string  $ssl_verify Boolean to control whether to verify the SSL connection
-             *                                or path to an SSL certificate.
-             * @param  string  $url        The request URL.
+             * @param  bool|string  $ssl_verify  Boolean to control whether to verify the SSL connection
+             *                                   or path to an SSL certificate.
+             * @param  string  $url  The request URL.
              */
             $ssl_verify = apply_filters('https_local_ssl_verify', $ssl_verify, $url);
         } elseif (! $is_local) {
@@ -427,8 +427,8 @@ class WP_Http_Streams
      *
      * @since 3.7.0
      *
-     * @param  resource  $stream The PHP Stream which the SSL request is being made over
-     * @param  string  $host   The hostname being requested
+     * @param  resource  $stream  The PHP Stream which the SSL request is being made over
+     * @param  string  $host  The hostname being requested
      * @return bool If the certificate presented in $stream is valid for $host
      */
     public static function verify_ssl_certificate($stream, $host)
@@ -491,7 +491,7 @@ class WP_Http_Streams
      * @since 2.7.0
      * @since 3.7.0 Combined with the fsockopen transport and switched to stream_socket_client().
      *
-     * @param  array  $args Optional. Array of request arguments. Default empty array.
+     * @param  array  $args  Optional. Array of request arguments. Default empty array.
      * @return bool False means this class can not be used, true means it can.
      */
     public static function test($args = [])
@@ -516,8 +516,8 @@ class WP_Http_Streams
          *
          * @since 2.7.0
          *
-         * @param  bool  $use_class Whether the class can be used. Default true.
-         * @param  array  $args      Request arguments.
+         * @param  bool  $use_class  Whether the class can be used. Default true.
+         * @param  array  $args  Request arguments.
          */
         return apply_filters('use_streams_transport', true, $args);
     }

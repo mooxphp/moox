@@ -78,7 +78,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  string  $stylesheet The stylesheet name.
+     * @param  string  $stylesheet  The stylesheet name.
      * @return string Sanitized stylesheet.
      */
     public function _sanitize_stylesheet_callback($stylesheet)
@@ -91,7 +91,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, otherwise WP_Error object.
      */
     public function get_items_permissions_check($request)
@@ -117,7 +117,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, otherwise WP_Error object.
      */
     public function get_item_permissions_check($request)
@@ -171,7 +171,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -194,7 +194,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -229,8 +229,8 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      * @since 5.0.0
      * @since 5.9.0 Renamed `$theme` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Theme  $item    Theme object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Theme  $item  Theme object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -351,8 +351,8 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
          *
          * @since 5.0.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  WP_Theme  $theme    Theme object used to create response.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  WP_Theme  $theme  Theme object used to create response.
          * @param  WP_REST_Request  $request  Request object.
          */
         return apply_filters('rest_prepare_theme', $response, $theme, $request);
@@ -363,7 +363,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.7.0
      *
-     * @param  WP_Theme  $theme Theme data.
+     * @param  WP_Theme  $theme  Theme data.
      * @return array Links for the given block type.
      */
     protected function prepare_links($theme)
@@ -399,8 +399,8 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.7.0
      *
-     * @param  WP_Theme  $theme_a First theme to compare.
-     * @param  WP_Theme  $theme_b Second theme to compare.
+     * @param  WP_Theme  $theme_a  First theme to compare.
+     * @param  WP_Theme  $theme_b  Second theme to compare.
      * @return bool
      */
     protected function is_same_theme($theme_a, $theme_b)
@@ -413,10 +413,10 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  mixed  $support The raw value from get_theme_support().
-     * @param  array  $args    The feature's registration args.
-     * @param  string  $feature The feature name.
-     * @param  WP_REST_Request  $request The request object.
+     * @param  mixed  $support  The raw value from get_theme_support().
+     * @param  array  $args  The feature's registration args.
+     * @param  string  $feature  The feature name.
+     * @param  WP_REST_Request  $request  The request object.
      * @return mixed The prepared support value.
      */
     protected function prepare_theme_support($support, $args, $feature, $request)
@@ -644,7 +644,7 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
          *
          * @since 5.0.0
          *
-         * @param  array  $query_params JSON Schema-formatted collection parameters.
+         * @param  array  $query_params  JSON Schema-formatted collection parameters.
          */
         return apply_filters('rest_themes_collection_params', $query_params);
     }
@@ -656,8 +656,8 @@ class WP_REST_Themes_Controller extends WP_REST_Controller
      * @deprecated 5.7.0
      *
      * @param  string|array  $statuses  One or more theme statuses.
-     * @param  WP_REST_Request  $request   Full details about the request.
-     * @param  string  $parameter Additional parameter to pass to validation.
+     * @param  WP_REST_Request  $request  Full details about the request.
+     * @param  string  $parameter  Additional parameter to pass to validation.
      * @return array|WP_Error A list of valid statuses, otherwise WP_Error object.
      */
     public function sanitize_theme_status($statuses, $request, $parameter)

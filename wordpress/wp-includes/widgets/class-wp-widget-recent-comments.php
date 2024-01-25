@@ -47,7 +47,7 @@ class WP_Widget_Recent_Comments extends WP_Widget
          * @since 3.1.0
          *
          * @param  bool  $active  Whether the widget is active. Default true.
-         * @param  string  $id_base The widget ID.
+         * @param  string  $id_base  The widget ID.
          */
         if (! current_theme_supports('widgets') // Temp hack #14876.
             || ! apply_filters('show_recent_comments_widget_style', true, $this->id_base)) {
@@ -69,9 +69,9 @@ class WP_Widget_Recent_Comments extends WP_Widget
      * @since 5.4.0 Creates a unique HTML ID for the `<ul>` element
      *              if more than one instance is displayed on the page.
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Recent Comments widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Recent Comments widget instance.
      */
     public function widget($args, $instance)
     {
@@ -102,8 +102,8 @@ class WP_Widget_Recent_Comments extends WP_Widget
              * @since 4.9.0 Added the `$instance` parameter.
              * @see WP_Comment_Query::query() for information on accepted arguments.
              *
-             * @param  array  $comment_args An array of arguments used to retrieve the recent comments.
-             * @param  array  $instance     Array of settings for the current widget.
+             * @param  array  $comment_args  An array of arguments used to retrieve the recent comments.
+             * @param  array  $instance  Array of settings for the current widget.
              */
             apply_filters(
                 'widget_comments_args',
@@ -169,9 +169,9 @@ class WP_Widget_Recent_Comments extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Updated settings to save.
      */
     public function update($new_instance, $old_instance)
@@ -188,7 +188,7 @@ class WP_Widget_Recent_Comments extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     public function form($instance)
     {

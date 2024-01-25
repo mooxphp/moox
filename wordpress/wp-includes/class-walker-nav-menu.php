@@ -46,9 +46,9 @@ class Walker_Nav_Menu extends Walker
      * @since 3.0.0
      * @see Walker::start_lvl()
      *
-     * @param  string  $output Used to append additional content (passed by reference).
+     * @param  string  $output  Used to append additional content (passed by reference).
      * @param  int  $depth  Depth of menu item. Used for padding.
-     * @param  stdClass  $args   An object of wp_nav_menu() arguments.
+     * @param  stdClass  $args  An object of wp_nav_menu() arguments.
      */
     public function start_lvl(&$output, $depth = 0, $args = null)
     {
@@ -69,9 +69,9 @@ class Walker_Nav_Menu extends Walker
          *
          * @since 4.8.0
          *
-         * @param  string[]  $classes Array of the CSS classes that are applied to the menu `<ul>` element.
-         * @param  stdClass  $args    An object of `wp_nav_menu()` arguments.
-         * @param  int  $depth   Depth of menu item. Used for padding.
+         * @param  string[]  $classes  Array of the CSS classes that are applied to the menu `<ul>` element.
+         * @param  stdClass  $args  An object of `wp_nav_menu()` arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $class_names = implode(' ', apply_filters('nav_menu_submenu_css_class', $classes, $args, $depth));
 
@@ -83,14 +83,14 @@ class Walker_Nav_Menu extends Walker
          *
          * @since 6.3.0
          *
-         * @param  array  $atts {
-         *     The HTML attributes applied to the `<ul>` element, empty strings are ignored.
+         * @param  array  $atts  {
+         *                       The HTML attributes applied to the `<ul>` element, empty strings are ignored.
          *
-         *     @type string $class    HTML CSS class attribute.
-         * }
+         * @type string $class    HTML CSS class attribute.
+         *              }
          *
-         * @param  stdClass  $args      An object of `wp_nav_menu()` arguments.
-         * @param  int  $depth     Depth of menu item. Used for padding.
+         * @param  stdClass  $args  An object of `wp_nav_menu()` arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $atts = apply_filters('nav_menu_submenu_attributes', $atts, $args, $depth);
         $attributes = $this->build_atts($atts);
@@ -104,9 +104,9 @@ class Walker_Nav_Menu extends Walker
      * @since 3.0.0
      * @see Walker::end_lvl()
      *
-     * @param  string  $output Used to append additional content (passed by reference).
+     * @param  string  $output  Used to append additional content (passed by reference).
      * @param  int  $depth  Depth of menu item. Used for padding.
-     * @param  stdClass  $args   An object of wp_nav_menu() arguments.
+     * @param  stdClass  $args  An object of wp_nav_menu() arguments.
      */
     public function end_lvl(&$output, $depth = 0, $args = null)
     {
@@ -130,11 +130,11 @@ class Walker_Nav_Menu extends Walker
      *              to match parent class for PHP 8 named parameter support.
      * @see Walker::start_el()
      *
-     * @param  string  $output            Used to append additional content (passed by reference).
-     * @param  WP_Post  $data_object       Menu item data object.
-     * @param  int  $depth             Depth of menu item. Used for padding.
-     * @param  stdClass  $args              An object of wp_nav_menu() arguments.
-     * @param  int  $current_object_id Optional. ID of the current menu item. Default 0.
+     * @param  string  $output  Used to append additional content (passed by reference).
+     * @param  WP_Post  $data_object  Menu item data object.
+     * @param  int  $depth  Depth of menu item. Used for padding.
+     * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+     * @param  int  $current_object_id  Optional. ID of the current menu item. Default 0.
      */
     public function start_el(&$output, $data_object, $depth = 0, $args = null, $current_object_id = 0)
     {
@@ -158,9 +158,9 @@ class Walker_Nav_Menu extends Walker
          *
          * @since 4.4.0
          *
-         * @param  stdClass  $args      An object of wp_nav_menu() arguments.
-         * @param  WP_Post  $menu_item Menu item data object.
-         * @param  int  $depth     Depth of menu item. Used for padding.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+         * @param  WP_Post  $menu_item  Menu item data object.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $args = apply_filters('nav_menu_item_args', $args, $menu_item, $depth);
 
@@ -170,10 +170,10 @@ class Walker_Nav_Menu extends Walker
          * @since 3.0.0
          * @since 4.1.0 The `$depth` parameter was added.
          *
-         * @param  string[]  $classes   Array of the CSS classes that are applied to the menu item's `<li>` element.
-         * @param  WP_Post  $menu_item The current menu item object.
-         * @param  stdClass  $args      An object of wp_nav_menu() arguments.
-         * @param  int  $depth     Depth of menu item. Used for padding.
+         * @param  string[]  $classes  Array of the CSS classes that are applied to the menu item's `<li>` element.
+         * @param  WP_Post  $menu_item  The current menu item object.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $class_names = implode(' ', apply_filters('nav_menu_css_class', array_filter($classes), $menu_item, $args, $depth));
 
@@ -183,10 +183,10 @@ class Walker_Nav_Menu extends Walker
          * @since 3.0.1
          * @since 4.1.0 The `$depth` parameter was added.
          *
-         * @param  string  $menu_item_id The ID attribute applied to the menu item's `<li>` element.
-         * @param  WP_Post  $menu_item    The current menu item.
-         * @param  stdClass  $args         An object of wp_nav_menu() arguments.
-         * @param  int  $depth        Depth of menu item. Used for padding.
+         * @param  string  $menu_item_id  The ID attribute applied to the menu item's `<li>` element.
+         * @param  WP_Post  $menu_item  The current menu item.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $id = apply_filters('nav_menu_item_id', 'menu-item-'.$menu_item->ID, $menu_item, $args, $depth);
 
@@ -199,16 +199,16 @@ class Walker_Nav_Menu extends Walker
          *
          * @since 6.3.0
          *
-         * @param  array  $li_atts {
-         *     The HTML attributes applied to the menu item's `<li>` element, empty strings are ignored.
+         * @param  array  $li_atts  {
+         *                          The HTML attributes applied to the menu item's `<li>` element, empty strings are ignored.
          *
-         *     @type string $class        HTML CSS class attribute.
-         *     @type string $id           HTML id attribute.
-         * }
+         * @type string $class        HTML CSS class attribute.
+         * @type string $id           HTML id attribute.
+         *              }
          *
-         * @param  WP_Post  $menu_item The current menu item object.
-         * @param  stdClass  $args      An object of wp_nav_menu() arguments.
-         * @param  int  $depth     Depth of menu item. Used for padding.
+         * @param  WP_Post  $menu_item  The current menu item object.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $li_atts = apply_filters('nav_menu_item_attributes', $li_atts, $menu_item, $args, $depth);
         $li_attributes = $this->build_atts($li_atts);
@@ -242,19 +242,19 @@ class Walker_Nav_Menu extends Walker
          * @since 3.6.0
          * @since 4.1.0 The `$depth` parameter was added.
          *
-         * @param  array  $atts {
-         *     The HTML attributes applied to the menu item's `<a>` element, empty strings are ignored.
+         * @param  array  $atts  {
+         *                       The HTML attributes applied to the menu item's `<a>` element, empty strings are ignored.
          *
-         *     @type string $title        Title attribute.
-         *     @type string $target       Target attribute.
-         *     @type string $rel          The rel attribute.
-         *     @type string $href         The href attribute.
-         *     @type string $aria-current The aria-current attribute.
-         * }
+         * @type string $title        Title attribute.
+         * @type string $target       Target attribute.
+         * @type string $rel          The rel attribute.
+         * @type string $href         The href attribute.
+         * @type string $aria-current The aria-current attribute.
+         *              }
          *
-         * @param  WP_Post  $menu_item The current menu item object.
-         * @param  stdClass  $args      An object of wp_nav_menu() arguments.
-         * @param  int  $depth     Depth of menu item. Used for padding.
+         * @param  WP_Post  $menu_item  The current menu item object.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $atts = apply_filters('nav_menu_link_attributes', $atts, $menu_item, $args, $depth);
         $attributes = $this->build_atts($atts);
@@ -267,10 +267,10 @@ class Walker_Nav_Menu extends Walker
          *
          * @since 4.4.0
          *
-         * @param  string  $title     The menu item's title.
-         * @param  WP_Post  $menu_item The current menu item object.
-         * @param  stdClass  $args      An object of wp_nav_menu() arguments.
-         * @param  int  $depth     Depth of menu item. Used for padding.
+         * @param  string  $title  The menu item's title.
+         * @param  WP_Post  $menu_item  The current menu item object.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
+         * @param  int  $depth  Depth of menu item. Used for padding.
          */
         $title = apply_filters('nav_menu_item_title', $title, $menu_item, $args, $depth);
 
@@ -289,10 +289,10 @@ class Walker_Nav_Menu extends Walker
          *
          * @since 3.0.0
          *
-         * @param  string  $item_output The menu item's starting HTML output.
-         * @param  WP_Post  $menu_item   Menu item data object.
-         * @param  int  $depth       Depth of menu item. Used for padding.
-         * @param  stdClass  $args        An object of wp_nav_menu() arguments.
+         * @param  string  $item_output  The menu item's starting HTML output.
+         * @param  WP_Post  $menu_item  Menu item data object.
+         * @param  int  $depth  Depth of menu item. Used for padding.
+         * @param  stdClass  $args  An object of wp_nav_menu() arguments.
          */
         $output .= apply_filters('walker_nav_menu_start_el', $item_output, $menu_item, $depth, $args);
     }
@@ -304,10 +304,10 @@ class Walker_Nav_Menu extends Walker
      * @since 5.9.0 Renamed `$item` to `$data_object` to match parent class for PHP 8 named parameter support.
      * @see Walker::end_el()
      *
-     * @param  string  $output      Used to append additional content (passed by reference).
-     * @param  WP_Post  $data_object Menu item data object. Not used.
-     * @param  int  $depth       Depth of page. Not Used.
-     * @param  stdClass  $args        An object of wp_nav_menu() arguments.
+     * @param  string  $output  Used to append additional content (passed by reference).
+     * @param  WP_Post  $data_object  Menu item data object. Not used.
+     * @param  int  $depth  Depth of page. Not Used.
+     * @param  stdClass  $args  An object of wp_nav_menu() arguments.
      */
     public function end_el(&$output, $data_object, $depth = 0, $args = null)
     {
@@ -327,7 +327,7 @@ class Walker_Nav_Menu extends Walker
      *
      * @since 6.3.0
      *
-     * @param  array  $atts Optional. An array of HTML attribute key/value pairs. Default empty array.
+     * @param  array  $atts  Optional. An array of HTML attribute key/value pairs. Default empty array.
      * @return string A string of HTML attributes.
      */
     protected function build_atts($atts = [])

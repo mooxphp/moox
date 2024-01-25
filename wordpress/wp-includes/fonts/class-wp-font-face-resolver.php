@@ -38,7 +38,7 @@ class WP_Font_Face_Resolver
      *
      * @since 6.4.0
      *
-     * @param  array  $settings Font settings to parse.
+     * @param  array  $settings  Font settings to parse.
      * @return array Returns an array of fonts, grouped by font-family.
      */
     private static function parse_settings(array $settings)
@@ -85,7 +85,7 @@ class WP_Font_Face_Resolver
      *
      * @since 6.4.0
      *
-     * @param  string  $font_family Font family `fontFamily' to parse.
+     * @param  string  $font_family  Font family `fontFamily' to parse.
      * @return string Font-family name.
      */
     private static function maybe_parse_name_from_comma_separated_list($font_family)
@@ -102,8 +102,8 @@ class WP_Font_Face_Resolver
      *
      * @since 6.4.0
      *
-     * @param  array  $font_face_definition The font-face definitions to convert.
-     * @param  string  $font_family_property The value to store in the font-face font-family property.
+     * @param  array  $font_face_definition  The font-face definitions to convert.
+     * @param  string  $font_family_property  The value to store in the font-face font-family property.
      * @return array Converted font-face properties.
      */
     private static function convert_font_face_properties(array $font_face_definition, $font_family_property)
@@ -137,7 +137,7 @@ class WP_Font_Face_Resolver
      *
      * @since 6.4.0
      *
-     * @param  array  $src An array of font file sources to process.
+     * @param  array  $src  An array of font file sources to process.
      * @return array An array of font file src URI(s).
      */
     private static function to_theme_file_uri(array $src)
@@ -162,7 +162,7 @@ class WP_Font_Face_Resolver
      *
      * @since 6.4.0
      *
-     * @param  array  $data The array to process.
+     * @param  array  $data  The array to process.
      * @return array Data with first dimension keys converted into kebab-case.
      */
     private static function to_kebab_case(array $data)

@@ -38,7 +38,7 @@ if (! class_exists('MO', false)) {
         /**
          * Fills up with the entries from MO file $filename
          *
-         * @param  string  $filename MO file to load
+         * @param  string  $filename  MO file to load
          * @return bool True if the import from file was successful, otherwise false.
          */
         public function import_from_file($filename)
@@ -326,10 +326,10 @@ if (! class_exists('MO', false)) {
          *
          * @static
          *
-         * @param  string  $original original string to translate from MO file. Might contain
-         *  0x04 as context separator or 0x00 as singular/plural separator
-         * @param  string  $translation translation string from MO file. Might contain
-         *  0x00 as a plural translations separator
+         * @param  string  $original  original string to translate from MO file. Might contain
+         *                            0x04 as context separator or 0x00 as singular/plural separator
+         * @param  string  $translation  translation string from MO file. Might contain
+         *                               0x00 as a plural translations separator
          * @return Translation_Entry Entry instance.
          */
         public function &make_entry($original, $translation)

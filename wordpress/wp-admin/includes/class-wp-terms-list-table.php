@@ -28,7 +28,7 @@ class WP_Terms_List_Table extends WP_List_Table
      * @global string $action
      * @global object $tax
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -82,7 +82,7 @@ class WP_Terms_List_Table extends WP_List_Table
              *
              * @since 2.8.0
              *
-             * @param  int  $tags_per_page Number of tags to be displayed. Default 20.
+             * @param  int  $tags_per_page  Number of tags to be displayed. Default 20.
              */
             $tags_per_page = apply_filters('edit_tags_per_page', $tags_per_page);
 
@@ -92,7 +92,7 @@ class WP_Terms_List_Table extends WP_List_Table
              * @since 2.7.0
              * @deprecated 2.8.0 Use {@see 'edit_tags_per_page'} instead.
              *
-             * @param  int  $tags_per_page Number of tags to be displayed. Default 20.
+             * @param  int  $tags_per_page  Number of tags to be displayed. Default 20.
              */
             $tags_per_page = apply_filters_deprecated('tagsperpage', [$tags_per_page], '2.8.0', 'edit_tags_per_page');
         } elseif ($taxonomy === 'category') {
@@ -101,7 +101,7 @@ class WP_Terms_List_Table extends WP_List_Table
              *
              * @since 2.8.0
              *
-             * @param  int  $tags_per_page Number of categories to be displayed. Default 20.
+             * @param  int  $tags_per_page  Number of categories to be displayed. Default 20.
              */
             $tags_per_page = apply_filters('edit_categories_per_page', $tags_per_page);
         }
@@ -333,7 +333,7 @@ class WP_Terms_List_Table extends WP_List_Table
     /**
      * @global string $taxonomy
      *
-     * @param  WP_Term  $tag   Term object.
+     * @param  WP_Term  $tag  Term object.
      * @param  int  $level
      */
     public function single_row($tag, $level = 0)
@@ -358,7 +358,7 @@ class WP_Terms_List_Table extends WP_List_Table
     /**
      * @since 5.9.0 Renamed `$tag` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Term  $item Term object.
+     * @param  WP_Term  $item  Term object.
      * @return string
      */
     public function column_cb($item)
@@ -380,7 +380,7 @@ class WP_Terms_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Term  $tag Term object.
+     * @param  WP_Term  $tag  Term object.
      * @return string
      */
     public function column_name($tag)
@@ -398,8 +398,8 @@ class WP_Terms_List_Table extends WP_List_Table
          * @since 2.5.0
          * @see WP_Terms_List_Table::column_name()
          *
-         * @param  string  $pad_tag_name The term name, padded if not top-level.
-         * @param  WP_Term  $tag         Term object.
+         * @param  string  $pad_tag_name  The term name, padded if not top-level.
+         * @param  WP_Term  $tag  Term object.
          */
         $name = apply_filters('term_name', $pad.' '.$tag->name, $tag);
 
@@ -462,9 +462,9 @@ class WP_Terms_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$tag` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Term  $item        Tag being acted upon.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  WP_Term  $item  Tag being acted upon.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for terms, or an empty string
      *                if the current column is not the primary column.
      */
@@ -502,8 +502,8 @@ class WP_Terms_List_Table extends WP_List_Table
              *
              * @since 6.4.0
              *
-             * @param  bool  $enable   Whether to enable the Quick Edit functionality. Default true.
-             * @param  string  $taxonomy Taxonomy name.
+             * @param  bool  $enable  Whether to enable the Quick Edit functionality. Default true.
+             * @param  string  $taxonomy  Taxonomy name.
              */
             $quick_edit_enabled = apply_filters('quick_edit_enabled_for_taxonomy', true, $taxonomy);
 
@@ -544,9 +544,9 @@ class WP_Terms_List_Table extends WP_List_Table
          * @since 3.0.0 Deprecated in favor of {@see '{$taxonomy}_row_actions'} filter.
          * @since 5.4.2 Restored (un-deprecated).
          *
-         * @param  string[]  $actions An array of action links to be displayed. Default
-         *                          'Edit', 'Quick Edit', 'Delete', and 'View'.
-         * @param  WP_Term  $tag     Term object.
+         * @param  string[]  $actions  An array of action links to be displayed. Default
+         *                             'Edit', 'Quick Edit', 'Delete', and 'View'.
+         * @param  WP_Term  $tag  Term object.
          */
         $actions = apply_filters('tag_row_actions', $actions, $tag);
 
@@ -562,9 +562,9 @@ class WP_Terms_List_Table extends WP_List_Table
          *
          * @since 3.0.0
          *
-         * @param  string[]  $actions An array of action links to be displayed. Default
-         *                          'Edit', 'Quick Edit', 'Delete', and 'View'.
-         * @param  WP_Term  $tag     Term object.
+         * @param  string[]  $actions  An array of action links to be displayed. Default
+         *                             'Edit', 'Quick Edit', 'Delete', and 'View'.
+         * @param  WP_Term  $tag  Term object.
          */
         $actions = apply_filters("{$taxonomy}_row_actions", $actions, $tag);
 
@@ -572,7 +572,7 @@ class WP_Terms_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Term  $tag Term object.
+     * @param  WP_Term  $tag  Term object.
      * @return string
      */
     public function column_description($tag)
@@ -588,7 +588,7 @@ class WP_Terms_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Term  $tag Term object.
+     * @param  WP_Term  $tag  Term object.
      * @return string
      */
     public function column_slug($tag)
@@ -598,7 +598,7 @@ class WP_Terms_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Term  $tag Term object.
+     * @param  WP_Term  $tag  Term object.
      * @return string
      */
     public function column_posts($tag)
@@ -633,7 +633,7 @@ class WP_Terms_List_Table extends WP_List_Table
     }
 
     /**
-     * @param  WP_Term  $tag Term object.
+     * @param  WP_Term  $tag  Term object.
      * @return string
      */
     public function column_links($tag)
@@ -650,8 +650,8 @@ class WP_Terms_List_Table extends WP_List_Table
     /**
      * @since 5.9.0 Renamed `$tag` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Term  $item        Term object.
-     * @param  string  $column_name Name of the column.
+     * @param  WP_Term  $item  Term object.
+     * @param  string  $column_name  Name of the column.
      * @return string
      */
     public function column_default($item, $column_name)
@@ -672,9 +672,9 @@ class WP_Terms_List_Table extends WP_List_Table
          *
          * @since 2.8.0
          *
-         * @param  string  $string      Custom column output. Default empty.
-         * @param  string  $column_name Name of the column.
-         * @param  int  $term_id     Term ID.
+         * @param  string  $string  Custom column output. Default empty.
+         * @param  string  $column_name  Name of the column.
+         * @param  int  $term_id  Term ID.
          */
         return apply_filters("manage_{$this->screen->taxonomy}_custom_column", '', $column_name, $tag->term_id);
     }

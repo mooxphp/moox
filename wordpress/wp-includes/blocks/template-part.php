@@ -6,7 +6,7 @@
 /**
  * Renders the `core/template-part` block on the server.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return string The render.
  */
 function render_block_core_template_part($attributes)
@@ -51,10 +51,10 @@ function render_block_core_template_part($attributes)
              *
              * @since 5.9.0
              *
-             * @param  string  $template_part_id   The requested template part namespaced to the theme.
-             * @param  array  $attributes         The block attributes.
-             * @param  WP_Post  $template_part_post The template part post object.
-             * @param  string  $content            The template part content.
+             * @param  string  $template_part_id  The requested template part namespaced to the theme.
+             * @param  array  $attributes  The block attributes.
+             * @param  WP_Post  $template_part_post  The template part post object.
+             * @param  string  $content  The template part content.
              */
             do_action('render_block_core_template_part_post', $template_part_id, $attributes, $template_part_post, $content);
         } else {
@@ -76,10 +76,10 @@ function render_block_core_template_part($attributes)
                  *
                  * @since 5.9.0
                  *
-                 * @param  string  $template_part_id        The requested template part namespaced to the theme.
-                 * @param  array  $attributes              The block attributes.
-                 * @param  string  $template_part_file_path Absolute path to the template path.
-                 * @param  string  $content                 The template part content.
+                 * @param  string  $template_part_id  The requested template part namespaced to the theme.
+                 * @param  array  $attributes  The block attributes.
+                 * @param  string  $template_part_file_path  Absolute path to the template path.
+                 * @param  string  $content  The template part content.
                  */
                 do_action('render_block_core_template_part_file', $template_part_id, $attributes, $template_part_file_path, $content);
             } else {
@@ -88,9 +88,9 @@ function render_block_core_template_part($attributes)
                  *
                  * @since 5.9.0
                  *
-                 * @param  string  $template_part_id        The requested template part namespaced to the theme.
-                 * @param  array  $attributes              The block attributes.
-                 * @param  string  $template_part_file_path Absolute path to the not found template path.
+                 * @param  string  $template_part_id  The requested template part namespaced to the theme.
+                 * @param  array  $attributes  The block attributes.
+                 * @param  string  $template_part_file_path  Absolute path to the not found template path.
                  */
                 do_action('render_block_core_template_part_none', $template_part_id, $attributes, $template_part_file_path);
             }
@@ -167,7 +167,7 @@ function render_block_core_template_part($attributes)
 /**
  * Returns an array of area variation objects for the template part block.
  *
- * @param  array  $instance_variations The variations for instances.
+ * @param  array  $instance_variations  The variations for instances.
  * @return array Array containing the block variation objects.
  */
 function build_template_part_block_area_variations($instance_variations)

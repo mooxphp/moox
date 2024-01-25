@@ -52,7 +52,7 @@ class WP_HTML_Open_Elements
      *
      * @since 6.4.0
      *
-     * @param  WP_HTML_Token  $token Look for this node in the stack.
+     * @param  WP_HTML_Token  $token  Look for this node in the stack.
      * @return bool Whether the referenced node is in the stack of open elements.
      */
     public function contains_node($token)
@@ -104,8 +104,8 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#has-an-element-in-the-specific-scope
      *
-     * @param  string  $tag_name         Name of tag check.
-     * @param  string[]  $termination_list List of elements that terminate the search.
+     * @param  string  $tag_name  Name of tag check.
+     * @param  string[]  $termination_list  List of elements that terminate the search.
      * @return bool Whether the element was found in a specific scope.
      */
     public function has_element_in_specific_scope($tag_name, $termination_list)
@@ -134,7 +134,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#has-an-element-in-scope
      *
-     * @param  string  $tag_name Name of tag to check.
+     * @param  string  $tag_name  Name of tag to check.
      * @return bool Whether given element is in scope.
      */
     public function has_element_in_scope($tag_name)
@@ -160,7 +160,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#has-an-element-in-list-item-scope
      *
-     * @param  string  $tag_name Name of tag to check.
+     * @param  string  $tag_name  Name of tag to check.
      * @return bool Whether given element is in scope.
      *
      * @throws WP_HTML_Unsupported_Exception Always until this function is implemented.
@@ -178,7 +178,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#has-an-element-in-button-scope
      *
-     * @param  string  $tag_name Name of tag to check.
+     * @param  string  $tag_name  Name of tag to check.
      * @return bool Whether given element is in scope.
      */
     public function has_element_in_button_scope($tag_name)
@@ -192,7 +192,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#has-an-element-in-table-scope
      *
-     * @param  string  $tag_name Name of tag to check.
+     * @param  string  $tag_name  Name of tag to check.
      * @return bool Whether given element is in scope.
      *
      * @throws WP_HTML_Unsupported_Exception Always until this function is implemented.
@@ -210,7 +210,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#has-an-element-in-select-scope
      *
-     * @param  string  $tag_name Name of tag to check.
+     * @param  string  $tag_name  Name of tag to check.
      * @return bool Whether given element is in scope.
      *
      * @throws WP_HTML_Unsupported_Exception Always until this function is implemented.
@@ -262,7 +262,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see WP_HTML_Open_Elements::pop
      *
-     * @param  string  $tag_name Name of tag that needs to be popped off of the stack of open elements.
+     * @param  string  $tag_name  Name of tag that needs to be popped off of the stack of open elements.
      * @return bool Whether a tag of the given name was found and popped off of the stack of open elements.
      */
     public function pop_until($tag_name)
@@ -284,7 +284,7 @@ class WP_HTML_Open_Elements
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#stack-of-open-elements
      *
-     * @param  WP_HTML_Token  $stack_item Item to add onto stack.
+     * @param  WP_HTML_Token  $stack_item  Item to add onto stack.
      */
     public function push($stack_item)
     {
@@ -297,7 +297,7 @@ class WP_HTML_Open_Elements
      *
      * @since 6.4.0
      *
-     * @param  WP_HTML_Token  $token The node to remove from the stack of open elements.
+     * @param  WP_HTML_Token  $token  The node to remove from the stack of open elements.
      * @return bool Whether the node was found and removed from the stack of open elements.
      */
     public function remove_node($token)
@@ -386,7 +386,7 @@ class WP_HTML_Open_Elements
      *
      * @since 6.4.0
      *
-     * @param  WP_HTML_Token  $item Element that was added to the stack of open elements.
+     * @param  WP_HTML_Token  $item  Element that was added to the stack of open elements.
      */
     public function after_element_push($item)
     {
@@ -416,7 +416,7 @@ class WP_HTML_Open_Elements
      *
      * @since 6.4.0
      *
-     * @param  WP_HTML_Token  $item Element that was removed from the stack of open elements.
+     * @param  WP_HTML_Token  $item  Element that was removed from the stack of open elements.
      */
     public function after_element_pop($item)
     {

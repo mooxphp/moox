@@ -54,7 +54,7 @@ class WP_REST_Pattern_Directory_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has permission, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -83,7 +83,7 @@ class WP_REST_Pattern_Directory_Controller extends WP_REST_Controller
      * @since 6.0.0 Added 'slug' to request.
      * @since 6.2.0 Added 'per_page', 'page', 'offset', 'order', and 'orderby' to request.
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -188,8 +188,8 @@ class WP_REST_Pattern_Directory_Controller extends WP_REST_Controller
      * @since 5.8.0
      * @since 5.9.0 Renamed `$raw_pattern` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  object  $item    Raw pattern from api.wordpress.org, before any changes.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  object  $item  Raw pattern from api.wordpress.org, before any changes.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response
      */
     public function prepare_item_for_response($item, $request)
@@ -217,9 +217,9 @@ class WP_REST_Pattern_Directory_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  WP_REST_Response  $response    The response object.
-         * @param  object  $raw_pattern The unprepared block pattern.
-         * @param  WP_REST_Request  $request     The request object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  object  $raw_pattern  The unprepared block pattern.
+         * @param  WP_REST_Request  $request  The request object.
          */
         return apply_filters('rest_prepare_block_pattern', $response, $raw_pattern, $request);
     }
@@ -375,7 +375,7 @@ class WP_REST_Pattern_Directory_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  array  $query_params JSON Schema-formatted collection parameters.
+         * @param  array  $query_params  JSON Schema-formatted collection parameters.
          */
         return apply_filters('rest_pattern_directory_collection_params', $query_params);
     }

@@ -76,8 +76,8 @@ class WP_Block_Supports
      * @since 5.6.0
      * @link https://developer.wordpress.org/block-editor/reference-guides/block-api/block-supports/
      *
-     * @param  string  $block_support_name   Block support name.
-     * @param  array  $block_support_config Array containing the properties of the block support.
+     * @param  string  $block_support_name  Block support name.
+     * @param  array  $block_support_config  Array containing the properties of the block support.
      */
     public function register($block_support_name, $block_support_config)
     {
@@ -173,7 +173,7 @@ class WP_Block_Supports
  *
  * @since 5.6.0
  *
- * @param  string[]  $extra_attributes Optional. Array of extra attributes to render on the block wrapper.
+ * @param  string[]  $extra_attributes  Optional. Array of extra attributes to render on the block wrapper.
  * @return string String of HTML attributes.
  */
 function get_block_wrapper_attributes($extra_attributes = [])

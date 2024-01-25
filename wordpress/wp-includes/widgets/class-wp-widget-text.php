@@ -45,8 +45,8 @@ class WP_Widget_Text extends WP_Widget
     /**
      * Adds hooks for enqueueing assets when registering all widget instances of this widget class.
      *
-     * @param  int  $number Optional. The unique order number of this widget instance
-     *                    compared to other instances of the same class. Default -1.
+     * @param  int  $number  Optional. The unique order number of this widget instance
+     *                       compared to other instances of the same class. Default -1.
      */
     public function _register_one($number = -1)
     {
@@ -78,13 +78,13 @@ class WP_Widget_Text extends WP_Widget
      *
      * @since 4.8.1
      *
-     * @param  array  $instance {
-     *     Instance data.
+     * @param  array  $instance  {
+     *                           Instance data.
      *
-     *     @type string      $text   Content.
-     *     @type bool|string $filter Whether autop or content filters should apply.
-     *     @type bool        $legacy Whether widget is in legacy mode.
-     * }
+     * @type string $text   Content.
+     * @type bool|string $filter Whether autop or content filters should apply.
+     * @type bool $legacy Whether widget is in legacy mode.
+     *            }
      *
      * @return bool Whether Text widget instance contains legacy data.
      */
@@ -205,7 +205,7 @@ class WP_Widget_Text extends WP_Widget
      *
      * @since 4.9.0
      *
-     * @param  array  $attrs Attributes.
+     * @param  array  $attrs  Attributes.
      * @return array Attributes.
      */
     public function _filter_gallery_shortcode_attrs($attrs)
@@ -224,9 +224,9 @@ class WP_Widget_Text extends WP_Widget
      *
      * @global WP_Post $post Global post object.
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Text widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Text widget instance.
      */
     public function widget($args, $instance)
     {
@@ -281,9 +281,9 @@ class WP_Widget_Text extends WP_Widget
          * @since 4.4.0 Added the `$widget` parameter.
          * @since 4.8.1 The `$widget` param may now be a `WP_Widget_Custom_HTML` object in addition to a `WP_Widget_Text` object.
          *
-         * @param  string  $text     The widget content.
-         * @param  array  $instance Array of settings for the current widget.
-         * @param  WP_Widget_Text|WP_Widget_Custom_HTML  $widget   Current text or HTML widget instance.
+         * @param  string  $text  The widget content.
+         * @param  array  $instance  Array of settings for the current widget.
+         * @param  WP_Widget_Text|WP_Widget_Custom_HTML  $widget  Current text or HTML widget instance.
          */
         $text = apply_filters('widget_text', $text, $instance, $this);
 
@@ -296,9 +296,9 @@ class WP_Widget_Text extends WP_Widget
              *
              * @since 4.8.0
              *
-             * @param  string  $text     The widget content.
-             * @param  array  $instance Array of settings for the current widget.
-             * @param  WP_Widget_Text  $widget   Current Text widget instance.
+             * @param  string  $text  The widget content.
+             * @param  array  $instance  Array of settings for the current widget.
+             * @param  WP_Widget_Text  $widget  Current Text widget instance.
              */
             $text = apply_filters('widget_text_content', $text, $instance, $this);
         } else {
@@ -354,7 +354,7 @@ class WP_Widget_Text extends WP_Widget
      * @since 4.9.0
      * @see WP_Widget_Media_Video::inject_video_max_width_style()
      *
-     * @param  array  $matches Pattern matches from preg_replace_callback.
+     * @param  array  $matches  Pattern matches from preg_replace_callback.
      * @return string HTML Output.
      */
     public function inject_video_max_width_style($matches)
@@ -372,9 +372,9 @@ class WP_Widget_Text extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Settings to save or bool false to cancel saving.
      */
     public function update($new_instance, $old_instance)
@@ -460,7 +460,7 @@ class WP_Widget_Text extends WP_Widget
      * @see WP_Widget_Text::render_control_template_scripts()
      * @see _WP_Editors::editor()
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     public function form($instance)
     {
@@ -482,8 +482,8 @@ class WP_Widget_Text extends WP_Widget
                 $default_editor = 'html';
             }
 
-            /** This filter is documented in wp-includes/class-wp-editor.php */
-            $text = apply_filters('the_editor_content', $instance['text'], $default_editor);
+		    /** This filter is documented in wp-includes/class-wp-editor.php */
+		    $text = apply_filters('the_editor_content', $instance['text'], $default_editor);
 
 		    // Reset filter addition.
 		    if (user_can_richedit()) {

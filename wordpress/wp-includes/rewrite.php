@@ -129,10 +129,10 @@ define('EP_ALL', EP_PERMALINK | EP_ATTACHMENT | EP_ROOT | EP_COMMENTS | EP_SEARC
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  string  $regex Regular expression to match request against.
- * @param  string|array  $query The corresponding query vars for this rewrite rule.
- * @param  string  $after Optional. Priority of the new rule. Accepts 'top'
- *                            or 'bottom'. Default 'bottom'.
+ * @param  string  $regex  Regular expression to match request against.
+ * @param  string|array  $query  The corresponding query vars for this rewrite rule.
+ * @param  string  $after  Optional. Priority of the new rule. Accepts 'top'
+ *                         or 'bottom'. Default 'bottom'.
  */
 function add_rewrite_rule($regex, $query, $after = 'bottom')
 {
@@ -153,9 +153,9 @@ function add_rewrite_rule($regex, $query, $after = 'bottom')
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  * @global WP         $wp         Current WordPress environment instance.
  *
- * @param  string  $tag   Name of the new rewrite tag.
- * @param  string  $regex Regular expression to substitute the tag for in rewrite rules.
- * @param  string  $query Optional. String to append to the rewritten query. Must end in '='. Default empty.
+ * @param  string  $tag  Name of the new rewrite tag.
+ * @param  string  $regex  Regular expression to substitute the tag for in rewrite rules.
+ * @param  string  $query  Optional. String to append to the rewritten query. Must end in '='. Default empty.
  */
 function add_rewrite_tag($tag, $regex, $query = '')
 {
@@ -182,7 +182,7 @@ function add_rewrite_tag($tag, $regex, $query = '')
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  string  $tag Name of the rewrite tag.
+ * @param  string  $tag  Name of the rewrite tag.
  */
 function remove_rewrite_tag($tag)
 {
@@ -198,9 +198,9 @@ function remove_rewrite_tag($tag)
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  string  $name   Name for permalink structure.
- * @param  string  $struct Permalink structure.
- * @param  array  $args   Optional. Arguments for building the rules from the permalink structure,
+ * @param  string  $name  Name for permalink structure.
+ * @param  string  $struct  Permalink structure.
+ * @param  array  $args  Optional. Arguments for building the rules from the permalink structure,
  *                       see WP_Rewrite::add_permastruct() for full details. Default empty array.
  */
 function add_permastruct($name, $struct, $args = [])
@@ -230,7 +230,7 @@ function add_permastruct($name, $struct, $args = [])
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  string  $name Name for permalink structure.
+ * @param  string  $name  Name for permalink structure.
  */
 function remove_permastruct($name)
 {
@@ -246,8 +246,8 @@ function remove_permastruct($name)
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  string  $feedname Feed name.
- * @param  callable  $callback Callback to run on feed display.
+ * @param  string  $feedname  Feed name.
+ * @param  callable  $callback  Callback to run on feed display.
  * @return string Feed action name.
  */
 function add_feed($feedname, $callback)
@@ -275,8 +275,8 @@ function add_feed($feedname, $callback)
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  bool  $hard Whether to update .htaccess (hard flush) or just update
- *                   rewrite_rules option (soft flush). Default is true (hard).
+ * @param  bool  $hard  Whether to update .htaccess (hard flush) or just update
+ *                      rewrite_rules option (soft flush). Default is true (hard).
  */
 function flush_rewrite_rules($hard = true)
 {
@@ -314,27 +314,27 @@ function flush_rewrite_rules($hard = true)
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  *
- * @param  string  $name      Name of the endpoint.
- * @param  int  $places    Endpoint mask describing the places the endpoint should be added.
- *                               Accepts a mask of:
- *                               - `EP_ALL`
- *                               - `EP_NONE`
- *                               - `EP_ALL_ARCHIVES`
- *                               - `EP_ATTACHMENT`
- *                               - `EP_AUTHORS`
- *                               - `EP_CATEGORIES`
- *                               - `EP_COMMENTS`
- *                               - `EP_DATE`
- *                               - `EP_DAY`
- *                               - `EP_MONTH`
- *                               - `EP_PAGES`
- *                               - `EP_PERMALINK`
- *                               - `EP_ROOT`
- *                               - `EP_SEARCH`
- *                               - `EP_TAGS`
- *                               - `EP_YEAR`
- * @param  string|bool  $query_var Name of the corresponding query variable. Pass `false` to skip registering a query_var
- *                               for this endpoint. Defaults to the value of `$name`.
+ * @param  string  $name  Name of the endpoint.
+ * @param  int  $places  Endpoint mask describing the places the endpoint should be added.
+ *                       Accepts a mask of:
+ *                       - `EP_ALL`
+ *                       - `EP_NONE`
+ *                       - `EP_ALL_ARCHIVES`
+ *                       - `EP_ATTACHMENT`
+ *                       - `EP_AUTHORS`
+ *                       - `EP_CATEGORIES`
+ *                       - `EP_COMMENTS`
+ *                       - `EP_DATE`
+ *                       - `EP_DAY`
+ *                       - `EP_MONTH`
+ *                       - `EP_PAGES`
+ *                       - `EP_PERMALINK`
+ *                       - `EP_ROOT`
+ *                       - `EP_SEARCH`
+ *                       - `EP_TAGS`
+ *                       - `EP_YEAR`
+ * @param  string|bool  $query_var  Name of the corresponding query variable. Pass `false` to skip registering a query_var
+ *                                  for this endpoint. Defaults to the value of `$name`.
  */
 function add_rewrite_endpoint($name, $places, $query_var = true)
 {
@@ -349,7 +349,7 @@ function add_rewrite_endpoint($name, $places, $query_var = true)
  *
  * @since 2.6.0
  *
- * @param  string  $base The taxonomy base that we're going to filter
+ * @param  string  $base  The taxonomy base that we're going to filter
  * @return string
  */
 function _wp_filter_taxonomy_base($base)
@@ -379,8 +379,8 @@ function _wp_filter_taxonomy_base($base)
  *
  * @since 4.3.0
  *
- * @param  array  $query_vars Optional. Query variables for setting up the loop, as determined in
- *                          WP::parse_request(). Default empty array.
+ * @param  array  $query_vars  Optional. Query variables for setting up the loop, as determined in
+ *                             WP::parse_request(). Default empty array.
  * @return array Returns the original array of query vars, with date/post conflicts resolved.
  */
 function wp_resolve_numeric_slug_conflicts($query_vars = [])
@@ -492,7 +492,7 @@ function wp_resolve_numeric_slug_conflicts($query_vars = [])
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  * @global WP         $wp         Current WordPress environment instance.
  *
- * @param  string  $url Permalink to check.
+ * @param  string  $url  Permalink to check.
  * @return int Post ID, or 0 on failure.
  */
 function url_to_postid($url)
@@ -504,7 +504,7 @@ function url_to_postid($url)
      *
      * @since 2.2.0
      *
-     * @param  string  $url The URL to derive the post ID from.
+     * @param  string  $url  The URL to derive the post ID from.
      */
     $url = apply_filters('url_to_postid', $url);
 

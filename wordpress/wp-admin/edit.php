@@ -212,10 +212,10 @@ if ($doaction) {
              *
              * @since 4.7.0
              *
-             * @param  string  $sendback The redirect URL.
-             * @param  string  $doaction The action being taken.
-             * @param  array  $items    The items to take the action on. Accepts an array of IDs of posts,
-             *                         comments, terms, links, plugins, attachments, or users.
+             * @param  string  $sendback  The redirect URL.
+             * @param  string  $doaction  The action being taken.
+             * @param  array  $items  The items to take the action on. Accepts an array of IDs of posts,
+             *                        comments, terms, links, plugins, attachments, or users.
              */
             $sendback = apply_filters("handle_bulk_actions-{$screen}", $sendback, $doaction, $post_ids); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
             break;
@@ -393,9 +393,9 @@ $bulk_messages['wp_block'] = [
  *
  * @since 3.7.0
  *
- * @param  array[]  $bulk_messages Arrays of messages, each keyed by the corresponding post type. Messages are
- *                               keyed with 'updated', 'locked', 'deleted', 'trashed', and 'untrashed'.
- * @param  int[]  $bulk_counts   Array of item counts for each message, used to build internationalized strings.
+ * @param  array[]  $bulk_messages  Arrays of messages, each keyed by the corresponding post type. Messages are
+ *                                  keyed with 'updated', 'locked', 'deleted', 'trashed', and 'untrashed'.
+ * @param  int[]  $bulk_counts  Array of item counts for each message, used to build internationalized strings.
  */
 $bulk_messages = apply_filters('bulk_post_updated_messages', $bulk_messages, $bulk_counts);
 $bulk_counts = array_filter($bulk_counts);

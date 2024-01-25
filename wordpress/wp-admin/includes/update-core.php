@@ -1060,8 +1060,8 @@ $_new_bundled_files = [
  * @global string             $required_php_version
  * @global string             $required_mysql_version
  *
- * @param  string  $from New release unzipped path.
- * @param  string  $to   Path to old WordPress installation.
+ * @param  string  $from  New release unzipped path.
+ * @param  string  $to  Path to old WordPress installation.
  * @return string|WP_Error New WordPress version on success, WP_Error on failure.
  */
 function update_core($from, $to)
@@ -1095,7 +1095,7 @@ function update_core($from, $to)
      *
      * @since 2.5.0
      *
-     * @param  string  $feedback The core update feedback messages.
+     * @param  string  $feedback  The core update feedback messages.
      */
     apply_filters('update_feedback', __('Verifying the unpacked files&#8230;'));
 
@@ -1613,7 +1613,7 @@ function update_core($from, $to)
      *
      * @since 3.3.0
      *
-     * @param  string  $wp_version The current WordPress version.
+     * @param  string  $wp_version  The current WordPress version.
      */
     do_action('_core_updated_successfully', $wp_version);
 
@@ -1643,7 +1643,7 @@ function update_core($from, $to)
  * @global WP_Filesystem_Base $wp_filesystem       WordPress filesystem subclass.
  * @global string             $wp_version          The WordPress version string.
  *
- * @param  string  $to Path to old WordPress installation.
+ * @param  string  $to  Path to old WordPress installation.
  */
 function _preload_old_requests_classes_and_interfaces($to)
 {
@@ -1800,7 +1800,7 @@ function _upgrade_422_remove_genericons()
  *
  * @since 4.2.2
  *
- * @param  string  $directory Directory path. Expects trailingslashed.
+ * @param  string  $directory  Directory path. Expects trailingslashed.
  * @return array
  */
 function _upgrade_422_find_genericons_files_in_folder($directory)

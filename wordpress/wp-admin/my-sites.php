@@ -115,8 +115,8 @@ if (empty($blogs)) {
      *
      * @since MU (3.0.0)
      *
-     * @param  string  $settings_html The settings HTML markup. Default empty.
-     * @param  string  $context       Context of the setting (global or site-specific). Default 'global'.
+     * @param  string  $settings_html  The settings HTML markup. Default empty.
+     * @param  string  $context  Context of the setting (global or site-specific). Default 'global'.
      */
     $settings_html = apply_filters('myblogs_options', '', 'global');
 
@@ -144,8 +144,8 @@ if (empty($blogs)) {
          *
          * @since MU (3.0.0)
          *
-         * @param  string  $actions   The HTML site link markup.
-         * @param  object  $user_blog An object containing the site data.
+         * @param  string  $actions  The HTML site link markup.
+         * @param  object  $user_blog  An object containing the site data.
          */
         $actions = apply_filters('myblogs_blog_actions', $actions, $user_blog);
 

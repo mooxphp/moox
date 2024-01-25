@@ -111,9 +111,9 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $method     Optional. Request method. Default empty.
-     * @param  string  $route      Optional. Request route. Default empty.
-     * @param  array  $attributes Optional. Request attributes. Default empty array.
+     * @param  string  $method  Optional. Request method. Default empty.
+     * @param  string  $route  Optional. Request route. Default empty.
+     * @param  array  $attributes  Optional. Request attributes. Default empty array.
      */
     public function __construct($method = '', $route = '', $attributes = [])
     {
@@ -151,7 +151,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $method HTTP method.
+     * @param  string  $method  HTTP method.
      */
     public function set_method($method)
     {
@@ -184,7 +184,7 @@ class WP_REST_Request implements ArrayAccess
      * @link https://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers
      * @since 4.4.0
      *
-     * @param  string  $key Header name.
+     * @param  string  $key  Header name.
      * @return string Canonicalized name.
      */
     public static function canonicalize_header_name($key)
@@ -204,7 +204,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key Header name, will be canonicalized to lowercase.
+     * @param  string  $key  Header name, will be canonicalized to lowercase.
      * @return string|null String value if set, null otherwise.
      */
     public function get_header($key)
@@ -223,7 +223,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key Header name, will be canonicalized to lowercase.
+     * @param  string  $key  Header name, will be canonicalized to lowercase.
      * @return array|null List of string values if set, null otherwise.
      */
     public function get_header_as_array($key)
@@ -242,8 +242,8 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key   Header name.
-     * @param  string  $value Header value, or list of values.
+     * @param  string  $key  Header name.
+     * @param  string  $value  Header value, or list of values.
      */
     public function set_header($key, $value)
     {
@@ -258,8 +258,8 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key   Header name.
-     * @param  string  $value Header value, or list of values.
+     * @param  string  $key  Header name.
+     * @param  string  $value  Header value, or list of values.
      */
     public function add_header($key, $value)
     {
@@ -278,7 +278,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key Header name.
+     * @param  string  $key  Header name.
      */
     public function remove_header($key)
     {
@@ -292,7 +292,7 @@ class WP_REST_Request implements ArrayAccess
      * @since 4.4.0
      *
      * @param  array  $headers  Map of header name to value.
-     * @param  bool  $override If true, replace the request's headers. Otherwise, merge with existing.
+     * @param  bool  $override  If true, replace the request's headers. Otherwise, merge with existing.
      */
     public function set_headers($headers, $override = true)
     {
@@ -397,8 +397,8 @@ class WP_REST_Request implements ArrayAccess
          *
          * @since 4.4.0
          *
-         * @param  string[]  $order   Array of types to check, in order of priority.
-         * @param  WP_REST_Request  $request The request object.
+         * @param  string[]  $order  Array of types to check, in order of priority.
+         * @param  WP_REST_Request  $request  The request object.
          */
         return apply_filters('rest_request_parameter_order', $order, $this);
     }
@@ -408,7 +408,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key Parameter name.
+     * @param  string  $key  Parameter name.
      * @return mixed|null Value if set, null otherwise.
      */
     public function get_param($key)
@@ -433,7 +433,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 5.3.0
      *
-     * @param  string  $key Parameter name.
+     * @param  string  $key  Parameter name.
      * @return bool True if a param exists for the given key.
      */
     public function has_param($key)
@@ -458,8 +458,8 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $key   Parameter name.
-     * @param  mixed  $value Parameter value.
+     * @param  string  $key  Parameter name.
+     * @param  mixed  $value  Parameter value.
      */
     public function set_param($key, $value)
     {
@@ -528,7 +528,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  array  $params Parameter map of key to value.
+     * @param  array  $params  Parameter map of key to value.
      */
     public function set_url_params($params)
     {
@@ -556,7 +556,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  array  $params Parameter map of key to value.
+     * @param  array  $params  Parameter map of key to value.
      */
     public function set_query_params($params)
     {
@@ -584,7 +584,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  array  $params Parameter map of key to value.
+     * @param  array  $params  Parameter map of key to value.
      */
     public function set_body_params($params)
     {
@@ -612,7 +612,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  array  $params Parameter map of key to value.
+     * @param  array  $params  Parameter map of key to value.
      */
     public function set_file_params($params)
     {
@@ -640,7 +640,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  array  $params Parameter map of key to value.
+     * @param  array  $params  Parameter map of key to value.
      */
     public function set_default_params($params)
     {
@@ -664,7 +664,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $data Binary data from the request body.
+     * @param  string  $data  Binary data from the request body.
      */
     public function set_body($data)
     {
@@ -794,7 +794,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $route Route matching regex.
+     * @param  string  $route  Route matching regex.
      */
     public function set_route($route)
     {
@@ -820,7 +820,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  array  $attributes Attributes for the request.
+     * @param  array  $attributes  Attributes for the request.
      */
     public function set_attributes($attributes)
     {
@@ -1001,7 +1001,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $offset Parameter name.
+     * @param  string  $offset  Parameter name.
      * @return bool Whether the parameter is set.
      */
     #[ReturnTypeWillChange]
@@ -1023,7 +1023,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $offset Parameter name.
+     * @param  string  $offset  Parameter name.
      * @return mixed|null Value if set, null otherwise.
      */
     #[ReturnTypeWillChange]
@@ -1037,7 +1037,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $offset Parameter name.
+     * @param  string  $offset  Parameter name.
      * @param  mixed  $value  Parameter value.
      */
     #[ReturnTypeWillChange]
@@ -1051,7 +1051,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.4.0
      *
-     * @param  string  $offset Parameter name.
+     * @param  string  $offset  Parameter name.
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($offset)
@@ -1069,7 +1069,7 @@ class WP_REST_Request implements ArrayAccess
      *
      * @since 4.5.0
      *
-     * @param  string  $url URL with protocol, domain, path and query args.
+     * @param  string  $url  URL with protocol, domain, path and query args.
      * @return WP_REST_Request|false WP_REST_Request object on success, false on failure.
      */
     public static function from_url($url)
@@ -1103,9 +1103,9 @@ class WP_REST_Request implements ArrayAccess
          *
          * @since 4.5.0
          *
-         * @param  WP_REST_Request|false  $request Generated request object, or false if URL
-         *                                       could not be parsed.
-         * @param  string  $url     URL the request was generated from.
+         * @param  WP_REST_Request|false  $request  Generated request object, or false if URL
+         *                                          could not be parsed.
+         * @param  string  $url  URL the request was generated from.
          */
         return apply_filters('rest_request_from_url', $request, $url);
     }

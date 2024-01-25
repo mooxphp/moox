@@ -81,7 +81,7 @@ if ($action) {
                          *
                          * @since 4.4.0
                          *
-                         * @param  int  $user_id ID of the newly created user.
+                         * @param  int  $user_id  ID of the newly created user.
                          */
                         do_action('network_site_users_created_user', $user_id);
                     }
@@ -205,7 +205,7 @@ $submenu_file = 'sites.php';
  *
  * @since 3.1.0
  *
- * @param  bool  $bool Whether to show the Add Existing User form. Default true.
+ * @param  bool  $bool  Whether to show the Add Existing User form. Default true.
  */
 if (! wp_is_large_network('users') && apply_filters('show_network_site_users_add_existing_form', true)) {
     wp_enqueue_script('user-suggest');
@@ -341,7 +341,7 @@ if (current_user_can('promote_users') && apply_filters('show_network_site_users_
  *
  * @since 3.1.0
  *
- * @param  bool  $bool Whether to show the Add New User form. Default true.
+ * @param  bool  $bool  Whether to show the Add New User form. Default true.
  */
 if (current_user_can('create_users') && apply_filters('show_network_site_users_add_new_form', true)) {
     ?>

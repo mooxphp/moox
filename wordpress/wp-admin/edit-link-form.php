@@ -38,7 +38,7 @@ do_action('add_meta_boxes', 'link', $link);
  *
  * @since 3.0.0
  *
- * @param  object  $link Link object.
+ * @param  object  $link  Link object.
  */
 do_action('add_meta_boxes_link', $link);
 

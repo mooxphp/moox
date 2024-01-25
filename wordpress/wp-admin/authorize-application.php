@@ -226,9 +226,9 @@ if ($new_password) {
      * @since 5.6.0
      * @since 5.6.1 Corrected action name and signature.
      *
-     * @param  string  $new_password The newly generated application password.
-     * @param  array  $request      The array of request data. All arguments are optional and may be empty.
-     * @param  WP_User  $user         The user authorizing the application.
+     * @param  string  $new_password  The newly generated application password.
+     * @param  array  $request  The array of request data. All arguments are optional and may be empty.
+     * @param  WP_User  $user  The user authorizing the application.
      */
     do_action('wp_authorize_application_password_form_approved_no_js', $new_password, $request, $user);
 } else {
@@ -251,15 +251,15 @@ if ($new_password) {
          *
          * @since 5.6.0
          *
-         * @param  array  $request {
-         *     The array of request data. All arguments are optional and may be empty.
+         * @param  array  $request  {
+         *                          The array of request data. All arguments are optional and may be empty.
          *
-         *     @type string $app_name    The suggested name of the application.
-         *     @type string $success_url The URL the user will be redirected to after approving the application.
-         *     @type string $reject_url  The URL the user will be redirected to after rejecting the application.
-         * }
+         * @type string $app_name    The suggested name of the application.
+         * @type string $success_url The URL the user will be redirected to after approving the application.
+         * @type string $reject_url  The URL the user will be redirected to after rejecting the application.
+         *              }
          *
-         * @param  WP_User  $user The user authorizing the application.
+         * @param  WP_User  $user  The user authorizing the application.
          */
         do_action('wp_authorize_application_password_form', $request, $user);
     ?>

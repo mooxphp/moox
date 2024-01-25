@@ -18,7 +18,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  int  $id Supplied ID.
+     * @param  int  $id  Supplied ID.
      * @return object|WP_Error Post object if ID is valid, WP_Error otherwise.
      */
     protected function get_nav_menu_item($id)
@@ -36,7 +36,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -55,7 +55,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return bool|WP_Error True if the request has read access for the item, WP_Error object or false otherwise.
      */
     public function get_item_permissions_check($request)
@@ -76,7 +76,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     protected function check_has_read_only_access($request)
@@ -107,7 +107,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -146,9 +146,9 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
          *
          * @since 5.9.0
          *
-         * @param  object  $nav_menu_item Inserted or updated menu item object.
-         * @param  WP_REST_Request  $request       Request object.
-         * @param  bool  $creating      True when creating a menu item, false when updating.
+         * @param  object  $nav_menu_item  Inserted or updated menu item object.
+         * @param  WP_REST_Request  $request  Request object.
+         * @param  bool  $creating  True when creating a menu item, false when updating.
          */
         do_action('rest_insert_nav_menu_item', $nav_menu_item, $request, true);
 
@@ -176,9 +176,9 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
          *
          * @since 5.9.0
          *
-         * @param  object  $nav_menu_item Inserted or updated menu item object.
-         * @param  WP_REST_Request  $request       Request object.
-         * @param  bool  $creating      True when creating a menu item, false when updating.
+         * @param  object  $nav_menu_item  Inserted or updated menu item object.
+         * @param  WP_REST_Request  $request  Request object.
+         * @param  bool  $creating  True when creating a menu item, false when updating.
          */
         do_action('rest_after_insert_nav_menu_item', $nav_menu_item, $request, true);
 
@@ -199,7 +199,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -274,7 +274,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error True on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -311,9 +311,9 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
          *
          * @since 5.9.0
          *
-         * @param  object  $nav_menu_item Inserted or updated menu item object.
-         * @param  WP_REST_Response  $response The response data.
-         * @param  WP_REST_Request  $request       Request object.
+         * @param  object  $nav_menu_item  Inserted or updated menu item object.
+         * @param  WP_REST_Response  $response  The response data.
+         * @param  WP_REST_Request  $request  Request object.
          */
         do_action('rest_delete_nav_menu_item', $menu_item, $response, $request);
 
@@ -325,7 +325,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return object|WP_Error
      */
     protected function prepare_item_for_database($request)
@@ -478,9 +478,9 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
          *
          * @since 5.9.0
          *
-         * @param  object  $prepared_nav_item An object representing a single menu item prepared
-         *                                           for inserting or updating the database.
-         * @param  WP_REST_Request  $request           Request object.
+         * @param  object  $prepared_nav_item  An object representing a single menu item prepared
+         *                                     for inserting or updating the database.
+         * @param  WP_REST_Request  $request  Request object.
          */
         return apply_filters('rest_pre_insert_nav_menu_item', $prepared_nav_item, $request);
     }
@@ -490,8 +490,8 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_Post  $item    Post object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $item  Post object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -636,8 +636,8 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
          * @since 5.9.0
          *
          * @param  WP_REST_Response  $response  The response object.
-         * @param  object  $menu_item Menu item setup by {@see wp_setup_nav_menu_item()}.
-         * @param  WP_REST_Request  $request   Request object.
+         * @param  object  $menu_item  Menu item setup by {@see wp_setup_nav_menu_item()}.
+         * @param  WP_REST_Request  $request  Request object.
          */
         return apply_filters('rest_prepare_nav_menu_item', $response, $menu_item, $request);
     }
@@ -647,7 +647,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      * @return array Links for the given post.
      */
     protected function prepare_links($post)
@@ -984,8 +984,8 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  array  $prepared_args Optional. Prepared WP_Query arguments. Default empty array.
-     * @param  WP_REST_Request  $request       Optional. Full details about the request.
+     * @param  array  $prepared_args  Optional. Prepared WP_Query arguments. Default empty array.
+     * @param  WP_REST_Request  $request  Optional. Full details about the request.
      * @return array Items query arguments.
      */
     protected function prepare_items_query($prepared_args = [], $request = null)
@@ -1017,7 +1017,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.9.0
      *
-     * @param  int  $menu_item_id Menu item id.
+     * @param  int  $menu_item_id  Menu item id.
      * @return int
      */
     protected function get_menu_id($menu_item_id)

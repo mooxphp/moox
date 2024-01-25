@@ -122,7 +122,7 @@ if (class_exists('WpOrg\Requests\Autoload') === false) {
         /**
          * Autoloader.
          *
-         * @param  string  $class_name Name of the class name to load.
+         * @param  string  $class_name  Name of the class name to load.
          * @return bool Whether a class was loaded or not.
          */
         public static function load($class_name)

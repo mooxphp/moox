@@ -14,9 +14,9 @@
  * the block is in legacy mode. If not, the HTML generated in the editor is
  * returned instead.
  *
- * @param  array  $attributes Block attributes.
- * @param  string  $content    Block default content.
- * @param  WP_Block  $block      Block instance.
+ * @param  array  $attributes  Block attributes.
+ * @param  string  $content  Block default content.
+ * @param  WP_Block  $block  Block instance.
  * @return string Returns the filtered post comments for the current post wrapped inside "p" tags.
  */
 function render_block_core_comments($attributes, $content, $block)
@@ -98,7 +98,7 @@ add_action('init', 'register_block_core_comments');
 /**
  * Use the button block classes for the form-submit button.
  *
- * @param  array  $fields The default comment form arguments.
+ * @param  array  $fields  The default comment form arguments.
  * @return array Returns the modified fields.
  */
 function comments_block_form_defaults($fields)
@@ -116,7 +116,7 @@ add_filter('comment_form_defaults', 'comments_block_form_defaults');
  * Enqueues styles from the legacy `core/post-comments` block. These styles are
  * required only by the block's fallback.
  *
- * @param  string  $block_name Name of the new block type.
+ * @param  string  $block_name  Name of the new block type.
  */
 function enqueue_legacy_post_comments_block_styles($block_name)
 {

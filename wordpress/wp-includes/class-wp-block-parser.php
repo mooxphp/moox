@@ -60,7 +60,7 @@ class WP_Block_Parser
      *
      * @since 5.0.0
      *
-     * @param  string  $document Input document being parsed.
+     * @param  string  $document  Input document being parsed.
      * @return array[]
      */
     public function parse($document)
@@ -326,7 +326,7 @@ class WP_Block_Parser
      *
      * @since 3.9.0
      *
-     * @param  string  $inner_html HTML content of block.
+     * @param  string  $inner_html  HTML content of block.
      * @return WP_Block_Parser_Block freeform block object.
      */
     public function freeform($inner_html)
@@ -342,7 +342,7 @@ class WP_Block_Parser
      *
      * @since 5.0.0
      *
-     * @param  null  $length how many bytes of document text to output.
+     * @param  null  $length  how many bytes of document text to output.
      */
     public function add_freeform($length = null)
     {
@@ -363,9 +363,9 @@ class WP_Block_Parser
      *
      * @since 5.0.0
      *
-     * @param  WP_Block_Parser_Block  $block        The block to add to the output.
+     * @param  WP_Block_Parser_Block  $block  The block to add to the output.
      * @param  int  $token_start  Byte offset into the document where the first token for the block starts.
-     * @param  int  $token_length Byte length of entire block from start of opening token to end of closing token.
+     * @param  int  $token_length  Byte length of entire block from start of opening token to end of closing token.
      * @param  int|null  $last_offset  Last byte offset into document if continuing form earlier output.
      */
     public function add_inner_block(WP_Block_Parser_Block $block, $token_start, $token_length, $last_offset = null)
@@ -390,7 +390,7 @@ class WP_Block_Parser
      *
      * @since 5.0.0
      *
-     * @param  int|null  $end_offset byte offset into document for where we should stop sending text output as HTML.
+     * @param  int|null  $end_offset  byte offset into document for where we should stop sending text output as HTML.
      */
     public function add_block_from_stack($end_offset = null)
     {

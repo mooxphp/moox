@@ -113,7 +113,7 @@ final class WP_User_Request
      *
      * @since 4.9.6
      *
-     * @param  WP_Post|object  $post Post object.
+     * @param  WP_Post|object  $post  Post object.
      */
     public function __construct($post)
     {

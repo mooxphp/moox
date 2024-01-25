@@ -19,9 +19,9 @@ require ABSPATH.WPINC.'/option.php';
  *
  * @since 0.71
  *
- * @param  string  $format    Format of the date to return.
- * @param  string  $date      Date string to convert.
- * @param  bool  $translate Whether the return date should be translated. Default true.
+ * @param  string  $format  Format of the date to return.
+ * @param  string  $date  Date string to convert.
+ * @param  bool  $translate  Whether the return date should be translated. Default true.
  * @return string|int|false Integer if `$format` is 'U' or 'G', string otherwise.
  *                          False on failure.
  */
@@ -64,8 +64,8 @@ function mysql2date($format, $date, $translate = true)
  * @since 1.0.0
  * @since 5.3.0 Now returns an integer if `$type` is 'U'. Previously a string was returned.
  *
- * @param  string  $type Type of time to retrieve. Accepts 'mysql', 'timestamp', 'U',
- *                       or PHP date format string (e.g. 'Y-m-d').
+ * @param  string  $type  Type of time to retrieve. Accepts 'mysql', 'timestamp', 'U',
+ *                        or PHP date format string (e.g. 'Y-m-d').
  * @param  int|bool  $gmt  Optional. Whether to use GMT timezone. Default false.
  * @return int|string Integer if `$type` is 'timestamp' or 'U', string otherwise.
  */
@@ -167,11 +167,11 @@ function wp_timezone()
  * @since 0.71
  * @since 5.3.0 Converted into a wrapper for wp_date().
  *
- * @param  string  $format                Format to display the date.
- * @param  int|bool  $timestamp_with_offset Optional. A sum of Unix timestamp and timezone offset
- *                                        in seconds. Default false.
- * @param  bool  $gmt                   Optional. Whether to use GMT timezone. Only applies
- *                                        if timestamp is not provided. Default false.
+ * @param  string  $format  Format to display the date.
+ * @param  int|bool  $timestamp_with_offset  Optional. A sum of Unix timestamp and timezone offset
+ *                                           in seconds. Default false.
+ * @param  bool  $gmt  Optional. Whether to use GMT timezone. Only applies
+ *                     if timestamp is not provided. Default false.
  * @return string The date, translated if locale specifies it.
  */
 function date_i18n($format, $timestamp_with_offset = false, $gmt = false)
@@ -210,12 +210,12 @@ function date_i18n($format, $timestamp_with_offset = false, $gmt = false)
      *
      * @since 2.8.0
      *
-     * @param  string  $date      Formatted date string.
-     * @param  string  $format    Format to display the date.
-     * @param  int  $timestamp A sum of Unix timestamp and timezone offset in seconds.
+     * @param  string  $date  Formatted date string.
+     * @param  string  $format  Format to display the date.
+     * @param  int  $timestamp  A sum of Unix timestamp and timezone offset in seconds.
      *                          Might be without offset if input omitted timestamp but requested GMT.
-     * @param  bool  $gmt       Whether to use GMT timezone. Only applies if timestamp was not provided.
-     *                          Default false.
+     * @param  bool  $gmt  Whether to use GMT timezone. Only applies if timestamp was not provided.
+     *                     Default false.
      */
     $date = apply_filters('date_i18n', $date, $format, $timestamp, $gmt);
 
@@ -234,10 +234,10 @@ function date_i18n($format, $timestamp_with_offset = false, $gmt = false)
  *
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
- * @param  string  $format    PHP date format.
- * @param  int  $timestamp Optional. Unix timestamp. Defaults to current time.
+ * @param  string  $format  PHP date format.
+ * @param  int  $timestamp  Optional. Unix timestamp. Defaults to current time.
  * @param  DateTimeZone  $timezone  Optional. Timezone to output result in. Defaults to timezone
- *                                from site settings.
+ *                                  from site settings.
  * @return string|false The date, translated if locale specifies it. False on invalid timestamp input.
  */
 function wp_date($format, $timestamp = null, $timezone = null)
@@ -311,9 +311,9 @@ function wp_date($format, $timestamp = null, $timezone = null)
      *
      * @since 5.3.0
      *
-     * @param  string  $date      Formatted date string.
-     * @param  string  $format    Format to display the date.
-     * @param  int  $timestamp Unix timestamp.
+     * @param  string  $date  Formatted date string.
+     * @param  string  $format  Format to display the date.
+     * @param  int  $timestamp  Unix timestamp.
      * @param  DateTimeZone  $timezone  Timezone.
      */
     $date = apply_filters('wp_date', $date, $format, $timestamp, $timezone);
@@ -332,8 +332,8 @@ function wp_date($format, $timestamp = null, $timezone = null)
  *
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
- * @param  string  $date   Formatted date string.
- * @param  string  $format Optional. Date format to check. Default empty string.
+ * @param  string  $date  Formatted date string.
+ * @param  string  $format  Optional. Date format to check. Default empty string.
  * @return string The date, declined if locale specifies it.
  */
 function wp_maybe_decline_date($date, $format = '')
@@ -419,8 +419,8 @@ function wp_maybe_decline_date($date, $format = '')
  *
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
- * @param  float  $number   The number to convert based on locale.
- * @param  int  $decimals Optional. Precision of the number of decimal places. Default 0.
+ * @param  float  $number  The number to convert based on locale.
+ * @param  int  $decimals  Optional. Precision of the number of decimal places. Default 0.
  * @return string Converted number in string format.
  */
 function number_format_i18n($number, $decimals = 0)
@@ -439,8 +439,8 @@ function number_format_i18n($number, $decimals = 0)
      * @since 2.8.0
      * @since 4.9.0 The `$number` and `$decimals` parameters were added.
      *
-     * @param  string  $formatted Converted number in string format.
-     * @param  float  $number    The number to convert based on locale.
+     * @param  string  $formatted  Converted number in string format.
+     * @param  float  $number  The number to convert based on locale.
      * @param  int  $decimals  Precision of the number of decimal places.
      */
     return apply_filters('number_format_i18n', $formatted, $number, $decimals);
@@ -463,8 +463,8 @@ function number_format_i18n($number, $decimals = 0)
  * @since 2.3.0
  * @since 6.0.0 Support for PB, EB, ZB, and YB was added.
  *
- * @param  int|string  $bytes    Number of bytes. Note max integer size for integers.
- * @param  int  $decimals Optional. Precision of number of decimal places. Default 0.
+ * @param  int|string  $bytes  Number of bytes. Note max integer size for integers.
+ * @param  int  $decimals  Optional. Precision of number of decimal places. Default 0.
  * @return string|false Number string on success, false on failure.
  */
 function size_format($bytes, $decimals = 0)
@@ -509,8 +509,8 @@ function size_format($bytes, $decimals = 0)
  *
  * @since 5.1.0
  *
- * @param  string  $duration Duration will be in string format (HH:ii:ss) OR (ii:ss),
- *                         with a possible prepended negative sign (-).
+ * @param  string  $duration  Duration will be in string format (HH:ii:ss) OR (ii:ss),
+ *                            with a possible prepended negative sign (-).
  * @return string|false A human readable duration string, false on failure.
  */
 function human_readable_duration($duration = '')
@@ -580,14 +580,14 @@ function human_readable_duration($duration = '')
  *
  * @since 0.71
  *
- * @param  string  $mysqlstring   Date or datetime field type from MySQL.
- * @param  int|string  $start_of_week Optional. Start of the week as an integer. Default empty string.
+ * @param  string  $mysqlstring  Date or datetime field type from MySQL.
+ * @param  int|string  $start_of_week  Optional. Start of the week as an integer. Default empty string.
  * @return int[] {
- *     Week start and end dates as Unix timestamps.
+ *               Week start and end dates as Unix timestamps.
  *
- *     @type int $start The week start date as a Unix timestamp.
- *     @type int $end   The week end date as a Unix timestamp.
- * }
+ * @type int $start The week start date as a Unix timestamp.
+ * @type int $end   The week end date as a Unix timestamp.
+ *           }
  */
 function get_weekstartend($mysqlstring, $start_of_week = '')
 {
@@ -628,7 +628,7 @@ function get_weekstartend($mysqlstring, $start_of_week = '')
  *
  * @since 2.0.5
  *
- * @param  string|array|object  $data Data that might be serialized.
+ * @param  string|array|object  $data  Data that might be serialized.
  * @return mixed A scalar data.
  */
 function maybe_serialize($data)
@@ -654,7 +654,7 @@ function maybe_serialize($data)
  *
  * @since 2.0.0
  *
- * @param  string  $data Data that might be unserialized.
+ * @param  string  $data  Data that might be unserialized.
  * @return mixed Unserialized data can be any type.
  */
 function maybe_unserialize($data)
@@ -675,8 +675,8 @@ function maybe_unserialize($data)
  * @since 2.0.5
  * @since 6.1.0 Added Enum support.
  *
- * @param  string  $data   Value to check to see if was serialized.
- * @param  bool  $strict Optional. Whether to be strict about the end of the string. Default true.
+ * @param  string  $data  Value to check to see if was serialized.
+ * @param  bool  $strict  Optional. Whether to be strict about the end of the string. Default true.
  * @return bool False if not serialized and true if it was.
  */
 function is_serialized($data, $strict = true)
@@ -746,7 +746,7 @@ function is_serialized($data, $strict = true)
  *
  * @since 2.0.5
  *
- * @param  string  $data Serialized data.
+ * @param  string  $data  Serialized data.
  * @return bool False if not a serialized string, true if it is.
  */
 function is_serialized_string($data)
@@ -781,7 +781,7 @@ function is_serialized_string($data)
  *
  * @global string $post_default_title Default XML-RPC post title.
  *
- * @param  string  $content XMLRPC XML Request content
+ * @param  string  $content  XMLRPC XML Request content
  * @return string Post title
  */
 function xmlrpc_getposttitle($content)
@@ -807,7 +807,7 @@ function xmlrpc_getposttitle($content)
  *
  * @global string $post_default_category Default XML-RPC post category.
  *
- * @param  string  $content XMLRPC XML Request content
+ * @param  string  $content  XMLRPC XML Request content
  * @return string|array List of categories or category name.
  */
 function xmlrpc_getpostcategory($content)
@@ -828,7 +828,7 @@ function xmlrpc_getpostcategory($content)
  *
  * @since 0.71
  *
- * @param  string  $content XML-RPC XML Request content.
+ * @param  string  $content  XML-RPC XML Request content.
  * @return string XMLRPC XML Request content without title and category elements.
  */
 function xmlrpc_removepostdata($content)
@@ -846,7 +846,7 @@ function xmlrpc_removepostdata($content)
  * @since 3.7.0
  * @since 6.0.0 Fixes support for HTML entities (Trac 30580).
  *
- * @param  string  $content Content to extract URLs from.
+ * @param  string  $content  Content to extract URLs from.
  * @return string[] Array of URLs found in passed string.
  */
 function wp_extract_urls($content)
@@ -899,8 +899,8 @@ function wp_extract_urls($content)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string|null  $content Post content. If `null`, the `post_content` field from `$post` is used.
- * @param  int|WP_Post  $post    Post ID or post object.
+ * @param  string|null  $content  Post content. If `null`, the `post_content` field from `$post` is used.
+ * @param  int|WP_Post  $post  Post ID or post object.
  * @return void|false Void on success, false if the post is not found.
  */
 function do_enclose($content, $post)
@@ -958,8 +958,8 @@ function do_enclose($content, $post)
      *
      * @since 4.4.0
      *
-     * @param  string[]  $post_links An array of enclosure links.
-     * @param  int  $post_id    Post ID.
+     * @param  string[]  $post_links  An array of enclosure links.
+     * @param  int  $post_id  Post ID.
      */
     $post_links = apply_filters('enclosure_links', $post_links, $post->ID);
 
@@ -1001,8 +1001,8 @@ function do_enclose($content, $post)
  *
  * @since 1.5.1
  *
- * @param  string  $url        URL to retrieve HTTP headers from.
- * @param  bool  $deprecated Not Used.
+ * @param  string  $url  URL to retrieve HTTP headers from.
+ * @param  bool  $deprecated  Not Used.
  * @return \WpOrg\Requests\Utility\CaseInsensitiveDictionary|false Headers on success, false on failure.
  */
 function wp_get_http_headers($url, $deprecated = false)
@@ -1057,7 +1057,7 @@ function is_new_day()
  * @link https://www.php.net/manual/en/function.http-build-query.php for more on what
  *       http_build_query() does.
  *
- * @param  array  $data URL-encode key/value pairs.
+ * @param  array  $data  URL-encode key/value pairs.
  * @return string URL-encoded string.
  */
 function build_query($data)
@@ -1071,13 +1071,13 @@ function build_query($data)
  * @since 3.2.0
  * @see https://www.php.net/manual/en/function.http-build-query.php
  *
- * @param  array|object  $data      An array or object of data. Converted to array.
- * @param  string  $prefix    Optional. Numeric index. If set, start parameter numbering with it.
- *                                Default null.
- * @param  string  $sep       Optional. Argument separator; defaults to 'arg_separator.output'.
- *                                Default null.
- * @param  string  $key       Optional. Used to prefix key name. Default empty string.
- * @param  bool  $urlencode Optional. Whether to use urlencode() in the result. Default true.
+ * @param  array|object  $data  An array or object of data. Converted to array.
+ * @param  string  $prefix  Optional. Numeric index. If set, start parameter numbering with it.
+ *                          Default null.
+ * @param  string  $sep  Optional. Argument separator; defaults to 'arg_separator.output'.
+ *                       Default null.
+ * @param  string  $key  Optional. Used to prefix key name. Default empty string.
+ * @param  bool  $urlencode  Optional. Whether to use urlencode() in the result. Default true.
  * @return string The query string.
  */
 function _http_build_query($data, $prefix = null, $sep = null, $key = '', $urlencode = true)
@@ -1151,9 +1151,9 @@ function _http_build_query($data, $prefix = null, $sep = null, $key = '', $urlen
  * @since 5.3.0 Formalized the existing and already documented parameters
  *              by adding `...$args` to the function signature.
  *
- * @param  string|array  $key   Either a query variable key, or an associative array of query variables.
- * @param  string  $value Optional. Either a query variable value, or a URL to act upon.
- * @param  string  $url   Optional. A URL to act upon.
+ * @param  string|array  $key  Either a query variable key, or an associative array of query variables.
+ * @param  string  $value  Optional. Either a query variable value, or a URL to act upon.
+ * @param  string  $url  Optional. A URL to act upon.
  * @return string New URL query string (unescaped).
  */
 function add_query_arg(...$args)
@@ -1235,8 +1235,8 @@ function add_query_arg(...$args)
  *
  * @since 1.5.0
  *
- * @param  string|string[]  $key   Query key or keys to remove.
- * @param  false|string  $query Optional. When false uses the current URL. Default false.
+ * @param  string|string[]  $key  Query key or keys to remove.
+ * @param  false|string  $query  Optional. When false uses the current URL. Default false.
  * @return string New URL query string.
  */
 function remove_query_arg($key, $query = false)
@@ -1297,7 +1297,7 @@ function wp_removable_query_args()
      *
      * @since 4.2.0
      *
-     * @param  string[]  $removable_query_args An array of query variable names to remove from a URL.
+     * @param  string[]  $removable_query_args  An array of query variable names to remove from a URL.
      */
     return apply_filters('removable_query_args', $removable_query_args);
 }
@@ -1308,7 +1308,7 @@ function wp_removable_query_args()
  * @since 0.71
  * @since 5.5.0 Non-string values are left untouched.
  *
- * @param  array  $input_array Array to walk while sanitizing contents.
+ * @param  array  $input_array  Array to walk while sanitizing contents.
  * @return array Sanitized $input_array.
  */
 function add_magic_quotes($input_array)
@@ -1330,7 +1330,7 @@ function add_magic_quotes($input_array)
  * @since 1.5.1
  * @see wp_safe_remote_get()
  *
- * @param  string  $uri URI/URL of web page to retrieve.
+ * @param  string  $uri  URI/URL of web page to retrieve.
  * @return string|false HTTP content. False on failure.
  */
 function wp_remote_fopen($uri)
@@ -1362,7 +1362,7 @@ function wp_remote_fopen($uri)
  * @global WP_Query $wp_query     WordPress Query object.
  * @global WP_Query $wp_the_query Copy of the WordPress Query object.
  *
- * @param  string|array  $query_vars Default WP_Query arguments.
+ * @param  string|array  $query_vars  Default WP_Query arguments.
  */
 function wp($query_vars = '')
 {
@@ -1385,7 +1385,7 @@ function wp($query_vars = '')
  *
  * @global array $wp_header_to_desc
  *
- * @param  int  $code HTTP status code.
+ * @param  int  $code  HTTP status code.
  * @return string Status description if found, an empty string otherwise.
  */
 function get_status_header_desc($code)
@@ -1477,9 +1477,9 @@ function get_status_header_desc($code)
  * @since 4.4.0 Added the `$description` parameter.
  * @see get_status_header_desc()
  *
- * @param  int  $code        HTTP status code.
- * @param  string  $description Optional. A custom description for the HTTP status.
- *                            Defaults to the result of get_status_header_desc() for the given code.
+ * @param  int  $code  HTTP status code.
+ * @param  string  $description  Optional. A custom description for the HTTP status.
+ *                               Defaults to the result of get_status_header_desc() for the given code.
  */
 function status_header($code, $description = '')
 {
@@ -1500,10 +1500,10 @@ function status_header($code, $description = '')
          *
          * @since 2.2.0
          *
-         * @param  string  $status_header HTTP status header.
-         * @param  int  $code          HTTP status code.
-         * @param  string  $description   Description for the status code.
-         * @param  string  $protocol      Server protocol.
+         * @param  string  $status_header  HTTP status header.
+         * @param  int  $code  HTTP status code.
+         * @param  string  $description  Description for the status code.
+         * @param  string  $protocol  Server protocol.
          */
         $status_header = apply_filters('status_header', $status_header, $code, $description, $protocol);
     }
@@ -1543,7 +1543,7 @@ function wp_get_nocache_headers()
          * @since 2.8.0
          * @see wp_get_nocache_headers()
          *
-         * @param  array  $headers Header names and field values.
+         * @param  array  $headers  Header names and field values.
          */
         $headers = (array) apply_filters('nocache_headers', $headers);
     }
@@ -1616,7 +1616,7 @@ function get_num_queries()
  *
  * @since 1.0.0
  *
- * @param  string  $yn Character string containing either 'y' (yes) or 'n' (no).
+ * @param  string  $yn  Character string containing either 'y' (yes) or 'n' (no).
  * @return bool True if 'y', false on anything else.
  */
 function bool_from_yn($yn)
@@ -1668,8 +1668,8 @@ function do_feed()
      * @since 2.1.0
      * @since 4.4.0 The `$feed` parameter was added.
      *
-     * @param  bool  $is_comment_feed Whether the feed is a comment feed.
-     * @param  string  $feed            The feed name.
+     * @param  bool  $is_comment_feed  Whether the feed is a comment feed.
+     * @param  string  $feed  The feed name.
      */
     do_action("do_feed_{$feed}", $wp_query->is_comment_feed, $feed);
 }
@@ -1702,7 +1702,7 @@ function do_feed_rss()
  * @since 2.1.0
  * @see load_template()
  *
- * @param  bool  $for_comments True for the comment feed, false for normal feed.
+ * @param  bool  $for_comments  True for the comment feed, false for normal feed.
  */
 function do_feed_rss2($for_comments)
 {
@@ -1719,7 +1719,7 @@ function do_feed_rss2($for_comments)
  * @since 2.1.0
  * @see load_template()
  *
- * @param  bool  $for_comments True for the comment feed, false for normal feed.
+ * @param  bool  $for_comments  True for the comment feed, false for normal feed.
  */
 function do_feed_atom($for_comments)
 {
@@ -1762,8 +1762,8 @@ function do_robots()
      *
      * @since 3.0.0
      *
-     * @param  string  $output The robots.txt output.
-     * @param  bool  $public Whether the site is considered "public".
+     * @param  string  $output  The robots.txt output.
+     * @param  bool  $public  Whether the site is considered "public".
      */
     echo apply_filters('robots_txt', $output, $public);
 }
@@ -1896,9 +1896,9 @@ function is_blog_installed()
  *
  * @since 2.0.4
  *
- * @param  string  $actionurl URL to add nonce action.
- * @param  int|string  $action    Optional. Nonce action name. Default -1.
- * @param  string  $name      Optional. Nonce name. Default '_wpnonce'.
+ * @param  string  $actionurl  URL to add nonce action.
+ * @param  int|string  $action  Optional. Nonce action name. Default -1.
+ * @param  string  $name  Optional. Nonce name. Default '_wpnonce'.
  * @return string Escaped URL with nonce action added.
  */
 function wp_nonce_url($actionurl, $action = -1, $name = '_wpnonce')
@@ -1929,9 +1929,9 @@ function wp_nonce_url($actionurl, $action = -1, $name = '_wpnonce')
  * @since 2.0.4
  *
  * @param  int|string  $action  Optional. Action name. Default -1.
- * @param  string  $name    Optional. Nonce name. Default '_wpnonce'.
- * @param  bool  $referer Optional. Whether to set the referer field for validation. Default true.
- * @param  bool  $display Optional. Whether to display or return hidden form field. Default true.
+ * @param  string  $name  Optional. Nonce name. Default '_wpnonce'.
+ * @param  bool  $referer  Optional. Whether to set the referer field for validation. Default true.
+ * @param  bool  $display  Optional. Whether to display or return hidden form field. Default true.
  * @return string Nonce field HTML markup.
  */
 function wp_nonce_field($action = -1, $name = '_wpnonce', $referer = true, $display = true)
@@ -1958,7 +1958,7 @@ function wp_nonce_field($action = -1, $name = '_wpnonce', $referer = true, $disp
  *
  * @since 2.0.4
  *
- * @param  bool  $display Optional. Whether to echo or return the referer field. Default true.
+ * @param  bool  $display  Optional. Whether to echo or return the referer field. Default true.
  * @return string Referer field HTML markup.
  */
 function wp_referer_field($display = true)
@@ -1982,9 +1982,9 @@ function wp_referer_field($display = true)
  *
  * @since 2.0.4
  *
- * @param  bool  $display      Optional. Whether to echo the original http referer. Default true.
- * @param  string  $jump_back_to Optional. Can be 'previous' or page you want to jump back to.
- *                             Default 'current'.
+ * @param  bool  $display  Optional. Whether to echo the original http referer. Default true.
+ * @param  string  $jump_back_to  Optional. Can be 'previous' or page you want to jump back to.
+ *                                Default 'current'.
  * @return string Original referer field.
  */
 function wp_original_referer_field($display = true, $jump_back_to = 'current')
@@ -2081,7 +2081,7 @@ function wp_get_original_referer()
  *
  * @since 2.0.1
  *
- * @param  string  $target Full path to attempt to create.
+ * @param  string  $target  Full path to attempt to create.
  * @return bool Whether the path was created. True if path already exists.
  */
 function wp_mkdir_p($target)
@@ -2159,7 +2159,7 @@ function wp_mkdir_p($target)
  *
  * @since 2.5.0
  *
- * @param  string  $path File path.
+ * @param  string  $path  File path.
  * @return bool True if path is absolute, false is not absolute.
  */
 function path_is_absolute($path)
@@ -2201,8 +2201,8 @@ function path_is_absolute($path)
  *
  * @since 2.5.0
  *
- * @param  string  $base Base path.
- * @param  string  $path Path relative to $base.
+ * @param  string  $base  Base path.
+ * @param  string  $path  Path relative to $base.
  * @return string The path with the base or absolute path.
  */
 function path_join($base, $path)
@@ -2227,7 +2227,7 @@ function path_join($base, $path)
  * @since 4.5.0 Allows for Windows network shares.
  * @since 4.9.7 Allows for PHP file wrappers.
  *
- * @param  string  $path Path to normalize.
+ * @param  string  $path  Path to normalize.
  * @return string Normalized path.
  */
 function wp_normalize_path($path)
@@ -2308,7 +2308,7 @@ function get_temp_dir()
  * @since 3.6.0
  * @see win_is_writable()
  *
- * @param  string  $path Path to check for write-ability.
+ * @param  string  $path  Path to check for write-ability.
  * @return bool Whether the path is writable.
  */
 function wp_is_writable($path)
@@ -2332,7 +2332,7 @@ function wp_is_writable($path)
  * @see https://bugs.php.net/bug.php?id=27609
  * @see https://bugs.php.net/bug.php?id=30931
  *
- * @param  string  $path Windows path to check for write-ability.
+ * @param  string  $path  Windows path to check for write-ability.
  * @return bool Whether the path is writable.
  */
 function win_is_writable($path)
@@ -2401,20 +2401,20 @@ function wp_get_upload_dir()
  *
  * @uses _wp_upload_dir()
  *
- * @param  string  $time Optional. Time formatted in 'yyyy/mm'. Default null.
- * @param  bool  $create_dir Optional. Whether to check and create the uploads directory.
- *                           Default true for backward compatibility.
- * @param  bool  $refresh_cache Optional. Whether to refresh the cache. Default false.
+ * @param  string  $time  Optional. Time formatted in 'yyyy/mm'. Default null.
+ * @param  bool  $create_dir  Optional. Whether to check and create the uploads directory.
+ *                            Default true for backward compatibility.
+ * @param  bool  $refresh_cache  Optional. Whether to refresh the cache. Default false.
  * @return array {
- *     Array of information about the upload directory.
+ *               Array of information about the upload directory.
  *
- *     @type string       $path    Base directory and subdirectory or full path to upload directory.
- *     @type string       $url     Base URL and subdirectory or absolute URL to upload directory.
- *     @type string       $subdir  Subdirectory if uploads use year/month folders option is on.
- *     @type string       $basedir Path without subdir.
- *     @type string       $baseurl URL path without subdir.
- *     @type string|false $error   False or error message.
- * }
+ * @type string $path    Base directory and subdirectory or full path to upload directory.
+ * @type string $url     Base URL and subdirectory or absolute URL to upload directory.
+ * @type string $subdir  Subdirectory if uploads use year/month folders option is on.
+ * @type string $basedir Path without subdir.
+ * @type string $baseurl URL path without subdir.
+ * @type string|false $error   False or error message.
+ *                    }
  */
 function wp_upload_dir($time = null, $create_dir = true, $refresh_cache = false)
 {
@@ -2431,16 +2431,16 @@ function wp_upload_dir($time = null, $create_dir = true, $refresh_cache = false)
      *
      * @since 2.0.0
      *
-     * @param  array  $uploads {
-     *     Array of information about the upload directory.
+     * @param  array  $uploads  {
+     *                          Array of information about the upload directory.
      *
-     *     @type string       $path    Base directory and subdirectory or full path to upload directory.
-     *     @type string       $url     Base URL and subdirectory or absolute URL to upload directory.
-     *     @type string       $subdir  Subdirectory if uploads use year/month folders option is on.
-     *     @type string       $basedir Path without subdir.
-     *     @type string       $baseurl URL path without subdir.
-     *     @type string|false $error   False or error message.
-     * }
+     * @type string $path    Base directory and subdirectory or full path to upload directory.
+     * @type string $url     Base URL and subdirectory or absolute URL to upload directory.
+     * @type string $subdir  Subdirectory if uploads use year/month folders option is on.
+     * @type string $basedir Path without subdir.
+     * @type string $baseurl URL path without subdir.
+     * @type string|false $error   False or error message.
+     *                    }
      */
     $uploads = apply_filters('upload_dir', $cache[$key]);
 
@@ -2476,7 +2476,7 @@ function wp_upload_dir($time = null, $create_dir = true, $refresh_cache = false)
  *
  * @since 4.5.0
  *
- * @param  string  $time Optional. Time formatted in 'yyyy/mm'. Default null.
+ * @param  string  $time  Optional. Time formatted in 'yyyy/mm'. Default null.
  * @return array See wp_upload_dir()
  */
 function _wp_upload_dir($time = null)
@@ -2597,9 +2597,9 @@ function _wp_upload_dir($time = null)
  *
  * @since 2.5.0
  *
- * @param  string  $dir                      Directory.
- * @param  string  $filename                 File name.
- * @param  callable  $unique_filename_callback Callback. Default null.
+ * @param  string  $dir  Directory.
+ * @param  string  $filename  File name.
+ * @param  callable  $unique_filename_callback  Callback. Default null.
  * @return string New filename, if given wasn't unique.
  */
 function wp_unique_filename($dir, $filename, $unique_filename_callback = null)
@@ -2718,10 +2718,10 @@ function wp_unique_filename($dir, $filename, $unique_filename_callback = null)
              *
              * @since 5.5.0
              *
-             * @param  array|null  $files    The list of files to use for filename comparisons.
+             * @param  array|null  $files  The list of files to use for filename comparisons.
              *                             Default null (to retrieve the list from the filesystem).
-             * @param  string  $dir      The directory for the new file.
-             * @param  string  $filename The proposed filename for the new file.
+             * @param  string  $dir  The directory for the new file.
+             * @param  string  $filename  The proposed filename for the new file.
              */
             $files = apply_filters('pre_wp_unique_filename_file_list', null, $dir, $filename);
 
@@ -2840,13 +2840,13 @@ function wp_unique_filename($dir, $filename, $unique_filename_callback = null)
      * @since 4.5.0
      * @since 5.8.1 The `$alt_filenames` and `$number` parameters were added.
      *
-     * @param  string  $filename                 Unique file name.
-     * @param  string  $ext                      File extension. Example: ".png".
-     * @param  string  $dir                      Directory path.
-     * @param  callable|null  $unique_filename_callback Callback function that generates the unique file name.
-     * @param  string[]  $alt_filenames            Array of alternate file names that were checked for collisions.
-     * @param  int|string  $number                   The highest number that was used to make the file name unique
-     *                                                or an empty string if unused.
+     * @param  string  $filename  Unique file name.
+     * @param  string  $ext  File extension. Example: ".png".
+     * @param  string  $dir  Directory path.
+     * @param  callable|null  $unique_filename_callback  Callback function that generates the unique file name.
+     * @param  string[]  $alt_filenames  Array of alternate file names that were checked for collisions.
+     * @param  int|string  $number  The highest number that was used to make the file name unique
+     *                              or an empty string if unused.
      */
     return apply_filters('wp_unique_filename', $filename, $ext, $dir, $unique_filename_callback, $alt_filenames, $number);
 }
@@ -2856,9 +2856,9 @@ function wp_unique_filename($dir, $filename, $unique_filename_callback = null)
  *
  * @since 5.8.1
  *
- * @param  string[]  $filenames Array of file names to check.
- * @param  string  $dir       The directory containing the files.
- * @param  array  $files     An array of existing files in the directory. May be empty.
+ * @param  string[]  $filenames  Array of file names to check.
+ * @param  string  $dir  The directory containing the files.
+ * @param  array  $files  An array of existing files in the directory. May be empty.
  * @return bool True if the tested file name could match an existing file, false otherwise.
  */
 function _wp_check_alternate_file_names($filenames, $dir, $files)
@@ -2881,8 +2881,8 @@ function _wp_check_alternate_file_names($filenames, $dir, $files)
  *
  * @since 5.3.1
  *
- * @param  string  $filename The file name to check.
- * @param  array  $files    An array of existing files in the directory.
+ * @param  string  $filename  The file name to check.
+ * @param  array  $files  An array of existing files in the directory.
  * @return bool True if the tested file name could match an existing file, false otherwise.
  */
 function _wp_check_existing_file_names($filename, $files)
@@ -2927,18 +2927,18 @@ function _wp_check_existing_file_names($filename, $files)
  *
  * @since 2.0.0
  *
- * @param  string  $name       Filename.
- * @param  null|string  $deprecated Never used. Set to null.
- * @param  string  $bits       File content
- * @param  string  $time       Optional. Time formatted in 'yyyy/mm'. Default null.
+ * @param  string  $name  Filename.
+ * @param  null|string  $deprecated  Never used. Set to null.
+ * @param  string  $bits  File content
+ * @param  string  $time  Optional. Time formatted in 'yyyy/mm'. Default null.
  * @return array {
- *     Information about the newly-uploaded file.
+ *               Information about the newly-uploaded file.
  *
- *     @type string       $file  Filename of the newly-uploaded file.
- *     @type string       $url   URL of the uploaded file.
- *     @type string       $type  File type.
- *     @type string|false $error Error message, if there has been an error.
- * }
+ * @type string $file  Filename of the newly-uploaded file.
+ * @type string $url   URL of the uploaded file.
+ * @type string $type  File type.
+ * @type string|false $error Error message, if there has been an error.
+ *                    }
  */
 function wp_upload_bits($name, $deprecated, $bits, $time = null)
 {
@@ -2969,7 +2969,7 @@ function wp_upload_bits($name, $deprecated, $bits, $time = null)
      *
      * @since 3.0.0
      *
-     * @param  array|string  $upload_bits_error An array of upload bits data, or error message to return.
+     * @param  array|string  $upload_bits_error  An array of upload bits data, or error message to return.
      */
     $upload_bits_error = apply_filters(
         'wp_upload_bits',
@@ -3048,7 +3048,7 @@ function wp_upload_bits($name, $deprecated, $bits, $time = null)
  *
  * @since 2.5.0
  *
- * @param  string  $ext The extension to search.
+ * @param  string  $ext  The extension to search.
  * @return string|void The file type, example: audio, video, document, spreadsheet, etc.
  */
 function wp_ext2type($ext)
@@ -3090,15 +3090,15 @@ function wp_get_default_extension_for_mime_type($mime_type)
  *
  * @since 2.0.4
  *
- * @param  string  $filename File name or path.
- * @param  string[]|null  $mimes    Optional. Array of allowed mime types keyed by their file extension regex.
+ * @param  string  $filename  File name or path.
+ * @param  string[]|null  $mimes  Optional. Array of allowed mime types keyed by their file extension regex.
  *                                Defaults to the result of get_allowed_mime_types().
  * @return array {
- *     Values for the extension and mime type.
+ *               Values for the extension and mime type.
  *
- *     @type string|false $ext  File extension, or false if the file doesn't match a mime type.
- *     @type string|false $type File mime type, or false if the file doesn't match a mime type.
- * }
+ * @type string|false $ext  File extension, or false if the file doesn't match a mime type.
+ * @type string|false $type File mime type, or false if the file doesn't match a mime type.
+ *                    }
  */
 function wp_check_filetype($filename, $mimes = null)
 {
@@ -3132,18 +3132,18 @@ function wp_check_filetype($filename, $mimes = null)
  *
  * @since 3.0.0
  *
- * @param  string  $file     Full path to the file.
- * @param  string  $filename The name of the file (may differ from $file due to $file being
- *                                in a tmp directory).
- * @param  string[]|null  $mimes    Optional. Array of allowed mime types keyed by their file extension regex.
+ * @param  string  $file  Full path to the file.
+ * @param  string  $filename  The name of the file (may differ from $file due to $file being
+ *                            in a tmp directory).
+ * @param  string[]|null  $mimes  Optional. Array of allowed mime types keyed by their file extension regex.
  *                                Defaults to the result of get_allowed_mime_types().
  * @return array {
- *     Values for the extension, mime type, and corrected filename.
+ *               Values for the extension, mime type, and corrected filename.
  *
- *     @type string|false $ext             File extension, or false if the file doesn't match a mime type.
- *     @type string|false $type            File mime type, or false if the file doesn't match a mime type.
- *     @type string|false $proper_filename File name with its correct extension, or false if it cannot be determined.
- * }
+ * @type string|false $ext             File extension, or false if the file doesn't match a mime type.
+ * @type string|false $type            File mime type, or false if the file doesn't match a mime type.
+ * @type string|false $proper_filename File name with its correct extension, or false if it cannot be determined.
+ *                    }
  */
 function wp_check_filetype_and_ext($file, $filename, $mimes = null)
 {
@@ -3173,7 +3173,7 @@ function wp_check_filetype_and_ext($file, $filename, $mimes = null)
              *
              * @since 3.0.0
              *
-             * @param  array  $mime_to_ext Array of image mime types and their matching extensions.
+             * @param  array  $mime_to_ext  Array of image mime types and their matching extensions.
              */
             $mime_to_ext = apply_filters(
                 'getimagesize_mimes_to_exts',
@@ -3338,20 +3338,20 @@ function wp_check_filetype_and_ext($file, $filename, $mimes = null)
      * @since 3.0.0
      * @since 5.1.0 The $real_mime parameter was added.
      *
-     * @param  array  $wp_check_filetype_and_ext {
-     *     Values for the extension, mime type, and corrected filename.
+     * @param  array  $wp_check_filetype_and_ext  {
+     *                                            Values for the extension, mime type, and corrected filename.
      *
-     *     @type string|false $ext             File extension, or false if the file doesn't match a mime type.
-     *     @type string|false $type            File mime type, or false if the file doesn't match a mime type.
-     *     @type string|false $proper_filename File name with its correct extension, or false if it cannot be determined.
-     * }
+     * @type string|false $ext             File extension, or false if the file doesn't match a mime type.
+     * @type string|false $type            File mime type, or false if the file doesn't match a mime type.
+     * @type string|false $proper_filename File name with its correct extension, or false if it cannot be determined.
+     *                    }
      *
-     * @param  string  $file                      Full path to the file.
-     * @param  string  $filename                  The name of the file (may differ from $file due to
-     *                                                 $file being in a tmp directory).
-     * @param  string[]|null  $mimes                     Array of mime types keyed by their file extension regex, or null if
-     *                                                 none were provided.
-     * @param  string|false  $real_mime                 The actual mime type or false if the type cannot be determined.
+     * @param  string  $file  Full path to the file.
+     * @param  string  $filename  The name of the file (may differ from $file due to
+     *                            $file being in a tmp directory).
+     * @param  string[]|null  $mimes  Array of mime types keyed by their file extension regex, or null if
+     *                                none were provided.
+     * @param  string|false  $real_mime  The actual mime type or false if the type cannot be determined.
      */
     return apply_filters('wp_check_filetype_and_ext', compact('ext', 'type', 'proper_filename'), $file, $filename, $mimes, $real_mime);
 }
@@ -3364,7 +3364,7 @@ function wp_check_filetype_and_ext($file, $filename, $mimes = null)
  * @since 4.7.1
  * @since 5.8.0 Added support for WebP images.
  *
- * @param  string  $file Full path to the file.
+ * @param  string  $file  Full path to the file.
  * @return string|false The actual mime type or false if the type cannot be determined.
  */
 function wp_get_image_mime($file)
@@ -3445,8 +3445,8 @@ function wp_get_mime_types()
      *
      * @since 3.5.0
      *
-     * @param  string[]  $wp_get_mime_types Mime types keyed by the file extension regex
-     *                                    corresponding to those types.
+     * @param  string[]  $wp_get_mime_types  Mime types keyed by the file extension regex
+     *                                       corresponding to those types.
      */
     return apply_filters(
         'mime_types',
@@ -3574,7 +3574,7 @@ function wp_get_ext_types()
      * @since 2.5.0
      * @see wp_ext2type()
      *
-     * @param  array[]  $ext2type Multi-dimensional array of file extensions types keyed by the type of file.
+     * @param  array[]  $ext2type  Multi-dimensional array of file extensions types keyed by the type of file.
      */
     return apply_filters(
         'ext2type',
@@ -3598,7 +3598,7 @@ function wp_get_ext_types()
  * @since 6.0.0
  * @link https://www.php.net/manual/en/function.filesize.php
  *
- * @param  string  $path Path to the file.
+ * @param  string  $path  Path to the file.
  * @return int The size of the file in bytes, or 0 in the event of an error.
  */
 function wp_filesize($path)
@@ -3608,8 +3608,8 @@ function wp_filesize($path)
      *
      * @since 6.0.0
      *
-     * @param  null|int  $size The unfiltered value. Returning an int from the callback bypasses the filesize call.
-     * @param  string  $path Path to the file.
+     * @param  null|int  $size  The unfiltered value. Returning an int from the callback bypasses the filesize call.
+     * @param  string  $path  Path to the file.
      */
     $size = apply_filters('pre_wp_filesize', null, $path);
 
@@ -3624,8 +3624,8 @@ function wp_filesize($path)
      *
      * @since 6.0.0
      *
-     * @param  int  $size The result of PHP filesize on the file.
-     * @param  string  $path Path to the file.
+     * @param  int  $size  The result of PHP filesize on the file.
+     * @param  string  $path  Path to the file.
      */
     return (int) apply_filters('wp_filesize', $size, $path);
 }
@@ -3635,7 +3635,7 @@ function wp_filesize($path)
  *
  * @since 2.8.6
  *
- * @param  int|WP_User  $user Optional. User to check. Defaults to current user.
+ * @param  int|WP_User  $user  Optional. User to check. Defaults to current user.
  * @return string[] Array of mime types keyed by the file extension regex corresponding
  *                  to those types.
  */
@@ -3657,8 +3657,8 @@ function get_allowed_mime_types($user = null)
      *
      * @since 2.0.0
      *
-     * @param  array  $t    Mime types keyed by the file extension regex corresponding to those types.
-     * @param  int|WP_User|null  $user User ID, User object or null if not provided (indicates current user).
+     * @param  array  $t  Mime types keyed by the file extension regex corresponding to those types.
+     * @param  int|WP_User|null  $user  User ID, User object or null if not provided (indicates current user).
      */
     return apply_filters('upload_mimes', $t, $user);
 }
@@ -3671,7 +3671,7 @@ function get_allowed_mime_types($user = null)
  *
  * @since 2.0.4
  *
- * @param  string  $action The nonce action.
+ * @param  string  $action  The nonce action.
  */
 function wp_nonce_ays($action)
 {
@@ -3736,31 +3736,31 @@ function wp_nonce_ays($action)
  *
  * @global WP_Query $wp_query WordPress Query object.
  *
- * @param  string|WP_Error  $message Optional. Error message. If this is a WP_Error object,
- *                                  and not an Ajax or XML-RPC request, the error's messages are used.
- *                                  Default empty string.
- * @param  string|int  $title   Optional. Error title. If `$message` is a `WP_Error` object,
- *                                  error data with the key 'title' may be used to specify the title.
- *                                  If `$title` is an integer, then it is treated as the response code.
- *                                  Default empty string.
- * @param  string|array|int  $args {
- *     Optional. Arguments to control behavior. If `$args` is an integer, then it is treated
- *     as the response code. Default empty array.
+ * @param  string|WP_Error  $message  Optional. Error message. If this is a WP_Error object,
+ *                                    and not an Ajax or XML-RPC request, the error's messages are used.
+ *                                    Default empty string.
+ * @param  string|int  $title  Optional. Error title. If `$message` is a `WP_Error` object,
+ *                             error data with the key 'title' may be used to specify the title.
+ *                             If `$title` is an integer, then it is treated as the response code.
+ *                             Default empty string.
+ * @param  string|array|int  $args  {
+ *                                  Optional. Arguments to control behavior. If `$args` is an integer, then it is treated
+ *                                  as the response code. Default empty array.
  *
- *     @type int    $response       The HTTP response code. Default 200 for Ajax requests, 500 otherwise.
- *     @type string $link_url       A URL to include a link to. Only works in combination with $link_text.
- *                                  Default empty string.
- *     @type string $link_text      A label for the link to include. Only works in combination with $link_url.
- *                                  Default empty string.
- *     @type bool   $back_link      Whether to include a link to go back. Default false.
- *     @type string $text_direction The text direction. This is only useful internally, when WordPress is still
- *                                  loading and the site's locale is not set up yet. Accepts 'rtl' and 'ltr'.
- *                                  Default is the value of is_rtl().
- *     @type string $charset        Character set of the HTML output. Default 'utf-8'.
- *     @type string $code           Error code to use. Default is 'wp_die', or the main error code if $message
- *                                  is a WP_Error.
- *     @type bool   $exit           Whether to exit the process after completion. Default true.
- * }
+ * @type int $response       The HTTP response code. Default 200 for Ajax requests, 500 otherwise.
+ * @type string $link_url       A URL to include a link to. Only works in combination with $link_text.
+ *              Default empty string.
+ * @type string $link_text      A label for the link to include. Only works in combination with $link_url.
+ *              Default empty string.
+ * @type bool $back_link      Whether to include a link to go back. Default false.
+ * @type string $text_direction The text direction. This is only useful internally, when WordPress is still
+ *              loading and the site's locale is not set up yet. Accepts 'rtl' and 'ltr'.
+ *              Default is the value of is_rtl().
+ * @type string $charset        Character set of the HTML output. Default 'utf-8'.
+ * @type string $code           Error code to use. Default is 'wp_die', or the main error code if $message
+ *              is a WP_Error.
+ * @type bool $exit           Whether to exit the process after completion. Default true.
+ *            }
  */
 function wp_die($message = '', $title = '', $args = [])
 {
@@ -3779,7 +3779,7 @@ function wp_die($message = '', $title = '', $args = [])
          *
          * @since 3.4.0
          *
-         * @param  callable  $callback Callback function name.
+         * @param  callable  $callback  Callback function name.
          */
         $callback = apply_filters('wp_die_ajax_handler', '_ajax_wp_die_handler');
     } elseif (wp_is_json_request()) {
@@ -3788,7 +3788,7 @@ function wp_die($message = '', $title = '', $args = [])
          *
          * @since 5.1.0
          *
-         * @param  callable  $callback Callback function name.
+         * @param  callable  $callback  Callback function name.
          */
         $callback = apply_filters('wp_die_json_handler', '_json_wp_die_handler');
     } elseif (defined('REST_REQUEST') && REST_REQUEST && wp_is_jsonp_request()) {
@@ -3797,7 +3797,7 @@ function wp_die($message = '', $title = '', $args = [])
          *
          * @since 5.2.0
          *
-         * @param  callable  $callback Callback function name.
+         * @param  callable  $callback  Callback function name.
          */
         $callback = apply_filters('wp_die_jsonp_handler', '_jsonp_wp_die_handler');
     } elseif (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST) {
@@ -3806,7 +3806,7 @@ function wp_die($message = '', $title = '', $args = [])
          *
          * @since 3.4.0
          *
-         * @param  callable  $callback Callback function name.
+         * @param  callable  $callback  Callback function name.
          */
         $callback = apply_filters('wp_die_xmlrpc_handler', '_xmlrpc_wp_die_handler');
     } elseif (wp_is_xml_request()
@@ -3819,7 +3819,7 @@ function wp_die($message = '', $title = '', $args = [])
          *
          * @since 5.2.0
          *
-         * @param  callable  $callback Callback function name.
+         * @param  callable  $callback  Callback function name.
          */
         $callback = apply_filters('wp_die_xml_handler', '_xml_wp_die_handler');
     } else {
@@ -3828,7 +3828,7 @@ function wp_die($message = '', $title = '', $args = [])
          *
          * @since 3.0.0
          *
-         * @param  callable  $callback Callback function name.
+         * @param  callable  $callback  Callback function name.
          */
         $callback = apply_filters('wp_die_handler', '_default_wp_die_handler');
     }
@@ -3844,9 +3844,9 @@ function wp_die($message = '', $title = '', $args = [])
  *
  * @since 3.0.0
  *
- * @param  string|WP_Error  $message Error message or WP_Error object.
- * @param  string  $title   Optional. Error title. Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string|WP_Error  $message  Error message or WP_Error object.
+ * @param  string  $title  Optional. Error title. Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _default_wp_die_handler($message, $title = '', $args = [])
 {
@@ -4048,9 +4048,9 @@ function _default_wp_die_handler($message, $title = '', $args = [])
  *
  * @since 3.4.0
  *
- * @param  string  $message Error message.
- * @param  string  $title   Optional. Error title (unused). Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string  $message  Error message.
+ * @param  string  $title  Optional. Error title (unused). Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _ajax_wp_die_handler($message, $title = '', $args = [])
 {
@@ -4090,9 +4090,9 @@ function _ajax_wp_die_handler($message, $title = '', $args = [])
  *
  * @since 5.1.0
  *
- * @param  string  $message Error message.
- * @param  string  $title   Optional. Error title. Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string  $message  Error message.
+ * @param  string  $title  Optional. Error title. Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _json_wp_die_handler($message, $title = '', $args = [])
 {
@@ -4128,9 +4128,9 @@ function _json_wp_die_handler($message, $title = '', $args = [])
  *
  * @since 5.2.0
  *
- * @param  string  $message Error message.
- * @param  string  $title   Optional. Error title. Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string  $message  Error message.
+ * @param  string  $title  Optional. Error title. Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _jsonp_wp_die_handler($message, $title = '', $args = [])
 {
@@ -4172,9 +4172,9 @@ function _jsonp_wp_die_handler($message, $title = '', $args = [])
  *
  * @global wp_xmlrpc_server $wp_xmlrpc_server
  *
- * @param  string  $message Error message.
- * @param  string  $title   Optional. Error title. Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string  $message  Error message.
+ * @param  string  $title  Optional. Error title. Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _xmlrpc_wp_die_handler($message, $title = '', $args = [])
 {
@@ -4202,9 +4202,9 @@ function _xmlrpc_wp_die_handler($message, $title = '', $args = [])
  *
  * @since 5.2.0
  *
- * @param  string  $message Error message.
- * @param  string  $title   Optional. Error title. Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string  $message  Error message.
+ * @param  string  $title  Optional. Error title. Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _xml_wp_die_handler($message, $title = '', $args = [])
 {
@@ -4247,9 +4247,9 @@ EOD;
  * @since 3.4.0
  * @since 5.1.0 Added the $title and $args parameters.
  *
- * @param  string  $message Optional. Response to print. Default empty string.
- * @param  string  $title   Optional. Error title (unused). Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string  $message  Optional. Response to print. Default empty string.
+ * @param  string  $title  Optional. Error title (unused). Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  */
 function _scalar_wp_die_handler($message = '', $title = '', $args = [])
 {
@@ -4272,16 +4272,16 @@ function _scalar_wp_die_handler($message = '', $title = '', $args = [])
  *
  * @since 5.1.0
  *
- * @param  string|WP_Error  $message Error message or WP_Error object.
- * @param  string  $title   Optional. Error title. Default empty string.
- * @param  string|array  $args    Optional. Arguments to control behavior. Default empty array.
+ * @param  string|WP_Error  $message  Error message or WP_Error object.
+ * @param  string  $title  Optional. Error title. Default empty string.
+ * @param  string|array  $args  Optional. Arguments to control behavior. Default empty array.
  * @return array {
- *     Processed arguments.
+ *               Processed arguments.
  *
- *     @type string $0 Error message.
- *     @type string $1 Error title.
- *     @type array  $2 Arguments to control behavior.
- * }
+ * @type string $0 Error message.
+ * @type string $1 Error title.
+ * @type array $2 Arguments to control behavior.
+ *             }
  */
 function _wp_die_process_input($message, $title = '', $args = [])
 {
@@ -4362,10 +4362,10 @@ function _wp_die_process_input($message, $title = '', $args = [])
  * @since 4.1.0
  * @since 5.3.0 No longer handles support for PHP < 5.6.
  *
- * @param  mixed  $data    Variable (usually an array or object) to encode as JSON.
- * @param  int  $options Optional. Options to be passed to json_encode(). Default 0.
- * @param  int  $depth   Optional. Maximum depth to walk through $data. Must be
- *                       greater than 0. Default 512.
+ * @param  mixed  $data  Variable (usually an array or object) to encode as JSON.
+ * @param  int  $options  Optional. Options to be passed to json_encode(). Default 0.
+ * @param  int  $depth  Optional. Maximum depth to walk through $data. Must be
+ *                      greater than 0. Default 512.
  * @return string|false The JSON encoded string, or false if it cannot be encoded.
  */
 function wp_json_encode($data, $options = 0, $depth = 512)
@@ -4395,7 +4395,7 @@ function wp_json_encode($data, $options = 0, $depth = 512)
  * @see wp_json_encode()
  *
  * @param  mixed  $data  Variable (usually an array or object) to encode as JSON.
- * @param  int  $depth Maximum depth to walk through $data. Must be greater than 0.
+ * @param  int  $depth  Maximum depth to walk through $data. Must be greater than 0.
  * @return mixed The sanitized data that shall be encoded to JSON.
  *
  * @throws Exception If depth limit is reached.
@@ -4459,7 +4459,7 @@ function _wp_json_sanity_check($data, $depth)
  * @since 4.1.0
  * @see _wp_json_sanity_check()
  *
- * @param  string  $input_string The string which is to be converted.
+ * @param  string  $input_string  The string which is to be converted.
  * @return string The checked string.
  */
 function _wp_json_convert_string($input_string)
@@ -4492,7 +4492,7 @@ function _wp_json_convert_string($input_string)
  * @deprecated 5.3.0 This function is no longer needed as support for PHP 5.2-5.3
  *                   has been dropped.
  *
- * @param  mixed  $data Native representation.
+ * @param  mixed  $data  Native representation.
  * @return bool|int|float|null|string|array Data ready for `json_encode()`.
  */
 function _wp_json_prepare_data($data)
@@ -4509,10 +4509,10 @@ function _wp_json_prepare_data($data)
  * @since 4.7.0 The `$status_code` parameter was added.
  * @since 5.6.0 The `$options` parameter was added.
  *
- * @param  mixed  $response    Variable (usually an array or object) to encode as JSON,
+ * @param  mixed  $response  Variable (usually an array or object) to encode as JSON,
  *                           then print and die.
- * @param  int  $status_code Optional. The HTTP status code to output. Default null.
- * @param  int  $options     Optional. Options to be passed to json_encode(). Default 0.
+ * @param  int  $status_code  Optional. The HTTP status code to output. Default null.
+ * @param  int  $options  Optional. Options to be passed to json_encode(). Default 0.
  */
 function wp_send_json($response, $status_code = null, $options = 0)
 {
@@ -4558,9 +4558,9 @@ function wp_send_json($response, $status_code = null, $options = 0)
  * @since 4.7.0 The `$status_code` parameter was added.
  * @since 5.6.0 The `$options` parameter was added.
  *
- * @param  mixed  $data        Optional. Data to encode as JSON, then print and die. Default null.
- * @param  int  $status_code Optional. The HTTP status code to output. Default null.
- * @param  int  $options     Optional. Options to be passed to json_encode(). Default 0.
+ * @param  mixed  $data  Optional. Data to encode as JSON, then print and die. Default null.
+ * @param  int  $status_code  Optional. The HTTP status code to output. Default null.
+ * @param  int  $options  Optional. Options to be passed to json_encode(). Default 0.
  */
 function wp_send_json_success($data = null, $status_code = null, $options = 0)
 {
@@ -4586,9 +4586,9 @@ function wp_send_json_success($data = null, $status_code = null, $options = 0)
  * @since 4.7.0 The `$status_code` parameter was added.
  * @since 5.6.0 The `$options` parameter was added.
  *
- * @param  mixed  $data        Optional. Data to encode as JSON, then print and die. Default null.
- * @param  int  $status_code Optional. The HTTP status code to output. Default null.
- * @param  int  $options     Optional. Options to be passed to json_encode(). Default 0.
+ * @param  mixed  $data  Optional. Data to encode as JSON, then print and die. Default null.
+ * @param  int  $status_code  Optional. The HTTP status code to output. Default null.
+ * @param  int  $options  Optional. Options to be passed to json_encode(). Default 0.
  */
 function wp_send_json_error($data = null, $status_code = null, $options = 0)
 {
@@ -4624,7 +4624,7 @@ function wp_send_json_error($data = null, $status_code = null, $options = 0)
  *
  * @since 4.6.0
  *
- * @param  string  $callback Supplied JSONP callback function name.
+ * @param  string  $callback  Supplied JSONP callback function name.
  * @return bool Whether the callback function name is valid.
  */
 function wp_check_jsonp_callback($callback)
@@ -4643,13 +4643,13 @@ function wp_check_jsonp_callback($callback)
  *
  * @since 5.9.0
  *
- * @param  string  $filename Path to the JSON file.
+ * @param  string  $filename  Path to the JSON file.
  * @param  array  $options  {
- *     Optional. Options to be used with `json_decode()`.
+ *                          Optional. Options to be used with `json_decode()`.
  *
- *     @type bool $associative Optional. When `true`, JSON objects will be returned as associative arrays.
- *                             When `false`, JSON objects will be returned as objects. Default false.
- * }
+ * @type bool $associative Optional. When `true`, JSON objects will be returned as associative arrays.
+ *            When `false`, JSON objects will be returned as objects. Default false.
+ *            }
  *
  * @return mixed Returns the value encoded in JSON in appropriate PHP type.
  *               `null` is returned if the file is not found, or its content can't be decoded.
@@ -4700,7 +4700,7 @@ function wp_json_file_decode($filename, $options = [])
  * @since 2.2.0
  * @see WP_HOME
  *
- * @param  string  $url URL for the home location.
+ * @param  string  $url  URL for the home location.
  * @return string Homepage location.
  */
 function _config_wp_home($url = '')
@@ -4722,7 +4722,7 @@ function _config_wp_home($url = '')
  * @since 2.2.0
  * @see WP_SITEURL
  *
- * @param  string  $url URL to set the WordPress site location.
+ * @param  string  $url  URL to set the WordPress site location.
  * @return string The WordPress site URL.
  */
 function _config_wp_siteurl($url = '')
@@ -4757,7 +4757,7 @@ function _delete_option_fresh_site()
  *
  * @since 2.1.0
  *
- * @param  array  $mce_init MCE settings array.
+ * @param  array  $mce_init  MCE settings array.
  * @return array Direction set for 'rtl', if needed by locale.
  */
 function _mce_set_direction($mce_init)
@@ -4867,7 +4867,7 @@ function smilies_init()
      *
      * @since 4.7.0
      *
-     * @param  string[]  $wpsmiliestrans List of the smilies' hexadecimal representations, keyed by their smily code.
+     * @param  string[]  $wpsmiliestrans  List of the smilies' hexadecimal representations, keyed by their smily code.
      */
     $wpsmiliestrans = apply_filters('smilies', $wpsmiliestrans);
 
@@ -4920,9 +4920,9 @@ function smilies_init()
  * @since 2.2.0
  * @since 2.3.0 `$args` can now also be an object.
  *
- * @param  string|array|object  $args     Value to merge with $defaults.
- * @param  array  $defaults Optional. Array that serves as the defaults.
- *                                      Default empty array.
+ * @param  string|array|object  $args  Value to merge with $defaults.
+ * @param  array  $defaults  Optional. Array that serves as the defaults.
+ *                           Default empty array.
  * @return array Merged user defined values with defaults.
  */
 function wp_parse_args($args, $defaults = [])
@@ -4947,7 +4947,7 @@ function wp_parse_args($args, $defaults = [])
  *
  * @since 5.1.0
  *
- * @param  array|string  $input_list List of values.
+ * @param  array|string  $input_list  List of values.
  * @return array Array of values.
  */
 function wp_parse_list($input_list)
@@ -4968,7 +4968,7 @@ function wp_parse_list($input_list)
  * @since 3.0.0
  * @since 5.1.0 Refactored to use wp_parse_list().
  *
- * @param  array|string  $input_list List of IDs.
+ * @param  array|string  $input_list  List of IDs.
  * @return int[] Sanitized array of IDs.
  */
 function wp_parse_id_list($input_list)
@@ -4984,7 +4984,7 @@ function wp_parse_id_list($input_list)
  * @since 4.7.0
  * @since 5.1.0 Refactored to use wp_parse_list().
  *
- * @param  array|string  $input_list List of slugs.
+ * @param  array|string  $input_list  List of slugs.
  * @return string[] Sanitized array of slugs.
  */
 function wp_parse_slug_list($input_list)
@@ -4999,8 +4999,8 @@ function wp_parse_slug_list($input_list)
  *
  * @since 3.1.0
  *
- * @param  array  $input_array The original array.
- * @param  array  $keys        The list of keys.
+ * @param  array  $input_array  The original array.
+ * @param  array  $keys  The list of keys.
  * @return array The array slice.
  */
 function wp_array_slice_assoc($input_array, $keys)
@@ -5024,7 +5024,7 @@ function wp_array_slice_assoc($input_array, $keys)
  *
  * @since 6.0.0
  *
- * @param  array  $input_array The array to sort, passed by reference.
+ * @param  array  $input_array  The array to sort, passed by reference.
  */
 function wp_recursive_ksort(&$input_array)
 {
@@ -5058,10 +5058,10 @@ function wp_recursive_ksort(&$input_array)
  *
  * @since 5.6.0
  *
- * @param  array  $input_array   An array from which we want to retrieve some information.
- * @param  array  $path          An array of keys describing the path with which to retrieve information.
- * @param  mixed  $default_value Optional. The return value if the path does not exist within the array,
- *                             or if `$input_array` or `$path` are not arrays. Default null.
+ * @param  array  $input_array  An array from which we want to retrieve some information.
+ * @param  array  $path  An array of keys describing the path with which to retrieve information.
+ * @param  mixed  $default_value  Optional. The return value if the path does not exist within the array,
+ *                                or if `$input_array` or `$path` are not arrays. Default null.
  * @return mixed The value from the path specified.
  */
 function _wp_array_get($input_array, $path, $default_value = null)
@@ -5132,9 +5132,9 @@ function _wp_array_get($input_array, $path, $default_value = null)
  *
  * @since 5.8.0
  *
- * @param  array  $input_array An array that we want to mutate to include a specific value in a path.
- * @param  array  $path        An array of keys describing the path that we want to mutate.
- * @param  mixed  $value       The value that will be set.
+ * @param  array  $input_array  An array that we want to mutate to include a specific value in a path.
+ * @param  array  $path  An array of keys describing the path that we want to mutate.
+ * @param  mixed  $value  The value that will be set.
  */
 function _wp_array_set(&$input_array, $path, $value = null)
 {
@@ -5198,7 +5198,7 @@ function _wp_array_set(&$input_array, $path, $value = null)
  * @link https://github.com/lodash-php/lodash-php/blob/master/src/String/kebabCase.php
  * @link https://github.com/lodash-php/lodash-php/blob/master/src/internal/unicodeWords.php
  *
- * @param  string  $input_string The string to kebab-case.
+ * @param  string  $input_string  The string to kebab-case.
  * @return string kebab-cased-string.
  */
 function _wp_to_kebab_case($input_string)
@@ -5259,7 +5259,7 @@ function _wp_to_kebab_case($input_string)
  *
  * @since 4.4.0
  *
- * @param  mixed  $data Variable to check.
+ * @param  mixed  $data  Variable to check.
  * @return bool Whether the variable is a list.
  */
 function wp_is_numeric_array($data)
@@ -5291,15 +5291,15 @@ function wp_is_numeric_array($data)
  * @since 3.0.0
  * @since 4.7.0 Uses `WP_List_Util` class.
  *
- * @param  array  $input_list An array of objects to filter.
- * @param  array  $args       Optional. An array of key => value arguments to match
- *                                against each object. Default empty array.
- * @param  string  $operator   Optional. The logical operation to perform. 'AND' means
- *                                all elements from the array must match. 'OR' means only
- *                                one element needs to match. 'NOT' means no elements may
- *                                match. Default 'AND'.
- * @param  bool|string  $field      Optional. A field from the object to place instead
- *                                of the entire object. Default false.
+ * @param  array  $input_list  An array of objects to filter.
+ * @param  array  $args  Optional. An array of key => value arguments to match
+ *                       against each object. Default empty array.
+ * @param  string  $operator  Optional. The logical operation to perform. 'AND' means
+ *                            all elements from the array must match. 'OR' means only
+ *                            one element needs to match. 'NOT' means no elements may
+ *                            match. Default 'AND'.
+ * @param  bool|string  $field  Optional. A field from the object to place instead
+ *                              of the entire object. Default false.
  * @return array A list of objects or object fields.
  */
 function wp_filter_object_list($input_list, $args = [], $operator = 'and', $field = false)
@@ -5336,13 +5336,13 @@ function wp_filter_object_list($input_list, $args = [], $operator = 'and', $fiel
  * @since 4.7.0 Uses `WP_List_Util` class.
  * @since 5.9.0 Converted into a wrapper for `wp_filter_object_list()`.
  *
- * @param  array  $input_list An array of objects to filter.
- * @param  array  $args       Optional. An array of key => value arguments to match
- *                           against each object. Default empty array.
- * @param  string  $operator   Optional. The logical operation to perform. 'AND' means
- *                           all elements from the array must match. 'OR' means only
- *                           one element needs to match. 'NOT' means no elements may
- *                           match. Default 'AND'.
+ * @param  array  $input_list  An array of objects to filter.
+ * @param  array  $args  Optional. An array of key => value arguments to match
+ *                       against each object. Default empty array.
+ * @param  string  $operator  Optional. The logical operation to perform. 'AND' means
+ *                            all elements from the array must match. 'OR' means only
+ *                            one element needs to match. 'NOT' means no elements may
+ *                            match. Default 'AND'.
  * @return array Array of found values.
  */
 function wp_list_filter($input_list, $args = [], $operator = 'AND')
@@ -5360,10 +5360,10 @@ function wp_list_filter($input_list, $args = [], $operator = 'AND')
  * @since 4.0.0 $index_key parameter added.
  * @since 4.7.0 Uses `WP_List_Util` class.
  *
- * @param  array  $input_list List of objects or arrays.
- * @param  int|string  $field      Field from the object to place instead of the entire object.
+ * @param  array  $input_list  List of objects or arrays.
+ * @param  int|string  $field  Field from the object to place instead of the entire object.
  * @param  int|string  $index_key  Optional. Field from the object to use as keys for the new array.
- *                               Default null.
+ *                                 Default null.
  * @return array Array of found values. If `$index_key` is set, an array of found values with keys
  *               corresponding to `$index_key`. If `$index_key` is null, array keys from the original
  *               `$input_list` will be preserved in the results.
@@ -5384,13 +5384,13 @@ function wp_list_pluck($input_list, $field, $index_key = null)
  *
  * @since 4.7.0
  *
- * @param  array  $input_list    An array of objects or arrays to sort.
- * @param  string|array  $orderby       Optional. Either the field name to order by or an array
- *                                    of multiple orderby fields as `$orderby => $order`.
- *                                    Default empty array.
- * @param  string  $order         Optional. Either 'ASC' or 'DESC'. Only used if `$orderby`
- *                                    is a string. Default 'ASC'.
- * @param  bool  $preserve_keys Optional. Whether to preserve keys. Default false.
+ * @param  array  $input_list  An array of objects or arrays to sort.
+ * @param  string|array  $orderby  Optional. Either the field name to order by or an array
+ *                                 of multiple orderby fields as `$orderby => $order`.
+ *                                 Default empty array.
+ * @param  string  $order  Optional. Either 'ASC' or 'DESC'. Only used if `$orderby`
+ *                         is a string. Default 'ASC'.
+ * @param  bool  $preserve_keys  Optional. Whether to preserve keys. Default false.
  * @return array The sorted array.
  */
 function wp_list_sort($input_list, $orderby = [], $order = 'ASC', $preserve_keys = false)
@@ -5422,8 +5422,8 @@ function wp_maybe_load_widgets()
      *
      * @since 2.8.0
      *
-     * @param  bool  $wp_maybe_load_widgets Whether to load the Widgets library.
-     *                                    Default true.
+     * @param  bool  $wp_maybe_load_widgets  Whether to load the Widgets library.
+     *                                       Default true.
      */
     if (! apply_filters('load_default_widgets', true)) {
         return;
@@ -5519,7 +5519,7 @@ function dead_db()
  *
  * @since 2.5.0
  *
- * @param  mixed  $maybeint Data you wish to have converted to a non-negative integer.
+ * @param  mixed  $maybeint  Data you wish to have converted to a non-negative integer.
  * @return int A non-negative integer.
  */
 function absint($maybeint)
@@ -5541,9 +5541,9 @@ function absint($maybeint)
  * @since 5.4.0 This function is no longer marked as "private".
  * @since 5.4.0 The error type is now classified as E_USER_DEPRECATED (used to default to E_USER_NOTICE).
  *
- * @param  string  $function_name The function that was called.
- * @param  string  $version       The version of WordPress that deprecated the function.
- * @param  string  $replacement   Optional. The function that should have been called. Default empty string.
+ * @param  string  $function_name  The function that was called.
+ * @param  string  $version  The version of WordPress that deprecated the function.
+ * @param  string  $replacement  Optional. The function that should have been called. Default empty string.
  */
 function _deprecated_function($function_name, $version, $replacement = '')
 {
@@ -5553,9 +5553,9 @@ function _deprecated_function($function_name, $version, $replacement = '')
      *
      * @since 2.5.0
      *
-     * @param  string  $function_name The function that was called.
-     * @param  string  $replacement   The function that should have been called.
-     * @param  string  $version       The version of WordPress that deprecated the function.
+     * @param  string  $function_name  The function that was called.
+     * @param  string  $replacement  The function that should have been called.
+     * @param  string  $version  The version of WordPress that deprecated the function.
      */
     do_action('deprecated_function_run', $function_name, $replacement, $version);
 
@@ -5564,7 +5564,7 @@ function _deprecated_function($function_name, $version, $replacement = '')
      *
      * @since 2.5.0
      *
-     * @param  bool  $trigger Whether to trigger the error for deprecated functions. Default true.
+     * @param  bool  $trigger  Whether to trigger the error for deprecated functions. Default true.
      */
     if (WP_DEBUG && apply_filters('deprecated_function_trigger_error', true)) {
         if (function_exists('__')) {
@@ -5620,10 +5620,10 @@ function _deprecated_function($function_name, $version, $replacement = '')
  * @since 5.4.0 This function is no longer marked as "private".
  * @since 5.4.0 The error type is now classified as E_USER_DEPRECATED (used to default to E_USER_NOTICE).
  *
- * @param  string  $class_name   The class containing the deprecated constructor.
- * @param  string  $version      The version of WordPress that deprecated the function.
- * @param  string  $parent_class Optional. The parent class calling the deprecated constructor.
- *                             Default empty string.
+ * @param  string  $class_name  The class containing the deprecated constructor.
+ * @param  string  $version  The version of WordPress that deprecated the function.
+ * @param  string  $parent_class  Optional. The parent class calling the deprecated constructor.
+ *                                Default empty string.
  */
 function _deprecated_constructor($class_name, $version, $parent_class = '')
 {
@@ -5634,9 +5634,9 @@ function _deprecated_constructor($class_name, $version, $parent_class = '')
      * @since 4.3.0
      * @since 4.5.0 Added the `$parent_class` parameter.
      *
-     * @param  string  $class_name   The class containing the deprecated constructor.
-     * @param  string  $version      The version of WordPress that deprecated the function.
-     * @param  string  $parent_class The parent class calling the deprecated constructor.
+     * @param  string  $class_name  The class containing the deprecated constructor.
+     * @param  string  $version  The version of WordPress that deprecated the function.
+     * @param  string  $parent_class  The parent class calling the deprecated constructor.
      */
     do_action('deprecated_constructor_run', $class_name, $version, $parent_class);
 
@@ -5647,7 +5647,7 @@ function _deprecated_constructor($class_name, $version, $parent_class = '')
      *
      * @since 4.3.0
      *
-     * @param  bool  $trigger Whether to trigger the error for deprecated functions. Default true.
+     * @param  bool  $trigger  Whether to trigger the error for deprecated functions. Default true.
      */
     if (WP_DEBUG && apply_filters('deprecated_constructor_trigger_error', true)) {
         if (function_exists('__')) {
@@ -5706,9 +5706,9 @@ function _deprecated_constructor($class_name, $version, $parent_class = '')
  * @since 6.4.0
  *
  * @param  string  $class_name  The name of the class being instantiated.
- * @param  string  $version     The version of WordPress that deprecated the class.
- * @param  string  $replacement Optional. The class or function that should have been called.
- *                            Default empty string.
+ * @param  string  $version  The version of WordPress that deprecated the class.
+ * @param  string  $replacement  Optional. The class or function that should have been called.
+ *                               Default empty string.
  */
 function _deprecated_class($class_name, $version, $replacement = '')
 {
@@ -5719,8 +5719,8 @@ function _deprecated_class($class_name, $version, $replacement = '')
      * @since 6.4.0
      *
      * @param  string  $class_name  The name of the class being instantiated.
-     * @param  string  $replacement The class or function that should have been called.
-     * @param  string  $version     The version of WordPress that deprecated the class.
+     * @param  string  $replacement  The class or function that should have been called.
+     * @param  string  $version  The version of WordPress that deprecated the class.
      */
     do_action('deprecated_class_run', $class_name, $replacement, $version);
 
@@ -5729,7 +5729,7 @@ function _deprecated_class($class_name, $version, $replacement = '')
      *
      * @since 6.4.0
      *
-     * @param  bool  $trigger Whether to trigger an error for a deprecated class. Default true.
+     * @param  bool  $trigger  Whether to trigger an error for a deprecated class. Default true.
      */
     if (WP_DEBUG && apply_filters('deprecated_class_trigger_error', true)) {
         if (function_exists('__')) {
@@ -5784,11 +5784,11 @@ function _deprecated_class($class_name, $version, $replacement = '')
  * @since 5.4.0 This function is no longer marked as "private".
  * @since 5.4.0 The error type is now classified as E_USER_DEPRECATED (used to default to E_USER_NOTICE).
  *
- * @param  string  $file        The file that was included.
- * @param  string  $version     The version of WordPress that deprecated the file.
- * @param  string  $replacement Optional. The file that should have been included based on ABSPATH.
- *                            Default empty string.
- * @param  string  $message     Optional. A message regarding the change. Default empty string.
+ * @param  string  $file  The file that was included.
+ * @param  string  $version  The version of WordPress that deprecated the file.
+ * @param  string  $replacement  Optional. The file that should have been included based on ABSPATH.
+ *                               Default empty string.
+ * @param  string  $message  Optional. A message regarding the change. Default empty string.
  */
 function _deprecated_file($file, $version, $replacement = '', $message = '')
 {
@@ -5798,10 +5798,10 @@ function _deprecated_file($file, $version, $replacement = '', $message = '')
      *
      * @since 2.5.0
      *
-     * @param  string  $file        The file that was called.
-     * @param  string  $replacement The file that should have been included based on ABSPATH.
-     * @param  string  $version     The version of WordPress that deprecated the file.
-     * @param  string  $message     A message regarding the change.
+     * @param  string  $file  The file that was called.
+     * @param  string  $replacement  The file that should have been included based on ABSPATH.
+     * @param  string  $version  The version of WordPress that deprecated the file.
+     * @param  string  $message  A message regarding the change.
      */
     do_action('deprecated_file_included', $file, $replacement, $version, $message);
 
@@ -5810,7 +5810,7 @@ function _deprecated_file($file, $version, $replacement = '', $message = '')
      *
      * @since 2.5.0
      *
-     * @param  bool  $trigger Whether to trigger the error for deprecated files. Default true.
+     * @param  bool  $trigger  Whether to trigger the error for deprecated files. Default true.
      */
     if (WP_DEBUG && apply_filters('deprecated_file_trigger_error', true)) {
         $message = empty($message) ? '' : ' '.$message;
@@ -5874,9 +5874,9 @@ function _deprecated_file($file, $version, $replacement = '', $message = '')
  * @since 5.4.0 This function is no longer marked as "private".
  * @since 5.4.0 The error type is now classified as E_USER_DEPRECATED (used to default to E_USER_NOTICE).
  *
- * @param  string  $function_name The function that was called.
- * @param  string  $version       The version of WordPress that deprecated the argument used.
- * @param  string  $message       Optional. A message regarding the change. Default empty string.
+ * @param  string  $function_name  The function that was called.
+ * @param  string  $version  The version of WordPress that deprecated the argument used.
+ * @param  string  $message  Optional. A message regarding the change. Default empty string.
  */
 function _deprecated_argument($function_name, $version, $message = '')
 {
@@ -5886,9 +5886,9 @@ function _deprecated_argument($function_name, $version, $message = '')
      *
      * @since 3.0.0
      *
-     * @param  string  $function_name The function that was called.
-     * @param  string  $message       A message regarding the change.
-     * @param  string  $version       The version of WordPress that deprecated the argument used.
+     * @param  string  $function_name  The function that was called.
+     * @param  string  $message  A message regarding the change.
+     * @param  string  $version  The version of WordPress that deprecated the argument used.
      */
     do_action('deprecated_argument_run', $function_name, $message, $version);
 
@@ -5897,7 +5897,7 @@ function _deprecated_argument($function_name, $version, $message = '')
      *
      * @since 3.0.0
      *
-     * @param  bool  $trigger Whether to trigger the error for deprecated arguments. Default true.
+     * @param  bool  $trigger  Whether to trigger the error for deprecated arguments. Default true.
      */
     if (WP_DEBUG && apply_filters('deprecated_argument_trigger_error', true)) {
         if (function_exists('__')) {
@@ -5952,10 +5952,10 @@ function _deprecated_argument($function_name, $version, $message = '')
  * @since 4.6.0
  * @since 5.4.0 The error type is now classified as E_USER_DEPRECATED (used to default to E_USER_NOTICE).
  *
- * @param  string  $hook        The hook that was used.
- * @param  string  $version     The version of WordPress that deprecated the hook.
- * @param  string  $replacement Optional. The hook that should have been used. Default empty string.
- * @param  string  $message     Optional. A message regarding the change. Default empty.
+ * @param  string  $hook  The hook that was used.
+ * @param  string  $version  The version of WordPress that deprecated the hook.
+ * @param  string  $replacement  Optional. The hook that should have been used. Default empty string.
+ * @param  string  $message  Optional. A message regarding the change. Default empty.
  */
 function _deprecated_hook($hook, $version, $replacement = '', $message = '')
 {
@@ -5964,10 +5964,10 @@ function _deprecated_hook($hook, $version, $replacement = '', $message = '')
      *
      * @since 4.6.0
      *
-     * @param  string  $hook        The hook that was called.
-     * @param  string  $replacement The hook that should be used as a replacement.
-     * @param  string  $version     The version of WordPress that deprecated the argument used.
-     * @param  string  $message     A message regarding the change.
+     * @param  string  $hook  The hook that was called.
+     * @param  string  $replacement  The hook that should be used as a replacement.
+     * @param  string  $version  The version of WordPress that deprecated the argument used.
+     * @param  string  $message  A message regarding the change.
      */
     do_action('deprecated_hook_run', $hook, $replacement, $version, $message);
 
@@ -5976,8 +5976,8 @@ function _deprecated_hook($hook, $version, $replacement = '', $message = '')
      *
      * @since 4.6.0
      *
-     * @param  bool  $trigger Whether to trigger deprecated hook errors. Requires
-     *                      `WP_DEBUG` to be defined true.
+     * @param  bool  $trigger  Whether to trigger deprecated hook errors. Requires
+     *                         `WP_DEBUG` to be defined true.
      */
     if (WP_DEBUG && apply_filters('deprecated_hook_trigger_error', true)) {
         $message = empty($message) ? '' : ' '.$message;
@@ -6014,9 +6014,9 @@ function _deprecated_hook($hook, $version, $replacement = '', $message = '')
  * @since 3.1.0
  * @since 5.4.0 This function is no longer marked as "private".
  *
- * @param  string  $function_name The function that was called.
- * @param  string  $message       A message explaining what has been done incorrectly.
- * @param  string  $version       The version of WordPress where the message was added.
+ * @param  string  $function_name  The function that was called.
+ * @param  string  $message  A message explaining what has been done incorrectly.
+ * @param  string  $version  The version of WordPress where the message was added.
  */
 function _doing_it_wrong($function_name, $message, $version)
 {
@@ -6026,9 +6026,9 @@ function _doing_it_wrong($function_name, $message, $version)
      *
      * @since 3.1.0
      *
-     * @param  string  $function_name The function that was called.
-     * @param  string  $message       A message explaining what has been done incorrectly.
-     * @param  string  $version       The version of WordPress where the message was added.
+     * @param  string  $function_name  The function that was called.
+     * @param  string  $message  A message explaining what has been done incorrectly.
+     * @param  string  $version  The version of WordPress where the message was added.
      */
     do_action('doing_it_wrong_run', $function_name, $message, $version);
 
@@ -6038,10 +6038,10 @@ function _doing_it_wrong($function_name, $message, $version)
      * @since 3.1.0
      * @since 5.1.0 Added the $function_name, $message and $version parameters.
      *
-     * @param  bool  $trigger       Whether to trigger the error for _doing_it_wrong() calls. Default true.
-     * @param  string  $function_name The function that was called.
-     * @param  string  $message       A message explaining what has been done incorrectly.
-     * @param  string  $version       The version of WordPress where the message was added.
+     * @param  bool  $trigger  Whether to trigger the error for _doing_it_wrong() calls. Default true.
+     * @param  string  $function_name  The function that was called.
+     * @param  string  $message  A message explaining what has been done incorrectly.
+     * @param  string  $version  The version of WordPress where the message was added.
      */
     if (WP_DEBUG && apply_filters('doing_it_wrong_trigger_error', true, $function_name, $message, $version)) {
         if (function_exists('__')) {
@@ -6092,14 +6092,14 @@ function _doing_it_wrong($function_name, $message, $version)
  *
  * @since 6.4.0
  *
- * @param  string  $function_name The function that triggered the error.
- * @param  string  $message       The message explaining the error.
- *                              The message can contain allowed HTML 'a' (with href), 'code',
- *                              'br', 'em', and 'strong' tags and http or https protocols.
- *                              If it contains other HTML tags or protocols, the message should be escaped
- *                              before passing to this function to avoid being stripped {@see wp_kses()}.
- * @param  int  $error_level   Optional. The designated error type for this error.
- *                              Only works with E_USER family of constants. Default E_USER_NOTICE.
+ * @param  string  $function_name  The function that triggered the error.
+ * @param  string  $message  The message explaining the error.
+ *                           The message can contain allowed HTML 'a' (with href), 'code',
+ *                           'br', 'em', and 'strong' tags and http or https protocols.
+ *                           If it contains other HTML tags or protocols, the message should be escaped
+ *                           before passing to this function to avoid being stripped {@see wp_kses()}.
+ * @param  int  $error_level  Optional. The designated error type for this error.
+ *                            Only works with E_USER family of constants. Default E_USER_NOTICE.
  */
 function wp_trigger_error($function_name, $message, $error_level = E_USER_NOTICE)
 {
@@ -6116,9 +6116,9 @@ function wp_trigger_error($function_name, $message, $error_level = E_USER_NOTICE
      *
      * @since 6.4.0
      *
-     * @param  string  $function_name The function that was called.
-     * @param  string  $message       A message explaining what has been done incorrectly.
-     * @param  int  $error_level   The designated error type for this error.
+     * @param  string  $function_name  The function that was called.
+     * @param  string  $message  A message explaining what has been done incorrectly.
+     * @param  int  $error_level  The designated error type for this error.
      */
     do_action('wp_trigger_error_run', $function_name, $message, $error_level);
 
@@ -6163,8 +6163,8 @@ function is_lighttpd_before_150()
  *
  * @global bool $is_apache
  *
- * @param  string  $mod           The module, e.g. mod_rewrite.
- * @param  bool  $default_value Optional. The default return value if the module is not found. Default false.
+ * @param  string  $mod  The module, e.g. mod_rewrite.
+ * @param  bool  $default_value  Optional. The default return value if the module is not found. Default false.
  * @return bool Whether the specified module is loaded.
  */
 function apache_mod_loaded($mod, $default_value = false)
@@ -6233,7 +6233,7 @@ function iis7_supports_permalinks()
      *
      * @since 2.8.0
      *
-     * @param  bool  $supports_permalinks Whether IIS7 supports permalinks. Default false.
+     * @param  bool  $supports_permalinks  Whether IIS7 supports permalinks. Default false.
      */
     return apply_filters('iis7_supports_permalinks', $supports_permalinks);
 }
@@ -6249,8 +6249,8 @@ function iis7_supports_permalinks()
  *
  * @since 1.2.0
  *
- * @param  string  $file          File path.
- * @param  string[]  $allowed_files Optional. Array of allowed files. Default empty array.
+ * @param  string  $file  File path.
+ * @param  string[]  $allowed_files  Optional. Array of allowed files. Default empty array.
  * @return int 0 means nothing is wrong, greater than 0 means something was wrong.
  */
 function validate_file($file, $allowed_files = [])
@@ -6292,7 +6292,7 @@ function validate_file($file, $allowed_files = [])
  *
  * @since 2.6.0
  *
- * @param  string|bool  $force Optional. Whether to force SSL in admin screens. Default null.
+ * @param  string|bool  $force  Optional. Whether to force SSL in admin screens. Default null.
  * @return bool True if forced, false if not forced.
  */
 function force_ssl_admin($force = null)
@@ -6371,8 +6371,8 @@ function wp_guess_url()
  *
  * @since 3.3.0
  *
- * @param  bool  $suspend Optional. Suspends additions if true, re-enables them if false.
- *                      Defaults to not changing the current setting.
+ * @param  bool  $suspend  Optional. Suspends additions if true, re-enables them if false.
+ *                         Defaults to not changing the current setting.
  * @return bool The current suspend setting.
  */
 function wp_suspend_cache_addition($suspend = null)
@@ -6397,7 +6397,7 @@ function wp_suspend_cache_addition($suspend = null)
  *
  * @global bool $_wp_suspend_cache_invalidation
  *
- * @param  bool  $suspend Optional. Whether to suspend or enable cache invalidation. Default true.
+ * @param  bool  $suspend  Optional. Whether to suspend or enable cache invalidation. Default true.
  * @return bool The current suspend setting.
  */
 function wp_suspend_cache_invalidation($suspend = true)
@@ -6416,9 +6416,9 @@ function wp_suspend_cache_invalidation($suspend = true)
  * @since 3.0.0
  * @since 4.9.0 The `$network_id` parameter was added.
  *
- * @param  int  $site_id    Optional. Site ID to test. Defaults to current site.
- * @param  int  $network_id Optional. Network ID of the network to check for.
- *                        Defaults to current network.
+ * @param  int  $site_id  Optional. Site ID to test. Defaults to current site.
+ * @param  int  $network_id  Optional. Network ID of the network to check for.
+ *                           Defaults to current network.
  * @return bool True if $site_id is the main site of the network, or if not
  *              running Multisite.
  */
@@ -6442,8 +6442,8 @@ function is_main_site($site_id = null, $network_id = null)
  *
  * @since 4.9.0
  *
- * @param  int  $network_id Optional. The ID of the network for which to get the main site.
- *                        Defaults to the current network.
+ * @param  int  $network_id  Optional. The ID of the network for which to get the main site.
+ *                           Defaults to the current network.
  * @return int The ID of the main site.
  */
 function get_main_site_id($network_id = null)
@@ -6465,7 +6465,7 @@ function get_main_site_id($network_id = null)
  *
  * @since 3.7.0
  *
- * @param  int  $network_id Optional. Network ID to test. Defaults to current network.
+ * @param  int  $network_id  Optional. Network ID to test. Defaults to current network.
  * @return bool True if $network_id is the main network, or if not running Multisite.
  */
 function is_main_network($network_id = null)
@@ -6518,7 +6518,7 @@ function get_main_network_id()
      *
      * @since 4.3.0
      *
-     * @param  int  $main_network_id The ID of the main network.
+     * @param  int  $main_network_id  The ID of the main network.
      */
     return (int) apply_filters('get_main_network_id', $main_network_id);
 }
@@ -6644,8 +6644,8 @@ function _wp_timezone_choice_usort_callback($a, $b)
  * @since 2.9.0
  * @since 4.7.0 Added the `$locale` parameter.
  *
- * @param  string  $selected_zone Selected timezone.
- * @param  string  $locale        Optional. Locale to load the timezones in. Default current site locale.
+ * @param  string  $selected_zone  Selected timezone.
+ * @param  string  $locale  Optional. Locale to load the timezones in. Default current site locale.
  * @return string
  */
 function wp_timezone_choice($selected_zone, $locale = null)
@@ -6846,7 +6846,7 @@ function wp_timezone_choice($selected_zone, $locale = null)
  * @since 2.8.0
  * @see https://core.trac.wordpress.org/ticket/8497
  *
- * @param  string  $str Header comment to clean up.
+ * @param  string  $str  Header comment to clean up.
  * @return string
  */
 function _cleanup_header_comment($str)
@@ -6920,10 +6920,10 @@ function wp_scheduled_delete()
  * @link https://codex.wordpress.org/File_Header
  * @since 2.9.0
  *
- * @param  string  $file            Absolute path to the file.
- * @param  array  $default_headers List of headers, in the format `array( 'HeaderKey' => 'Header Name' )`.
- * @param  string  $context         Optional. If specified adds filter hook {@see 'extra_$context_headers'}.
- *                                Default empty string.
+ * @param  string  $file  Absolute path to the file.
+ * @param  array  $default_headers  List of headers, in the format `array( 'HeaderKey' => 'Header Name' )`.
+ * @param  string  $context  Optional. If specified adds filter hook {@see 'extra_$context_headers'}.
+ *                           Default empty string.
  * @return string[] Array of file header values keyed by header name.
  */
 function get_file_data($file, $default_headers, $context = '')
@@ -6946,7 +6946,7 @@ function get_file_data($file, $default_headers, $context = '')
      *
      * @since 2.9.0
      *
-     * @param  array  $extra_context_headers Empty array by default.
+     * @param  array  $extra_context_headers  Empty array by default.
      */
     $extra_headers = $context ? apply_filters("extra_{$context}_headers", []) : [];
     if ($extra_headers) {
@@ -7073,7 +7073,7 @@ function send_nosniff_header()
  *
  * @since 3.0.0
  *
- * @param  string  $column Database column.
+ * @param  string  $column  Database column.
  * @return string SQL clause.
  */
 function _wp_mysql_week($column)
@@ -7099,11 +7099,11 @@ function _wp_mysql_week($column)
  *
  * @since 3.1.0
  *
- * @param  callable  $callback      Function that accepts ( ID, $callback_args ) and outputs parent_ID.
- * @param  int  $start         The ID to start the loop check at.
+ * @param  callable  $callback  Function that accepts ( ID, $callback_args ) and outputs parent_ID.
+ * @param  int  $start  The ID to start the loop check at.
  * @param  int  $start_parent  The parent_ID of $start to use instead of calling $callback( $start ).
- *                                Use null to always use $callback.
- * @param  array  $callback_args Optional. Additional arguments to send to $callback. Default empty array.
+ *                             Use null to always use $callback.
+ * @param  array  $callback_args  Optional. Additional arguments to send to $callback. Default empty array.
  * @return array IDs of all members of loop.
  */
 function wp_find_hierarchy_loop($callback, $start, $start_parent, $callback_args = [])
@@ -7126,14 +7126,14 @@ function wp_find_hierarchy_loop($callback, $start, $start_parent, $callback_args
  *
  * @since 3.1.0
  *
- * @param  callable  $callback      Function that accepts ( ID, callback_arg, ... ) and outputs parent_ID.
- * @param  int  $start         The ID to start the loop check at.
- * @param  array  $override      Optional. An array of ( ID => parent_ID, ... ) to use instead of $callback.
- *                                Default empty array.
- * @param  array  $callback_args Optional. Additional arguments to send to $callback. Default empty array.
+ * @param  callable  $callback  Function that accepts ( ID, callback_arg, ... ) and outputs parent_ID.
+ * @param  int  $start  The ID to start the loop check at.
+ * @param  array  $override  Optional. An array of ( ID => parent_ID, ... ) to use instead of $callback.
+ *                           Default empty array.
+ * @param  array  $callback_args  Optional. Additional arguments to send to $callback. Default empty array.
  * @param  bool  $_return_loop  Optional. Return loop members or just detect presence of loop? Only set
- *                                to true if you already know the given $start is part of a loop (otherwise
- *                                the returned array might include branches). Default false.
+ *                              to true if you already know the given $start is part of a loop (otherwise
+ *                              the returned array might include branches). Default false.
  * @return mixed Scalar ID of some arbitrary member of the loop, or array of IDs of all members of loop if
  *               $_return_loop
  */
@@ -7212,7 +7212,7 @@ function wp_allowed_protocols()
          *
          * @since 3.0.0
          *
-         * @param  string[]  $protocols Array of allowed protocols e.g. 'http', 'ftp', 'tel', and more.
+         * @param  string[]  $protocols  Array of allowed protocols e.g. 'http', 'ftp', 'tel', and more.
          */
         $protocols = array_unique((array) apply_filters('kses_allowed_protocols', $protocols));
     }
@@ -7227,12 +7227,12 @@ function wp_allowed_protocols()
  * @since 3.4.0
  * @see https://core.trac.wordpress.org/ticket/19589
  *
- * @param  string  $ignore_class Optional. A class to ignore all function calls within - useful
- *                             when you want to just give info about the callee. Default null.
+ * @param  string  $ignore_class  Optional. A class to ignore all function calls within - useful
+ *                                when you want to just give info about the callee. Default null.
  * @param  int  $skip_frames  Optional. A number of stack frames to skip - useful for unwinding
- *                             back to the source of the issue. Default 0.
- * @param  bool  $pretty       Optional. Whether you want a comma separated string instead of
- *                             the raw array returned. Default true.
+ *                            back to the source of the issue. Default 0.
+ * @param  bool  $pretty  Optional. Whether you want a comma separated string instead of
+ *                        the raw array returned. Default true.
  * @return string|array Either a string containing a reversed comma separated trace or an array
  *                      of individual calls.
  */
@@ -7286,7 +7286,7 @@ function wp_debug_backtrace_summary($ignore_class = null, $skip_frames = 0, $pre
  * @since 6.1.0 This function is no longer marked as "private".
  *
  * @param  int[]  $object_ids  Array of IDs.
- * @param  string  $cache_group The cache group to check against.
+ * @param  string  $cache_group  The cache group to check against.
  * @return int[] Array of IDs not present in the cache.
  */
 function _get_non_cached_ids($object_ids, $cache_group)
@@ -7318,7 +7318,7 @@ function _get_non_cached_ids($object_ids, $cache_group)
  *
  * @since 6.3.0
  *
- * @param  mixed  $object_id The cache ID to validate.
+ * @param  mixed  $object_id  The cache ID to validate.
  * @return bool Whether the given $object_id is a valid cache ID.
  */
 function _validate_cache_id($object_id)
@@ -7368,7 +7368,7 @@ function _device_can_upload()
  *
  * @since 3.5.0
  *
- * @param  string  $path The resource path or URL.
+ * @param  string  $path  The resource path or URL.
  * @return bool True if the path is a stream URL.
  */
 function wp_is_stream($path)
@@ -7391,10 +7391,10 @@ function wp_is_stream($path)
  * @since 3.5.0
  * @link https://www.php.net/manual/en/function.checkdate.php
  *
- * @param  int  $month       Month number.
- * @param  int  $day         Day number.
- * @param  int  $year        Year number.
- * @param  string  $source_date The date to filter.
+ * @param  int  $month  Month number.
+ * @param  int  $day  Day number.
+ * @param  int  $year  Year number.
+ * @param  string  $source_date  The date to filter.
  * @return bool True if valid date, false if not valid date.
  */
 function wp_checkdate($month, $day, $year, $source_date)
@@ -7404,8 +7404,8 @@ function wp_checkdate($month, $day, $year, $source_date)
      *
      * @since 3.5.0
      *
-     * @param  bool  $checkdate   Whether the given date is valid.
-     * @param  string  $source_date Date to check.
+     * @param  bool  $checkdate  Whether the given date is valid.
+     * @param  string  $source_date  Date to check.
      */
     return apply_filters('wp_checkdate', checkdate($month, $day, $year), $source_date);
 }
@@ -7443,8 +7443,8 @@ function wp_auth_check_load()
      *
      * @since 3.6.0
      *
-     * @param  bool  $show   Whether to load the authentication check.
-     * @param  WP_Screen  $screen The current screen object.
+     * @param  bool  $show  Whether to load the authentication check.
+     * @param  WP_Screen  $screen  The current screen object.
      */
     if (apply_filters('wp_auth_check_load', $show, $screen)) {
         wp_enqueue_style('wp-auth-check');
@@ -7471,7 +7471,7 @@ function wp_auth_check_html()
      *
      * @since 3.6.0
      *
-     * @param  bool  $same_domain Whether the authentication check originated at the same domain.
+     * @param  bool  $same_domain  Whether the authentication check originated at the same domain.
      */
     $same_domain = apply_filters('wp_auth_check_same_domain', $same_domain);
     $wrap_class = $same_domain ? 'hidden' : 'hidden fallback';
@@ -7545,7 +7545,7 @@ function wp_auth_check($response)
  *
  * @since 3.6.0
  *
- * @param  string  $tag An HTML tag name. Example: 'video'.
+ * @param  string  $tag  An HTML tag name. Example: 'video'.
  * @return string Tag RegEx.
  */
 function get_tag_regex($tag)
@@ -7564,7 +7564,7 @@ function get_tag_regex($tag)
  * @since 3.6.0
  * @see https://core.trac.wordpress.org/ticket/23688
  *
- * @param  string  $charset A charset name.
+ * @param  string  $charset  A charset name.
  * @return string The canonical form of the charset.
  */
 function _canonical_charset($charset)
@@ -7601,8 +7601,8 @@ function _canonical_charset($charset)
  * @since 3.7.0
  * @see reset_mbstring_encoding()
  *
- * @param  bool  $reset Optional. Whether to reset the encoding back to a previously-set encoding.
- *                    Default false.
+ * @param  bool  $reset  Optional. Whether to reset the encoding back to a previously-set encoding.
+ *                       Default false.
  */
 function mbstring_binary_safe_encoding($reset = false)
 {
@@ -7653,7 +7653,7 @@ function reset_mbstring_encoding()
  *
  * @since 4.0.0
  *
- * @param  mixed  $value Boolean value to validate.
+ * @param  mixed  $value  Boolean value to validate.
  * @return bool Whether the value is validated.
  */
 function wp_validate_boolean($value)
@@ -7674,7 +7674,7 @@ function wp_validate_boolean($value)
  *
  * @since 4.2.0
  *
- * @param  string  $file The path to the file to delete.
+ * @param  string  $file  The path to the file to delete.
  */
 function wp_delete_file($file)
 {
@@ -7683,7 +7683,7 @@ function wp_delete_file($file)
      *
      * @since 2.1.0
      *
-     * @param  string  $file Path to the file to delete.
+     * @param  string  $file  Path to the file to delete.
      */
     $delete = apply_filters('wp_delete_file', $file);
     if (! empty($delete)) {
@@ -7696,8 +7696,8 @@ function wp_delete_file($file)
  *
  * @since 4.9.7
  *
- * @param  string  $file      Absolute path to the file to delete.
- * @param  string  $directory Absolute path to a directory.
+ * @param  string  $file  Absolute path to the file to delete.
+ * @param  string  $directory  Absolute path to a directory.
  * @return bool True on success, false on failure.
  */
 function wp_delete_file_from_directory($file, $directory)
@@ -7777,7 +7777,7 @@ function wp_post_preview_js()
  *
  * @since 4.4.0
  *
- * @param  string  $date_string Date string to parse and format.
+ * @param  string  $date_string  Date string to parse and format.
  * @return string Date formatted for ISO8601 without time zone.
  */
 function mysql_to_rfc3339($date_string)
@@ -7792,10 +7792,10 @@ function mysql_to_rfc3339($date_string)
  *
  * @since 4.6.0
  *
- * @param  string  $context Optional. Context in which the function is called. Accepts either 'admin',
- *                        'image', 'cron', or an arbitrary other context. If an arbitrary context is passed,
- *                        the similarly arbitrary {@see '$context_memory_limit'} filter will be
- *                        invoked. Default 'admin'.
+ * @param  string  $context  Optional. Context in which the function is called. Accepts either 'admin',
+ *                           'image', 'cron', or an arbitrary other context. If an arbitrary context is passed,
+ *                           the similarly arbitrary {@see '$context_memory_limit'} filter will be
+ *                           invoked. Default 'admin'.
  * @return int|string|false The limit that was set or false on failure.
  */
 function wp_raise_memory_limit($context = 'admin')
@@ -7833,8 +7833,8 @@ function wp_raise_memory_limit($context = 'admin')
              * @since 3.0.0
              * @since 4.6.0 The default now takes the original `memory_limit` into account.
              *
-             * @param  int|string  $filtered_limit The maximum WordPress memory limit. Accepts an integer
-             *                                   (bytes), or a shorthand string notation, such as '256M'.
+             * @param  int|string  $filtered_limit  The maximum WordPress memory limit. Accepts an integer
+             *                                      (bytes), or a shorthand string notation, such as '256M'.
              */
             $filtered_limit = apply_filters('admin_memory_limit', $filtered_limit);
             break;
@@ -7846,11 +7846,11 @@ function wp_raise_memory_limit($context = 'admin')
              * @since 3.5.0
              * @since 4.6.0 The default now takes the original `memory_limit` into account.
              *
-             * @param  int|string  $filtered_limit Maximum memory limit to allocate for image processing.
-             *                                   Default `WP_MAX_MEMORY_LIMIT` or the original
-             *                                   php.ini `memory_limit`, whichever is higher.
-             *                                   Accepts an integer (bytes), or a shorthand string
-             *                                   notation, such as '256M'.
+             * @param  int|string  $filtered_limit  Maximum memory limit to allocate for image processing.
+             *                                      Default `WP_MAX_MEMORY_LIMIT` or the original
+             *                                      php.ini `memory_limit`, whichever is higher.
+             *                                      Accepts an integer (bytes), or a shorthand string
+             *                                      notation, such as '256M'.
              */
             $filtered_limit = apply_filters('image_memory_limit', $filtered_limit);
             break;
@@ -7861,11 +7861,11 @@ function wp_raise_memory_limit($context = 'admin')
              *
              * @since 6.3.0
              *
-             * @param  int|string  $filtered_limit Maximum memory limit to allocate for WP-Cron.
-             *                                   Default `WP_MAX_MEMORY_LIMIT` or the original
-             *                                   php.ini `memory_limit`, whichever is higher.
-             *                                   Accepts an integer (bytes), or a shorthand string
-             *                                   notation, such as '256M'.
+             * @param  int|string  $filtered_limit  Maximum memory limit to allocate for WP-Cron.
+             *                                      Default `WP_MAX_MEMORY_LIMIT` or the original
+             *                                      php.ini `memory_limit`, whichever is higher.
+             *                                      Accepts an integer (bytes), or a shorthand string
+             *                                      notation, such as '256M'.
              */
             $filtered_limit = apply_filters('cron_memory_limit', $filtered_limit);
             break;
@@ -7880,10 +7880,10 @@ function wp_raise_memory_limit($context = 'admin')
              *
              * @since 4.6.0
              *
-             * @param  int|string  $filtered_limit Maximum memory limit to allocate for this context.
-             *                                   Default WP_MAX_MEMORY_LIMIT` or the original php.ini `memory_limit`,
-             *                                   whichever is higher. Accepts an integer (bytes), or a
-             *                                   shorthand string notation, such as '256M'.
+             * @param  int|string  $filtered_limit  Maximum memory limit to allocate for this context.
+             *                                      Default WP_MAX_MEMORY_LIMIT` or the original php.ini `memory_limit`,
+             *                                      whichever is higher. Accepts an integer (bytes), or a
+             *                                      shorthand string notation, such as '256M'.
              */
             $filtered_limit = apply_filters("{$context}_memory_limit", $filtered_limit);
             break;
@@ -7935,9 +7935,9 @@ function wp_generate_uuid4()
  *
  * @since 4.9.0
  *
- * @param  mixed  $uuid    UUID to check.
- * @param  int  $version Specify which version of UUID to check against. Default is none,
- *                       to accept any UUID version. Otherwise, only version allowed is `4`.
+ * @param  mixed  $uuid  UUID to check.
+ * @param  int  $version  Specify which version of UUID to check against. Default is none,
+ *                        to accept any UUID version. Otherwise, only version allowed is `4`.
  * @return bool The string is a valid UUID or false on failure.
  */
 function wp_is_uuid($uuid, $version = null)
@@ -7971,7 +7971,7 @@ function wp_is_uuid($uuid, $version = null)
  *
  * @since 5.0.3
  *
- * @param  string  $prefix Prefix for the returned ID.
+ * @param  string  $prefix  Prefix for the returned ID.
  * @return string Unique ID.
  */
 function wp_unique_id($prefix = '')
@@ -7992,7 +7992,7 @@ function wp_unique_id($prefix = '')
  *
  * @since 6.4.0
  *
- * @param  string  $prefix Optional. Prefix for the returned ID. Default empty string.
+ * @param  string  $prefix  Optional. Prefix for the returned ID. Default empty string.
  * @return string Incremental ID per prefix.
  */
 function wp_unique_prefixed_id($prefix = '')
@@ -8021,7 +8021,7 @@ function wp_unique_prefixed_id($prefix = '')
  *
  * @since 4.7.0
  *
- * @param  string  $group Where the cache contents are grouped.
+ * @param  string  $group  Where the cache contents are grouped.
  * @return string UNIX timestamp with microseconds representing when the group was last changed.
  */
 function wp_cache_get_last_changed($group)
@@ -8040,7 +8040,7 @@ function wp_cache_get_last_changed($group)
  *
  * @since 6.3.0
  *
- * @param  string  $group Where the cache contents are grouped.
+ * @param  string  $group  Where the cache contents are grouped.
  * @return string UNIX timestamp when the group was last changed.
  */
 function wp_cache_set_last_changed($group)
@@ -8058,9 +8058,9 @@ function wp_cache_set_last_changed($group)
      *
      * @since 6.3.0
      *
-     * @param  string  $group         The cache group name.
-     * @param  int  $time          The new last changed time.
-     * @param  int|false  $previous_time The previous last changed time. False if not previously set.
+     * @param  string  $group  The cache group name.
+     * @param  int  $time  The new last changed time.
+     * @param  int|false  $previous_time  The previous last changed time. False if not previously set.
      */
     do_action('wp_cache_set_last_changed', $group, $time, $previous_time);
 
@@ -8072,9 +8072,9 @@ function wp_cache_set_last_changed($group)
  *
  * @since 4.9.0
  *
- * @param  string  $old_email   The old site admin email address.
- * @param  string  $new_email   The new site admin email address.
- * @param  string  $option_name The relevant database option name.
+ * @param  string  $old_email  The old site admin email address.
+ * @param  string  $new_email  The new site admin email address.
+ * @param  string  $option_name  The relevant database option name.
  */
 function wp_site_admin_email_change_notification($old_email, $new_email, $option_name)
 {
@@ -8090,9 +8090,9 @@ function wp_site_admin_email_change_notification($old_email, $new_email, $option
      *
      * @since 4.9.0
      *
-     * @param  bool  $send      Whether to send the email notification.
-     * @param  string  $old_email The old site admin email address.
-     * @param  string  $new_email The new site admin email address.
+     * @param  bool  $send  Whether to send the email notification.
+     * @param  string  $old_email  The old site admin email address.
+     * @param  string  $new_email  The new site admin email address.
      */
     $send = apply_filters('send_site_admin_email_change_email', $send, $old_email, $new_email);
 
@@ -8131,22 +8131,22 @@ All at ###SITENAME###
      *
      * @since 4.9.0
      *
-     * @param  array  $email_change_email {
-     *     Used to build wp_mail().
+     * @param  array  $email_change_email  {
+     *                                     Used to build wp_mail().
      *
-     *     @type string $to      The intended recipient.
-     *     @type string $subject The subject of the email.
-     *     @type string $message The content of the email.
-     *         The following strings have a special meaning and will get replaced dynamically:
-     *         - ###OLD_EMAIL### The old site admin email address.
-     *         - ###NEW_EMAIL### The new site admin email address.
-     *         - ###SITENAME###  The name of the site.
-     *         - ###SITEURL###   The URL to the site.
-     *     @type string $headers Headers.
-     * }
+     * @type string $to      The intended recipient.
+     * @type string $subject The subject of the email.
+     * @type string $message The content of the email.
+     *              The following strings have a special meaning and will get replaced dynamically:
+     *              - ###OLD_EMAIL### The old site admin email address.
+     *              - ###NEW_EMAIL### The new site admin email address.
+     *              - ###SITENAME###  The name of the site.
+     *              - ###SITEURL###   The URL to the site.
+     * @type string $headers Headers.
+     *              }
      *
-     * @param  string  $old_email The old site admin email address.
-     * @param  string  $new_email The new site admin email address.
+     * @param  string  $old_email  The old site admin email address.
+     * @param  string  $new_email  The new site admin email address.
      */
     $email_change_email = apply_filters('site_admin_email_change_email', $email_change_email, $old_email, $new_email);
 
@@ -8171,10 +8171,10 @@ All at ###SITENAME###
  *
  * @since 4.9.6 Abstracted from `WP_Community_Events::get_unsafe_client_ip()`.
  *
- * @param  string  $ip_addr       The IPv4 or IPv6 address to be anonymized.
- * @param  bool  $ipv6_fallback Optional. Whether to return the original IPv6 address if the needed functions
- *                              to anonymize it are not present. Default false, return `::` (unspecified address).
- * @return string  The anonymized IP address.
+ * @param  string  $ip_addr  The IPv4 or IPv6 address to be anonymized.
+ * @param  bool  $ipv6_fallback  Optional. Whether to return the original IPv6 address if the needed functions
+ *                               to anonymize it are not present. Default false, return `::` (unspecified address).
+ * @return string The anonymized IP address.
  */
 function wp_privacy_anonymize_ip($ip_addr, $ipv6_fallback = false)
 {
@@ -8246,8 +8246,8 @@ function wp_privacy_anonymize_ip($ip_addr, $ipv6_fallback = false)
  *
  * @since 4.9.6
  *
- * @param  string  $type The type of data to be anonymized.
- * @param  string  $data Optional. The data to be anonymized. Default empty string.
+ * @param  string  $type  The type of data to be anonymized.
+ * @param  string  $data  Optional. The data to be anonymized. Default empty string.
  * @return string The anonymous data for the requested type.
  */
 function wp_privacy_anonymize_data($type, $data = '')
@@ -8284,9 +8284,9 @@ function wp_privacy_anonymize_data($type, $data = '')
      *
      * @since 4.9.6
      *
-     * @param  string  $anonymous Anonymized data.
-     * @param  string  $type      Type of the data.
-     * @param  string  $data      Original data.
+     * @param  string  $anonymous  Anonymized data.
+     * @param  string  $type  Type of the data.
+     * @param  string  $data  Original data.
      */
     return apply_filters('wp_privacy_anonymize_data', $anonymous, $type, $data);
 }
@@ -8311,7 +8311,7 @@ function wp_privacy_exports_dir()
      * @since 5.5.0 Exports now use relative paths, so changes to the directory
      *              via this filter should be reflected on the server.
      *
-     * @param  string  $exports_dir Exports directory.
+     * @param  string  $exports_dir  Exports directory.
      */
     return apply_filters('wp_privacy_exports_dir', $exports_dir);
 }
@@ -8336,7 +8336,7 @@ function wp_privacy_exports_url()
      * @since 5.5.0 Exports now use relative paths, so changes to the directory URL
      *              via this filter should be reflected on the server.
      *
-     * @param  string  $exports_url Exports directory URL.
+     * @param  string  $exports_url  Exports directory URL.
      */
     return apply_filters('wp_privacy_exports_url', $exports_url);
 }
@@ -8386,7 +8386,7 @@ function wp_privacy_delete_old_export_files()
      *
      * @since 4.9.6
      *
-     * @param  int  $expiration The expiration age of the export, in seconds.
+     * @param  int  $expiration  The expiration age of the export, in seconds.
      */
     $expiration = apply_filters('wp_privacy_export_expiration', 3 * DAY_IN_SECONDS);
 
@@ -8428,7 +8428,7 @@ function wp_get_update_php_url()
      *
      * @since 5.1.0
      *
-     * @param  string  $update_url URL to learn more about updating PHP.
+     * @param  string  $update_url  URL to learn more about updating PHP.
      */
     $update_url = apply_filters('wp_update_php_url', $update_url);
 
@@ -8466,8 +8466,8 @@ function wp_get_default_update_php_url()
  * @since 6.4.0 Added the `$display` parameter.
  *
  * @param  string  $before  Markup to output before the annotation. Default `<p class="description">`.
- * @param  string  $after   Markup to output after the annotation. Default `</p>`.
- * @param  bool  $display Whether to echo or return the markup. Default `true` for echo.
+ * @param  string  $after  Markup to output after the annotation. Default `</p>`.
+ * @param  bool  $display  Whether to echo or return the markup. Default `true` for echo.
  * @return string|void
  */
 function wp_update_php_annotation($before = '<p class="description">', $after = '</p>', $display = true)
@@ -8535,7 +8535,7 @@ function wp_get_direct_php_update_url()
      *
      * @since 5.1.1
      *
-     * @param  string  $direct_update_url URL for directly updating PHP.
+     * @param  string  $direct_update_url  URL for directly updating PHP.
      */
     $direct_update_url = apply_filters('wp_direct_php_update_url', $direct_update_url);
 
@@ -8599,7 +8599,7 @@ function wp_get_update_https_url()
      *
      * @since 5.7.0
      *
-     * @param  string  $update_url URL to learn more about updating HTTPS.
+     * @param  string  $update_url  URL to learn more about updating HTTPS.
      */
     $update_url = apply_filters('wp_update_https_url', $update_url);
     if (empty($update_url)) {
@@ -8650,7 +8650,7 @@ function wp_get_direct_update_https_url()
      *
      * @since 5.7.0
      *
-     * @param  string  $direct_update_url URL for directly updating PHP.
+     * @param  string  $direct_update_url  URL for directly updating PHP.
      */
     $direct_update_url = apply_filters('wp_direct_update_https_url', $direct_update_url);
 
@@ -8666,8 +8666,8 @@ function wp_get_direct_update_https_url()
  * @since MU (3.0.0)
  * @since 5.2.0 $max_execution_time parameter added.
  *
- * @param  string  $directory Full path of a directory.
- * @param  int  $max_execution_time Maximum time to run before giving up. In seconds.
+ * @param  string  $directory  Full path of a directory.
+ * @param  int  $max_execution_time  Maximum time to run before giving up. In seconds.
  *                                   The timeout is global and is measured from the moment WordPress started to load.
  * @return int|false|null Size in bytes if a valid directory. False if not. Null if timeout.
  */
@@ -8697,16 +8697,16 @@ function get_dirsize($directory, $max_execution_time = null)
  * @since 5.2.0 The `$max_execution_time` parameter was added.
  * @since 5.6.0 The `$directory_cache` parameter was added.
  *
- * @param  string  $directory          Full path of a directory.
- * @param  string|string[]  $exclude            Optional. Full path of a subdirectory to exclude from the total,
- *                                            or array of paths. Expected without trailing slash(es).
- *                                            Default null.
- * @param  int  $max_execution_time Optional. Maximum time to run before giving up. In seconds.
- *                                            The timeout is global and is measured from the moment
- *                                            WordPress started to load. Defaults to the value of
- *                                            `max_execution_time` PHP setting.
- * @param  array  $directory_cache    Optional. Array of cached directory paths.
- *                                            Defaults to the value of `dirsize_cache` transient.
+ * @param  string  $directory  Full path of a directory.
+ * @param  string|string[]  $exclude  Optional. Full path of a subdirectory to exclude from the total,
+ *                                    or array of paths. Expected without trailing slash(es).
+ *                                    Default null.
+ * @param  int  $max_execution_time  Optional. Maximum time to run before giving up. In seconds.
+ *                                   The timeout is global and is measured from the moment
+ *                                   WordPress started to load. Defaults to the value of
+ *                                   `max_execution_time` PHP setting.
+ * @param  array  $directory_cache  Optional. Array of cached directory paths.
+ *                                  Defaults to the value of `dirsize_cache` transient.
  * @return int|false|null Size in bytes if a valid directory. False if not. Null if timeout.
  */
 function recurse_dirsize($directory, $exclude = null, $max_execution_time = null, &$directory_cache = null)
@@ -8757,12 +8757,12 @@ function recurse_dirsize($directory, $exclude = null, $max_execution_time = null
      *
      * @since 5.6.0
      *
-     * @param  int|false  $space_used         The amount of used space, in bytes. Default false.
-     * @param  string  $directory          Full path of a directory.
-     * @param  string|string[]|null  $exclude            Full path of a subdirectory to exclude from the total,
-     *                                                 or array of paths.
-     * @param  int  $max_execution_time Maximum time to run before giving up. In seconds.
-     * @param  array  $directory_cache    Array of cached directory paths.
+     * @param  int|false  $space_used  The amount of used space, in bytes. Default false.
+     * @param  string  $directory  Full path of a directory.
+     * @param  string|string[]|null  $exclude  Full path of a subdirectory to exclude from the total,
+     *                                         or array of paths.
+     * @param  int  $max_execution_time  Maximum time to run before giving up. In seconds.
+     * @param  array  $directory_cache  Array of cached directory paths.
      */
     $size = apply_filters('pre_recurse_dirsize', false, $directory, $exclude, $max_execution_time, $directory_cache);
 
@@ -8819,7 +8819,7 @@ function recurse_dirsize($directory, $exclude = null, $max_execution_time = null
  * @since 5.6.0
  * @since 5.9.0 Added input validation with a notice for invalid input.
  *
- * @param  string  $path Full path of a directory or file.
+ * @param  string  $path  Full path of a directory or file.
  */
 function clean_dirsize_cache($path)
 {
@@ -8878,7 +8878,7 @@ function clean_dirsize_cache($path)
  *
  * @global string $wp_version The WordPress version string.
  *
- * @param  string  $required Minimum required WordPress version.
+ * @param  string  $required  Minimum required WordPress version.
  * @return bool True if required version is compatible or empty, false if not.
  */
 function is_wp_version_compatible($required)
@@ -8896,7 +8896,7 @@ function is_wp_version_compatible($required)
  *
  * @since 5.2.0
  *
- * @param  string  $required Minimum required PHP version.
+ * @param  string  $required  Minimum required PHP version.
  * @return bool True if required version is compatible or empty, false if not.
  */
 function is_php_version_compatible($required)
@@ -8912,8 +8912,8 @@ function is_php_version_compatible($required)
  * @since 5.3.0
  *
  * @param  int|float  $expected  The expected value.
- * @param  int|float  $actual    The actual number.
- * @param  int|float  $precision Optional. The allowed variation. Default 1.
+ * @param  int|float  $actual  The actual number.
+ * @param  int|float  $precision  Optional. The allowed variation. Default 1.
  * @return bool Whether the numbers match within the specified precision.
  */
 function wp_fuzzy_number_match($expected, $actual, $precision = 1)
@@ -8926,19 +8926,19 @@ function wp_fuzzy_number_match($expected, $actual, $precision = 1)
  *
  * @since 6.4.0
  *
- * @param  string  $message The message.
- * @param  array  $args {
- *     Optional. An array of arguments for the admin notice. Default empty array.
+ * @param  string  $message  The message.
+ * @param  array  $args  {
+ *                       Optional. An array of arguments for the admin notice. Default empty array.
  *
- *     @type string   $type               Optional. The type of admin notice.
- *                                        For example, 'error', 'success', 'warning', 'info'.
- *                                        Default empty string.
- *     @type bool     $dismissible        Optional. Whether the admin notice is dismissible. Default false.
- *     @type string   $id                 Optional. The value of the admin notice's ID attribute. Default empty string.
- *     @type string[] $additional_classes Optional. A string array of class names. Default empty array.
- *     @type string[] $attributes         Optional. Additional attributes for the notice div. Default empty array.
- *     @type bool     $paragraph_wrap     Optional. Whether to wrap the message in paragraph tags. Default true.
- * }
+ * @type string $type               Optional. The type of admin notice.
+ *              For example, 'error', 'success', 'warning', 'info'.
+ *              Default empty string.
+ * @type bool $dismissible        Optional. Whether the admin notice is dismissible. Default false.
+ * @type string $id                 Optional. The value of the admin notice's ID attribute. Default empty string.
+ * @type string[] $additional_classes Optional. A string array of class names. Default empty array.
+ * @type string[] $attributes         Optional. Additional attributes for the notice div. Default empty array.
+ * @type bool $paragraph_wrap     Optional. Whether to wrap the message in paragraph tags. Default true.
+ *            }
  *
  * @return string The markup for an admin notice.
  */
@@ -8960,8 +8960,8 @@ function wp_get_admin_notice($message, $args = [])
      *
      * @since 6.4.0
      *
-     * @param  array  $args    The arguments for the admin notice.
-     * @param  string  $message The message for the admin notice.
+     * @param  array  $args  The arguments for the admin notice.
+     * @param  string  $message  The message for the admin notice.
      */
     $args = apply_filters('wp_admin_notice_args', $args, $message);
     $id = '';
@@ -9029,8 +9029,8 @@ function wp_get_admin_notice($message, $args = [])
      * @since 6.4.0
      *
      * @param  string  $markup  The HTML markup for the admin notice.
-     * @param  string  $message The message for the admin notice.
-     * @param  array  $args    The arguments for the admin notice.
+     * @param  string  $message  The message for the admin notice.
+     * @param  array  $args  The arguments for the admin notice.
      */
     return apply_filters('wp_admin_notice_markup', $markup, $message, $args);
 }
@@ -9040,18 +9040,18 @@ function wp_get_admin_notice($message, $args = [])
  *
  * @since 6.4.0
  *
- * @param  string  $message The message to output.
- * @param  array  $args {
- *     Optional. An array of arguments for the admin notice. Default empty array.
+ * @param  string  $message  The message to output.
+ * @param  array  $args  {
+ *                       Optional. An array of arguments for the admin notice. Default empty array.
  *
- *     @type string   $type               Optional. The type of admin notice.
- *                                        For example, 'error', 'success', 'warning', 'info'.
- *                                        Default empty string.
- *     @type bool     $dismissible        Optional. Whether the admin notice is dismissible. Default false.
- *     @type string   $id                 Optional. The value of the admin notice's ID attribute. Default empty string.
- *     @type string[] $additional_classes Optional. A string array of class names. Default empty array.
- *     @type bool     $paragraph_wrap     Optional. Whether to wrap the message in paragraph tags. Default true.
- * }
+ * @type string $type               Optional. The type of admin notice.
+ *              For example, 'error', 'success', 'warning', 'info'.
+ *              Default empty string.
+ * @type bool $dismissible        Optional. Whether the admin notice is dismissible. Default false.
+ * @type string $id                 Optional. The value of the admin notice's ID attribute. Default empty string.
+ * @type string[] $additional_classes Optional. A string array of class names. Default empty array.
+ * @type bool $paragraph_wrap     Optional. Whether to wrap the message in paragraph tags. Default true.
+ *            }
  */
 function wp_admin_notice($message, $args = [])
 {
@@ -9060,8 +9060,8 @@ function wp_admin_notice($message, $args = [])
      *
      * @since 6.4.0
      *
-     * @param  string  $message The message for the admin notice.
-     * @param  array  $args    The arguments for the admin notice.
+     * @param  string  $message  The message for the admin notice.
+     * @param  array  $args  The arguments for the admin notice.
      */
     do_action('wp_admin_notice', $message, $args);
 

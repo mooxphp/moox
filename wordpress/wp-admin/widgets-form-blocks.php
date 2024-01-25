@@ -94,16 +94,16 @@ do_action('widgets_admin_page');
                 esc_url($plugin_install_url)
             );
         }
-        /**
-         * Filters the message displayed in the block widget interface when JavaScript is
-         * not enabled in the browser.
-         *
-         * @since 6.4.0
-         *
-         * @param  string  $message The message being displayed.
-         * @param  bool  $installed Whether the Classic Widget plugin is installed.
-         */
-        $message = apply_filters('block_widgets_no_javascript_message', $message, $installed);
+/**
+ * Filters the message displayed in the block widget interface when JavaScript is
+ * not enabled in the browser.
+ *
+ * @since 6.4.0
+ *
+ * @param  string  $message  The message being displayed.
+ * @param  bool  $installed  Whether the Classic Widget plugin is installed.
+ */
+$message = apply_filters('block_widgets_no_javascript_message', $message, $installed);
 wp_admin_notice(
     $message,
     [

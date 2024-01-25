@@ -72,7 +72,7 @@ class WP_REST_Block_Patterns_Controller extends WP_REST_Controller
      *
      * @since 6.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -100,7 +100,7 @@ class WP_REST_Block_Patterns_Controller extends WP_REST_Controller
      * @since 6.0.0
      * @since 6.2.0 Added migration for old core pattern categories to the new ones.
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -133,7 +133,7 @@ class WP_REST_Block_Patterns_Controller extends WP_REST_Controller
      *
      * @since 6.2.0
      *
-     * @param  array  $pattern Raw pattern as registered, before applying any changes.
+     * @param  array  $pattern  Raw pattern as registered, before applying any changes.
      * @return array Migrated pattern.
      */
     protected function migrate_pattern_categories($pattern)
@@ -162,8 +162,8 @@ class WP_REST_Block_Patterns_Controller extends WP_REST_Controller
      * @since 6.0.0
      * @since 6.3.0 Added `source` property.
      *
-     * @param  array  $item    Raw pattern as registered, before any changes.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  array  $item  Raw pattern as registered, before any changes.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)

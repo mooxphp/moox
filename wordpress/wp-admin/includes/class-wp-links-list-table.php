@@ -19,7 +19,7 @@ class WP_Links_List_Table extends WP_List_Table
      * @since 3.1.0
      * @see WP_List_Table::__construct() for more information on default arguments.
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -171,7 +171,7 @@ class WP_Links_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$link` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  object  $item The current link object.
+     * @param  object  $item  The current link object.
      */
     public function column_cb($item)
     {
@@ -196,7 +196,7 @@ class WP_Links_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  object  $link The current link object.
+     * @param  object  $link  The current link object.
      */
     public function column_name($link)
     {
@@ -215,7 +215,7 @@ class WP_Links_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  object  $link The current link object.
+     * @param  object  $link  The current link object.
      */
     public function column_url($link)
     {
@@ -230,7 +230,7 @@ class WP_Links_List_Table extends WP_List_Table
      *
      * @global int $cat_id
      *
-     * @param  object  $link The current link object.
+     * @param  object  $link  The current link object.
      */
     public function column_categories($link)
     {
@@ -256,7 +256,7 @@ class WP_Links_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  object  $link The current link object.
+     * @param  object  $link  The current link object.
      */
     public function column_rel($link)
     {
@@ -268,7 +268,7 @@ class WP_Links_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  object  $link The current link object.
+     * @param  object  $link  The current link object.
      */
     public function column_visible($link)
     {
@@ -284,7 +284,7 @@ class WP_Links_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  object  $link The current link object.
+     * @param  object  $link  The current link object.
      */
     public function column_rating($link)
     {
@@ -297,8 +297,8 @@ class WP_Links_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$link` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  object  $item        Link object.
-     * @param  string  $column_name Current column name.
+     * @param  object  $item  Link object.
+     * @param  string  $column_name  Current column name.
      */
     public function column_default($item, $column_name)
     {
@@ -310,8 +310,8 @@ class WP_Links_List_Table extends WP_List_Table
          *
          * @since 2.1.0
          *
-         * @param  string  $column_name Name of the custom column.
-         * @param  int  $link_id     Link ID.
+         * @param  string  $column_name  Name of the custom column.
+         * @param  int  $link_id  Link ID.
          */
         do_action('manage_link_custom_column', $column_name, $link->link_id);
     }
@@ -336,9 +336,9 @@ class WP_Links_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$link` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  object  $item        Link being acted upon.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  object  $item  Link being acted upon.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for links, or an empty string
      *                if the current column is not the primary column.
      */

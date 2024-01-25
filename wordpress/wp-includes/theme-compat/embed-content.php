@@ -25,7 +25,7 @@ if (get_post_type() === 'attachment' && wp_attachment_is_image()) {
  *
  * @since 4.9.0
  *
- * @param  int|false  $thumbnail_id Attachment ID, or false if there is none.
+ * @param  int|false  $thumbnail_id  Attachment ID, or false if there is none.
  */
 $thumbnail_id = apply_filters('embed_thumbnail_id', $thumbnail_id);
 
@@ -51,8 +51,8 @@ if ($thumbnail_id) {
      * @since 4.4.0
      * @since 4.5.0 Added `$thumbnail_id` parameter.
      *
-     * @param  string  $image_size   Thumbnail image size.
-     * @param  int  $thumbnail_id Attachment ID.
+     * @param  string  $image_size  Thumbnail image size.
+     * @param  int  $thumbnail_id  Attachment ID.
      */
     $image_size = apply_filters('embed_thumbnail_image_size', $image_size, $thumbnail_id);
 
@@ -67,8 +67,8 @@ if ($thumbnail_id) {
      * @since 4.4.0
      * @since 4.5.0 Added `$thumbnail_id` parameter.
      *
-     * @param  string  $shape        Thumbnail image shape. Either 'rectangular' or 'square'.
-     * @param  int  $thumbnail_id Attachment ID.
+     * @param  string  $shape  Thumbnail image shape. Either 'rectangular' or 'square'.
+     * @param  int  $thumbnail_id  Attachment ID.
      */
     $shape = apply_filters('embed_thumbnail_image_shape', $shape, $thumbnail_id);
 }

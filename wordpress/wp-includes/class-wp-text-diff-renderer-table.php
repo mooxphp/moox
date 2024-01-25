@@ -148,7 +148,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
     /**
      * @ignore
      *
-     * @param  string  $line HTML-escape the value.
+     * @param  string  $line  HTML-escape the value.
      * @return string
      */
     public function addedLine($line)
@@ -162,7 +162,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
     /**
      * @ignore
      *
-     * @param  string  $line HTML-escape the value.
+     * @param  string  $line  HTML-escape the value.
      * @return string
      */
     public function deletedLine($line)
@@ -176,7 +176,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
     /**
      * @ignore
      *
-     * @param  string  $line HTML-escape the value.
+     * @param  string  $line  HTML-escape the value.
      * @return string
      */
     public function contextLine($line)
@@ -220,9 +220,9 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
                  *
                  * @since 4.1.0
                  *
-                 * @param  string  $processed_line The processed diffed line.
-                 * @param  string  $line           The unprocessed diffed line.
-                 * @param  string  $context        The line context. Values are 'added', 'deleted' or 'unchanged'.
+                 * @param  string  $processed_line  The processed diffed line.
+                 * @param  string  $line  The unprocessed diffed line.
+                 * @param  string  $context  The line context. Values are 'added', 'deleted' or 'unchanged'.
                  */
                 $line = apply_filters('process_text_diff_html', $processed_line, $line, 'added');
             }
@@ -395,27 +395,27 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
      * @since 2.6.0
      *
      * @param  array  $orig  Lines of the original version of the text.
-     * @param  array  $final Lines of the final version of the text.
+     * @param  array  $final  Lines of the final version of the text.
      * @return array {
-     *     Array containing results of comparing the original text to the final text.
+     *               Array containing results of comparing the original text to the final text.
      *
-     *     @type array $orig_matches  Associative array of original matches. Index == row
-     *                                number of `$orig`, value == corresponding row number
-     *                                of that same line in `$final` or 'x' if there is no
-     *                                corresponding row (indicating it is a deleted line).
-     *     @type array $final_matches Associative array of final matches. Index == row
-     *                                number of `$final`, value == corresponding row number
-     *                                of that same line in `$orig` or 'x' if there is no
-     *                                corresponding row (indicating it is a new line).
-     *     @type array $orig_rows     Associative array of interleaved rows of `$orig` with
-     *                                blanks to keep matches aligned with side-by-side diff
-     *                                of `$final`. A value >= 0 corresponds to index of `$orig`.
-     *                                Value < 0 indicates a blank row.
-     *     @type array $final_rows    Associative array of interleaved rows of `$final` with
-     *                                blanks to keep matches aligned with side-by-side diff
-     *                                of `$orig`. A value >= 0 corresponds to index of `$final`.
-     *                                Value < 0 indicates a blank row.
-     * }
+     * @type array $orig_matches  Associative array of original matches. Index == row
+     *             number of `$orig`, value == corresponding row number
+     *             of that same line in `$final` or 'x' if there is no
+     *             corresponding row (indicating it is a deleted line).
+     * @type array $final_matches Associative array of final matches. Index == row
+     *             number of `$final`, value == corresponding row number
+     *             of that same line in `$orig` or 'x' if there is no
+     *             corresponding row (indicating it is a new line).
+     * @type array $orig_rows     Associative array of interleaved rows of `$orig` with
+     *             blanks to keep matches aligned with side-by-side diff
+     *             of `$final`. A value >= 0 corresponds to index of `$orig`.
+     *             Value < 0 indicates a blank row.
+     * @type array $final_rows    Associative array of interleaved rows of `$final` with
+     *             blanks to keep matches aligned with side-by-side diff
+     *             of `$orig`. A value >= 0 corresponds to index of `$final`.
+     *             Value < 0 indicates a blank row.
+     *             }
      */
     public function interleave_changed_lines($orig, $final) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.finalFound
     {// Contains all pairwise string comparisons. Keys are such that this need only be a one dimensional array.
@@ -564,7 +564,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
      * @since 4.0.0
      * @since 6.4.0 Getting a dynamic property is deprecated.
      *
-     * @param  string  $name Property to get.
+     * @param  string  $name  Property to get.
      * @return mixed A declared property's value, else null.
      */
     public function __get($name)
@@ -590,7 +590,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
      * @since 6.4.0 Setting a dynamic property is deprecated.
      *
      * @param  string  $name  Property to check if set.
-     * @param  mixed  $value Property value.
+     * @param  mixed  $value  Property value.
      */
     public function __set($name, $value)
     {
@@ -614,7 +614,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
      * @since 4.0.0
      * @since 6.4.0 Checking a dynamic property is deprecated.
      *
-     * @param  string  $name Property to check if set.
+     * @param  string  $name  Property to check if set.
      * @return bool Whether the property is set.
      */
     public function __isset($name)
@@ -639,7 +639,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
      * @since 4.0.0
      * @since 6.4.0 Unsetting a dynamic property is deprecated.
      *
-     * @param  string  $name Property to unset.
+     * @param  string  $name  Property to unset.
      */
     public function __unset($name)
     {

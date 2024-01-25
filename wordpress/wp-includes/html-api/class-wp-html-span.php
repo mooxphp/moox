@@ -42,8 +42,8 @@ class WP_HTML_Span
      *
      * @since 6.2.0
      *
-     * @param  int  $start Byte offset into document where replacement span begins.
-     * @param  int  $end   Byte offset into document where replacement span ends.
+     * @param  int  $start  Byte offset into document where replacement span begins.
+     * @param  int  $end  Byte offset into document where replacement span ends.
      */
     public function __construct($start, $end)
     {

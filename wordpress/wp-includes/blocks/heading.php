@@ -12,8 +12,8 @@
  * Would be transformed to:
  *  <h2 class="align-left wp-block-heading">Hello World</h2>
  *
- * @param  array  $attributes Attributes of the block being rendered.
- * @param  string  $content Content of the block being rendered.
+ * @param  array  $attributes  Attributes of the block being rendered.
+ * @param  string  $content  Content of the block being rendered.
  * @return string The content of the block being rendered.
  */
 function block_core_heading_render($attributes, $content)

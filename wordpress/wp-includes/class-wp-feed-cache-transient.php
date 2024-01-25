@@ -50,7 +50,7 @@ class WP_Feed_Cache_Transient
      *
      * @param  string  $location  URL location (scheme is used to determine handler).
      * @param  string  $filename  Unique identifier for cache object.
-     * @param  string  $extension 'spi' or 'spc'.
+     * @param  string  $extension  'spi' or 'spc'.
      */
     public function __construct($location, $filename, $extension)
     {
@@ -63,8 +63,8 @@ class WP_Feed_Cache_Transient
          *
          * @since 2.8.0
          *
-         * @param  int  $lifetime Cache duration in seconds. Default is 43200 seconds (12 hours).
-         * @param  string  $filename Unique identifier for the cache object.
+         * @param  int  $lifetime  Cache duration in seconds. Default is 43200 seconds (12 hours).
+         * @param  string  $filename  Unique identifier for the cache object.
          */
         $this->lifetime = apply_filters('wp_feed_cache_transient_lifetime', $lifetime, $filename);
     }
@@ -74,7 +74,7 @@ class WP_Feed_Cache_Transient
      *
      * @since 2.8.0
      *
-     * @param  SimplePie  $data Data to save.
+     * @param  SimplePie  $data  Data to save.
      * @return true Always true.
      */
     public function save($data)

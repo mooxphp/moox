@@ -75,7 +75,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -108,7 +108,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -148,7 +148,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, otherwise false or WP_Error object.
      */
     public function get_item_permissions_check($request)
@@ -178,7 +178,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -204,8 +204,8 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
      * @since 4.7.0
      * @since 5.9.0 Renamed `$taxonomy` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Taxonomy  $item    Taxonomy data.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_Taxonomy  $item  Taxonomy data.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -287,8 +287,8 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  WP_Taxonomy  $item     The original taxonomy object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  WP_Taxonomy  $item  The original taxonomy object.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_taxonomy', $response, $taxonomy, $request);
@@ -299,7 +299,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller
      *
      * @since 6.1.0
      *
-     * @param  WP_Taxonomy  $taxonomy The taxonomy.
+     * @param  WP_Taxonomy  $taxonomy  The taxonomy.
      * @return array Links for the given taxonomy.
      */
     protected function prepare_links($taxonomy)

@@ -41,7 +41,7 @@ class ParagonIE_Sodium_Core_Base64_UrlSafe
 
     /**
      * @param  string  $src
-     * @param  bool  $pad   Include = padding?
+     * @param  bool  $pad  Include = padding?
      * @return string
      *
      * @throws TypeError

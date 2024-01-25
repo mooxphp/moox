@@ -12,11 +12,11 @@
  * @since 2.1.0
  * @see get_terms() Type of arguments that can be changed.
  *
- * @param  string|array  $args {
- *     Optional. Arguments to retrieve categories. See get_terms() for additional options.
+ * @param  string|array  $args  {
+ *                              Optional. Arguments to retrieve categories. See get_terms() for additional options.
  *
- *     @type string $taxonomy Taxonomy to retrieve terms for. Default 'category'.
- * }
+ * @type string $taxonomy Taxonomy to retrieve terms for. Default 'category'.
+ *              }
  *
  * @return array List of category objects.
  */
@@ -30,8 +30,8 @@ function get_categories($args = '')
      *
      * @since 2.7.0
      *
-     * @param  string  $taxonomy Taxonomy to retrieve terms from.
-     * @param  array  $args     An array of arguments. See get_terms().
+     * @param  string  $taxonomy  Taxonomy to retrieve terms from.
+     * @param  array  $args  An array of arguments. See get_terms().
      */
     $args['taxonomy'] = apply_filters('get_categories_taxonomy', $args['taxonomy'], $args);
 
@@ -78,11 +78,11 @@ function get_categories($args = '')
  *
  * @since 1.5.1
  *
- * @param  int|object  $category Category ID or category row object.
- * @param  string  $output   Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
- *                             correspond to a WP_Term object, an associative array, or a numeric array,
- *                             respectively. Default OBJECT.
- * @param  string  $filter   Optional. How to sanitize category fields. Default 'raw'.
+ * @param  int|object  $category  Category ID or category row object.
+ * @param  string  $output  Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
+ *                          correspond to a WP_Term object, an associative array, or a numeric array,
+ *                          respectively. Default OBJECT.
+ * @param  string  $filter  Optional. How to sanitize category fields. Default 'raw'.
  * @return object|array|WP_Error|null Category data in type defined by $output parameter.
  *                                    WP_Error if $category is empty, null if it does not exist.
  */
@@ -113,11 +113,11 @@ function get_category($category, $output = OBJECT, $filter = 'raw')
  *
  * @since 2.1.0
  *
- * @param  string  $category_path URL containing category slugs.
- * @param  bool  $full_match    Optional. Whether full path should be matched.
- * @param  string  $output        Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
- *                              correspond to a WP_Term object, an associative array, or a numeric array,
- *                              respectively. Default OBJECT.
+ * @param  string  $category_path  URL containing category slugs.
+ * @param  bool  $full_match  Optional. Whether full path should be matched.
+ * @param  string  $output  Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
+ *                          correspond to a WP_Term object, an associative array, or a numeric array,
+ *                          respectively. Default OBJECT.
  * @return WP_Term|array|WP_Error|null Type is based on $output value.
  */
 function get_category_by_path($category_path, $full_match = true, $output = OBJECT)
@@ -182,7 +182,7 @@ function get_category_by_path($category_path, $full_match = true, $output = OBJE
  *
  * @since 2.3.0
  *
- * @param  string  $slug The category slug.
+ * @param  string  $slug  The category slug.
  * @return object|false Category data object on success, false if not found.
  */
 function get_category_by_slug($slug)
@@ -201,7 +201,7 @@ function get_category_by_slug($slug)
  *
  * @since 1.0.0
  *
- * @param  string  $cat_name Category name.
+ * @param  string  $cat_name  Category name.
  * @return int Category ID on success, 0 if the category doesn't exist.
  */
 function get_cat_ID($cat_name) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
@@ -220,7 +220,7 @@ function get_cat_ID($cat_name) // phpcs:ignore WordPress.NamingConventions.Valid
  *
  * @since 1.0.0
  *
- * @param  int  $cat_id Category ID.
+ * @param  int  $cat_id  Category ID.
  * @return string Category name, or an empty string if the category doesn't exist.
  */
 function get_cat_name($cat_id)
@@ -243,8 +243,8 @@ function get_cat_name($cat_id)
  *
  * @since 2.1.0
  *
- * @param  int|object  $cat1 ID or object to check if this is the parent category.
- * @param  int|object  $cat2 The child category.
+ * @param  int|object  $cat1  ID or object to check if this is the parent category.
+ * @param  int|object  $cat2  The child category.
  * @return bool Whether $cat2 is child of $cat1.
  */
 function cat_is_ancestor_of($cat1, $cat2)
@@ -257,7 +257,7 @@ function cat_is_ancestor_of($cat1, $cat2)
  *
  * @since 2.3.0
  *
- * @param  object|array  $category Category data.
+ * @param  object|array  $category  Category data.
  * @param  string  $context  Optional. Default 'display'.
  * @return object|array Same type as $category with sanitized data for safe use.
  */
@@ -271,10 +271,10 @@ function sanitize_category($category, $context = 'display')
  *
  * @since 2.3.0
  *
- * @param  string  $field   Category key to sanitize.
- * @param  mixed  $value   Category value to sanitize.
+ * @param  string  $field  Category key to sanitize.
+ * @param  mixed  $value  Category value to sanitize.
  * @param  int  $cat_id  Category ID.
- * @param  string  $context What filter to use, 'raw', 'display', etc.
+ * @param  string  $context  What filter to use, 'raw', 'display', etc.
  * @return mixed Value after $value has been sanitized.
  */
 function sanitize_category_field($field, $value, $cat_id, $context)
@@ -289,11 +289,11 @@ function sanitize_category_field($field, $value, $cat_id, $context)
  *
  * @since 2.3.0
  *
- * @param  string|array  $args {
- *     Optional. Arguments to retrieve tags. See get_terms() for additional options.
+ * @param  string|array  $args  {
+ *                              Optional. Arguments to retrieve tags. See get_terms() for additional options.
  *
- *     @type string $taxonomy Taxonomy to retrieve terms for. Default 'post_tag'.
- * }
+ * @type string $taxonomy Taxonomy to retrieve terms for. Default 'post_tag'.
+ *              }
  *
  * @return WP_Term[]|int|WP_Error Array of 'post_tag' term objects, a count thereof,
  *                                or WP_Error if any of the taxonomies do not exist.
@@ -313,9 +313,9 @@ function get_tags($args = '')
          *
          * @since 2.3.0
          *
-         * @param  WP_Term[]|int|WP_Error  $tags Array of 'post_tag' term objects, a count thereof,
-         *                                     or WP_Error if any of the taxonomies do not exist.
-         * @param  array  $args An array of arguments. See {@see get_terms()}.
+         * @param  WP_Term[]|int|WP_Error  $tags  Array of 'post_tag' term objects, a count thereof,
+         *                                        or WP_Error if any of the taxonomies do not exist.
+         * @param  array  $args  An array of arguments. See {@see get_terms()}.
          */
         $tags = apply_filters('get_tags', $tags, $args);
     }
@@ -337,11 +337,11 @@ function get_tags($args = '')
  *
  * @since 2.3.0
  *
- * @param  int|WP_Term|object  $tag    A tag ID or object.
- * @param  string  $output Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
- *                                   correspond to a WP_Term object, an associative array, or a numeric array,
- *                                   respectively. Default OBJECT.
- * @param  string  $filter Optional. How to sanitize tag fields. Default 'raw'.
+ * @param  int|WP_Term|object  $tag  A tag ID or object.
+ * @param  string  $output  Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
+ *                          correspond to a WP_Term object, an associative array, or a numeric array,
+ *                          respectively. Default OBJECT.
+ * @param  string  $filter  Optional. How to sanitize tag fields. Default 'raw'.
  * @return WP_Term|array|WP_Error|null Tag data in type defined by $output parameter.
  *                                     WP_Error if $tag is empty, null if it does not exist.
  */
@@ -357,7 +357,7 @@ function get_tag($tag, $output = OBJECT, $filter = 'raw')
  *
  * @since 2.1.0
  *
- * @param  int  $id Category ID
+ * @param  int  $id  Category ID
  */
 function clean_category_cache($id)
 {
@@ -381,7 +381,7 @@ function clean_category_cache($id)
  * @since 2.3.0
  * @since 4.4.0 The `$category` parameter now also accepts a WP_Term object.
  *
- * @param  array|object|WP_Term  $category Category row object or array.
+ * @param  array|object|WP_Term  $category  Category row object or array.
  */
 function _make_cat_compat(&$category)
 {

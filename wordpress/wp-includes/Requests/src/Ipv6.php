@@ -32,7 +32,7 @@ final class Ipv6
      * @copyright 2003-2005 The PHP Group
      * @license https://opensource.org/licenses/bsd-license.php
      *
-     * @param  string|Stringable  $ip An IPv6 address
+     * @param  string|Stringable  $ip  An IPv6 address
      * @return string The uncompressed IPv6 address
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not a string or a stringable object.
@@ -89,7 +89,7 @@ final class Ipv6
      *
      * @see \WpOrg\Requests\Ipv6::uncompress()
      *
-     * @param  string  $ip An IPv6 address
+     * @param  string  $ip  An IPv6 address
      * @return string The compressed IPv6 address
      */
     public static function compress($ip)
@@ -132,7 +132,7 @@ final class Ipv6
      * Example:  0:0:0:0:0:0:13.1.68.3
      *           0:0:0:0:0:FFFF:129.144.52.38
      *
-     * @param  string  $ip An IPv6 address
+     * @param  string  $ip  An IPv6 address
      * @return string[] [0] contains the IPv6 represented part, and [1] the IPv4 represented part
      */
     private static function split_v6_v4($ip)
@@ -153,7 +153,7 @@ final class Ipv6
      *
      * Checks if the given IP is a valid IPv6 address
      *
-     * @param  string  $ip An IPv6 address
+     * @param  string  $ip  An IPv6 address
      * @return bool true if $ip is a valid IPv6 address
      */
     public static function check_ipv6($ip)

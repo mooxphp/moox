@@ -11,7 +11,7 @@
  * @since 5.6.0
  * @since 6.1.0 Improved $color_support assignment optimization.
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_colors_support($block_type)
 {
@@ -72,8 +72,8 @@ function wp_register_colors_support($block_type)
  * @since 5.6.0
  * @since 6.1.0 Implemented the style engine to generate CSS and classnames.
  *
- * @param  WP_Block_Type  $block_type       Block type.
- * @param  array  $block_attributes Block attributes.
+ * @param  WP_Block_Type  $block_type  Block type.
+ * @param  array  $block_attributes  Block attributes.
  * @return array Colors CSS classes and inline styles.
  */
 function wp_apply_colors_support($block_type, $block_attributes)

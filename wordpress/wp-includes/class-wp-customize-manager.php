@@ -268,21 +268,21 @@ final class WP_Customize_Manager
      * @since 3.4.0
      * @since 4.7.0 Added `$args` parameter.
      *
-     * @param  array  $args {
-     *     Args.
+     * @param  array  $args  {
+     *                       Args.
      *
-     *     @type null|string|false $changeset_uuid     Changeset UUID, the `post_name` for the customize_changeset post containing the customized state.
-     *                                                 Defaults to `null` resulting in a UUID to be immediately generated. If `false` is provided, then
-     *                                                 then the changeset UUID will be determined during `after_setup_theme`: when the
-     *                                                 `customize_changeset_branching` filter returns false, then the default UUID will be that
-     *                                                 of the most recent `customize_changeset` post that has a status other than 'auto-draft',
-     *                                                 'publish', or 'trash'. Otherwise, if changeset branching is enabled, then a random UUID will be used.
-     *     @type string            $theme              Theme to be previewed (for theme switch). Defaults to customize_theme or theme query params.
-     *     @type string            $messenger_channel  Messenger channel. Defaults to customize_messenger_channel query param.
-     *     @type bool              $settings_previewed If settings should be previewed. Defaults to true.
-     *     @type bool              $branching          If changeset branching is allowed; otherwise, changesets are linear. Defaults to true.
-     *     @type bool              $autosaved          If data from a changeset's autosaved revision should be loaded if it exists. Defaults to false.
-     * }
+     * @type null|string|false $changeset_uuid     Changeset UUID, the `post_name` for the customize_changeset post containing the customized state.
+     *                         Defaults to `null` resulting in a UUID to be immediately generated. If `false` is provided, then
+     *                         then the changeset UUID will be determined during `after_setup_theme`: when the
+     *                         `customize_changeset_branching` filter returns false, then the default UUID will be that
+     *                         of the most recent `customize_changeset` post that has a status other than 'auto-draft',
+     *                         'publish', or 'trash'. Otherwise, if changeset branching is enabled, then a random UUID will be used.
+     * @type string $theme              Theme to be previewed (for theme switch). Defaults to customize_theme or theme query params.
+     * @type string $messenger_channel  Messenger channel. Defaults to customize_messenger_channel query param.
+     * @type bool $settings_previewed If settings should be previewed. Defaults to true.
+     * @type bool $branching          If changeset branching is allowed; otherwise, changesets are linear. Defaults to true.
+     * @type bool $autosaved          If data from a changeset's autosaved revision should be loaded if it exists. Defaults to false.
+     *            }
      */
     public function __construct($args = [])
     {
@@ -373,8 +373,8 @@ final class WP_Customize_Manager
          * @since 4.4.0
          * @see WP_Customize_Manager::__construct()
          *
-         * @param  string[]  $components Array of core components to load.
-         * @param  WP_Customize_Manager  $manager    WP_Customize_Manager instance.
+         * @param  string[]  $components  Array of core components to load.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         $components = apply_filters('customize_loaded_components', $this->components, $this);
 
@@ -440,7 +440,7 @@ final class WP_Customize_Manager
      * @since 3.4.0
      * @since 4.2.0 Added `$action` param.
      *
-     * @param  string|null  $action Whether the supplied Ajax action is being run.
+     * @param  string|null  $action  Whether the supplied Ajax action is being run.
      * @return bool True if it's an Ajax request, false otherwise.
      */
     public function doing_ajax($action = null)
@@ -466,8 +466,8 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string|WP_Error  $ajax_message Ajax return.
-     * @param  string  $message      Optional. UI message.
+     * @param  string|WP_Error  $ajax_message  Ajax return.
+     * @param  string  $message  Optional. UI message.
      */
     protected function wp_die($ajax_message, $message = null)
     {
@@ -731,7 +731,7 @@ final class WP_Customize_Manager
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('start_previewing_theme', $this);
     }
@@ -770,7 +770,7 @@ final class WP_Customize_Manager
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('stop_previewing_theme', $this);
     }
@@ -833,9 +833,9 @@ final class WP_Customize_Manager
          *
          * @since 4.9.0
          *
-         * @param  bool  $allow_branching Whether branching is allowed. If `false`, the default,
-         *                                              then only one saved changeset exists at a time.
-         * @param  WP_Customize_Manager  $wp_customize    Manager instance.
+         * @param  bool  $allow_branching  Whether branching is allowed. If `false`, the default,
+         *                                 then only one saved changeset exists at a time.
+         * @param  WP_Customize_Manager  $wp_customize  Manager instance.
          */
         $this->branching = apply_filters('customize_changeset_branching', $this->branching, $this);
 
@@ -981,7 +981,7 @@ final class WP_Customize_Manager
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('customize_register', $this);
 
@@ -1005,7 +1005,7 @@ final class WP_Customize_Manager
      * @since 3.4.0
      * @deprecated 4.7.0
      *
-     * @param  int  $status Status.
+     * @param  int  $status  Status.
      * @return int
      */
     public function wp_redirect_status($status)
@@ -1024,7 +1024,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  string  $uuid Changeset UUID.
+     * @param  string  $uuid  Changeset UUID.
      * @return int|null Returns post ID on success and null on failure.
      */
     public function find_changeset_post_id($uuid)
@@ -1064,14 +1064,14 @@ final class WP_Customize_Manager
      *
      * @since 4.9.0
      *
-     * @param  array  $args {
-     *     Args to pass into `get_posts()` to query changesets.
+     * @param  array  $args  {
+     *                       Args to pass into `get_posts()` to query changesets.
      *
-     *     @type int    $posts_per_page             Number of posts to return. Defaults to -1 (all posts).
-     *     @type int    $author                     Post author. Defaults to current user.
-     *     @type string $post_status                Status of changeset. Defaults to 'auto-draft'.
-     *     @type bool   $exclude_restore_dismissed  Whether to exclude changeset auto-drafts that have been dismissed. Defaults to true.
-     * }
+     * @type int $posts_per_page             Number of posts to return. Defaults to -1 (all posts).
+     * @type int $author                     Post author. Defaults to current user.
+     * @type string $post_status                Status of changeset. Defaults to 'auto-draft'.
+     * @type bool $exclude_restore_dismissed  Whether to exclude changeset auto-drafts that have been dismissed. Defaults to true.
+     *            }
      *
      * @return WP_Post[] Auto-draft changesets.
      */
@@ -1165,7 +1165,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  int  $post_id Changeset post ID.
+     * @param  int  $post_id  Changeset post ID.
      * @return array|WP_Error Changeset data or WP_Error on error.
      */
     protected function get_changeset_post_data($post_id)
@@ -1251,7 +1251,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  array  $starter_content Starter content. Defaults to `get_theme_starter_content()`.
+     * @param  array  $starter_content  Starter content. Defaults to `get_theme_starter_content()`.
      */
     public function import_theme_starter_content($starter_content = [])
     {
@@ -1709,7 +1709,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  array  $attachments Attachments.
+     * @param  array  $attachments  Attachments.
      * @return array Prepared attachments.
      */
     protected function prepare_starter_content_attachments($attachments)
@@ -1808,12 +1808,12 @@ final class WP_Customize_Manager
      * @since 4.1.1
      * @since 4.7.0 Added `$args` parameter and merging with changeset values and stashed theme mods.
      *
-     * @param  array  $args {
-     *     Args.
+     * @param  array  $args  {
+     *                       Args.
      *
-     *     @type bool $exclude_changeset Whether the changeset values should also be excluded. Defaults to false.
-     *     @type bool $exclude_post_data Whether the post input values should also be excluded. Defaults to false when lacking the customize capability.
-     * }
+     * @type bool $exclude_changeset Whether the changeset values should also be excluded. Defaults to false.
+     * @type bool $exclude_post_data Whether the post input values should also be excluded. Defaults to false when lacking the customize capability.
+     *            }
      *
      * @return array
      */
@@ -1889,9 +1889,9 @@ final class WP_Customize_Manager
      * @see WP_REST_Request::sanitize_params()
      * @see WP_REST_Request::has_valid_params()
      *
-     * @param  WP_Customize_Setting  $setting       A WP_Customize_Setting derived object.
-     * @param  mixed  $default_value Value returned if `$setting` has no post value (added in 4.2.0)
-     *                                            or the post value is invalid (added in 4.6.0).
+     * @param  WP_Customize_Setting  $setting  A WP_Customize_Setting derived object.
+     * @param  mixed  $default_value  Value returned if `$setting` has no post value (added in 4.2.0)
+     *                                or the post value is invalid (added in 4.6.0).
      * @return string|mixed Sanitized value or the `$default_value` provided.
      */
     public function post_value($setting, $default_value = null)
@@ -1923,8 +1923,8 @@ final class WP_Customize_Manager
      *
      * @since 4.2.0
      *
-     * @param  string  $setting_id ID for the WP_Customize_Setting instance.
-     * @param  mixed  $value      Post value.
+     * @param  string  $setting_id  ID for the WP_Customize_Setting instance.
+     * @param  mixed  $value  Post value.
      */
     public function set_post_value($setting_id, $value)
     {
@@ -1940,8 +1940,8 @@ final class WP_Customize_Manager
          *
          * @since 4.4.0
          *
-         * @param  mixed  $value   Unsanitized setting post value.
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  mixed  $value  Unsanitized setting post value.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action("customize_post_value_set_{$setting_id}", $value, $this);
 
@@ -1955,9 +1955,9 @@ final class WP_Customize_Manager
          *
          * @since 4.4.0
          *
-         * @param  string  $setting_id Setting ID.
-         * @param  mixed  $value      Unsanitized setting post value.
-         * @param  WP_Customize_Manager  $manager    WP_Customize_Manager instance.
+         * @param  string  $setting_id  Setting ID.
+         * @param  mixed  $value  Unsanitized setting post value.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('customize_post_value_set', $setting_id, $value, $this);
     }
@@ -2021,7 +2021,7 @@ final class WP_Customize_Manager
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('customize_preview_init', $this);
     }
@@ -2031,7 +2031,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  array  $headers Headers.
+     * @param  array  $headers  Headers.
      * @return array Headers.
      */
     public function filter_iframe_security_headers($headers)
@@ -2049,7 +2049,7 @@ final class WP_Customize_Manager
      * @see wp_redirect()
      * @see WP_Customize_Manager::get_allowed_url()
      *
-     * @param  string  $url URL.
+     * @param  string  $url  URL.
      * @return string URL.
      */
     public function add_state_query_params($url)
@@ -2320,8 +2320,8 @@ final class WP_Customize_Manager
      * @since 3.4.0
      * @deprecated 4.7.0
      *
-     * @param  callable|null  $callback Optional. Value passed through for {@see 'wp_die_handler'} filter.
-     *                                Default null.
+     * @param  callable|null  $callback  Optional. Value passed through for {@see 'wp_die_handler'} filter.
+     *                                   Default null.
      * @return callable|null Value passed through for {@see 'wp_die_handler'} filter.
      */
     public function remove_preview_signature($callback = null)
@@ -2396,7 +2396,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  mixed  $current_theme {@internal Parameter is not used}
+     * @param  mixed  $current_theme  {@internal Parameter is not used}
      * @return string Theme name.
      */
     public function current_theme($current_theme)
@@ -2416,13 +2416,13 @@ final class WP_Customize_Manager
      * @see WP_REST_Request::has_valid_params()
      * @see WP_Customize_Setting::validate()
      *
-     * @param  array  $setting_values Mapping of setting IDs to values to validate and sanitize.
-     * @param  array  $options {
-     *     Options.
+     * @param  array  $setting_values  Mapping of setting IDs to values to validate and sanitize.
+     * @param  array  $options  {
+     *                          Options.
      *
-     *     @type bool $validate_existence  Whether a setting's existence will be checked.
-     *     @type bool $validate_capability Whether the setting capability will be checked.
-     * }
+     * @type bool $validate_existence  Whether a setting's existence will be checked.
+     * @type bool $validate_capability Whether the setting capability will be checked.
+     *            }
      *
      * @return array Mapping of setting IDs to return value of validate method calls, either `true` or `WP_Error`.
      */
@@ -2486,7 +2486,7 @@ final class WP_Customize_Manager
      *
      * @since 4.6.0
      *
-     * @param  true|WP_Error  $validity Setting validity.
+     * @param  true|WP_Error  $validity  Setting validity.
      * @return true|array If `$validity` was a WP_Error, the error codes will be array-mapped
      *                    to their respective `message` and `data` to pass into the
      *                    `wp.customize.Notification` JS model.
@@ -2692,8 +2692,8 @@ final class WP_Customize_Manager
          *
          * @since 4.2.0
          *
-         * @param  array  $response Additional information passed back to the 'saved'
-         *                                       event on `wp.customize`.
+         * @param  array  $response  Additional information passed back to the 'saved'
+         *                           event on `wp.customize`.
          * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         $response = apply_filters('customize_save_response', $response, $this);
@@ -2710,17 +2710,17 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  array  $args {
-     *     Args for changeset post.
+     * @param  array  $args  {
+     *                       Args for changeset post.
      *
-     *     @type array  $data            Optional additional changeset data. Values will be merged on top of any existing post values.
-     *     @type string $status          Post status. Optional. If supplied, the save will be transactional and a post revision will be allowed.
-     *     @type string $title           Post title. Optional.
-     *     @type string $date_gmt        Date in GMT. Optional.
-     *     @type int    $user_id         ID for user who is saving the changeset. Optional, defaults to the current user ID.
-     *     @type bool   $starter_content Whether the data is starter content. If false (default), then $starter_content will be cleared for any $data being saved.
-     *     @type bool   $autosave        Whether this is a request to create an autosave revision.
-     * }
+     * @type array $data            Optional additional changeset data. Values will be merged on top of any existing post values.
+     * @type string $status          Post status. Optional. If supplied, the save will be transactional and a post revision will be allowed.
+     * @type string $title           Post title. Optional.
+     * @type string $date_gmt        Date in GMT. Optional.
+     * @type int $user_id         ID for user who is saving the changeset. Optional, defaults to the current user ID.
+     * @type bool $starter_content Whether the data is starter content. If false (default), then $starter_content will be cleared for any $data being saved.
+     * @type bool $autosave        Whether this is a request to create an autosave revision.
+     *            }
      *
      * @return array|WP_Error Returns array on success and WP_Error with array data on error.
      */
@@ -2863,7 +2863,7 @@ final class WP_Customize_Manager
          *
          * @since 4.6.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('customize_save_validation_before', $this);
 
@@ -2978,18 +2978,18 @@ final class WP_Customize_Manager
          *
          * @since 4.7.0
          *
-         * @param  array  $data Updated changeset data, mapping setting IDs to arrays containing a $value item and optionally other metadata.
-         * @param  array  $context {
-         *     Filter context.
+         * @param  array  $data  Updated changeset data, mapping setting IDs to arrays containing a $value item and optionally other metadata.
+         * @param  array  $context  {
+         *                          Filter context.
          *
-         *     @type string               $uuid          Changeset UUID.
-         *     @type string               $title         Requested title for the changeset post.
-         *     @type string               $status        Requested status for the changeset post.
-         *     @type string               $date_gmt      Requested date for the changeset post in MySQL format and GMT timezone.
-         *     @type int|false            $post_id       Post ID for the changeset, or false if it doesn't exist yet.
-         *     @type array                $previous_data Previous data contained in the changeset.
-         *     @type WP_Customize_Manager $manager       Manager instance.
-         * }
+         * @type string $uuid          Changeset UUID.
+         * @type string $title         Requested title for the changeset post.
+         * @type string $status        Requested status for the changeset post.
+         * @type string $date_gmt      Requested date for the changeset post in MySQL format and GMT timezone.
+         * @type int|false $post_id       Post ID for the changeset, or false if it doesn't exist yet.
+         * @type array $previous_data Previous data contained in the changeset.
+         * @type WP_Customize_Manager $manager       Manager instance.
+         *                            }
          */
         $data = apply_filters('customize_changeset_save_data', $data, $filter_context);
 
@@ -3120,9 +3120,9 @@ final class WP_Customize_Manager
      *
      * @since 5.4.1
      *
-     * @param  array  $data                An array of slashed and processed post data.
-     * @param  array  $postarr             An array of sanitized (and slashed) but otherwise unmodified post data.
-     * @param  array  $unsanitized_postarr An array of slashed yet *unsanitized* and unprocessed post data as originally passed to wp_insert_post().
+     * @param  array  $data  An array of slashed and processed post data.
+     * @param  array  $postarr  An array of sanitized (and slashed) but otherwise unmodified post data.
+     * @param  array  $unsanitized_postarr  An array of slashed yet *unsanitized* and unprocessed post data as originally passed to wp_insert_post().
      * @return array Filtered post data.
      */
     public function preserve_insert_changeset_post_content($data, $postarr, $unsanitized_postarr)
@@ -3156,7 +3156,7 @@ final class WP_Customize_Manager
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int|WP_Post  $post The changeset post.
+     * @param  int|WP_Post  $post  The changeset post.
      * @return mixed A WP_Post object for the trashed post or an empty value on failure.
      */
     public function trash_changeset_post($post)
@@ -3326,10 +3326,10 @@ final class WP_Customize_Manager
      * @see WP_Customize_Manager::save_changeset_post()
      * @see _wp_translate_postdata()
      *
-     * @param  string[]  $caps    Array of the user's capabilities.
-     * @param  string  $cap     Capability name.
-     * @param  int  $user_id The user ID.
-     * @param  array  $args    Adds the context to the cap. Typically the object ID.
+     * @param  string[]  $caps  Array of the user's capabilities.
+     * @param  string  $cap  Capability name.
+     * @param  int  $user_id  The user ID.
+     * @param  array  $args  Adds the context to the cap. Typically the object ID.
      * @return array Capabilities.
      */
     public function grant_edit_post_capability_for_changeset($caps, $cap, $user_id, $args)
@@ -3347,8 +3347,8 @@ final class WP_Customize_Manager
      *
      * @since 4.9.0
      *
-     * @param  int  $changeset_post_id Changeset post ID.
-     * @param  bool  $take_over Whether to take over the changeset. Default false.
+     * @param  int  $changeset_post_id  Changeset post ID.
+     * @param  bool  $take_over  Whether to take over the changeset. Default false.
      */
     public function set_changeset_lock($changeset_post_id, $take_over = false)
     {
@@ -3373,7 +3373,7 @@ final class WP_Customize_Manager
      *
      * @since 4.9.0
      *
-     * @param  int  $changeset_post_id Changeset post ID.
+     * @param  int  $changeset_post_id  Changeset post ID.
      */
     public function refresh_changeset_lock($changeset_post_id)
     {
@@ -3401,7 +3401,7 @@ final class WP_Customize_Manager
      *
      * @global string $pagenow The filename of the current screen.
      *
-     * @param  array  $settings Current settings to filter.
+     * @param  array  $settings  Current settings to filter.
      * @return array Heartbeat settings.
      */
     public function add_customize_screen_to_heartbeat_settings($settings)
@@ -3420,7 +3420,7 @@ final class WP_Customize_Manager
      *
      * @since 4.9.0
      *
-     * @param  int  $user_id User ID.
+     * @param  int  $user_id  User ID.
      * @return array|null User data formatted for client.
      */
     protected function get_lock_user_data($user_id)
@@ -3448,8 +3448,8 @@ final class WP_Customize_Manager
      * @since 4.9.0
      *
      * @param  array  $response  The Heartbeat response.
-     * @param  array  $data      The $_POST data sent.
-     * @param  string  $screen_id The screen id.
+     * @param  array  $data  The $_POST data sent.
+     * @param  string  $screen_id  The screen id.
      * @return array The Heartbeat response.
      */
     public function check_changeset_lock_with_heartbeat($response, $data, $screen_id)
@@ -3541,9 +3541,9 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  bool  $post_has_changed Whether the post has changed.
+     * @param  bool  $post_has_changed  Whether the post has changed.
      * @param  WP_Post  $latest_revision  The latest revision post object.
-     * @param  WP_Post  $post             The post object.
+     * @param  WP_Post  $post  The post object.
      * @return bool Whether a revision should be made.
      */
     public function _filter_revision_post_has_changed($post_has_changed, $latest_revision, $post)
@@ -3574,7 +3574,7 @@ final class WP_Customize_Manager
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int  $changeset_post_id ID for customize_changeset post. Defaults to the changeset for the current manager instance.
+     * @param  int  $changeset_post_id  ID for customize_changeset post. Defaults to the changeset for the current manager instance.
      * @return true|WP_Error True or error info.
      */
     public function _publish_changeset_values($changeset_post_id)
@@ -3650,7 +3650,7 @@ final class WP_Customize_Manager
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('customize_save', $this);
 
@@ -3703,7 +3703,7 @@ final class WP_Customize_Manager
          *
          * @since 3.6.0
          *
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         do_action('customize_save_after', $this);
 
@@ -3752,7 +3752,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  array  $inactive_theme_mod_settings Mapping of stylesheet to arrays of theme mod settings.
+     * @param  array  $inactive_theme_mod_settings  Mapping of stylesheet to arrays of theme mod settings.
      * @return array|false Returns array of updated stashed theme mods or false if the update failed or there were no changes.
      */
     protected function update_stashed_theme_mod_settings($inactive_theme_mod_settings)
@@ -3877,10 +3877,10 @@ final class WP_Customize_Manager
      * @see WP_Customize_Setting::__construct()
      * @link https://developer.wordpress.org/themes/customize-api
      *
-     * @param  WP_Customize_Setting|string  $id   Customize Setting object, or ID.
-     * @param  array  $args Optional. Array of properties for the new Setting object.
-     *                                          See WP_Customize_Setting::__construct() for information
-     *                                          on accepted arguments. Default empty array.
+     * @param  WP_Customize_Setting|string  $id  Customize Setting object, or ID.
+     * @param  array  $args  Optional. Array of properties for the new Setting object.
+     *                       See WP_Customize_Setting::__construct() for information
+     *                       on accepted arguments. Default empty array.
      * @return WP_Customize_Setting The instance of the setting that was added.
      */
     public function add_setting($id, $args = [])
@@ -3915,7 +3915,7 @@ final class WP_Customize_Manager
      *
      * @since 4.2.0
      *
-     * @param  array  $setting_ids The setting IDs to add.
+     * @param  array  $setting_ids  The setting IDs to add.
      * @return array The WP_Customize_Setting objects added.
      */
     public function add_dynamic_settings($setting_ids)
@@ -3939,8 +3939,8 @@ final class WP_Customize_Manager
              *
              * @since 4.2.0
              *
-             * @param  false|array  $setting_args The arguments to the WP_Customize_Setting constructor.
-             * @param  string  $setting_id   ID for dynamic setting, usually coming from `$_POST['customized']`.
+             * @param  false|array  $setting_args  The arguments to the WP_Customize_Setting constructor.
+             * @param  string  $setting_id  ID for dynamic setting, usually coming from `$_POST['customized']`.
              */
             $setting_args = apply_filters('customize_dynamic_setting_args', $setting_args, $setting_id);
             if ($setting_args === false) {
@@ -3952,8 +3952,8 @@ final class WP_Customize_Manager
              *
              * @since 4.2.0
              *
-             * @param  string  $setting_class WP_Customize_Setting or a subclass.
-             * @param  string  $setting_id    ID for dynamic setting, usually coming from `$_POST['customized']`.
+             * @param  string  $setting_class  WP_Customize_Setting or a subclass.
+             * @param  string  $setting_id  ID for dynamic setting, usually coming from `$_POST['customized']`.
              * @param  array  $setting_args  WP_Customize_Setting or a subclass.
              */
             $setting_class = apply_filters('customize_dynamic_setting_class', $setting_class, $setting_id, $setting_args);
@@ -3972,7 +3972,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string  $id Customize Setting ID.
+     * @param  string  $id  Customize Setting ID.
      * @return WP_Customize_Setting|void The setting, if set.
      */
     public function get_setting($id)
@@ -3989,7 +3989,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string  $id Customize Setting ID.
+     * @param  string  $id  Customize Setting ID.
      */
     public function remove_setting($id)
     {
@@ -4003,10 +4003,10 @@ final class WP_Customize_Manager
      * @since 4.5.0 Return added WP_Customize_Panel instance.
      * @see WP_Customize_Panel::__construct()
      *
-     * @param  WP_Customize_Panel|string  $id   Customize Panel object, or ID.
-     * @param  array  $args Optional. Array of properties for the new Panel object.
-     *                                        See WP_Customize_Panel::__construct() for information
-     *                                        on accepted arguments. Default empty array.
+     * @param  WP_Customize_Panel|string  $id  Customize Panel object, or ID.
+     * @param  array  $args  Optional. Array of properties for the new Panel object.
+     *                       See WP_Customize_Panel::__construct() for information
+     *                       on accepted arguments. Default empty array.
      * @return WP_Customize_Panel The instance of the panel that was added.
      */
     public function add_panel($id, $args = [])
@@ -4027,7 +4027,7 @@ final class WP_Customize_Manager
      *
      * @since 4.0.0
      *
-     * @param  string  $id Panel ID to get.
+     * @param  string  $id  Panel ID to get.
      * @return WP_Customize_Panel|void Requested panel instance, if set.
      */
     public function get_panel($id)
@@ -4044,7 +4044,7 @@ final class WP_Customize_Manager
      *
      * @since 4.0.0
      *
-     * @param  string  $id Panel ID to remove.
+     * @param  string  $id  Panel ID to remove.
      */
     public function remove_panel($id)
     {
@@ -4076,7 +4076,7 @@ final class WP_Customize_Manager
      * @since 4.3.0
      * @see WP_Customize_Panel
      *
-     * @param  string  $panel Name of a custom panel which is a subclass of WP_Customize_Panel.
+     * @param  string  $panel  Name of a custom panel which is a subclass of WP_Customize_Panel.
      */
     public function register_panel_type($panel)
     {
@@ -4103,10 +4103,10 @@ final class WP_Customize_Manager
      * @since 4.5.0 Return added WP_Customize_Section instance.
      * @see WP_Customize_Section::__construct()
      *
-     * @param  WP_Customize_Section|string  $id   Customize Section object, or ID.
-     * @param  array  $args Optional. Array of properties for the new Section object.
-     *                                          See WP_Customize_Section::__construct() for information
-     *                                          on accepted arguments. Default empty array.
+     * @param  WP_Customize_Section|string  $id  Customize Section object, or ID.
+     * @param  array  $args  Optional. Array of properties for the new Section object.
+     *                       See WP_Customize_Section::__construct() for information
+     *                       on accepted arguments. Default empty array.
      * @return WP_Customize_Section The instance of the section that was added.
      */
     public function add_section($id, $args = [])
@@ -4127,7 +4127,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string  $id Section ID.
+     * @param  string  $id  Section ID.
      * @return WP_Customize_Section|void The section, if set.
      */
     public function get_section($id)
@@ -4144,7 +4144,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string  $id Section ID.
+     * @param  string  $id  Section ID.
      */
     public function remove_section($id)
     {
@@ -4159,7 +4159,7 @@ final class WP_Customize_Manager
      * @since 4.3.0
      * @see WP_Customize_Section
      *
-     * @param  string  $section Name of a custom section which is a subclass of WP_Customize_Section.
+     * @param  string  $section  Name of a custom section which is a subclass of WP_Customize_Section.
      */
     public function register_section_type($section)
     {
@@ -4186,10 +4186,10 @@ final class WP_Customize_Manager
      * @since 4.5.0 Return added WP_Customize_Control instance.
      * @see WP_Customize_Control::__construct()
      *
-     * @param  WP_Customize_Control|string  $id   Customize Control object, or ID.
-     * @param  array  $args Optional. Array of properties for the new Control object.
-     *                                          See WP_Customize_Control::__construct() for information
-     *                                          on accepted arguments. Default empty array.
+     * @param  WP_Customize_Control|string  $id  Customize Control object, or ID.
+     * @param  array  $args  Optional. Array of properties for the new Control object.
+     *                       See WP_Customize_Control::__construct() for information
+     *                       on accepted arguments. Default empty array.
      * @return WP_Customize_Control The instance of the control that was added.
      */
     public function add_control($id, $args = [])
@@ -4210,7 +4210,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string  $id ID of the control.
+     * @param  string  $id  ID of the control.
      * @return WP_Customize_Control|void The control object, if set.
      */
     public function get_control($id)
@@ -4227,7 +4227,7 @@ final class WP_Customize_Manager
      *
      * @since 3.4.0
      *
-     * @param  string  $id ID of the control.
+     * @param  string  $id  ID of the control.
      */
     public function remove_control($id)
     {
@@ -4241,8 +4241,8 @@ final class WP_Customize_Manager
      *
      * @since 4.1.0
      *
-     * @param  string  $control Name of a custom control which is a subclass of
-     *                        WP_Customize_Control.
+     * @param  string  $control  Name of a custom control which is a subclass of
+     *                           WP_Customize_Control.
      */
     public function register_control_type($control)
     {
@@ -4541,8 +4541,8 @@ final class WP_Customize_Manager
      * @since 3.4.0
      * @deprecated 4.7.0 Use wp_list_sort()
      *
-     * @param  WP_Customize_Panel|WP_Customize_Section|WP_Customize_Control  $a Object A.
-     * @param  WP_Customize_Panel|WP_Customize_Section|WP_Customize_Control  $b Object B.
+     * @param  WP_Customize_Panel|WP_Customize_Section|WP_Customize_Control  $a  Object A.
+     * @param  WP_Customize_Panel|WP_Customize_Section|WP_Customize_Control  $b  Object B.
      * @return int
      */
     protected function _cmp_priority($a, $b)
@@ -4732,7 +4732,7 @@ final class WP_Customize_Manager
      *
      * @since 4.4.0
      *
-     * @param  string  $preview_url URL to be previewed.
+     * @param  string  $preview_url  URL to be previewed.
      */
     public function set_preview_url($preview_url)
     {
@@ -4801,7 +4801,7 @@ final class WP_Customize_Manager
          *
          * @since 3.4.0
          *
-         * @param  string[]  $allowed_urls An array of allowed URLs.
+         * @param  string[]  $allowed_urls  An array of allowed URLs.
          */
         $allowed_urls = array_unique(apply_filters('customize_allowed_urls', $allowed_urls));
 
@@ -4827,7 +4827,7 @@ final class WP_Customize_Manager
      *
      * @since 4.4.0
      *
-     * @param  string  $return_url URL for return link.
+     * @param  string  $return_url  URL for return link.
      */
     public function set_return_url($return_url)
     {
@@ -4886,13 +4886,13 @@ final class WP_Customize_Manager
      *
      * @since 4.4.0
      *
-     * @param  array  $autofocus {
-     *     Mapping of 'panel', 'section', 'control' to the ID which should be autofocused.
+     * @param  array  $autofocus  {
+     *                            Mapping of 'panel', 'section', 'control' to the ID which should be autofocused.
      *
-     *     @type string $control ID for control to be autofocused.
-     *     @type string $section ID for section to be autofocused.
-     *     @type string $panel   ID for panel to be autofocused.
-     * }
+     * @type string $control ID for control to be autofocused.
+     * @type string $section ID for section to be autofocused.
+     * @type string $panel   ID for panel to be autofocused.
+     *              }
      */
     public function set_autofocus($autofocus)
     {
@@ -4905,12 +4905,12 @@ final class WP_Customize_Manager
      * @since 4.4.0
      *
      * @return string[] {
-     *     Mapping of 'panel', 'section', 'control' to the ID which should be autofocused.
+     *                  Mapping of 'panel', 'section', 'control' to the ID which should be autofocused.
      *
-     *     @type string $control ID for control to be autofocused.
-     *     @type string $section ID for section to be autofocused.
-     *     @type string $panel   ID for panel to be autofocused.
-     * }
+     * @type string $control ID for control to be autofocused.
+     * @type string $section ID for section to be autofocused.
+     * @type string $panel   ID for panel to be autofocused.
+     *              }
      */
     public function get_autofocus()
     {
@@ -4941,8 +4941,8 @@ final class WP_Customize_Manager
          * @since 4.2.0
          *
          * @param  string[]  $nonces  Array of refreshed nonces for save and
-         *                                      preview actions.
-         * @param  WP_Customize_Manager  $manager WP_Customize_Manager instance.
+         *                            preview actions.
+         * @param  WP_Customize_Manager  $manager  WP_Customize_Manager instance.
          */
         $nonces = apply_filters('customize_refresh_nonces', $nonces, $this);
 
@@ -5195,7 +5195,7 @@ final class WP_Customize_Manager
          * @since 4.5.0
          * @see WP_Customize_Manager::get_previewable_devices()
          *
-         * @param  array  $devices List of devices with labels and default setting.
+         * @param  array  $devices  List of devices with labels and default setting.
          */
         $devices = apply_filters('customize_previewable_devices', $devices);
 
@@ -6124,8 +6124,8 @@ final class WP_Customize_Manager
          * @see WP_Customize_Manager::__construct()
          *
          * @param  array|stdClass  $themes  Nested array or object of theme data.
-         * @param  array  $args    List of arguments, such as page, search term, and tags to query for.
-         * @param  WP_Customize_Manager  $manager Instance of Customize manager.
+         * @param  array  $args  List of arguments, such as page, search term, and tags to query for.
+         * @param  WP_Customize_Manager  $manager  Instance of Customize manager.
          */
         $themes = apply_filters('customize_load_themes', $themes, $args, $this);
 
@@ -6162,8 +6162,8 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  string  $value   Repeat value.
-     * @param  WP_Customize_Setting  $setting Setting.
+     * @param  string  $value  Repeat value.
+     * @param  WP_Customize_Setting  $setting  Setting.
      * @return string|WP_Error Background value or validation error.
      */
     public function _sanitize_background_setting($value, $setting)
@@ -6206,9 +6206,9 @@ final class WP_Customize_Manager
      *
      * @since 4.7.0
      *
-     * @param  array  $response          Response.
-     * @param  WP_Customize_Selective_Refresh  $selective_refresh Selective refresh component.
-     * @param  array  $partials          Array of partials.
+     * @param  array  $response  Response.
+     * @param  WP_Customize_Selective_Refresh  $selective_refresh  Selective refresh component.
+     * @param  array  $partials  Array of partials.
      * @return array
      */
     public function export_header_video_settings($response, $selective_refresh, $partials)
@@ -6286,7 +6286,7 @@ final class WP_Customize_Manager
      *
      * @since 4.7.1
      *
-     * @param  string  $value URL.
+     * @param  string  $value  URL.
      * @return string Sanitized URL.
      */
     public function _sanitize_external_header_video($value)

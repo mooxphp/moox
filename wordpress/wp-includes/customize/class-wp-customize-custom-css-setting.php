@@ -56,10 +56,10 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting
      *
      * @since 4.7.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
-     * @param  string  $id      A specific ID of the setting.
-     *                                      Can be a theme mod or option name.
-     * @param  array  $args    Setting arguments.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
+     * @param  string  $id  A specific ID of the setting.
+     *                      Can be a theme mod or option name.
+     * @param  array  $args  Setting arguments.
      *
      * @throws Exception If the setting ID does not match the pattern `custom_css[$stylesheet]`.
      */
@@ -101,8 +101,8 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting
      * @since 4.7.0
      * @see wp_get_custom_css()
      *
-     * @param  string  $css        Original CSS.
-     * @param  string  $stylesheet Current stylesheet.
+     * @param  string  $css  Original CSS.
+     * @param  string  $stylesheet  Current stylesheet.
      * @return string CSS.
      */
     public function filter_previewed_wp_get_custom_css($css, $stylesheet)
@@ -159,7 +159,7 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting
      * @since 4.9.0 Checking for balanced characters has been moved client-side via linting in code editor.
      * @since 5.9.0 Renamed `$css` to `$value` for PHP 8 named parameter support.
      *
-     * @param  string  $value CSS to validate.
+     * @param  string  $value  CSS to validate.
      * @return true|WP_Error True if the input was validated, otherwise WP_Error.
      */
     public function validate($value)
@@ -186,7 +186,7 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting
      * @since 4.7.0
      * @since 5.9.0 Renamed `$css` to `$value` for PHP 8 named parameter support.
      *
-     * @param  string  $value CSS to update.
+     * @param  string  $value  CSS to update.
      * @return int|false The post ID or false if the value could not be saved.
      */
     public function update($value)

@@ -24,8 +24,8 @@ final class FilteredIterator extends ArrayIterator
     /**
      * Create a new iterator
      *
-     * @param  array  $data     The array or object to be iterated on.
-     * @param  callable  $callback Callback to be called on each value
+     * @param  array  $data  The array or object to be iterated on.
+     * @param  callable  $callback  Callback to be called on each value
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $data argument is not iterable.
      */
@@ -47,7 +47,7 @@ final class FilteredIterator extends ArrayIterator
      *
      * @phpcs:disable PHPCompatibility.FunctionNameRestrictions.NewMagicMethods.__unserializeFound
      *
-     * @param  array  $data Restored array of data originally serialized.
+     * @param  array  $data  Restored array of data originally serialized.
      * @return void
      */
     #[ReturnTypeWillChange]
@@ -88,7 +88,7 @@ final class FilteredIterator extends ArrayIterator
     /**
      * Prevent creating a PHP value from a stored representation of the object for security reasons.
      *
-     * @param  string  $data The serialized string.
+     * @param  string  $data  The serialized string.
      * @return void
      */
     #[ReturnTypeWillChange]

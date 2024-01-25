@@ -114,7 +114,7 @@ if (isset($_GET['download'])) {
      *
      * @since 3.5.0
      *
-     * @param  array  $args The arguments to send to the exporter.
+     * @param  array  $args  The arguments to send to the exporter.
      */
     $args = apply_filters('export_args', $args);
 
@@ -132,7 +132,7 @@ require_once ABSPATH.'wp-admin/admin-header.php';
  *
  * @since 3.1.0
  *
- * @param  string  $post_type The post type. Default 'post'.
+ * @param  string  $post_type  The post type. Default 'post'.
  */
 function export_date_options($post_type = 'post')
 {

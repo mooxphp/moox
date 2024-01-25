@@ -54,7 +54,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $parent_post_type Post type of the parent.
+     * @param  string  $parent_post_type  Post type of the parent.
      */
     public function __construct($parent_post_type)
     {
@@ -146,7 +146,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.2
      *
-     * @param  int  $parent_post_id Supplied ID.
+     * @param  int  $parent_post_id  Supplied ID.
      * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
      */
     protected function get_parent($parent_post_id)
@@ -177,7 +177,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -203,7 +203,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.2
      *
-     * @param  int  $id Supplied ID.
+     * @param  int  $id  Supplied ID.
      * @return WP_Post|WP_Error Revision post object if ID is valid, WP_Error otherwise.
      */
     protected function get_revision($id)
@@ -231,7 +231,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -382,7 +382,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -395,7 +395,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -420,7 +420,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -464,7 +464,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -495,10 +495,10 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_Post|false|null  $result The revision object (if it was deleted or moved to the Trash successfully)
-         *                                   or false or null (failure). If the revision was moved to the Trash, $result represents
-         *                                   its new state; if it was deleted, $result represents its state before deletion.
-         * @param  WP_REST_Request  $request The request sent to the API.
+         * @param  WP_Post|false|null  $result  The revision object (if it was deleted or moved to the Trash successfully)
+         *                                      or false or null (failure). If the revision was moved to the Trash, $result represents
+         *                                      its new state; if it was deleted, $result represents its state before deletion.
+         * @param  WP_REST_Request  $request  The request sent to the API.
          */
         do_action('rest_delete_revision', $result, $request);
 
@@ -527,8 +527,8 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  array  $prepared_args Optional. Prepared WP_Query arguments. Default empty array.
-     * @param  WP_REST_Request  $request       Optional. Full details about the request.
+     * @param  array  $prepared_args  Optional. Prepared WP_Query arguments. Default empty array.
+     * @param  WP_REST_Request  $request  Optional. Full details about the request.
      * @return array Items query arguments.
      */
     protected function prepare_items_query($prepared_args = [], $request = null)
@@ -563,8 +563,8 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      * @since 4.7.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item    Post revision object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $item  Post revision object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -662,8 +662,8 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  WP_Post  $post     The original revision object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  WP_Post  $post  The original revision object.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_revision', $response, $post, $request);
@@ -675,8 +675,8 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $date_gmt GMT publication time.
-     * @param  string|null  $date     Optional. Local publication time. Default null.
+     * @param  string  $date_gmt  GMT publication time.
+     * @param  string|null  $date  Optional. Local publication time. Default null.
      * @return string|null ISO8601/RFC3339 formatted datetime, otherwise null.
      */
     protected function prepare_date_response($date_gmt, $date = null)
@@ -856,8 +856,8 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $excerpt The post excerpt.
-     * @param  WP_Post  $post    Post revision object.
+     * @param  string  $excerpt  The post excerpt.
+     * @param  WP_Post  $post  Post revision object.
      * @return string Prepared excerpt or empty string.
      */
     protected function prepare_excerpt_response($excerpt, $post)

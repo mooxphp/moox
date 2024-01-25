@@ -392,7 +392,7 @@ if (! function_exists('fetch_rss')) {
      *
      * @since 1.5.0
      *
-     * @param  string  $url URL to retrieve feed.
+     * @param  string  $url  URL to retrieve feed.
      * @return MagpieRSS|false MagpieRSS object on success, false on failure.
      */
     function fetch_rss($url)
@@ -527,8 +527,8 @@ if (! function_exists('fetch_rss')) {
  *
  * @since 1.5.0
  *
- * @param  string  $url URL to retrieve
- * @param  array  $headers Optional. Headers to send to the URL. Default empty string.
+ * @param  string  $url  URL to retrieve
+ * @param  array  $headers  Optional. Headers to send to the URL. Default empty string.
  * @return Snoopy style response
  */
 function _fetch_remote_file($url, $headers = '')
@@ -892,8 +892,8 @@ if (! function_exists('wp_rss')) {
      *
      * @since 1.5.0
      *
-     * @param  string  $url URL of feed to display. Will not auto sense feed URL.
-     * @param  int  $num_items Optional. Number of items to display, default is all.
+     * @param  string  $url  URL of feed to display. Will not auto sense feed URL.
+     * @param  int  $num_items  Optional. Number of items to display, default is all.
      */
     function wp_rss($url, $num_items = -1)
     {
@@ -931,8 +931,8 @@ if (! function_exists('get_rss')) {
      *
      * @since 1.5.0
      *
-     * @param  string  $url URL of feed to display. Will not auto sense feed URL.
-     * @param  int  $num_items Optional. Number of items to display, default is all.
+     * @param  string  $url  URL of feed to display. Will not auto sense feed URL.
+     * @param  int  $num_items  Optional. Number of items to display, default is all.
      * @return bool False on failure.
      */
     function get_rss($url, $num_items = 5) // Like get posts, but for RSS

@@ -737,12 +737,12 @@ if (! CUSTOM_TAGS) {
  * @see wp_allowed_protocols() for the default allowed protocols in link URLs.
  * @since 1.0.0
  *
- * @param  string  $content           Text content to filter.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                          or a context name such as 'post'. See wp_kses_allowed_html()
- *                                          for the list of accepted context names.
- * @param  string[]  $allowed_protocols Optional. Array of allowed URL protocols.
- *                                          Defaults to the result of wp_allowed_protocols().
+ * @param  string  $content  Text content to filter.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Optional. Array of allowed URL protocols.
+ *                                       Defaults to the result of wp_allowed_protocols().
  * @return string Filtered content containing only the allowed HTML.
  */
 function wp_kses($content, $allowed_html, $allowed_protocols = [])
@@ -765,8 +765,8 @@ function wp_kses($content, $allowed_html, $allowed_protocols = [])
  *
  * @since 4.2.3
  *
- * @param  string  $attr    The 'whole' attribute, including name and value.
- * @param  string  $element The HTML element name to which the attribute belongs.
+ * @param  string  $attr  The 'whole' attribute, including name and value.
+ * @param  string  $element  The HTML element name to which the attribute belongs.
  * @return string Filtered attribute.
  */
 function wp_kses_one_attr($attr, $element)
@@ -844,9 +844,9 @@ function wp_kses_one_attr($attr, $element)
  * @global array $allowedtags
  * @global array $allowedentitynames
  *
- * @param  string|array  $context The context for which to retrieve tags. Allowed values are 'post',
- *                              'strip', 'data', 'entities', or the name of a field filter such as
- *                              'pre_user_description', or an array of allowed HTML elements and attributes.
+ * @param  string|array  $context  The context for which to retrieve tags. Allowed values are 'post',
+ *                                 'strip', 'data', 'entities', or the name of a field filter such as
+ *                                 'pre_user_description', or an array of allowed HTML elements and attributes.
  * @return array Array of allowed HTML tags and their allowed attributes.
  */
 function wp_kses_allowed_html($context = '')
@@ -867,8 +867,8 @@ function wp_kses_allowed_html($context = '')
          *
          * @since 3.5.0
          *
-         * @param  array[]  $html    Allowed HTML tags.
-         * @param  string  $context Context name.
+         * @param  array[]  $html  Allowed HTML tags.
+         * @param  string  $context  Context name.
          */
         return apply_filters('wp_kses_allowed_html', $html, $context);
     }
@@ -929,11 +929,11 @@ function wp_kses_allowed_html($context = '')
  *
  * @since 1.0.0
  *
- * @param  string  $content           Content to filter through KSES.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                          or a context name such as 'post'. See wp_kses_allowed_html()
- *                                          for the list of accepted context names.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $content  Content to filter through KSES.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Filtered content through {@see 'pre_kses'} hook.
  */
 function wp_kses_hook($content, $allowed_html, $allowed_protocols)
@@ -943,11 +943,11 @@ function wp_kses_hook($content, $allowed_html, $allowed_protocols)
      *
      * @since 2.3.0
      *
-     * @param  string  $content           Content to filter through KSES.
-     * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
-     *                                          or a context name such as 'post'. See wp_kses_allowed_html()
-     *                                          for the list of accepted context names.
-     * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+     * @param  string  $content  Content to filter through KSES.
+     * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+     *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+     *                                        for the list of accepted context names.
+     * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
      */
     return apply_filters('pre_kses', $content, $allowed_html, $allowed_protocols);
 }
@@ -975,11 +975,11 @@ function wp_kses_version()
  *                                                or a context name such as 'post'.
  * @global string[]       $pass_allowed_protocols Array of allowed URL protocols.
  *
- * @param  string  $content           Content to filter.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                          or a context name such as 'post'. See wp_kses_allowed_html()
- *                                          for the list of accepted context names.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $content  Content to filter.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Content with fixed HTML tags
  */
 function wp_kses_split($content, $allowed_html, $allowed_protocols)
@@ -1035,7 +1035,7 @@ function wp_kses_uri_attributes()
      *
      * @since 5.0.1
      *
-     * @param  string[]  $uri_attributes HTML attribute names whose value contains a URL.
+     * @param  string[]  $uri_attributes  HTML attribute names whose value contains a URL.
      */
     $uri_attributes = apply_filters('wp_kses_uri_attributes', $uri_attributes);
 
@@ -1053,7 +1053,7 @@ function wp_kses_uri_attributes()
  *                                                or a context name such as 'post'.
  * @global string[]       $pass_allowed_protocols Array of allowed URL protocols.
  *
- * @param  array  $matches preg_replace regexp matches
+ * @param  array  $matches  preg_replace regexp matches
  * @return string
  */
 function _wp_kses_split_callback($matches)
@@ -1079,11 +1079,11 @@ function _wp_kses_split_callback($matches)
  *
  * @since 1.0.0
  *
- * @param  string  $content           Content to filter.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                          or a context name such as 'post'. See wp_kses_allowed_html()
- *                                          for the list of accepted context names.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $content  Content to filter.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Fixed HTML element
  */
 function wp_kses_split2($content, $allowed_html, $allowed_protocols)
@@ -1162,12 +1162,12 @@ function wp_kses_split2($content, $allowed_html, $allowed_protocols)
  * @since 5.9.0 Added support for an array of allowed values for attributes.
  *              Added support for required attributes.
  *
- * @param  string  $element           HTML element/tag.
- * @param  string  $attr              HTML attributes from HTML element to closing HTML element tag.
- * @param  array[]|string  $allowed_html      An array of allowed HTML elements and attributes,
- *                                          or a context name such as 'post'. See wp_kses_allowed_html()
- *                                          for the list of accepted context names.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $element  HTML element/tag.
+ * @param  string  $attr  HTML attributes from HTML element to closing HTML element tag.
+ * @param  array[]|string  $allowed_html  An array of allowed HTML elements and attributes,
+ *                                        or a context name such as 'post'. See wp_kses_allowed_html()
+ *                                        for the list of accepted context names.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Sanitized HTML element.
  */
 function wp_kses_attr($element, $attr, $allowed_html, $allowed_protocols)
@@ -1245,12 +1245,12 @@ function wp_kses_attr($element, $attr, $allowed_html, $allowed_protocols)
  * @since 4.2.3
  * @since 5.0.0 Added support for `data-*` wildcard attributes.
  *
- * @param  string  $name         The attribute name. Passed by reference. Returns empty string when not allowed.
- * @param  string  $value        The attribute value. Passed by reference. Returns a filtered value.
- * @param  string  $whole        The `name=value` input. Passed by reference. Returns filtered input.
- * @param  string  $vless        Whether the attribute is valueless. Use 'y' or 'n'.
- * @param  string  $element      The name of the element to which this attribute belongs.
- * @param  array  $allowed_html The full list of allowed elements and attributes.
+ * @param  string  $name  The attribute name. Passed by reference. Returns empty string when not allowed.
+ * @param  string  $value  The attribute value. Passed by reference. Returns a filtered value.
+ * @param  string  $whole  The `name=value` input. Passed by reference. Returns filtered input.
+ * @param  string  $vless  Whether the attribute is valueless. Use 'y' or 'n'.
+ * @param  string  $element  The name of the element to which this attribute belongs.
+ * @param  array  $allowed_html  The full list of allowed elements and attributes.
  * @return bool Whether or not the attribute is allowed.
  */
 function wp_kses_attr_check(&$name, &$value, &$whole, $vless, $element, $allowed_html)
@@ -1340,8 +1340,8 @@ function wp_kses_attr_check(&$name, &$value, &$whole, $vless, $element, $allowed
  *
  * @since 1.0.0
  *
- * @param  string  $attr              Attribute list from HTML element to closing HTML element tag.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $attr  Attribute list from HTML element to closing HTML element tag.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return array[] Array of attribute information after parsing.
  */
 function wp_kses_hair($attr, $allowed_protocols)
@@ -1494,7 +1494,7 @@ function wp_kses_hair($attr, $allowed_protocols)
  *
  * @since 4.2.3
  *
- * @param  string  $element HTML element.
+ * @param  string  $element  HTML element.
  * @return array|false List of attributes found in the element. Returns false on failure.
  */
 function wp_kses_attr_parse($element)
@@ -1546,7 +1546,7 @@ function wp_kses_attr_parse($element)
  *
  * @since 4.2.3
  *
- * @param  string  $attr Attribute list from HTML element to closing HTML element tag.
+ * @param  string  $attr  Attribute list from HTML element to closing HTML element tag.
  * @return array|false List of attributes found in $attr. Returns false on failure.
  */
 function wp_kses_hair_parse($attr)
@@ -1603,10 +1603,10 @@ function wp_kses_hair_parse($attr)
  *
  * @since 1.0.0
  *
- * @param  string  $value      Attribute value.
- * @param  string  $vless      Whether the attribute is valueless. Use 'y' or 'n'.
+ * @param  string  $value  Attribute value.
+ * @param  string  $vless  Whether the attribute is valueless. Use 'y' or 'n'.
  * @param  string  $checkname  What $checkvalue is checking for.
- * @param  mixed  $checkvalue What constraint the value should pass.
+ * @param  mixed  $checkvalue  What constraint the value should pass.
  * @return bool Whether check passes.
  */
 function wp_kses_check_attr_val($value, $vless, $checkname, $checkvalue)
@@ -1717,8 +1717,8 @@ function wp_kses_check_attr_val($value, $vless, $checkname, $checkvalue)
  *
  * @since 1.0.0
  *
- * @param  string  $content           Content to filter bad protocols from.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $content  Content to filter bad protocols from.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Filtered content.
  */
 function wp_kses_bad_protocol($content, $allowed_protocols)
@@ -1754,8 +1754,8 @@ function wp_kses_bad_protocol($content, $allowed_protocols)
  *
  * @since 1.0.0
  *
- * @param  string  $content Content to filter null characters from.
- * @param  array  $options Set 'slash_zero' => 'keep' when '\0' is allowed. Default is 'remove'.
+ * @param  string  $content  Content to filter null characters from.
+ * @param  array  $options  Set 'slash_zero' => 'keep' when '\0' is allowed. Default is 'remove'.
  * @return string Filtered content.
  */
 function wp_kses_no_null($content, $options = null)
@@ -1780,7 +1780,7 @@ function wp_kses_no_null($content, $options = null)
  *
  * @since 1.0.0
  *
- * @param  string  $content String to strip slashes from.
+ * @param  string  $content  String to strip slashes from.
  * @return string Fixed string with quoted slashes.
  */
 function wp_kses_stripslashes($content)
@@ -1793,7 +1793,7 @@ function wp_kses_stripslashes($content)
  *
  * @since 1.0.0
  *
- * @param  array  $inarray Unfiltered array.
+ * @param  array  $inarray  Unfiltered array.
  * @return array Fixed array with all lowercase keys.
  */
 function wp_kses_array_lc($inarray)
@@ -1837,9 +1837,9 @@ function wp_kses_html_error($attr)
  *
  * @since 1.0.0
  *
- * @param  string  $content           Content to check for bad protocols.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
- * @param  int  $count             Depth of call recursion to this function.
+ * @param  string  $content  Content to check for bad protocols.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
+ * @param  int  $count  Depth of call recursion to this function.
  * @return string Sanitized content.
  */
 function wp_kses_bad_protocol_once($content, $allowed_protocols, $count = 1)
@@ -1876,8 +1876,8 @@ function wp_kses_bad_protocol_once($content, $allowed_protocols, $count = 1)
  *
  * @since 1.0.0
  *
- * @param  string  $scheme            URI scheme to check against the list of allowed protocols.
- * @param  string[]  $allowed_protocols Array of allowed URL protocols.
+ * @param  string  $scheme  URI scheme to check against the list of allowed protocols.
+ * @param  string[]  $allowed_protocols  Array of allowed URL protocols.
  * @return string Sanitized content.
  */
 function wp_kses_bad_protocol_once2($scheme, $allowed_protocols)
@@ -1914,9 +1914,9 @@ function wp_kses_bad_protocol_once2($scheme, $allowed_protocols)
  * @since 1.0.0
  * @since 5.5.0 Added `$context` parameter.
  *
- * @param  string  $content Content to normalize entities.
- * @param  string  $context Context for normalization. Can be either 'html' or 'xml'.
- *                        Default 'html'.
+ * @param  string  $content  Content to normalize entities.
+ * @param  string  $context  Context for normalization. Can be either 'html' or 'xml'.
+ *                           Default 'html'.
  * @return string Content with normalized entities.
  */
 function wp_kses_normalize_entities($content, $context = 'html')
@@ -1946,7 +1946,7 @@ function wp_kses_normalize_entities($content, $context = 'html')
  *
  * @global array $allowedentitynames
  *
- * @param  array  $matches preg_replace_callback() matches array.
+ * @param  array  $matches  preg_replace_callback() matches array.
  * @return string Correctly encoded entity.
  */
 function wp_kses_named_entities($matches)
@@ -1974,7 +1974,7 @@ function wp_kses_named_entities($matches)
  * @global array $allowedentitynames
  * @global array $allowedxmlentitynames
  *
- * @param  array  $matches preg_replace_callback() matches array.
+ * @param  array  $matches  preg_replace_callback() matches array.
  * @return string Correctly encoded entity.
  */
 function wp_kses_xml_named_entities($matches)
@@ -2006,7 +2006,7 @@ function wp_kses_xml_named_entities($matches)
  *
  * @since 1.0.0
  *
- * @param  array  $matches `preg_replace_callback()` matches array.
+ * @param  array  $matches  `preg_replace_callback()` matches array.
  * @return string Correctly encoded entity.
  */
 function wp_kses_normalize_entities2($matches)
@@ -2037,7 +2037,7 @@ function wp_kses_normalize_entities2($matches)
  *
  * @ignore
  *
- * @param  array  $matches `preg_replace_callback()` matches array.
+ * @param  array  $matches  `preg_replace_callback()` matches array.
  * @return string Correctly encoded entity.
  */
 function wp_kses_normalize_entities3($matches)
@@ -2056,7 +2056,7 @@ function wp_kses_normalize_entities3($matches)
  *
  * @since 2.7.0
  *
- * @param  int  $i Unicode codepoint.
+ * @param  int  $i  Unicode codepoint.
  * @return bool Whether or not the codepoint is a valid Unicode codepoint.
  */
 function valid_unicode($i)
@@ -2078,7 +2078,7 @@ function valid_unicode($i)
  *
  * @since 1.0.0
  *
- * @param  string  $content Content to change entities.
+ * @param  string  $content  Content to change entities.
  * @return string Content after decoded entities.
  */
 function wp_kses_decode_entities($content)
@@ -2096,7 +2096,7 @@ function wp_kses_decode_entities($content)
  *
  * @ignore
  *
- * @param  array  $matches preg match
+ * @param  array  $matches  preg match
  * @return string
  */
 function _wp_kses_decode_entities_chr($matches)
@@ -2111,7 +2111,7 @@ function _wp_kses_decode_entities_chr($matches)
  *
  * @ignore
  *
- * @param  array  $matches preg match
+ * @param  array  $matches  preg match
  * @return string
  */
 function _wp_kses_decode_entities_chr_hexdec($matches)
@@ -2126,7 +2126,7 @@ function _wp_kses_decode_entities_chr_hexdec($matches)
  *
  * @since 1.0.0
  *
- * @param  string  $data Content to filter, expected to be escaped with slashes.
+ * @param  string  $data  Content to filter, expected to be escaped with slashes.
  * @return string Filtered content.
  */
 function wp_filter_kses($data)
@@ -2141,7 +2141,7 @@ function wp_filter_kses($data)
  *
  * @since 2.9.0
  *
- * @param  string  $data Content to filter, expected to not be escaped.
+ * @param  string  $data  Content to filter, expected to not be escaped.
  * @return string Filtered content.
  */
 function wp_kses_data($data)
@@ -2159,7 +2159,7 @@ function wp_kses_data($data)
  *
  * @since 2.0.0
  *
- * @param  string  $data Post content to filter, expected to be escaped with slashes.
+ * @param  string  $data  Post content to filter, expected to be escaped with slashes.
  * @return string Filtered post content with allowed HTML tags and attributes intact.
  */
 function wp_filter_post_kses($data)
@@ -2172,7 +2172,7 @@ function wp_filter_post_kses($data)
  *
  * @since 5.9.0
  *
- * @param  string  $data Post content to filter.
+ * @param  string  $data  Post content to filter.
  * @return string Filtered post content with unsafe rules removed.
  */
 function wp_filter_global_styles_post($data)
@@ -2207,7 +2207,7 @@ function wp_filter_global_styles_post($data)
  *
  * @since 2.9.0
  *
- * @param  string  $data Post content to filter.
+ * @param  string  $data  Post content to filter.
  * @return string Filtered post content with allowed HTML tags and attributes intact.
  */
 function wp_kses_post($data)
@@ -2222,7 +2222,7 @@ function wp_kses_post($data)
  * @since 4.4.2
  * @see map_deep()
  *
- * @param  mixed  $data The array, object, or scalar value to inspect.
+ * @param  mixed  $data  The array, object, or scalar value to inspect.
  * @return mixed The filtered content.
  */
 function wp_kses_post_deep($data)
@@ -2237,7 +2237,7 @@ function wp_kses_post_deep($data)
  *
  * @since 2.1.0
  *
- * @param  string  $data Content to strip all HTML from.
+ * @param  string  $data  Content to strip all HTML from.
  * @return string Filtered content without any HTML.
  */
 function wp_filter_nohtml_kses($data)
@@ -2351,8 +2351,8 @@ function kses_init()
  *              Added support for `box-shadow`.
  * @since 6.4.0 Added support for `writing-mode`.
  *
- * @param  string  $css        A string of CSS rules.
- * @param  string  $deprecated Not used.
+ * @param  string  $css  A string of CSS rules.
+ * @param  string  $deprecated  Not used.
  * @return string Filtered string of CSS rules.
  */
 function safecss_filter_attr($css, $deprecated = '')
@@ -2373,7 +2373,7 @@ function safecss_filter_attr($css, $deprecated = '')
      *
      * @since 2.8.1
      *
-     * @param  string[]  $attr Array of allowed CSS attributes.
+     * @param  string[]  $attr  Array of allowed CSS attributes.
      */
     $allowed_attr = apply_filters(
         'safe_style_css',
@@ -2656,8 +2656,8 @@ function safecss_filter_attr($css, $deprecated = '')
              *
              * @since 5.5.0
              *
-             * @param  bool  $allow_css       Whether the CSS in the test string is considered safe.
-             * @param  string  $css_test_string The CSS string to test.
+             * @param  bool  $allow_css  Whether the CSS in the test string is considered safe.
+             * @param  string  $css_test_string  The CSS string to test.
              */
             $allow_css = apply_filters('safecss_filter_attr_allow_css', $allow_css, $css_test_string);
 
@@ -2686,7 +2686,7 @@ function safecss_filter_attr($css, $deprecated = '')
  *
  * @ignore
  *
- * @param  array  $value An array of attributes.
+ * @param  array  $value  An array of attributes.
  * @return array The array of attributes with global attributes added.
  */
 function _wp_add_global_attributes($value)
@@ -2731,7 +2731,7 @@ function _wp_add_global_attributes($value)
  *
  * @ignore
  *
- * @param  string  $url The URL to check.
+ * @param  string  $url  The URL to check.
  * @return bool True if the URL is safe, false otherwise.
  */
 function _wp_kses_allow_pdf_objects($url)

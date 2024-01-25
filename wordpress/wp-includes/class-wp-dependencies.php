@@ -109,10 +109,10 @@ class WP_Dependencies
      * @since 2.6.0
      * @since 2.8.0 Added the `$group` parameter.
      *
-     * @param  string|string[]|false  $handles Optional. Items to be processed: queue (false),
-     *                                       single item (string), or multiple items (array of strings).
-     *                                       Default false.
-     * @param  int|false  $group   Optional. Group level: level (int), no group (false).
+     * @param  string|string[]|false  $handles  Optional. Items to be processed: queue (false),
+     *                                          single item (string), or multiple items (array of strings).
+     *                                          Default false.
+     * @param  int|false  $group  Optional. Group level: level (int), no group (false).
      * @return string[] Array of handles of items that have been processed.
      */
     public function do_items($handles = false, $group = false)
@@ -149,9 +149,9 @@ class WP_Dependencies
      * @since 2.6.0
      * @since 5.5.0 Added the `$group` parameter.
      *
-     * @param  string  $handle Name of the item. Should be unique.
+     * @param  string  $handle  Name of the item. Should be unique.
      * @param  int|false  $group  Optional. Group level: level (int), no group (false).
-     *                          Default false.
+     *                            Default false.
      * @return bool True on success, false if not set.
      */
     public function do_item($handle, $group = false)
@@ -169,11 +169,11 @@ class WP_Dependencies
      * @since 2.6.0 Moved from `WP_Scripts`.
      * @since 2.8.0 Added the `$group` parameter.
      *
-     * @param  string|string[]  $handles   Item handle (string) or item handles (array of strings).
-     * @param  bool  $recursion Optional. Internal flag that function is calling itself.
-     *                                   Default false.
-     * @param  int|false  $group     Optional. Group level: level (int), no group (false).
-     *                                   Default false.
+     * @param  string|string[]  $handles  Item handle (string) or item handles (array of strings).
+     * @param  bool  $recursion  Optional. Internal flag that function is calling itself.
+     *                           Default false.
+     * @param  int|false  $group  Optional. Group level: level (int), no group (false).
+     *                            Default false.
      * @return bool True on success, false on failure.
      */
     public function all_deps($handles, $recursion = false, $group = false)
@@ -238,19 +238,19 @@ class WP_Dependencies
      * @since 2.1.0
      * @since 2.6.0 Moved from `WP_Scripts`.
      *
-     * @param  string  $handle Name of the item. Should be unique.
-     * @param  string|false  $src    Full URL of the item, or path of the item relative
-     *                                 to the WordPress root directory. If source is set to false,
-     *                                 the item is an alias of other items it depends on.
-     * @param  string[]  $deps   Optional. An array of registered item handles this item depends on.
-     *                                 Default empty array.
-     * @param  string|bool|null  $ver    Optional. String specifying item version number, if it has one,
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  string|false  $src  Full URL of the item, or path of the item relative
+     *                             to the WordPress root directory. If source is set to false,
+     *                             the item is an alias of other items it depends on.
+     * @param  string[]  $deps  Optional. An array of registered item handles this item depends on.
+     *                          Default empty array.
+     * @param  string|bool|null  $ver  Optional. String specifying item version number, if it has one,
      *                                 which is added to the URL as a query string for cache busting purposes.
      *                                 If version is set to false, a version number is automatically added
      *                                 equal to current installed WordPress version.
      *                                 If set to null, no version is added.
-     * @param  mixed  $args   Optional. Custom property of the item. NOT the class property $args.
-     *                                 Examples: $media, $in_footer.
+     * @param  mixed  $args  Optional. Custom property of the item. NOT the class property $args.
+     *                       Examples: $media, $in_footer.
      * @return bool Whether the item has been registered. True on success, false on failure.
      */
     public function add($handle, $src, $deps = [], $ver = false, $args = null)
@@ -281,8 +281,8 @@ class WP_Dependencies
      *
      * @since 2.6.0
      *
-     * @param  string  $handle Name of the item. Should be unique.
-     * @param  string  $key    The data key.
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  string  $key  The data key.
      * @param  mixed  $value  The data value.
      * @return bool True on success, false on failure.
      */
@@ -302,8 +302,8 @@ class WP_Dependencies
      *
      * @since 3.3.0
      *
-     * @param  string  $handle Name of the item. Should be unique.
-     * @param  string  $key    The data key.
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  string  $key  The data key.
      * @return mixed Extra item data (string), false otherwise.
      */
     public function get_data($handle, $key)
@@ -325,7 +325,7 @@ class WP_Dependencies
      * @since 2.1.0
      * @since 2.6.0 Moved from `WP_Scripts`.
      *
-     * @param  string|string[]  $handles Item handle (string) or item handles (array of strings).
+     * @param  string|string[]  $handles  Item handle (string) or item handles (array of strings).
      */
     public function remove($handles)
     {
@@ -345,7 +345,7 @@ class WP_Dependencies
      * @since 2.1.0
      * @since 2.6.0 Moved from `WP_Scripts`.
      *
-     * @param  string|string[]  $handles Item handle (string) or item handles (array of strings).
+     * @param  string|string[]  $handles  Item handle (string) or item handles (array of strings).
      */
     public function enqueue($handles)
     {
@@ -380,7 +380,7 @@ class WP_Dependencies
      * @since 2.1.0
      * @since 2.6.0 Moved from `WP_Scripts`.
      *
-     * @param  string|string[]  $handles Item handle (string) or item handles (array of strings).
+     * @param  string|string[]  $handles  Item handle (string) or item handles (array of strings).
      */
     public function dequeue($handles)
     {
@@ -406,7 +406,7 @@ class WP_Dependencies
      * @since 4.0.0
      *
      * @param  string[]  $queue  An array of queued _WP_Dependency handles.
-     * @param  string  $handle Name of the item. Should be unique.
+     * @param  string  $handle  Name of the item. Should be unique.
      * @return bool Whether the handle is found after recursively searching the dependency tree.
      */
     protected function recurse_deps($queue, $handle)
@@ -444,8 +444,8 @@ class WP_Dependencies
      * @since 2.1.0
      * @since 2.6.0 Moved from `WP_Scripts`.
      *
-     * @param  string  $handle Name of the item. Should be unique.
-     * @param  string  $status Optional. Status of the item to query. Default 'registered'.
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  string  $status  Optional. Status of the item to query. Default 'registered'.
      * @return bool|_WP_Dependency Found, or object Item data.
      */
     public function query($handle, $status = 'registered')
@@ -484,9 +484,9 @@ class WP_Dependencies
      *
      * @since 2.8.0
      *
-     * @param  string  $handle    Name of the item. Should be unique.
-     * @param  bool  $recursion Internal flag that calling function was called recursively.
-     * @param  int|false  $group     Group level: level (int), no group (false).
+     * @param  string  $handle  Name of the item. Should be unique.
+     * @param  bool  $recursion  Internal flag that calling function was called recursively.
+     * @param  int|false  $group  Group level: level (int), no group (false).
      * @return bool Not already in the group or a lower group.
      */
     public function set_group($handle, $recursion, $group)

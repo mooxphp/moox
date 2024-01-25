@@ -45,9 +45,9 @@ class WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  mixed  $data    Response data. Default null.
+     * @param  mixed  $data  Response data. Default null.
      * @param  int  $status  Optional. HTTP status code. Default 200.
-     * @param  array  $headers Optional. HTTP header map. Default empty array.
+     * @param  array  $headers  Optional. HTTP header map. Default empty array.
      */
     public function __construct($data = null, $status = 200, $headers = [])
     {
@@ -73,7 +73,7 @@ class WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  array  $headers Map of header name to header value.
+     * @param  array  $headers  Map of header name to header value.
      */
     public function set_headers($headers)
     {
@@ -85,10 +85,10 @@ class WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  string  $key     Header name.
-     * @param  string  $value   Header value.
-     * @param  bool  $replace Optional. Whether to replace an existing header of the same name.
-     *                        Default true.
+     * @param  string  $key  Header name.
+     * @param  string  $value  Header value.
+     * @param  bool  $replace  Optional. Whether to replace an existing header of the same name.
+     *                         Default true.
      */
     public function header($key, $value, $replace = true)
     {
@@ -116,7 +116,7 @@ class WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  int  $code HTTP status.
+     * @param  int  $code  HTTP status.
      */
     public function set_status($code)
     {
@@ -140,7 +140,7 @@ class WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  mixed  $data Response data.
+     * @param  mixed  $data  Response data.
      */
     public function set_data($data)
     {

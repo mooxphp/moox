@@ -127,7 +127,7 @@ class SimplePie_HTTP_Parser
     /**
      * Create an instance of the class with the input data
      *
-     * @param  string  $data Input data
+     * @param  string  $data  Input data
      */
     public function __construct($data)
     {
@@ -453,8 +453,8 @@ class SimplePie_HTTP_Parser
     /**
      * Prepare headers (take care of proxies headers)
      *
-     * @param  string  $headers Raw headers
-     * @param  int  $count   Redirection count. Default to 1.
+     * @param  string  $headers  Raw headers
+     * @param  int  $count  Redirection count. Default to 1.
      * @return string
      */
     public static function prepareHeaders($headers, $count = 1)

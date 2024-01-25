@@ -81,8 +81,8 @@ class WP_Site_Icon
      *
      * @since 4.3.0
      *
-     * @param  string  $cropped              Cropped image URL.
-     * @param  int  $parent_attachment_id Attachment ID of parent image.
+     * @param  string  $cropped  Cropped image URL.
+     * @param  int  $parent_attachment_id  Attachment ID of parent image.
      * @return array An array with attachment object data.
      */
     public function create_attachment_object($cropped, $parent_attachment_id)
@@ -111,9 +111,9 @@ class WP_Site_Icon
      *
      * @since 4.3.0
      *
-     * @param  array  $attachment An array with attachment object data.
-     * @param  string  $file       File path of the attached image.
-     * @return int               Attachment ID.
+     * @param  array  $attachment  An array with attachment object data.
+     * @param  string  $file  File path of the attached image.
+     * @return int Attachment ID.
      */
     public function insert_attachment($attachment, $file)
     {
@@ -126,7 +126,7 @@ class WP_Site_Icon
          * @since 4.3.0
          * @see wp_generate_attachment_metadata()
          *
-         * @param  array  $metadata Attachment metadata.
+         * @param  array  $metadata  Attachment metadata.
          */
         $metadata = apply_filters('site_icon_attachment_metadata', $metadata);
         wp_update_attachment_metadata($attachment_id, $metadata);
@@ -139,7 +139,7 @@ class WP_Site_Icon
      *
      * @since 4.3.0
      *
-     * @param  array[]  $sizes Array of arrays containing information for additional sizes.
+     * @param  array[]  $sizes  Array of arrays containing information for additional sizes.
      * @return array[] Array of arrays containing additional image sizes.
      */
     public function additional_sizes($sizes = [])
@@ -151,7 +151,7 @@ class WP_Site_Icon
          *
          * @since 4.3.0
          *
-         * @param  int[]  $site_icon_sizes Array of sizes available for the Site Icon.
+         * @param  int[]  $site_icon_sizes  Array of sizes available for the Site Icon.
          */
         $this->site_icon_sizes = apply_filters('site_icon_image_sizes', $this->site_icon_sizes);
 
@@ -184,7 +184,7 @@ class WP_Site_Icon
      *
      * @since 4.3.0
      *
-     * @param  string[]  $sizes Array of image size names.
+     * @param  string[]  $sizes  Array of image size names.
      * @return string[] Array of image size names.
      */
     public function intermediate_image_sizes($sizes = [])
@@ -203,7 +203,7 @@ class WP_Site_Icon
      *
      * @since 4.3.0
      *
-     * @param  int  $post_id Attachment ID.
+     * @param  int  $post_id  Attachment ID.
      */
     public function delete_attachment_data($post_id)
     {
@@ -219,11 +219,11 @@ class WP_Site_Icon
      *
      * @since 4.3.0
      *
-     * @param  null|array|string  $value    The value get_metadata() should return a single metadata value, or an
+     * @param  null|array|string  $value  The value get_metadata() should return a single metadata value, or an
      *                                    array of values.
      * @param  int  $post_id  Post ID.
-     * @param  string  $meta_key Meta key.
-     * @param  bool  $single   Whether to return only the first value of the specified `$meta_key`.
+     * @param  string  $meta_key  Meta key.
+     * @param  bool  $single  Whether to return only the first value of the specified `$meta_key`.
      * @return array|null|string The attachment metadata value, array of values, or null.
      */
     public function get_post_metadata($value, $post_id, $meta_key, $single)

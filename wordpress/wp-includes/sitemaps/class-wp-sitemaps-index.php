@@ -39,7 +39,7 @@ class WP_Sitemaps_Index
      *
      * @since 5.5.0
      *
-     * @param  WP_Sitemaps_Registry  $registry Sitemap provider registry.
+     * @param  WP_Sitemaps_Registry  $registry  Sitemap provider registry.
      */
     public function __construct(WP_Sitemaps_Registry $registry)
     {

@@ -37,7 +37,7 @@ if (empty($option_page)) {
      *
      * @since 3.2.0
      *
-     * @param  string  $capability The capability used for the page, which is manage_options by default.
+     * @param  string  $capability  The capability used for the page, which is manage_options by default.
      */
     $capability = apply_filters("option_page_capability_{$option_page}", $capability);
 }
@@ -197,7 +197,7 @@ if (! is_multisite()) {
      *
      * @since 3.0.0
      *
-     * @param  bool  $enabled Whether post-by-email configuration is enabled. Default true.
+     * @param  bool  $enabled  Whether post-by-email configuration is enabled. Default true.
      */
     if (apply_filters('enable_post_by_email_configuration', true)) {
         $allowed_options['writing'] = array_merge($allowed_options['writing'], $mail_options);
@@ -210,7 +210,7 @@ if (! is_multisite()) {
  * @since 2.7.0
  * @deprecated 5.5.0 Use {@see 'allowed_options'} instead.
  *
- * @param  array  $allowed_options The allowed options list.
+ * @param  array  $allowed_options  The allowed options list.
  */
 $allowed_options = apply_filters_deprecated(
     'whitelist_options',
@@ -225,7 +225,7 @@ $allowed_options = apply_filters_deprecated(
  *
  * @since 5.5.0
  *
- * @param  array  $allowed_options The allowed options list.
+ * @param  array  $allowed_options  The allowed options list.
  */
 $allowed_options = apply_filters('allowed_options', $allowed_options);
 

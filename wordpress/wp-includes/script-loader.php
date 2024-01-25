@@ -41,8 +41,8 @@ require ABSPATH.WPINC.'/functions.wp-styles.php';
  * @global bool   $concatenate_scripts
  * @global bool   $compress_scripts
  *
- * @param  WP_Scripts  $scripts            WP_Scripts object.
- * @param  bool  $force_uncompressed Whether to forcibly prevent gzip compression. Default false.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
+ * @param  bool  $force_uncompressed  Whether to forcibly prevent gzip compression. Default false.
  */
 function wp_register_tinymce_scripts($scripts, $force_uncompressed = false)
 {
@@ -80,7 +80,7 @@ function wp_register_tinymce_scripts($scripts, $force_uncompressed = false)
  *
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
  */
 function wp_default_packages_vendor($scripts)
 {
@@ -172,8 +172,8 @@ function wp_default_packages_vendor($scripts)
  *
  * @since 5.0.0
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
- * @param  string[]  $tests   Features to detect.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
+ * @param  string[]  $tests  Features to detect.
  * @return string Conditional polyfill inline script.
  */
 function wp_get_script_polyfill($scripts, $tests)
@@ -225,7 +225,7 @@ function wp_get_script_polyfill($scripts, $tests)
  * @see https://github.com/WordPress/gutenberg/tree/trunk/packages/scripts#start
  * @since 6.0.0
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
  */
 function wp_register_development_scripts($scripts)
 {
@@ -267,7 +267,7 @@ function wp_register_development_scripts($scripts)
  *
  * @since 5.0.0
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
  */
 function wp_default_packages_scripts($scripts)
 {
@@ -340,7 +340,7 @@ function wp_default_packages_scripts($scripts)
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  * @global wpdb      $wpdb      WordPress database abstraction object.
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
  */
 function wp_default_packages_inline_scripts($scripts)
 {
@@ -660,7 +660,7 @@ function wp_tinymce_inline_scripts()
  *
  * @since 5.0.0
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
  */
 function wp_default_packages($scripts)
 {
@@ -681,7 +681,7 @@ function wp_default_packages($scripts)
  *
  * @since 5.0.0
  *
- * @param  string  $type The type of suffix to retrieve.
+ * @param  string  $type  The type of suffix to retrieve.
  * @return string The script suffix.
  */
 function wp_scripts_get_suffix($type = '')
@@ -727,7 +727,7 @@ function wp_scripts_get_suffix($type = '')
  *
  * @since 2.6.0
  *
- * @param  WP_Scripts  $scripts WP_Scripts object.
+ * @param  WP_Scripts  $scripts  WP_Scripts object.
  */
 function wp_default_scripts($scripts)
 {
@@ -843,7 +843,7 @@ function wp_default_scripts($scripts)
          *
          * @since 3.6.0
          *
-         * @param  array  $settings Heartbeat settings array.
+         * @param  array  $settings  Heartbeat settings array.
          */
         apply_filters('heartbeat_settings', [])
     );
@@ -1180,7 +1180,7 @@ function wp_default_scripts($scripts)
          *
          * @since 4.4.0
          *
-         * @param  array  $mejs_settings MediaElement settings array.
+         * @param  array  $mejs_settings  MediaElement settings array.
          */
         apply_filters('mejs_settings', $mejs_settings)
     );
@@ -1858,7 +1858,7 @@ function wp_default_styles($styles)
  *
  * @since 2.3.1
  *
- * @param  string[]  $js_array JavaScript scripts array
+ * @param  string[]  $js_array  JavaScript scripts array
  * @return string[] Reordered array, if needed.
  */
 function wp_prototype_before_jquery($js_array)
@@ -2048,8 +2048,8 @@ function wp_localize_community_events()
  *
  * @global array $_wp_admin_css_colors
  *
- * @param  string  $src    Source URL.
- * @param  string  $handle Either 'colors' or 'colors-rtl'.
+ * @param  string  $src  Source URL.
+ * @param  string  $handle  Either 'colors' or 'colors-rtl'.
  * @return string|false URL path to CSS stylesheet for Administration Screens.
  */
 function wp_style_loader_src($src, $handle)
@@ -2119,7 +2119,7 @@ function print_head_scripts()
      *
      * @since 2.8.0
      *
-     * @param  bool  $print Whether to print the head scripts. Default true.
+     * @param  bool  $print  Whether to print the head scripts. Default true.
      */
     if (apply_filters('print_head_scripts', true)) {
         _print_scripts();
@@ -2156,7 +2156,7 @@ function print_footer_scripts()
      *
      * @since 2.8.0
      *
-     * @param  bool  $print Whether to print the footer scripts. Default true.
+     * @param  bool  $print  Whether to print the footer scripts. Default true.
      */
     if (apply_filters('print_footer_scripts', true)) {
         _print_scripts();
@@ -2308,7 +2308,7 @@ function print_admin_styles()
      *
      * @since 2.8.0
      *
-     * @param  bool  $print Whether to print the admin styles. Default true.
+     * @param  bool  $print  Whether to print the admin styles. Default true.
      */
     if (apply_filters('print_admin_styles', true)) {
         _print_styles();
@@ -2346,7 +2346,7 @@ function print_late_styles()
      *
      * @since 3.3.0
      *
-     * @param  bool  $print Whether to print the 'late' styles. Default true.
+     * @param  bool  $print  Whether to print the 'late' styles. Default true.
      */
     if (apply_filters('print_late_styles', true)) {
         _print_styles();
@@ -2487,7 +2487,7 @@ function wp_common_block_scripts_and_styles()
  *
  * @since 6.1.0
  *
- * @param  array  $nodes The nodes to filter.
+ * @param  array  $nodes  The nodes to filter.
  * @return array A filtered array of style nodes.
  */
 function wp_filter_out_block_nodes($nodes)
@@ -2591,7 +2591,7 @@ function wp_should_load_block_editor_scripts_and_styles()
      *
      * @since 5.6.0
      *
-     * @param  bool  $is_block_editor_screen Current value of the flag.
+     * @param  bool  $is_block_editor_screen  Current value of the flag.
      */
     return apply_filters('should_load_block_editor_scripts_and_styles', $is_block_editor_screen);
 }
@@ -2630,8 +2630,8 @@ function wp_should_load_separate_core_block_assets()
      *
      * @since 5.8.0
      *
-     * @param  bool  $load_separate_assets Whether separate assets will be loaded.
-     *                                   Default false (all block assets are loaded, even when not used).
+     * @param  bool  $load_separate_assets  Whether separate assets will be loaded.
+     *                                      Default false (all block assets are loaded, even when not used).
      */
     return apply_filters('should_load_separate_core_block_assets', false);
 }
@@ -2800,7 +2800,7 @@ function wp_enqueue_editor_format_library_assets()
  *
  * @since 5.7.0
  *
- * @param  array  $attributes Key-value pairs representing `<script>` tag attributes.
+ * @param  array  $attributes  Key-value pairs representing `<script>` tag attributes.
  * @return string String made of sanitized `<script>` tag attributes.
  */
 function wp_sanitize_script_attributes($attributes)
@@ -2833,7 +2833,7 @@ function wp_sanitize_script_attributes($attributes)
  *
  * @since 5.7.0
  *
- * @param  array  $attributes Key-value pairs representing `<script>` tag attributes.
+ * @param  array  $attributes  Key-value pairs representing `<script>` tag attributes.
  * @return string String containing `<script>` opening and closing tags.
  */
 function wp_get_script_tag($attributes)
@@ -2850,9 +2850,9 @@ function wp_get_script_tag($attributes)
      *
      * @since 5.7.0
      *
-     * @param  array  $attributes Key-value pairs representing `<script>` tag attributes.
-     *                          Only the attribute name is added to the `<script>` tag for
-     *                          entries with a boolean value, and that are true.
+     * @param  array  $attributes  Key-value pairs representing `<script>` tag attributes.
+     *                             Only the attribute name is added to the `<script>` tag for
+     *                             entries with a boolean value, and that are true.
      */
     $attributes = apply_filters('wp_script_attributes', $attributes);
 
@@ -2867,7 +2867,7 @@ function wp_get_script_tag($attributes)
  *
  * @since 5.7.0
  *
- * @param  array  $attributes Key-value pairs representing `<script>` tag attributes.
+ * @param  array  $attributes  Key-value pairs representing `<script>` tag attributes.
  */
 function wp_print_script_tag($attributes)
 {
@@ -2882,8 +2882,8 @@ function wp_print_script_tag($attributes)
  *
  * @since 5.7.0
  *
- * @param  string  $javascript Inline JavaScript code.
- * @param  array  $attributes Optional. Key-value pairs representing `<script>` tag attributes.
+ * @param  string  $javascript  Inline JavaScript code.
+ * @param  array  $attributes  Optional. Key-value pairs representing `<script>` tag attributes.
  * @return string String containing inline JavaScript code wrapped around `<script>` tag.
  */
 function wp_get_inline_script_tag($javascript, $attributes = [])
@@ -2944,10 +2944,10 @@ function wp_get_inline_script_tag($javascript, $attributes = [])
      *
      * @since 5.7.0
      *
-     * @param  array  $attributes Key-value pairs representing `<script>` tag attributes.
-     *                           Only the attribute name is added to the `<script>` tag for
-     *                           entries with a boolean value, and that are true.
-     * @param  string  $javascript Inline JavaScript code.
+     * @param  array  $attributes  Key-value pairs representing `<script>` tag attributes.
+     *                             Only the attribute name is added to the `<script>` tag for
+     *                             entries with a boolean value, and that are true.
+     * @param  string  $javascript  Inline JavaScript code.
      */
     $attributes = apply_filters('wp_inline_script_attributes', $attributes, $javascript);
 
@@ -2962,8 +2962,8 @@ function wp_get_inline_script_tag($javascript, $attributes = [])
  *
  * @since 5.7.0
  *
- * @param  string  $javascript Inline JavaScript code.
- * @param  array  $attributes Optional. Key-value pairs representing `<script>` tag attributes.
+ * @param  string  $javascript  Inline JavaScript code.
+ * @param  array  $attributes  Optional. Key-value pairs representing `<script>` tag attributes.
  */
 function wp_print_inline_script_tag($javascript, $attributes = [])
 {
@@ -2992,7 +2992,7 @@ function wp_maybe_inline_styles()
      *
      * @since 5.8.0
      *
-     * @param  int  $total_inline_limit The file-size threshold, in bytes. Default 20000.
+     * @param  int  $total_inline_limit  The file-size threshold, in bytes. Default 20000.
      */
     $total_inline_limit = apply_filters('styles_inline_size_limit', $total_inline_limit);
 
@@ -3071,8 +3071,8 @@ function wp_maybe_inline_styles()
  *
  * @since 5.9.0
  *
- * @param  string  $css            The CSS to make URLs relative to the WordPress installation.
- * @param  string  $stylesheet_url The URL to the stylesheet.
+ * @param  string  $css  The CSS to make URLs relative to the WordPress installation.
+ * @param  string  $stylesheet_url  The URL to the stylesheet.
  * @return string The CSS with URLs made relative to the WordPress installation.
  */
 function _wp_normalize_relative_css_links($css, $stylesheet_url)
@@ -3128,8 +3128,8 @@ function wp_enqueue_global_styles_css_custom_properties()
  * For classic ones, styles are loaded in the body because the wp_head action happens before render_block.
  * @link https://core.trac.wordpress.org/ticket/53494.
  *
- * @param  string  $style    String containing the CSS styles to be added.
- * @param  int  $priority To set the priority for the add_action.
+ * @param  string  $style  String containing the CSS styles to be added.
+ * @param  int  $priority  To set the priority for the add_action.
  */
 function wp_enqueue_block_support_styles($style, $priority = 10)
 {
@@ -3153,15 +3153,15 @@ function wp_enqueue_block_support_styles($style, $priority = 10)
  * @link https://developer.wordpress.org/block-editor/reference-guides/packages/packages-style-engine/
  * @since 6.1.0
  *
- * @param  array  $options {
- *     Optional. An array of options to pass to wp_style_engine_get_stylesheet_from_context().
- *     Default empty array.
+ * @param  array  $options  {
+ *                          Optional. An array of options to pass to wp_style_engine_get_stylesheet_from_context().
+ *                          Default empty array.
  *
- *     @type bool $optimize Whether to optimize the CSS output, e.g., combine rules.
- *                          Default false.
- *     @type bool $prettify Whether to add new lines and indents to output.
- *                          Default to whether the `SCRIPT_DEBUG` constant is defined.
- * }
+ * @type bool $optimize Whether to optimize the CSS output, e.g., combine rules.
+ *            Default false.
+ * @type bool $prettify Whether to add new lines and indents to output.
+ *            Default to whether the `SCRIPT_DEBUG` constant is defined.
+ *            }
  */
 function wp_enqueue_stored_styles($options = [])
 {
@@ -3225,17 +3225,17 @@ function wp_enqueue_stored_styles($options = [])
  *
  * @since 5.9.0
  *
- * @param  string  $block_name The block-name, including namespace.
- * @param  array  $args       {
- *     An array of arguments. See wp_register_style() for full information about each argument.
+ * @param  string  $block_name  The block-name, including namespace.
+ * @param  array  $args  {
+ *                       An array of arguments. See wp_register_style() for full information about each argument.
  *
- *     @type string           $handle The handle for the stylesheet.
- *     @type string|false     $src    The source URL of the stylesheet.
- *     @type string[]         $deps   Array of registered stylesheet handles this stylesheet depends on.
- *     @type string|bool|null $ver    Stylesheet version number.
- *     @type string           $media  The media for which this stylesheet has been defined.
- *     @type string|null      $path   Absolute path to the stylesheet, so that it can potentially be inlined.
- * }
+ * @type string $handle The handle for the stylesheet.
+ * @type string|false $src    The source URL of the stylesheet.
+ * @type string[] $deps   Array of registered stylesheet handles this stylesheet depends on.
+ * @type string|bool|null $ver    Stylesheet version number.
+ * @type string $media  The media for which this stylesheet has been defined.
+ * @type string|null $path   Absolute path to the stylesheet, so that it can potentially be inlined.
+ *                   }
  */
 function wp_enqueue_block_style($block_name, $args)
 {
@@ -3253,9 +3253,9 @@ function wp_enqueue_block_style($block_name, $args)
     /**
      * Callback function to register and enqueue styles.
      *
-     * @param  string  $content When the callback is used for the render_block filter,
-     *                        the content needs to be returned so the function parameter
-     *                        is to ensure the content exists.
+     * @param  string  $content  When the callback is used for the render_block filter,
+     *                           the content needs to be returned so the function parameter
+     *                           is to ensure the content exists.
      * @return string Block content.
      */
     $callback = static function ($content) use ($args) {
@@ -3292,8 +3292,8 @@ function wp_enqueue_block_style($block_name, $args)
         /**
          * Callback function to register and enqueue styles.
          *
-         * @param  string  $content The block content.
-         * @param  array  $block   The full block, including name and attributes.
+         * @param  string  $content  The block content.
+         * @param  array  $block  The full block, including name and attributes.
          * @return string Block content.
          */
         $callback_separate = static function ($content, $block) use ($block_name, $callback) {
@@ -3357,7 +3357,7 @@ function wp_enqueue_classic_theme_styles()
  *
  * @since 6.1.0
  *
- * @param  array  $editor_settings The array of editor settings.
+ * @param  array  $editor_settings  The array of editor settings.
  * @return array A filtered array of editor settings.
  */
 function wp_add_editor_classic_theme_styles($editor_settings)
@@ -3412,7 +3412,7 @@ function wp_add_editor_classic_theme_styles($editor_settings)
  * @see wp_print_inline_script_tag()
  * @see wp_get_inline_script_tag()
  *
- * @param  string  $contents Script body with manually created SCRIPT tag literals.
+ * @param  string  $contents  Script body with manually created SCRIPT tag literals.
  * @return string Script body without surrounding script tag literals, or
  *                original contents if both exact literals aren't present.
  */

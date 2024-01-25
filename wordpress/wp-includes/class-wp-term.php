@@ -115,8 +115,8 @@ final class WP_Term
      * @global wpdb $wpdb WordPress database abstraction object.
      *
      * @param  int  $term_id  Term ID.
-     * @param  string  $taxonomy Optional. Limit matched terms to those matching `$taxonomy`. Only used for
-     *                         disambiguating potentially shared terms.
+     * @param  string  $taxonomy  Optional. Limit matched terms to those matching `$taxonomy`. Only used for
+     *                            disambiguating potentially shared terms.
      * @return WP_Term|WP_Error|false Term object, if found. WP_Error if `$term_id` is shared between taxonomies and
      *                                there's insufficient data to distinguish which term is intended.
      *                                False for other failures.
@@ -201,7 +201,7 @@ final class WP_Term
      *
      * @since 4.4.0
      *
-     * @param  WP_Term|object  $term Term object.
+     * @param  WP_Term|object  $term  Term object.
      */
     public function __construct($term)
     {
@@ -215,7 +215,7 @@ final class WP_Term
      *
      * @since 4.4.0
      *
-     * @param  string  $filter Filter context. Accepts 'edit', 'db', 'display', 'attribute', 'js', 'rss', or 'raw'.
+     * @param  string  $filter  Filter context. Accepts 'edit', 'db', 'display', 'attribute', 'js', 'rss', or 'raw'.
      */
     public function filter($filter)
     {
@@ -239,7 +239,7 @@ final class WP_Term
      *
      * @since 4.4.0
      *
-     * @param  string  $key Property to get.
+     * @param  string  $key  Property to get.
      * @return mixed Property value.
      */
     public function __get($key)

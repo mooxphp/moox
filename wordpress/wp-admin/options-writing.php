@@ -209,7 +209,7 @@ if (apply_filters('enable_post_by_email_configuration', true)) {
  *
  * @since 3.0.0
  *
- * @param  bool  $enable Whether to enable the Update Services settings area. Default true.
+ * @param  bool  $enable  Whether to enable the Update Services settings area. Default true.
  */
 if (apply_filters('enable_update_services_configuration', true)) {
     ?>

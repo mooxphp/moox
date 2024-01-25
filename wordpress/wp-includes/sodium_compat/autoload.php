@@ -5,8 +5,8 @@ if (PHP_VERSION_ID < 70000) {
         /**
          * Sodium_Compat autoloader.
          *
-         * @param  string  $class Class name to be autoloaded.
-         * @return bool         Stop autoloading?
+         * @param  string  $class  Class name to be autoloaded.
+         * @return bool Stop autoloading?
          */
         function sodiumCompatAutoloader($class)
         {

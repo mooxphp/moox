@@ -181,8 +181,8 @@ if ($user_id) {
  * @since 5.0.0
  * @since 5.8.0 Changed the default placeholder text.
  *
- * @param  string  $text Placeholder text. Default 'Type / to choose a block'.
- * @param  WP_Post  $post Post object.
+ * @param  string  $text  Placeholder text. Default 'Type / to choose a block'.
+ * @param  WP_Post  $post  Post object.
  */
 $body_placeholder = apply_filters('write_your_story', __('Type / to choose a block'), $post);
 
@@ -337,18 +337,18 @@ require_once ABSPATH.'wp-admin/admin-header.php';
             );
         }
 
-        /**
-         * Filters the message displayed in the block editor interface when JavaScript is
-         * not enabled in the browser.
-         *
-         * @since 5.0.3
-         * @since 6.4.0 Added `$installed` parameter.
-         *
-         * @param  string  $message   The message being displayed.
-         * @param  WP_Post  $post      The post being edited.
-         * @param  bool  $installed Whether the classic editor is installed.
-         */
-        $message = apply_filters('block_editor_no_javascript_message', $message, $post, $installed);
+/**
+ * Filters the message displayed in the block editor interface when JavaScript is
+ * not enabled in the browser.
+ *
+ * @since 5.0.3
+ * @since 6.4.0 Added `$installed` parameter.
+ *
+ * @param  string  $message  The message being displayed.
+ * @param  WP_Post  $post  The post being edited.
+ * @param  bool  $installed  Whether the classic editor is installed.
+ */
+$message = apply_filters('block_editor_no_javascript_message', $message, $post, $installed);
 wp_admin_notice(
     $message,
     [

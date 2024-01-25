@@ -7,9 +7,9 @@
  * Build an array with CSS classes and inline styles defining the colors
  * which will be applied to the navigation markup in the front-end.
  *
- * @param  array  $context     Navigation block context.
+ * @param  array  $context  Navigation block context.
  * @param  array  $attributes  Block attributes.
- * @param  bool  $is_sub_menu Whether the link is part of a sub-menu.
+ * @param  bool  $is_sub_menu  Whether the link is part of a sub-menu.
  * @return array Colors CSS classes and inline styles.
  */
 function block_core_navigation_link_build_css_colors($context, $attributes, $is_sub_menu = false)
@@ -78,7 +78,7 @@ function block_core_navigation_link_build_css_colors($context, $attributes, $is_
  * Build an array with CSS classes and inline styles defining the font sizes
  * which will be applied to the navigation markup in the front-end.
  *
- * @param  array  $context Navigation block context.
+ * @param  array  $context  Navigation block context.
  * @return array Font size CSS classes and inline styles.
  */
 function block_core_navigation_link_build_css_font_sizes($context)
@@ -123,7 +123,7 @@ function block_core_navigation_link_render_submenu_icon()
 /**
  * Decodes a url if it's encoded, returning the same url if not.
  *
- * @param  string  $url The url to decode.
+ * @param  string  $url  The url to decode.
  * @return string $url Returns the decoded url.
  */
 function block_core_navigation_link_maybe_urldecode($url)
@@ -149,9 +149,9 @@ function block_core_navigation_link_maybe_urldecode($url)
 /**
  * Renders the `core/navigation-link` block.
  *
- * @param  array  $attributes The block attributes.
- * @param  string  $content    The saved content.
- * @param  WP_Block  $block      The parsed block.
+ * @param  array  $attributes  The block attributes.
+ * @param  string  $content  The saved content.
+ * @param  WP_Block  $block  The parsed block.
  * @return string Returns the post content with the legacy widget added.
  */
 function render_block_core_navigation_link($attributes, $content, $block)
@@ -265,8 +265,8 @@ function render_block_core_navigation_link($attributes, $content, $block)
 /**
  * Returns a navigation link variation
  *
- * @param  WP_Taxonomy|WP_Post_Type  $entity post type or taxonomy entity.
- * @param  string  $kind string of value 'taxonomy' or 'post-type'.
+ * @param  WP_Taxonomy|WP_Post_Type  $entity  post type or taxonomy entity.
+ * @param  string  $kind  string of value 'taxonomy' or 'post-type'.
  * @return array
  */
 function build_variation_for_navigation_link($entity, $kind)

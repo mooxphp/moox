@@ -49,7 +49,7 @@ class WP_List_Util
      *
      * @since 4.7.0
      *
-     * @param  array  $input Array to perform operations on.
+     * @param  array  $input  Array to perform operations on.
      */
     public function __construct($input)
     {
@@ -93,12 +93,12 @@ class WP_List_Util
      *
      * @since 4.7.0
      *
-     * @param  array  $args     Optional. An array of key => value arguments to match
-     *                         against each object. Default empty array.
-     * @param  string  $operator Optional. The logical operation to perform. 'AND' means
-     *                         all elements from the array must match. 'OR' means only
-     *                         one element needs to match. 'NOT' means no elements may
-     *                         match. Default 'AND'.
+     * @param  array  $args  Optional. An array of key => value arguments to match
+     *                       against each object. Default empty array.
+     * @param  string  $operator  Optional. The logical operation to perform. 'AND' means
+     *                            all elements from the array must match. 'OR' means only
+     *                            one element needs to match. 'NOT' means no elements may
+     *                            match. Default 'AND'.
      * @return array Array of found values.
      */
     public function filter($args = [], $operator = 'AND')
@@ -156,9 +156,9 @@ class WP_List_Util
      *
      * @since 4.7.0
      *
-     * @param  int|string  $field     Field to fetch from the object or array.
-     * @param  int|string  $index_key Optional. Field from the element to use as keys for the new array.
-     *                              Default null.
+     * @param  int|string  $field  Field to fetch from the object or array.
+     * @param  int|string  $index_key  Optional. Field from the element to use as keys for the new array.
+     *                                 Default null.
      * @return array Array of found values. If `$index_key` is set, an array of found values with keys
      *               corresponding to `$index_key`. If `$index_key` is null, array keys from the original
      *               `$list` will be preserved in the results.
@@ -227,12 +227,12 @@ class WP_List_Util
      *
      * @since 4.7.0
      *
-     * @param  string|array  $orderby       Optional. Either the field name to order by or an array
-     *                                    of multiple orderby fields as `$orderby => $order`.
-     *                                    Default empty array.
-     * @param  string  $order         Optional. Either 'ASC' or 'DESC'. Only used if `$orderby`
-     *                                    is a string. Default 'ASC'.
-     * @param  bool  $preserve_keys Optional. Whether to preserve keys. Default false.
+     * @param  string|array  $orderby  Optional. Either the field name to order by or an array
+     *                                 of multiple orderby fields as `$orderby => $order`.
+     *                                 Default empty array.
+     * @param  string  $order  Optional. Either 'ASC' or 'DESC'. Only used if `$orderby`
+     *                         is a string. Default 'ASC'.
+     * @param  bool  $preserve_keys  Optional. Whether to preserve keys. Default false.
      * @return array The sorted array.
      */
     public function sort($orderby = [], $order = 'ASC', $preserve_keys = false)
@@ -268,8 +268,8 @@ class WP_List_Util
      * @since 4.7.0
      * @see WP_List_Util::sort()
      *
-     * @param  object|array  $a One object to compare.
-     * @param  object|array  $b The other object to compare.
+     * @param  object|array  $a  One object to compare.
+     * @param  object|array  $b  The other object to compare.
      * @return int 0 if both objects equal. -1 if second object should come first, 1 otherwise.
      */
     private function sort_callback($a, $b)

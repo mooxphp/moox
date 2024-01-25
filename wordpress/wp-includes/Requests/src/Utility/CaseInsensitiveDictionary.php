@@ -26,7 +26,7 @@ class CaseInsensitiveDictionary implements ArrayAccess, IteratorAggregate
     /**
      * Creates a case insensitive dictionary.
      *
-     * @param  array  $data Dictionary/map to convert to case-insensitive
+     * @param  array  $data  Dictionary/map to convert to case-insensitive
      */
     public function __construct(array $data = [])
     {
@@ -38,7 +38,7 @@ class CaseInsensitiveDictionary implements ArrayAccess, IteratorAggregate
     /**
      * Check if the given item exists
      *
-     * @param  string  $offset Item key
+     * @param  string  $offset  Item key
      * @return bool Does the item exist?
      */
     #[ReturnTypeWillChange]
@@ -54,7 +54,7 @@ class CaseInsensitiveDictionary implements ArrayAccess, IteratorAggregate
     /**
      * Get the value for the item
      *
-     * @param  string  $offset Item key
+     * @param  string  $offset  Item key
      * @return string|null Item value (null if the item key doesn't exist)
      */
     #[ReturnTypeWillChange]
@@ -74,8 +74,8 @@ class CaseInsensitiveDictionary implements ArrayAccess, IteratorAggregate
     /**
      * Set the given item
      *
-     * @param  string  $offset Item name
-     * @param  string  $value Item value
+     * @param  string  $offset  Item name
+     * @param  string  $value  Item value
      *
      * @throws \WpOrg\Requests\Exception On attempting to use dictionary as list (`invalidset`)
      */
@@ -96,7 +96,7 @@ class CaseInsensitiveDictionary implements ArrayAccess, IteratorAggregate
     /**
      * Unset the given header
      *
-     * @param  string  $offset The key for the item to unset.
+     * @param  string  $offset  The key for the item to unset.
      */
     #[ReturnTypeWillChange]
     public function offsetUnset($offset)

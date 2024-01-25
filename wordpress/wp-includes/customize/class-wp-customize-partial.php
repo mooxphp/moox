@@ -45,9 +45,9 @@ class WP_Customize_Partial
      *
      * @var array {
      *
-     *     @type string $base ID base.
-     *     @type array  $keys Keys for multidimensional.
-     * }
+     * @type string $base ID base.
+     * @type array $keys Keys for multidimensional.
+     *             }
      */
     protected $id_data = [];
 
@@ -142,30 +142,30 @@ class WP_Customize_Partial
      *
      * @since 4.5.0
      *
-     * @param  WP_Customize_Selective_Refresh  $component Customize Partial Refresh plugin instance.
-     * @param  string  $id        Control ID.
-     * @param  array  $args {
-     *     Optional. Array of properties for the new Partials object. Default empty array.
+     * @param  WP_Customize_Selective_Refresh  $component  Customize Partial Refresh plugin instance.
+     * @param  string  $id  Control ID.
+     * @param  array  $args  {
+     *                       Optional. Array of properties for the new Partials object. Default empty array.
      *
-     *     @type string   $type                  Type of the partial to be created.
-     *     @type string   $selector              The jQuery selector to find the container element for the partial, that is,
-     *                                           a partial's placement.
-     *     @type string[] $settings              IDs for settings tied to the partial. If undefined, `$id` will be used.
-     *     @type string   $primary_setting       The ID for the setting that this partial is primarily responsible for
-     *                                           rendering. If not supplied, it will default to the ID of the first setting.
-     *     @type string   $capability            Capability required to edit this partial.
-     *                                           Normally this is empty and the capability is derived from the capabilities
-     *                                           of the associated `$settings`.
-     *     @type callable $render_callback       Render callback.
-     *                                           Callback is called with one argument, the instance of WP_Customize_Partial.
-     *                                           The callback can either echo the partial or return the partial as a string,
-     *                                           or return false if error.
-     *     @type bool     $container_inclusive   Whether the container element is included in the partial, or if only
-     *                                           the contents are rendered.
-     *     @type bool     $fallback_refresh      Whether to refresh the entire preview in case a partial cannot be refreshed.
-     *                                           A partial render is considered a failure if the render_callback returns
-     *                                           false.
-     * }
+     * @type string $type                  Type of the partial to be created.
+     * @type string $selector              The jQuery selector to find the container element for the partial, that is,
+     *              a partial's placement.
+     * @type string[] $settings              IDs for settings tied to the partial. If undefined, `$id` will be used.
+     * @type string $primary_setting       The ID for the setting that this partial is primarily responsible for
+     *              rendering. If not supplied, it will default to the ID of the first setting.
+     * @type string $capability            Capability required to edit this partial.
+     *              Normally this is empty and the capability is derived from the capabilities
+     *              of the associated `$settings`.
+     * @type callable $render_callback       Render callback.
+     *                Callback is called with one argument, the instance of WP_Customize_Partial.
+     *                The callback can either echo the partial or return the partial as a string,
+     *                or return false if error.
+     * @type bool $container_inclusive   Whether the container element is included in the partial, or if only
+     *            the contents are rendered.
+     * @type bool $fallback_refresh      Whether to refresh the entire preview in case a partial cannot be refreshed.
+     *            A partial render is considered a failure if the render_callback returns
+     *            false.
+     *            }
      */
     public function __construct(WP_Customize_Selective_Refresh $component, $id, $args = [])
     {
@@ -203,11 +203,11 @@ class WP_Customize_Partial
      * @since 4.5.0
      *
      * @return array {
-     *     ID data for multidimensional partial.
+     *               ID data for multidimensional partial.
      *
-     *     @type string $base ID base.
-     *     @type array  $keys Keys for multidimensional array.
-     * }
+     * @type string $base ID base.
+     * @type array $keys Keys for multidimensional array.
+     *             }
      */
     final public function id_data()
     {
@@ -219,8 +219,8 @@ class WP_Customize_Partial
      *
      * @since 4.5.0
      *
-     * @param  array  $container_context Optional. Array of context data associated with the target container (placement).
-     *                                 Default empty array.
+     * @param  array  $container_context  Optional. Array of context data associated with the target container (placement).
+     *                                    Default empty array.
      * @return string|array|false The rendered partial as a string, raw data array (for client-side JS template),
      *                            or false if no render applied.
      */
@@ -250,10 +250,10 @@ class WP_Customize_Partial
          *
          * @since 4.5.0
          *
-         * @param  string|array|false  $rendered          The partial value. Default false.
-         * @param  WP_Customize_Partial  $partial           WP_Customize_Setting instance.
-         * @param  array  $container_context Optional array of context data associated with
-         *                                                the target container.
+         * @param  string|array|false  $rendered  The partial value. Default false.
+         * @param  WP_Customize_Partial  $partial  WP_Customize_Setting instance.
+         * @param  array  $container_context  Optional array of context data associated with
+         *                                    the target container.
          */
         $rendered = apply_filters('customize_partial_render', $rendered, $partial, $container_context);
 
@@ -264,10 +264,10 @@ class WP_Customize_Partial
          *
          * @since 4.5.0
          *
-         * @param  string|array|false  $rendered          The partial value. Default false.
-         * @param  WP_Customize_Partial  $partial           WP_Customize_Setting instance.
-         * @param  array  $container_context Optional array of context data associated with
-         *                                                the target container.
+         * @param  string|array|false  $rendered  The partial value. Default false.
+         * @param  WP_Customize_Partial  $partial  WP_Customize_Setting instance.
+         * @param  array  $container_context  Optional array of context data associated with
+         *                                    the target container.
          */
         $rendered = apply_filters("customize_partial_render_{$partial->id}", $rendered, $partial, $container_context);
 
@@ -288,8 +288,8 @@ class WP_Customize_Partial
      *
      * @since 4.5.0
      *
-     * @param  WP_Customize_Partial  $partial Partial.
-     * @param  array  $context Context.
+     * @param  WP_Customize_Partial  $partial  Partial.
+     * @param  array  $context  Context.
      * @return string|array|false
      */
     public function render_callback(WP_Customize_Partial $partial, $context = [])
@@ -329,7 +329,7 @@ class WP_Customize_Partial
      * @since 4.5.0
      *
      * @return bool False if user can't edit one of the related settings,
-     *                    or if one of the associated settings does not exist.
+     *              or if one of the associated settings does not exist.
      */
     final public function check_capabilities()
     {

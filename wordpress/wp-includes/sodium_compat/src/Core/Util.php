@@ -11,7 +11,7 @@ abstract class ParagonIE_Sodium_Core_Util
 {
     /**
      * @param  int  $integer
-     * @param  int  $size (16, 32, 64)
+     * @param  int  $size  (16, 32, 64)
      * @return int
      */
     public static function abs($integer, $size = 0)
@@ -40,7 +40,7 @@ abstract class ParagonIE_Sodium_Core_Util
      *
      * @internal You should not use this directly from another application
      *
-     * @param  string  $binaryString (raw binary)
+     * @param  string  $binaryString  (raw binary)
      * @return string
      *
      * @throws TypeError
@@ -77,7 +77,7 @@ abstract class ParagonIE_Sodium_Core_Util
      *
      * @internal You should not use this directly from another application
      *
-     * @param  string  $bin_string (raw binary)
+     * @param  string  $bin_string  (raw binary)
      * @return string
      *
      * @throws TypeError
@@ -557,8 +557,8 @@ abstract class ParagonIE_Sodium_Core_Util
      *
      * @param  int  $a
      * @param  int  $b
-     * @param  int  $size Limits the number of operations (useful for small,
-     *                  constant operands)
+     * @param  int  $size  Limits the number of operations (useful for small,
+     *                     constant operands)
      * @return int
      */
     public static function mul($a, $b, $size = 0)

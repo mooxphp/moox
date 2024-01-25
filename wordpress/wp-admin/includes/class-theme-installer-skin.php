@@ -68,7 +68,7 @@ class Theme_Installer_Skin extends WP_Upgrader_Skin
      *
      * @since 5.5.0
      *
-     * @param  WP_Error  $wp_error WP_Error object.
+     * @param  WP_Error  $wp_error  WP_Error object.
      * @return bool True if the error should be hidden, false otherwise.
      */
     public function hide_process_failed($wp_error)
@@ -181,10 +181,10 @@ class Theme_Installer_Skin extends WP_Upgrader_Skin
          *
          * @since 2.8.0
          *
-         * @param  string[]  $install_actions Array of theme action links.
-         * @param  object  $api             Object containing WordPress.org API theme data.
-         * @param  string  $stylesheet      Theme directory name.
-         * @param  WP_Theme  $theme_info      Theme object.
+         * @param  string[]  $install_actions  Array of theme action links.
+         * @param  object  $api  Object containing WordPress.org API theme data.
+         * @param  string  $stylesheet  Theme directory name.
+         * @param  WP_Theme  $theme_info  Theme object.
          */
         $install_actions = apply_filters('install_theme_complete_actions', $install_actions, $this->api, $stylesheet, $theme_info);
         if (! empty($install_actions)) {
@@ -288,9 +288,9 @@ class Theme_Installer_Skin extends WP_Upgrader_Skin
          *
          * @since 5.5.0
          *
-         * @param  string  $table              The output table with Name, Version, Author, RequiresWP, and RequiresPHP info.
-         * @param  WP_Theme  $current_theme_data Active theme data.
-         * @param  array  $new_theme_data     Array with uploaded theme data.
+         * @param  string  $table  The output table with Name, Version, Author, RequiresWP, and RequiresPHP info.
+         * @param  WP_Theme  $current_theme_data  Active theme data.
+         * @param  array  $new_theme_data  Array with uploaded theme data.
          */
         echo apply_filters('install_theme_overwrite_comparison', $table, $current_theme_data, $new_theme_data);
 
@@ -371,8 +371,8 @@ class Theme_Installer_Skin extends WP_Upgrader_Skin
          *
          * @since 5.5.0
          *
-         * @param  string[]  $install_actions Array of theme action links.
-         * @param  object  $api             Object containing WordPress.org API theme data.
+         * @param  string[]  $install_actions  Array of theme action links.
+         * @param  object  $api  Object containing WordPress.org API theme data.
          * @param  array  $new_theme_data  Array with uploaded theme data.
          */
         $install_actions = apply_filters('install_theme_overwrite_actions', $install_actions, $this->api, $new_theme_data);

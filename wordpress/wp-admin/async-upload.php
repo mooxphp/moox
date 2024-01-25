@@ -153,7 +153,7 @@ if ($_REQUEST['short']) {
      *
      * @since 2.5.0
      *
-     * @param  int  $id Uploaded attachment ID.
+     * @param  int  $id  Uploaded attachment ID.
      */
     echo apply_filters("async_upload_{$type}", $id);
 }

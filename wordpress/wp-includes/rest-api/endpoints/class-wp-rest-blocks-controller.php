@@ -21,7 +21,7 @@ class WP_REST_Blocks_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_Post  $post Post object that backs the block.
+     * @param  WP_Post  $post  Post object that backs the block.
      * @return bool Whether the pattern can be read.
      */
     public function check_read_permission($post)
@@ -40,8 +40,8 @@ class WP_REST_Blocks_Controller extends WP_REST_Posts_Controller
      * @since 5.0.0
      * @since 6.3.0 Adds the `wp_pattern_sync_status` postmeta property to the top level of response.
      *
-     * @param  array  $data    Response data to filter.
-     * @param  string  $context Context defined in the schema.
+     * @param  array  $data  Response data to filter.
+     * @param  string  $context  Context defined in the schema.
      * @return array Filtered response.
      */
     public function filter_response_by_context($data, $context)

@@ -87,8 +87,8 @@ class SimplePie_Misc
      *
      * @deprecated Use DOMDocument instead (parsing HTML with regex is bad!)
      *
-     * @param  string  $realname Element name (including namespace prefix if applicable)
-     * @param  string  $string HTML document
+     * @param  string  $realname  Element name (including namespace prefix if applicable)
+     * @param  string  $string  HTML document
      * @return array
      */
     public static function get_element($realname, $string)
@@ -256,7 +256,7 @@ class SimplePie_Misc
      *
      * @static
      *
-     * @param  string  $string Windows-1252 encoded string
+     * @param  string  $string  Windows-1252 encoded string
      * @return string UTF-8 encoded string
      */
     public static function windows_1252_to_utf8($string)
@@ -269,9 +269,9 @@ class SimplePie_Misc
     /**
      * Change a string from one encoding to another
      *
-     * @param  string  $data Raw data in $input encoding
-     * @param  string  $input Encoding of $data
-     * @param  string  $output Encoding you want
+     * @param  string  $data  Raw data in $input encoding
+     * @param  string  $input  Encoding of $data
+     * @param  string  $output  Encoding you want
      * @return string|bool False if we can't convert it
      */
     public static function change_encoding($data, $input, $output)
@@ -367,7 +367,7 @@ class SimplePie_Misc
      * To generate it, run `php create.php` on the command line, and copy the
      * output to replace this function.
      *
-     * @param  string  $charset Character set to standardise
+     * @param  string  $charset  Character set to standardise
      * @return string Standardised name
      */
     public static function encoding($charset)
@@ -1700,7 +1700,7 @@ class SimplePie_Misc
     /**
      * Strip HTML comments
      *
-     * @param  string  $data Data to strip comments from
+     * @param  string  $data  Data to strip comments from
      * @return string Comment stripped string
      */
     public static function strip_comments($data)
@@ -1730,7 +1730,7 @@ class SimplePie_Misc
      *
      * @deprecated Use DOMDocument instead
      *
-     * @param  string  $data Input data
+     * @param  string  $data  Input data
      * @return string Output data
      */
     public static function entities_decode($data)
@@ -1743,7 +1743,7 @@ class SimplePie_Misc
     /**
      * Remove RFC822 comments
      *
-     * @param  string  $data Data to strip comments from
+     * @param  string  $data  Data to strip comments from
      * @return string Comment stripped string
      */
     public static function uncomment_rfc822($string)
@@ -1901,7 +1901,7 @@ class SimplePie_Misc
      *
      * @static
      *
-     * @param  int  $codepoint Unicode codepoint
+     * @param  int  $codepoint  Unicode codepoint
      * @return string UTF-8 character
      */
     public static function codepoint_to_utf8($codepoint)
@@ -1931,7 +1931,7 @@ class SimplePie_Misc
      *
      * @static
      *
-     * @param  string  $str The input string.
+     * @param  string  $str  The input string.
      * @return array
      */
     public static function parse_str($str)
@@ -1956,8 +1956,8 @@ class SimplePie_Misc
      *
      * @todo Add support for EBCDIC
      *
-     * @param  string  $data XML data
-     * @param  SimplePie_Registry  $registry Class registry
+     * @param  string  $data  XML data
+     * @param  SimplePie_Registry  $registry  Class registry
      * @return array Possible encodings
      */
     public static function xml_encoding($data, $registry)
@@ -2150,7 +2150,7 @@ function embed_wmedia(width, height, link) {
     /**
      * Sanitize a URL by removing HTTP credentials.
      *
-     * @param  string  $url the URL to sanitize.
+     * @param  string  $url  the URL to sanitize.
      * @return string the same URL without HTTP credentials.
      */
     public static function url_remove_credentials($url)

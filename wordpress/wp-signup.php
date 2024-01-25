@@ -105,9 +105,9 @@ do_action('before_signup_form');
  *
  * @since MU (3.0.0)
  *
- * @param  string  $blogname   The new site name.
- * @param  string  $blog_title The new site title.
- * @param  WP_Error|string  $errors     A WP_Error object containing existing errors. Defaults to empty string.
+ * @param  string  $blogname  The new site name.
+ * @param  string  $blog_title  The new site title.
+ * @param  WP_Error|string  $errors  A WP_Error object containing existing errors. Defaults to empty string.
  */
 function show_blog_form($blogname = '', $blog_title = '', $errors = '')
 {
@@ -234,7 +234,7 @@ function show_blog_form($blogname = '', $blog_title = '', $errors = '')
      *
      * @since 3.0.0
      *
-     * @param  WP_Error  $errors A WP_Error object possibly containing 'blogname' or 'blog_title' errors.
+     * @param  WP_Error  $errors  A WP_Error object possibly containing 'blogname' or 'blog_title' errors.
      */
     do_action('signup_blogform', $errors);
 }
@@ -263,8 +263,8 @@ function validate_blog_form()
  * @since MU (3.0.0)
  *
  * @param  string  $user_name  The entered username.
- * @param  string  $user_email The entered email address.
- * @param  WP_Error|string  $errors     A WP_Error object containing existing errors. Defaults to empty string.
+ * @param  string  $user_email  The entered email address.
+ * @param  WP_Error|string  $errors  A WP_Error object containing existing errors. Defaults to empty string.
  */
 function show_user_form($user_name = '', $user_email = '', $errors = '')
 {
@@ -308,7 +308,7 @@ function show_user_form($user_name = '', $user_email = '', $errors = '')
      *
      * @since 3.0.0
      *
-     * @param  WP_Error  $errors A WP_Error object containing 'user_name' or 'user_email' errors.
+     * @param  WP_Error  $errors  A WP_Error object containing 'user_name' or 'user_email' errors.
      */
     do_action('signup_extra_fields', $errors);
 }
@@ -331,9 +331,9 @@ function validate_user_form()
  *
  * @since MU (3.0.0)
  *
- * @param  string  $blogname   The new site name
- * @param  string  $blog_title The new site title.
- * @param  WP_Error|string  $errors     A WP_Error object containing existing errors. Defaults to empty string.
+ * @param  string  $blogname  The new site name
+ * @param  string  $blog_title  The new site title.
+ * @param  WP_Error|string  $errors  A WP_Error object containing existing errors. Defaults to empty string.
  */
 function signup_another_blog($blogname = '', $blog_title = '', $errors = '')
 {
@@ -354,13 +354,13 @@ function signup_another_blog($blogname = '', $blog_title = '', $errors = '')
      *
      * @since 3.0.0
      *
-     * @param  array  $signup_defaults {
-     *     An array of default site sign-up variables.
+     * @param  array  $signup_defaults  {
+     *                                  An array of default site sign-up variables.
      *
-     *     @type string   $blogname   The site blogname.
-     *     @type string   $blog_title The site title.
-     *     @type WP_Error $errors     A WP_Error object possibly containing 'blogname' or 'blog_title' errors.
-     * }
+     * @type string $blogname   The site blogname.
+     * @type string $blog_title The site title.
+     * @type WP_Error $errors     A WP_Error object possibly containing 'blogname' or 'blog_title' errors.
+     *                }
      */
     $filtered_results = apply_filters('signup_another_blog_init', $signup_defaults);
 
@@ -410,8 +410,8 @@ function signup_another_blog($blogname = '', $blog_title = '', $errors = '')
          *
          * @since MU (3.0.0)
          *
-         * @param  string  $context A string describing the steps of the sign-up process. The value can be
-         *                        'create-another-site', 'validate-user', or 'validate-site'.
+         * @param  string  $context  A string describing the steps of the sign-up process. The value can be
+         *                           'create-another-site', 'validate-user', or 'validate-site'.
          */
         do_action('signup_hidden_fields', 'create-another-site');
     ?>
@@ -487,7 +487,7 @@ function validate_another_blog_signup()
      * @since MU (3.0.0)
      * @deprecated 3.0.0 Use the {@see 'add_signup_meta'} filter instead.
      *
-     * @param  array  $blog_meta_defaults An array of default blog meta variables.
+     * @param  array  $blog_meta_defaults  An array of default blog meta variables.
      */
     $meta_defaults = apply_filters_deprecated('signup_create_blog_meta', [$blog_meta_defaults], '3.0.0', 'add_signup_meta');
 
@@ -496,12 +496,12 @@ function validate_another_blog_signup()
      *
      * @since 3.0.0
      *
-     * @param  array  $meta {
-     *     An array of default site meta variables.
+     * @param  array  $meta  {
+     *                       An array of default site meta variables.
      *
-     *     @type int $lang_id     The language ID.
-     *     @type int $blog_public Whether search engines should be discouraged from indexing the site. 1 for true, 0 for false.
-     * }
+     * @type int $lang_id     The language ID.
+     * @type int $blog_public Whether search engines should be discouraged from indexing the site. 1 for true, 0 for false.
+     *           }
      */
     $meta = apply_filters('add_signup_meta', $meta_defaults);
 
@@ -522,13 +522,13 @@ function validate_another_blog_signup()
  * @since MU (3.0.0)
  * @since 4.4.0 Added the `$blog_id` parameter.
  *
- * @param  string  $domain     The domain URL.
- * @param  string  $path       The site root path.
- * @param  string  $blog_title The site title.
+ * @param  string  $domain  The domain URL.
+ * @param  string  $path  The site root path.
+ * @param  string  $blog_title  The site title.
  * @param  string  $user_name  The username.
- * @param  string  $user_email The user's email address.
- * @param  array  $meta       Any additional meta from the {@see 'add_signup_meta'} filter in validate_blog_signup().
- * @param  int  $blog_id    The site ID.
+ * @param  string  $user_email  The user's email address.
+ * @param  array  $meta  Any additional meta from the {@see 'add_signup_meta'} filter in validate_blog_signup().
+ * @param  int  $blog_id  The site ID.
  */
 function confirm_another_blog_signup($domain, $path, $blog_title, $user_name, $user_email = '', $meta = [], $blog_id = 0)
 {
@@ -589,8 +589,8 @@ function confirm_another_blog_signup($domain, $path, $blog_title, $user_name, $u
  *                               'all', 'none', 'blog', or 'user'.
  *
  * @param  string  $user_name  The username.
- * @param  string  $user_email The user's email.
- * @param  WP_Error|string  $errors     A WP_Error object containing existing errors. Defaults to empty string.
+ * @param  string  $user_email  The user's email.
+ * @param  WP_Error|string  $errors  A WP_Error object containing existing errors. Defaults to empty string.
  */
 function signup_user($user_name = '', $user_email = '', $errors = '')
 {
@@ -613,13 +613,13 @@ function signup_user($user_name = '', $user_email = '', $errors = '')
      *
      * @since 3.0.0
      *
-     * @param  array  $signup_user_defaults {
-     *     An array of default user variables.
+     * @param  array  $signup_user_defaults  {
+     *                                       An array of default user variables.
      *
-     *     @type string   $user_name  The user username.
-     *     @type string   $user_email The user email address.
-     *     @type WP_Error $errors     A WP_Error object with possible errors relevant to the sign-up user.
-     * }
+     * @type string $user_name  The user username.
+     * @type string $user_email The user email address.
+     * @type WP_Error $errors     A WP_Error object with possible errors relevant to the sign-up user.
+     *                }
      */
     $filtered_results = apply_filters('signup_user_init', $signup_user_defaults);
     $user_name = $filtered_results['user_name'];
@@ -707,7 +707,7 @@ function validate_user_signup()
  * @since MU (3.0.0)
  *
  * @param  string  $user_name  The username.
- * @param  string  $user_email The user's email address.
+ * @param  string  $user_email  The user's email address.
  */
 function confirm_user_signup($user_name, $user_email)
 {
@@ -737,10 +737,10 @@ function confirm_user_signup($user_name, $user_email)
  * @since MU (3.0.0)
  *
  * @param  string  $user_name  The username.
- * @param  string  $user_email The user's email address.
- * @param  string  $blogname   The site name.
- * @param  string  $blog_title The site title.
- * @param  WP_Error|string  $errors     A WP_Error object containing existing errors. Defaults to empty string.
+ * @param  string  $user_email  The user's email address.
+ * @param  string  $blogname  The site name.
+ * @param  string  $blog_title  The site title.
+ * @param  WP_Error|string  $errors  A WP_Error object containing existing errors. Defaults to empty string.
  */
 function signup_blog($user_name = '', $user_email = '', $blogname = '', $blog_title = '', $errors = '')
 {
@@ -761,15 +761,15 @@ function signup_blog($user_name = '', $user_email = '', $blogname = '', $blog_ti
      *
      * @since 3.0.0
      *
-     * @param  array  $signup_blog_defaults {
-     *     An array of default site creation variables.
+     * @param  array  $signup_blog_defaults  {
+     *                                       An array of default site creation variables.
      *
-     *     @type string   $user_name  The user username.
-     *     @type string   $user_email The user email address.
-     *     @type string   $blogname   The blogname.
-     *     @type string   $blog_title The title of the site.
-     *     @type WP_Error $errors     A WP_Error object with possible errors relevant to new site creation variables.
-     * }
+     * @type string $user_name  The user username.
+     * @type string $user_email The user email address.
+     * @type string $blogname   The blogname.
+     * @type string $blog_title The title of the site.
+     * @type WP_Error $errors     A WP_Error object with possible errors relevant to new site creation variables.
+     *                }
      */
     $filtered_results = apply_filters('signup_blog_init', $signup_blog_defaults);
 
@@ -865,12 +865,12 @@ function validate_blog_signup()
  *
  * @since MU (3.0.0)
  *
- * @param  string  $domain     The domain or subdomain of the site.
- * @param  string  $path       The path of the site.
- * @param  string  $blog_title The title of the new site.
+ * @param  string  $domain  The domain or subdomain of the site.
+ * @param  string  $path  The path of the site.
+ * @param  string  $blog_title  The title of the new site.
  * @param  string  $user_name  The user's username.
- * @param  string  $user_email The user's email address.
- * @param  array  $meta       Any additional meta from the {@see 'add_signup_meta'} filter in validate_blog_signup().
+ * @param  string  $user_email  The user's email address.
+ * @param  array  $meta  Any additional meta from the {@see 'add_signup_meta'} filter in validate_blog_signup().
  */
 function confirm_blog_signup($domain, $path, $blog_title, $user_name = '', $user_email = '', $meta = [])
 {
@@ -928,8 +928,8 @@ function signup_get_available_languages()
      *
      * @since 4.4.0
      *
-     * @param  string[]  $languages Array of available language codes. Language codes are formed by
-     *                            stripping the .mo extension from the language file names.
+     * @param  string[]  $languages  Array of available language codes. Language codes are formed by
+     *                               stripping the .mo extension from the language file names.
      */
     $languages = (array) apply_filters('signup_get_available_languages', get_available_languages());
 
@@ -950,8 +950,8 @@ $active_signup = get_site_option('registration', 'none');
  *
  * @since 3.0.0
  *
- * @param  string  $active_signup String that returns registration type. The value can be
- *                              'all', 'none', 'blog', or 'user'.
+ * @param  string  $active_signup  String that returns registration type. The value can be
+ *                                 'all', 'none', 'blog', or 'user'.
  */
 $active_signup = apply_filters('wpmu_active_signup', $active_signup);
 

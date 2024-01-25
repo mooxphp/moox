@@ -124,15 +124,15 @@ while (have_comments()) {
 			<?php
         }
 
-        /**
-         * Fires at the end of each Atom comment feed item.
-         *
-         * @since 2.2.0
-         *
-         * @param  int  $comment_id      ID of the current comment.
-         * @param  int  $comment_post_id ID of the post the current comment is connected to.
-         */
-        do_action('comment_atom_entry', $comment->comment_ID, $comment_post->ID);
+    /**
+     * Fires at the end of each Atom comment feed item.
+     *
+     * @since 2.2.0
+     *
+     * @param  int  $comment_id  ID of the current comment.
+     * @param  int  $comment_post_id  ID of the post the current comment is connected to.
+     */
+    do_action('comment_atom_entry', $comment->comment_ID, $comment_post->ID);
     ?>
 	</entry>
 	<?php

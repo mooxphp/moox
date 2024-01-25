@@ -8,17 +8,17 @@
  *
  * @since 5.9.0
  *
- * @param  array  $path    Path to the specific setting to retrieve. Optional.
+ * @param  array  $path  Path to the specific setting to retrieve. Optional.
  *                       If empty, will return all settings.
- * @param  array  $context {
- *     Metadata to know where to retrieve the $path from. Optional.
+ * @param  array  $context  {
+ *                          Metadata to know where to retrieve the $path from. Optional.
  *
- *     @type string $block_name Which block to retrieve the settings from.
- *                              If empty, it'll return the settings for the global context.
- *     @type string $origin     Which origin to take data from.
- *                              Valid values are 'all' (core, theme, and user) or 'base' (core and theme).
- *                              If empty or unknown, 'all' is used.
- * }
+ * @type string $block_name Which block to retrieve the settings from.
+ *              If empty, it'll return the settings for the global context.
+ * @type string $origin     Which origin to take data from.
+ *              Valid values are 'all' (core, theme, and user) or 'base' (core and theme).
+ *              If empty or unknown, 'all' is used.
+ *              }
  *
  * @return mixed The settings array or individual setting value to retrieve.
  */
@@ -95,20 +95,20 @@ function wp_get_global_settings($path = [], $context = [])
  * @since 6.3.0 `transforms` is now usable in the `context` parameter. In case [`transforms`]['resolve_variables']
  *              is defined, variables are resolved to their value in the styles.
  *
- * @param  array  $path    Path to the specific style to retrieve. Optional.
+ * @param  array  $path  Path to the specific style to retrieve. Optional.
  *                       If empty, will return all styles.
- * @param  array  $context {
- *     Metadata to know where to retrieve the $path from. Optional.
+ * @param  array  $context  {
+ *                          Metadata to know where to retrieve the $path from. Optional.
  *
- *     @type string $block_name Which block to retrieve the styles from.
- *                              If empty, it'll return the styles for the global context.
- *     @type string $origin     Which origin to take data from.
- *                              Valid values are 'all' (core, theme, and user) or 'base' (core and theme).
- *                              If empty or unknown, 'all' is used.
- *     @type array $transforms Which transformation(s) to apply.
- *                              Valid value is array( 'resolve-variables' ).
- *                              If defined, variables are resolved to their value in the styles.
- * }
+ * @type string $block_name Which block to retrieve the styles from.
+ *              If empty, it'll return the styles for the global context.
+ * @type string $origin     Which origin to take data from.
+ *              Valid values are 'all' (core, theme, and user) or 'base' (core and theme).
+ *              If empty or unknown, 'all' is used.
+ * @type array $transforms Which transformation(s) to apply.
+ *             Valid value is array( 'resolve-variables' ).
+ *             If defined, variables are resolved to their value in the styles.
+ *             }
  *
  * @return mixed The styles array or individual style value to retrieve.
  */
@@ -142,11 +142,11 @@ function wp_get_global_styles($path = [], $context = [])
  * @since 5.9.0
  * @since 6.1.0 Added 'base-layout-styles' support.
  *
- * @param  array  $types Optional. Types of styles to load.
- *                     It accepts as values 'variables', 'presets', 'styles', 'base-layout-styles'.
- *                     If empty, it'll load the following:
- *                     - for themes without theme.json: 'variables', 'presets', 'base-layout-styles'.
- *                     - for themes with theme.json: 'variables', 'presets', 'styles'.
+ * @param  array  $types  Optional. Types of styles to load.
+ *                        It accepts as values 'variables', 'presets', 'styles', 'base-layout-styles'.
+ *                        If empty, it'll load the following:
+ *                        - for themes without theme.json: 'variables', 'presets', 'base-layout-styles'.
+ *                        - for themes with theme.json: 'variables', 'presets', 'styles'.
  * @return string Stylesheet.
  */
 function wp_get_global_stylesheet($types = [])
@@ -343,7 +343,7 @@ function wp_add_global_styles_for_blocks()
  *
  * @since 6.3.0
  *
- * @param  array  $path An array of keys describing the path to a property in theme.json.
+ * @param  array  $path  An array of keys describing the path to a property in theme.json.
  * @return string Identified block name, or empty string if none found.
  */
 function wp_get_block_name_from_theme_json_path($path)
@@ -503,9 +503,9 @@ function wp_get_theme_data_template_parts()
  *
  * @since 6.3.0
  *
- * @param  WP_Block_Type  $block_type The block's type.
- * @param  string|array  $target     The desired selector's target, `root` or array path.
- * @param  bool  $fallback   Whether to fall back to broader selector.
+ * @param  WP_Block_Type  $block_type  The block's type.
+ * @param  string|array  $target  The desired selector's target, `root` or array path.
+ * @param  bool  $fallback  Whether to fall back to broader selector.
  * @return string|null CSS selector or `null` if no selector available.
  */
 function wp_get_block_css_selector($block_type, $target = 'root', $fallback = false)

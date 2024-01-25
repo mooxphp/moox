@@ -16,9 +16,9 @@
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $comment_author Author of the comment.
- * @param  string  $comment_date   Date of the comment.
- * @param  string  $timezone       Timezone. Accepts 'blog' or 'gmt'. Default 'blog'.
+ * @param  string  $comment_author  Author of the comment.
+ * @param  string  $comment_date  Date of the comment.
+ * @param  string  $timezone  Timezone. Accepts 'blog' or 'gmt'. Default 'blog'.
  * @return string|null Comment post ID on success.
  */
 function comment_exists($comment_author, $comment_date, $timezone = 'blog')
@@ -104,7 +104,7 @@ function edit_comment()
  *
  * @since 2.0.0
  *
- * @param  int  $id ID of comment to retrieve.
+ * @param  int  $id  ID of comment to retrieve.
  * @return WP_Comment|false Comment if found. False on failure.
  */
 function get_comment_to_edit($id)
@@ -123,7 +123,7 @@ function get_comment_to_edit($id)
      *
      * @since 2.0.0
      *
-     * @param  string  $comment_content Comment content.
+     * @param  string  $comment_content  Comment content.
      */
     $comment->comment_content = apply_filters('comment_edit_pre', $comment->comment_content);
 
@@ -142,7 +142,7 @@ function get_comment_to_edit($id)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int|int[]  $post_id Either a single Post ID or an array of Post IDs
+ * @param  int|int[]  $post_id  Either a single Post ID or an array of Post IDs
  * @return int|int[] Either a single Posts pending comments as an int or an array of ints keyed on the Post IDs
  */
 function get_pending_comments_num($post_id)
@@ -190,7 +190,7 @@ function get_pending_comments_num($post_id)
  *
  * @since 2.5.0
  *
- * @param  string  $name User name.
+ * @param  string  $name  User name.
  * @return string Avatar with the user name.
  */
 function floated_admin_avatar($name)
@@ -215,7 +215,7 @@ function enqueue_comment_hotkeys_js()
 /**
  * Displays error message at bottom of comments.
  *
- * @param  string  $msg Error Message. Assumed to contain HTML and be sanitized.
+ * @param  string  $msg  Error Message. Assumed to contain HTML and be sanitized.
  */
 function comment_footer_die($msg)
 {

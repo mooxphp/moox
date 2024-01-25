@@ -93,7 +93,7 @@ class WP_Network
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int  $network_id The ID of the network to retrieve.
+     * @param  int  $network_id  The ID of the network to retrieve.
      * @return WP_Network|false The network's object if found. False if not.
      */
     public static function get_instance($network_id)
@@ -132,7 +132,7 @@ class WP_Network
      *
      * @since 4.4.0
      *
-     * @param  WP_Network|object  $network A network object.
+     * @param  WP_Network|object  $network  A network object.
      */
     public function __construct($network)
     {
@@ -151,7 +151,7 @@ class WP_Network
      *
      * @since 4.6.0
      *
-     * @param  string  $key Property to get.
+     * @param  string  $key  Property to get.
      * @return mixed Value of the property. Null if not available.
      */
     public function __get($key)
@@ -175,7 +175,7 @@ class WP_Network
      *
      * @since 4.6.0
      *
-     * @param  string  $key Property to check if set.
+     * @param  string  $key  Property to check if set.
      * @return bool Whether the property is set.
      */
     public function __isset($key)
@@ -197,8 +197,8 @@ class WP_Network
      *
      * @since 4.6.0
      *
-     * @param  string  $key   Property to set.
-     * @param  mixed  $value Value to assign to the property.
+     * @param  string  $key  Property to set.
+     * @param  mixed  $value  Value to assign to the property.
      */
     public function __set($key, $value)
     {
@@ -234,8 +234,8 @@ class WP_Network
          *
          * @since 4.9.0
          *
-         * @param  int|null  $main_site_id If a positive integer is returned, it is interpreted as the main site ID.
-         * @param  WP_Network  $network      The network object for which the main site was detected.
+         * @param  int|null  $main_site_id  If a positive integer is returned, it is interpreted as the main site ID.
+         * @param  WP_Network  $network  The network object for which the main site was detected.
          */
         $main_site_id = (int) apply_filters('pre_get_main_site_id', null, $this);
 
@@ -338,9 +338,9 @@ class WP_Network
      *
      * @since 4.4.0
      *
-     * @param  string  $domain   Domain to check.
-     * @param  string  $path     Path to check.
-     * @param  int|null  $segments Path segments to use. Defaults to null, or the full path.
+     * @param  string  $domain  Domain to check.
+     * @param  string  $path  Path to check.
+     * @param  int|null  $segments  Path segments to use. Defaults to null, or the full path.
      * @return WP_Network|false Network object if successful. False when no network is found.
      */
     public static function get_by_path($domain = '', $path = '', $segments = null)
@@ -387,11 +387,11 @@ class WP_Network
              *
              * @since 3.9.0
              *
-             * @param  int|null  $segments The number of path segments to consider. WordPress by default looks at
-             *                           one path segment. The function default of null only makes sense when you
-             *                           know the requested path should match a network.
-             * @param  string  $domain   The requested domain.
-             * @param  string  $path     The requested path, in full.
+             * @param  int|null  $segments  The number of path segments to consider. WordPress by default looks at
+             *                              one path segment. The function default of null only makes sense when you
+             *                              know the requested path should match a network.
+             * @param  string  $domain  The requested domain.
+             * @param  string  $path  The requested path, in full.
              */
             $segments = apply_filters('network_by_path_segments_count', $segments, $domain, $path);
 
@@ -420,12 +420,12 @@ class WP_Network
          * @since 3.9.0
          *
          * @param  null|false|WP_Network  $network  Network value to return by path. Default null
-         *                                        to continue retrieving the network.
-         * @param  string  $domain   The requested domain.
-         * @param  string  $path     The requested path, in full.
-         * @param  int|null  $segments The suggested number of paths to consult.
-         *                                        Default null, meaning the entire path was to be consulted.
-         * @param  string[]  $paths    Array of paths to search for, based on `$path` and `$segments`.
+         *                                          to continue retrieving the network.
+         * @param  string  $domain  The requested domain.
+         * @param  string  $path  The requested path, in full.
+         * @param  int|null  $segments  The suggested number of paths to consult.
+         *                              Default null, meaning the entire path was to be consulted.
+         * @param  string[]  $paths  Array of paths to search for, based on `$path` and `$segments`.
          */
         $pre = apply_filters('pre_get_network_by_path', null, $domain, $path, $segments, $paths);
         if ($pre !== null) {

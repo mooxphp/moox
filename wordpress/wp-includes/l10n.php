@@ -74,7 +74,7 @@ function get_locale()
      *
      * @since 1.5.0
      *
-     * @param  string  $locale The locale ID.
+     * @param  string  $locale  The locale ID.
      */
     return apply_filters('locale', $locale);
 }
@@ -87,7 +87,7 @@ function get_locale()
  *
  * @since 4.7.0
  *
- * @param  int|WP_User  $user User's ID or a WP_User object. Defaults to current user.
+ * @param  int|WP_User  $user  User's ID or a WP_User object. Defaults to current user.
  * @return string The locale of the user.
  */
 function get_user_locale($user = 0)
@@ -129,7 +129,7 @@ function determine_locale()
      *
      * @since 5.0.0
      *
-     * @param  string|null  $locale The locale to return and short-circuit. Default null.
+     * @param  string|null  $locale  The locale to return and short-circuit. Default null.
      */
     $determined_locale = apply_filters('pre_determine_locale', null);
 
@@ -162,7 +162,7 @@ function determine_locale()
      *
      * @since 5.0.0
      *
-     * @param  string  $locale The locale.
+     * @param  string  $locale  The locale.
      */
     return apply_filters('determine_locale', $determined_locale);
 }
@@ -177,9 +177,9 @@ function determine_locale()
  * @since 2.2.0
  * @since 5.5.0 Introduced `gettext-{$domain}` filter.
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  * @return string Translated text.
  */
 function translate($text, $domain = 'default')
@@ -192,9 +192,9 @@ function translate($text, $domain = 'default')
      *
      * @since 2.0.11
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $text        Text to translate.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $text  Text to translate.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters('gettext', $translation, $text, $domain);
 
@@ -205,9 +205,9 @@ function translate($text, $domain = 'default')
      *
      * @since 5.5.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $text        Text to translate.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $text  Text to translate.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters("gettext_{$domain}", $translation, $text, $domain);
 
@@ -222,7 +222,7 @@ function translate($text, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text A pipe-delimited string.
+ * @param  string  $text  A pipe-delimited string.
  * @return string Either $text or everything before the last pipe.
  */
 function before_last_bar($text)
@@ -245,10 +245,10 @@ function before_last_bar($text)
  * @since 2.8.0
  * @since 5.5.0 Introduced `gettext_with_context-{$domain}` filter.
  *
- * @param  string  $text    Text to translate.
- * @param  string  $context Context information for the translators.
+ * @param  string  $text  Text to translate.
+ * @param  string  $context  Context information for the translators.
  * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
- *                        Default 'default'.
+ *                          Default 'default'.
  * @return string Translated text on success, original text on failure.
  */
 function translate_with_gettext_context($text, $context, $domain = 'default')
@@ -261,10 +261,10 @@ function translate_with_gettext_context($text, $context, $domain = 'default')
      *
      * @since 2.8.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $text        Text to translate.
-     * @param  string  $context     Context information for the translators.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $text  Text to translate.
+     * @param  string  $context  Context information for the translators.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters('gettext_with_context', $translation, $text, $context, $domain);
 
@@ -275,10 +275,10 @@ function translate_with_gettext_context($text, $context, $domain = 'default')
      *
      * @since 5.5.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $text        Text to translate.
-     * @param  string  $context     Context information for the translators.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $text  Text to translate.
+     * @param  string  $context  Context information for the translators.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters("gettext_with_context_{$domain}", $translation, $text, $context, $domain);
 
@@ -292,9 +292,9 @@ function translate_with_gettext_context($text, $context, $domain = 'default')
  *
  * @since 2.1.0
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  * @return string Translated text.
  */
 function __($text, $domain = 'default')
@@ -309,9 +309,9 @@ function __($text, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  * @return string Translated text on success, original text on failure.
  */
 function esc_attr__($text, $domain = 'default')
@@ -327,9 +327,9 @@ function esc_attr__($text, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  * @return string Translated text.
  */
 function esc_html__($text, $domain = 'default')
@@ -342,9 +342,9 @@ function esc_html__($text, $domain = 'default')
  *
  * @since 1.2.0
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  */
 function _e($text, $domain = 'default')
 {
@@ -361,9 +361,9 @@ function _e($text, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  */
 function esc_attr_e($text, $domain = 'default')
 {
@@ -380,9 +380,9 @@ function esc_attr_e($text, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text   Text to translate.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $text  Text to translate.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  */
 function esc_html_e($text, $domain = 'default')
 {
@@ -400,10 +400,10 @@ function esc_html_e($text, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text    Text to translate.
- * @param  string  $context Context information for the translators.
+ * @param  string  $text  Text to translate.
+ * @param  string  $context  Context information for the translators.
  * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
- *                        Default 'default'.
+ *                          Default 'default'.
  * @return string Translated context string without pipe.
  */
 function _x($text, $context, $domain = 'default')
@@ -416,10 +416,10 @@ function _x($text, $context, $domain = 'default')
  *
  * @since 3.0.0
  *
- * @param  string  $text    Text to translate.
- * @param  string  $context Context information for the translators.
+ * @param  string  $text  Text to translate.
+ * @param  string  $context  Context information for the translators.
  * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
- *                        Default 'default'.
+ *                          Default 'default'.
  */
 function _ex($text, $context, $domain = 'default')
 {
@@ -434,10 +434,10 @@ function _ex($text, $context, $domain = 'default')
  *
  * @since 2.8.0
  *
- * @param  string  $text    Text to translate.
- * @param  string  $context Context information for the translators.
+ * @param  string  $text  Text to translate.
+ * @param  string  $context  Context information for the translators.
  * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
- *                        Default 'default'.
+ *                          Default 'default'.
  * @return string Translated text.
  */
 function esc_attr_x($text, $context, $domain = 'default')
@@ -453,10 +453,10 @@ function esc_attr_x($text, $context, $domain = 'default')
  *
  * @since 2.9.0
  *
- * @param  string  $text    Text to translate.
- * @param  string  $context Context information for the translators.
+ * @param  string  $text  Text to translate.
+ * @param  string  $context  Context information for the translators.
  * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
- *                        Default 'default'.
+ *                          Default 'default'.
  * @return string Translated text.
  */
 function esc_html_x($text, $context, $domain = 'default')
@@ -477,11 +477,11 @@ function esc_html_x($text, $context, $domain = 'default')
  * @since 2.8.0
  * @since 5.5.0 Introduced `ngettext-{$domain}` filter.
  *
- * @param  string  $single The text to be used if the number is singular.
- * @param  string  $plural The text to be used if the number is plural.
- * @param  int  $number The number to compare against to use either the singular or plural form.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $single  The text to be used if the number is singular.
+ * @param  string  $plural  The text to be used if the number is plural.
+ * @param  int  $number  The number to compare against to use either the singular or plural form.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  * @return string The translated singular or plural form.
  */
 function _n($single, $plural, $number, $domain = 'default')
@@ -494,11 +494,11 @@ function _n($single, $plural, $number, $domain = 'default')
      *
      * @since 2.2.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $single      The text to be used if the number is singular.
-     * @param  string  $plural      The text to be used if the number is plural.
-     * @param  int  $number      The number to compare against to use either the singular or plural form.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $single  The text to be used if the number is singular.
+     * @param  string  $plural  The text to be used if the number is plural.
+     * @param  int  $number  The number to compare against to use either the singular or plural form.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters('ngettext', $translation, $single, $plural, $number, $domain);
 
@@ -509,11 +509,11 @@ function _n($single, $plural, $number, $domain = 'default')
      *
      * @since 5.5.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $single      The text to be used if the number is singular.
-     * @param  string  $plural      The text to be used if the number is plural.
-     * @param  int  $number      The number to compare against to use either the singular or plural form.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $single  The text to be used if the number is singular.
+     * @param  string  $plural  The text to be used if the number is plural.
+     * @param  int  $number  The number to compare against to use either the singular or plural form.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters("ngettext_{$domain}", $translation, $single, $plural, $number, $domain);
 
@@ -539,9 +539,9 @@ function _n($single, $plural, $number, $domain = 'default')
  * @param  string  $single  The text to be used if the number is singular.
  * @param  string  $plural  The text to be used if the number is plural.
  * @param  int  $number  The number to compare against to use either the singular or plural form.
- * @param  string  $context Context information for the translators.
+ * @param  string  $context  Context information for the translators.
  * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
- *                        Default 'default'.
+ *                          Default 'default'.
  * @return string The translated singular or plural form.
  */
 function _nx($single, $plural, $number, $context, $domain = 'default')
@@ -554,12 +554,12 @@ function _nx($single, $plural, $number, $context, $domain = 'default')
      *
      * @since 2.8.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $single      The text to be used if the number is singular.
-     * @param  string  $plural      The text to be used if the number is plural.
-     * @param  int  $number      The number to compare against to use either the singular or plural form.
-     * @param  string  $context     Context information for the translators.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $single  The text to be used if the number is singular.
+     * @param  string  $plural  The text to be used if the number is plural.
+     * @param  int  $number  The number to compare against to use either the singular or plural form.
+     * @param  string  $context  Context information for the translators.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters('ngettext_with_context', $translation, $single, $plural, $number, $context, $domain);
 
@@ -570,12 +570,12 @@ function _nx($single, $plural, $number, $context, $domain = 'default')
      *
      * @since 5.5.0
      *
-     * @param  string  $translation Translated text.
-     * @param  string  $single      The text to be used if the number is singular.
-     * @param  string  $plural      The text to be used if the number is plural.
-     * @param  int  $number      The number to compare against to use either the singular or plural form.
-     * @param  string  $context     Context information for the translators.
-     * @param  string  $domain      Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $translation  Translated text.
+     * @param  string  $single  The text to be used if the number is singular.
+     * @param  string  $plural  The text to be used if the number is plural.
+     * @param  int  $number  The number to compare against to use either the singular or plural form.
+     * @param  string  $context  Context information for the translators.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $translation = apply_filters("ngettext_with_context_{$domain}", $translation, $single, $plural, $number, $context, $domain);
 
@@ -596,20 +596,20 @@ function _nx($single, $plural, $number, $context, $domain = 'default')
  *
  * @since 2.5.0
  *
- * @param  string  $singular Singular form to be localized.
- * @param  string  $plural   Plural form to be localized.
- * @param  string  $domain   Optional. Text domain. Unique identifier for retrieving translated strings.
- *                         Default null.
+ * @param  string  $singular  Singular form to be localized.
+ * @param  string  $plural  Plural form to be localized.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default null.
  * @return array {
- *     Array of translation information for the strings.
+ *               Array of translation information for the strings.
  *
- *     @type string      $0        Singular form to be localized. No longer used.
- *     @type string      $1        Plural form to be localized. No longer used.
- *     @type string      $singular Singular form to be localized.
- *     @type string      $plural   Plural form to be localized.
- *     @type null        $context  Context information for the translators.
- *     @type string|null $domain   Text domain.
- * }
+ * @type string $0        Singular form to be localized. No longer used.
+ * @type string $1        Plural form to be localized. No longer used.
+ * @type string $singular Singular form to be localized.
+ * @type string $plural   Plural form to be localized.
+ * @type null $context  Context information for the translators.
+ * @type string|null $domain   Text domain.
+ *                   }
  */
 function _n_noop($singular, $plural, $domain = null)
 {
@@ -641,22 +641,22 @@ function _n_noop($singular, $plural, $domain = null)
  *
  * @since 2.8.0
  *
- * @param  string  $singular Singular form to be localized.
- * @param  string  $plural   Plural form to be localized.
+ * @param  string  $singular  Singular form to be localized.
+ * @param  string  $plural  Plural form to be localized.
  * @param  string  $context  Context information for the translators.
- * @param  string  $domain   Optional. Text domain. Unique identifier for retrieving translated strings.
- *                         Default null.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default null.
  * @return array {
- *     Array of translation information for the strings.
+ *               Array of translation information for the strings.
  *
- *     @type string      $0        Singular form to be localized. No longer used.
- *     @type string      $1        Plural form to be localized. No longer used.
- *     @type string      $2        Context information for the translators. No longer used.
- *     @type string      $singular Singular form to be localized.
- *     @type string      $plural   Plural form to be localized.
- *     @type string      $context  Context information for the translators.
- *     @type string|null $domain   Text domain.
- * }
+ * @type string $0        Singular form to be localized. No longer used.
+ * @type string $1        Plural form to be localized. No longer used.
+ * @type string $2        Context information for the translators. No longer used.
+ * @type string $singular Singular form to be localized.
+ * @type string $plural   Plural form to be localized.
+ * @type string $context  Context information for the translators.
+ * @type string|null $domain   Text domain.
+ *                   }
  */
 function _nx_noop($singular, $plural, $context, $domain = null)
 {
@@ -685,18 +685,18 @@ function _nx_noop($singular, $plural, $context, $domain = null)
  *
  * @since 3.1.0
  *
- * @param  array  $nooped_plural {
- *     Array that is usually a return value from _n_noop() or _nx_noop().
+ * @param  array  $nooped_plural  {
+ *                                Array that is usually a return value from _n_noop() or _nx_noop().
  *
- *     @type string      $singular Singular form to be localized.
- *     @type string      $plural   Plural form to be localized.
- *     @type string|null $context  Context information for the translators.
- *     @type string|null $domain   Text domain.
- * }
+ * @type string $singular Singular form to be localized.
+ * @type string $plural   Plural form to be localized.
+ * @type string|null $context  Context information for the translators.
+ * @type string|null $domain   Text domain.
+ *                   }
  *
- * @param  int  $count         Number of objects.
- * @param  string  $domain        Optional. Text domain. Unique identifier for retrieving translated strings. If $nooped_plural contains
- *                              a text domain passed to _n_noop() or _nx_noop(), it will override this value. Default 'default'.
+ * @param  int  $count  Number of objects.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings. If $nooped_plural contains
+ *                          a text domain passed to _n_noop() or _nx_noop(), it will override this value. Default 'default'.
  * @return string Either $singular or $plural translated text.
  */
 function translate_nooped_plural($nooped_plural, $count, $domain = 'default')
@@ -728,9 +728,9 @@ function translate_nooped_plural($nooped_plural, $count, $domain = 'default')
  * @global MO[]                   $l10n_unloaded          An array of all text domains that have been unloaded again.
  * @global WP_Textdomain_Registry $wp_textdomain_registry WordPress Textdomain Registry.
  *
- * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
- * @param  string  $mofile Path to the .mo file.
- * @param  string  $locale Optional. Locale. Default is the current locale.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+ * @param  string  $mofile  Path to the .mo file.
+ * @param  string  $locale  Optional. Locale. Default is the current locale.
  * @return bool True on success, false on failure.
  */
 function load_textdomain($domain, $mofile, $locale = null)
@@ -748,10 +748,10 @@ function load_textdomain($domain, $mofile, $locale = null)
      *
      * @since 6.3.0
      *
-     * @param  bool|null  $loaded The result of loading a .mo file. Default null.
-     * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
-     * @param  string  $mofile Path to the MO file.
-     * @param  string|null  $locale Locale.
+     * @param  bool|null  $loaded  The result of loading a .mo file. Default null.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $mofile  Path to the MO file.
+     * @param  string|null  $locale  Locale.
      */
     $loaded = apply_filters('pre_load_textdomain', null, $domain, $mofile, $locale);
     if ($loaded !== null) {
@@ -768,10 +768,10 @@ function load_textdomain($domain, $mofile, $locale = null)
      * @since 2.9.0
      * @since 6.2.0 Added the `$locale` parameter.
      *
-     * @param  bool  $override Whether to override the .mo file loading. Default false.
-     * @param  string  $domain   Text domain. Unique identifier for retrieving translated strings.
-     * @param  string  $mofile   Path to the MO file.
-     * @param  string|null  $locale   Locale.
+     * @param  bool  $override  Whether to override the .mo file loading. Default false.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $mofile  Path to the MO file.
+     * @param  string|null  $locale  Locale.
      */
     $plugin_override = apply_filters('override_load_textdomain', false, $domain, $mofile, $locale);
 
@@ -786,8 +786,8 @@ function load_textdomain($domain, $mofile, $locale = null)
      *
      * @since 2.9.0
      *
-     * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
-     * @param  string  $mofile Path to the .mo file.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $mofile  Path to the .mo file.
      */
     do_action('load_textdomain', $domain, $mofile);
 
@@ -796,8 +796,8 @@ function load_textdomain($domain, $mofile, $locale = null)
      *
      * @since 2.9.0
      *
-     * @param  string  $mofile Path to the MO file.
-     * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $mofile  Path to the MO file.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $mofile = apply_filters('load_textdomain_mofile', $mofile, $domain);
 
@@ -838,8 +838,8 @@ function load_textdomain($domain, $mofile, $locale = null)
  * @global MO[] $l10n          An array of all currently loaded text domains.
  * @global MO[] $l10n_unloaded An array of all text domains that have been unloaded again.
  *
- * @param  string  $domain     Text domain. Unique identifier for retrieving translated strings.
- * @param  bool  $reloadable Whether the text domain can be loaded just-in-time again.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+ * @param  bool  $reloadable  Whether the text domain can be loaded just-in-time again.
  * @return bool Whether textdomain was unloaded.
  */
 function unload_textdomain($domain, $reloadable = false)
@@ -854,9 +854,9 @@ function unload_textdomain($domain, $reloadable = false)
      * @since 3.0.0
      * @since 6.1.0 Added the `$reloadable` parameter.
      *
-     * @param  bool  $override   Whether to override the text domain unloading. Default false.
-     * @param  string  $domain     Text domain. Unique identifier for retrieving translated strings.
-     * @param  bool  $reloadable Whether the text domain can be loaded just-in-time again.
+     * @param  bool  $override  Whether to override the text domain unloading. Default false.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+     * @param  bool  $reloadable  Whether the text domain can be loaded just-in-time again.
      */
     $plugin_override = apply_filters('override_unload_textdomain', false, $domain, $reloadable);
 
@@ -874,8 +874,8 @@ function unload_textdomain($domain, $reloadable = false)
      * @since 3.0.0
      * @since 6.1.0 Added the `$reloadable` parameter.
      *
-     * @param  string  $domain     Text domain. Unique identifier for retrieving translated strings.
-     * @param  bool  $reloadable Whether the text domain can be loaded just-in-time again.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+     * @param  bool  $reloadable  Whether the text domain can be loaded just-in-time again.
      */
     do_action('unload_textdomain', $domain, $reloadable);
 
@@ -907,7 +907,7 @@ function unload_textdomain($domain, $reloadable = false)
  * @see load_textdomain()
  * @since 1.5.0
  *
- * @param  string  $locale Optional. Locale to load. Default is the value of get_locale().
+ * @param  string  $locale  Optional. Locale to load. Default is the value of get_locale().
  * @return bool Whether the textdomain was loaded.
  */
 function load_default_textdomain($locale = null)
@@ -948,11 +948,11 @@ function load_default_textdomain($locale = null)
  * @since 1.5.0
  * @since 4.6.0 The function now tries to load the .mo file from the languages directory first.
  *
- * @param  string  $domain          Unique identifier for retrieving translated strings
- * @param  string|false  $deprecated      Optional. Deprecated. Use the $plugin_rel_path parameter instead.
- *                                      Default false.
- * @param  string|false  $plugin_rel_path Optional. Relative path to WP_PLUGIN_DIR where the .mo file resides.
- *                                      Default false.
+ * @param  string  $domain  Unique identifier for retrieving translated strings
+ * @param  string|false  $deprecated  Optional. Deprecated. Use the $plugin_rel_path parameter instead.
+ *                                    Default false.
+ * @param  string|false  $plugin_rel_path  Optional. Relative path to WP_PLUGIN_DIR where the .mo file resides.
+ *                                         Default false.
  * @return bool True when textdomain is successfully loaded, false otherwise.
  */
 function load_plugin_textdomain($domain, $deprecated = false, $plugin_rel_path = false)
@@ -965,8 +965,8 @@ function load_plugin_textdomain($domain, $deprecated = false, $plugin_rel_path =
      *
      * @since 3.0.0
      *
-     * @param  string  $locale The plugin's current locale.
-     * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $locale  The plugin's current locale.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $locale = apply_filters('plugin_locale', determine_locale(), $domain);
 
@@ -999,9 +999,9 @@ function load_plugin_textdomain($domain, $deprecated = false, $plugin_rel_path =
  *
  * @global WP_Textdomain_Registry $wp_textdomain_registry WordPress Textdomain Registry.
  *
- * @param  string  $domain             Text domain. Unique identifier for retrieving translated strings.
- * @param  string  $mu_plugin_rel_path Optional. Relative to `WPMU_PLUGIN_DIR` directory in which the .mo
- *                                   file resides. Default empty string.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+ * @param  string  $mu_plugin_rel_path  Optional. Relative to `WPMU_PLUGIN_DIR` directory in which the .mo
+ *                                      file resides. Default empty string.
  * @return bool True when textdomain is successfully loaded, false otherwise.
  */
 function load_muplugin_textdomain($domain, $mu_plugin_rel_path = '')
@@ -1039,9 +1039,9 @@ function load_muplugin_textdomain($domain, $mu_plugin_rel_path = '')
  *
  * @global WP_Textdomain_Registry $wp_textdomain_registry WordPress Textdomain Registry.
  *
- * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
- * @param  string|false  $path   Optional. Path to the directory containing the .mo file.
- *                             Default false.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+ * @param  string|false  $path  Optional. Path to the directory containing the .mo file.
+ *                              Default false.
  * @return bool True when textdomain is successfully loaded, false otherwise.
  */
 function load_theme_textdomain($domain, $path = false)
@@ -1054,8 +1054,8 @@ function load_theme_textdomain($domain, $path = false)
      *
      * @since 3.0.0
      *
-     * @param  string  $locale The theme's current locale.
-     * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
+     * @param  string  $locale  The theme's current locale.
+     * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
      */
     $locale = apply_filters('theme_locale', determine_locale(), $domain);
 
@@ -1085,9 +1085,9 @@ function load_theme_textdomain($domain, $path = false)
  *
  * @since 2.9.0
  *
- * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
- * @param  string|false  $path   Optional. Path to the directory containing the .mo file.
- *                             Default false.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
+ * @param  string|false  $path  Optional. Path to the directory containing the .mo file.
+ *                              Default false.
  * @return bool True when the theme textdomain is successfully loaded, false otherwise.
  */
 function load_child_theme_textdomain($domain, $path = false)
@@ -1107,9 +1107,9 @@ function load_child_theme_textdomain($domain, $path = false)
  * @since 5.1.0 The `$domain` parameter was made optional.
  * @see WP_Scripts::set_translations()
  *
- * @param  string  $handle Name of the script to register a translation domain to.
- * @param  string  $domain Optional. Text domain. Default 'default'.
- * @param  string  $path   Optional. The full file path to the directory containing translation files.
+ * @param  string  $handle  Name of the script to register a translation domain to.
+ * @param  string  $domain  Optional. Text domain. Default 'default'.
+ * @param  string  $path  Optional. The full file path to the directory containing translation files.
  * @return string|false The translated strings in JSON encoding on success,
  *                      false if the script textdomain could not be loaded.
  */
@@ -1200,8 +1200,8 @@ function load_script_textdomain($handle, $domain = 'default', $path = '')
      *
      * @since 5.0.2
      *
-     * @param  string|false  $relative The relative path of the script. False if it could not be determined.
-     * @param  string  $src      The full source URL of the script.
+     * @param  string|false  $relative  The relative path of the script. False if it could not be determined.
+     * @param  string  $src  The full source URL of the script.
      */
     $relative = apply_filters('load_script_textdomain_relative_path', $relative, $src);
 
@@ -1239,9 +1239,9 @@ function load_script_textdomain($handle, $domain = 'default', $path = '')
  *
  * @since 5.0.2
  *
- * @param  string|false  $file   Path to the translation file to load. False if there isn't one.
- * @param  string  $handle Name of the script to register a translation domain to.
- * @param  string  $domain The text domain.
+ * @param  string|false  $file  Path to the translation file to load. False if there isn't one.
+ * @param  string  $handle  Name of the script to register a translation domain to.
+ * @param  string  $domain  The text domain.
  * @return string|false The JSON-encoded translated strings for the given script handle and text domain.
  *                      False if there are none.
  */
@@ -1254,10 +1254,10 @@ function load_script_translations($file, $handle, $domain)
      *
      * @since 5.0.2
      *
-     * @param  string|false|null  $translations JSON-encoded translation data. Default null.
-     * @param  string|false  $file         Path to the translation file to load. False if there isn't one.
-     * @param  string  $handle       Name of the script to register a translation domain to.
-     * @param  string  $domain       The text domain.
+     * @param  string|false|null  $translations  JSON-encoded translation data. Default null.
+     * @param  string|false  $file  Path to the translation file to load. False if there isn't one.
+     * @param  string  $handle  Name of the script to register a translation domain to.
+     * @param  string  $domain  The text domain.
      */
     $translations = apply_filters('pre_load_script_translations', null, $file, $handle, $domain);
 
@@ -1270,9 +1270,9 @@ function load_script_translations($file, $handle, $domain)
      *
      * @since 5.0.2
      *
-     * @param  string|false  $file   Path to the translation file to load. False if there isn't one.
-     * @param  string  $handle Name of the script to register a translation domain to.
-     * @param  string  $domain The text domain.
+     * @param  string|false  $file  Path to the translation file to load. False if there isn't one.
+     * @param  string  $handle  Name of the script to register a translation domain to.
+     * @param  string  $domain  The text domain.
      */
     $file = apply_filters('load_script_translation_file', $file, $handle, $domain);
 
@@ -1287,10 +1287,10 @@ function load_script_translations($file, $handle, $domain)
      *
      * @since 5.0.2
      *
-     * @param  string  $translations JSON-encoded translation data.
-     * @param  string  $file         Path to the translation file that was loaded.
-     * @param  string  $handle       Name of the script to register a translation domain to.
-     * @param  string  $domain       The text domain.
+     * @param  string  $translations  JSON-encoded translation data.
+     * @param  string  $file  Path to the translation file that was loaded.
+     * @param  string  $handle  Name of the script to register a translation domain to.
+     * @param  string  $domain  The text domain.
      */
     return apply_filters('load_script_translations', $translations, $file, $handle, $domain);
 }
@@ -1307,7 +1307,7 @@ function load_script_translations($file, $handle, $domain)
  * @global MO[]                   $l10n_unloaded          An array of all text domains that have been unloaded again.
  * @global WP_Textdomain_Registry $wp_textdomain_registry WordPress Textdomain Registry.
  *
- * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
  * @return bool True when the textdomain is successfully loaded, false otherwise.
  */
 function _load_textdomain_just_in_time($domain)
@@ -1352,7 +1352,7 @@ function _load_textdomain_just_in_time($domain)
  *
  * @global MO[] $l10n An array of all currently loaded text domains.
  *
- * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
  * @return Translations|NOOP_Translations A Translations instance.
  */
 function get_translations_for_domain($domain)
@@ -1379,7 +1379,7 @@ function get_translations_for_domain($domain)
  *
  * @global MO[] $l10n An array of all currently loaded text domains.
  *
- * @param  string  $domain Text domain. Unique identifier for retrieving translated strings.
+ * @param  string  $domain  Text domain. Unique identifier for retrieving translated strings.
  * @return bool Whether there are translations.
  */
 function is_textdomain_loaded($domain)
@@ -1404,9 +1404,9 @@ function is_textdomain_loaded($domain)
  * @since 2.8.0
  * @since 5.2.0 Added the `$domain` parameter.
  *
- * @param  string  $name   The role name.
- * @param  string  $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- *                       Default 'default'.
+ * @param  string  $name  The role name.
+ * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                          Default 'default'.
  * @return string Translated role name on success, original name on failure.
  */
 function translate_user_role($name, $domain = 'default')
@@ -1422,8 +1422,8 @@ function translate_user_role($name, $domain = 'default')
  * @since 3.0.0
  * @since 4.7.0 The results are now filterable with the {@see 'get_available_languages'} filter.
  *
- * @param  string  $dir A directory to search for language files.
- *                    Default WP_LANG_DIR.
+ * @param  string  $dir  A directory to search for language files.
+ *                       Default WP_LANG_DIR.
  * @return string[] An array of language codes or an empty array if no languages are present.
  *                  Language codes are formed by stripping the .mo extension from the language file names.
  */
@@ -1447,8 +1447,8 @@ function get_available_languages($dir = null)
      *
      * @since 4.7.0
      *
-     * @param  string[]  $languages An array of available language codes.
-     * @param  string  $dir       The directory where the language files were found.
+     * @param  string[]  $languages  An array of available language codes.
+     * @param  string  $dir  The directory where the language files were found.
      */
     return apply_filters('get_available_languages', $languages, $dir);
 }
@@ -1461,7 +1461,7 @@ function get_available_languages($dir = null)
  *
  * @since 3.7.0
  *
- * @param  string  $type What to search for. Accepts 'plugins', 'themes', 'core'.
+ * @param  string  $type  What to search for. Accepts 'plugins', 'themes', 'core'.
  * @return array Array of language data.
  */
 function wp_get_installed_translations($type)
@@ -1516,7 +1516,7 @@ function wp_get_installed_translations($type)
  *
  * @since 3.7.0
  *
- * @param  string  $po_file Path to PO file.
+ * @param  string  $po_file  Path to PO file.
  * @return string[] Array of PO file header values keyed by header name.
  */
 function wp_get_pomo_file_data($po_file)
@@ -1549,24 +1549,24 @@ function wp_get_pomo_file_data($po_file)
  * @see get_available_languages()
  * @see wp_get_available_translations()
  *
- * @param  string|array  $args {
- *     Optional. Array or string of arguments for outputting the language selector.
+ * @param  string|array  $args  {
+ *                              Optional. Array or string of arguments for outputting the language selector.
  *
- *     @type string   $id                           ID attribute of the select element. Default 'locale'.
- *     @type string   $name                         Name attribute of the select element. Default 'locale'.
- *     @type string[] $languages                    List of installed languages, contain only the locales.
- *                                                  Default empty array.
- *     @type array    $translations                 List of available translations. Default result of
- *                                                  wp_get_available_translations().
- *     @type string   $selected                     Language which should be selected. Default empty.
- *     @type bool|int $echo                         Whether to echo the generated markup. Accepts 0, 1, or their
- *                                                  boolean equivalents. Default 1.
- *     @type bool     $show_available_translations  Whether to show available translations. Default true.
- *     @type bool     $show_option_site_default     Whether to show an option to fall back to the site's locale. Default false.
- *     @type bool     $show_option_en_us            Whether to show an option for English (United States). Default true.
- *     @type bool     $explicit_option_en_us        Whether the English (United States) option uses an explicit value of en_US
- *                                                  instead of an empty value. Default false.
- * }
+ * @type string $id                           ID attribute of the select element. Default 'locale'.
+ * @type string $name                         Name attribute of the select element. Default 'locale'.
+ * @type string[] $languages                    List of installed languages, contain only the locales.
+ *                Default empty array.
+ * @type array $translations                 List of available translations. Default result of
+ *             wp_get_available_translations().
+ * @type string $selected                     Language which should be selected. Default empty.
+ * @type bool|int $echo                         Whether to echo the generated markup. Accepts 0, 1, or their
+ *                boolean equivalents. Default 1.
+ * @type bool $show_available_translations  Whether to show available translations. Default true.
+ * @type bool $show_option_site_default     Whether to show an option to fall back to the site's locale. Default false.
+ * @type bool $show_option_en_us            Whether to show an option for English (United States). Default true.
+ * @type bool $explicit_option_en_us        Whether the English (United States) option uses an explicit value of en_US
+ *            instead of an empty value. Default false.
+ *            }
  *
  * @return string HTML dropdown list of languages.
  */
@@ -1729,7 +1729,7 @@ function is_rtl()
  *
  * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  *
- * @param  string  $locale The locale.
+ * @param  string  $locale  The locale.
  * @return bool True on success, false on failure.
  */
 function switch_to_locale($locale)
@@ -1751,7 +1751,7 @@ function switch_to_locale($locale)
  *
  * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  * @return bool True on success, false on failure.
  */
 function switch_to_user_locale($user_id)
@@ -1830,8 +1830,8 @@ function is_locale_switched()
  *
  * @since 5.9.0
  *
- * @param  string|string[]|array[]|object  $i18n_schema I18n schema for the setting.
- * @param  string|string[]|array[]  $settings    Value for the settings.
+ * @param  string|string[]|array[]|object  $i18n_schema  I18n schema for the setting.
+ * @param  string|string[]|array[]  $settings  Value for the settings.
  * @param  string  $textdomain  Textdomain to use with translations.
  * @return string|string[]|array[] Translated settings.
  */

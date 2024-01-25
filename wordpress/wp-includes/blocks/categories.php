@@ -6,7 +6,7 @@
 /**
  * Renders the `core/categories` block on server.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return string Returns the categories list/dropdown markup.
  */
 function render_block_core_categories($attributes)
@@ -61,7 +61,7 @@ function render_block_core_categories($attributes)
 /**
  * Generates the inline script for a categories dropdown field.
  *
- * @param  string  $dropdown_id ID of the dropdown field.
+ * @param  string  $dropdown_id  ID of the dropdown field.
  * @return string Returns the dropdown onChange redirection script.
  */
 function build_dropdown_script_block_core_categories($dropdown_id)

@@ -22,11 +22,11 @@
  * @deprecated 5.9.0 Use wp_readonly() introduced in 5.9.0.
  * @see wp_readonly()
  *
- * @param  mixed  $readonly_value One of the values to compare.
- * @param  mixed  $current        Optional. The other value to compare if not just true.
- *                              Default true.
- * @param  bool  $display        Optional. Whether to echo or just return the string.
- *                              Default true.
+ * @param  mixed  $readonly_value  One of the values to compare.
+ * @param  mixed  $current  Optional. The other value to compare if not just true.
+ *                          Default true.
+ * @param  bool  $display  Optional. Whether to echo or just return the string.
+ *                         Default true.
  * @return string HTML attribute or empty string.
  */
 function readonly($readonly_value, $current = true, $display = true)

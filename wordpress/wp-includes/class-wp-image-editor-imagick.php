@@ -192,7 +192,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  int  $quality Compression Quality. Range: [1,100]
+     * @param  int  $quality  Compression Quality. Range: [1,100]
      * @return true|WP_Error True if set successfully; WP_Error on failure.
      */
     public function set_quality($quality = null)
@@ -322,16 +322,16 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  int|null  $max_w Image width.
-     * @param  int|null  $max_h Image height.
+     * @param  int|null  $max_w  Image width.
+     * @param  int|null  $max_h  Image height.
      * @param  bool|array  $crop  {
-     *     Optional. Image cropping behavior. If false, the image will be scaled (default).
-     *     If true, image will be cropped to the specified dimensions using center positions.
-     *     If an array, the image will be cropped using the array to specify the crop location:
+     *                            Optional. Image cropping behavior. If false, the image will be scaled (default).
+     *                            If true, image will be cropped to the specified dimensions using center positions.
+     *                            If an array, the image will be cropped using the array to specify the crop location:
      *
-     *     @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
-     *     @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
-     * }
+     * @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
+     * @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
+     *              }
      *
      * @return true|WP_Error
      */
@@ -369,9 +369,9 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 4.5.0
      *
-     * @param  int  $dst_w       The destination width.
-     * @param  int  $dst_h       The destination height.
-     * @param  string  $filter_name Optional. The Imagick filter to use when resizing. Default 'FILTER_TRIANGLE'.
+     * @param  int  $dst_w  The destination width.
+     * @param  int  $dst_h  The destination height.
+     * @param  string  $filter_name  Optional. The Imagick filter to use when resizing. Default 'FILTER_TRIANGLE'.
      * @param  bool  $strip_meta  Optional. Strip all profiles, excluding color profiles, from the image. Default true.
      * @return void|WP_Error
      */
@@ -413,7 +413,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
          *
          * @since 4.5.0
          *
-         * @param  bool  $strip_meta Whether to strip image metadata during resizing. Default true.
+         * @param  bool  $strip_meta  Whether to strip image metadata during resizing. Default true.
          */
         if (apply_filters('image_strip_meta', $strip_meta)) {
             $this->strip_meta(); // Fail silently if not supported.
@@ -507,20 +507,20 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  array  $sizes {
-     *     An array of image size data arrays.
+     * @param  array  $sizes  {
+     *                        An array of image size data arrays.
      *
      *     Either a height or width must be provided.
      *     If one of the two is set to null, the resize will
      *     maintain aspect ratio according to the provided dimension.
      *
-     *     @type array ...$0 {
-     *         Array of height, width values, and whether to crop.
-     *         @type int        $width  Image width. Optional if `$height` is specified.
-     *         @type int        $height Image height. Optional if `$width` is specified.
-     *         @type bool|array $crop   Optional. Whether to crop the image. Default false.
-     *     }
-     * }
+     * @type array ...$0 {
+     *             Array of height, width values, and whether to crop.
+     * @type int $width  Image width. Optional if `$height` is specified.
+     * @type int $height Image height. Optional if `$width` is specified.
+     * @type bool|array $crop   Optional. Whether to crop the image. Default false.
+     *                  }
+     *                  }
      *
      * @return array An array of resized images' metadata by size.
      */
@@ -544,13 +544,13 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 5.3.0
      *
-     * @param  array  $size_data {
-     *     Array of size data.
+     * @param  array  $size_data  {
+     *                            Array of size data.
      *
-     *     @type int        $width  The maximum width in pixels.
-     *     @type int        $height The maximum height in pixels.
-     *     @type bool|array $crop   Whether to crop the image to exact dimensions.
-     * }
+     * @type int $width  The maximum width in pixels.
+     * @type int $height The maximum height in pixels.
+     * @type bool|array $crop   Whether to crop the image to exact dimensions.
+     *                  }
      *
      * @return array|WP_Error The image data array for inclusion in the `sizes` array in the image meta,
      *                        WP_Error object on error.
@@ -607,13 +607,13 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  int  $src_x   The start x position to crop from.
-     * @param  int  $src_y   The start y position to crop from.
-     * @param  int  $src_w   The width to crop.
-     * @param  int  $src_h   The height to crop.
-     * @param  int  $dst_w   Optional. The destination width.
-     * @param  int  $dst_h   Optional. The destination height.
-     * @param  bool  $src_abs Optional. If the source crop points are absolute.
+     * @param  int  $src_x  The start x position to crop from.
+     * @param  int  $src_y  The start y position to crop from.
+     * @param  int  $src_w  The width to crop.
+     * @param  int  $src_h  The height to crop.
+     * @param  int  $dst_w  Optional. The destination width.
+     * @param  int  $dst_h  Optional. The destination height.
+     * @param  bool  $src_abs  Optional. If the source crop points are absolute.
      * @return true|WP_Error
      */
     public function crop($src_x, $src_y, $src_w, $src_h, $dst_w = null, $dst_h = null, $src_abs = false)
@@ -694,8 +694,8 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  bool  $horz Flip along Horizontal Axis
-     * @param  bool  $vert Flip along Vertical Axis
+     * @param  bool  $horz  Flip along Horizontal Axis
+     * @param  bool  $vert  Flip along Vertical Axis
      * @return true|WP_Error
      */
     public function flip($horz, $vert)
@@ -746,18 +746,18 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      * @since 3.5.0
      * @since 6.0.0 The `$filesize` value was added to the returned array.
      *
-     * @param  string  $destfilename Optional. Destination filename. Default null.
-     * @param  string  $mime_type    Optional. The mime-type. Default null.
+     * @param  string  $destfilename  Optional. Destination filename. Default null.
+     * @param  string  $mime_type  Optional. The mime-type. Default null.
      * @return array|WP_Error {
-     *     Array on success or WP_Error if the file failed to save.
+     *                        Array on success or WP_Error if the file failed to save.
      *
-     *     @type string $path      Path to the image file.
-     *     @type string $file      Name of the image file.
-     *     @type int    $width     Image width.
-     *     @type int    $height    Image height.
-     *     @type string $mime-type The mime type of the image.
-     *     @type int    $filesize  File size of the image.
-     * }
+     * @type string $path      Path to the image file.
+     * @type string $file      Name of the image file.
+     * @type int $width     Image width.
+     * @type int $height    Image height.
+     * @type string $mime-type The mime type of the image.
+     * @type int $filesize  File size of the image.
+     *           }
      */
     public function save($destfilename = null, $mime_type = null)
     {
@@ -804,15 +804,15 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      * @param  string  $filename
      * @param  string  $mime_type
      * @return array|WP_Error {
-     *     Array on success or WP_Error if the file failed to save.
+     *                        Array on success or WP_Error if the file failed to save.
      *
-     *     @type string $path      Path to the image file.
-     *     @type string $file      Name of the image file.
-     *     @type int    $width     Image width.
-     *     @type int    $height    Image height.
-     *     @type string $mime-type The mime type of the image.
-     *     @type int    $filesize  File size of the image.
-     * }
+     * @type string $path      Path to the image file.
+     * @type string $file      Name of the image file.
+     * @type int $width     Image width.
+     * @type int $height    Image height.
+     * @type string $mime-type The mime type of the image.
+     * @type int $filesize  File size of the image.
+     *           }
      */
     protected function _save($image, $filename = null, $mime_type = null)
     {
@@ -865,7 +865,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      * @since 5.6.0
      *
      * @param  Imagick  $image
-     * @param  string  $filename The destination filename or stream URL.
+     * @param  string  $filename  The destination filename or stream URL.
      * @return true|WP_Error
      */
     private function write_image($image, $filename)
@@ -915,7 +915,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  string  $mime_type The mime type of the image.
+     * @param  string  $mime_type  The mime type of the image.
      * @return true|WP_Error True on success, WP_Error object on failure.
      */
     public function stream($mime_type = null)

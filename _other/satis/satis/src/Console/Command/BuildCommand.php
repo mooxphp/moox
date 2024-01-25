@@ -296,8 +296,8 @@ class BuildCommand extends BaseCommand
     }
 
     /**
-     * @throws ParsingException         if the json file has an invalid syntax
-     * @throws JsonValidationException  if the json file doesn't match the schema
+     * @throws ParsingException if the json file has an invalid syntax
+     * @throws JsonValidationException if the json file doesn't match the schema
      * @throws UnexpectedValueException if the json file is not UTF-8
      */
     private function check(string $configFile): bool

@@ -80,8 +80,8 @@ class SimplePie_Item
      * This is usually used by {@see SimplePie::get_items} and
      * {@see SimplePie::get_item}. Avoid creating this manually.
      *
-     * @param  SimplePie  $feed Parent feed
-     * @param  array  $data Raw data
+     * @param  SimplePie  $feed  Parent feed
+     * @param  array  $data  Raw data
      */
     public function __construct($feed, $data)
     {
@@ -132,8 +132,8 @@ class SimplePie_Item
      * @since 1.0
      * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
      *
-     * @param  string  $namespace The URL of the XML namespace of the elements you're trying to access
-     * @param  string  $tag Tag name
+     * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+     * @param  string  $tag  Tag name
      * @return array
      */
     public function get_item_tags($namespace, $tag)
@@ -163,9 +163,9 @@ class SimplePie_Item
      *
      * @see SimplePie::sanitize()
      *
-     * @param  string  $data Data to sanitize
-     * @param  int  $type One of the SIMPLEPIE_CONSTRUCT_* constants
-     * @param  string  $base Base URL to resolve URLs against
+     * @param  string  $data  Data to sanitize
+     * @param  int  $type  One of the SIMPLEPIE_CONSTRUCT_* constants
+     * @param  string  $base  Base URL to resolve URLs against
      * @return string Sanitized data
      */
     public function sanitize($data, $type, $base = '')
@@ -199,8 +199,8 @@ class SimplePie_Item
      *
      * @since Beta 2
      *
-     * @param  bool  $hash Should we force using a hash instead of the supplied ID?
-     * @param  string|false  $fn User-supplied function to generate an hash
+     * @param  bool  $hash  Should we force using a hash instead of the supplied ID?
+     * @param  string|false  $fn  User-supplied function to generate an hash
      * @return string|null
      */
     public function get_id($hash = false, $fn = 'md5')
@@ -278,7 +278,7 @@ class SimplePie_Item
      *
      * @since 0.8
      *
-     * @param  bool  $description_only Should we avoid falling back to the content?
+     * @param  bool  $description_only  Should we avoid falling back to the content?
      * @return string|null
      */
     public function get_description($description_only = false)
@@ -329,7 +329,7 @@ class SimplePie_Item
      *
      * @since 1.0
      *
-     * @param  bool  $content_only Should we avoid falling back to the description?
+     * @param  bool  $content_only  Should we avoid falling back to the description?
      * @return string|null
      */
     public function get_content($content_only = false)
@@ -376,7 +376,7 @@ class SimplePie_Item
      *
      * @since Beta 3 (previously called `get_categories()` since Beta 2)
      *
-     * @param  int  $key The category that you want to return.  Remember that arrays begin with 0, not 1
+     * @param  int  $key  The category that you want to return.  Remember that arrays begin with 0, not 1
      * @return SimplePie_Category|null
      */
     public function get_category($key = 0)
@@ -450,7 +450,7 @@ class SimplePie_Item
      *
      * @since Beta 2
      *
-     * @param  int  $key The author that you want to return.  Remember that arrays begin with 0, not 1
+     * @param  int  $key  The author that you want to return.  Remember that arrays begin with 0, not 1
      * @return SimplePie_Author|null
      */
     public function get_author($key = 0)
@@ -468,7 +468,7 @@ class SimplePie_Item
      *
      * @since 1.1
      *
-     * @param  int  $key The contrbutor that you want to return.  Remember that arrays begin with 0, not 1
+     * @param  int  $key  The contrbutor that you want to return.  Remember that arrays begin with 0, not 1
      * @return SimplePie_Author|null
      */
     public function get_contributor($key = 0)
@@ -638,7 +638,7 @@ class SimplePie_Item
      *
      * @since Beta 2 (previously called `get_item_date` since 0.8)
      *
-     * @param  string  $date_format Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
      * @return int|string|null
      */
     public function get_date($date_format = 'j F Y, g:i a')
@@ -694,7 +694,7 @@ class SimplePie_Item
      * Note: obeys PHP's timezone setting. To get a UTC date/time, use
      * {@see get_gmdate}
      *
-     * @param  string  $date_format Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
      * @return int|string|null
      */
     public function get_updated_date($date_format = 'j F Y, g:i a')
@@ -738,7 +738,7 @@ class SimplePie_Item
      *
      * @since 1.0
      *
-     * @param  string  $date_format Supports any PHP date format from {@see http://php.net/strftime} (empty for the raw data)
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/strftime} (empty for the raw data)
      * @return int|string|null
      */
     public function get_local_date($date_format = '%c')
@@ -757,7 +757,7 @@ class SimplePie_Item
      *
      * @see get_date
      *
-     * @param  string  $date_format Supports any PHP date format from {@see http://php.net/date}
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date}
      * @return int|string|null
      */
     public function get_gmdate($date_format = 'j F Y, g:i a')
@@ -775,7 +775,7 @@ class SimplePie_Item
      *
      * @see get_updated_date
      *
-     * @param  string  $date_format Supports any PHP date format from {@see http://php.net/date}
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date}
      * @return int|string|null
      */
     public function get_updated_gmdate($date_format = 'j F Y, g:i a')
@@ -817,8 +817,8 @@ class SimplePie_Item
      *
      * @since Beta 3
      *
-     * @param  int  $key The link that you want to return.  Remember that arrays begin with 0, not 1
-     * @param  string  $rel The relationship of the link to return
+     * @param  int  $key  The link that you want to return.  Remember that arrays begin with 0, not 1
+     * @param  string  $rel  The relationship of the link to return
      * @return string|null Link URL
      */
     public function get_link($key = 0, $rel = 'alternate')
@@ -838,7 +838,7 @@ class SimplePie_Item
      *
      * @since Beta 2
      *
-     * @param  string  $rel The relationship of links to return
+     * @param  string  $rel  The relationship of links to return
      * @return array|null Links found for the item (strings)
      */
     public function get_links($rel = 'alternate')
@@ -904,7 +904,7 @@ class SimplePie_Item
      *
      * @todo Add ability to prefer one type of content over another (in a media group).
      *
-     * @param  int  $key The enclosure that you want to return.  Remember that arrays begin with 0, not 1
+     * @param  int  $key  The enclosure that you want to return.  Remember that arrays begin with 0, not 1
      * @return SimplePie_Enclosure|null
      */
     public function get_enclosure($key = 0, $prefer = null)

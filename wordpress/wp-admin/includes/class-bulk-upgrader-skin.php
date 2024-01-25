@@ -50,7 +50,7 @@ class Bulk_Upgrader_Skin extends WP_Upgrader_Skin
     /**
      * @since 5.9.0 Renamed `$string` (a PHP reserved keyword) to `$feedback` for PHP 8 named parameter support.
      *
-     * @param  string  $feedback Message data.
+     * @param  string  $feedback  Message data.
      * @param  mixed  ...$args  Optional text replacements.
      */
     public function feedback($feedback, ...$args)
@@ -89,7 +89,7 @@ class Bulk_Upgrader_Skin extends WP_Upgrader_Skin
     /**
      * @since 5.9.0 Renamed `$error` to `$errors` for PHP 8 named parameter support.
      *
-     * @param  string|WP_Error  $errors Errors.
+     * @param  string|WP_Error  $errors  Errors.
      */
     public function error($errors)
     {

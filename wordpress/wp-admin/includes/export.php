@@ -25,31 +25,31 @@ define('WXR_VERSION', '1.2');
  * @global wpdb    $wpdb WordPress database abstraction object.
  * @global WP_Post $post Global post object.
  *
- * @param  array  $args {
- *     Optional. Arguments for generating the WXR export file for download. Default empty array.
+ * @param  array  $args  {
+ *                       Optional. Arguments for generating the WXR export file for download. Default empty array.
  *
- *     @type string $content    Type of content to export. If set, only the post content of this post type
- *                              will be exported. Accepts 'all', 'post', 'page', 'attachment', or a defined
- *                              custom post. If an invalid custom post type is supplied, every post type for
- *                              which `can_export` is enabled will be exported instead. If a valid custom post
- *                              type is supplied but `can_export` is disabled, then 'posts' will be exported
- *                              instead. When 'all' is supplied, only post types with `can_export` enabled will
- *                              be exported. Default 'all'.
- *     @type string $author     Author to export content for. Only used when `$content` is 'post', 'page', or
- *                              'attachment'. Accepts false (all) or a specific author ID. Default false (all).
- *     @type string $category   Category (slug) to export content for. Used only when `$content` is 'post'. If
- *                              set, only post content assigned to `$category` will be exported. Accepts false
- *                              or a specific category slug. Default is false (all categories).
- *     @type string $start_date Start date to export content from. Expected date format is 'Y-m-d'. Used only
- *                              when `$content` is 'post', 'page' or 'attachment'. Default false (since the
- *                              beginning of time).
- *     @type string $end_date   End date to export content to. Expected date format is 'Y-m-d'. Used only when
- *                              `$content` is 'post', 'page' or 'attachment'. Default false (latest publish date).
- *     @type string $status     Post status to export posts for. Used only when `$content` is 'post' or 'page'.
- *                              Accepts false (all statuses except 'auto-draft'), or a specific status, i.e.
- *                              'publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', or
- *                              'trash'. Default false (all statuses except 'auto-draft').
- * }
+ * @type string $content    Type of content to export. If set, only the post content of this post type
+ *              will be exported. Accepts 'all', 'post', 'page', 'attachment', or a defined
+ *              custom post. If an invalid custom post type is supplied, every post type for
+ *              which `can_export` is enabled will be exported instead. If a valid custom post
+ *              type is supplied but `can_export` is disabled, then 'posts' will be exported
+ *              instead. When 'all' is supplied, only post types with `can_export` enabled will
+ *              be exported. Default 'all'.
+ * @type string $author     Author to export content for. Only used when `$content` is 'post', 'page', or
+ *              'attachment'. Accepts false (all) or a specific author ID. Default false (all).
+ * @type string $category   Category (slug) to export content for. Used only when `$content` is 'post'. If
+ *              set, only post content assigned to `$category` will be exported. Accepts false
+ *              or a specific category slug. Default is false (all categories).
+ * @type string $start_date Start date to export content from. Expected date format is 'Y-m-d'. Used only
+ *              when `$content` is 'post', 'page' or 'attachment'. Default false (since the
+ *              beginning of time).
+ * @type string $end_date   End date to export content to. Expected date format is 'Y-m-d'. Used only when
+ *              `$content` is 'post', 'page' or 'attachment'. Default false (latest publish date).
+ * @type string $status     Post status to export posts for. Used only when `$content` is 'post' or 'page'.
+ *              Accepts false (all statuses except 'auto-draft'), or a specific status, i.e.
+ *              'publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit', or
+ *              'trash'. Default false (all statuses except 'auto-draft').
+ *              }
  */
 function export_wp($args = [])
 {
@@ -70,7 +70,7 @@ function export_wp($args = [])
      *
      * @since 2.3.0
      *
-     * @param  array  $args An array of export arguments.
+     * @param  array  $args  An array of export arguments.
      */
     do_action('export_wp', $args);
 
@@ -85,9 +85,9 @@ function export_wp($args = [])
      *
      * @since 4.4.0
      *
-     * @param  string  $wp_filename The name of the file for download.
-     * @param  string  $sitename    The site name.
-     * @param  string  $date        Today's date, formatted.
+     * @param  string  $wp_filename  The name of the file for download.
+     * @param  string  $sitename  The site name.
+     * @param  string  $date  Today's date, formatted.
      */
     $filename = apply_filters('export_wp_filename', $wp_filename, $sitename, $date);
 
@@ -191,7 +191,7 @@ function export_wp($args = [])
      *
      * @since 2.1.0
      *
-     * @param  string  $str String to wrap in XML CDATA tag.
+     * @param  string  $str  String to wrap in XML CDATA tag.
      * @return string
      */
     function wxr_cdata($str)
@@ -228,7 +228,7 @@ function export_wp($args = [])
      *
      * @since 2.1.0
      *
-     * @param  WP_Term  $category Category Object.
+     * @param  WP_Term  $category  Category Object.
      */
     function wxr_cat_name($category)
     {
@@ -244,7 +244,7 @@ function export_wp($args = [])
      *
      * @since 2.1.0
      *
-     * @param  WP_Term  $category Category Object.
+     * @param  WP_Term  $category  Category Object.
      */
     function wxr_category_description($category)
     {
@@ -260,7 +260,7 @@ function export_wp($args = [])
      *
      * @since 2.3.0
      *
-     * @param  WP_Term  $tag Tag Object.
+     * @param  WP_Term  $tag  Tag Object.
      */
     function wxr_tag_name($tag)
     {
@@ -276,7 +276,7 @@ function export_wp($args = [])
      *
      * @since 2.3.0
      *
-     * @param  WP_Term  $tag Tag Object.
+     * @param  WP_Term  $tag  Tag Object.
      */
     function wxr_tag_description($tag)
     {
@@ -292,7 +292,7 @@ function export_wp($args = [])
      *
      * @since 2.9.0
      *
-     * @param  WP_Term  $term Term Object.
+     * @param  WP_Term  $term  Term Object.
      */
     function wxr_term_name($term)
     {
@@ -308,7 +308,7 @@ function export_wp($args = [])
      *
      * @since 2.9.0
      *
-     * @param  WP_Term  $term Term Object.
+     * @param  WP_Term  $term  Term Object.
      */
     function wxr_term_description($term)
     {
@@ -326,7 +326,7 @@ function export_wp($args = [])
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  WP_Term  $term Term object.
+     * @param  WP_Term  $term  Term object.
      */
     function wxr_term_meta($term)
     {
@@ -343,9 +343,9 @@ function export_wp($args = [])
              *
              * @since 4.6.0
              *
-             * @param  bool  $skip     Whether to skip the current piece of term meta. Default false.
-             * @param  string  $meta_key Current meta key.
-             * @param  object  $meta     Current meta object.
+             * @param  bool  $skip  Whether to skip the current piece of term meta. Default false.
+             * @param  string  $meta_key  Current meta key.
+             * @param  object  $meta  Current meta object.
              */
             if (! apply_filters('wxr_export_skip_termmeta', false, $meta->meta_key, $meta)) {
                 printf("\t\t<wp:termmeta>\n\t\t\t<wp:meta_key>%s</wp:meta_key>\n\t\t\t<wp:meta_value>%s</wp:meta_value>\n\t\t</wp:termmeta>\n", wxr_cdata($meta->meta_key), wxr_cdata($meta->meta_value));
@@ -360,7 +360,7 @@ function export_wp($args = [])
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int[]  $post_ids Optional. Array of post IDs to filter the query by.
+     * @param  int[]  $post_ids  Optional. Array of post IDs to filter the query by.
      */
     function wxr_authors_list(?array $post_ids = null)
     {
@@ -440,7 +440,7 @@ function export_wp($args = [])
      *
      * @since 3.3.0
      *
-     * @param  bool  $return_me Whether to skip the current post meta. Default false.
+     * @param  bool  $return_me  Whether to skip the current post meta. Default false.
      * @param  string  $meta_key  Meta key.
      * @return bool
      */
@@ -566,7 +566,7 @@ function export_wp($args = [])
                  *
                  * @since 5.7.0
                  *
-                 * @param  string  $post_title Title of the current post.
+                 * @param  string  $post_title  Title of the current post.
                  */
                 $title = wxr_cdata(apply_filters('the_title_export', $post->post_title));
 
@@ -575,7 +575,7 @@ function export_wp($args = [])
                  *
                  * @since 2.5.0
                  *
-                 * @param  string  $post_content Content of the current post.
+                 * @param  string  $post_content  Content of the current post.
                  */
                 $content = wxr_cdata(apply_filters('the_content_export', $post->post_content));
 
@@ -584,7 +584,7 @@ function export_wp($args = [])
                  *
                  * @since 2.6.0
                  *
-                 * @param  string  $post_excerpt Excerpt for the current post.
+                 * @param  string  $post_excerpt  Excerpt for the current post.
                  */
                 $excerpt = wxr_cdata(apply_filters('the_excerpt_export', $post->post_excerpt));
 
@@ -628,9 +628,9 @@ function export_wp($args = [])
                      *
                      * @since 3.3.0
                      *
-                     * @param  bool  $skip     Whether to skip the current post meta. Default false.
-                     * @param  string  $meta_key Current meta key.
-                     * @param  object  $meta     Current meta object.
+                     * @param  bool  $skip  Whether to skip the current post meta. Default false.
+                     * @param  string  $meta_key  Current meta key.
+                     * @param  object  $meta  Current meta object.
                      */
                     if (apply_filters('wxr_export_skip_postmeta', false, $meta->meta_key, $meta)) {
                         continue;
@@ -671,9 +671,9 @@ function export_wp($args = [])
                          *
                          * @since 4.0.0
                          *
-                         * @param  bool  $skip     Whether to skip the current comment meta. Default false.
-                         * @param  string  $meta_key Current meta key.
-                         * @param  object  $meta     Current meta object.
+                         * @param  bool  $skip  Whether to skip the current comment meta. Default false.
+                         * @param  string  $meta_key  Current meta key.
+                         * @param  object  $meta  Current meta object.
                          */
                         if (apply_filters('wxr_export_skip_commentmeta', false, $meta->meta_key, $meta)) {
                             continue;

@@ -8,7 +8,7 @@
  *
  * @since 4.9.6
  *
- * @param  int  $request_id Request ID.
+ * @param  int  $request_id  Request ID.
  * @return true|WP_Error Returns true if sending the email was successful, or a WP_Error object.
  */
 function _wp_privacy_resend_request($request_id)
@@ -36,7 +36,7 @@ function _wp_privacy_resend_request($request_id)
  *
  * @since 4.9.6
  *
- * @param  int  $request_id Request ID.
+ * @param  int  $request_id  Request ID.
  * @return int|WP_Error Request ID on success, or a WP_Error on failure.
  */
 function _wp_privacy_completed_request($request_id)
@@ -227,22 +227,22 @@ function _wp_personal_data_cleanup_requests()
  * @since 4.9.6
  * @since 5.4.0 Added the `$group_id` and `$groups_count` parameters.
  *
- * @param  array  $group_data {
- *     The group data to render.
+ * @param  array  $group_data  {
+ *                             The group data to render.
  *
- *     @type string $group_label  The user-facing heading for the group, e.g. 'Comments'.
- *     @type array  $items        {
- *         An array of group items.
- *         @type array  $group_item_data  {
+ * @type string $group_label  The user-facing heading for the group, e.g. 'Comments'.
+ * @type array $items        {
+ *             An array of group items.
+ * @type array $group_item_data  {
  *             An array of name-value pairs for the item.
- *             @type string $name   The user-facing name of an item name-value pair, e.g. 'IP Address'.
- *             @type string $value  The user-facing value of an item data pair, e.g. '50.60.70.0'.
- *         }
- *     }
- * }
+ * @type string $name   The user-facing name of an item name-value pair, e.g. 'IP Address'.
+ * @type string $value  The user-facing value of an item data pair, e.g. '50.60.70.0'.
+ *              }
+ *              }
+ *              }
  *
- * @param  string  $group_id     The group identifier.
- * @param  int  $groups_count The number of all groups
+ * @param  string  $group_id  The group identifier.
+ * @param  int  $groups_count  The number of all groups
  * @return string The HTML for this group and its items.
  */
 function wp_privacy_generate_personal_data_export_group_html($group_data, $group_id = '', $groups_count = 1)
@@ -302,7 +302,7 @@ function wp_privacy_generate_personal_data_export_group_html($group_data, $group
  *
  * @since 4.9.6
  *
- * @param  int  $request_id The export request ID.
+ * @param  int  $request_id  The export request ID.
  */
 function wp_privacy_generate_personal_data_export_file($request_id)
 {
@@ -552,11 +552,11 @@ function wp_privacy_generate_personal_data_export_file($request_id)
              * @since 4.9.6
              * @since 5.4.0 Added the `$json_report_pathname` parameter.
              *
-             * @param  string  $archive_pathname     The full path to the export file on the filesystem.
-             * @param  string  $archive_url          The URL of the archive file.
-             * @param  string  $html_report_pathname The full path to the HTML personal data report on the filesystem.
-             * @param  int  $request_id           The export request ID.
-             * @param  string  $json_report_pathname The full path to the JSON personal data report on the filesystem.
+             * @param  string  $archive_pathname  The full path to the export file on the filesystem.
+             * @param  string  $archive_url  The URL of the archive file.
+             * @param  string  $html_report_pathname  The full path to the HTML personal data report on the filesystem.
+             * @param  int  $request_id  The export request ID.
+             * @param  string  $json_report_pathname  The full path to the JSON personal data report on the filesystem.
              */
             do_action('wp_privacy_personal_data_export_file_created', $archive_pathname, $archive_url, $html_report_pathname, $request_id, $json_report_pathname);
         }
@@ -580,7 +580,7 @@ function wp_privacy_generate_personal_data_export_file($request_id)
  *
  * @since 4.9.6
  *
- * @param  int  $request_id The request ID for this personal data export.
+ * @param  int  $request_id  The request ID for this personal data export.
  * @return true|WP_Error True on success or `WP_Error` on failure.
  */
 function wp_privacy_send_personal_data_export_email($request_id)
@@ -616,8 +616,8 @@ function wp_privacy_send_personal_data_export_email($request_id)
      *
      * @since 5.3.0
      *
-     * @param  string  $request_email The email address of the notification recipient.
-     * @param  WP_User_Request  $request       The request that is initiating the notification.
+     * @param  string  $request_email  The email address of the notification recipient.
+     * @param  WP_User_Request  $request  The request that is initiating the notification.
      */
     $request_email = apply_filters('wp_privacy_personal_data_email_to', $request->email, $request);
 
@@ -639,21 +639,21 @@ function wp_privacy_send_personal_data_export_email($request_id)
      *
      * @since 5.3.0
      *
-     * @param  string  $subject    The email subject.
-     * @param  string  $sitename   The name of the site.
-     * @param  array  $email_data {
-     *     Data relating to the account action email.
+     * @param  string  $subject  The email subject.
+     * @param  string  $sitename  The name of the site.
+     * @param  array  $email_data  {
+     *                             Data relating to the account action email.
      *
-     *     @type WP_User_Request $request           User request object.
-     *     @type int             $expiration        The time in seconds until the export file expires.
-     *     @type string          $expiration_date   The localized date and time when the export file expires.
-     *     @type string          $message_recipient The address that the email will be sent to. Defaults
-     *                                              to the value of `$request->email`, but can be changed
-     *                                              by the `wp_privacy_personal_data_email_to` filter.
-     *     @type string          $export_file_url   The export file URL.
-     *     @type string          $sitename          The site name sending the mail.
-     *     @type string          $siteurl           The site URL sending the mail.
-     * }
+     * @type WP_User_Request $request           User request object.
+     * @type int $expiration        The time in seconds until the export file expires.
+     * @type string $expiration_date   The localized date and time when the export file expires.
+     * @type string $message_recipient The address that the email will be sent to. Defaults
+     *              to the value of `$request->email`, but can be changed
+     *              by the `wp_privacy_personal_data_email_to` filter.
+     * @type string $export_file_url   The export file URL.
+     * @type string $sitename          The site name sending the mail.
+     * @type string $siteurl           The site URL sending the mail.
+     *              }
      */
     $subject = apply_filters('wp_privacy_personal_data_email_subject', $subject, $site_name, $email_data);
 
@@ -685,20 +685,20 @@ All at ###SITENAME###
      * @since 4.9.6
      * @since 5.3.0 Introduced the `$email_data` array.
      *
-     * @param  string  $email_text Text in the email.
-     * @param  int  $request_id The request ID for this personal data export.
-     * @param  array  $email_data {
-     *     Data relating to the account action email.
+     * @param  string  $email_text  Text in the email.
+     * @param  int  $request_id  The request ID for this personal data export.
+     * @param  array  $email_data  {
+     *                             Data relating to the account action email.
      *
-     *     @type WP_User_Request $request           User request object.
-     *     @type int             $expiration        The time in seconds until the export file expires.
-     *     @type string          $expiration_date   The localized date and time when the export file expires.
-     *     @type string          $message_recipient The address that the email will be sent to. Defaults
-     *                                              to the value of `$request->email`, but can be changed
-     *                                              by the `wp_privacy_personal_data_email_to` filter.
-     *     @type string          $export_file_url   The export file URL.
-     *     @type string          $sitename          The site name sending the mail.
-     *     @type string          $siteurl           The site URL sending the mail.
+     * @type WP_User_Request $request           User request object.
+     * @type int $expiration        The time in seconds until the export file expires.
+     * @type string $expiration_date   The localized date and time when the export file expires.
+     * @type string $message_recipient The address that the email will be sent to. Defaults
+     *              to the value of `$request->email`, but can be changed
+     *              by the `wp_privacy_personal_data_email_to` filter.
+     * @type string $export_file_url   The export file URL.
+     * @type string $sitename          The site name sending the mail.
+     * @type string $siteurl           The site URL sending the mail.
      */
     $content = apply_filters('wp_privacy_personal_data_email_content', $email_text, $request_id, $email_data);
 
@@ -715,23 +715,23 @@ All at ###SITENAME###
      *
      * @since 5.4.0
      *
-     * @param  string|array  $headers    The email headers.
-     * @param  string  $subject    The email subject.
-     * @param  string  $content    The email content.
-     * @param  int  $request_id The request ID.
-     * @param  array  $email_data {
-     *     Data relating to the account action email.
+     * @param  string|array  $headers  The email headers.
+     * @param  string  $subject  The email subject.
+     * @param  string  $content  The email content.
+     * @param  int  $request_id  The request ID.
+     * @param  array  $email_data  {
+     *                             Data relating to the account action email.
      *
-     *     @type WP_User_Request $request           User request object.
-     *     @type int             $expiration        The time in seconds until the export file expires.
-     *     @type string          $expiration_date   The localized date and time when the export file expires.
-     *     @type string          $message_recipient The address that the email will be sent to. Defaults
-     *                                              to the value of `$request->email`, but can be changed
-     *                                              by the `wp_privacy_personal_data_email_to` filter.
-     *     @type string          $export_file_url   The export file URL.
-     *     @type string          $sitename          The site name sending the mail.
-     *     @type string          $siteurl           The site URL sending the mail.
-     * }
+     * @type WP_User_Request $request           User request object.
+     * @type int $expiration        The time in seconds until the export file expires.
+     * @type string $expiration_date   The localized date and time when the export file expires.
+     * @type string $message_recipient The address that the email will be sent to. Defaults
+     *              to the value of `$request->email`, but can be changed
+     *              by the `wp_privacy_personal_data_email_to` filter.
+     * @type string $export_file_url   The export file URL.
+     * @type string $sitename          The site name sending the mail.
+     * @type string $siteurl           The site URL sending the mail.
+     *              }
      */
     $headers = apply_filters('wp_privacy_personal_data_email_headers', $headers, $subject, $content, $request_id, $email_data);
 
@@ -754,13 +754,13 @@ All at ###SITENAME###
  * @since 4.9.6
  * @see 'wp_privacy_personal_data_export_page'
  *
- * @param  array  $response        The response from the personal data exporter for the given page.
+ * @param  array  $response  The response from the personal data exporter for the given page.
  * @param  int  $exporter_index  The index of the personal data exporter. Begins at 1.
- * @param  string  $email_address   The email address of the user whose personal data this is.
- * @param  int  $page            The page of personal data for this exporter. Begins at 1.
- * @param  int  $request_id      The request ID for this personal data export.
- * @param  bool  $send_as_email   Whether the final results of the export should be emailed to the user.
- * @param  string  $exporter_key    The slug (key) of the exporter.
+ * @param  string  $email_address  The email address of the user whose personal data this is.
+ * @param  int  $page  The page of personal data for this exporter. Begins at 1.
+ * @param  int  $request_id  The request ID for this personal data export.
+ * @param  bool  $send_as_email  Whether the final results of the export should be emailed to the user.
+ * @param  string  $exporter_key  The slug (key) of the exporter.
  * @return array The filtered response.
  */
 function wp_privacy_process_personal_data_export_page($response, $exporter_index, $email_address, $page, $request_id, $send_as_email, $exporter_key)
@@ -858,7 +858,7 @@ function wp_privacy_process_personal_data_export_page($response, $exporter_index
      *
      * @since 4.9.6
      *
-     * @param  int  $request_id The export request ID.
+     * @param  int  $request_id  The export request ID.
      */
     do_action('wp_privacy_personal_data_export_file', $request_id);
 
@@ -898,15 +898,15 @@ function wp_privacy_process_personal_data_export_page($response, $exporter_index
  * @since 4.9.6
  * @see 'wp_privacy_personal_data_erasure_page'
  *
- * @param  array  $response      The response from the personal data eraser for
- *                              the given page.
+ * @param  array  $response  The response from the personal data eraser for
+ *                           the given page.
  * @param  int  $eraser_index  The index of the personal data eraser. Begins
- *                              at 1.
- * @param  string  $email_address The email address of the user whose personal
- *                              data this is.
- * @param  int  $page          The page of personal data for this eraser.
- *                              Begins at 1.
- * @param  int  $request_id    The request ID for this personal data erasure.
+ *                             at 1.
+ * @param  string  $email_address  The email address of the user whose personal
+ *                                 data this is.
+ * @param  int  $page  The page of personal data for this eraser.
+ *                     Begins at 1.
+ * @param  int  $request_id  The request ID for this personal data erasure.
  * @return array The filtered response.
  */
 function wp_privacy_process_personal_data_erasure_page($response, $eraser_index, $email_address, $page, $request_id)
@@ -959,7 +959,7 @@ function wp_privacy_process_personal_data_erasure_page($response, $eraser_index,
      *
      * @since 4.9.6
      *
-     * @param  int  $request_id The privacy request post ID associated with this request.
+     * @param  int  $request_id  The privacy request post ID associated with this request.
      */
     do_action('wp_privacy_personal_data_erased', $request_id);
 

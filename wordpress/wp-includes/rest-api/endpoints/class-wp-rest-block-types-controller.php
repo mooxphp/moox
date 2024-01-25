@@ -115,7 +115,7 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -128,7 +128,7 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -163,7 +163,7 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -207,7 +207,7 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  string  $name Block name.
+     * @param  string  $name  Block name.
      * @return WP_Block_Type|WP_Error Block type object if name is valid, WP_Error otherwise.
      */
     protected function get_block($name)
@@ -225,7 +225,7 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -247,8 +247,8 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      * @since 5.9.0 Renamed `$block_type` to `$item` to match parent class for PHP 8 named parameter support.
      * @since 6.3.0 Added `selectors` field.
      *
-     * @param  WP_Block_Type  $item    Block type data.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_Block_Type  $item  Block type data.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Block type data.
      */
     public function prepare_item_for_response($item, $request)
@@ -345,9 +345,9 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
          *
          * @since 5.5.0
          *
-         * @param  WP_REST_Response  $response   The response object.
-         * @param  WP_Block_Type  $block_type The original block type object.
-         * @param  WP_REST_Request  $request    Request used to generate the response.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  WP_Block_Type  $block_type  The original block type object.
+         * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_block_type', $response, $block_type, $request);
     }
@@ -357,7 +357,7 @@ class WP_REST_Block_Types_Controller extends WP_REST_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_Block_Type  $block_type Block type data.
+     * @param  WP_Block_Type  $block_type  Block type data.
      * @return array Links for the given block type.
      */
     protected function prepare_links($block_type)

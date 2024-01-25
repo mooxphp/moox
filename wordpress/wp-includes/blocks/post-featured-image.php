@@ -6,9 +6,9 @@
 /**
  * Renders the `core/post-featured-image` block on the server.
  *
- * @param  array  $attributes Block attributes.
- * @param  string  $content    Block default content.
- * @param  WP_Block  $block      Block instance.
+ * @param  array  $attributes  Block attributes.
+ * @param  string  $content  Block default content.
+ * @param  WP_Block  $block  Block instance.
  * @return string Returns the featured image for the current post.
  */
 function render_block_core_post_featured_image($attributes, $content, $block)
@@ -94,7 +94,7 @@ function render_block_core_post_featured_image($attributes, $content, $block)
 /**
  * Generate markup for the HTML element that will be used for the overlay.
  *
- * @param  array  $attributes Block attributes.
+ * @param  array  $attributes  Block attributes.
  * @return string HTML markup in string format.
  */
 function get_block_core_post_featured_image_overlay_element_markup($attributes)
@@ -160,7 +160,7 @@ function get_block_core_post_featured_image_overlay_element_markup($attributes)
  * Generates class names and styles to apply the border support styles for
  * the Post Featured Image block.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return array The border-related classnames and styles for the block.
  */
 function get_block_core_post_featured_image_border_attributes($attributes)

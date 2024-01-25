@@ -22,7 +22,7 @@ if (! class_exists('SimplePie', false)) {
      *
      * @since 3.5.0
      *
-     * @param  string  $class Class name.
+     * @param  string  $class  Class name.
      */
     function wp_simplepie_autoload($class)
     {
@@ -533,7 +533,7 @@ if (! class_exists('SimplePie', false)) {
 
         /**
          * @var bool Forces fsockopen() to be used for remote files instead
-         * of cURL, even if a new enough version is installed
+         *           of cURL, even if a new enough version is installed
          *
          * @see SimplePie::force_fsockopen()
          */
@@ -541,7 +541,7 @@ if (! class_exists('SimplePie', false)) {
 
         /**
          * @var bool Force the given data/URL to be treated as a feed no matter what
-         * it appears like
+         *           it appears like
          *
          * @see SimplePie::force_feed()
          */
@@ -556,7 +556,7 @@ if (! class_exists('SimplePie', false)) {
 
         /**
          * @var bool Force SimplePie to fallback to expired cache, if enabled,
-         * when feed is unavailable.
+         *           when feed is unavailable.
          *
          * @see SimplePie::force_cache_fallback()
          */
@@ -599,7 +599,7 @@ if (! class_exists('SimplePie', false)) {
 
         /**
          * @var mixed Force input encoding to be set to the follow value
-         * (false, or anything type-cast to false, disables this feature)
+         *            (false, or anything type-cast to false, disables this feature)
          *
          * @see SimplePie::set_input_encoding()
          */
@@ -668,7 +668,7 @@ if (! class_exists('SimplePie', false)) {
 
         /**
          * @var bool Stores if last-modified and/or etag headers were sent with the
-         * request when checking a feed.
+         *           request when checking a feed.
          */
         public $check_modified = false;
 
@@ -777,7 +777,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.1
          *
-         * @param  bool  $enable Force the given data/URL to be treated as a feed
+         * @param  bool  $enable  Force the given data/URL to be treated as a feed
          */
         public function force_feed($enable = false)
         {
@@ -798,7 +798,7 @@ if (! class_exists('SimplePie', false)) {
          * @since 1.0 Preview Release
          * @see set_raw_data()
          *
-         * @param  string|array  $url This is the URL (or array of URLs) that you want to parse.
+         * @param  string|array  $url  This is the URL (or array of URLs) that you want to parse.
          */
         public function set_feed_url($url)
         {
@@ -843,7 +843,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0 Beta 3
          *
-         * @param  string  $data RSS or Atom data as a string.
+         * @param  string  $data  RSS or Atom data as a string.
          *
          * @see set_feed_url()
          */
@@ -860,7 +860,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0 Beta 3
          *
-         * @param  int  $timeout The maximum number of seconds to spend waiting to retrieve a feed.
+         * @param  int  $timeout  The maximum number of seconds to spend waiting to retrieve a feed.
          */
         public function set_timeout($timeout = 10)
         {
@@ -874,7 +874,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0 Beta 3
          *
-         * @param  array  $curl_options Curl options to add to default settings
+         * @param  array  $curl_options  Curl options to add to default settings
          */
         public function set_curl_options(array $curl_options = [])
         {
@@ -886,7 +886,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0 Beta 3
          *
-         * @param  bool  $enable Force fsockopen() to be used
+         * @param  bool  $enable  Force fsockopen() to be used
          */
         public function force_fsockopen($enable = false)
         {
@@ -901,7 +901,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0 Preview Release
          *
-         * @param  bool  $enable Enable caching
+         * @param  bool  $enable  Enable caching
          */
         public function enable_cache($enable = true)
         {
@@ -917,7 +917,7 @@ if (! class_exists('SimplePie', false)) {
          * still exists.
 
          *
-         * @param  bool  $enable Force use of cache on fail.
+         * @param  bool  $enable  Force use of cache on fail.
          */
         public function force_cache_fallback($enable = false)
         {
@@ -928,7 +928,7 @@ if (! class_exists('SimplePie', false)) {
          * Set the length of time (in seconds) that the contents of a feed will be
          * cached
          *
-         * @param  int  $seconds The feed content cache duration
+         * @param  int  $seconds  The feed content cache duration
          */
         public function set_cache_duration($seconds = 3600)
         {
@@ -939,7 +939,7 @@ if (! class_exists('SimplePie', false)) {
          * Set the length of time (in seconds) that the autodiscovered feed URL will
          * be cached
          *
-         * @param  int  $seconds The autodiscovered feed URL cache duration.
+         * @param  int  $seconds  The autodiscovered feed URL cache duration.
          */
         public function set_autodiscovery_cache_duration($seconds = 604800)
         {
@@ -949,7 +949,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set the file system location where the cached files should be stored
          *
-         * @param  string  $location The file system location.
+         * @param  string  $location  The file system location.
          */
         public function set_cache_location($location = './cache')
         {
@@ -959,7 +959,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Return the filename (i.e. hash, without path and without extension) of the file to cache a given URL.
          *
-         * @param  string  $url The URL of the feed to be cached.
+         * @param  string  $url  The URL of the feed to be cached.
          * @return string A filename (i.e. hash, without path and without extension).
          */
         public function get_cache_filename($url)
@@ -989,7 +989,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set whether feed items should be sorted into reverse chronological order
          *
-         * @param  bool  $enable Sort as reverse chronological order.
+         * @param  bool  $enable  Sort as reverse chronological order.
          */
         public function enable_order_by_date($enable = true)
         {
@@ -1002,7 +1002,7 @@ if (! class_exists('SimplePie', false)) {
          * This overrides the encoding reported by the feed, however it will fall
          * back to the normal encoding detection if the override fails
          *
-         * @param  string  $encoding Character encoding
+         * @param  string  $encoding  Character encoding
          */
         public function set_input_encoding($encoding = false)
         {
@@ -1024,7 +1024,7 @@ if (! class_exists('SimplePie', false)) {
          * @see SIMPLEPIE_LOCATOR_REMOTE_BODY
          * @see SIMPLEPIE_LOCATOR_ALL
          *
-         * @param  int  $level Feed Autodiscovery Level (level can be a combination of the above constants, see bitwise OR operator)
+         * @param  int  $level  Feed Autodiscovery Level (level can be a combination of the above constants, see bitwise OR operator)
          */
         public function set_autodiscovery_level($level = SIMPLEPIE_LOCATOR_ALL)
         {
@@ -1185,7 +1185,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set the user agent string
          *
-         * @param  string  $ua New user agent string.
+         * @param  string  $ua  New user agent string.
          */
         public function set_useragent($ua = SIMPLEPIE_USERAGENT)
         {
@@ -1195,7 +1195,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set callback function to create cache filename with
          *
-         * @param  mixed  $function Callback function
+         * @param  mixed  $function  Callback function
          */
         public function set_cache_name_function($function = 'md5')
         {
@@ -1210,7 +1210,7 @@ if (! class_exists('SimplePie', false)) {
          * Forgoes a substantial amount of data sanitization in favor of speed. This
          * turns SimplePie into a dumb parser of feeds.
          *
-         * @param  bool  $set Whether to set them or not
+         * @param  bool  $set  Whether to set them or not
          */
         public function set_stupidly_fast($set = false)
         {
@@ -1229,7 +1229,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set maximum number of feeds to check with autodiscovery
          *
-         * @param  int  $max Maximum number of feeds to check
+         * @param  int  $max  Maximum number of feeds to check
          */
         public function set_max_checked_feeds($max = 10)
         {
@@ -1315,7 +1315,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0
          *
-         * @param  array|null  $element_attribute Element/attribute key/value pairs, null for default
+         * @param  array|null  $element_attribute  Element/attribute key/value pairs, null for default
          */
         public function set_url_replacements($element_attribute = null)
         {
@@ -1339,8 +1339,8 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set the handler to enable the display of cached images.
          *
-         * @param  string  $page Web-accessible path to the handler_image.php file.
-         * @param  string  $qs The query string that the value should be passed to.
+         * @param  string  $page  Web-accessible path to the handler_image.php file.
+         * @param  string  $qs  The query string that the value should be passed to.
          */
         public function set_image_handler($page = false, $qs = 'i')
         {
@@ -1354,7 +1354,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Set the limit for items returned per-feed with multifeeds
          *
-         * @param  int  $limit The maximum number of items to return.
+         * @param  int  $limit  The maximum number of items to return.
          */
         public function set_item_limit($limit = 0)
         {
@@ -1364,7 +1364,7 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Enable throwing exceptions
          *
-         * @param  bool  $enable Should we throw exceptions, or use the old-style error property?
+         * @param  bool  $enable  Should we throw exceptions, or use the old-style error property?
          */
         public function enable_exceptions($enable = true)
         {
@@ -1574,7 +1574,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * If the data is already cached, attempt to fetch it from there instead
          *
-         * @param  SimplePie_Cache_Base|false  $cache Cache handler, or false to not load from the cache
+         * @param  SimplePie_Cache_Base|false  $cache  Cache handler, or false to not load from the cache
          * @return array|true Returns true if the data was loaded from the cache, or an array of HTTP headers and sniffed type
          */
         protected function fetch_data(&$cache)
@@ -1822,7 +1822,7 @@ if (! class_exists('SimplePie', false)) {
          * of HTTP headers), this should only be used once per page (again, at the
          * top).
          *
-         * @param  string  $mime MIME type to serve the page as
+         * @param  string  $mime  MIME type to serve the page as
          */
         public function handle_content_type($mime = 'text/html')
         {
@@ -1946,8 +1946,8 @@ if (! class_exists('SimplePie', false)) {
          * @todo Support <itunes:new-feed-url>
          * @todo Also, |atom:link|@rel=self
          *
-         * @param  bool  $permanent Permanent mode to return only the original URL or the first redirection
-         * iff it is a 301 redirection
+         * @param  bool  $permanent  Permanent mode to return only the original URL or the first redirection
+         *                           iff it is a 301 redirection
          * @return string|null
          */
         public function subscribe_url($permanent = false)
@@ -1998,8 +1998,8 @@ if (! class_exists('SimplePie', false)) {
          * @since 1.0
          * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
          *
-         * @param  string  $namespace The URL of the XML namespace of the elements you're trying to access
-         * @param  string  $tag Tag name
+         * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+         * @param  string  $tag  Tag name
          * @return array
          */
         public function get_feed_tags($namespace, $tag)
@@ -2040,8 +2040,8 @@ if (! class_exists('SimplePie', false)) {
          * @since 1.0
          * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
          *
-         * @param  string  $namespace The URL of the XML namespace of the elements you're trying to access
-         * @param  string  $tag Tag name
+         * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+         * @param  string  $tag  Tag name
          * @return array
          */
         public function get_channel_tags($namespace, $tag)
@@ -2088,8 +2088,8 @@ if (! class_exists('SimplePie', false)) {
          * @since 1.0
          * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
          *
-         * @param  string  $namespace The URL of the XML namespace of the elements you're trying to access
-         * @param  string  $tag Tag name
+         * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+         * @param  string  $tag  Tag name
          * @return array
          */
         public function get_image_tags($namespace, $tag)
@@ -2148,9 +2148,9 @@ if (! class_exists('SimplePie', false)) {
          *
          * @see SimplePie_Sanitize::sanitize()
          *
-         * @param  string  $data Data to sanitize
-         * @param  int  $type One of the SIMPLEPIE_CONSTRUCT_* constants
-         * @param  string  $base Base URL to resolve URLs against
+         * @param  string  $data  Data to sanitize
+         * @param  int  $type  One of the SIMPLEPIE_CONSTRUCT_* constants
+         * @param  string  $base  Base URL to resolve URLs against
          * @return string Sanitized data
          */
         public function sanitize($data, $type, $base = '')
@@ -2204,7 +2204,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since Unknown
          *
-         * @param  int  $key The category that you want to return. Remember that arrays begin with 0, not 1
+         * @param  int  $key  The category that you want to return. Remember that arrays begin with 0, not 1
          * @return SimplePie_Category|null
          */
         public function get_category($key = 0)
@@ -2275,7 +2275,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.1
          *
-         * @param  int  $key The author that you want to return. Remember that arrays begin with 0, not 1
+         * @param  int  $key  The author that you want to return. Remember that arrays begin with 0, not 1
          * @return SimplePie_Author|null
          */
         public function get_author($key = 0)
@@ -2356,7 +2356,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.1
          *
-         * @param  int  $key The contrbutor that you want to return. Remember that arrays begin with 0, not 1
+         * @param  int  $key  The contrbutor that you want to return. Remember that arrays begin with 0, not 1
          * @return SimplePie_Author|null
          */
         public function get_contributor($key = 0)
@@ -2428,8 +2428,8 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since 1.0 (previously called `get_feed_link` since Preview Release, `get_feed_permalink()` since 0.8)
          *
-         * @param  int  $key The link that you want to return. Remember that arrays begin with 0, not 1
-         * @param  string  $rel The relationship of the link to return
+         * @param  int  $key  The link that you want to return. Remember that arrays begin with 0, not 1
+         * @param  string  $rel  The relationship of the link to return
          * @return string|null Link URL
          */
         public function get_link($key = 0, $rel = 'alternate')
@@ -2467,7 +2467,7 @@ if (! class_exists('SimplePie', false)) {
          *
          * @since Beta 2
          *
-         * @param  string  $rel The relationship of links to return
+         * @param  string  $rel  The relationship of links to return
          * @return array|null Links found for the feed (strings)
          */
         public function get_links($rel = 'alternate')
@@ -2810,7 +2810,7 @@ if (! class_exists('SimplePie', false)) {
          * This is well-suited for {@link http://php.net/for for()} loops with
          * {@see get_item()}
          *
-         * @param  int  $max Maximum value to return. 0 for no limit
+         * @param  int  $max  Maximum value to return. 0 for no limit
          * @return int Number of items in the feed
          */
         public function get_item_quantity($max = 0)
@@ -2834,7 +2834,7 @@ if (! class_exists('SimplePie', false)) {
          * @see get_item_quantity()
          * @since Beta 2
          *
-         * @param  int  $key The item that you want to return. Remember that arrays begin with 0, not 1
+         * @param  int  $key  The item that you want to return. Remember that arrays begin with 0, not 1
          * @return SimplePie_Item|null
          */
         public function get_item($key = 0)
@@ -2857,8 +2857,8 @@ if (! class_exists('SimplePie', false)) {
          * @see get_item_quantity
          * @since Beta 2
          *
-         * @param  int  $start Index to start at
-         * @param  int  $end Number of items to return. 0 for all items after `$start`
+         * @param  int  $start  Index to start at
+         * @param  int  $end  Number of items to return. 0 for all items after `$start`
          * @return SimplePie_Item[]|null List of {@see SimplePie_Item} objects
          */
         public function get_items($start = 0, $end = 0)
@@ -2959,8 +2959,8 @@ if (! class_exists('SimplePie', false)) {
         /**
          * Magic method handler
          *
-         * @param  string  $method Method name
-         * @param  array  $args Arguments to the method
+         * @param  string  $method  Method name
+         * @param  array  $args  Arguments to the method
          * @return mixed
          */
         public function __call($method, $args)
@@ -3018,10 +3018,10 @@ if (! class_exists('SimplePie', false)) {
          *
          * @link http://simplepie.org/wiki/tutorial/sort_multiple_feeds_by_time_and_date#if_feeds_require_separate_per-feed_settings
          *
-         * @param  array  $urls List of SimplePie feed objects to merge
-         * @param  int  $start Starting item
-         * @param  int  $end Number of items to return
-         * @param  int  $limit Maximum number of items per feed
+         * @param  array  $urls  List of SimplePie feed objects to merge
+         * @param  int  $start  Starting item
+         * @param  int  $end  Number of items to return
+         * @param  int  $limit  Maximum number of items per feed
          * @return array
          */
         public static function merge_items($urls, $start = 0, $end = 0, $limit = 0)

@@ -37,7 +37,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      * @global string $status
      * @global int    $page
      *
-     * @param  array  $args An associative array of arguments.
+     * @param  array  $args  An associative array of arguments.
      */
     public function __construct($args = [])
     {
@@ -109,7 +109,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
              *
              * @since 3.1.0
              *
-             * @param  WP_Theme[]  $all Array of WP_Theme objects to display in the list table.
+             * @param  WP_Theme[]  $all  Array of WP_Theme objects to display in the list table.
              */
             'all' => apply_filters('all_themes', wp_get_themes()),
             'search' => [],
@@ -514,7 +514,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$theme` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Theme  $item The current WP_Theme object.
+     * @param  WP_Theme  $item  The current WP_Theme object.
      */
     public function column_cb($item)
     {
@@ -547,7 +547,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      * @global int    $page
      * @global string $s
      *
-     * @param  WP_Theme  $theme The current WP_Theme object.
+     * @param  WP_Theme  $theme  The current WP_Theme object.
      */
     public function column_name($theme)
     {
@@ -671,9 +671,9 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 2.8.0
          *
-         * @param  string[]  $actions An array of action links.
-         * @param  WP_Theme  $theme   The current WP_Theme object.
-         * @param  string  $context Status of the theme, one of 'all', 'enabled', or 'disabled'.
+         * @param  string[]  $actions  An array of action links.
+         * @param  WP_Theme  $theme  The current WP_Theme object.
+         * @param  string  $context  Status of the theme, one of 'all', 'enabled', or 'disabled'.
          */
         $actions = apply_filters('theme_action_links', array_filter($actions), $theme, $context);
 
@@ -687,9 +687,9 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 3.1.0
          *
-         * @param  string[]  $actions An array of action links.
-         * @param  WP_Theme  $theme   The current WP_Theme object.
-         * @param  string  $context Status of the theme, one of 'all', 'enabled', or 'disabled'.
+         * @param  string[]  $actions  An array of action links.
+         * @param  WP_Theme  $theme  The current WP_Theme object.
+         * @param  string  $context  Status of the theme, one of 'all', 'enabled', or 'disabled'.
          */
         $actions = apply_filters("theme_action_links_{$stylesheet}", $actions, $theme, $context);
 
@@ -704,7 +704,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      * @global string $status
      * @global array  $totals
      *
-     * @param  WP_Theme  $theme The current WP_Theme object.
+     * @param  WP_Theme  $theme  The current WP_Theme object.
      */
     public function column_description($theme)
     {
@@ -766,11 +766,11 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 3.1.0
          *
-         * @param  string[]  $theme_meta An array of the theme's metadata, including
-         *                             the version, author, and theme URI.
-         * @param  string  $stylesheet Directory name of the theme.
-         * @param  WP_Theme  $theme      WP_Theme object.
-         * @param  string  $status     Status of the theme.
+         * @param  string[]  $theme_meta  An array of the theme's metadata, including
+         *                                the version, author, and theme URI.
+         * @param  string  $stylesheet  Directory name of the theme.
+         * @param  WP_Theme  $theme  WP_Theme object.
+         * @param  string  $status  Status of the theme.
          */
         $theme_meta = apply_filters('theme_row_meta', $theme_meta, $stylesheet, $theme, $status);
 
@@ -787,7 +787,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      * @global string $status
      * @global int  $page
      *
-     * @param  WP_Theme  $theme The current WP_Theme object.
+     * @param  WP_Theme  $theme  The current WP_Theme object.
      */
     public function column_autoupdates($theme)
     {
@@ -866,10 +866,10 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 5.5.0
          *
-         * @param  string  $html       The HTML for theme's auto-update setting, including
-         *                             toggle auto-update action link and time to next update.
-         * @param  string  $stylesheet Directory name of the theme.
-         * @param  WP_Theme  $theme      WP_Theme object.
+         * @param  string  $html  The HTML for theme's auto-update setting, including
+         *                        toggle auto-update action link and time to next update.
+         * @param  string  $stylesheet  Directory name of the theme.
+         * @param  WP_Theme  $theme  WP_Theme object.
          */
         echo apply_filters('theme_auto_update_setting_html', $html, $stylesheet, $theme);
 
@@ -888,8 +888,8 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$theme` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Theme  $item        The current WP_Theme object.
-     * @param  string  $column_name The current column name.
+     * @param  WP_Theme  $item  The current WP_Theme object.
+     * @param  string  $column_name  The current column name.
      */
     public function column_default($item, $column_name)
     {
@@ -903,9 +903,9 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 3.1.0
          *
-         * @param  string  $column_name Name of the column.
+         * @param  string  $column_name  Name of the column.
          * @param  string  $stylesheet  Directory name of the theme.
-         * @param  WP_Theme  $theme       Current WP_Theme object.
+         * @param  WP_Theme  $theme  Current WP_Theme object.
          */
         do_action('manage_themes_custom_column', $column_name, $stylesheet, $theme);
     }
@@ -915,7 +915,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_Theme  $item The current WP_Theme object.
+     * @param  WP_Theme  $item  The current WP_Theme object.
      */
     public function single_row_columns($item)
     {
@@ -1030,9 +1030,9 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 3.1.0
          *
-         * @param  string  $stylesheet Directory name of the theme.
-         * @param  WP_Theme  $theme      Current WP_Theme object.
-         * @param  string  $status     Status of the theme.
+         * @param  string  $stylesheet  Directory name of the theme.
+         * @param  WP_Theme  $theme  Current WP_Theme object.
+         * @param  string  $status  Status of the theme.
          */
         do_action('after_theme_row', $stylesheet, $theme, $status);
 
@@ -1045,9 +1045,9 @@ class WP_MS_Themes_List_Table extends WP_List_Table
          *
          * @since 3.5.0
          *
-         * @param  string  $stylesheet Directory name of the theme.
-         * @param  WP_Theme  $theme      Current WP_Theme object.
-         * @param  string  $status     Status of the theme.
+         * @param  string  $stylesheet  Directory name of the theme.
+         * @param  WP_Theme  $theme  Current WP_Theme object.
+         * @param  string  $status  Status of the theme.
          */
         do_action("after_theme_row_{$stylesheet}", $stylesheet, $theme, $status);
     }

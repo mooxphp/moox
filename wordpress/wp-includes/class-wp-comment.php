@@ -193,7 +193,7 @@ final class WP_Comment
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int  $id Comment ID.
+     * @param  int  $id  Comment ID.
      * @return WP_Comment|false Comment object, otherwise false.
      */
     public static function get_instance($id)
@@ -227,7 +227,7 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  WP_Comment  $comment Comment object.
+     * @param  WP_Comment  $comment  Comment object.
      */
     public function __construct($comment)
     {
@@ -253,35 +253,35 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  array  $args {
-     *     Array of arguments used to pass to get_comments() and determine format.
+     * @param  array  $args  {
+     *                       Array of arguments used to pass to get_comments() and determine format.
      *
-     *     @type string $format        Return value format. 'tree' for a hierarchical tree, 'flat' for a flattened array.
-     *                                 Default 'tree'.
-     *     @type string $status        Comment status to limit results by. Accepts 'hold' (`comment_status=0`),
-     *                                 'approve' (`comment_status=1`), 'all', or a custom comment status.
-     *                                 Default 'all'.
-     *     @type string $hierarchical  Whether to include comment descendants in the results.
-     *                                 'threaded' returns a tree, with each comment's children
-     *                                 stored in a `children` property on the `WP_Comment` object.
-     *                                 'flat' returns a flat array of found comments plus their children.
-     *                                 Pass `false` to leave out descendants.
-     *                                 The parameter is ignored (forced to `false`) when `$fields` is 'ids' or 'counts'.
-     *                                 Accepts 'threaded', 'flat', or false. Default: 'threaded'.
-     *     @type string|array $orderby Comment status or array of statuses. To use 'meta_value'
-     *                                 or 'meta_value_num', `$meta_key` must also be defined.
-     *                                 To sort by a specific `$meta_query` clause, use that
-     *                                 clause's array key. Accepts 'comment_agent',
-     *                                 'comment_approved', 'comment_author',
-     *                                 'comment_author_email', 'comment_author_IP',
-     *                                 'comment_author_url', 'comment_content', 'comment_date',
-     *                                 'comment_date_gmt', 'comment_ID', 'comment_karma',
-     *                                 'comment_parent', 'comment_post_ID', 'comment_type',
-     *                                 'user_id', 'comment__in', 'meta_value', 'meta_value_num',
-     *                                 the value of $meta_key, and the array keys of
-     *                                 `$meta_query`. Also accepts false, an empty array, or
-     *                                 'none' to disable `ORDER BY` clause.
-     * }
+     * @type string $format        Return value format. 'tree' for a hierarchical tree, 'flat' for a flattened array.
+     *              Default 'tree'.
+     * @type string $status        Comment status to limit results by. Accepts 'hold' (`comment_status=0`),
+     *              'approve' (`comment_status=1`), 'all', or a custom comment status.
+     *              Default 'all'.
+     * @type string $hierarchical  Whether to include comment descendants in the results.
+     *              'threaded' returns a tree, with each comment's children
+     *              stored in a `children` property on the `WP_Comment` object.
+     *              'flat' returns a flat array of found comments plus their children.
+     *              Pass `false` to leave out descendants.
+     *              The parameter is ignored (forced to `false`) when `$fields` is 'ids' or 'counts'.
+     *              Accepts 'threaded', 'flat', or false. Default: 'threaded'.
+     * @type string|array $orderby Comment status or array of statuses. To use 'meta_value'
+     *                    or 'meta_value_num', `$meta_key` must also be defined.
+     *                    To sort by a specific `$meta_query` clause, use that
+     *                    clause's array key. Accepts 'comment_agent',
+     *                    'comment_approved', 'comment_author',
+     *                    'comment_author_email', 'comment_author_IP',
+     *                    'comment_author_url', 'comment_content', 'comment_date',
+     *                    'comment_date_gmt', 'comment_ID', 'comment_karma',
+     *                    'comment_parent', 'comment_post_ID', 'comment_type',
+     *                    'user_id', 'comment__in', 'meta_value', 'meta_value_num',
+     *                    the value of $meta_key, and the array keys of
+     *                    `$meta_query`. Also accepts false, an empty array, or
+     *                    'none' to disable `ORDER BY` clause.
+     *                    }
      *
      * @return WP_Comment[] Array of `WP_Comment` objects.
      */
@@ -329,7 +329,7 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  WP_Comment  $child Child comment.
+     * @param  WP_Comment  $child  Child comment.
      */
     public function add_child(WP_Comment $child)
     {
@@ -341,7 +341,7 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  int  $child_id ID of the child.
+     * @param  int  $child_id  ID of the child.
      * @return WP_Comment|false Returns the comment object if found, otherwise false.
      */
     public function get_child($child_id)
@@ -361,7 +361,7 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  bool  $set Whether the comment's children have already been populated.
+     * @param  bool  $set  Whether the comment's children have already been populated.
      */
     public function populated_children($set)
     {
@@ -375,7 +375,7 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  string  $name Property name.
+     * @param  string  $name  Property name.
      * @return bool
      */
     public function __isset($name)
@@ -394,7 +394,7 @@ final class WP_Comment
      *
      * @since 4.4.0
      *
-     * @param  string  $name Property name.
+     * @param  string  $name  Property name.
      * @return mixed
      */
     public function __get($name)

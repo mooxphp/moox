@@ -31,15 +31,15 @@ class WP_SimplePie_File extends SimplePie_File
      * @since 5.6.1 Multiple headers are concatenated into a comma-separated string,
      *              rather than remaining an array.
      *
-     * @param  string  $url             Remote file URL.
-     * @param  int  $timeout         Optional. How long the connection should stay open in seconds.
-     *                                      Default 10.
-     * @param  int  $redirects       Optional. The number of allowed redirects. Default 5.
-     * @param  string|array  $headers         Optional. Array or string of headers to send with the request.
-     *                                      Default null.
-     * @param  string  $useragent       Optional. User-agent value sent. Default null.
-     * @param  bool  $force_fsockopen Optional. Whether to force opening internet or unix domain socket
-     *                                      connection or not. Default false.
+     * @param  string  $url  Remote file URL.
+     * @param  int  $timeout  Optional. How long the connection should stay open in seconds.
+     *                        Default 10.
+     * @param  int  $redirects  Optional. The number of allowed redirects. Default 5.
+     * @param  string|array  $headers  Optional. Array or string of headers to send with the request.
+     *                                 Default null.
+     * @param  string  $useragent  Optional. User-agent value sent. Default null.
+     * @param  bool  $force_fsockopen  Optional. Whether to force opening internet or unix domain socket
+     *                                 connection or not. Default false.
      */
     public function __construct($url, $timeout = 10, $redirects = 5, $headers = null, $useragent = null, $force_fsockopen = false)
     {

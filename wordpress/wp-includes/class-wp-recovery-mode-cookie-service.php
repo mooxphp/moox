@@ -42,7 +42,7 @@ final class WP_Recovery_Mode_Cookie_Service
          *
          * @since 5.2.0
          *
-         * @param  int  $length Length in seconds.
+         * @param  int  $length  Length in seconds.
          */
         $length = apply_filters('recovery_mode_cookie_length', WEEK_IN_SECONDS);
 
@@ -71,8 +71,8 @@ final class WP_Recovery_Mode_Cookie_Service
      *
      * @since 5.2.0
      *
-     * @param  string  $cookie Optionally specify the cookie string.
-     *                       If omitted, it will be retrieved from the super global.
+     * @param  string  $cookie  Optionally specify the cookie string.
+     *                          If omitted, it will be retrieved from the super global.
      * @return true|WP_Error True on success, error object on failure.
      */
     public function validate_cookie($cookie = '')
@@ -122,8 +122,8 @@ final class WP_Recovery_Mode_Cookie_Service
      *
      * @since 5.2.0
      *
-     * @param  string  $cookie Optionally specify the cookie string.
-     *                       If omitted, it will be retrieved from the super global.
+     * @param  string  $cookie  Optionally specify the cookie string.
+     *                          If omitted, it will be retrieved from the super global.
      * @return string|WP_Error Session ID on success, or error object on failure.
      */
     public function get_session_id_from_cookie($cookie = '')
@@ -151,7 +151,7 @@ final class WP_Recovery_Mode_Cookie_Service
      *
      * @since 5.2.0
      *
-     * @param  string  $cookie Cookie content.
+     * @param  string  $cookie  Cookie content.
      * @return array|WP_Error Cookie parts array, or error object on failure.
      */
     private function parse_cookie($cookie)
@@ -200,7 +200,7 @@ final class WP_Recovery_Mode_Cookie_Service
      *
      * @since 5.2.0
      *
-     * @param  string  $data Data to hash.
+     * @param  string  $data  Data to hash.
      * @return string|false The hashed $data, or false on failure.
      */
     private function recovery_mode_hash($data)

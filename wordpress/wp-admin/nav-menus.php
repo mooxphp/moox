@@ -790,7 +790,7 @@ require_once ABSPATH.'wp-admin/admin-header.php';
         );
     }
 
-    $nav_tab_active_class = '';
+$nav_tab_active_class = '';
 $nav_aria_current = '';
 
 if (! isset($_GET['action']) || isset($_GET['action']) && $_GET['action'] !== 'locations') {
@@ -994,7 +994,7 @@ if ($locations_screen) {
 				         *
 				         * @since 3.6.0
 				         *
-				         * @param  int  $locations Number of menu locations to list. Default 3.
+				         * @param  int  $locations  Number of menu locations to list. Default 3.
 				         */
 				        $locations_listed_per_menu = absint(apply_filters('wp_nav_locations_listed_per_menu', 3));
 
@@ -1041,7 +1041,7 @@ if ($locations_screen) {
 			<?php
 		}
 
-    $metabox_holder_disabled_class = '';
+	    $metabox_holder_disabled_class = '';
 
 	    if (isset($_GET['menu']) && (int) $_GET['menu'] === 0) {
 	        $metabox_holder_disabled_class = ' metabox-holder-disabled';
@@ -1143,7 +1143,7 @@ if ($locations_screen) {
 								<?php
 							}
 
-                            $no_menus_style = '';
+	    $no_menus_style = '';
 
 	    if ($one_theme_location_no_menus) {
 	        $no_menus_style = 'style="display: none;"';

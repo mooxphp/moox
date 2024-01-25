@@ -45,7 +45,7 @@ class WP_REST_Template_Revisions_Controller extends WP_REST_Revisions_Controller
      *
      * @since 6.4.0
      *
-     * @param  string  $parent_post_type Post type of the parent.
+     * @param  string  $parent_post_type  Post type of the parent.
      */
     public function __construct($parent_post_type)
     {
@@ -162,7 +162,7 @@ class WP_REST_Template_Revisions_Controller extends WP_REST_Revisions_Controller
      *
      * @since 6.4.0
      *
-     * @param  int  $parent_post_id Supplied ID.
+     * @param  int  $parent_post_id  Supplied ID.
      * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
      */
     protected function get_parent($parent_post_id)
@@ -185,8 +185,8 @@ class WP_REST_Template_Revisions_Controller extends WP_REST_Revisions_Controller
      *
      * @since 6.4.0
      *
-     * @param  WP_Post  $item    Post revision object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $item  Post revision object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -220,7 +220,7 @@ class WP_REST_Template_Revisions_Controller extends WP_REST_Revisions_Controller
      *
      * @since 6.4.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to delete the item, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -259,7 +259,7 @@ class WP_REST_Template_Revisions_Controller extends WP_REST_Revisions_Controller
      *
      * @since 6.4.0
      *
-     * @param  WP_Block_Template  $template Template.
+     * @param  WP_Block_Template  $template  Template.
      * @return array Links for the given post.
      */
     protected function prepare_links($template)

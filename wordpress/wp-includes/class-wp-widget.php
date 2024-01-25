@@ -113,9 +113,9 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance The settings for the particular instance of the widget.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  The settings for the particular instance of the widget.
      */
     public function widget($args, $instance)
     {
@@ -131,9 +131,9 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Settings to save or bool false to cancel saving.
      */
     public function update($new_instance, $old_instance)
@@ -146,7 +146,7 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      * @return string Default return is 'noform'.
      */
     public function form($instance)
@@ -163,13 +163,13 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  string  $id_base         Base ID for the widget, lowercase and unique. If left empty,
-     *                                a portion of the widget's PHP class name will be used. Has to be unique.
-     * @param  string  $name            Name for the widget displayed on the configuration page.
+     * @param  string  $id_base  Base ID for the widget, lowercase and unique. If left empty,
+     *                           a portion of the widget's PHP class name will be used. Has to be unique.
+     * @param  string  $name  Name for the widget displayed on the configuration page.
      * @param  array  $widget_options  Optional. Widget options. See wp_register_sidebar_widget() for
-     *                                information on accepted arguments. Default empty array.
-     * @param  array  $control_options Optional. Widget control options. See wp_register_widget_control() for
-     *                                information on accepted arguments. Default empty array.
+     *                                 information on accepted arguments. Default empty array.
+     * @param  array  $control_options  Optional. Widget control options. See wp_register_widget_control() for
+     *                                  information on accepted arguments. Default empty array.
      */
     public function __construct($id_base, $name, $widget_options = [], $control_options = [])
     {
@@ -199,13 +199,13 @@ class WP_Widget
      * @deprecated 4.3.0 Use __construct() instead.
      * @see WP_Widget::__construct()
      *
-     * @param  string  $id_base         Base ID for the widget, lowercase and unique. If left empty,
-     *                                a portion of the widget's PHP class name will be used. Has to be unique.
-     * @param  string  $name            Name for the widget displayed on the configuration page.
+     * @param  string  $id_base  Base ID for the widget, lowercase and unique. If left empty,
+     *                           a portion of the widget's PHP class name will be used. Has to be unique.
+     * @param  string  $name  Name for the widget displayed on the configuration page.
      * @param  array  $widget_options  Optional. Widget options. See wp_register_sidebar_widget() for
-     *                                information on accepted arguments. Default empty array.
-     * @param  array  $control_options Optional. Widget control options. See wp_register_widget_control() for
-     *                                information on accepted arguments. Default empty array.
+     *                                 information on accepted arguments. Default empty array.
+     * @param  array  $control_options  Optional. Widget control options. See wp_register_widget_control() for
+     *                                  information on accepted arguments. Default empty array.
      */
     public function WP_Widget($id_base, $name, $widget_options = [], $control_options = [])
     {
@@ -222,7 +222,7 @@ class WP_Widget
      * @since 2.8.0
      * @since 4.4.0 Array format field names are now accepted.
      *
-     * @param  string  $field_name Field name.
+     * @param  string  $field_name  Field name.
      * @return string Name attribute for `$field_name`.
      */
     public function get_field_name($field_name)
@@ -248,7 +248,7 @@ class WP_Widget
      * @since 2.8.0
      * @since 4.4.0 Array format field IDs are now accepted.
      *
-     * @param  string  $field_name Field name.
+     * @param  string  $field_name  Field name.
      * @return string ID attribute for `$field_name`.
      */
     public function get_field_id($field_name)
@@ -296,8 +296,8 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  int  $number The unique order number of this widget instance compared to other
-     *                    instances of the same class.
+     * @param  int  $number  The unique order number of this widget instance compared to other
+     *                       instances of the same class.
      */
     public function _set($number)
     {
@@ -369,14 +369,14 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $args        Display arguments. See WP_Widget::widget() for information
-     *                               on accepted arguments.
-     * @param  int|array  $widget_args {
-     *     Optional. Internal order number of the widget instance, or array of multi-widget arguments.
-     *     Default 1.
+     * @param  array  $args  Display arguments. See WP_Widget::widget() for information
+     *                       on accepted arguments.
+     * @param  int|array  $widget_args  {
+     *                                  Optional. Internal order number of the widget instance, or array of multi-widget arguments.
+     *                                  Default 1.
      *
-     *     @type int $number Number increment used for multiples of the same widget.
-     * }
+     * @type int $number Number increment used for multiples of the same widget.
+     *           }
      */
     public function display_callback($args, $widget_args = 1)
     {
@@ -398,9 +398,9 @@ class WP_Widget
              *
              * @since 2.8.0
              *
-             * @param  array  $instance The current widget instance's settings.
-             * @param  WP_Widget  $widget   The current widget instance.
-             * @param  array  $args     An array of default widget arguments.
+             * @param  array  $instance  The current widget instance's settings.
+             * @param  WP_Widget  $widget  The current widget instance.
+             * @param  array  $args  An array of default widget arguments.
              */
             $instance = apply_filters('widget_display_callback', $instance, $this, $args);
 
@@ -428,7 +428,7 @@ class WP_Widget
      *
      * @global array $wp_registered_widgets
      *
-     * @param  int  $deprecated Not used.
+     * @param  int  $deprecated  Not used.
      */
     public function update_callback($deprecated = 1)
     {
@@ -491,10 +491,10 @@ class WP_Widget
                  *
                  * @since 2.8.0
                  *
-                 * @param  array  $instance     The current widget instance's settings.
-                 * @param  array  $new_instance Array of new widget settings.
-                 * @param  array  $old_instance Array of old widget settings.
-                 * @param  WP_Widget  $widget       The current widget instance.
+                 * @param  array  $instance  The current widget instance's settings.
+                 * @param  array  $new_instance  Array of new widget settings.
+                 * @param  array  $old_instance  Array of old widget settings.
+                 * @param  WP_Widget  $widget  The current widget instance.
                  */
                 $instance = apply_filters('widget_update_callback', $instance, $new_instance, $old_instance, $this);
 
@@ -515,12 +515,12 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  int|array  $widget_args {
-     *     Optional. Internal order number of the widget instance, or array of multi-widget arguments.
-     *     Default 1.
+     * @param  int|array  $widget_args  {
+     *                                  Optional. Internal order number of the widget instance, or array of multi-widget arguments.
+     *                                  Default 1.
      *
-     *     @type int $number Number increment used for multiples of the same widget.
-     * }
+     * @type int $number Number increment used for multiples of the same widget.
+     *           }
      *
      * @return string|null
      */
@@ -549,8 +549,8 @@ class WP_Widget
          *
          * @since 2.8.0
          *
-         * @param  array  $instance The current widget instance's settings.
-         * @param  WP_Widget  $widget   The current widget instance.
+         * @param  array  $instance  The current widget instance's settings.
+         * @param  WP_Widget  $widget  The current widget instance.
          */
         $instance = apply_filters('widget_form_callback', $instance, $this);
 
@@ -571,9 +571,9 @@ class WP_Widget
              *
              * @since 2.8.0
              *
-             * @param  WP_Widget  $widget   The widget instance (passed by reference).
-             * @param  null  $return   Return null if new fields are added.
-             * @param  array  $instance An array of the widget's settings.
+             * @param  WP_Widget  $widget  The widget instance (passed by reference).
+             * @param  null  $return  Return null if new fields are added.
+             * @param  array  $instance  An array of the widget's settings.
              */
             do_action_ref_array('in_widget_form', [&$this, &$return, $instance]);
         }
@@ -586,8 +586,8 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  int  $number Optional. The unique order number of this widget instance
-     *                    compared to other instances of the same class. Default -1.
+     * @param  int  $number  Optional. The unique order number of this widget instance
+     *                       compared to other instances of the same class. Default -1.
      */
     public function _register_one($number = -1)
     {
@@ -620,7 +620,7 @@ class WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $settings Multi-dimensional array of widget instance settings.
+     * @param  array  $settings  Multi-dimensional array of widget instance settings.
      */
     public function save_settings($settings)
     {

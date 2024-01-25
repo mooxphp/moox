@@ -122,8 +122,8 @@ class AtomParser
     /**
      * Map attributes to key="val"
      *
-     * @param  string  $k Key
-     * @param  string  $v Value
+     * @param  string  $k  Key
+     * @param  string  $v  Value
      * @return string
      */
     public static function map_attrs($k, $v)
@@ -134,8 +134,8 @@ class AtomParser
     /**
      * Map XML namespace to string.
      *
-     * @param  indexish  $p XML Namespace element index
-     * @param  array  $n Two-element array pair. [ 0 => {namespace}, 1 => {url} ]
+     * @param  indexish  $p  XML Namespace element index
+     * @param  array  $n  Two-element array pair. [ 0 => {namespace}, 1 => {url} ]
      * @return string 'xmlns="{url}"' or 'xmlns:{namespace}="{url}"'
      */
     public static function map_xmlns($p, $n)

@@ -10,7 +10,7 @@
  *
  * @since 6.0.0
  *
- * @param  array  $block Block object.
+ * @param  array  $block  Block object.
  * @return string The unique class name.
  */
 function wp_get_elements_class_name($block)
@@ -24,8 +24,8 @@ function wp_get_elements_class_name($block)
  * @since 5.8.0
  * @since 6.4.0 Added support for button and heading element styling.
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
  * @return string Filtered block content.
  */
 function wp_render_elements_support($block_content, $block)
@@ -133,8 +133,8 @@ function wp_render_elements_support($block_content, $block)
  * @since 6.0.0
  * @since 6.1.0 Implemented the style engine to generate CSS and classnames.
  *
- * @param  string|null  $pre_render The pre-rendered content. Default null.
- * @param  array  $block      The block being rendered.
+ * @param  string|null  $pre_render  The pre-rendered content. Default null.
+ * @param  array  $block  The block being rendered.
  * @return null
  */
 function wp_render_elements_support_styles($pre_render, $block)

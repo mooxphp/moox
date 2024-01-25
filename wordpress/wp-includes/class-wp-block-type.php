@@ -293,40 +293,40 @@ class WP_Block_Type
      * @since 6.4.0 Added the `block_hooks` property.
      * @see register_block_type()
      *
-     * @param  string  $block_type Block type name including namespace.
-     * @param  array|string  $args       {
-     *     Optional. Array or string of arguments for registering a block type. Any arguments may be defined,
-     *     however the ones described below are supported by default. Default empty array.
+     * @param  string  $block_type  Block type name including namespace.
+     * @param  array|string  $args  {
+     *                              Optional. Array or string of arguments for registering a block type. Any arguments may be defined,
+     *                              however the ones described below are supported by default. Default empty array.
      *
-     *     @type string        $api_version              Block API version.
-     *     @type string        $title                    Human-readable block type label.
-     *     @type string|null   $category                 Block type category classification, used in
-     *                                                   search interfaces to arrange block types by category.
-     *     @type string[]|null $parent                   Setting parent lets a block require that it is only
-     *                                                   available when nested within the specified blocks.
-     *     @type string[]|null $ancestor                 Setting ancestor makes a block available only inside the specified
-     *                                                   block types at any position of the ancestor's block subtree.
-     *     @type string|null   $icon                     Block type icon.
-     *     @type string        $description              A detailed block type description.
-     *     @type string[]      $keywords                 Additional keywords to produce block type as
-     *                                                   result in search interfaces.
-     *     @type string|null   $textdomain               The translation textdomain.
-     *     @type array[]       $styles                   Alternative block styles.
-     *     @type array[]       $variations               Block variations.
-     *     @type array         $selectors                Custom CSS selectors for theme.json style generation.
-     *     @type array|null    $supports                 Supported features.
-     *     @type array|null    $example                  Structured data for the block preview.
-     *     @type callable|null $render_callback          Block type render callback.
-     *     @type array|null    $attributes               Block type attributes property schemas.
-     *     @type string[]      $uses_context             Context values inherited by blocks of this type.
-     *     @type string[]|null $provides_context         Context provided by blocks of this type.
-     *     @type array[]       $block_hooks              Block hooks.
-     *     @type string[]      $editor_script_handles    Block type editor only script handles.
-     *     @type string[]      $script_handles           Block type front end and editor script handles.
-     *     @type string[]      $view_script_handles      Block type front end only script handles.
-     *     @type string[]      $editor_style_handles     Block type editor only style handles.
-     *     @type string[]      $style_handles            Block type front end and editor style handles.
-     * }
+     * @type string $api_version              Block API version.
+     * @type string $title                    Human-readable block type label.
+     * @type string|null $category                 Block type category classification, used in
+     *                   search interfaces to arrange block types by category.
+     * @type string[]|null $parent                   Setting parent lets a block require that it is only
+     *                     available when nested within the specified blocks.
+     * @type string[]|null $ancestor                 Setting ancestor makes a block available only inside the specified
+     *                     block types at any position of the ancestor's block subtree.
+     * @type string|null $icon                     Block type icon.
+     * @type string $description              A detailed block type description.
+     * @type string[] $keywords                 Additional keywords to produce block type as
+     *                result in search interfaces.
+     * @type string|null $textdomain               The translation textdomain.
+     * @type array[] $styles                   Alternative block styles.
+     * @type array[] $variations               Block variations.
+     * @type array $selectors                Custom CSS selectors for theme.json style generation.
+     * @type array|null $supports                 Supported features.
+     * @type array|null $example                  Structured data for the block preview.
+     * @type callable|null $render_callback          Block type render callback.
+     * @type array|null $attributes               Block type attributes property schemas.
+     * @type string[] $uses_context             Context values inherited by blocks of this type.
+     * @type string[]|null $provides_context         Context provided by blocks of this type.
+     * @type array[] $block_hooks              Block hooks.
+     * @type string[] $editor_script_handles    Block type editor only script handles.
+     * @type string[] $script_handles           Block type front end and editor script handles.
+     * @type string[] $view_script_handles      Block type front end only script handles.
+     * @type string[] $editor_style_handles     Block type editor only style handles.
+     * @type string[] $style_handles            Block type front end and editor style handles.
+     *                }
      */
     public function __construct($block_type, $args = [])
     {
@@ -341,7 +341,7 @@ class WP_Block_Type
      *
      * @since 6.1.0
      *
-     * @param  string  $name Deprecated property name.
+     * @param  string  $name  Deprecated property name.
      * @return string|string[]|null|void The value read from the new property if the first item in the array provided,
      *                                   null when value not found, or void when unknown property name provided.
      */
@@ -370,7 +370,7 @@ class WP_Block_Type
      *
      * @since 6.1.0
      *
-     * @param  string  $name Deprecated property name.
+     * @param  string  $name  Deprecated property name.
      * @return bool Returns true when for the new property the first item in the array exists,
      *              or false otherwise.
      */
@@ -393,7 +393,7 @@ class WP_Block_Type
      * @since 6.1.0
      *
      * @param  string  $name  Property name.
-     * @param  mixed  $value Property value.
+     * @param  mixed  $value  Property value.
      */
     public function __set($name, $value)
     {
@@ -437,8 +437,8 @@ class WP_Block_Type
      *
      * @since 5.0.0
      *
-     * @param  array  $attributes Optional. Block attributes. Default empty array.
-     * @param  string  $content    Optional. Block content. Default empty string.
+     * @param  array  $attributes  Optional. Block attributes. Default empty array.
+     * @param  string  $content  Optional. Block content. Default empty string.
      * @return string Rendered block type output.
      */
     public function render($attributes = [], $content = '')
@@ -471,7 +471,7 @@ class WP_Block_Type
      *
      * @since 5.0.0
      *
-     * @param  array  $attributes Original block attributes.
+     * @param  array  $attributes  Original block attributes.
      * @return array Prepared block attributes.
      */
     public function prepare_attributes_for_render($attributes)
@@ -518,8 +518,8 @@ class WP_Block_Type
      *
      * @since 5.0.0
      *
-     * @param  array|string  $args Array or string of arguments for registering a block type.
-     *                           See WP_Block_Type::__construct() for information on accepted arguments.
+     * @param  array|string  $args  Array or string of arguments for registering a block type.
+     *                              See WP_Block_Type::__construct() for information on accepted arguments.
      */
     public function set_props($args)
     {
@@ -549,8 +549,8 @@ class WP_Block_Type
          *
          * @since 5.5.0
          *
-         * @param  array  $args       Array of arguments for registering a block type.
-         * @param  string  $block_type Block type name including namespace.
+         * @param  array  $args  Array of arguments for registering a block type.
+         * @param  string  $block_type  Block type name including namespace.
          */
         $args = apply_filters('register_block_type_args', $args, $this->name);
 

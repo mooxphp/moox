@@ -139,7 +139,7 @@ class WP_Styles extends WP_Dependencies
          *
          * @since 2.6.0
          *
-         * @param  WP_Styles  $wp_styles WP_Styles instance (passed by reference).
+         * @param  WP_Styles  $wp_styles  WP_Styles instance (passed by reference).
          */
         do_action_ref_array('wp_default_styles', [&$this]);
     }
@@ -151,9 +151,9 @@ class WP_Styles extends WP_Dependencies
      * @since 5.5.0 Added the `$group` parameter.
      * @see WP_Dependencies::do_item()
      *
-     * @param  string  $handle The style's registered handle.
+     * @param  string  $handle  The style's registered handle.
      * @param  int|false  $group  Optional. Group level: level (int), no groups (false).
-     *                          Default false.
+     *                            Default false.
      * @return bool True on success, false on failure.
      */
     public function do_item($handle, $group = false)
@@ -252,9 +252,9 @@ class WP_Styles extends WP_Dependencies
          * @since 4.3.0 Introduced the `$href` parameter.
          * @since 4.5.0 Introduced the `$media` parameter.
          *
-         * @param  string  $tag    The link tag for the enqueued style.
-         * @param  string  $handle The style's registered handle.
-         * @param  string  $href   The stylesheet's source URL.
+         * @param  string  $tag  The link tag for the enqueued style.
+         * @param  string  $handle  The style's registered handle.
+         * @param  string  $href  The stylesheet's source URL.
          * @param  string  $media  The stylesheet's media attribute.
          */
         $tag = apply_filters('style_loader_tag', $tag, $handle, $href, $media);
@@ -309,8 +309,8 @@ class WP_Styles extends WP_Dependencies
      *
      * @since 3.3.0
      *
-     * @param  string  $handle The style's registered handle.
-     * @param  string  $code   String containing the CSS styles to be added.
+     * @param  string  $handle  The style's registered handle.
+     * @param  string  $code  String containing the CSS styles to be added.
      * @return bool True on success, false on failure.
      */
     public function add_inline_style($handle, $code)
@@ -335,8 +335,8 @@ class WP_Styles extends WP_Dependencies
      * @since 3.3.0
      *
      * @param  string  $handle  The style's registered handle.
-     * @param  bool  $display Optional. Whether to print the inline style
-     *                        instead of just returning it. Default true.
+     * @param  bool  $display  Optional. Whether to print the inline style
+     *                         instead of just returning it. Default true.
      * @return string|bool False if no data exists, inline styles if `$display` is true,
      *                     true otherwise.
      */
@@ -370,11 +370,11 @@ class WP_Styles extends WP_Dependencies
      * @since 2.6.0
      * @see WP_Dependencies::all_deps()
      *
-     * @param  string|string[]  $handles   Item handle (string) or item handles (array of strings).
-     * @param  bool  $recursion Optional. Internal flag that function is calling itself.
-     *                                   Default false.
-     * @param  int|false  $group     Optional. Group level: level (int), no groups (false).
-     *                                   Default false.
+     * @param  string|string[]  $handles  Item handle (string) or item handles (array of strings).
+     * @param  bool  $recursion  Optional. Internal flag that function is calling itself.
+     *                           Default false.
+     * @param  int|false  $group  Optional. Group level: level (int), no groups (false).
+     *                            Default false.
      * @return bool True on success, false on failure.
      */
     public function all_deps($handles, $recursion = false, $group = false)
@@ -386,7 +386,7 @@ class WP_Styles extends WP_Dependencies
              *
              * @since 2.6.0
              *
-             * @param  string[]  $to_do The list of enqueued style handles about to be processed.
+             * @param  string[]  $to_do  The list of enqueued style handles about to be processed.
              */
             $this->to_do = apply_filters('print_styles_array', $this->to_do);
         }
@@ -399,9 +399,9 @@ class WP_Styles extends WP_Dependencies
      *
      * @since 2.6.0
      *
-     * @param  string  $src    The source of the enqueued style.
-     * @param  string  $ver    The version of the enqueued style.
-     * @param  string  $handle The style's registered handle.
+     * @param  string  $src  The source of the enqueued style.
+     * @param  string  $ver  The version of the enqueued style.
+     * @param  string  $handle  The style's registered handle.
      * @return string Style's fully-qualified URL.
      */
     public function _css_href($src, $ver, $handle)
@@ -419,8 +419,8 @@ class WP_Styles extends WP_Dependencies
          *
          * @since 2.6.0
          *
-         * @param  string  $src    The source URL of the enqueued style.
-         * @param  string  $handle The style's registered handle.
+         * @param  string  $src  The source URL of the enqueued style.
+         * @param  string  $handle  The style's registered handle.
          */
         $src = apply_filters('style_loader_src', $src, $handle);
 
@@ -432,7 +432,7 @@ class WP_Styles extends WP_Dependencies
      *
      * @since 2.8.0
      *
-     * @param  string  $src The source of the enqueued style.
+     * @param  string  $src  The source of the enqueued style.
      * @return bool True if found, false if not.
      */
     public function in_default_dir($src)

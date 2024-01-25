@@ -93,7 +93,7 @@ class WP_Fatal_Error_Handler
      *
      * @since 5.2.0
      *
-     * @param  array  $error Error information retrieved from `error_get_last()`.
+     * @param  array  $error  Error information retrieved from `error_get_last()`.
      * @return bool Whether WordPress should handle this error.
      */
     protected function should_handle_error($error)
@@ -119,8 +119,8 @@ class WP_Fatal_Error_Handler
          *
          * @since 5.2.0
          *
-         * @param  bool  $should_handle_error Whether the error should be handled by the fatal error handler.
-         * @param  array  $error               Error information retrieved from `error_get_last()`.
+         * @param  bool  $should_handle_error  Whether the error should be handled by the fatal error handler.
+         * @param  array  $error  Error information retrieved from `error_get_last()`.
          */
         return (bool) apply_filters('wp_should_handle_php_error', false, $error);
     }
@@ -138,8 +138,8 @@ class WP_Fatal_Error_Handler
      * @since 5.2.0
      * @since 5.3.0 The `$handled` parameter was added.
      *
-     * @param  array  $error   Error information retrieved from `error_get_last()`.
-     * @param  true|WP_Error  $handled Whether Recovery Mode handled the fatal error.
+     * @param  array  $error  Error information retrieved from `error_get_last()`.
+     * @param  true|WP_Error  $handled  Whether Recovery Mode handled the fatal error.
      */
     protected function display_error_template($error, $handled)
     {
@@ -169,8 +169,8 @@ class WP_Fatal_Error_Handler
      * @since 5.2.0
      * @since 5.3.0 The `$handled` parameter was added.
      *
-     * @param  array  $error   Error information retrieved from `error_get_last()`.
-     * @param  true|WP_Error  $handled Whether Recovery Mode handled the fatal error.
+     * @param  array  $error  Error information retrieved from `error_get_last()`.
+     * @param  true|WP_Error  $handled  Whether Recovery Mode handled the fatal error.
      */
     protected function display_default_error_template($error, $handled)
     {
@@ -216,8 +216,8 @@ class WP_Fatal_Error_Handler
          *
          * @since 5.2.0
          *
-         * @param  string  $message HTML error message to display.
-         * @param  array  $error   Error information retrieved from `error_get_last()`.
+         * @param  string  $message  HTML error message to display.
+         * @param  array  $error  Error information retrieved from `error_get_last()`.
          */
         $message = apply_filters('wp_php_error_message', $message, $error);
 
@@ -226,9 +226,9 @@ class WP_Fatal_Error_Handler
          *
          * @since 5.2.0
          *
-         * @param  array  $args Associative array of arguments passed to `wp_die()`. By default these contain a
-         *                    'response' key, and optionally 'link_url' and 'link_text' keys.
-         * @param  array  $error Error information retrieved from `error_get_last()`.
+         * @param  array  $args  Associative array of arguments passed to `wp_die()`. By default these contain a
+         *                       'response' key, and optionally 'link_url' and 'link_text' keys.
+         * @param  array  $error  Error information retrieved from `error_get_last()`.
          */
         $args = apply_filters('wp_php_error_args', $args, $error);
 

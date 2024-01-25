@@ -28,7 +28,7 @@ final class WP_oEmbed_Controller
          *
          * @since 4.4.0
          *
-         * @param  int  $maxwidth Maximum allowed width. Default 600.
+         * @param  int  $maxwidth  Maximum allowed width. Default 600.
          */
         $maxwidth = apply_filters('oembed_default_width', 600);
 
@@ -113,7 +113,7 @@ final class WP_oEmbed_Controller
      *
      * @since 4.4.0
      *
-     * @param  WP_REST_Request  $request Full data about the request.
+     * @param  WP_REST_Request  $request  Full data about the request.
      * @return array|WP_Error oEmbed response data or WP_Error on failure.
      */
     public function get_item($request)
@@ -125,8 +125,8 @@ final class WP_oEmbed_Controller
          *
          * @since 4.4.0
          *
-         * @param  int  $post_id The post ID.
-         * @param  string  $url     The requested URL.
+         * @param  int  $post_id  The post ID.
+         * @param  string  $url  The requested URL.
          */
         $post_id = apply_filters('oembed_request_post_id', $post_id, $request['url']);
 
@@ -166,7 +166,7 @@ final class WP_oEmbed_Controller
      * @global WP_Embed   $wp_embed
      * @global WP_Scripts $wp_scripts
      *
-     * @param  WP_REST_Request  $request Full data about the request.
+     * @param  WP_REST_Request  $request  Full data about the request.
      * @return object|WP_Error oEmbed response data or WP_Error on failure.
      */
     public function get_proxy_item($request)
@@ -237,9 +237,9 @@ final class WP_oEmbed_Controller
          *
          * @since 4.8.0
          *
-         * @param  int  $time    Time to live (in seconds).
-         * @param  string  $url     The attempted embed URL.
-         * @param  array  $args    An array of embed request arguments.
+         * @param  int  $time  Time to live (in seconds).
+         * @param  string  $url  The attempted embed URL.
+         * @param  array  $args  An array of embed request arguments.
          */
         $ttl = apply_filters('rest_oembed_ttl', DAY_IN_SECONDS, $url, $args);
 

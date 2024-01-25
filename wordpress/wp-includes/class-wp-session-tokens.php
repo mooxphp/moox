@@ -27,7 +27,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  int  $user_id User whose session to manage.
+     * @param  int  $user_id  User whose session to manage.
      */
     protected function __construct($user_id)
     {
@@ -42,7 +42,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  int  $user_id User whose session to manage.
+     * @param  int  $user_id  User whose session to manage.
      * @return WP_Session_Tokens The session object, which is by default an instance of
      *                           the `WP_User_Meta_Session_Tokens` class.
      */
@@ -53,8 +53,8 @@ abstract class WP_Session_Tokens
          *
          * @since 4.0.0
          *
-         * @param  string  $session Name of class to use as the manager.
-         *                        Default 'WP_User_Meta_Session_Tokens'.
+         * @param  string  $session  Name of class to use as the manager.
+         *                           Default 'WP_User_Meta_Session_Tokens'.
          */
         $manager = apply_filters('session_token_manager', 'WP_User_Meta_Session_Tokens');
 
@@ -66,7 +66,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $token Session token to hash.
+     * @param  string  $token  Session token to hash.
      * @return string A hash of the session token (a verifier).
      */
     private function hash_token($token)
@@ -84,7 +84,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $token Session token.
+     * @param  string  $token  Session token.
      * @return array|null The session, or null if it does not exist.
      */
     final public function get($token)
@@ -101,7 +101,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $token Token to verify.
+     * @param  string  $token  Token to verify.
      * @return bool Whether the token is valid for the user.
      */
     final public function verify($token)
@@ -124,7 +124,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  int  $expiration Session expiration timestamp.
+     * @param  int  $expiration  Session expiration timestamp.
      * @return string Session token.
      */
     final public function create($expiration)
@@ -136,8 +136,8 @@ abstract class WP_Session_Tokens
          *
          * @since 4.0.0
          *
-         * @param  array  $session Array of extra data.
-         * @param  int  $user_id User ID.
+         * @param  array  $session  Array of extra data.
+         * @param  int  $user_id  User ID.
          */
         $session = apply_filters('attach_session_information', [], $this->user_id);
         $session['expiration'] = $expiration;
@@ -167,8 +167,8 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $token Session token to update.
-     * @param  array  $session Session information.
+     * @param  string  $token  Session token to update.
+     * @param  array  $session  Session information.
      */
     final public function update($token, $session)
     {
@@ -181,7 +181,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $token Session token to destroy.
+     * @param  string  $token  Session token to destroy.
      */
     final public function destroy($token)
     {
@@ -194,7 +194,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $token_to_keep Session token to keep.
+     * @param  string  $token_to_keep  Session token to keep.
      */
     final public function destroy_others($token_to_keep)
     {
@@ -212,7 +212,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  array  $session Session to check.
+     * @param  array  $session  Session to check.
      * @return bool Whether session is valid.
      */
     final protected function is_still_valid($session)
@@ -268,7 +268,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $verifier Verifier for the session to retrieve.
+     * @param  string  $verifier  Verifier for the session to retrieve.
      * @return array|null The session, or null if it does not exist.
      */
     abstract protected function get_session($verifier);
@@ -280,7 +280,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $verifier Verifier for the session to update.
+     * @param  string  $verifier  Verifier for the session to update.
      * @param  array  $session  Optional. Session. Omitting this argument destroys the session.
      */
     abstract protected function update_session($verifier, $session = null);
@@ -290,7 +290,7 @@ abstract class WP_Session_Tokens
      *
      * @since 4.0.0
      *
-     * @param  string  $verifier Verifier of the session to keep.
+     * @param  string  $verifier  Verifier of the session to keep.
      */
     abstract protected function destroy_other_sessions($verifier);
 

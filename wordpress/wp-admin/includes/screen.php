@@ -8,7 +8,7 @@
  *
  * @since 2.7.0
  *
- * @param  string|WP_Screen  $screen The screen you want the headers for
+ * @param  string|WP_Screen  $screen  The screen you want the headers for
  * @return string[] The column header labels keyed by column ID.
  */
 function get_column_headers($screen)
@@ -30,7 +30,7 @@ function get_column_headers($screen)
          *
          * @since 3.0.0
          *
-         * @param  string[]  $columns The column header labels keyed by column ID.
+         * @param  string[]  $columns  The column header labels keyed by column ID.
          */
         $column_headers[$screen->id] = apply_filters("manage_{$screen->id}_columns", []);
     }
@@ -43,7 +43,7 @@ function get_column_headers($screen)
  *
  * @since 2.7.0
  *
- * @param  string|WP_Screen  $screen The screen you want the hidden columns for
+ * @param  string|WP_Screen  $screen  The screen you want the hidden columns for
  * @return string[] Array of IDs of hidden columns.
  */
 function get_hidden_columns($screen)
@@ -64,8 +64,8 @@ function get_hidden_columns($screen)
          *
          * @since 4.4.0
          *
-         * @param  string[]  $hidden Array of IDs of columns hidden by default.
-         * @param  WP_Screen  $screen WP_Screen object of the current screen.
+         * @param  string[]  $hidden  Array of IDs of columns hidden by default.
+         * @param  WP_Screen  $screen  WP_Screen object of the current screen.
          */
         $hidden = apply_filters('default_hidden_columns', $hidden, $screen);
     }
@@ -76,9 +76,9 @@ function get_hidden_columns($screen)
      * @since 4.4.0
      * @since 4.4.1 Added the `use_defaults` parameter.
      *
-     * @param  string[]  $hidden       Array of IDs of hidden columns.
-     * @param  WP_Screen  $screen       WP_Screen object of the current screen.
-     * @param  bool  $use_defaults Whether to show the default columns.
+     * @param  string[]  $hidden  Array of IDs of hidden columns.
+     * @param  WP_Screen  $screen  WP_Screen object of the current screen.
+     * @param  bool  $use_defaults  Whether to show the default columns.
      */
     return apply_filters('hidden_columns', $hidden, $screen, $use_defaults);
 }
@@ -146,7 +146,7 @@ function meta_box_prefs($screen)
  *
  * @since 2.7.0
  *
- * @param  string|WP_Screen  $screen Screen identifier
+ * @param  string|WP_Screen  $screen  Screen identifier
  * @return string[] IDs of hidden meta boxes.
  */
 function get_hidden_meta_boxes($screen)
@@ -176,8 +176,8 @@ function get_hidden_meta_boxes($screen)
          *
          * @since 3.1.0
          *
-         * @param  string[]  $hidden An array of IDs of meta boxes hidden by default.
-         * @param  WP_Screen  $screen WP_Screen object of the current screen.
+         * @param  string[]  $hidden  An array of IDs of meta boxes hidden by default.
+         * @param  WP_Screen  $screen  WP_Screen object of the current screen.
          */
         $hidden = apply_filters('default_hidden_meta_boxes', $hidden, $screen);
     }
@@ -187,10 +187,10 @@ function get_hidden_meta_boxes($screen)
      *
      * @since 3.3.0
      *
-     * @param  string[]  $hidden       An array of IDs of hidden meta boxes.
-     * @param  WP_Screen  $screen       WP_Screen object of the current screen.
-     * @param  bool  $use_defaults Whether to show the default meta boxes.
-     *                                Default true.
+     * @param  string[]  $hidden  An array of IDs of hidden meta boxes.
+     * @param  WP_Screen  $screen  WP_Screen object of the current screen.
+     * @param  bool  $use_defaults  Whether to show the default meta boxes.
+     *                              Default true.
      */
     return apply_filters('hidden_meta_boxes', $hidden, $screen, $use_defaults);
 }
@@ -200,8 +200,8 @@ function get_hidden_meta_boxes($screen)
  *
  * @since 3.1.0
  *
- * @param  string  $option An option name.
- * @param  mixed  $args   Option-dependent arguments.
+ * @param  string  $option  An option name.
+ * @param  mixed  $args  Option-dependent arguments.
  */
 function add_screen_option($option, $args = [])
 {
@@ -239,8 +239,8 @@ function get_current_screen()
  *
  * @since 3.0.0
  *
- * @param  string|WP_Screen  $hook_name Optional. The hook name (also known as the hook suffix) used to determine the screen,
- *                                    or an existing screen object.
+ * @param  string|WP_Screen  $hook_name  Optional. The hook name (also known as the hook suffix) used to determine the screen,
+ *                                       or an existing screen object.
  */
 function set_current_screen($hook_name = '')
 {

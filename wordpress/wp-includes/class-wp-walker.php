@@ -61,9 +61,9 @@ class Walker
      *
      * @abstract
      *
-     * @param  string  $output Used to append additional content (passed by reference).
+     * @param  string  $output  Used to append additional content (passed by reference).
      * @param  int  $depth  Depth of the item.
-     * @param  array  $args   An array of additional arguments.
+     * @param  array  $args  An array of additional arguments.
      */
     public function start_lvl(&$output, $depth = 0, $args = [])
     {
@@ -79,9 +79,9 @@ class Walker
      *
      * @abstract
      *
-     * @param  string  $output Used to append additional content (passed by reference).
+     * @param  string  $output  Used to append additional content (passed by reference).
      * @param  int  $depth  Depth of the item.
-     * @param  array  $args   An array of additional arguments.
+     * @param  array  $args  An array of additional arguments.
      */
     public function end_lvl(&$output, $depth = 0, $args = [])
     {
@@ -98,11 +98,11 @@ class Walker
      *
      * @abstract
      *
-     * @param  string  $output            Used to append additional content (passed by reference).
-     * @param  object  $data_object       The data object.
-     * @param  int  $depth             Depth of the item.
-     * @param  array  $args              An array of additional arguments.
-     * @param  int  $current_object_id Optional. ID of the current item. Default 0.
+     * @param  string  $output  Used to append additional content (passed by reference).
+     * @param  object  $data_object  The data object.
+     * @param  int  $depth  Depth of the item.
+     * @param  array  $args  An array of additional arguments.
+     * @param  int  $current_object_id  Optional. ID of the current item. Default 0.
      */
     public function start_el(&$output, $data_object, $depth = 0, $args = [], $current_object_id = 0)
     {
@@ -118,10 +118,10 @@ class Walker
      *
      * @abstract
      *
-     * @param  string  $output      Used to append additional content (passed by reference).
-     * @param  object  $data_object The data object.
-     * @param  int  $depth       Depth of the item.
-     * @param  array  $args        An array of additional arguments.
+     * @param  string  $output  Used to append additional content (passed by reference).
+     * @param  object  $data_object  The data object.
+     * @param  int  $depth  Depth of the item.
+     * @param  array  $args  An array of additional arguments.
      */
     public function end_el(&$output, $data_object, $depth = 0, $args = [])
     {
@@ -139,12 +139,12 @@ class Walker
      *
      * @since 2.5.0
      *
-     * @param  object  $element           Data object.
-     * @param  array  $children_elements List of elements to continue traversing (passed by reference).
-     * @param  int  $max_depth         Max depth to traverse.
-     * @param  int  $depth             Depth of current element.
-     * @param  array  $args              An array of arguments.
-     * @param  string  $output            Used to append additional content (passed by reference).
+     * @param  object  $element  Data object.
+     * @param  array  $children_elements  List of elements to continue traversing (passed by reference).
+     * @param  int  $max_depth  Max depth to traverse.
+     * @param  int  $depth  Depth of current element.
+     * @param  array  $args  An array of arguments.
+     * @param  string  $output  Used to append additional content (passed by reference).
      */
     public function display_element($element, &$children_elements, $max_depth, $depth, $args, &$output)
     {
@@ -201,8 +201,8 @@ class Walker
      *              to the function signature.
      *
      * @param  array  $elements  An array of elements.
-     * @param  int  $max_depth The maximum hierarchical depth.
-     * @param  mixed  ...$args   Optional additional arguments.
+     * @param  int  $max_depth  The maximum hierarchical depth.
+     * @param  mixed  ...$args  Optional additional arguments.
      * @return string The hierarchical item output.
      */
     public function walk($elements, $max_depth, ...$args)
@@ -297,10 +297,10 @@ class Walker
      *              to the function signature.
      *
      * @param  array  $elements  An array of elements.
-     * @param  int  $max_depth The maximum hierarchical depth.
+     * @param  int  $max_depth  The maximum hierarchical depth.
      * @param  int  $page_num  The specific page number, beginning with 1.
      * @param  int  $per_page  Number of elements per page.
-     * @param  mixed  ...$args   Optional additional arguments.
+     * @param  mixed  ...$args  Optional additional arguments.
      * @return string XHTML of the specified page of elements.
      */
     public function paged_walk($elements, $max_depth, $page_num, $per_page, ...$args)
@@ -428,7 +428,7 @@ class Walker
      *
      * @since 2.7.0
      *
-     * @param  array  $elements Elements to list.
+     * @param  array  $elements  Elements to list.
      * @return int Number of root elements.
      */
     public function get_number_of_root_elements($elements)
@@ -450,8 +450,8 @@ class Walker
      *
      * @since 2.7.0
      *
-     * @param  object  $element           The top level element.
-     * @param  array  $children_elements The children elements.
+     * @param  object  $element  The top level element.
+     * @param  array  $children_elements  The children elements.
      */
     public function unset_children($element, &$children_elements)
     {

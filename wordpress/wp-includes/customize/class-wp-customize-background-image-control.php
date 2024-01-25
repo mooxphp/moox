@@ -29,7 +29,7 @@ class WP_Customize_Background_Image_Control extends WP_Customize_Image_Control
      *
      * @uses WP_Customize_Image_Control::__construct()
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
      */
     public function __construct($manager)
     {

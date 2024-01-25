@@ -120,9 +120,9 @@ class WP_Block
      *
      * @since 5.5.0
      *
-     * @param  array  $block             Array of parsed block properties.
-     * @param  array  $available_context Optional array of ancestry context values.
-     * @param  WP_Block_Type_Registry  $registry          Optional block type registry.
+     * @param  array  $block  Array of parsed block properties.
+     * @param  array  $available_context  Optional array of ancestry context values.
+     * @param  WP_Block_Type_Registry  $registry  Optional block type registry.
      */
     public function __construct($block, $available_context = [], $registry = null)
     {
@@ -180,7 +180,7 @@ class WP_Block
      *
      * @since 5.5.0
      *
-     * @param  string  $name Property name.
+     * @param  string  $name  Property name.
      * @return array|null Prepared attributes, or null.
      */
     public function __get($name)
@@ -207,11 +207,11 @@ class WP_Block
      *
      * @global WP_Post $post Global post object.
      *
-     * @param  array  $options {
-     *     Optional options object.
+     * @param  array  $options  {
+     *                          Optional options object.
      *
-     *     @type bool $dynamic Defaults to 'true'. Optionally set to false to avoid using the block's render_callback.
-     * }
+     * @type bool $dynamic Defaults to 'true'. Optionally set to false to avoid using the block's render_callback.
+     *            }
      *
      * @return string Rendered block output.
      */
@@ -297,9 +297,9 @@ class WP_Block
          * @since 5.0.0
          * @since 5.9.0 The `$instance` parameter was added.
          *
-         * @param  string  $block_content The block content.
-         * @param  array  $block         The full block, including name and attributes.
-         * @param  WP_Block  $instance      The block instance.
+         * @param  string  $block_content  The block content.
+         * @param  array  $block  The full block, including name and attributes.
+         * @param  WP_Block  $instance  The block instance.
          */
         $block_content = apply_filters('render_block', $block_content, $this->parsed_block, $this);
 
@@ -312,9 +312,9 @@ class WP_Block
          * @since 5.7.0
          * @since 5.9.0 The `$instance` parameter was added.
          *
-         * @param  string  $block_content The block content.
-         * @param  array  $block         The full block, including name and attributes.
-         * @param  WP_Block  $instance      The block instance.
+         * @param  string  $block_content  The block content.
+         * @param  array  $block  The full block, including name and attributes.
+         * @param  WP_Block  $instance  The block instance.
          */
         $block_content = apply_filters("render_block_{$this->name}", $block_content, $this->parsed_block, $this);
 

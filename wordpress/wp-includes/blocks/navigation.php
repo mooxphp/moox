@@ -9,7 +9,7 @@ if (defined('IS_GUTENBERG_PLUGIN') && IS_GUTENBERG_PLUGIN) {
     /**
      * Returns the menu items for a WordPress menu location.
      *
-     * @param  string  $location The menu location.
+     * @param  string  $location  The menu location.
      * @return array Menu items for the location.
      */
     function block_core_navigation_get_menu_items_at_location($location)
@@ -45,7 +45,7 @@ if (defined('IS_GUTENBERG_PLUGIN') && IS_GUTENBERG_PLUGIN) {
      * Sorts a standard array of menu items into a nested structure keyed by the
      * id of the parent menu.
      *
-     * @param  array  $menu_items Menu items to sort.
+     * @param  array  $menu_items  Menu items to sort.
      * @return array An array keyed by the id of the parent menu where each element
      *               is an array of menu items that belong to that parent.
      */
@@ -70,8 +70,8 @@ if (defined('IS_GUTENBERG_PLUGIN') && IS_GUTENBERG_PLUGIN) {
  * Add Interactivity API directives to the navigation-submenu and page-list
  * blocks markup using the Tag Processor.
  *
- * @param  string  $w Markup of the navigation block.
- * @param  array  $block_attributes Block attributes.
+ * @param  string  $w  Markup of the navigation block.
+ * @param  array  $block_attributes  Block attributes.
  * @return string Submenu markup with the directives injected.
  */
 function block_core_navigation_add_directives_to_submenu($w, $block_attributes)
@@ -132,7 +132,7 @@ function block_core_navigation_add_directives_to_submenu($w, $block_attributes)
  * Build an array with CSS classes and inline styles defining the colors
  * which will be applied to the navigation markup in the front-end.
  *
- * @param  array  $attributes Navigation block attributes.
+ * @param  array  $attributes  Navigation block attributes.
  * @return array Colors CSS classes and inline styles.
  */
 function block_core_navigation_build_css_colors($attributes)
@@ -223,7 +223,7 @@ function block_core_navigation_build_css_colors($attributes)
  * Build an array with CSS classes and inline styles defining the font sizes
  * which will be applied to the navigation markup in the front-end.
  *
- * @param  array  $attributes Navigation block attributes.
+ * @param  array  $attributes  Navigation block attributes.
  * @return array Font size CSS classes and inline styles.
  */
 function block_core_navigation_build_css_font_sizes($attributes)
@@ -264,7 +264,7 @@ function block_core_navigation_render_submenu_icon()
  * it encounters whitespace. This is not a bug but rather how the parser
  * is designed.
  *
- * @param  array  $parsed_blocks the parsed blocks to be normalized.
+ * @param  array  $parsed_blocks  the parsed blocks to be normalized.
  * @return array the normalized parsed blocks.
  */
 function block_core_navigation_filter_out_empty_blocks($parsed_blocks)
@@ -283,7 +283,7 @@ function block_core_navigation_filter_out_empty_blocks($parsed_blocks)
 /**
  * Returns true if the navigation block contains a nested navigation block.
  *
- * @param  WP_Block_List  $inner_blocks Inner block instance to be normalized.
+ * @param  WP_Block_List  $inner_blocks  Inner block instance to be normalized.
  * @return bool true if the navigation block contains a nested navigation block.
  */
 function block_core_navigation_block_contains_core_navigation($inner_blocks)
@@ -355,7 +355,7 @@ function block_core_navigation_get_fallback_blocks()
 /**
  * Iterate through all inner blocks recursively and get navigation link block's post IDs.
  *
- * @param  WP_Block_List  $inner_blocks Block list class instance.
+ * @param  WP_Block_List  $inner_blocks  Block list class instance.
  * @return array Array of post IDs.
  */
 function block_core_navigation_get_post_ids($inner_blocks)
@@ -368,7 +368,7 @@ function block_core_navigation_get_post_ids($inner_blocks)
 /**
  * Get post IDs from a navigation link block instance.
  *
- * @param  WP_Block  $block Instance of a block.
+ * @param  WP_Block  $block  Instance of a block.
  * @return array Array of post IDs.
  */
 function block_core_navigation_from_block_get_post_ids($block)
@@ -391,9 +391,9 @@ function block_core_navigation_from_block_get_post_ids($block)
 /**
  * Renders the `core/navigation` block on server.
  *
- * @param  array  $attributes The block attributes.
- * @param  string  $content    The saved content.
- * @param  WP_Block  $block      The parsed block.
+ * @param  array  $attributes  The block attributes.
+ * @param  string  $content  The saved content.
+ * @param  WP_Block  $block  The parsed block.
  * @return string Returns the post content with the legacy widget added.
  */
 function render_block_core_navigation($attributes, $content, $block)
@@ -804,7 +804,7 @@ add_action('init', 'register_block_core_navigation');
 /**
  * Filter that changes the parsed attribute values of navigation blocks contain typographic presets to contain the values directly.
  *
- * @param  array  $parsed_block The block being rendered.
+ * @param  array  $parsed_block  The block being rendered.
  * @return array The block being rendered without typographic presets.
  */
 function block_core_navigation_typographic_presets_backcompatibility($parsed_block)
@@ -860,12 +860,12 @@ add_action('wp_print_scripts', 'block_core_navigation_ensure_interactivity_depen
  *
  * @deprecated 6.3.0 Use WP_Navigation_Fallback::parse_blocks_from_menu_items() instead.
  *
- * @param  array  $menu_items               An array of menu items that represent
- *                                        an individual level of a menu.
+ * @param  array  $menu_items  An array of menu items that represent
+ *                             an individual level of a menu.
  * @param  array  $menu_items_by_parent_id  An array keyed by the id of the
- *                                        parent menu where each element is an
- *                                        array of menu items that belong to
- *                                        that parent.
+ *                                          parent menu where each element is an
+ *                                          array of menu items that belong to
+ *                                          that parent.
  * @return array An array of parsed block data.
  */
 function block_core_navigation_parse_blocks_from_menu_items($menu_items, $menu_items_by_parent_id)
@@ -964,7 +964,7 @@ function block_core_navigation_get_classic_menu_fallback()
  *
  * @deprecated 6.3.0 Use WP_Navigation_Fallback::get_classic_menu_fallback_blocks() instead.
  *
- * @param  object  $classic_nav_menu WP_Term The classic navigation object to convert.
+ * @param  object  $classic_nav_menu  WP_Term The classic navigation object to convert.
  * @return array the normalized parsed blocks.
  */
 function block_core_navigation_get_classic_menu_fallback_blocks($classic_nav_menu)

@@ -23,7 +23,7 @@ function got_mod_rewrite()
      * @since 2.5.0
      * @see got_url_rewrite()
      *
-     * @param  bool  $got_rewrite Whether Apache and mod_rewrite are present.
+     * @param  bool  $got_rewrite  Whether Apache and mod_rewrite are present.
      */
     return apply_filters('got_rewrite', $got_rewrite);
 }
@@ -48,7 +48,7 @@ function got_url_rewrite()
      *
      * @since 3.7.0
      *
-     * @param  bool  $got_url_rewrite Whether URL rewriting is available.
+     * @param  bool  $got_url_rewrite  Whether URL rewriting is available.
      */
     return apply_filters('got_url_rewrite', $got_url_rewrite);
 }
@@ -58,8 +58,8 @@ function got_url_rewrite()
  *
  * @since 1.5.0
  *
- * @param  string  $filename Filename to extract the strings from.
- * @param  string  $marker   The marker to extract the strings from.
+ * @param  string  $filename  Filename to extract the strings from.
+ * @param  string  $marker  The marker to extract the strings from.
  * @return string[] An array of strings from a file (.htaccess) from between BEGIN and END markers.
  */
 function extract_from_markers($filename, $marker)
@@ -105,8 +105,8 @@ function extract_from_markers($filename, $marker)
  * @since 1.5.0
  *
  * @param  string  $filename  Filename to alter.
- * @param  string  $marker    The marker to alter.
- * @param  array|string  $insertion The new content to insert.
+ * @param  string  $marker  The marker to alter.
+ * @param  array|string  $insertion  The new content to insert.
  * @return bool True on write success, false on failure.
  */
 function insert_with_markers($filename, $marker, $insertion)
@@ -157,8 +157,8 @@ Any changes to the directives between these markers will be overwritten.'
      *
      * @since 5.3.0
      *
-     * @param  string[]  $instructions Array of lines with inline instructions.
-     * @param  string  $marker       The marker being inserted.
+     * @param  string[]  $instructions  Array of lines with inline instructions.
+     * @param  string  $marker  The marker being inserted.
      */
     $instructions = apply_filters('insert_with_markers_inline_instructions', $instructions, $marker);
 
@@ -364,7 +364,7 @@ function update_recently_edited($file)
  *
  * @since 4.9.0
  *
- * @param  array  $allowed_files List of theme file paths.
+ * @param  array  $allowed_files  List of theme file paths.
  * @return array Tree structure for listing theme files.
  */
 function wp_make_theme_file_tree($allowed_files)
@@ -395,9 +395,9 @@ function wp_make_theme_file_tree($allowed_files)
  * @global string $stylesheet    The stylesheet name of the theme being edited.
  *
  * @param  array|string  $tree  List of file/folder paths, or filename.
- * @param  int  $level The aria-level for the current iteration.
+ * @param  int  $level  The aria-level for the current iteration.
  * @param  int  $size  The aria-setsize for the current iteration.
- * @param  int  $index The aria-posinset for the current iteration.
+ * @param  int  $index  The aria-posinset for the current iteration.
  */
 function wp_print_theme_file_tree($tree, $level = 2, $size = 1, $index = 1)
 {
@@ -470,7 +470,7 @@ function wp_print_theme_file_tree($tree, $level = 2, $size = 1, $index = 1)
  *
  * @since 4.9.0
  *
- * @param  array  $plugin_editable_files List of plugin file paths.
+ * @param  array  $plugin_editable_files  List of plugin file paths.
  * @return array Tree structure for listing plugin files.
  */
 function wp_make_plugin_file_tree($plugin_editable_files)
@@ -497,10 +497,10 @@ function wp_make_plugin_file_tree($plugin_editable_files)
  * @since 4.9.0
  *
  * @param  array|string  $tree  List of file/folder paths, or filename.
- * @param  string  $label Name of file or folder to print.
- * @param  int  $level The aria-level for the current iteration.
+ * @param  string  $label  Name of file or folder to print.
+ * @param  int  $level  The aria-level for the current iteration.
  * @param  int  $size  The aria-setsize for the current iteration.
- * @param  int  $index The aria-posinset for the current iteration.
+ * @param  int  $index  The aria-posinset for the current iteration.
  */
 function wp_print_plugin_file_tree($tree, $label = '', $level = 2, $size = 1, $index = 1)
 {
@@ -591,7 +591,7 @@ function update_home_siteurl($old_value, $value)
  *
  * @since 2.0.0
  *
- * @param  array  $vars An array of globals to reset.
+ * @param  array  $vars  An array of globals to reset.
  */
 function wp_reset_vars($vars)
 {
@@ -677,7 +677,7 @@ function wp_doc_link_parse($content)
      *
      * @since 2.8.0
      *
-     * @param  string[]  $ignore_functions Array of names of functions and classes to be ignored.
+     * @param  string[]  $ignore_functions  Array of names of functions and classes to be ignored.
      */
     $ignore_functions = apply_filters('documentation_ignore_functions', $ignore_functions);
 
@@ -775,10 +775,10 @@ function set_screen_options()
                  *              or the 'layout_columns' option.
                  * @see set_screen_options()
                  *
-                 * @param  mixed  $screen_option The value to save instead of the option value.
-                 *                              Default false (to skip saving the current option).
-                 * @param  string  $option        The option name.
-                 * @param  int  $value         The option value.
+                 * @param  mixed  $screen_option  The value to save instead of the option value.
+                 *                                Default false (to skip saving the current option).
+                 * @param  string  $option  The option name.
+                 * @param  int  $value  The option value.
                  */
                 $screen_option = apply_filters('set-screen-option', $screen_option, $option, $value); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
             }
@@ -793,10 +793,10 @@ function set_screen_options()
              * @since 5.4.2
              * @see set_screen_options()
              *
-             * @param  mixed  $screen_option The value to save instead of the option value.
-             *                               Default false (to skip saving the current option).
-             * @param  string  $option        The option name.
-             * @param  int  $value         The option value.
+             * @param  mixed  $screen_option  The value to save instead of the option value.
+             *                                Default false (to skip saving the current option).
+             * @param  string  $option  The option name.
+             * @param  int  $value  The option value.
              */
             $value = apply_filters("set_screen_option_{$option}", $screen_option, $option, $value);
 
@@ -824,7 +824,7 @@ function set_screen_options()
  *
  * @since 2.8.0
  *
- * @param  string  $filename The file path to the configuration file.
+ * @param  string  $filename  The file path to the configuration file.
  * @return bool
  */
 function iis7_rewrite_rule_exists($filename)
@@ -858,7 +858,7 @@ function iis7_rewrite_rule_exists($filename)
  *
  * @since 2.8.0
  *
- * @param  string  $filename Name of the configuration file.
+ * @param  string  $filename  Name of the configuration file.
  * @return bool
  */
 function iis7_delete_rewrite_rule($filename)
@@ -898,8 +898,8 @@ function iis7_delete_rewrite_rule($filename)
  *
  * @since 2.8.0
  *
- * @param  string  $filename     The file path to the configuration file.
- * @param  string  $rewrite_rule The XML fragment with URL Rewrite rule.
+ * @param  string  $filename  The file path to the configuration file.
+ * @param  string  $rewrite_rule  The XML fragment with URL Rewrite rule.
  * @return bool
  */
 function iis7_add_rewrite_rule($filename, $rewrite_rule)
@@ -1007,7 +1007,7 @@ function saveDomDocument($doc, $filename) // phpcs:ignore WordPress.NamingConven
  *
  * @global array $_wp_admin_css_colors
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  */
 function admin_color_scheme_picker($user_id)
 {
@@ -1114,7 +1114,7 @@ function wp_admin_viewport_meta()
      *
      * @since 5.5.0
      *
-     * @param  string  $viewport_meta The viewport meta.
+     * @param  string  $viewport_meta  The viewport meta.
      */
     $viewport_meta = apply_filters('admin_viewport_meta', 'width=device-width,initial-scale=1.0');
 
@@ -1132,7 +1132,7 @@ function wp_admin_viewport_meta()
  *
  * @since 5.5.0
  *
- * @param  string  $viewport_meta The viewport meta.
+ * @param  string  $viewport_meta  The viewport meta.
  * @return string Filtered viewport meta.
  */
 function _customizer_mobile_viewport_meta($viewport_meta)
@@ -1146,8 +1146,8 @@ function _customizer_mobile_viewport_meta($viewport_meta)
  * @since 3.6.0
  *
  * @param  array  $response  The Heartbeat response.
- * @param  array  $data      The $_POST data sent.
- * @param  string  $screen_id The screen ID.
+ * @param  array  $data  The $_POST data sent.
+ * @param  string  $screen_id  The screen ID.
  * @return array The Heartbeat response.
  */
 function wp_check_locked_posts($response, $data, $screen_id)
@@ -1198,8 +1198,8 @@ function wp_check_locked_posts($response, $data, $screen_id)
  * @since 3.6.0
  *
  * @param  array  $response  The Heartbeat response.
- * @param  array  $data      The $_POST data sent.
- * @param  string  $screen_id The screen ID.
+ * @param  array  $data  The $_POST data sent.
+ * @param  string  $screen_id  The screen ID.
  * @return array The Heartbeat response.
  */
 function wp_refresh_post_lock($response, $data, $screen_id)
@@ -1254,8 +1254,8 @@ function wp_refresh_post_lock($response, $data, $screen_id)
  * @since 3.6.0
  *
  * @param  array  $response  The Heartbeat response.
- * @param  array  $data      The $_POST data sent.
- * @param  string  $screen_id The screen ID.
+ * @param  array  $data  The $_POST data sent.
+ * @param  string  $screen_id  The screen ID.
  * @return array The Heartbeat response.
  */
 function wp_refresh_post_nonces($response, $data, $screen_id)
@@ -1295,7 +1295,7 @@ function wp_refresh_post_nonces($response, $data, $screen_id)
  * @since 6.1.0
  *
  * @param  array  $response  The Heartbeat response.
- * @param  array  $data      The $_POST data sent.
+ * @param  array  $data  The $_POST data sent.
  * @return array The Heartbeat response.
  */
 function wp_refresh_metabox_loader_nonces($response, $data)
@@ -1330,7 +1330,7 @@ function wp_refresh_metabox_loader_nonces($response, $data)
  *
  * @since 5.0.0
  *
- * @param  array  $response The Heartbeat response.
+ * @param  array  $response  The Heartbeat response.
  * @return array The Heartbeat response.
  */
 function wp_refresh_heartbeat_nonces($response)
@@ -1351,7 +1351,7 @@ function wp_refresh_heartbeat_nonces($response)
  *
  * @global string $pagenow The filename of the current screen.
  *
- * @param  array  $settings An array of Heartbeat settings.
+ * @param  array  $settings  An array of Heartbeat settings.
  * @return array Filtered Heartbeat settings.
  */
 function wp_heartbeat_set_suspension($settings)
@@ -1370,8 +1370,8 @@ function wp_heartbeat_set_suspension($settings)
  *
  * @since 3.9.0
  *
- * @param  array  $response The Heartbeat response.
- * @param  array  $data     The $_POST data sent.
+ * @param  array  $response  The Heartbeat response.
+ * @param  array  $data  The $_POST data sent.
  * @return array The Heartbeat response.
  */
 function heartbeat_autosave($response, $data)
@@ -1448,7 +1448,7 @@ function wp_admin_headers()
      * @since 4.9.5 The default value was changed to 'strict-origin-when-cross-origin'.
      * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy
      *
-     * @param  string  $policy The admin referrer policy header value. Default 'strict-origin-when-cross-origin'.
+     * @param  string  $policy  The admin referrer policy header value. Default 'strict-origin-when-cross-origin'.
      */
     $policy = apply_filters('admin_referrer_policy', $policy);
 
@@ -1482,8 +1482,8 @@ function wp_page_reload_on_back_button_js()
  * @since 3.0.0
  * @since 4.9.0 This function was moved from wp-admin/includes/ms.php so it's no longer Multisite specific.
  *
- * @param  string  $old_value The old site admin email address.
- * @param  string  $value     The proposed new site admin email address.
+ * @param  string  $old_value  The old site admin email address.
+ * @param  string  $value  The proposed new site admin email address.
  */
 function update_option_new_admin_email($old_value, $value)
 {
@@ -1534,13 +1534,13 @@ All at ###SITENAME###
      * @since MU (3.0.0)
      * @since 4.9.0 This filter is no longer Multisite specific.
      *
-     * @param  string  $email_text      Text in the email.
-     * @param  array  $new_admin_email {
-     *     Data relating to the new site admin email address.
+     * @param  string  $email_text  Text in the email.
+     * @param  array  $new_admin_email  {
+     *                                  Data relating to the new site admin email address.
      *
-     *     @type string $hash     The secure hash used in the confirmation link URL.
-     *     @type string $newemail The proposed new site admin email address.
-     * }
+     * @type string $hash     The secure hash used in the confirmation link URL.
+     * @type string $newemail The proposed new site admin email address.
+     *              }
      */
     $content = apply_filters('new_admin_email_content', $email_text, $new_admin_email);
 
@@ -1578,7 +1578,7 @@ All at ###SITENAME###
  *
  * @since 4.9.8
  *
- * @param  string  $title Page title.
+ * @param  string  $title  Page title.
  * @param  WP_Post  $page  Page data object.
  * @return string Page title.
  */
@@ -1599,15 +1599,15 @@ function _wp_privacy_settings_filter_draft_page_titles($title, $page)
  * @since 5.1.1 Added the {@see 'wp_is_php_version_acceptable'} filter.
  *
  * @return array|false {
- *     Array of PHP version data. False on failure.
+ *                     Array of PHP version data. False on failure.
  *
- *     @type string $recommended_version The PHP version recommended by WordPress.
- *     @type string $minimum_version     The minimum required PHP version.
- *     @type bool   $is_supported        Whether the PHP version is actively supported.
- *     @type bool   $is_secure           Whether the PHP version receives security updates.
- *     @type bool   $is_acceptable       Whether the PHP version is still acceptable or warnings
- *                                       should be shown and an update recommended.
- * }
+ * @type string $recommended_version The PHP version recommended by WordPress.
+ * @type string $minimum_version     The minimum required PHP version.
+ * @type bool $is_supported        Whether the PHP version is actively supported.
+ * @type bool $is_secure           Whether the PHP version receives security updates.
+ * @type bool $is_acceptable       Whether the PHP version is still acceptable or warnings
+ *            should be shown and an update recommended.
+ *            }
  */
 function wp_check_php_version()
 {
@@ -1651,8 +1651,8 @@ function wp_check_php_version()
          *
          * @since 5.1.1
          *
-         * @param  bool  $is_acceptable Whether the PHP version is considered acceptable. Default true.
-         * @param  string  $version       PHP version checked.
+         * @param  bool  $is_acceptable  Whether the PHP version is considered acceptable. Default true.
+         * @param  string  $version  PHP version checked.
          */
         $response['is_acceptable'] = (bool) apply_filters('wp_is_php_version_acceptable', true, $version);
     }

@@ -490,10 +490,10 @@ final class WP_Post_Type
      * @since 4.6.0
      * @see register_post_type()
      *
-     * @param  string  $post_type Post type key.
-     * @param  array|string  $args      Optional. Array or string of arguments for registering a post type.
-     *                                See register_post_type() for information on accepted arguments.
-     *                                Default empty array.
+     * @param  string  $post_type  Post type key.
+     * @param  array|string  $args  Optional. Array or string of arguments for registering a post type.
+     *                              See register_post_type() for information on accepted arguments.
+     *                              Default empty array.
      */
     public function __construct($post_type, $args = [])
     {
@@ -509,7 +509,7 @@ final class WP_Post_Type
      *
      * @since 4.6.0
      *
-     * @param  array|string  $args Array or string of arguments for registering a post type.
+     * @param  array|string  $args  Array or string of arguments for registering a post type.
      */
     public function set_props($args)
     {
@@ -520,9 +520,9 @@ final class WP_Post_Type
          *
          * @since 4.4.0
          *
-         * @param  array  $args      Array of arguments for registering a post type.
-         *                          See the register_post_type() function for accepted arguments.
-         * @param  string  $post_type Post type key.
+         * @param  array  $args  Array of arguments for registering a post type.
+         *                       See the register_post_type() function for accepted arguments.
+         * @param  string  $post_type  Post type key.
          */
         $args = apply_filters('register_post_type_args', $args, $this->name);
 
@@ -541,9 +541,9 @@ final class WP_Post_Type
          * @since 6.0.0
          * @since 6.4.0 Added `late_route_registration`, `autosave_rest_controller_class` and `revisions_rest_controller_class` arguments.
          *
-         * @param  array  $args      Array of arguments for registering a post type.
-         *                          See the register_post_type() function for accepted arguments.
-         * @param  string  $post_type Post type key.
+         * @param  array  $args  Array of arguments for registering a post type.
+         *                       See the register_post_type() function for accepted arguments.
+         * @param  string  $post_type  Post type key.
          */
         $args = apply_filters("register_{$post_type}_post_type_args", $args, $this->name);
 

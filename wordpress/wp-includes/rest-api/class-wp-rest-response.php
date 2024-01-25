@@ -49,10 +49,10 @@ class WP_REST_Response extends WP_HTTP_Response
      * @link https://tools.ietf.org/html/rfc5988
      * @link https://www.iana.org/assignments/link-relations/link-relations.xml
      *
-     * @param  string  $rel        Link relation. Either an IANA registered type,
-     *                           or an absolute URL.
-     * @param  string  $href       Target URI for the link.
-     * @param  array  $attributes Optional. Link parameters to send along with the URL. Default empty array.
+     * @param  string  $rel  Link relation. Either an IANA registered type,
+     *                       or an absolute URL.
+     * @param  string  $href  Target URI for the link.
+     * @param  array  $attributes  Optional. Link parameters to send along with the URL. Default empty array.
      */
     public function add_link($rel, $href, $attributes = [])
     {
@@ -77,8 +77,8 @@ class WP_REST_Response extends WP_HTTP_Response
      * @since 4.4.0
      *
      * @param  string  $rel  Link relation. Either an IANA registered type, or an absolute URL.
-     * @param  string  $href Optional. Only remove links for the relation matching the given href.
-     *                     Default null.
+     * @param  string  $href  Optional. Only remove links for the relation matching the given href.
+     *                        Default null.
      */
     public function remove_link($rel, $href = null)
     {
@@ -107,7 +107,7 @@ class WP_REST_Response extends WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  array  $links Map of link relation to list of links.
+     * @param  array  $links  Map of link relation to list of links.
      */
     public function add_links($links)
     {
@@ -144,10 +144,10 @@ class WP_REST_Response extends WP_HTTP_Response
      * @link https://tools.ietf.org/html/rfc5988
      * @link https://www.iana.org/assignments/link-relations/link-relations.xml
      *
-     * @param  string  $rel   Link relation. Either an IANA registered type, or an absolute URL.
+     * @param  string  $rel  Link relation. Either an IANA registered type, or an absolute URL.
      * @param  string  $link  Target IRI for the link.
-     * @param  array  $other Optional. Other parameters to send, as an associative array.
-     *                      Default empty array.
+     * @param  array  $other  Optional. Other parameters to send, as an associative array.
+     *                        Default empty array.
      */
     public function link_header($rel, $link, $other = [])
     {
@@ -180,7 +180,7 @@ class WP_REST_Response extends WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  string  $route Route name.
+     * @param  string  $route  Route name.
      */
     public function set_matched_route($route)
     {
@@ -204,7 +204,7 @@ class WP_REST_Response extends WP_HTTP_Response
      *
      * @since 4.4.0
      *
-     * @param  array  $handler The matched handler.
+     * @param  array  $handler  The matched handler.
      */
     public function set_matched_handler($handler)
     {
@@ -294,7 +294,7 @@ class WP_REST_Response extends WP_HTTP_Response
          *
          * @since 4.5.0
          *
-         * @param  array  $additional Additional CURIEs to register with the REST API.
+         * @param  array  $additional  Additional CURIEs to register with the REST API.
          */
         $additional = apply_filters('rest_response_link_curies', []);
 

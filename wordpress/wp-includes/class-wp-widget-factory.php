@@ -53,7 +53,7 @@ class WP_Widget_Factory
      * @since 4.6.0 Updated the `$widget` parameter to also accept a WP_Widget instance object
      *              instead of simply a `WP_Widget` subclass name.
      *
-     * @param  string|WP_Widget  $widget Either the name of a `WP_Widget` subclass or an instance of a `WP_Widget` subclass.
+     * @param  string|WP_Widget  $widget  Either the name of a `WP_Widget` subclass or an instance of a `WP_Widget` subclass.
      */
     public function register($widget)
     {
@@ -71,7 +71,7 @@ class WP_Widget_Factory
      * @since 4.6.0 Updated the `$widget` parameter to also accept a WP_Widget instance object
      *              instead of simply a `WP_Widget` subclass name.
      *
-     * @param  string|WP_Widget  $widget Either the name of a `WP_Widget` subclass or an instance of a `WP_Widget` subclass.
+     * @param  string|WP_Widget  $widget  Either the name of a `WP_Widget` subclass or an instance of a `WP_Widget` subclass.
      */
     public function unregister($widget)
     {
@@ -113,7 +113,7 @@ class WP_Widget_Factory
      *
      * @since 5.8.0
      *
-     * @param  string  $id_base Widget type ID.
+     * @param  string  $id_base  Widget type ID.
      * @return WP_Widget|null
      */
     public function get_widget_object($id_base)
@@ -131,7 +131,7 @@ class WP_Widget_Factory
      *
      * @since 5.8.0
      *
-     * @param  string  $id_base Widget type ID.
+     * @param  string  $id_base  Widget type ID.
      * @return string
      */
     public function get_widget_key($id_base)

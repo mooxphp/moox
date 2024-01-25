@@ -53,7 +53,7 @@ class Custom_Image_Header
      * @since 2.1.0
      *
      * @param  callable  $admin_header_callback
-     * @param  callable  $admin_image_div_callback Optional custom image div output callback.
+     * @param  callable  $admin_image_div_callback  Optional custom image div output callback.
      */
     public function __construct($admin_header_callback, $admin_image_div_callback = '')
     {
@@ -313,8 +313,8 @@ class Custom_Image_Header
      *
      * @since 3.0.0
      *
-     * @param  string  $type The header type. One of 'default' (for the Uploaded Images control)
-     *                     or 'uploaded' (for the Uploaded Images control).
+     * @param  string  $type  The header type. One of 'default' (for the Uploaded Images control)
+     *                        or 'uploaded' (for the Uploaded Images control).
      */
     public function show_header_selector($type = 'default')
     {
@@ -481,16 +481,16 @@ class Custom_Image_Header
 			aspectRatio: xinit + ':' + yinit,
 				<?php
             }
-            if (! current_theme_supports('custom-header', 'flex-height')) {
-                ?>
+        if (! current_theme_supports('custom-header', 'flex-height')) {
+            ?>
 			maxHeight: <?php echo get_theme_support('custom-header', 'height'); ?>,
 				<?php
-            }
-            if (! current_theme_supports('custom-header', 'flex-width')) {
-                ?>
+        }
+        if (! current_theme_supports('custom-header', 'flex-width')) {
+            ?>
 			maxWidth: <?php echo get_theme_support('custom-header', 'width'); ?>,
 				<?php
-            }
+        }
         ?>
 			onInit: function () {
 				jQuery('#width').val(xinit);
@@ -639,33 +639,33 @@ class Custom_Image_Header
                 }
             }
 
-            if (current_theme_supports('custom-header', 'flex-height')
-                || current_theme_supports('custom-header', 'flex-width')
-            ) {
-                if (current_theme_supports('custom-header', 'width')) {
-                    printf(
-                        /* translators: %s: Size in pixels. */
-                        __('Suggested width is %s.').' ',
-                        sprintf(
-                            /* translators: %d: Custom header width. */
-                            '<strong>'.__('%d pixels').'</strong>',
-                            get_theme_support('custom-header', 'width')
-                        )
-                    );
-                }
+		    if (current_theme_supports('custom-header', 'flex-height')
+		        || current_theme_supports('custom-header', 'flex-width')
+		    ) {
+		        if (current_theme_supports('custom-header', 'width')) {
+		            printf(
+		                /* translators: %s: Size in pixels. */
+		                __('Suggested width is %s.').' ',
+		                sprintf(
+		                    /* translators: %d: Custom header width. */
+		                    '<strong>'.__('%d pixels').'</strong>',
+		                    get_theme_support('custom-header', 'width')
+		                )
+		            );
+		        }
 
-                if (current_theme_supports('custom-header', 'height')) {
-                    printf(
-                        /* translators: %s: Size in pixels. */
-                        __('Suggested height is %s.').' ',
-                        sprintf(
-                            /* translators: %d: Custom header height. */
-                            '<strong>'.__('%d pixels').'</strong>',
-                            get_theme_support('custom-header', 'height')
-                        )
-                    );
-                }
-            }
+		        if (current_theme_supports('custom-header', 'height')) {
+		            printf(
+		                /* translators: %s: Size in pixels. */
+		                __('Suggested height is %s.').' ',
+		                sprintf(
+		                    /* translators: %d: Custom header height. */
+		                    '<strong>'.__('%d pixels').'</strong>',
+		                    get_theme_support('custom-header', 'height')
+		                )
+		            );
+		        }
+		    }
 		    ?>
 	</p>
 	<form enctype="multipart/form-data" id="upload-form" class="wp-upload-form" method="post" action="<?php echo esc_url(add_query_arg('step', 2)); ?>">
@@ -814,10 +814,10 @@ class Custom_Image_Header
 		}
 
         /**
-		 * Fires just before the submit button in the custom header options form.
-		 *
-		 * @since 3.1.0
-		 */
+         * Fires just before the submit button in the custom header options form.
+         *
+         * @since 3.1.0
+         */
         do_action('custom_header_options');
 
         wp_nonce_field('custom-header-options', '_wpnonce-custom-header-options');
@@ -901,8 +901,8 @@ class Custom_Image_Header
              *
              * @since 2.1.0
              *
-             * @param  string  $file          Path to the file.
-             * @param  int  $attachment_id Attachment ID.
+             * @param  string  $file  Path to the file.
+             * @param  int  $attachment_id  Attachment ID.
              */
             $file = apply_filters('wp_create_file_in_uploads', $file, $attachment_id); // For replication.
 
@@ -1179,12 +1179,12 @@ class Custom_Image_Header
      *
      * @since 3.4.0
      *
-     * @param  mixed  $choice Which header image to select. Allows for values of 'random-default-image',
-     *                      for randomly cycling among the default images; 'random-uploaded-image',
-     *                      for randomly cycling among the uploaded images; the key of a default image
-     *                      registered for that theme; and the key of an image uploaded for that theme
-     *                      (the attachment ID of the image). Or an array of arguments: attachment_id,
-     *                      url, width, height. All are required.
+     * @param  mixed  $choice  Which header image to select. Allows for values of 'random-default-image',
+     *                         for randomly cycling among the default images; 'random-uploaded-image',
+     *                         for randomly cycling among the uploaded images; the key of a default image
+     *                         registered for that theme; and the key of an image uploaded for that theme
+     *                         (the attachment ID of the image). Or an array of arguments: attachment_id,
+     *                         url, width, height. All are required.
      */
     final public function set_header_image($choice)
     {
@@ -1336,8 +1336,8 @@ class Custom_Image_Header
      *
      * @since 3.9.0
      *
-     * @param  string  $cropped              Cropped image URL.
-     * @param  int  $parent_attachment_id Attachment ID of parent image.
+     * @param  string  $cropped  Cropped image URL.
+     * @param  int  $parent_attachment_id  Attachment ID of parent image.
      * @return array An array with attachment object data.
      */
     final public function create_attachment_object($cropped, $parent_attachment_id)
@@ -1366,8 +1366,8 @@ class Custom_Image_Header
      *
      * @since 3.9.0
      *
-     * @param  array  $attachment An array with attachment object data.
-     * @param  string  $cropped    File path to cropped image.
+     * @param  array  $attachment  An array with attachment object data.
+     * @param  string  $cropped  File path to cropped image.
      * @return int Attachment ID.
      */
     final public function insert_attachment($attachment, $cropped)
@@ -1389,7 +1389,7 @@ class Custom_Image_Header
          * @since 3.9.0
          * @see wp_generate_attachment_metadata()
          *
-         * @param  array  $metadata Attachment metadata.
+         * @param  array  $metadata  Attachment metadata.
          */
         $metadata = apply_filters('wp_header_image_attachment_metadata', $metadata);
 
@@ -1528,7 +1528,7 @@ class Custom_Image_Header
      *
      * @since 3.9.0
      *
-     * @param  WP_Customize_Manager  $wp_customize Customize manager.
+     * @param  WP_Customize_Manager  $wp_customize  Customize manager.
      */
     public function customize_set_last_used($wp_customize)
     {
@@ -1622,7 +1622,7 @@ class Custom_Image_Header
      *
      * @since 4.9.0
      *
-     * @param  array  $attachment An array with a cropped attachment object data.
+     * @param  array  $attachment  An array with a cropped attachment object data.
      * @return int|false An attachment ID if one exists. False if none.
      */
     public function get_previous_crop($attachment)

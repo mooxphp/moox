@@ -108,9 +108,9 @@ class SimplePie_Registry
     /**
      * Register a class
      *
-     * @param  string  $type See {@see $default} for names
-     * @param  string  $class Class name, must subclass the corresponding default
-     * @param  bool  $legacy Whether to enable legacy support for this class
+     * @param  string  $type  See {@see $default} for names
+     * @param  string  $class  Class name, must subclass the corresponding default
+     * @param  bool  $legacy  Whether to enable legacy support for this class
      * @return bool Successfulness
      */
     public function register($type, $class, $legacy = false)
@@ -152,7 +152,7 @@ class SimplePie_Registry
      * Create a new instance of a given type
      *
      * @param  string  $type
-     * @param  array  $parameters Parameters to pass to the constructor
+     * @param  array  $parameters  Parameters to pass to the constructor
      * @return object Instance of class
      */
     public function &create($type, $parameters = [])

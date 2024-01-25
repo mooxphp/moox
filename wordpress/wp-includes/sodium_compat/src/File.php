@@ -17,9 +17,9 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * the same result.
      *
      * @param  string  $inputFile  Absolute path to a file on the filesystem
-     * @param  string  $outputFile Absolute path to a file on the filesystem
-     * @param  string  $nonce      Number to be used only once
-     * @param  string  $keyPair    ECDH secret key and ECDH public key concatenated
+     * @param  string  $outputFile  Absolute path to a file on the filesystem
+     * @param  string  $nonce  Number to be used only once
+     * @param  string  $keyPair  ECDH secret key and ECDH public key concatenated
      * @return bool
      *
      * @throws SodiumException
@@ -157,7 +157,7 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * the same result.
      *
      * @param  string  $inputFile  Absolute path to a file on the filesystem
-     * @param  string  $outputFile Absolute path to a file on the filesystem
+     * @param  string  $outputFile  Absolute path to a file on the filesystem
      * @param  string  $publicKey  ECDH public key
      * @return bool
      *
@@ -347,10 +347,10 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
     /**
      * Calculate the BLAKE2b hash of a file.
      *
-     * @param  string  $filePath     Absolute path to a file on the filesystem
-     * @param  string|null  $key          BLAKE2b key
-     * @param  int  $outputLength Length of hash output
-     * @return string                   BLAKE2b hash
+     * @param  string  $filePath  Absolute path to a file on the filesystem
+     * @param  string|null  $key  BLAKE2b key
+     * @param  int  $outputLength  Length of hash output
+     * @return string BLAKE2b hash
      *
      * @throws SodiumException
      * @throws TypeError
@@ -428,9 +428,9 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * the same result.
      *
      * @param  string  $inputFile  Absolute path to a file on the filesystem
-     * @param  string  $outputFile Absolute path to a file on the filesystem
-     * @param  string  $nonce      Number to be used only once
-     * @param  string  $key        Encryption key
+     * @param  string  $outputFile  Absolute path to a file on the filesystem
+     * @param  string  $nonce  Number to be used only once
+     * @param  string  $key  Encryption key
      * @return bool
      *
      * @throws SodiumException
@@ -566,8 +566,8 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * the same result.
      *
      * @param  string  $filePath  Absolute path to a file on the filesystem
-     * @param  string  $secretKey Secret signing key
-     * @return string           Ed25519 signature
+     * @param  string  $secretKey  Secret signing key
+     * @return string Ed25519 signature
      *
      * @throws SodiumException
      * @throws TypeError
@@ -660,9 +660,9 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * ParagonIE_Sodium_Compat::crypto_sign_verify_detached(), but
      * produces the same result.
      *
-     * @param  string  $sig       Ed25519 signature
+     * @param  string  $sig  Ed25519 signature
      * @param  string  $filePath  Absolute path to a file on the filesystem
-     * @param  string  $publicKey Signing public key
+     * @param  string  $publicKey  Signing public key
      * @return bool
      *
      * @throws SodiumException
@@ -1170,8 +1170,8 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * the same result. (32-bit)
      *
      * @param  string  $filePath  Absolute path to a file on the filesystem
-     * @param  string  $secretKey Secret signing key
-     * @return string           Ed25519 signature
+     * @param  string  $secretKey  Secret signing key
+     * @return string Ed25519 signature
      *
      * @throws SodiumException
      * @throws TypeError
@@ -1236,9 +1236,9 @@ class ParagonIE_Sodium_File extends ParagonIE_Sodium_Core_Util
      * ParagonIE_Sodium_Compat::crypto_sign_verify_detached(), but
      * produces the same result. (32-bit)
      *
-     * @param  string  $sig       Ed25519 signature
+     * @param  string  $sig  Ed25519 signature
      * @param  string  $filePath  Absolute path to a file on the filesystem
-     * @param  string  $publicKey Signing public key
+     * @param  string  $publicKey  Signing public key
      * @return bool
      *
      * @throws SodiumException

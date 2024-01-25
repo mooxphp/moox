@@ -110,7 +110,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -134,7 +134,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -170,7 +170,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -192,7 +192,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  string  $sidebar_id The sidebar ID.
+     * @param  string  $sidebar_id  The sidebar ID.
      * @return bool Whether the sidebar can be read.
      */
     protected function check_read_sidebar_permission($sidebar_id)
@@ -207,7 +207,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -233,7 +233,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -246,7 +246,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -279,7 +279,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -294,7 +294,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @global WP_Widget_Factory $wp_widget_factory
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -355,7 +355,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -371,7 +371,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      * @global WP_Widget_Factory $wp_widget_factory
      * @global array             $wp_registered_widget_updates The registered widget update functions.
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -473,9 +473,9 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
          * @since 5.8.0
          *
          * @param  string  $widget_id  ID of the widget marked for deletion.
-         * @param  string  $sidebar_id ID of the sidebar the widget was deleted from.
-         * @param  WP_REST_Response|WP_Error  $response   The response data, or WP_Error object on failure.
-         * @param  WP_REST_Request  $request    The request sent to the API.
+         * @param  string  $sidebar_id  ID of the sidebar the widget was deleted from.
+         * @param  WP_REST_Response|WP_Error  $response  The response data, or WP_Error object on failure.
+         * @param  WP_REST_Request  $request  The request sent to the API.
          */
         do_action('rest_delete_widget', $widget_id, $sidebar_id, $response, $request);
 
@@ -487,7 +487,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error
      */
     protected function permissions_check($request)
@@ -527,8 +527,8 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      * @global WP_Widget_Factory $wp_widget_factory
      * @global array             $wp_registered_widget_updates The registered widget update functions.
      *
-     * @param  WP_REST_Request  $request    Full details about the request.
-     * @param  string  $sidebar_id ID of the sidebar the widget belongs to.
+     * @param  WP_REST_Request  $request  Full details about the request.
+     * @param  string  $sidebar_id  ID of the sidebar the widget belongs to.
      * @return string|WP_Error The saved widget ID.
      */
     protected function save_widget($request, $sidebar_id)
@@ -655,10 +655,10 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  string  $id         ID of the widget being saved.
-         * @param  string  $sidebar_id ID of the sidebar containing the widget being saved.
-         * @param  WP_REST_Request  $request    Request object.
-         * @param  bool  $creating   True when creating a widget, false when updating.
+         * @param  string  $id  ID of the widget being saved.
+         * @param  string  $sidebar_id  ID of the sidebar containing the widget being saved.
+         * @param  WP_REST_Request  $request  Request object.
+         * @param  bool  $creating  True when creating a widget, false when updating.
          */
         do_action('rest_after_save_widget', $id, $sidebar_id, $request, $creating);
 
@@ -673,8 +673,8 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      * @global WP_Widget_Factory $wp_widget_factory
      * @global array             $wp_registered_widgets The registered widgets.
      *
-     * @param  array  $item    An array containing a widget_id and sidebar_id.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  array  $item  An array containing a widget_id and sidebar_id.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)
@@ -750,8 +750,8 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
          *
          * @since 5.8.0
          *
-         * @param  WP_REST_Response|WP_Error  $response The response object, or WP_Error object on failure.
-         * @param  array  $widget   The registered widget data.
+         * @param  WP_REST_Response|WP_Error  $response  The response object, or WP_Error object on failure.
+         * @param  array  $widget  The registered widget data.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_widget', $response, $widget, $request);
@@ -762,7 +762,7 @@ class WP_REST_Widgets_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  array  $prepared Widget.
+     * @param  array  $prepared  Widget.
      * @return array Links for the given widget.
      */
     protected function prepare_links($prepared)

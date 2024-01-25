@@ -36,8 +36,8 @@ class WP_HTTP_Requests_Response extends WP_HTTP_Response
      *
      * @since 4.6.0
      *
-     * @param  \WpOrg\Requests\Response  $response HTTP response.
-     * @param  string  $filename Optional. File name. Default empty.
+     * @param  \WpOrg\Requests\Response  $response  HTTP response.
+     * @param  string  $filename  Optional. File name. Default empty.
      */
     public function __construct(WpOrg\Requests\Response $response, $filename = '')
     {
@@ -85,7 +85,7 @@ class WP_HTTP_Requests_Response extends WP_HTTP_Response
      *
      * @since 4.6.0
      *
-     * @param  array  $headers Map of header name to header value.
+     * @param  array  $headers  Map of header name to header value.
      */
     public function set_headers($headers)
     {
@@ -97,10 +97,10 @@ class WP_HTTP_Requests_Response extends WP_HTTP_Response
      *
      * @since 4.6.0
      *
-     * @param  string  $key     Header name.
-     * @param  string  $value   Header value.
-     * @param  bool  $replace Optional. Whether to replace an existing header of the same name.
-     *                        Default true.
+     * @param  string  $key  Header name.
+     * @param  string  $value  Header value.
+     * @param  bool  $replace  Optional. Whether to replace an existing header of the same name.
+     *                         Default true.
      */
     public function header($key, $value, $replace = true)
     {
@@ -128,7 +128,7 @@ class WP_HTTP_Requests_Response extends WP_HTTP_Response
      *
      * @since 4.6.0
      *
-     * @param  int  $code HTTP status.
+     * @param  int  $code  HTTP status.
      */
     public function set_status($code)
     {
@@ -152,7 +152,7 @@ class WP_HTTP_Requests_Response extends WP_HTTP_Response
      *
      * @since 4.6.0
      *
-     * @param  string  $data Response data.
+     * @param  string  $data  Response data.
      */
     public function set_data($data)
     {

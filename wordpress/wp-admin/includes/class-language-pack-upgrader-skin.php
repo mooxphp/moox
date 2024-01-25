@@ -55,7 +55,7 @@ class Language_Pack_Upgrader_Skin extends WP_Upgrader_Skin
     /**
      * @since 5.9.0 Renamed `$error` to `$errors` for PHP 8 named parameter support.
      *
-     * @param  string|WP_Error  $errors Errors.
+     * @param  string|WP_Error  $errors  Errors.
      */
     public function error($errors)
     {
@@ -86,7 +86,7 @@ class Language_Pack_Upgrader_Skin extends WP_Upgrader_Skin
          *
          * @since 3.7.0
          *
-         * @param  string[]  $update_actions Array of translations update links.
+         * @param  string[]  $update_actions  Array of translations update links.
          */
         $update_actions = apply_filters('update_translations_complete_actions', $update_actions);
 

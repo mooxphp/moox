@@ -29,7 +29,7 @@ abstract class WP_Image_Editor
     /**
      * Each instance handles a single file.
      *
-     * @param  string  $file Path to the file to load.
+     * @param  string  $file  Path to the file to load.
      */
     public function __construct($file)
     {
@@ -83,18 +83,18 @@ abstract class WP_Image_Editor
      * @since 3.5.0
      * @since 6.0.0 The `$filesize` value was added to the returned array.
      *
-     * @param  string  $destfilename Optional. Destination filename. Default null.
-     * @param  string  $mime_type    Optional. The mime-type. Default null.
+     * @param  string  $destfilename  Optional. Destination filename. Default null.
+     * @param  string  $mime_type  Optional. The mime-type. Default null.
      * @return array|WP_Error {
-     *     Array on success or WP_Error if the file failed to save.
+     *                        Array on success or WP_Error if the file failed to save.
      *
-     *     @type string $path      Path to the image file.
-     *     @type string $file      Name of the image file.
-     *     @type int    $width     Image width.
-     *     @type int    $height    Image height.
-     *     @type string $mime-type The mime type of the image.
-     *     @type int    $filesize  File size of the image.
-     * }
+     * @type string $path      Path to the image file.
+     * @type string $file      Name of the image file.
+     * @type int $width     Image width.
+     * @type int $height    Image height.
+     * @type string $mime-type The mime type of the image.
+     * @type int $filesize  File size of the image.
+     *           }
      */
     abstract public function save($destfilename = null, $mime_type = null);
 
@@ -107,16 +107,16 @@ abstract class WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  int|null  $max_w Image width.
-     * @param  int|null  $max_h Image height.
+     * @param  int|null  $max_w  Image width.
+     * @param  int|null  $max_h  Image height.
      * @param  bool|array  $crop  {
-     *     Optional. Image cropping behavior. If false, the image will be scaled (default).
-     *     If true, image will be cropped to the specified dimensions using center positions.
-     *     If an array, the image will be cropped using the array to specify the crop location:
+     *                            Optional. Image cropping behavior. If false, the image will be scaled (default).
+     *                            If true, image will be cropped to the specified dimensions using center positions.
+     *                            If an array, the image will be cropped using the array to specify the crop location:
      *
-     *     @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
-     *     @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
-     * }
+     * @type string $0 The x crop position. Accepts 'left' 'center', or 'right'.
+     * @type string $1 The y crop position. Accepts 'top', 'center', or 'bottom'.
+     *              }
      *
      * @return true|WP_Error
      */
@@ -127,15 +127,15 @@ abstract class WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  array  $sizes {
-     *     An array of image size arrays. Default sizes are 'small', 'medium', 'large'.
+     * @param  array  $sizes  {
+     *                        An array of image size arrays. Default sizes are 'small', 'medium', 'large'.
      *
-     *     @type array ...$0 {
-     *         @type int        $width  Image width.
-     *         @type int        $height Image height.
-     *         @type bool|array $crop   Optional. Whether to crop the image. Default false.
-     *     }
-     * }
+     * @type array ...$0 {
+     * @type int $width  Image width.
+     * @type int $height Image height.
+     * @type bool|array $crop   Optional. Whether to crop the image. Default false.
+     *                  }
+     *                  }
      *
      * @return array An array of resized images metadata by size.
      */
@@ -146,13 +146,13 @@ abstract class WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  int  $src_x   The start x position to crop from.
-     * @param  int  $src_y   The start y position to crop from.
-     * @param  int  $src_w   The width to crop.
-     * @param  int  $src_h   The height to crop.
-     * @param  int  $dst_w   Optional. The destination width.
-     * @param  int  $dst_h   Optional. The destination height.
-     * @param  bool  $src_abs Optional. If the source crop points are absolute.
+     * @param  int  $src_x  The start x position to crop from.
+     * @param  int  $src_y  The start y position to crop from.
+     * @param  int  $src_w  The width to crop.
+     * @param  int  $src_h  The height to crop.
+     * @param  int  $dst_w  Optional. The destination width.
+     * @param  int  $dst_h  Optional. The destination height.
+     * @param  bool  $src_abs  Optional. If the source crop points are absolute.
      * @return true|WP_Error
      */
     abstract public function crop($src_x, $src_y, $src_w, $src_h, $dst_w = null, $dst_h = null, $src_abs = false);
@@ -172,8 +172,8 @@ abstract class WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  bool  $horz Flip along Horizontal Axis
-     * @param  bool  $vert Flip along Vertical Axis
+     * @param  bool  $horz  Flip along Horizontal Axis
+     * @param  bool  $vert  Flip along Vertical Axis
      * @return true|WP_Error
      */
     abstract public function flip($horz, $vert);
@@ -183,7 +183,7 @@ abstract class WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  string  $mime_type The mime type of the image.
+     * @param  string  $mime_type  The mime type of the image.
      * @return true|WP_Error True on success, WP_Error object on failure.
      */
     abstract public function stream($mime_type = null);
@@ -194,11 +194,11 @@ abstract class WP_Image_Editor
      * @since 3.5.0
      *
      * @return int[] {
-     *     Dimensions of the image.
+     *               Dimensions of the image.
      *
-     *     @type int $width  The image width.
-     *     @type int $height The image height.
-     * }
+     * @type int $width  The image width.
+     * @type int $height The image height.
+     *           }
      */
     public function get_size()
     {
@@ -245,7 +245,7 @@ abstract class WP_Image_Editor
      *
      * @since 3.5.0
      *
-     * @param  int  $quality Compression Quality. Range: [1,100]
+     * @param  int  $quality  Compression Quality. Range: [1,100]
      * @return true|WP_Error True if set successfully; WP_Error on failure.
      */
     public function set_quality($quality = null)
@@ -266,8 +266,8 @@ abstract class WP_Image_Editor
              *
              * @since 3.5.0
              *
-             * @param  int  $quality   Quality level between 1 (low) and 100 (high).
-             * @param  string  $mime_type Image mime type.
+             * @param  int  $quality  Quality level between 1 (low) and 100 (high).
+             * @param  string  $mime_type  Image mime type.
              */
             $quality = apply_filters('wp_editor_set_quality', $default_quality, $mime_type);
 
@@ -285,8 +285,8 @@ abstract class WP_Image_Editor
                  *
                  * @since 2.5.0
                  *
-                 * @param  int  $quality Quality level between 0 (low) and 100 (high) of the JPEG.
-                 * @param  string  $context Context of the filter.
+                 * @param  int  $quality  Quality level between 0 (low) and 100 (high) of the JPEG.
+                 * @param  string  $context  Context of the filter.
                  */
                 $quality = apply_filters('jpeg_quality', $quality, 'image_resize');
             }
@@ -382,15 +382,15 @@ abstract class WP_Image_Editor
          * @see WP_Image_Editor::get_output_format()
          * @since 5.8.0
          *
-         * @param  string[]  $output_format {
-         *     An array of mime type mappings. Maps a source mime type to a new
-         *     destination mime type. Default empty array.
+         * @param  string[]  $output_format  {
+         *                                   An array of mime type mappings. Maps a source mime type to a new
+         *                                   destination mime type. Default empty array.
          *
-         *     @type string ...$0 The new mime type.
-         * }
+         * @type string ...$0 The new mime type.
+         *              }
          *
          * @param  string  $filename  Path to the image.
-         * @param  string  $mime_type The source image mime type.
+         * @param  string  $mime_type  The source image mime type.
          */
         $output_format = apply_filters('image_editor_output_format', [], $filename, $mime_type);
 
@@ -412,7 +412,7 @@ abstract class WP_Image_Editor
              * @see wp_get_mime_types()
              * @since 3.5.0
              *
-             * @param  string  $mime_type Mime type string.
+             * @param  string  $mime_type  Mime type string.
              */
             $mime_type = apply_filters('image_editor_default_mime_type', $this->default_mime_type);
             $new_ext = $this->get_extension($mime_type);
@@ -523,8 +523,8 @@ abstract class WP_Image_Editor
          *
          * @since 5.3.0
          *
-         * @param  int  $orientation EXIF Orientation value as retrieved from the image file.
-         * @param  string  $file        Path to the image file.
+         * @param  int  $orientation  EXIF Orientation value as retrieved from the image file.
+         * @param  string  $file  Path to the image file.
          */
         $orientation = apply_filters('wp_image_maybe_exif_rotate', $orientation, $this->file);
 

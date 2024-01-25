@@ -25,7 +25,7 @@
  * @property string $user_registered
  * @property string $user_activation_key
  * @property string $user_status
- * @property int    $user_level
+ * @property int $user_level
  * @property string $display_name
  * @property string $spam
  * @property string $deleted
@@ -125,9 +125,9 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  int|string|stdClass|WP_User  $id      User's ID, a WP_User object, or a user object from the DB.
-     * @param  string  $name    Optional. User's username
-     * @param  int  $site_id Optional Site ID, defaults to current site.
+     * @param  int|string|stdClass|WP_User  $id  User's ID, a WP_User object, or a user object from the DB.
+     * @param  string  $name  Optional. User's username
+     * @param  int  $site_id  Optional Site ID, defaults to current site.
      */
     public function __construct($id = 0, $name = '', $site_id = '')
     {
@@ -176,8 +176,8 @@ class WP_User
      *
      * @since 3.3.0
      *
-     * @param  object  $data    User DB row object.
-     * @param  int  $site_id Optional. The site ID to initialize for.
+     * @param  object  $data  User DB row object.
+     * @param  int  $site_id  Optional. The site ID to initialize for.
      */
     public function init($data, $site_id = '')
     {
@@ -198,8 +198,8 @@ class WP_User
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  string  $field The field to query against: 'id', 'ID', 'slug', 'email' or 'login'.
-     * @param  string|int  $value The field value.
+     * @param  string  $field  The field to query against: 'id', 'ID', 'slug', 'email' or 'login'.
+     * @param  string|int  $value  The field value.
      * @return object|false Raw user object.
      */
     public static function get_data_by($field, $value)
@@ -277,7 +277,7 @@ class WP_User
      *
      * @since 3.3.0
      *
-     * @param  string  $key User meta key to check if set.
+     * @param  string  $key  User meta key to check if set.
      * @return bool Whether the given user meta key is set.
      */
     public function __isset($key)
@@ -311,7 +311,7 @@ class WP_User
      *
      * @since 3.3.0
      *
-     * @param  string  $key User meta key to retrieve.
+     * @param  string  $key  User meta key to retrieve.
      * @return mixed Value of the given user meta key (if set). If `$key` is 'id', the user ID.
      */
     public function __get($key)
@@ -354,8 +354,8 @@ class WP_User
      *
      * @since 3.3.0
      *
-     * @param  string  $key   User meta key.
-     * @param  mixed  $value User meta value.
+     * @param  string  $key  User meta key.
+     * @param  mixed  $value  User meta value.
      */
     public function __set($key, $value)
     {
@@ -382,7 +382,7 @@ class WP_User
      *
      * @since 4.4.0
      *
-     * @param  string  $key User meta key to unset.
+     * @param  string  $key  User meta key to unset.
      */
     public function __unset($key)
     {
@@ -426,7 +426,7 @@ class WP_User
      *
      * @since 3.3.0
      *
-     * @param  string  $key Property
+     * @param  string  $key  Property
      * @return mixed
      */
     public function get($key)
@@ -441,7 +441,7 @@ class WP_User
      *
      * @since 3.3.0
      *
-     * @param  string  $key Property.
+     * @param  string  $key  Property.
      * @return bool
      */
     public function has_prop($key)
@@ -466,8 +466,8 @@ class WP_User
      *
      * @since 4.3.0
      *
-     * @param  string  $name      Method to call.
-     * @param  array  $arguments Arguments to pass when calling.
+     * @param  string  $name  Method to call.
+     * @param  array  $arguments  Arguments to pass when calling.
      * @return mixed|false Return value of the callback, false otherwise.
      */
     public function __call($name, $arguments)
@@ -492,7 +492,7 @@ class WP_User
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  string  $cap_key Optional capability key
+     * @param  string  $cap_key  Optional capability key
      */
     protected function _init_caps($cap_key = '')
     {
@@ -562,7 +562,7 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  string  $role Role name.
+     * @param  string  $role  Role name.
      */
     public function add_role($role)
     {
@@ -584,8 +584,8 @@ class WP_User
          *
          * @since 4.3.0
          *
-         * @param  int  $user_id The user ID.
-         * @param  string  $role    The new role.
+         * @param  int  $user_id  The user ID.
+         * @param  string  $role  The new role.
          */
         do_action('add_user_role', $this->ID, $role);
     }
@@ -595,7 +595,7 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  string  $role Role name.
+     * @param  string  $role  Role name.
      */
     public function remove_role($role)
     {
@@ -613,8 +613,8 @@ class WP_User
          *
          * @since 4.3.0
          *
-         * @param  int  $user_id The user ID.
-         * @param  string  $role    The removed role.
+         * @param  int  $user_id  The user ID.
+         * @param  string  $role  The removed role.
          */
         do_action('remove_user_role', $this->ID, $role);
     }
@@ -628,7 +628,7 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  string  $role Role name.
+     * @param  string  $role  Role name.
      */
     public function set_role($role)
     {
@@ -673,9 +673,9 @@ class WP_User
          * @since 2.9.0
          * @since 3.6.0 Added $old_roles to include an array of the user's previous roles.
          *
-         * @param  int  $user_id   The user ID.
-         * @param  string  $role      The new role.
-         * @param  string[]  $old_roles An array of the user's previous roles.
+         * @param  int  $user_id  The user ID.
+         * @param  string  $role  The new role.
+         * @param  string[]  $old_roles  An array of the user's previous roles.
          */
         do_action('set_user_role', $this->ID, $role, $old_roles);
     }
@@ -695,7 +695,7 @@ class WP_User
      * @since 2.0.0
      *
      * @param  int  $max  Max level of user.
-     * @param  string  $item Level capability name.
+     * @param  string  $item  Level capability name.
      * @return int Max Level.
      */
     public function level_reduction($max, $item)
@@ -732,8 +732,8 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  string  $cap   Capability name.
-     * @param  bool  $grant Whether to grant capability to user.
+     * @param  string  $cap  Capability name.
+     * @param  bool  $grant  Whether to grant capability to user.
      */
     public function add_cap($cap, $grant = true)
     {
@@ -748,7 +748,7 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  string  $cap Capability name.
+     * @param  string  $cap  Capability name.
      */
     public function remove_cap($cap)
     {
@@ -798,8 +798,8 @@ class WP_User
      *              by adding it to the function signature.
      * @see map_meta_cap()
      *
-     * @param  string  $cap     Capability name.
-     * @param  mixed  ...$args Optional further parameters, typically starting with an object ID.
+     * @param  string  $cap  Capability name.
+     * @param  mixed  ...$args  Optional further parameters, typically starting with an object ID.
      * @return bool Whether the user has the given capability, or, if an object ID is passed, whether the user has
      *              the given capability for that object.
      */
@@ -830,18 +830,18 @@ class WP_User
          * @since 2.0.0
          * @since 3.7.0 Added the `$user` parameter.
          *
-         * @param  bool[]  $allcaps Array of key/value pairs where keys represent a capability name
-         *                          and boolean values represent whether the user has that capability.
-         * @param  string[]  $caps    Required primitive capabilities for the requested capability.
-         * @param  array  $args {
-         *     Arguments that accompany the requested capability check.
+         * @param  bool[]  $allcaps  Array of key/value pairs where keys represent a capability name
+         *                           and boolean values represent whether the user has that capability.
+         * @param  string[]  $caps  Required primitive capabilities for the requested capability.
+         * @param  array  $args  {
+         *                       Arguments that accompany the requested capability check.
          *
-         *     @type string    $0 Requested capability.
-         *     @type int       $1 Concerned user ID.
-         *     @type mixed  ...$2 Optional second and further parameters, typically object ID.
-         * }
+         * @type string $0 Requested capability.
+         * @type int $1 Concerned user ID.
+         * @type mixed ...$2 Optional second and further parameters, typically object ID.
+         *             }
          *
-         * @param  WP_User  $user    The user object.
+         * @param  WP_User  $user  The user object.
          */
         $capabilities = apply_filters('user_has_cap', $this->allcaps, $caps, $args, $this);
 
@@ -868,7 +868,7 @@ class WP_User
      *
      * @since 2.0.0
      *
-     * @param  int  $level Level number, 1 to 10.
+     * @param  int  $level  Level number, 1 to 10.
      * @return string
      */
     public function translate_level_to_cap($level)
@@ -882,7 +882,7 @@ class WP_User
      * @since 3.0.0
      * @deprecated 4.9.0 Use WP_User::for_site()
      *
-     * @param  int  $blog_id Optional. Site ID, defaults to current site.
+     * @param  int  $blog_id  Optional. Site ID, defaults to current site.
      */
     public function for_blog($blog_id = '')
     {
@@ -898,7 +898,7 @@ class WP_User
      *
      * @global wpdb $wpdb WordPress database abstraction object.
      *
-     * @param  int  $site_id Site ID to initialize user capabilities for. Default is the current site.
+     * @param  int  $site_id  Site ID to initialize user capabilities for. Default is the current site.
      */
     public function for_site($site_id = '')
     {

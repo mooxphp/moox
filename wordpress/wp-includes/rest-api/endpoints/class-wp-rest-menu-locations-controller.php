@@ -74,7 +74,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_Error|bool True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -95,7 +95,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_Error|WP_REST_Response Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -119,7 +119,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -140,7 +140,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_Error|WP_REST_Response Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)
@@ -164,8 +164,8 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  stdClass  $item    Post status data.
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  stdClass  $item  Post status data.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response Menu location data.
      */
     public function prepare_item_for_response($item, $request)
@@ -206,8 +206,8 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
          *
          * @since 5.9.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  object  $location The original location object.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  object  $location  The original location object.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_menu_location', $response, $location, $request);
@@ -218,7 +218,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  stdClass  $location Menu location.
+     * @param  stdClass  $location  Menu location.
      * @return array Links for the given menu location.
      */
     protected function prepare_links($location)

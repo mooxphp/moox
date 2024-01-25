@@ -51,9 +51,9 @@ class WP_Widget_Block extends WP_Widget
      *
      * @since 5.8.0
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Block widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Block widget instance.
      */
     public function widget($args, $instance)
     {
@@ -71,8 +71,8 @@ class WP_Widget_Block extends WP_Widget
          * @since 5.8.0
          *
          * @param  string  $content  The widget content.
-         * @param  array  $instance Array of settings for the current widget.
-         * @param  WP_Widget_Block  $widget   Current Block widget instance.
+         * @param  array  $instance  Array of settings for the current widget.
+         * @param  WP_Widget_Block  $widget  Current Block widget instance.
          */
         echo apply_filters(
             'widget_block_content',
@@ -97,7 +97,7 @@ class WP_Widget_Block extends WP_Widget
      *
      * @since 5.8.0
      *
-     * @param  string  $content The HTML content of the current block widget.
+     * @param  string  $content  The HTML content of the current block widget.
      * @return string The classname to use in the block widget's container HTML.
      */
     private function get_dynamic_classname($content)
@@ -161,9 +161,9 @@ class WP_Widget_Block extends WP_Widget
          * @since 5.8.0
          *
          * @param  string  $classname  The classname to be used in the block widget's container HTML,
-         *                           e.g. 'widget_block widget_text'.
-         * @param  string  $block_name The name of the block contained by the block widget,
-         *                           e.g. 'core/paragraph'.
+         *                             e.g. 'widget_block widget_text'.
+         * @param  string  $block_name  The name of the block contained by the block widget,
+         *                              e.g. 'core/paragraph'.
          */
         return apply_filters('widget_block_dynamic_classname', $classname, $block_name);
     }
@@ -174,9 +174,9 @@ class WP_Widget_Block extends WP_Widget
      * @since 5.8.0
 
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Settings to save or bool false to cancel saving.
      */
     public function update($new_instance, $old_instance)
@@ -198,7 +198,7 @@ class WP_Widget_Block extends WP_Widget
      * @since 5.8.0
      * @see WP_Widget_Custom_HTML::render_control_template_scripts()
      *
-     * @param  array  $instance Current instance.
+     * @param  array  $instance  Current instance.
      */
     public function form($instance)
     {
@@ -221,8 +221,8 @@ class WP_Widget_Block extends WP_Widget
      *
      * @since 5.8.0
      *
-     * @param  bool  $is_wide   Whether the widget is considered wide.
-     * @param  string  $widget_id Widget ID.
+     * @param  bool  $is_wide  Whether the widget is considered wide.
+     * @param  string  $widget_id  Widget ID.
      * @return bool Updated `is_wide` value.
      */
     public function set_is_wide_widget_in_customizer($is_wide, $widget_id)

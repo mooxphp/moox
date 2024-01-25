@@ -43,7 +43,7 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
          *
          * @since 5.5.0
          *
-         * @param  WP_Taxonomy[]  $taxonomies Array of registered taxonomy objects keyed by their name.
+         * @param  WP_Taxonomy[]  $taxonomies  Array of registered taxonomy objects keyed by their name.
          */
         return apply_filters('wp_sitemaps_taxonomies', $taxonomies);
     }
@@ -55,8 +55,8 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
      * @since 5.9.0 Renamed `$taxonomy` to `$object_subtype` to match parent class
      *              for PHP 8 named parameter support.
      *
-     * @param  int  $page_num       Page of results.
-     * @param  string  $object_subtype Optional. Taxonomy name. Default empty.
+     * @param  int  $page_num  Page of results.
+     * @param  string  $object_subtype  Optional. Taxonomy name. Default empty.
      * @return array[] Array of URL information for a sitemap.
      */
     public function get_url_list($page_num, $object_subtype = '')
@@ -79,9 +79,9 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
          *
          * @since 5.5.0
          *
-         * @param  array[]|null  $url_list The URL list. Default null.
-         * @param  string  $taxonomy Taxonomy name.
-         * @param  int  $page_num Page of results.
+         * @param  array[]|null  $url_list  The URL list. Default null.
+         * @param  string  $taxonomy  Taxonomy name.
+         * @param  int  $page_num  Page of results.
          */
         $url_list = apply_filters(
             'wp_sitemaps_taxonomies_pre_url_list',
@@ -123,10 +123,10 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
                  * @since 5.5.0
                  * @since 6.0.0 Added `$term` argument containing the term object.
                  *
-                 * @param  array  $sitemap_entry Sitemap entry for the term.
-                 * @param  int  $term_id       Term ID.
-                 * @param  string  $taxonomy      Taxonomy name.
-                 * @param  WP_Term  $term          Term object.
+                 * @param  array  $sitemap_entry  Sitemap entry for the term.
+                 * @param  int  $term_id  Term ID.
+                 * @param  string  $taxonomy  Taxonomy name.
+                 * @param  WP_Term  $term  Term object.
                  */
                 $sitemap_entry = apply_filters('wp_sitemaps_taxonomies_entry', $sitemap_entry, $term->term_id, $taxonomy, $term);
                 $url_list[] = $sitemap_entry;
@@ -143,7 +143,7 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
      * @since 5.9.0 Renamed `$taxonomy` to `$object_subtype` to match parent class
      *              for PHP 8 named parameter support.
      *
-     * @param  string  $object_subtype Optional. Taxonomy name. Default empty.
+     * @param  string  $object_subtype  Optional. Taxonomy name. Default empty.
      * @return int Total number of pages.
      */
     public function get_max_num_pages($object_subtype = '')
@@ -163,8 +163,8 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
          *
          * @since 5.5.0
          *
-         * @param  int|null  $max_num_pages The maximum number of pages. Default null.
-         * @param  string  $taxonomy      Taxonomy name.
+         * @param  int|null  $max_num_pages  The maximum number of pages. Default null.
+         * @param  string  $taxonomy  Taxonomy name.
          */
         $max_num_pages = apply_filters('wp_sitemaps_taxonomies_pre_max_num_pages', null, $taxonomy);
 
@@ -182,7 +182,7 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
      *
      * @since 5.5.0
      *
-     * @param  string  $taxonomy Taxonomy name.
+     * @param  string  $taxonomy  Taxonomy name.
      * @return array Array of WP_Term_Query arguments.
      */
     protected function get_taxonomies_query_args($taxonomy)
@@ -195,8 +195,8 @@ class WP_Sitemaps_Taxonomies extends WP_Sitemaps_Provider
          * @see WP_Term_Query for a full list of arguments
          * @since 5.5.0
          *
-         * @param  array  $args     Array of WP_Term_Query arguments.
-         * @param  string  $taxonomy Taxonomy name.
+         * @param  array  $args  Array of WP_Term_Query arguments.
+         * @param  string  $taxonomy  Taxonomy name.
          */
         $args = apply_filters(
             'wp_sitemaps_taxonomies_query_args',

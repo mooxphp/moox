@@ -38,7 +38,7 @@ function get_dashboard_blog()
  * @deprecated 3.0.0 Use wp_generate_password()
  * @see wp_generate_password()
  *
- * @param  int  $len Optional. The length of password to generate. Default 8.
+ * @param  int  $len  Optional. The length of password to generate. Default 8.
  */
 function generate_random_password($len = 8)
 {
@@ -60,7 +60,7 @@ function generate_random_password($len = 8)
  * @deprecated 3.0.0 Use is_super_admin()
  * @see is_super_admin()
  *
- * @param  string  $user_login Optional. Username for the user to check. Default empty.
+ * @param  string  $user_login  Optional. Username for the user to check. Default empty.
  */
 function is_site_admin($user_login = '')
 {
@@ -129,7 +129,7 @@ text-align: center;
  * @deprecated 3.0.0 Use get_user_by()
  * @see get_user_by()
  *
- * @param  string  $username Username.
+ * @param  string  $username  Username.
  */
 function get_user_details($username)
 {
@@ -145,7 +145,7 @@ function get_user_details($username)
  * @deprecated 3.0.0 Use clean_post_cache()
  * @see clean_post_cache()
  *
- * @param  int  $post_id Post ID.
+ * @param  int  $post_id  Post ID.
  */
 function clear_global_post_cache($post_id)
 {
@@ -173,8 +173,8 @@ function is_main_blog()
  * @deprecated 3.0.0 Use is_email()
  * @see is_email()
  *
- * @param  string  $email        Email address to verify.
- * @param  bool  $check_domain Deprecated.
+ * @param  string  $email  Email address to verify.
+ * @param  bool  $check_domain  Deprecated.
  * @return string|false Valid email address on success, false on failure.
  */
 function validate_email($email, $check_domain = true)
@@ -193,9 +193,9 @@ function validate_email($email, $check_domain = true)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $start      Optional. Offset for retrieving the blog list. Default 0.
- * @param  int  $num        Optional. Number of blogs to list. Default 10.
- * @param  string  $deprecated Unused.
+ * @param  int  $start  Optional. Offset for retrieving the blog list. Default 0.
+ * @param  int  $num  Optional. Number of blogs to list. Default 10.
+ * @param  string  $deprecated  Unused.
  */
 function get_blog_list($start = 0, $num = 10, $deprecated = '')
 {
@@ -227,8 +227,8 @@ function get_blog_list($start = 0, $num = 10, $deprecated = '')
  * @since MU (3.0.0)
  * @deprecated 3.0.0
  *
- * @param  int  $num     Optional. Number of activate blogs to retrieve. Default 10.
- * @param  bool  $display Optional. Whether or not to display the most active blogs list. Default true.
+ * @param  int  $num  Optional. Number of activate blogs to retrieve. Default 10.
+ * @param  bool  $display  Optional. Whether or not to display the most active blogs list. Default true.
  * @return array List of "most active" sites.
  */
 function get_most_active_blogs($num = 10, $display = true)
@@ -282,7 +282,7 @@ function get_most_active_blogs($num = 10, $display = true)
  * @deprecated 3.3.0 Use wp_redirect()
  * @see wp_redirect()
  *
- * @param  string  $url Optional. Redirect URL. Default empty.
+ * @param  string  $url  Optional. Redirect URL. Default empty.
  */
 function wpmu_admin_do_redirect($url = '')
 {
@@ -328,7 +328,7 @@ function wpmu_admin_do_redirect($url = '')
  * @deprecated 3.3.0 Use add_query_arg()
  * @see add_query_arg()
  *
- * @param  string  $url Optional. Redirect URL. Default empty.
+ * @param  string  $url  Optional. Redirect URL. Default empty.
  * @return string
  */
 function wpmu_admin_redirect_add_updated_param($url = '')
@@ -356,7 +356,7 @@ function wpmu_admin_redirect_add_updated_param($url = '')
  * @deprecated 3.6.0 Use get_user_by()
  * @see get_user_by()
  *
- * @param  string  $email_or_login Either an email address or a login.
+ * @param  string  $email_or_login  Either an email address or a login.
  * @return int
  */
 function get_user_id_from_string($email_or_login)
@@ -416,10 +416,10 @@ function get_blogaddress_by_domain($domain, $path)
  * @since MU (3.0.0)
  * @deprecated 4.4.0
  *
- * @param  string  $domain       The new blog's domain.
- * @param  string  $path         The new blog's path.
- * @param  string  $weblog_title The new blog's title.
- * @param  int  $site_id      Optional. Defaults to 1.
+ * @param  string  $domain  The new blog's domain.
+ * @param  string  $path  The new blog's path.
+ * @param  string  $weblog_title  The new blog's title.
+ * @param  int  $site_id  Optional. Defaults to 1.
  * @return string|int The ID of the newly created blog
  */
 function create_empty_blog($domain, $path, $weblog_title, $site_id = 1)
@@ -460,8 +460,8 @@ function create_empty_blog($domain, $path, $weblog_title, $site_id = 1)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  string  $domain Optional. Network domain.
- * @param  string  $path   Optional. Network path.
+ * @param  string  $domain  Optional. Network domain.
+ * @param  string  $path  Optional. Network path.
  * @return array|false The network admins.
  */
 function get_admin_users_for_domain($domain = '', $path = '')
@@ -496,19 +496,19 @@ function get_admin_users_for_domain($domain = '', $path = '')
  * @deprecated 4.6.0 Use get_sites()
  * @see get_sites()
  *
- * @param  array  $args {
- *     Array of default arguments. Optional.
+ * @param  array  $args  {
+ *                       Array of default arguments. Optional.
  *
- *     @type int|int[] $network_id A network ID or array of network IDs. Set to null to retrieve sites
- *                                 from all networks. Defaults to current network ID.
- *     @type int       $public     Retrieve public or non-public sites. Default null, for any.
- *     @type int       $archived   Retrieve archived or non-archived sites. Default null, for any.
- *     @type int       $mature     Retrieve mature or non-mature sites. Default null, for any.
- *     @type int       $spam       Retrieve spam or non-spam sites. Default null, for any.
- *     @type int       $deleted    Retrieve deleted or non-deleted sites. Default null, for any.
- *     @type int       $limit      Number of sites to limit the query to. Default 100.
- *     @type int       $offset     Exclude the first x sites. Used in combination with the $limit parameter. Default 0.
- * }
+ * @type int|int[] $network_id A network ID or array of network IDs. Set to null to retrieve sites
+ *                 from all networks. Defaults to current network ID.
+ * @type int $public     Retrieve public or non-public sites. Default null, for any.
+ * @type int $archived   Retrieve archived or non-archived sites. Default null, for any.
+ * @type int $mature     Retrieve mature or non-mature sites. Default null, for any.
+ * @type int $spam       Retrieve spam or non-spam sites. Default null, for any.
+ * @type int $deleted    Retrieve deleted or non-deleted sites. Default null, for any.
+ * @type int $limit      Number of sites to limit the query to. Default 100.
+ * @type int $offset     Exclude the first x sites. Used in combination with the $limit parameter. Default 0.
+ *           }
  *
  * @return array[] An empty array if the installation is considered "large" via wp_is_large_network(). Otherwise,
  *                 an associative array of WP_Site data as arrays.
@@ -572,8 +572,8 @@ function wp_get_sites($args = [])
  * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param  string  $key
- * @param  int  $user_id Optional. Defaults to current user.
- * @param  int  $blog_id Optional. Defaults to current blog.
+ * @param  int  $user_id  Optional. Defaults to current user.
+ * @param  int  $blog_id  Optional. Defaults to current blog.
  * @return bool
  */
 function is_user_option_local($key, $user_id = 0, $blog_id = 0)
@@ -602,8 +602,8 @@ function is_user_option_local($key, $user_id = 0, $blog_id = 0)
  * @see wp_insert_site()
  *
  * @param  string  $domain  The domain of the new site.
- * @param  string  $path    The path of the new site.
- * @param  int  $site_id Unless you're running a multi-network install, be sure to set this value to 1.
+ * @param  string  $path  The path of the new site.
+ * @param  int  $site_id  Unless you're running a multi-network install, be sure to set this value to 1.
  * @return int|false The ID of the new row
  */
 function insert_blog($domain, $path, $site_id)
@@ -639,8 +639,8 @@ function insert_blog($domain, $path, $site_id)
  * @global wpdb     $wpdb     WordPress database abstraction object.
  * @global WP_Roles $wp_roles WordPress role management object.
  *
- * @param  int  $blog_id    The value returned by wp_insert_site().
- * @param  string  $blog_title The title of the new site.
+ * @param  int  $blog_id  The value returned by wp_insert_site().
+ * @param  string  $blog_title  The title of the new site.
  */
 function install_blog($blog_id, $blog_title = '')
 {
@@ -710,7 +710,7 @@ function install_blog($blog_id, $blog_title = '')
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $blog_id Ignored in this function.
+ * @param  int  $blog_id  Ignored in this function.
  * @param  int  $user_id
  */
 function install_blog_defaults($blog_id, $user_id)
@@ -739,12 +739,12 @@ function install_blog_defaults($blog_id, $user_id)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $id         The user ID.
- * @param  string  $pref       The column in the wp_users table to update the user's status
- *                           in (presumably user_status, spam, or deleted).
- * @param  int  $value      The new status for the user.
- * @param  null  $deprecated Deprecated as of 3.0.2 and should not be used.
- * @return int   The initially passed $value.
+ * @param  int  $id  The user ID.
+ * @param  string  $pref  The column in the wp_users table to update the user's status
+ *                        in (presumably user_status, spam, or deleted).
+ * @param  int  $value  The new status for the user.
+ * @param  null  $deprecated  Deprecated as of 3.0.2 and should not be used.
+ * @return int The initially passed $value.
  */
 function update_user_status($id, $pref, $value, $deprecated = null)
 {
@@ -781,8 +781,8 @@ function update_user_status($id, $pref, $value, $deprecated = null)
  * @since 6.1.0 This function no longer does anything.
  * @deprecated 6.1.0
  *
- * @param  int  $term_id    An ID for a term on the current blog.
- * @param  string  $deprecated Not used.
+ * @param  int  $term_id  An ID for a term on the current blog.
+ * @param  string  $deprecated  Not used.
  * @return int An ID from the global terms table mapped from $term_id.
  */
 function global_terms($term_id, $deprecated = '')

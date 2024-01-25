@@ -48,40 +48,40 @@ final class WP_Block_Patterns_Registry
      * @since 6.1.0 Added support for the `postTypes` property.
      * @since 6.2.0 Added support for the `templateTypes` property.
      *
-     * @param  string  $pattern_name       Block pattern name including namespace.
-     * @param  array  $pattern_properties {
-     *     List of properties for the block pattern.
+     * @param  string  $pattern_name  Block pattern name including namespace.
+     * @param  array  $pattern_properties  {
+     *                                     List of properties for the block pattern.
      *
-     *     @type string   $title         Required. A human-readable title for the pattern.
-     *     @type string   $content       Required. Block HTML markup for the pattern.
-     *     @type string   $description   Optional. Visually hidden text used to describe the pattern
-     *                                   in the inserter. A description is optional, but is strongly
-     *                                   encouraged when the title does not fully describe what the
-     *                                   pattern does. The description will help users discover the
-     *                                   pattern while searching.
-     *     @type int      $viewportWidth Optional. The intended width of the pattern to allow for a scaled
-     *                                   preview within the pattern inserter.
-     *     @type bool     $inserter      Optional. Determines whether the pattern is visible in inserter.
-     *                                   To hide a pattern so that it can only be inserted programmatically,
-     *                                   set this to false. Default true.
-     *     @type string[] $categories    Optional. A list of registered pattern categories used to group
-     *                                   block patterns. Block patterns can be shown on multiple categories.
-     *                                   A category must be registered separately in order to be used here.
-     *     @type string[] $keywords      Optional. A list of aliases or keywords that help users discover
-     *                                   the pattern while searching.
-     *     @type string[] $blockTypes    Optional. A list of block names including namespace that could use
-     *                                   the block pattern in certain contexts (placeholder, transforms).
-     *                                   The block pattern is available in the block editor inserter
-     *                                   regardless of this list of block names.
-     *                                   Certain blocks support further specificity besides the block name
-     *                                   (e.g. for `core/template-part` you can specify areas
-     *                                   like `core/template-part/header` or `core/template-part/footer`).
-     *     @type string[] $postTypes     Optional. An array of post types that the pattern is restricted
-     *                                   to be used with. The pattern will only be available when editing one
-     *                                   of the post types passed on the array. For all the other post types
-     *                                   not part of the array the pattern is not available at all.
-     *     @type string[] $templateTypes Optional. An array of template types where the pattern fits.
-     * }
+     * @type string $title         Required. A human-readable title for the pattern.
+     * @type string $content       Required. Block HTML markup for the pattern.
+     * @type string $description   Optional. Visually hidden text used to describe the pattern
+     *              in the inserter. A description is optional, but is strongly
+     *              encouraged when the title does not fully describe what the
+     *              pattern does. The description will help users discover the
+     *              pattern while searching.
+     * @type int $viewportWidth Optional. The intended width of the pattern to allow for a scaled
+     *           preview within the pattern inserter.
+     * @type bool $inserter      Optional. Determines whether the pattern is visible in inserter.
+     *            To hide a pattern so that it can only be inserted programmatically,
+     *            set this to false. Default true.
+     * @type string[] $categories    Optional. A list of registered pattern categories used to group
+     *                block patterns. Block patterns can be shown on multiple categories.
+     *                A category must be registered separately in order to be used here.
+     * @type string[] $keywords      Optional. A list of aliases or keywords that help users discover
+     *                the pattern while searching.
+     * @type string[] $blockTypes    Optional. A list of block names including namespace that could use
+     *                the block pattern in certain contexts (placeholder, transforms).
+     *                The block pattern is available in the block editor inserter
+     *                regardless of this list of block names.
+     *                Certain blocks support further specificity besides the block name
+     *                (e.g. for `core/template-part` you can specify areas
+     *                like `core/template-part/header` or `core/template-part/footer`).
+     * @type string[] $postTypes     Optional. An array of post types that the pattern is restricted
+     *                to be used with. The pattern will only be available when editing one
+     *                of the post types passed on the array. For all the other post types
+     *                not part of the array the pattern is not available at all.
+     * @type string[] $templateTypes Optional. An array of template types where the pattern fits.
+     *                }
      *
      * @return bool True if the pattern was registered with success and false otherwise.
      */
@@ -139,7 +139,7 @@ final class WP_Block_Patterns_Registry
      *
      * @since 5.5.0
      *
-     * @param  string  $pattern_name Block pattern name including namespace.
+     * @param  string  $pattern_name  Block pattern name including namespace.
      * @return bool True if the pattern was unregistered with success and false otherwise.
      */
     public function unregister($pattern_name)
@@ -167,8 +167,8 @@ final class WP_Block_Patterns_Registry
      *
      * @since 6.4.0
      *
-     * @param  array  $pattern       Registered pattern properties.
-     * @param  array  $hooked_blocks The list of hooked blocks.
+     * @param  array  $pattern  Registered pattern properties.
+     * @param  array  $hooked_blocks  The list of hooked blocks.
      * @return string The content of the block pattern.
      */
     private function prepare_content($pattern, $hooked_blocks)
@@ -192,7 +192,7 @@ final class WP_Block_Patterns_Registry
      *
      * @since 5.5.0
      *
-     * @param  string  $pattern_name Block pattern name including namespace.
+     * @param  string  $pattern_name  Block pattern name including namespace.
      * @return array Registered pattern properties.
      */
     public function get_registered($pattern_name)
@@ -212,7 +212,7 @@ final class WP_Block_Patterns_Registry
      *
      * @since 5.5.0
      *
-     * @param  bool  $outside_init_only Return only patterns registered outside the `init` action.
+     * @param  bool  $outside_init_only  Return only patterns registered outside the `init` action.
      * @return array[] Array of arrays containing the registered block patterns properties,
      *                 and per style.
      */
@@ -236,7 +236,7 @@ final class WP_Block_Patterns_Registry
      *
      * @since 5.5.0
      *
-     * @param  string  $pattern_name Block pattern name including namespace.
+     * @param  string  $pattern_name  Block pattern name including namespace.
      * @return bool True if the pattern is registered, false otherwise.
      */
     public function is_registered($pattern_name)
@@ -284,9 +284,9 @@ final class WP_Block_Patterns_Registry
  *
  * @since 5.5.0
  *
- * @param  string  $pattern_name       Block pattern name including namespace.
- * @param  array  $pattern_properties List of properties for the block pattern.
- *                                   See WP_Block_Patterns_Registry::register() for accepted arguments.
+ * @param  string  $pattern_name  Block pattern name including namespace.
+ * @param  array  $pattern_properties  List of properties for the block pattern.
+ *                                     See WP_Block_Patterns_Registry::register() for accepted arguments.
  * @return bool True if the pattern was registered with success and false otherwise.
  */
 function register_block_pattern($pattern_name, $pattern_properties)
@@ -299,7 +299,7 @@ function register_block_pattern($pattern_name, $pattern_properties)
  *
  * @since 5.5.0
  *
- * @param  string  $pattern_name Block pattern name including namespace.
+ * @param  string  $pattern_name  Block pattern name including namespace.
  * @return bool True if the pattern was unregistered with success and false otherwise.
  */
 function unregister_block_pattern($pattern_name)

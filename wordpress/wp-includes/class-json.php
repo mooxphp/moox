@@ -144,7 +144,7 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  int  $use    object behavior flags; combine with boolean-OR
+         * @param  int  $use  object behavior flags; combine with boolean-OR
          *
          *                           possible values:
          *                           - SERVICES_JSON_LOOSE_TYPE:  loose typing.
@@ -194,7 +194,7 @@ if (! class_exists('Services_JSON')) {
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
          * @param  string  $utf16  UTF-16 character
-         * @return   string  UTF-8 character
+         * @return string UTF-8 character
          */
         public function utf162utf8($utf16)
         {
@@ -240,8 +240,8 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  string  $utf8   UTF-8 character
-         * @return   string  UTF-16 character
+         * @param  string  $utf8  UTF-8 character
+         * @return string UTF-16 character
          */
         public function utf82utf16($utf8)
         {
@@ -283,11 +283,11 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  mixed  $var    any number, boolean, string, array, or object to be encoded.
-         *                           see argument 1 to Services_JSON() above for array-parsing behavior.
-         *                           if var is a string, note that encode() always expects it
-         *                           to be in ASCII or UTF-8 format!
-         * @return   mixed   JSON string representation of input var or an error if a problem occurs
+         * @param  mixed  $var  any number, boolean, string, array, or object to be encoded.
+         *                      see argument 1 to Services_JSON() above for array-parsing behavior.
+         *                      if var is a string, note that encode() always expects it
+         *                      to be in ASCII or UTF-8 format!
+         * @return mixed JSON string representation of input var or an error if a problem occurs
          */
         public function encode($var)
         {
@@ -303,11 +303,11 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  mixed  $var    any number, boolean, string, array, or object to be encoded.
-         *                           see argument 1 to Services_JSON() above for array-parsing behavior.
-         *                           if var is a string, note that encode() always expects it
-         *                           to be in ASCII or UTF-8 format!
-         * @return   mixed   JSON string representation of input var or an error if a problem occurs
+         * @param  mixed  $var  any number, boolean, string, array, or object to be encoded.
+         *                      see argument 1 to Services_JSON() above for array-parsing behavior.
+         *                      if var is a string, note that encode() always expects it
+         *                      to be in ASCII or UTF-8 format!
+         * @return mixed JSON string representation of input var or an error if a problem occurs
          */
         public function encodeUnsafe($var)
         {
@@ -328,11 +328,11 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  mixed  $var    any number, boolean, string, array, or object to be encoded.
-         *                           see argument 1 to Services_JSON() above for array-parsing behavior.
-         *                           if var is a string, note that encode() always expects it
-         *                           to be in ASCII or UTF-8 format!
-         * @return   mixed   JSON string representation of input var or an error if a problem occurs
+         * @param  mixed  $var  any number, boolean, string, array, or object to be encoded.
+         *                      see argument 1 to Services_JSON() above for array-parsing behavior.
+         *                      if var is a string, note that encode() always expects it
+         *                      to be in ASCII or UTF-8 format!
+         * @return mixed JSON string representation of input var or an error if a problem occurs
          */
         public function _encode($var)
         {
@@ -574,9 +574,9 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  string  $name   name of key to use
+         * @param  string  $name  name of key to use
          * @param  mixed  $value  reference to an array element to be encoded
-         * @return   string  JSON-formatted name-value pair, like '"name":value'
+         * @return string JSON-formatted name-value pair, like '"name":value'
          */
         public function name_value($name, $value)
         {
@@ -596,8 +596,8 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param    $str    string      string value to strip of comments and whitespace
-         * @return   string  string value stripped of comments and whitespace
+         * @param  $str  string      string value to strip of comments and whitespace
+         * @return string string value stripped of comments and whitespace
          */
         public function reduce_string($str)
         {
@@ -625,12 +625,12 @@ if (! class_exists('Services_JSON')) {
          *
          * @deprecated 5.3.0 Use the PHP native JSON extension instead.
          *
-         * @param  string  $str    JSON-formatted string
-         * @return   mixed   number, boolean, string, array, or object
-         *                   corresponding to given JSON input string.
-         *                   See argument 1 to Services_JSON() above for object-output behavior.
-         *                   Note that decode() always returns strings
-         *                   in ASCII or UTF-8 format!
+         * @param  string  $str  JSON-formatted string
+         * @return mixed number, boolean, string, array, or object
+         *               corresponding to given JSON input string.
+         *               See argument 1 to Services_JSON() above for object-output behavior.
+         *               Note that decode() always returns strings
+         *               in ASCII or UTF-8 format!
          */
         public function decode($str)
         {

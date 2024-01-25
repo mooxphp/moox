@@ -106,7 +106,7 @@ class WP_Widget_Media_Gallery extends WP_Widget_Media
      *
      * @since 4.9.0
      *
-     * @param  array  $instance Widget instance props.
+     * @param  array  $instance  Widget instance props.
      */
     public function render_media($instance)
     {
@@ -242,7 +242,7 @@ class WP_Widget_Media_Gallery extends WP_Widget_Media
      *
      * @since 4.9.0
      *
-     * @param  array  $instance Widget instance props.
+     * @param  array  $instance  Widget instance props.
      * @return bool Whether widget has content.
      */
     protected function has_content($instance)

@@ -173,8 +173,8 @@ switch ($action) {
          *
          * @since 4.9.0
          *
-         * @param  bool  $replace Whether to replace the editor. Default false.
-         * @param  WP_Post  $post    Post object.
+         * @param  bool  $replace  Whether to replace the editor. Default false.
+         * @param  WP_Post  $post  Post object.
          */
         if (apply_filters('replace_editor', false, $post) === true) {
             break;
@@ -355,7 +355,7 @@ switch ($action) {
          *
          * @since 4.6.0
          *
-         * @param  int  $post_id Post ID sent with the request.
+         * @param  int  $post_id  Post ID sent with the request.
          */
         do_action("post_action_{$action}", $post_id);
 

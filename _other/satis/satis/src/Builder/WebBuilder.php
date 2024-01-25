@@ -119,7 +119,7 @@ class WebBuilder extends Builder
     /**
      * Defines the required packages.
      *
-     * @param  PackageInterface[]  $packages List of packages to dump
+     * @param  PackageInterface[]  $packages  List of packages to dump
      * @return $this
      */
     private function setDependencies(array $packages): self
@@ -140,7 +140,7 @@ class WebBuilder extends Builder
     /**
      * Gets a list of packages grouped by name with a list of versions.
      *
-     * @param  PackageInterface[]  $ungroupedPackages List of packages to dump
+     * @param  PackageInterface[]  $ungroupedPackages  List of packages to dump
      * @return array Grouped list of packages with versions
      */
     private function getMappedPackageList(array $ungroupedPackages): array
@@ -165,7 +165,7 @@ class WebBuilder extends Builder
     /**
      * Gets a list of packages grouped by name.
      *
-     * @param  PackageInterface[]  $packages List of packages to dump
+     * @param  PackageInterface[]  $packages  List of packages to dump
      * @return array List of packages grouped by name
      */
     private function groupPackagesByName(array $packages): array
@@ -181,7 +181,7 @@ class WebBuilder extends Builder
     /**
      * Gets the highest version of packages.
      *
-     * @param  PackageInterface[]  $packages List of packages to dump
+     * @param  PackageInterface[]  $packages  List of packages to dump
      * @return PackageInterface The package with the highest version
      */
     private function getHighestVersion(array $packages): ?PackageInterface
@@ -200,7 +200,7 @@ class WebBuilder extends Builder
     /**
      * Sorts by version the list of packages.
      *
-     * @param  PackageInterface[]  $packages List of packages to dump
+     * @param  PackageInterface[]  $packages  List of packages to dump
      * @return PackageInterface[] Sorted list of packages by version
      */
     private function getDescSortedVersions(array $packages): array

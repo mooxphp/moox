@@ -52,7 +52,7 @@ class Text_Diff_Renderer
     /**
      * Get any renderer parameters.
      *
-     * @return array  All parameters of this renderer object.
+     * @return array All parameters of this renderer object.
      */
     public function getParams()
     {
@@ -70,7 +70,7 @@ class Text_Diff_Renderer
      * Renders a diff.
      *
      * @param  Text_Diff  $diff  A Text_Diff object.
-     * @return string  The formatted output.
+     * @return string The formatted output.
      */
     public function render($diff)
     {

@@ -76,7 +76,7 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
              *
              * @since 3.2.0
              *
-             * @param  bool  $is_admin Whether to use the Google Chrome Frame. Default is the value of is_admin().
+             * @param  bool  $is_admin  Whether to use the Google Chrome Frame. Default is the value of is_admin().
              */
             $is_chrome = apply_filters('use_google_chrome_frame', $is_admin);
             if ($is_chrome) {
@@ -170,7 +170,7 @@ function wp_is_mobile()
      *
      * @since 4.9.0
      *
-     * @param  bool  $is_mobile Whether the request is from a mobile device or not.
+     * @param  bool  $is_mobile  Whether the request is from a mobile device or not.
      */
     return apply_filters('wp_is_mobile', $is_mobile);
 }

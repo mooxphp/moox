@@ -186,7 +186,7 @@ for ($i = 1; $i <= $count; $i++) {
      *
      * @since 2.8.0
      *
-     * @param  string  $content The original email content.
+     * @param  string  $content  The original email content.
      */
     $content = apply_filters('wp_mail_original_content', $content);
 
@@ -209,7 +209,7 @@ for ($i = 1; $i <= $count; $i++) {
      *
      * @since 1.2.0
      *
-     * @param  string  $content The email content.
+     * @param  string  $content  The email content.
      */
     $post_content = apply_filters('phone_content', $content);
 
@@ -239,7 +239,7 @@ for ($i = 1; $i <= $count; $i++) {
      *
      * @since 1.2.0
      *
-     * @param  int  $post_ID The post ID.
+     * @param  int  $post_ID  The post ID.
      */
     do_action('publish_phone', $post_ID);
 

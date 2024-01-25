@@ -99,7 +99,7 @@ class SimplePie_XML_Declaration_Parser
     /**
      * Create an instance of the class with the input data
      *
-     * @param  string  $data Input data
+     * @param  string  $data  Input data
      */
     public function __construct($data)
     {

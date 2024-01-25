@@ -444,7 +444,7 @@ class SimplePie_Enclosure
     /**
      * Get the duration of the enclosure
      *
-     * @param  bool  $convert Convert seconds into hh:mm:ss
+     * @param  bool  $convert  Convert seconds into hh:mm:ss
      * @return string|int|null 'hh:mm:ss' string if `$convert` was specified, otherwise integer (or null if none found)
      */
     public function get_duration($convert = false)
@@ -837,7 +837,7 @@ class SimplePie_Enclosure
      *
      * @deprecated Use the second parameter to {@see embed} instead
      *
-     * @param  array|string  $options See first paramter to {@see embed}
+     * @param  array|string  $options  See first paramter to {@see embed}
      * @return string HTML string to output
      */
     public function native_embed($options = '')
@@ -887,8 +887,8 @@ class SimplePie_Enclosure
      *
      * @todo If the dimensions for media:content are defined, use them when width/height are set to 'auto'.
      *
-     * @param  array|string  $options Comma-separated key:value list, or array
-     * @param  bool  $native Use `<embed>`
+     * @param  array|string  $options  Comma-separated key:value list, or array
+     * @param  bool  $native  Use `<embed>`
      * @return string HTML string to output
      */
     public function embed($options = '', $native = false)
@@ -1073,7 +1073,7 @@ class SimplePie_Enclosure
      *
      * @see get_type()
      *
-     * @param  bool  $find_handler Internal use only, use {@see get_handler()} instead
+     * @param  bool  $find_handler  Internal use only, use {@see get_handler()} instead
      * @return string MIME type
      */
     public function get_real_type($find_handler = false)

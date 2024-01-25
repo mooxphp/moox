@@ -31,7 +31,7 @@ final class WP_Internal_Pointers
      *    }
      *    add_action( 'admin_enqueue_scripts', 'yourprefix_remove_pointers', 11 );
      *
-     * @param  string  $hook_suffix The current admin page.
+     * @param  string  $hook_suffix  The current admin page.
      */
     public static function enqueue_scripts($hook_suffix)
     {
@@ -108,9 +108,9 @@ final class WP_Internal_Pointers
      *
      * @since 3.3.0
      *
-     * @param  string  $pointer_id The pointer ID.
-     * @param  string  $selector The HTML elements, on which the pointer should be attached.
-     * @param  array  $args Arguments to be passed to the pointer JS (see wp-pointer.js).
+     * @param  string  $pointer_id  The pointer ID.
+     * @param  string  $selector  The HTML elements, on which the pointer should be attached.
+     * @param  array  $args  Arguments to be passed to the pointer JS (see wp-pointer.js).
      */
     private static function print_js($pointer_id, $selector, $args)
     {
@@ -200,7 +200,7 @@ final class WP_Internal_Pointers
      *
      * @since 3.3.0
      *
-     * @param  int  $user_id User ID.
+     * @param  int  $user_id  User ID.
      */
     public static function dismiss_pointers_for_new_users($user_id)
     {

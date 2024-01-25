@@ -66,10 +66,10 @@ class WP_HTML_Token
      *
      * @since 6.4.0
      *
-     * @param  string  $bookmark_name         Name of bookmark corresponding to location in HTML where token is found.
-     * @param  string  $node_name             Name of node token represents; if uppercase, an HTML element; if lowercase, a special value like "marker".
-     * @param  bool  $has_self_closing_flag Whether the source token contains the self-closing flag, regardless of whether it's valid.
-     * @param  callable  $on_destroy            Function to call when destroying token, useful for releasing the bookmark.
+     * @param  string  $bookmark_name  Name of bookmark corresponding to location in HTML where token is found.
+     * @param  string  $node_name  Name of node token represents; if uppercase, an HTML element; if lowercase, a special value like "marker".
+     * @param  bool  $has_self_closing_flag  Whether the source token contains the self-closing flag, regardless of whether it's valid.
+     * @param  callable  $on_destroy  Function to call when destroying token, useful for releasing the bookmark.
      */
     public function __construct($bookmark_name, $node_name, $has_self_closing_flag, $on_destroy = null)
     {

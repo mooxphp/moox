@@ -29,7 +29,7 @@ final class WP_Customize_Header_Image_Setting extends WP_Customize_Setting
      *
      * @global Custom_Image_Header $custom_image_header
      *
-     * @param  mixed  $value The value to update.
+     * @param  mixed  $value  The value to update.
      */
     public function update($value)
     {

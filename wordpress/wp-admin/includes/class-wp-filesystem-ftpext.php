@@ -130,7 +130,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Name of the file to read.
+     * @param  string  $file  Name of the file to read.
      * @return string|false Read data on success, false if no temporary file could be opened,
      *                      or if the file couldn't be retrieved.
      */
@@ -170,7 +170,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to the file.
+     * @param  string  $file  Path to the file.
      * @return array|false File contents in an array on success, false on failure.
      */
     public function get_contents_array($file)
@@ -183,10 +183,10 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file     Remote path to the file where to write the data.
-     * @param  string  $contents The data to write.
-     * @param  int|false  $mode     Optional. The file permissions as octal number, usually 0644.
-     *                            Default false.
+     * @param  string  $file  Remote path to the file where to write the data.
+     * @param  string  $contents  The data to write.
+     * @param  int|false  $mode  Optional. The file permissions as octal number, usually 0644.
+     *                           Default false.
      * @return bool True on success, false on failure.
      */
     public function put_contents($file, $contents, $mode = false)
@@ -249,7 +249,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $dir The new current directory.
+     * @param  string  $dir  The new current directory.
      * @return bool True on success, false on failure.
      */
     public function chdir($dir)
@@ -262,11 +262,11 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file      Path to the file.
-     * @param  int|false  $mode      Optional. The permissions as octal number, usually 0644 for files,
-     *                             0755 for directories. Default false.
-     * @param  bool  $recursive Optional. If set to true, changes file permissions recursively.
-     *                             Default false.
+     * @param  string  $file  Path to the file.
+     * @param  int|false  $mode  Optional. The permissions as octal number, usually 0644 for files,
+     *                           0755 for directories. Default false.
+     * @param  bool  $recursive  Optional. If set to true, changes file permissions recursively.
+     *                           Default false.
      * @return bool True on success, false on failure.
      */
     public function chmod($file, $mode = false, $recursive = false)
@@ -303,7 +303,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to the file.
+     * @param  string  $file  Path to the file.
      * @return string|false Username of the owner on success, false on failure.
      */
     public function owner($file)
@@ -318,7 +318,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to the file.
+     * @param  string  $file  Path to the file.
      * @return string Mode of the file (the last 3 digits).
      */
     public function getchmod($file)
@@ -333,7 +333,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to the file.
+     * @param  string  $file  Path to the file.
      * @return string|false The group on success, false on failure.
      */
     public function group($file)
@@ -348,12 +348,12 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $source      Path to the source file.
-     * @param  string  $destination Path to the destination file.
-     * @param  bool  $overwrite   Optional. Whether to overwrite the destination file if it exists.
-     *                               Default false.
-     * @param  int|false  $mode        Optional. The permissions as octal number, usually 0644 for files,
-     *                               0755 for dirs. Default false.
+     * @param  string  $source  Path to the source file.
+     * @param  string  $destination  Path to the destination file.
+     * @param  bool  $overwrite  Optional. Whether to overwrite the destination file if it exists.
+     *                           Default false.
+     * @param  int|false  $mode  Optional. The permissions as octal number, usually 0644 for files,
+     *                           0755 for dirs. Default false.
      * @return bool True on success, false on failure.
      */
     public function copy($source, $destination, $overwrite = false, $mode = false)
@@ -383,10 +383,10 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $source      Path to the source file or directory.
-     * @param  string  $destination Path to the destination file or directory.
-     * @param  bool  $overwrite   Optional. Whether to overwrite the destination if it exists.
-     *                            Default false.
+     * @param  string  $source  Path to the source file or directory.
+     * @param  string  $destination  Path to the destination file or directory.
+     * @param  bool  $overwrite  Optional. Whether to overwrite the destination if it exists.
+     *                           Default false.
      * @return bool True on success, false on failure.
      */
     public function move($source, $destination, $overwrite = false)
@@ -399,11 +399,11 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file      Path to the file or directory.
-     * @param  bool  $recursive Optional. If set to true, deletes files and folders recursively.
-     *                                Default false.
-     * @param  string|false  $type      Type of resource. 'f' for file, 'd' for directory.
-     *                                Default false.
+     * @param  string  $file  Path to the file or directory.
+     * @param  bool  $recursive  Optional. If set to true, deletes files and folders recursively.
+     *                           Default false.
+     * @param  string|false  $type  Type of resource. 'f' for file, 'd' for directory.
+     *                              Default false.
      * @return bool True on success, false on failure.
      */
     public function delete($file, $recursive = false, $type = false)
@@ -437,7 +437,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      * @since 2.5.0
      * @since 6.3.0 Returns false for an empty path.
      *
-     * @param  string  $path Path to file or directory.
+     * @param  string  $path  Path to file or directory.
      * @return bool Whether $path exists or not.
      */
     public function exists($path)
@@ -466,7 +466,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file File path.
+     * @param  string  $file  File path.
      * @return bool Whether $file is a file.
      */
     public function is_file($file)
@@ -479,7 +479,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $path Directory path.
+     * @param  string  $path  Directory path.
      * @return bool Whether $path is a directory.
      */
     public function is_dir($path)
@@ -501,7 +501,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to file.
+     * @param  string  $file  Path to file.
      * @return bool Whether $file is readable.
      */
     public function is_readable($file)
@@ -514,7 +514,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $path Path to file or directory.
+     * @param  string  $path  Path to file or directory.
      * @return bool Whether $path is writable.
      */
     public function is_writable($path)
@@ -527,7 +527,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to file.
+     * @param  string  $file  Path to file.
      * @return int|false Unix timestamp representing last access time, false on failure.
      */
     public function atime($file)
@@ -540,7 +540,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to file.
+     * @param  string  $file  Path to file.
      * @return int|false Unix timestamp representing modification time, false on failure.
      */
     public function mtime($file)
@@ -553,7 +553,7 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $file Path to file.
+     * @param  string  $file  Path to file.
      * @return int|false Size of the file in bytes on success, false on failure.
      */
     public function size($file)
@@ -572,8 +572,8 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @param  string  $file  Path to file.
      * @param  int  $time  Optional. Modified time to set for file.
-     *                      Default 0.
-     * @param  int  $atime Optional. Access time to set for file.
+     *                     Default 0.
+     * @param  int  $atime  Optional. Access time to set for file.
      *                      Default 0.
      * @return bool True on success, false on failure.
      */
@@ -588,12 +588,12 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      * @since 2.5.0
      *
      * @param  string  $path  Path for new directory.
-     * @param  int|false  $chmod Optional. The permissions as octal number (or false to skip chmod).
-     *                                Default false.
-     * @param  string|int|false  $chown Optional. A user name or number (or false to skip chown).
-     *                                Default false.
-     * @param  string|int|false  $chgrp Optional. A group name or number (or false to skip chgrp).
-     *                                Default false.
+     * @param  int|false  $chmod  Optional. The permissions as octal number (or false to skip chmod).
+     *                            Default false.
+     * @param  string|int|false  $chown  Optional. A user name or number (or false to skip chown).
+     *                                   Default false.
+     * @param  string|int|false  $chgrp  Optional. A group name or number (or false to skip chgrp).
+     *                                   Default false.
      * @return bool True on success, false on failure.
      */
     public function mkdir($path, $chmod = false, $chown = false, $chgrp = false)
@@ -618,9 +618,9 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $path      Path to directory.
-     * @param  bool  $recursive Optional. Whether to recursively remove files/directories.
-     *                          Default false.
+     * @param  string  $path  Path to directory.
+     * @param  bool  $recursive  Optional. Whether to recursively remove files/directories.
+     *                           Default false.
      * @return bool True on success, false on failure.
      */
     public function rmdir($path, $recursive = false)
@@ -631,23 +631,23 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
     /**
      * @param  string  $line
      * @return array {
-     *     Array of file information.
+     *               Array of file information.
      *
-     *     @type string       $name        Name of the file or directory.
-     *     @type string       $perms       *nix representation of permissions.
-     *     @type string       $permsn      Octal representation of permissions.
-     *     @type string|false $number      File number as a string, or false if not available.
-     *     @type string|false $owner       Owner name or ID, or false if not available.
-     *     @type string|false $group       File permissions group, or false if not available.
-     *     @type string|false $size        Size of file in bytes as a string, or false if not available.
-     *     @type string|false $lastmodunix Last modified unix timestamp as a string, or false if not available.
-     *     @type string|false $lastmod     Last modified month (3 letters) and day (without leading 0), or
-     *                                     false if not available.
-     *     @type string|false $time        Last modified time, or false if not available.
-     *     @type string       $type        Type of resource. 'f' for file, 'd' for directory, 'l' for link.
-     *     @type array|false  $files       If a directory and `$recursive` is true, contains another array of files.
-     *                                     False if unable to list directory contents.
-     * }
+     * @type string $name        Name of the file or directory.
+     * @type string $perms       *nix representation of permissions.
+     * @type string $permsn      Octal representation of permissions.
+     * @type string|false $number      File number as a string, or false if not available.
+     * @type string|false $owner       Owner name or ID, or false if not available.
+     * @type string|false $group       File permissions group, or false if not available.
+     * @type string|false $size        Size of file in bytes as a string, or false if not available.
+     * @type string|false $lastmodunix Last modified unix timestamp as a string, or false if not available.
+     * @type string|false $lastmod     Last modified month (3 letters) and day (without leading 0), or
+     *                    false if not available.
+     * @type string|false $time        Last modified time, or false if not available.
+     * @type string $type        Type of resource. 'f' for file, 'd' for directory, 'l' for link.
+     * @type array|false $files       If a directory and `$recursive` is true, contains another array of files.
+     *                   False if unable to list directory contents.
+     *                   }
      */
     public function parselisting($line)
     {
@@ -752,34 +752,34 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base
      *
      * @since 2.5.0
      *
-     * @param  string  $path           Path to directory or file.
-     * @param  bool  $include_hidden Optional. Whether to include details of hidden ("." prefixed) files.
-     *                               Default true.
-     * @param  bool  $recursive      Optional. Whether to recursively include file details in nested directories.
-     *                               Default false.
+     * @param  string  $path  Path to directory or file.
+     * @param  bool  $include_hidden  Optional. Whether to include details of hidden ("." prefixed) files.
+     *                                Default true.
+     * @param  bool  $recursive  Optional. Whether to recursively include file details in nested directories.
+     *                           Default false.
      * @return array|false {
-     *     Array of arrays containing file information. False if unable to list directory contents.
+     *                     Array of arrays containing file information. False if unable to list directory contents.
      *
-     *     @type array $0... {
-     *         Array of file information. Note that some elements may not be available on all filesystems.
-     *         @type string           $name        Name of the file or directory.
-     *         @type string           $perms       *nix representation of permissions.
-     *         @type string           $permsn      Octal representation of permissions.
-     *         @type int|string|false $number      File number. May be a numeric string. False if not available.
-     *         @type string|false     $owner       Owner name or ID, or false if not available.
-     *         @type string|false     $group       File permissions group, or false if not available.
-     *         @type int|string|false $size        Size of file in bytes. May be a numeric string.
-     *                                             False if not available.
-     *         @type int|string|false $lastmodunix Last modified unix timestamp. May be a numeric string.
-     *                                             False if not available.
-     *         @type string|false     $lastmod     Last modified month (3 letters) and day (without leading 0), or
-     *                                             false if not available.
-     *         @type string|false     $time        Last modified time, or false if not available.
-     *         @type string           $type        Type of resource. 'f' for file, 'd' for directory, 'l' for link.
-     *         @type array|false      $files       If a directory and `$recursive` is true, contains another array of
-     *                                             files. False if unable to list directory contents.
-     *     }
-     * }
+     * @type array $0... {
+     *             Array of file information. Note that some elements may not be available on all filesystems.
+     * @type string $name        Name of the file or directory.
+     * @type string $perms       *nix representation of permissions.
+     * @type string $permsn      Octal representation of permissions.
+     * @type int|string|false $number      File number. May be a numeric string. False if not available.
+     * @type string|false $owner       Owner name or ID, or false if not available.
+     * @type string|false $group       File permissions group, or false if not available.
+     * @type int|string|false $size        Size of file in bytes. May be a numeric string.
+     *                        False if not available.
+     * @type int|string|false $lastmodunix Last modified unix timestamp. May be a numeric string.
+     *                        False if not available.
+     * @type string|false $lastmod     Last modified month (3 letters) and day (without leading 0), or
+     *                    false if not available.
+     * @type string|false $time        Last modified time, or false if not available.
+     * @type string $type        Type of resource. 'f' for file, 'd' for directory, 'l' for link.
+     * @type array|false $files       If a directory and `$recursive` is true, contains another array of
+     *                   files. False if unable to list directory contents.
+     *                   }
+     *                   }
      */
     public function dirlist($path = '.', $include_hidden = true, $recursive = false)
     {

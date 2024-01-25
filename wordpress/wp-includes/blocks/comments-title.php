@@ -6,7 +6,7 @@
 /**
  * Renders the `core/comments-title` block on the server.
  *
- * @param  array  $attributes Block attributes.
+ * @param  array  $attributes  Block attributes.
  * @return string Return the post comments title.
  */
 function render_block_core_comments_title($attributes)

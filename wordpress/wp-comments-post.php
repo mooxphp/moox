@@ -45,9 +45,9 @@ $cookies_consent = (isset($_POST['wp-comment-cookies-consent']));
  * @since 3.4.0
  * @since 4.9.6 The `$cookies_consent` parameter was added.
  *
- * @param  WP_Comment  $comment         Comment object.
- * @param  WP_User  $user            Comment author's user object. The user may not exist.
- * @param  bool  $cookies_consent Comment author's consent to store cookies.
+ * @param  WP_Comment  $comment  Comment object.
+ * @param  WP_User  $user  Comment author's user object. The user may not exist.
+ * @param  bool  $cookies_consent  Comment author's consent to store cookies.
  */
 do_action('set_comment_cookies', $comment, $user, $cookies_consent);
 
@@ -69,7 +69,7 @@ if (! $cookies_consent && wp_get_comment_status($comment) === 'unapproved' && ! 
  *
  * @since 2.0.5
  *
- * @param  string  $location The 'redirect_to' URI sent via $_POST.
+ * @param  string  $location  The 'redirect_to' URI sent via $_POST.
  * @param  WP_Comment  $comment  Comment object.
  */
 $location = apply_filters('comment_post_redirect', $location, $comment);

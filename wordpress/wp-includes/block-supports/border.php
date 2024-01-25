@@ -12,7 +12,7 @@
  * @since 5.8.0
  * @since 6.1.0 Improved conditional blocks optimization.
  *
- * @param  WP_Block_Type  $block_type Block Type.
+ * @param  WP_Block_Type  $block_type  Block Type.
  */
 function wp_register_border_support($block_type)
 {
@@ -41,8 +41,8 @@ function wp_register_border_support($block_type)
  * @since 5.8.0
  * @since 6.1.0 Implemented the style engine to generate CSS and classnames.
  *
- * @param  WP_Block_Type  $block_type       Block type.
- * @param  array  $block_attributes Block attributes.
+ * @param  WP_Block_Type  $block_type  Block type.
+ * @param  array  $block_attributes  Block attributes.
  * @return array Border CSS classes and inline styles.
  */
 function wp_apply_border_support($block_type, $block_attributes)
@@ -143,9 +143,9 @@ function wp_apply_border_support($block_type, $block_attributes)
  *
  * @since 5.8.0
  *
- * @param  WP_Block_Type  $block_type    Block type to check for support.
- * @param  string  $feature       Name of the feature to check support for.
- * @param  mixed  $default_value Fallback value for feature support, defaults to false.
+ * @param  WP_Block_Type  $block_type  Block type to check for support.
+ * @param  string  $feature  Name of the feature to check support for.
+ * @param  mixed  $default_value  Fallback value for feature support, defaults to false.
  * @return bool Whether the feature is supported.
  */
 function wp_has_border_feature_support($block_type, $feature, $default_value = false)

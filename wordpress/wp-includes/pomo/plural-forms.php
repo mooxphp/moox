@@ -83,7 +83,7 @@ if (! class_exists('Plural_Forms', false)) {
          *
          * @since 4.9.0
          *
-         * @param  string  $str Plural function (just the bit after `plural=` from Plural-Forms)
+         * @param  string  $str  Plural function (just the bit after `plural=` from Plural-Forms)
          */
         public function __construct($str)
         {
@@ -98,7 +98,7 @@ if (! class_exists('Plural_Forms', false)) {
          *
          * @since 4.9.0
          *
-         * @param  string  $str String to parse.
+         * @param  string  $str  String to parse.
          *
          * @throws Exception If there is a syntax or parsing error with the string.
          */
@@ -246,7 +246,7 @@ if (! class_exists('Plural_Forms', false)) {
          *
          * @since 4.9.0
          *
-         * @param  int  $num Number to get plural form for.
+         * @param  int  $num  Number to get plural form for.
          * @return int Plural form value.
          */
         public function get($num)
@@ -264,7 +264,7 @@ if (! class_exists('Plural_Forms', false)) {
          *
          * @since 4.9.0
          *
-         * @param  int  $n Variable "n" to substitute.
+         * @param  int  $n  Variable "n" to substitute.
          * @return int Plural form value.
          *
          * @throws Exception If the plural form value cannot be calculated.

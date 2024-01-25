@@ -12,8 +12,8 @@
  *
  * @since 6.2.0
  *
- * @param  array  $block Block object.
- * @return string      The unique class name.
+ * @param  array  $block  Block object.
+ * @return string The unique class name.
  */
 function _wp_get_presets_class_name($block)
 {
@@ -27,9 +27,9 @@ function _wp_get_presets_class_name($block)
  *
  * @since 6.2.0
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
- * @return string                Filtered block content.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
+ * @return string Filtered block content.
  */
 function _wp_add_block_level_presets_class($block_content, $block)
 {
@@ -67,8 +67,8 @@ function _wp_add_block_level_presets_class($block_content, $block)
  * @since 6.2.0
  * @since 6.3.0 Updated preset styles to use Selectors API.
  *
- * @param  string|null  $pre_render   The pre-rendered content. Default null.
- * @param  array  $block The block being rendered.
+ * @param  string|null  $pre_render  The pre-rendered content. Default null.
+ * @param  array  $block  The block being rendered.
  * @return null
  */
 function _wp_add_block_level_preset_styles($pre_render, $block)

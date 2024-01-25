@@ -103,7 +103,7 @@ class WP_REST_Block_Renderer_Controller extends WP_REST_Controller
      *
      * @global WP_Post $post Global post object.
      *
-     * @param  WP_REST_Request  $request Request.
+     * @param  WP_REST_Request  $request  Request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -146,7 +146,7 @@ class WP_REST_Block_Renderer_Controller extends WP_REST_Controller
      *
      * @global WP_Post $post Global post object.
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_item($request)

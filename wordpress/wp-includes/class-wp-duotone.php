@@ -157,9 +157,9 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  float  $number The number to clamp.
-     * @param  float  $min    The minimum value.
-     * @param  float  $max    The maximum value.
+     * @param  float  $number  The number to clamp.
+     * @param  float  $min  The minimum value.
+     * @param  float  $max  The maximum value.
      * @return float The clamped value.
      */
     private static function colord_clamp($number, $min = 0, $max = 1)
@@ -178,7 +178,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  float  $degrees The hue to clamp.
+     * @param  float  $degrees  The hue to clamp.
      * @return float The clamped hue.
      */
     private static function colord_clamp_hue($degrees)
@@ -199,7 +199,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  float  $value The hue value to parse.
+     * @param  float  $value  The hue value to parse.
      * @param  string  $unit  The unit of the hue value.
      * @return float The parsed hue value.
      */
@@ -230,7 +230,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $hex The hex string to parse.
+     * @param  string  $hex  The hex string to parse.
      * @return array|null An array of RGBA values or null if the hex string is invalid.
      */
     private static function colord_parse_hex($hex)
@@ -279,7 +279,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $rgba The RGBA array to clamp.
+     * @param  array  $rgba  The RGBA array to clamp.
      * @return array The clamped RGBA array.
      */
     private static function colord_clamp_rgba($rgba)
@@ -303,7 +303,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $input The RGBA string to parse.
+     * @param  string  $input  The RGBA string to parse.
      * @return array|null An array of RGBA values or null if the RGB string is invalid.
      */
     private static function colord_parse_rgba_string($input)
@@ -363,7 +363,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $hsla The HSLA array to clamp.
+     * @param  array  $hsla  The HSLA array to clamp.
      * @return array The clamped HSLA array.
      */
     private static function colord_clamp_hsla($hsla)
@@ -387,7 +387,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $hsva The HSVA array to convert.
+     * @param  array  $hsva  The HSVA array to convert.
      * @return array The RGBA array.
      */
     private static function colord_hsva_to_rgba($hsva)
@@ -422,7 +422,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $hsla The HSLA array to convert.
+     * @param  array  $hsla  The HSLA array to convert.
      * @return array The HSVA array.
      */
     private static function colord_hsla_to_hsva($hsla)
@@ -453,7 +453,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $hsla The HSLA array to convert.
+     * @param  array  $hsla  The HSLA array to convert.
      * @return array The RGBA array.
      */
     private static function colord_hsla_to_rgba($hsla)
@@ -472,7 +472,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $input The HSLA string to parse.
+     * @param  string  $input  The HSLA string to parse.
      * @return array|null An array of RGBA values or null if the RGB string is invalid.
      */
     private static function colord_parse_hsla_string($input)
@@ -531,7 +531,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $input The string to parse.
+     * @param  string  $input  The string to parse.
      * @return array|null An array of RGBA values or null if the string is invalid.
      */
     private static function colord_parse($input)
@@ -560,7 +560,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $duotone_attr The duotone attribute from a block.
+     * @param  string  $duotone_attr  The duotone attribute from a block.
      * @return string The slug of the duotone preset or an empty string if no slug is found.
      */
     private static function get_slug_from_attribute($duotone_attr)
@@ -580,7 +580,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $duotone_attr The duotone attribute from a block.
+     * @param  string  $duotone_attr  The duotone attribute from a block.
      * @return bool True if the duotone preset present and valid.
      */
     private static function is_preset($duotone_attr)
@@ -601,7 +601,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $slug The slug of the duotone preset.
+     * @param  string  $slug  The slug of the duotone preset.
      * @return string The CSS variable name.
      */
     private static function get_css_custom_property_name($slug)
@@ -619,7 +619,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $slug The slug of the duotone preset.
+     * @param  string  $slug  The slug of the duotone preset.
      * @return string The ID of the duotone filter.
      */
     private static function get_filter_id($slug)
@@ -637,7 +637,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $slug The slug of the duotone preset.
+     * @param  string  $slug  The slug of the duotone preset.
      * @return string The CSS variable.
      */
     private static function get_css_var($slug)
@@ -657,7 +657,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $filter_id The ID of the filter.
+     * @param  string  $filter_id  The ID of the filter.
      * @return string The URL for the duotone filter.
      */
     private static function get_filter_url($filter_id)
@@ -674,8 +674,8 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $filter_id The ID of the filter.
-     * @param  array  $colors    An array of color strings.
+     * @param  string  $filter_id  The ID of the filter.
+     * @param  array  $colors  An array of color strings.
      * @return string An SVG with a duotone filter definition.
      */
     private static function get_filter_svg($filter_id, $colors)
@@ -765,8 +765,8 @@ class WP_Duotone
      * @since 6.3.0
      * @deprecated 6.3.0
      *
-     * @param  array  $preset Duotone preset value as seen in theme.json.
-     * @return string        Duotone filter CSS id.
+     * @param  array  $preset  Duotone preset value as seen in theme.json.
+     * @return string Duotone filter CSS id.
      */
     public static function get_filter_id_from_preset($preset)
     {
@@ -790,7 +790,7 @@ class WP_Duotone
      * @since 6.3.0
      * @deprecated 6.3.0
      *
-     * @param  array  $preset The duotone preset.
+     * @param  array  $preset  The duotone preset.
      * @return string The SVG for the filter definition.
      */
     public static function get_filter_svg_from_preset($preset)
@@ -812,7 +812,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $sources The duotone presets.
+     * @param  array  $sources  The duotone presets.
      * @return string The SVGs for the duotone filters.
      */
     private static function get_svg_definitions($sources)
@@ -836,7 +836,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $sources The duotone presets.
+     * @param  array  $sources  The duotone presets.
      * @return string The CSS for global styles.
      */
     private static function get_global_styles_presets($sources)
@@ -863,9 +863,9 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $filter_id        The filter ID. e.g. 'wp-duotone-000000-ffffff-2'.
-     * @param  string  $duotone_selector The block's duotone selector. e.g. '.wp-block-image img'.
-     * @param  string  $filter_value     The filter CSS value. e.g. 'url(#wp-duotone-000000-ffffff-2)' or 'unset'.
+     * @param  string  $filter_id  The filter ID. e.g. 'wp-duotone-000000-ffffff-2'.
+     * @param  string  $duotone_selector  The block's duotone selector. e.g. '.wp-block-image img'.
+     * @param  string  $filter_value  The filter CSS value. e.g. 'url(#wp-duotone-000000-ffffff-2)' or 'unset'.
      */
     private static function enqueue_block_css($filter_id, $duotone_selector, $filter_value)
     {
@@ -901,10 +901,10 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $filter_id        The filter ID. e.g. 'wp-duotone-000000-ffffff-2'.
-     * @param  string  $duotone_selector The block's duotone selector. e.g. '.wp-block-image img'.
-     * @param  string  $filter_value     The filter CSS value. e.g. 'url(#wp-duotone-000000-ffffff-2)' or 'unset'.
-     * @param  array  $filter_data      Duotone filter data with 'slug' and 'colors' keys.
+     * @param  string  $filter_id  The filter ID. e.g. 'wp-duotone-000000-ffffff-2'.
+     * @param  string  $duotone_selector  The block's duotone selector. e.g. '.wp-block-image img'.
+     * @param  string  $filter_value  The filter CSS value. e.g. 'url(#wp-duotone-000000-ffffff-2)' or 'unset'.
+     * @param  array  $filter_data  Duotone filter data with 'slug' and 'colors' keys.
      */
     private static function enqueue_custom_filter($filter_id, $duotone_selector, $filter_value, $filter_data)
     {
@@ -921,9 +921,9 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $filter_id        The filter ID. e.g. 'wp-duotone-blue-orange'.
-     * @param  string  $duotone_selector The block's duotone selector. e.g. '.wp-block-image img'.
-     * @param  string  $filter_value     The filter CSS value. e.g. 'url(#wp-duotone-blue-orange)' or 'unset'.
+     * @param  string  $filter_id  The filter ID. e.g. 'wp-duotone-blue-orange'.
+     * @param  string  $duotone_selector  The block's duotone selector. e.g. '.wp-block-image img'.
+     * @param  string  $filter_value  The filter CSS value. e.g. 'url(#wp-duotone-blue-orange)' or 'unset'.
      */
     private static function enqueue_global_styles_preset($filter_id, $duotone_selector, $filter_value)
     {
@@ -949,7 +949,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  WP_Block_Type  $block_type Block Type.
+     * @param  WP_Block_Type  $block_type  Block Type.
      */
     public static function register_duotone_support($block_type)
     {
@@ -980,7 +980,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  WP_Block_Type  $block_type Block type to check for support.
+     * @param  WP_Block_Type  $block_type  Block type to check for support.
      * @return string|null The CSS selector or null if there is no support.
      */
     private static function get_selector($block_type)
@@ -1106,9 +1106,9 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  string  $block_content Rendered block content.
-     * @param  array  $block         Block object.
-     * @param  WP_Block  $wp_block      The block instance.
+     * @param  string  $block_content  Rendered block content.
+     * @param  array  $block  Block object.
+     * @param  WP_Block  $wp_block  The block instance.
      * @return string Filtered block content.
      */
     public static function render_duotone_support($block_content, $block, $wp_block)
@@ -1263,7 +1263,7 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $settings The block editor settings from the `block_editor_settings_all` filter.
+     * @param  array  $settings  The block editor settings from the `block_editor_settings_all` filter.
      * @return array The editor settings with duotone SVGs and CSS custom properties.
      */
     public static function add_editor_settings($settings)
@@ -1303,8 +1303,8 @@ class WP_Duotone
      *
      * @since 6.3.0
      *
-     * @param  array  $settings Current block type settings.
-     * @param  array  $metadata Block metadata as read in via block.json.
+     * @param  array  $settings  Current block type settings.
+     * @param  array  $metadata  Block metadata as read in via block.json.
      * @return array Filtered block type settings.
      */
     public static function migrate_experimental_duotone_support_flag($settings, $metadata)
@@ -1330,7 +1330,7 @@ class WP_Duotone
      * @since 6.3.0
      * @deprecated 6.3.0
      *
-     * @param  array  $preset The duotone preset.
+     * @param  array  $preset  The duotone preset.
      * @return string The CSS filter property value.
      */
     public static function get_filter_css_property_value_from_preset($preset)

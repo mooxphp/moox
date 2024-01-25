@@ -73,7 +73,7 @@ class WP_Locale_Switcher
      * @since 4.7.0
      *
      * @param  string  $locale  The locale to switch to.
-     * @param  int|false  $user_id Optional. User ID as context. Default false.
+     * @param  int|false  $user_id  Optional. User ID as context. Default false.
      * @return bool True on success, false on failure.
      */
     public function switch_to_locale($locale, $user_id = false)
@@ -98,7 +98,7 @@ class WP_Locale_Switcher
          * @since 6.2.0 The `$user_id` parameter was added.
          *
          * @param  string  $locale  The new locale.
-         * @param  false|int  $user_id User ID for context if available.
+         * @param  false|int  $user_id  User ID for context if available.
          */
         do_action('switch_locale', $locale, $user_id);
 
@@ -110,7 +110,7 @@ class WP_Locale_Switcher
      *
      * @since 6.2.0
      *
-     * @param  int  $user_id User ID.
+     * @param  int  $user_id  User ID.
      * @return bool True on success, false on failure.
      */
     public function switch_to_user_locale($user_id)
@@ -151,8 +151,8 @@ class WP_Locale_Switcher
          *
          * @since 4.7.0
          *
-         * @param  string  $locale          The new locale.
-         * @param  string  $previous_locale The previous locale.
+         * @param  string  $locale  The new locale.
+         * @param  string  $previous_locale  The previous locale.
          */
         do_action('restore_previous_locale', $locale, $previous_locale[0]);
 
@@ -230,7 +230,7 @@ class WP_Locale_Switcher
      *
      * @since 4.7.0
      *
-     * @param  string  $locale The locale of the WordPress installation.
+     * @param  string  $locale  The locale of the WordPress installation.
      * @return string The locale currently being switched to.
      */
     public function filter_locale($locale)
@@ -253,7 +253,7 @@ class WP_Locale_Switcher
      *
      * @global Mo[] $l10n An array of all currently loaded text domains.
      *
-     * @param  string  $locale The locale to load translations for.
+     * @param  string  $locale  The locale to load translations for.
      */
     private function load_translations($locale)
     {
@@ -288,7 +288,7 @@ class WP_Locale_Switcher
      *
      * @global WP_Locale $wp_locale WordPress date and time locale object.
      *
-     * @param  string  $locale The locale to change to.
+     * @param  string  $locale  The locale to change to.
      */
     private function change_locale($locale)
     {
@@ -303,7 +303,7 @@ class WP_Locale_Switcher
          *
          * @since 4.7.0
          *
-         * @param  string  $locale The new locale.
+         * @param  string  $locale  The new locale.
          */
         do_action('change_locale', $locale);
     }

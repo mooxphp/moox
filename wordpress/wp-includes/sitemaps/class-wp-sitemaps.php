@@ -100,8 +100,8 @@ class WP_Sitemaps
          * @see WP_Sitemaps::register_rewrites()
          * @since 5.5.0
          *
-         * @param  bool  $is_enabled Whether XML Sitemaps are enabled or not.
-         *                         Defaults to true for public sites.
+         * @param  bool  $is_enabled  Whether XML Sitemaps are enabled or not.
+         *                            Defaults to true for public sites.
          */
         return (bool) apply_filters('wp_sitemaps_enabled', $is_enabled);
     }
@@ -230,7 +230,7 @@ class WP_Sitemaps
      *
      * @since 5.5.0
      *
-     * @param  bool  $bypass Pass-through of the pre_handle_404 filter value.
+     * @param  bool  $bypass  Pass-through of the pre_handle_404 filter value.
      * @param  WP_Query  $query  The WP_Query object.
      * @return bool Bypass value.
      */
@@ -257,8 +257,8 @@ class WP_Sitemaps
      *
      * @since 5.5.0
      *
-     * @param  string  $output    robots.txt output.
-     * @param  bool  $is_public Whether the site is public.
+     * @param  string  $output  robots.txt output.
+     * @param  bool  $is_public  Whether the site is public.
      * @return string The robots.txt output.
      */
     public function add_robots($output, $is_public)

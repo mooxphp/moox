@@ -209,7 +209,7 @@ class Theme_Upgrader extends WP_Upgrader
      *
      * @since 3.4.0
      *
-     * @param  array  $actions Preview actions.
+     * @param  array  $actions  Preview actions.
      * @return array
      */
     public function hide_activate_preview_actions($actions)
@@ -225,13 +225,13 @@ class Theme_Upgrader extends WP_Upgrader
      * @since 2.8.0
      * @since 3.7.0 The `$args` parameter was added, making clearing the update cache optional.
      *
-     * @param  string  $package The full local path or URI of the package.
-     * @param  array  $args {
-     *     Optional. Other arguments for installing a theme package. Default empty array.
+     * @param  string  $package  The full local path or URI of the package.
+     * @param  array  $args  {
+     *                       Optional. Other arguments for installing a theme package. Default empty array.
      *
-     *     @type bool $clear_update_cache Whether to clear the updates cache if successful.
-     *                                    Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the updates cache if successful.
+     *            Default true.
+     *            }
      *
      * @return bool|WP_Error True if the installation was successful, false or a WP_Error object otherwise.
      */
@@ -292,13 +292,13 @@ class Theme_Upgrader extends WP_Upgrader
      * @since 2.8.0
      * @since 3.7.0 The `$args` parameter was added, making clearing the update cache optional.
      *
-     * @param  string  $theme The theme slug.
-     * @param  array  $args {
-     *     Optional. Other arguments for upgrading a theme. Default empty array.
+     * @param  string  $theme  The theme slug.
+     * @param  array  $args  {
+     *                       Optional. Other arguments for upgrading a theme. Default empty array.
      *
-     *     @type bool $clear_update_cache Whether to clear the update cache if successful.
-     *                                    Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the update cache if successful.
+     *            Default true.
+     *            }
      *
      * @return bool|WP_Error True if the upgrade was successful, false or a WP_Error object otherwise.
      */
@@ -383,13 +383,13 @@ class Theme_Upgrader extends WP_Upgrader
      * @since 3.0.0
      * @since 3.7.0 The `$args` parameter was added, making clearing the update cache optional.
      *
-     * @param  string[]  $themes Array of the theme slugs.
-     * @param  array  $args {
-     *     Optional. Other arguments for upgrading several themes at once. Default empty array.
+     * @param  string[]  $themes  Array of the theme slugs.
+     * @param  array  $args  {
+     *                       Optional. Other arguments for upgrading several themes at once. Default empty array.
      *
-     *     @type bool $clear_update_cache Whether to clear the update cache if successful.
-     *                                    Default true.
-     * }
+     * @type bool $clear_update_cache Whether to clear the update cache if successful.
+     *            Default true.
+     *            }
      *
      * @return array[]|false An array of results, or false if unable to connect to the filesystem.
      */
@@ -540,7 +540,7 @@ class Theme_Upgrader extends WP_Upgrader
      * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
      * @global string             $wp_version    The WordPress version string.
      *
-     * @param  string  $source The path to the downloaded package source.
+     * @param  string  $source  The path to the downloaded package source.
      * @return string|WP_Error The source as passed, or a WP_Error object on failure.
      */
     public function check_package($source)
@@ -660,8 +660,8 @@ class Theme_Upgrader extends WP_Upgrader
      *
      * @since 2.8.0
      *
-     * @param  bool|WP_Error  $response The installation response before the installation has started.
-     * @param  array  $theme    Theme arguments.
+     * @param  bool|WP_Error  $response  The installation response before the installation has started.
+     * @param  array  $theme  Theme arguments.
      * @return bool|WP_Error The original `$response` parameter or WP_Error.
      */
     public function current_before($response, $theme)
@@ -693,8 +693,8 @@ class Theme_Upgrader extends WP_Upgrader
      *
      * @since 2.8.0
      *
-     * @param  bool|WP_Error  $response The installation response after the installation has finished.
-     * @param  array  $theme    Theme arguments.
+     * @param  bool|WP_Error  $response  The installation response after the installation has finished.
+     * @param  array  $theme  Theme arguments.
      * @return bool|WP_Error The original `$response` parameter or WP_Error.
      */
     public function current_after($response, $theme)
@@ -770,8 +770,8 @@ class Theme_Upgrader extends WP_Upgrader
      * @since 2.8.0
      * @since 3.0.0 The `$theme` argument was added.
      *
-     * @param  string  $theme The directory name of the theme. This is optional, and if not supplied,
-     *                      the directory name from the last result will be used.
+     * @param  string  $theme  The directory name of the theme. This is optional, and if not supplied,
+     *                         the directory name from the last result will be used.
      * @return WP_Theme|false The theme's info object, or false `$theme` is not supplied
      *                        and the last result isn't set.
      */

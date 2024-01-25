@@ -74,8 +74,8 @@ if (wp_is_recovery_mode()) {
  *
  * @since 3.1.0
  *
- * @param  string  $admin_title The page title, with extra context added.
- * @param  string  $title       The original page title.
+ * @param  string  $admin_title  The page title, with extra context added.
+ * @param  string  $title  The original page title.
  */
 $admin_title = apply_filters('admin_title', $admin_title, $title);
 
@@ -109,7 +109,7 @@ var ajaxurl = '<?php echo esc_js(admin_url('admin-ajax.php', 'relative')); ?>',
  *
  * @since 2.8.0
  *
- * @param  string  $hook_suffix The current admin page.
+ * @param  string  $hook_suffix  The current admin page.
  */
 do_action('admin_enqueue_scripts', $hook_suffix);
 
@@ -233,7 +233,7 @@ unset($error_get_last);
  *
  * @since 2.3.0
  *
- * @param  string  $classes Space-separated list of CSS classes.
+ * @param  string  $classes  Space-separated list of CSS classes.
  */
 $admin_body_classes = apply_filters('admin_body_class', '');
 $admin_body_classes = ltrim($admin_body_classes.' '.$admin_body_class);

@@ -102,7 +102,7 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  string  $raw_json Encoded JSON from global styles custom post content.
+     * @param  string  $raw_json  Encoded JSON from global styles custom post content.
      * @return array|WP_Error
      */
     protected function get_decoded_global_styles_json($raw_json)
@@ -128,7 +128,7 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response|WP_Error
      */
     public function get_items($request)
@@ -254,8 +254,8 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  string  $date_gmt GMT publication time.
-     * @param  string|null  $date     Optional. Local publication time. Default null.
+     * @param  string  $date_gmt  GMT publication time.
+     * @param  string|null  $date  Optional. Local publication time. Default null.
      * @return string|null ISO8601/RFC3339 formatted datetime, otherwise null.
      */
     protected function prepare_date_response($date_gmt, $date = null)
@@ -276,8 +276,8 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_Post  $post    Post revision object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $post  Post revision object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object.
      */
     public function prepare_item_for_response($post, $request)
@@ -425,7 +425,7 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -456,7 +456,7 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
      *
      * @since 6.3.0
      *
-     * @param  int  $parent_post_id Supplied ID.
+     * @param  int  $parent_post_id  Supplied ID.
      * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
      */
     protected function get_parent($parent_post_id)

@@ -36,9 +36,9 @@ class WP_Widget_Meta extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Meta widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Meta widget instance.
      */
     public function widget($args, $instance)
     {
@@ -80,8 +80,8 @@ class WP_Widget_Meta extends WP_Widget
              * @since 3.6.0
              * @since 4.9.0 Added the `$instance` parameter.
              *
-             * @param  string  $html     Default HTML for the WordPress.org list item.
-             * @param  array  $instance Array of settings for the current widget.
+             * @param  string  $html  Default HTML for the WordPress.org list item.
+             * @param  array  $instance  Array of settings for the current widget.
              */
             echo apply_filters(
                 'widget_meta_poweredby',
@@ -111,9 +111,9 @@ class WP_Widget_Meta extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Updated settings to save.
      */
     public function update($new_instance, $old_instance)
@@ -129,7 +129,7 @@ class WP_Widget_Meta extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     public function form($instance)
     {

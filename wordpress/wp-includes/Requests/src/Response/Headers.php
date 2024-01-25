@@ -24,7 +24,7 @@ class Headers extends CaseInsensitiveDictionary
      * Avoid using this where commas may be used unquoted in values, such as
      * Set-Cookie headers.
      *
-     * @param  string  $offset Name of the header to retrieve.
+     * @param  string  $offset  Name of the header to retrieve.
      * @return string|null Header value
      */
     public function offsetGet($offset)
@@ -43,8 +43,8 @@ class Headers extends CaseInsensitiveDictionary
     /**
      * Set the given item
      *
-     * @param  string  $offset Item name
-     * @param  string  $value Item value
+     * @param  string  $offset  Item name
+     * @param  string  $value  Item value
      *
      * @throws \WpOrg\Requests\Exception On attempting to use dictionary as list (`invalidset`)
      */
@@ -68,7 +68,7 @@ class Headers extends CaseInsensitiveDictionary
     /**
      * Get all values for a given header
      *
-     * @param  string  $offset Name of the header to retrieve.
+     * @param  string  $offset  Name of the header to retrieve.
      * @return array|null Header values
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not valid as an array key.
@@ -96,7 +96,7 @@ class Headers extends CaseInsensitiveDictionary
      * Converts an array into a string by imploding values with a comma, as per
      * RFC2616's rules for folding headers.
      *
-     * @param  string|array  $value Value to flatten
+     * @param  string|array  $value  Value to flatten
      * @return string Flattened value
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not a string or an array.

@@ -99,7 +99,7 @@ if (! defined('WP_ALLOW_REPAIR') || ! WP_ALLOW_REPAIR) {
      *
      * @since 3.0.0
      *
-     * @param  string[]  $tables Array of prefixed table names to be repaired.
+     * @param  string[]  $tables  Array of prefixed table names to be repaired.
      */
     $tables = array_merge($tables, (array) apply_filters('tables_to_repair', []));
 

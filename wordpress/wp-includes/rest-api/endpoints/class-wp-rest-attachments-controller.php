@@ -69,8 +69,8 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  array  $prepared_args Optional. Array of prepared arguments. Default empty array.
-     * @param  WP_REST_Request  $request       Optional. Request to prepare items for.
+     * @param  array  $prepared_args  Optional. Array of prepared arguments. Default empty array.
+     * @param  WP_REST_Request  $request  Optional. Request to prepare items for.
      * @return array Array of query arguments.
      */
     protected function prepare_items_query($prepared_args = [], $request = null)
@@ -107,7 +107,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error Boolean true if the attachment may be created, or a WP_Error if not.
      */
     public function create_item_permissions_check($request)
@@ -143,7 +143,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, WP_Error object on failure.
      */
     public function create_item($request)
@@ -194,9 +194,9 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
          *
          * @since 5.0.0
          *
-         * @param  WP_Post  $attachment Inserted or updated attachment object.
-         * @param  WP_REST_Request  $request    Request object.
-         * @param  bool  $creating   True when creating an attachment, false when updating.
+         * @param  WP_Post  $attachment  Inserted or updated attachment object.
+         * @param  WP_REST_Request  $request  Request object.
+         * @param  bool  $creating  True when creating an attachment, false when updating.
          */
         do_action('rest_after_insert_attachment', $attachment, $request, true);
 
@@ -305,10 +305,10 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_Post  $attachment Inserted or updated attachment
-         *                                    object.
-         * @param  WP_REST_Request  $request    The request sent to the API.
-         * @param  bool  $creating   True when creating an attachment, false when updating.
+         * @param  WP_Post  $attachment  Inserted or updated attachment
+         *                               object.
+         * @param  WP_REST_Request  $request  The request sent to the API.
+         * @param  bool  $creating  True when creating an attachment, false when updating.
          */
         do_action('rest_insert_attachment', $attachment, $request, true);
 
@@ -323,7 +323,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, WP_Error object on failure.
      */
     public function update_item($request)
@@ -376,7 +376,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.3.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, WP_Error object on failure.
      */
     public function post_process_item($request)
@@ -398,7 +398,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.3.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to update the item, WP_Error object otherwise.
      */
     public function post_process_item_permissions_check($request)
@@ -411,7 +411,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function edit_media_item_permissions_check($request)
@@ -432,7 +432,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 5.5.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, WP_Error object on failure.
      */
     public function edit_media_item($request)
@@ -675,9 +675,9 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
          *
          * @since 5.5.0
          *
-         * @param  array  $new_image_meta    Meta data for the new image.
-         * @param  int  $new_attachment_id Attachment post ID for the new image.
-         * @param  int  $attachment_id     Attachment post ID for the edited (parent) image.
+         * @param  array  $new_image_meta  Meta data for the new image.
+         * @param  int  $new_attachment_id  Attachment post ID for the new image.
+         * @param  int  $attachment_id  Attachment post ID for the edited (parent) image.
          */
         $new_image_meta = apply_filters('wp_edited_image_metadata', $new_image_meta, $new_attachment_id, $attachment_id);
 
@@ -695,7 +695,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return stdClass|WP_Error Post object.
      */
     protected function prepare_item_for_database($request)
@@ -733,8 +733,8 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      * @since 4.7.0
      * @since 5.9.0 Renamed `$post` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_Post  $item    Attachment object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $item  Attachment object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -854,8 +854,8 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
          *
          * @since 4.7.0
          *
-         * @param  WP_REST_Response  $response The response object.
-         * @param  WP_Post  $post     The original attachment post.
+         * @param  WP_REST_Response  $response  The response object.
+         * @param  WP_Post  $post  The original attachment post.
          * @param  WP_REST_Request  $request  Request used to generate the response.
          */
         return apply_filters('rest_prepare_attachment', $response, $post, $request);
@@ -987,8 +987,8 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  string  $data    Supplied file data.
-     * @param  array  $headers HTTP headers from the request.
+     * @param  string  $data  Supplied file data.
+     * @param  array  $headers  HTTP headers from the request.
      * @return array|WP_Error Data from wp_handle_sideload().
      */
     protected function upload_from_data($data, $headers)
@@ -1120,7 +1120,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      * @link https://tools.ietf.org/html/rfc2388
      * @link https://tools.ietf.org/html/rfc6266
      *
-     * @param  string[]  $disposition_header List of Content-Disposition header values.
+     * @param  string[]  $disposition_header  List of Content-Disposition header values.
      * @return string|null Filename if available, or null if not found.
      */
     public static function get_filename_from_disposition($disposition_header)
@@ -1200,8 +1200,8 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.7.0
      *
-     * @param  array  $files   Data from the `$_FILES` superglobal.
-     * @param  array  $headers HTTP headers from the request.
+     * @param  array  $files  Data from the `$_FILES` superglobal.
+     * @param  array  $headers  HTTP headers from the request.
      * @return array|WP_Error Data from wp_handle_upload().
      */
     protected function upload_from_file($files, $headers)
@@ -1293,7 +1293,7 @@ class WP_REST_Attachments_Controller extends WP_REST_Posts_Controller
      *
      * @since 4.9.8
      *
-     * @param  array  $file $_FILES array for a given file.
+     * @param  array  $file  $_FILES array for a given file.
      * @return true|WP_Error True if can upload, error for errors.
      */
     protected function check_upload_size($file)

@@ -133,17 +133,17 @@ final class Curl implements Transport
     /**
      * Perform a request
      *
-     * @param  string|Stringable  $url URL to request
-     * @param  array  $headers Associative array of request headers
-     * @param  string|array  $data Data to send either as the POST body, or as parameters in the URL for a GET/HEAD
-     * @param  array  $options Request options, see {@see \WpOrg\Requests\Requests::response()} for documentation
+     * @param  string|Stringable  $url  URL to request
+     * @param  array  $headers  Associative array of request headers
+     * @param  string|array  $data  Data to send either as the POST body, or as parameters in the URL for a GET/HEAD
+     * @param  array  $options  Request options, see {@see \WpOrg\Requests\Requests::response()} for documentation
      * @return string Raw HTTP result
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $url argument is not a string or Stringable.
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $headers argument is not an array.
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $data parameter is not an array or string.
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $options argument is not an array.
-     * @throws \WpOrg\Requests\Exception       On a cURL error (`curlerror`)
+     * @throws \WpOrg\Requests\Exception On a cURL error (`curlerror`)
      */
     public function request($url, $headers = [], $data = [], $options = [])
     {
@@ -230,8 +230,8 @@ final class Curl implements Transport
     /**
      * Send multiple requests simultaneously
      *
-     * @param  array  $requests Request data
-     * @param  array  $options Global options
+     * @param  array  $requests  Request data
+     * @param  array  $options  Global options
      * @return array Array of \WpOrg\Requests\Response objects (may contain \WpOrg\Requests\Exception or string responses as well)
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $requests argument is not an array or iterable object with array access.
@@ -328,10 +328,10 @@ final class Curl implements Transport
     /**
      * Get the cURL handle for use in a multi-request
      *
-     * @param  string  $url URL to request
-     * @param  array  $headers Associative array of request headers
-     * @param  string|array  $data Data to send either as the POST body, or as parameters in the URL for a GET/HEAD
-     * @param  array  $options Request options, see {@see \WpOrg\Requests\Requests::response()} for documentation
+     * @param  string  $url  URL to request
+     * @param  array  $headers  Associative array of request headers
+     * @param  string|array  $data  Data to send either as the POST body, or as parameters in the URL for a GET/HEAD
+     * @param  array  $options  Request options, see {@see \WpOrg\Requests\Requests::response()} for documentation
      * @return resource|\CurlHandle Subrequest's cURL handle
      */
     public function &get_subrequest_handle($url, $headers, $data, $options)
@@ -357,10 +357,10 @@ final class Curl implements Transport
     /**
      * Setup the cURL handle for the given data
      *
-     * @param  string  $url URL to request
-     * @param  array  $headers Associative array of request headers
-     * @param  string|array  $data Data to send either as the POST body, or as parameters in the URL for a GET/HEAD
-     * @param  array  $options Request options, see {@see \WpOrg\Requests\Requests::response()} for documentation
+     * @param  string  $url  URL to request
+     * @param  array  $headers  Associative array of request headers
+     * @param  string|array  $data  Data to send either as the POST body, or as parameters in the URL for a GET/HEAD
+     * @param  array  $options  Request options, see {@see \WpOrg\Requests\Requests::response()} for documentation
      */
     private function setup_handle($url, $headers, $data, $options)
     {
@@ -466,8 +466,8 @@ final class Curl implements Transport
     /**
      * Process a response
      *
-     * @param  string  $response Response data from the body
-     * @param  array  $options Request options
+     * @param  string  $response  Response data from the body
+     * @param  array  $options  Request options
      * @return string|false HTTP response data including headers. False if non-blocking.
      *
      * @throws \WpOrg\Requests\Exception If the request resulted in a cURL error.
@@ -507,8 +507,8 @@ final class Curl implements Transport
     /**
      * Collect the headers as they are received
      *
-     * @param  resource|\CurlHandle  $handle cURL handle
-     * @param  string  $headers Header string
+     * @param  resource|\CurlHandle  $handle  cURL handle
+     * @param  string  $headers  Header string
      * @return int Length of provided header
      */
     public function stream_headers($handle, $headers)
@@ -535,8 +535,8 @@ final class Curl implements Transport
      *
      * @since 1.6.1
      *
-     * @param  resource|\CurlHandle  $handle cURL handle
-     * @param  string  $data Body data
+     * @param  resource|\CurlHandle  $handle  cURL handle
+     * @param  string  $data  Body data
      * @return int Length of provided data
      */
     public function stream_body($handle, $data)
@@ -573,7 +573,7 @@ final class Curl implements Transport
      * Format a URL given GET data
      *
      * @param  string  $url  Original URL.
-     * @param  array|object  $data Data to build query using, see {@link https://www.php.net/http_build_query}
+     * @param  array|object  $data  Data to build query using, see {@link https://www.php.net/http_build_query}
      * @return string URL with data
      */
     private static function format_get($url, $data)
@@ -607,7 +607,7 @@ final class Curl implements Transport
      *
      * @codeCoverageIgnore
      *
-     * @param  array<string, bool>  $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
+     * @param  array<string, bool>  $capabilities  Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
      * @return bool Whether the transport can be used.
      */
     public static function test($capabilities = [])
@@ -630,7 +630,7 @@ final class Curl implements Transport
     /**
      * Get the correct "Expect" header for the given request data.
      *
-     * @param  string|array  $data Data to send either as the POST body, or as parameters in the URL for a GET/HEAD.
+     * @param  string|array  $data  Data to send either as the POST body, or as parameters in the URL for a GET/HEAD.
      * @return string The "Expect" header.
      */
     private function get_expect_header($data)

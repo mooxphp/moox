@@ -39,10 +39,10 @@ function documentation_link()
  * @deprecated 3.0.0 Use wp_constrain_dimensions()
  * @see wp_constrain_dimensions()
  *
- * @param  int  $width Current width of the image
- * @param  int  $height Current height of the image
- * @param  int  $wmax Maximum wanted width
- * @param  int  $hmax Maximum wanted height
+ * @param  int  $width  Current width of the image
+ * @param  int  $height  Current height of the image
+ * @param  int  $wmax  Maximum wanted width
+ * @param  int  $hmax  Maximum wanted height
  * @return array Shrunk dimensions (width, height).
  */
 function wp_shrink_dimensions($width, $height, $wmax = 128, $hmax = 96)
@@ -59,8 +59,8 @@ function wp_shrink_dimensions($width, $height, $wmax = 128, $hmax = 96)
  * @deprecated 3.5.0 Use wp_constrain_dimensions()
  * @see wp_constrain_dimensions()
  *
- * @param  int  $width Current width of the image
- * @param  int  $height Current height of the image
+ * @param  int  $width  Current width of the image
+ * @param  int  $height  Current height of the image
  * @return array Shrunk dimensions (width, height).
  */
 function get_udims($width, $height)
@@ -79,9 +79,9 @@ function get_udims($width, $height)
  *
  * @global int $post_ID
  *
- * @param  int  $default_category Unused.
+ * @param  int  $default_category  Unused.
  * @param  int  $category_parent  Unused.
- * @param  array  $popular_ids      Unused.
+ * @param  array  $popular_ids  Unused.
  */
 function dropdown_categories($default_category = 0, $category_parent = 0, $popular_ids = [])
 {
@@ -99,7 +99,7 @@ function dropdown_categories($default_category = 0, $category_parent = 0, $popul
  *
  * @global int $link_id
  *
- * @param  int  $default_link_category Unused.
+ * @param  int  $default_link_category  Unused.
  */
 function dropdown_link_categories($default_link_category = 0)
 {
@@ -116,7 +116,7 @@ function dropdown_link_categories($default_link_category = 0)
  *
  * @uses WP_CONTENT_DIR Full filesystem path to the wp-content directory.
  *
- * @param  string  $file Filesystem path relative to the wp-content directory.
+ * @param  string  $file  Filesystem path relative to the wp-content directory.
  * @return string Full filesystem path to edit.
  */
 function get_real_file_to_edit($file)
@@ -133,11 +133,11 @@ function get_real_file_to_edit($file)
  * @deprecated 3.0.0 Use wp_dropdown_categories()
  * @see wp_dropdown_categories()
  *
- * @param  int  $current_cat     Optional. ID of the current category. Default 0.
+ * @param  int  $current_cat  Optional. ID of the current category. Default 0.
  * @param  int  $current_parent  Optional. Current parent category ID. Default 0.
- * @param  int  $category_parent Optional. Parent ID to retrieve categories for. Default 0.
- * @param  int  $level           Optional. Number of levels deep to display. Default 0.
- * @param  array  $categories    Optional. Categories to include in the control. Default 0.
+ * @param  int  $category_parent  Optional. Parent ID to retrieve categories for. Default 0.
+ * @param  int  $level  Optional. Number of levels deep to display. Default 0.
+ * @param  array  $categories  Optional. Categories to include in the control. Default 0.
  * @return void|false Void on success, false if no categories were found.
  */
 function wp_dropdown_cats($current_cat = 0, $current_parent = 0, $category_parent = 0, $level = 0, $categories = 0)
@@ -172,11 +172,11 @@ function wp_dropdown_cats($current_cat = 0, $current_parent = 0, $category_paren
  * @deprecated 3.0.0 Use register_setting()
  * @see register_setting()
  *
- * @param  string  $option_group      A settings group name. Should correspond to an allowed option key name.
- *                                    Default allowed option key names include 'general', 'discussion', 'media',
- *                                    'reading', 'writing', and 'options'.
- * @param  string  $option_name       The name of an option to sanitize and save.
- * @param  callable  $sanitize_callback Optional. A callback function that sanitizes the option's value.
+ * @param  string  $option_group  A settings group name. Should correspond to an allowed option key name.
+ *                                Default allowed option key names include 'general', 'discussion', 'media',
+ *                                'reading', 'writing', and 'options'.
+ * @param  string  $option_name  The name of an option to sanitize and save.
+ * @param  callable  $sanitize_callback  Optional. A callback function that sanitizes the option's value.
  */
 function add_option_update_handler($option_group, $option_name, $sanitize_callback = '')
 {
@@ -191,9 +191,9 @@ function add_option_update_handler($option_group, $option_name, $sanitize_callba
  * @deprecated 3.0.0 Use unregister_setting()
  * @see unregister_setting()
  *
- * @param  string  $option_group      The settings group name used during registration.
- * @param  string  $option_name       The name of the option to unregister.
- * @param  callable  $sanitize_callback Optional. Deprecated.
+ * @param  string  $option_group  The settings group name used during registration.
+ * @param  string  $option_name  The name of the option to unregister.
+ * @param  callable  $sanitize_callback  Optional. Deprecated.
  */
 function remove_option_update_handler($option_group, $option_name, $sanitize_callback = '')
 {
@@ -266,7 +266,7 @@ function get_author_user_ids()
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  * @return array|false List of editable authors. False if no editable users.
  */
 function get_editable_authors($user_id)
@@ -294,8 +294,8 @@ function get_editable_authors($user_id)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $user_id       User ID.
- * @param  bool  $exclude_zeros Optional. Whether to exclude zeroes. Default true.
+ * @param  int  $user_id  User ID.
+ * @param  bool  $exclude_zeros  Optional. Whether to exclude zeroes. Default true.
  * @return array Array of editable user IDs, empty array otherwise.
  */
 function get_editable_user_ids($user_id, $exclude_zeros = true, $post_type = 'post')
@@ -511,9 +511,9 @@ if (! class_exists('WP_User_Search', false)) {
          *
          * @since 2.1.0
          *
-         * @param  string  $search_term Search terms string.
-         * @param  int  $page Optional. Page ID.
-         * @param  string  $role Role name.
+         * @param  string  $search_term  Search terms string.
+         * @param  int  $page  Optional. Page ID.
+         * @param  string  $role  Role name.
          * @return WP_User_Search
          */
         public function __construct($search_term = '', $page = '', $role = '')
@@ -535,9 +535,9 @@ if (! class_exists('WP_User_Search', false)) {
          *
          * @since 2.1.0
          *
-         * @param  string  $search_term Search terms string.
-         * @param  int  $page Optional. Page ID.
-         * @param  string  $role Role name.
+         * @param  string  $search_term  Search terms string.
+         * @param  int  $page  Optional. Page ID.
+         * @param  string  $role  Role name.
          * @return WP_User_Search
          */
         public function WP_User_Search($search_term = '', $page = '', $role = '')
@@ -720,8 +720,8 @@ if (! class_exists('WP_User_Search', false)) {
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $user_id User ID to not retrieve posts from.
- * @param  string  $type    Optional. Post type to retrieve. Accepts 'draft', 'pending' or 'any' (all).
+ * @param  int  $user_id  User ID to not retrieve posts from.
+ * @param  string  $type  Optional. Post type to retrieve. Accepts 'draft', 'pending' or 'any' (all).
  *                        Default 'any'.
  * @return array List of posts from others.
  */
@@ -757,7 +757,7 @@ function get_others_unpublished_posts($user_id, $type = 'any')
  * @deprecated 3.1.0 Use get_posts()
  * @see get_posts()
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  * @return array List of drafts from other users.
  */
 function get_others_drafts($user_id)
@@ -773,7 +773,7 @@ function get_others_drafts($user_id)
  * @deprecated 3.1.0 Use get_posts()
  * @see get_posts()
  *
- * @param  int  $user_id User ID.
+ * @param  int  $user_id  User ID.
  * @return array List of posts with pending review post type from other users.
  */
 function get_others_pending($user_id)
@@ -1058,9 +1058,9 @@ function type_url_form_file()
  * @deprecated 3.3.0 Use WP_Screen::add_help_tab()
  * @see WP_Screen::add_help_tab()
  *
- * @param  string  $screen The handle for the screen to add help to. This is usually
+ * @param  string  $screen  The handle for the screen to add help to. This is usually
  *                          the hook name returned by the `add_*_page()` functions.
- * @param  string  $help   The content of an 'Overview' help tab.
+ * @param  string  $help  The content of an 'Overview' help tab.
  */
 function add_contextual_help($screen, $help)
 {
@@ -1206,9 +1206,9 @@ function get_default_page_to_edit()
  * @deprecated 3.5.0 Use image_resize()
  * @see image_resize()
  *
- * @param  mixed  $file Filename of the original image, Or attachment ID.
- * @param  int  $max_side Maximum length of a single side for the thumbnail.
- * @param  mixed  $deprecated Never used.
+ * @param  mixed  $file  Filename of the original image, Or attachment ID.
+ * @param  int  $max_side  Maximum length of a single side for the thumbnail.
+ * @param  mixed  $deprecated  Never used.
  * @return string Thumbnail path on success, Error string on failure.
  */
 function wp_create_thumbnail($file, $max_side, $deprecated = '')
@@ -1436,7 +1436,7 @@ function wp_dashboard_secondary_control()
  * @deprecated 4.8.0
  *
  * @param  string  $rss  The RSS feed URL.
- * @param  array  $args Array of arguments for this RSS feed.
+ * @param  array  $args  Array of arguments for this RSS feed.
  */
 function wp_dashboard_plugins_output($rss, $args = [])
 {
@@ -1547,12 +1547,12 @@ function _relocate_children($old_ID, $new_ID)
  *
  * @global int $_wp_last_object_menu
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  string  $icon_url   Optional. The URL to the icon to be used for this menu.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  string  $icon_url  Optional. The URL to the icon to be used for this menu.
  * @return string The resulting page's hook_suffix.
  */
 function add_object_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $icon_url = '')
@@ -1581,12 +1581,12 @@ function add_object_page($page_title, $menu_title, $capability, $menu_slug, $cal
  *
  * @global int $_wp_last_utility_menu
  *
- * @param  string  $page_title The text to be displayed in the title tags of the page when the menu is selected.
- * @param  string  $menu_title The text to be used for the menu.
- * @param  string  $capability The capability required for this menu to be displayed to the user.
+ * @param  string  $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param  string  $menu_title  The text to be used for the menu.
+ * @param  string  $capability  The capability required for this menu to be displayed to the user.
  * @param  string  $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
- * @param  callable  $callback   Optional. The function to be called to output the content for this page.
- * @param  string  $icon_url   Optional. The URL to the icon to be used for this menu.
+ * @param  callable  $callback  Optional. The function to be called to output the content for this page.
+ * @param  string  $icon_url  Optional. The URL to the icon to be used for this menu.
  * @return string The resulting page's hook_suffix.
  */
 function add_utility_page($page_title, $menu_title, $capability, $menu_slug, $callback = '', $icon_url = '')
@@ -1707,8 +1707,8 @@ function _wp_privacy_requests_screen_options()
  * @since 2.5.0
  * @deprecated 6.0.0
  *
- * @param  array  $post       The WP_Post attachment object converted to an array.
- * @param  array  $attachment An array of attachment metadata.
+ * @param  array  $post  The WP_Post attachment object converted to an array.
+ * @param  array  $attachment  An array of attachment metadata.
  * @return array Attachment post object converted to an array.
  */
 function image_attachment_fields_to_save($post, $attachment)

@@ -105,7 +105,7 @@ switch ($action) {
              *
              * @since MU (3.0.0)
              *
-             * @param  array  $response The upgrade response array.
+             * @param  array  $response  The upgrade response array.
              */
             do_action('after_mu_upgrade', $response);
 
@@ -114,7 +114,7 @@ switch ($action) {
              *
              * @since MU (3.0.0)
              *
-             * @param  int  $site_id The Site ID.
+             * @param  int  $site_id  The Site ID.
              */
             do_action('wpmu_upgrade_site', $site_id);
         }

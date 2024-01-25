@@ -185,41 +185,41 @@ class WP_Customize_Control
      *
      * @since 3.4.0
      *
-     * @param  WP_Customize_Manager  $manager Customizer bootstrap instance.
-     * @param  string  $id      Control ID.
-     * @param  array  $args    {
-     *     Optional. Array of properties for the new Control object. Default empty array.
+     * @param  WP_Customize_Manager  $manager  Customizer bootstrap instance.
+     * @param  string  $id  Control ID.
+     * @param  array  $args  {
+     *                       Optional. Array of properties for the new Control object. Default empty array.
      *
-     *     @type int                  $instance_number Order in which this instance was created in relation
-     *                                                 to other instances.
-     *     @type WP_Customize_Manager $manager         Customizer bootstrap instance.
-     *     @type string               $id              Control ID.
-     *     @type array                $settings        All settings tied to the control. If undefined, `$id` will
-     *                                                 be used.
-     *     @type string               $setting         The primary setting for the control (if there is one).
-     *                                                 Default 'default'.
-     *     @type string               $capability      Capability required to use this control. Normally this is empty
-     *                                                 and the capability is derived from `$settings`.
-     *     @type int                  $priority        Order priority to load the control. Default 10.
-     *     @type string               $section         Section the control belongs to. Default empty.
-     *     @type string               $label           Label for the control. Default empty.
-     *     @type string               $description     Description for the control. Default empty.
-     *     @type array                $choices         List of choices for 'radio' or 'select' type controls, where
-     *                                                 values are the keys, and labels are the values.
-     *                                                 Default empty array.
-     *     @type array                $input_attrs     List of custom input attributes for control output, where
-     *                                                 attribute names are the keys and values are the values. Not
-     *                                                 used for 'checkbox', 'radio', 'select', 'textarea', or
-     *                                                 'dropdown-pages' control types. Default empty array.
-     *     @type bool                 $allow_addition  Show UI for adding new content, currently only used for the
-     *                                                 dropdown-pages control. Default false.
-     *     @type array                $json            Deprecated. Use WP_Customize_Control::json() instead.
-     *     @type string               $type            Control type. Core controls include 'text', 'checkbox',
-     *                                                 'textarea', 'radio', 'select', and 'dropdown-pages'. Additional
-     *                                                 input types such as 'email', 'url', 'number', 'hidden', and
-     *                                                 'date' are supported implicitly. Default 'text'.
-     *     @type callable             $active_callback Active callback.
-     * }
+     * @type int $instance_number Order in which this instance was created in relation
+     *           to other instances.
+     * @type WP_Customize_Manager $manager         Customizer bootstrap instance.
+     * @type string $id              Control ID.
+     * @type array $settings        All settings tied to the control. If undefined, `$id` will
+     *             be used.
+     * @type string $setting         The primary setting for the control (if there is one).
+     *              Default 'default'.
+     * @type string $capability      Capability required to use this control. Normally this is empty
+     *              and the capability is derived from `$settings`.
+     * @type int $priority        Order priority to load the control. Default 10.
+     * @type string $section         Section the control belongs to. Default empty.
+     * @type string $label           Label for the control. Default empty.
+     * @type string $description     Description for the control. Default empty.
+     * @type array $choices         List of choices for 'radio' or 'select' type controls, where
+     *             values are the keys, and labels are the values.
+     *             Default empty array.
+     * @type array $input_attrs     List of custom input attributes for control output, where
+     *             attribute names are the keys and values are the values. Not
+     *             used for 'checkbox', 'radio', 'select', 'textarea', or
+     *             'dropdown-pages' control types. Default empty array.
+     * @type bool $allow_addition  Show UI for adding new content, currently only used for the
+     *            dropdown-pages control. Default false.
+     * @type array $json            Deprecated. Use WP_Customize_Control::json() instead.
+     * @type string $type            Control type. Core controls include 'text', 'checkbox',
+     *              'textarea', 'radio', 'select', and 'dropdown-pages'. Additional
+     *              input types such as 'email', 'url', 'number', 'hidden', and
+     *              'date' are supported implicitly. Default 'text'.
+     * @type callable $active_callback Active callback.
+     *                }
      */
     public function __construct($manager, $id, $args = [])
     {
@@ -282,7 +282,7 @@ class WP_Customize_Control
          * @since 4.0.0
          *
          * @param  bool  $active  Whether the Customizer control is active.
-         * @param  WP_Customize_Control  $control WP_Customize_Control instance.
+         * @param  WP_Customize_Control  $control  WP_Customize_Control instance.
          */
         $active = apply_filters('customize_control_active', $active, $control);
 
@@ -425,7 +425,7 @@ class WP_Customize_Control
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Control  $control WP_Customize_Control instance.
+         * @param  WP_Customize_Control  $control  WP_Customize_Control instance.
          */
         do_action('customize_render_control', $this);
 
@@ -437,7 +437,7 @@ class WP_Customize_Control
          *
          * @since 3.4.0
          *
-         * @param  WP_Customize_Control  $control WP_Customize_Control instance.
+         * @param  WP_Customize_Control  $control  WP_Customize_Control instance.
          */
         do_action("customize_render_control_{$this->id}", $this);
 

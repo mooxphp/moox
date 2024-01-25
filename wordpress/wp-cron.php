@@ -144,9 +144,9 @@ foreach ($crons as $timestamp => $cronhooks) {
                      *
                      * @since 6.1.0
                      *
-                     * @param  WP_Error  $result The WP_Error object.
-                     * @param  string  $hook   Action hook to execute when the event is run.
-                     * @param  array  $v      Event data.
+                     * @param  WP_Error  $result  The WP_Error object.
+                     * @param  string  $hook  Action hook to execute when the event is run.
+                     * @param  array  $v  Event data.
                      */
                     do_action('cron_reschedule_event_error', $result, $hook, $v);
                 }
@@ -171,9 +171,9 @@ foreach ($crons as $timestamp => $cronhooks) {
                  *
                  * @since 6.1.0
                  *
-                 * @param  WP_Error  $result The WP_Error object.
-                 * @param  string  $hook   Action hook to execute when the event is run.
-                 * @param  array  $v      Event data.
+                 * @param  WP_Error  $result  The WP_Error object.
+                 * @param  string  $hook  Action hook to execute when the event is run.
+                 * @param  array  $v  Event data.
                  */
                 do_action('cron_unschedule_event_error', $result, $hook, $v);
             }
@@ -185,8 +185,8 @@ foreach ($crons as $timestamp => $cronhooks) {
              *
              * @since 2.1.0
              *
-             * @param  string  $hook Name of the hook that was scheduled to be fired.
-             * @param  array  $args The arguments to be passed to the hook.
+             * @param  string  $hook  Name of the hook that was scheduled to be fired.
+             * @param  array  $args  The arguments to be passed to the hook.
              */
             do_action_ref_array($hook, $v['args']);
 

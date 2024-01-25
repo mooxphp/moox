@@ -131,8 +131,8 @@ class WP_Plugin_Install_List_Table extends WP_List_Table
          *
          * @since 2.7.0
          *
-         * @param  string[]  $tabs The tabs shown on the Add Plugins screen. Defaults include
-         *                       'featured', 'popular', 'recommended', 'favorites', and 'upload'.
+         * @param  string[]  $tabs  The tabs shown on the Add Plugins screen. Defaults include
+         *                          'featured', 'popular', 'recommended', 'favorites', and 'upload'.
          */
         $tabs = apply_filters('install_plugins_tabs', $tabs);
 
@@ -141,7 +141,7 @@ class WP_Plugin_Install_List_Table extends WP_List_Table
          *
          * @since 2.7.0
          *
-         * @param  string[]  $nonmenu_tabs The tabs that don't have a menu item on the Add Plugins screen.
+         * @param  string[]  $nonmenu_tabs  The tabs that don't have a menu item on the Add Plugins screen.
          */
         $nonmenu_tabs = apply_filters('install_plugins_nonmenu_tabs', $nonmenu_tabs);
 
@@ -233,7 +233,7 @@ class WP_Plugin_Install_List_Table extends WP_List_Table
          *
          * @since 3.7.0
          *
-         * @param  array|false  $args Plugin install API arguments.
+         * @param  array|false  $args  Plugin install API arguments.
          */
         $args = apply_filters("install_plugins_table_api_args_{$tab}", $args);
 
@@ -540,9 +540,9 @@ class WP_Plugin_Install_List_Table extends WP_List_Table
              *
              * @since 6.0.0
              *
-             * @param  string  $description Plugin card description.
-             * @param  array  $plugin      An array of plugin data. See {@see plugins_api()}
-             *                            for the list of possible values.
+             * @param  string  $description  Plugin card description.
+             * @param  array  $plugin  An array of plugin data. See {@see plugins_api()}
+             *                         for the list of possible values.
              */
             $description = apply_filters('plugin_install_description', $description, $plugin);
 
@@ -691,10 +691,10 @@ class WP_Plugin_Install_List_Table extends WP_List_Table
              *
              * @since 2.7.0
              *
-             * @param  string[]  $action_links An array of plugin action links.
-             *                               Defaults are links to Details and Install Now.
-             * @param  array  $plugin       An array of plugin data. See {@see plugins_api()}
-             *                               for the list of possible values.
+             * @param  string[]  $action_links  An array of plugin action links.
+             *                                  Defaults are links to Details and Install Now.
+             * @param  array  $plugin  An array of plugin data. See {@see plugins_api()}
+             *                         for the list of possible values.
              */
             $action_links = apply_filters('plugin_install_action_links', $action_links, $plugin);
 

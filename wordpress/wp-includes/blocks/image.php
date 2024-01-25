@@ -7,9 +7,9 @@
  * Renders the `core/image` block on the server,
  * adding a data-id attribute to the element if core/gallery has added on pre-render.
  *
- * @param  array  $attributes The block attributes.
- * @param  string  $content    The block content.
- * @param  WP_Block  $block      The block object.
+ * @param  array  $attributes  The block attributes.
+ * @param  string  $content  The block content.
+ * @param  WP_Block  $block  The block object.
  * @return string The block content with the data-id attribute added.
  */
 function render_block_core_image($attributes, $content, $block)
@@ -83,7 +83,7 @@ function render_block_core_image($attributes, $content, $block)
  *
  * This is used to determine whether the lightbox should be rendered or not.
  *
- * @param  array  $block Block data.
+ * @param  array  $block  Block data.
  * @return array Filtered block data.
  */
 function block_core_image_get_lightbox_settings($block)
@@ -119,8 +119,8 @@ function block_core_image_get_lightbox_settings($block)
 /**
  * Adds the directives and layout needed for the lightbox behavior.
  *
- * @param  string  $block_content Rendered block content.
- * @param  array  $block         Block object.
+ * @param  string  $block_content  Rendered block content.
+ * @param  array  $block  Block object.
  * @return string Filtered block content.
  */
 function block_core_image_render_lightbox($block_content, $block)

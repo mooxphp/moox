@@ -31,8 +31,8 @@ class WP_HTTP_Requests_Hooks extends WpOrg\Requests\Hooks
     /**
      * Constructor.
      *
-     * @param  string  $url     URL to request.
-     * @param  array  $request Request data in WP_Http format.
+     * @param  string  $url  URL to request.
+     * @param  array  $request  Request data in WP_Http format.
      */
     public function __construct($url, $request)
     {
@@ -43,8 +43,8 @@ class WP_HTTP_Requests_Hooks extends WpOrg\Requests\Hooks
     /**
      * Dispatch a Requests hook to a native WordPress action.
      *
-     * @param  string  $hook       Hook name.
-     * @param  array  $parameters Parameters to pass to callbacks.
+     * @param  string  $hook  Hook name.
+     * @param  array  $parameters  Parameters to pass to callbacks.
      * @return bool True if hooks were run, false if nothing was hooked.
      */
     public function dispatch($hook, $parameters = [])
@@ -67,9 +67,9 @@ class WP_HTTP_Requests_Hooks extends WpOrg\Requests\Hooks
          * @see https://github.com/WordPress/Requests/blob/master/docs/hooks.md
          * @since 4.7.0
          *
-         * @param  array  $parameters Parameters from Requests internal hook.
-         * @param  array  $request Request data in WP_Http format.
-         * @param  string  $url URL to request.
+         * @param  array  $parameters  Parameters from Requests internal hook.
+         * @param  array  $request  Request data in WP_Http format.
+         * @param  string  $url  URL to request.
          */
         do_action_ref_array("requests-{$hook}", $parameters, $this->request, $this->url); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 

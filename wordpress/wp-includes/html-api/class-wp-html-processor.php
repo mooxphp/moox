@@ -229,9 +229,9 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  string  $html     Input HTML fragment to process.
+     * @param  string  $html  Input HTML fragment to process.
      * @param  string  $context  Context element for the fragment, must be default of `<body>`.
-     * @param  string  $encoding Text encoding of the document; must be default of 'UTF-8'.
+     * @param  string  $encoding  Text encoding of the document; must be default of 'UTF-8'.
      * @return WP_HTML_Processor|null The created processor if successful, otherwise null.
      */
     public static function create_fragment($html, $context = '<body>', $encoding = 'UTF-8')
@@ -276,8 +276,8 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      * @since 6.4.0
      * @see WP_HTML_Processor::create_fragment()
      *
-     * @param  string  $html                                  HTML to process.
-     * @param  string|null  $use_the_static_create_methods_instead This constructor should not be called manually.
+     * @param  string  $html  HTML to process.
+     * @param  string|null  $use_the_static_create_methods_instead  This constructor should not be called manually.
      */
     public function __construct($html, $use_the_static_create_methods_instead = null)
     {
@@ -341,20 +341,20 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  array|string|null  $query {
-     *     Optional. Which tag name to find, having which class, etc. Default is to find any tag.
+     * @param  array|string|null  $query  {
+     *                                    Optional. Which tag name to find, having which class, etc. Default is to find any tag.
      * @return bool Whether a tag was matched.
      *
      * @throws Exception When unable to allocate a bookmark for the next token in the input HTML document.
      *
-     *     @type string|null $tag_name     Which tag to find, or `null` for "any tag."
-     *     @type int|null    $match_offset Find the Nth tag matching all search criteria.
-     *                                     1 for "first" tag, 3 for "third," etc.
-     *                                     Defaults to first tag.
-     *     @type string|null $class_name   Tag must contain this whole class name to match.
-     *     @type string[]    $breadcrumbs  DOM sub-path at which element is found, e.g. `array( 'FIGURE', 'IMG' )`.
-     *                                     May also contain the wildcard `*` which matches a single element, e.g. `array( 'SECTION', '*' )`.
-     * }
+     * @type string|null $tag_name     Which tag to find, or `null` for "any tag."
+     * @type int|null $match_offset Find the Nth tag matching all search criteria.
+     *                1 for "first" tag, 3 for "third," etc.
+     *                Defaults to first tag.
+     * @type string|null $class_name   Tag must contain this whole class name to match.
+     * @type string[] $breadcrumbs  DOM sub-path at which element is found, e.g. `array( 'FIGURE', 'IMG' )`.
+     *                May also contain the wildcard `*` which matches a single element, e.g. `array( 'SECTION', '*' )`.
+     *                }
      */
     public function next_tag($query = null)
     {
@@ -435,8 +435,8 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  string[]  $breadcrumbs DOM sub-path at which element is found, e.g. `array( 'FIGURE', 'IMG' )`.
-     *                              May also contain the wildcard `*` which matches a single element, e.g. `array( 'SECTION', '*' )`.
+     * @param  string[]  $breadcrumbs  DOM sub-path at which element is found, e.g. `array( 'FIGURE', 'IMG' )`.
+     *                                 May also contain the wildcard `*` which matches a single element, e.g. `array( 'SECTION', '*' )`.
      * @return bool Whether the currently-matched tag is found at the given nested structure.
      */
     public function matches_breadcrumbs($breadcrumbs)
@@ -479,7 +479,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      * @see self::PROCESS_NEXT_NODE
      * @see self::REPROCESS_CURRENT_NODE
      *
-     * @param  string  $node_to_process Whether to parse the next node or reprocess the current node.
+     * @param  string  $node_to_process  Whether to parse the next node or reprocess the current node.
      * @return bool Whether a tag was matched.
      *
      * @throws Exception When unable to allocate a bookmark for the next token in the input HTML document.
@@ -866,7 +866,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  string  $bookmark_name Name of the bookmark to remove.
+     * @param  string  $bookmark_name  Name of the bookmark to remove.
      * @return bool Whether the bookmark already existed before removal.
      */
     public function release_bookmark($bookmark_name)
@@ -883,7 +883,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  string  $bookmark_name Jump to the place in the document identified by this bookmark name.
+     * @param  string  $bookmark_name  Jump to the place in the document identified by this bookmark name.
      * @return bool Whether the internal cursor was successfully moved to the bookmark's location.
      *
      * @throws Exception When unable to allocate a bookmark for the next token in the input HTML document.
@@ -1014,7 +1014,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      *
      * @since 6.4.0
      *
-     * @param  string  $bookmark_name Identifies this particular bookmark.
+     * @param  string  $bookmark_name  Identifies this particular bookmark.
      * @return bool Whether the bookmark was successfully created.
      */
     public function set_bookmark($bookmark_name)
@@ -1047,7 +1047,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#generate-implied-end-tags
      *
-     * @param  string|null  $except_for_this_element Perform as if this element doesn't exist in the stack of open elements.
+     * @param  string|null  $except_for_this_element  Perform as if this element doesn't exist in the stack of open elements.
      */
     private function generate_implied_end_tags($except_for_this_element = null)
     {
@@ -1255,7 +1255,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#insert-a-foreign-element
      *
-     * @param  WP_HTML_Token  $token Name of bookmark pointing to element in original input HTML.
+     * @param  WP_HTML_Token  $token  Name of bookmark pointing to element in original input HTML.
      */
     private function insert_html_element($token)
     {
@@ -1272,7 +1272,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#special
      *
-     * @param  string  $tag_name Name of element to check.
+     * @param  string  $tag_name  Name of element to check.
      * @return bool Whether the element of the given name is in the special category.
      */
     public static function is_special($tag_name)
@@ -1386,7 +1386,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
      * @since 6.4.0
      * @see https://html.spec.whatwg.org/#void-elements
      *
-     * @param  string  $tag_name Name of HTML tag to check.
+     * @param  string  $tag_name  Name of HTML tag to check.
      * @return bool Whether the given tag is an HTML Void Element.
      */
     public static function is_void($tag_name)

@@ -27,7 +27,7 @@ class WP_Paused_Extensions_Storage
      *
      * @since 5.2.0
      *
-     * @param  string  $extension_type Extension type. Either 'plugin' or 'theme'.
+     * @param  string  $extension_type  Extension type. Either 'plugin' or 'theme'.
      */
     public function __construct($extension_type)
     {
@@ -42,15 +42,15 @@ class WP_Paused_Extensions_Storage
      *
      * @since 5.2.0
      *
-     * @param  string  $extension Plugin or theme directory name.
-     * @param  array  $error     {
-     *     Error information returned by `error_get_last()`.
+     * @param  string  $extension  Plugin or theme directory name.
+     * @param  array  $error  {
+     *                        Error information returned by `error_get_last()`.
      *
-     *     @type int    $type    The error type.
-     *     @type string $file    The name of the file in which the error occurred.
-     *     @type int    $line    The line number in which the error occurred.
-     *     @type string $message The error message.
-     * }
+     * @type int $type    The error type.
+     * @type string $file    The name of the file in which the error occurred.
+     * @type int $line    The line number in which the error occurred.
+     * @type string $message The error message.
+     *              }
      *
      * @return bool True on success, false on failure.
      */
@@ -83,7 +83,7 @@ class WP_Paused_Extensions_Storage
      *
      * @since 5.2.0
      *
-     * @param  string  $extension Plugin or theme directory name.
+     * @param  string  $extension  Plugin or theme directory name.
      * @return bool True on success, false on failure.
      */
     public function delete($extension)
@@ -124,7 +124,7 @@ class WP_Paused_Extensions_Storage
      *
      * @since 5.2.0
      *
-     * @param  string  $extension Plugin or theme directory name.
+     * @param  string  $extension  Plugin or theme directory name.
      * @return array|null Error that is stored, or null if the extension is not paused.
      */
     public function get($extension)
@@ -148,10 +148,10 @@ class WP_Paused_Extensions_Storage
      * @since 5.2.0
      *
      * @return array {
-     *     Associative array of errors keyed by extension slug.
+     *               Associative array of errors keyed by extension slug.
      *
-     *     @type array ...$0 Error information returned by `error_get_last()`.
-     * }
+     * @type array ...$0 Error information returned by `error_get_last()`.
+     *             }
      */
     public function get_all()
     {

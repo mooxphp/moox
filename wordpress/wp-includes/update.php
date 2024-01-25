@@ -19,9 +19,9 @@
  * @global wpdb   $wpdb             WordPress database abstraction object.
  * @global string $wp_local_package Locale code of the package.
  *
- * @param  array  $extra_stats Extra statistics to report to the WordPress.org API.
- * @param  bool  $force_check Whether to bypass the transient cache and force a fresh update check.
- *                           Defaults to false, true if $extra_stats is set.
+ * @param  array  $extra_stats  Extra statistics to report to the WordPress.org API.
+ * @param  bool  $force_check  Whether to bypass the transient cache and force a fresh update check.
+ *                             Defaults to false, true if $extra_stats is set.
  */
 function wp_version_check($extra_stats = [], $force_check = false)
 {
@@ -66,7 +66,7 @@ function wp_version_check($extra_stats = [], $force_check = false)
      *
      * @since 2.8.0
      *
-     * @param  string  $locale Current locale.
+     * @param  string  $locale  Current locale.
      */
     $locale = apply_filters('core_version_check_locale', get_locale());
 
@@ -148,19 +148,19 @@ function wp_version_check($extra_stats = [], $force_check = false)
      *
      * @since 4.9.0
      *
-     * @param  array  $query {
-     *     Version check query arguments.
+     * @param  array  $query  {
+     *                        Version check query arguments.
      *
-     *     @type string $version            WordPress version number.
-     *     @type string $php                PHP version number.
-     *     @type string $locale             The locale to retrieve updates for.
-     *     @type string $mysql              MySQL version number.
-     *     @type string $local_package      The value of the $wp_local_package global, when set.
-     *     @type int    $blogs              Number of sites on this WordPress installation.
-     *     @type int    $users              Number of users on this WordPress installation.
-     *     @type int    $multisite_enabled  Whether this WordPress installation uses Multisite.
-     *     @type int    $initial_db_version Database version of WordPress at time of installation.
-     * }
+     * @type string $version            WordPress version number.
+     * @type string $php                PHP version number.
+     * @type string $locale             The locale to retrieve updates for.
+     * @type string $mysql              MySQL version number.
+     * @type string $local_package      The value of the $wp_local_package global, when set.
+     * @type int $blogs              Number of sites on this WordPress installation.
+     * @type int $users              Number of users on this WordPress installation.
+     * @type int $multisite_enabled  Whether this WordPress installation uses Multisite.
+     * @type int $initial_db_version Database version of WordPress at time of installation.
+     *           }
      */
     $query = apply_filters('core_version_check_query_args', $query);
 
@@ -307,7 +307,7 @@ function wp_version_check($extra_stats = [], $force_check = false)
  *
  * @global string $wp_version The WordPress version string.
  *
- * @param  array  $extra_stats Extra statistics to report to the WordPress.org API.
+ * @param  array  $extra_stats  Extra statistics to report to the WordPress.org API.
  */
 function wp_update_plugins($extra_stats = [])
 {
@@ -403,7 +403,7 @@ function wp_update_plugins($extra_stats = [])
      * @since 3.7.0
      * @since 4.5.0 The default value of the `$locales` parameter changed to include all locales.
      *
-     * @param  string[]  $locales Plugin locales. Default is all available locales of the site.
+     * @param  string[]  $locales  Plugin locales. Default is all available locales of the site.
      */
     $locales = apply_filters('plugins_update_check_locales', $locales);
     $locales = array_unique($locales);
@@ -480,36 +480,36 @@ function wp_update_plugins($extra_stats = [])
          *
          * @since 5.8.0
          *
-         * @param  array|false  $update {
-         *     The plugin update data with the latest details. Default false.
+         * @param  array|false  $update  {
+         *                               The plugin update data with the latest details. Default false.
          *
-         *     @type string $id           Optional. ID of the plugin for update purposes, should be a URI
-         *                                specified in the `Update URI` header field.
-         *     @type string $slug         Slug of the plugin.
-         *     @type string $version      The version of the plugin.
-         *     @type string $url          The URL for details of the plugin.
-         *     @type string $package      Optional. The update ZIP for the plugin.
-         *     @type string $tested       Optional. The version of WordPress the plugin is tested against.
-         *     @type string $requires_php Optional. The version of PHP which the plugin requires.
-         *     @type bool   $autoupdate   Optional. Whether the plugin should automatically update.
-         *     @type array  $icons        Optional. Array of plugin icons.
-         *     @type array  $banners      Optional. Array of plugin banners.
-         *     @type array  $banners_rtl  Optional. Array of plugin RTL banners.
-         *     @type array  $translations {
-         *         Optional. List of translation updates for the plugin.
-         *         @type string $language   The language the translation update is for.
-         *         @type string $version    The version of the plugin this translation is for.
-         *                                  This is not the version of the language file.
-         *         @type string $updated    The update timestamp of the translation file.
-         *                                  Should be a date in the `YYYY-MM-DD HH:MM:SS` format.
-         *         @type string $package    The ZIP location containing the translation update.
-         *         @type string $autoupdate Whether the translation should be automatically installed.
-         *     }
-         * }
+         * @type string $id           Optional. ID of the plugin for update purposes, should be a URI
+         *              specified in the `Update URI` header field.
+         * @type string $slug         Slug of the plugin.
+         * @type string $version      The version of the plugin.
+         * @type string $url          The URL for details of the plugin.
+         * @type string $package      Optional. The update ZIP for the plugin.
+         * @type string $tested       Optional. The version of WordPress the plugin is tested against.
+         * @type string $requires_php Optional. The version of PHP which the plugin requires.
+         * @type bool $autoupdate   Optional. Whether the plugin should automatically update.
+         * @type array $icons        Optional. Array of plugin icons.
+         * @type array $banners      Optional. Array of plugin banners.
+         * @type array $banners_rtl  Optional. Array of plugin RTL banners.
+         * @type array $translations {
+         *             Optional. List of translation updates for the plugin.
+         * @type string $language   The language the translation update is for.
+         * @type string $version    The version of the plugin this translation is for.
+         *              This is not the version of the language file.
+         * @type string $updated    The update timestamp of the translation file.
+         *              Should be a date in the `YYYY-MM-DD HH:MM:SS` format.
+         * @type string $package    The ZIP location containing the translation update.
+         * @type string $autoupdate Whether the translation should be automatically installed.
+         *              }
+         *              }
          *
-         * @param  array  $plugin_data      Plugin headers.
-         * @param  string  $plugin_file      Plugin filename.
-         * @param  string[]  $locales          Installed locales to look up translations for.
+         * @param  array  $plugin_data  Plugin headers.
+         * @param  string  $plugin_file  Plugin filename.
+         * @param  string[]  $locales  Installed locales to look up translations for.
          */
         $update = apply_filters("update_plugins_{$hostname}", false, $plugin_data, $plugin_file, $locales);
 
@@ -582,7 +582,7 @@ function wp_update_plugins($extra_stats = [])
  *
  * @global string $wp_version The WordPress version string.
  *
- * @param  array  $extra_stats Extra statistics to report to the WordPress.org API.
+ * @param  array  $extra_stats  Extra statistics to report to the WordPress.org API.
  */
 function wp_update_themes($extra_stats = [])
 {
@@ -686,7 +686,7 @@ function wp_update_themes($extra_stats = [])
      * @since 3.7.0
      * @since 4.5.0 The default value of the `$locales` parameter changed to include all locales.
      *
-     * @param  string[]  $locales Theme locales. Default is all available locales of the site.
+     * @param  string[]  $locales  Theme locales. Default is all available locales of the site.
      */
     $locales = apply_filters('themes_update_check_locales', $locales);
     $locales = array_unique($locales);
@@ -766,33 +766,33 @@ function wp_update_themes($extra_stats = [])
          *
          * @since 6.1.0
          *
-         * @param  array|false  $update {
-         *     The theme update data with the latest details. Default false.
+         * @param  array|false  $update  {
+         *                               The theme update data with the latest details. Default false.
          *
-         *     @type string $id           Optional. ID of the theme for update purposes, should be a URI
-         *                                specified in the `Update URI` header field.
-         *     @type string $theme        Directory name of the theme.
-         *     @type string $version      The version of the theme.
-         *     @type string $url          The URL for details of the theme.
-         *     @type string $package      Optional. The update ZIP for the theme.
-         *     @type string $tested       Optional. The version of WordPress the theme is tested against.
-         *     @type string $requires_php Optional. The version of PHP which the theme requires.
-         *     @type bool   $autoupdate   Optional. Whether the theme should automatically update.
-         *     @type array  $translations {
-         *         Optional. List of translation updates for the theme.
-         *         @type string $language   The language the translation update is for.
-         *         @type string $version    The version of the theme this translation is for.
-         *                                  This is not the version of the language file.
-         *         @type string $updated    The update timestamp of the translation file.
-         *                                  Should be a date in the `YYYY-MM-DD HH:MM:SS` format.
-         *         @type string $package    The ZIP location containing the translation update.
-         *         @type string $autoupdate Whether the translation should be automatically installed.
-         *     }
-         * }
+         * @type string $id           Optional. ID of the theme for update purposes, should be a URI
+         *              specified in the `Update URI` header field.
+         * @type string $theme        Directory name of the theme.
+         * @type string $version      The version of the theme.
+         * @type string $url          The URL for details of the theme.
+         * @type string $package      Optional. The update ZIP for the theme.
+         * @type string $tested       Optional. The version of WordPress the theme is tested against.
+         * @type string $requires_php Optional. The version of PHP which the theme requires.
+         * @type bool $autoupdate   Optional. Whether the theme should automatically update.
+         * @type array $translations {
+         *             Optional. List of translation updates for the theme.
+         * @type string $language   The language the translation update is for.
+         * @type string $version    The version of the theme this translation is for.
+         *              This is not the version of the language file.
+         * @type string $updated    The update timestamp of the translation file.
+         *              Should be a date in the `YYYY-MM-DD HH:MM:SS` format.
+         * @type string $package    The ZIP location containing the translation update.
+         * @type string $autoupdate Whether the translation should be automatically installed.
+         *              }
+         *              }
          *
-         * @param  array  $theme_data       Theme headers.
-         * @param  string  $theme_stylesheet Theme stylesheet.
-         * @param  string[]  $locales          Installed locales to look up translations for.
+         * @param  array  $theme_data  Theme headers.
+         * @param  string  $theme_stylesheet  Theme stylesheet.
+         * @param  string[]  $locales  Installed locales to look up translations for.
          */
         $update = apply_filters("update_themes_{$hostname}", false, $theme_data, $theme_stylesheet, $locales);
 
@@ -973,14 +973,14 @@ function wp_get_update_data()
      *
      * @since 3.5.0
      *
-     * @param  array  $update_data {
-     *     Fetched update data.
+     * @param  array  $update_data  {
+     *                              Fetched update data.
      *
-     *     @type array   $counts       An array of counts for available plugin, theme, and WordPress updates.
-     *     @type string  $update_title Titles of available updates.
-     * }
+     * @type array $counts       An array of counts for available plugin, theme, and WordPress updates.
+     * @type string $update_title Titles of available updates.
+     *              }
      *
-     * @param  array  $titles An array of update counts and UI strings for available updates.
+     * @param  array  $titles  An array of update counts and UI strings for available updates.
      */
     return apply_filters('wp_get_update_data', $update_data, $titles);
 }

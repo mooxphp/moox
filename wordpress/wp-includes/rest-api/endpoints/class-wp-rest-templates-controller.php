@@ -27,7 +27,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  string  $post_type Post type.
+     * @param  string  $post_type  Post type.
      */
     public function __construct($post_type)
     {
@@ -154,7 +154,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      * @since 6.1.0
      * @since 6.3.0 Ignore empty templates.
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response|WP_Error
      */
     public function get_template_fallback($request)
@@ -176,7 +176,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     protected function permissions_check($request)
@@ -211,7 +211,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      * @since 5.9.0
      * @see https://core.trac.wordpress.org/ticket/54507
      *
-     * @param  string  $id Template ID.
+     * @param  string  $id  Template ID.
      * @return string Sanitized template ID.
      */
     public function _sanitize_template_id($id)
@@ -239,7 +239,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -252,7 +252,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response
      */
     public function get_items($request)
@@ -282,7 +282,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -295,7 +295,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response|WP_Error
      */
     public function get_item($request)
@@ -318,7 +318,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has write access for the item, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -331,7 +331,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -402,7 +402,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has access to create items, WP_Error object otherwise.
      */
     public function create_item_permissions_check($request)
@@ -415,7 +415,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function create_item($request)
@@ -468,7 +468,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has delete access for the item, WP_Error object otherwise.
      */
     public function delete_item_permissions_check($request)
@@ -481,7 +481,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function delete_item($request)
@@ -545,7 +545,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return stdClass Changes to pass to wp_update_post.
      */
     protected function prepare_item_for_database($request)
@@ -644,8 +644,8 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      * @since 5.9.0 Renamed `$template` to `$item` to match parent class for PHP 8 named parameter support.
      * @since 6.3.0 Added `modified` property to the response.
      *
-     * @param  WP_Block_Template  $item    Template instance.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Block_Template  $item  Template instance.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -769,7 +769,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
      *
      * @since 5.8.0
      *
-     * @param  int  $id ID.
+     * @param  int  $id  ID.
      * @return array Links for the given post.
      */
     protected function prepare_links($id)

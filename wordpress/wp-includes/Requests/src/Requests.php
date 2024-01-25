@@ -197,7 +197,7 @@ class Requests
     /**
      * Register a transport
      *
-     * @param  string  $transport Transport class to add, must support the \WpOrg\Requests\Transport interface
+     * @param  string  $transport  Transport class to add, must support the \WpOrg\Requests\Transport interface
      */
     public static function add_transport($transport)
     {
@@ -211,7 +211,7 @@ class Requests
     /**
      * Get the fully qualified class name (FQCN) for a working transport.
      *
-     * @param  array<string, bool>  $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
+     * @param  array<string, bool>  $capabilities  Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
      * @return string FQCN of the transport to use, or an empty string if no transport was
      *                found which provided the requested capabilities.
      */
@@ -255,7 +255,7 @@ class Requests
     /**
      * Get a working transport.
      *
-     * @param  array<string, bool>  $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
+     * @param  array<string, bool>  $capabilities  Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
      * @return \WpOrg\Requests\Transport
      *
      * @throws \WpOrg\Requests\Exception If no valid transport is found (`notransport`).
@@ -280,7 +280,7 @@ class Requests
      * Example usage:
      * `Requests::has_capabilities([Capability::SSL => true])`.
      *
-     * @param  array<string, bool>  $capabilities Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
+     * @param  array<string, bool>  $capabilities  Optional. Associative array of capabilities to test against, i.e. `['<capability>' => true]`.
      * @return bool Whether the transport has the requested capabilities.
      */
     public static function has_capabilities(array $capabilities = [])
@@ -425,11 +425,11 @@ class Requests
      *    (string, one of 'query' or 'body', default: 'query' for
      *    HEAD/GET/DELETE, 'body' for POST/PUT/OPTIONS/PATCH)
      *
-     * @param  string|Stringable  $url URL to request
-     * @param  array  $headers Extra headers to send with the request
-     * @param  array|null  $data Data to send either as a query string for GET/HEAD requests, or in the body for POST requests
-     * @param  string  $type HTTP request type (use Requests constants)
-     * @param  array  $options Options for the request (see description for more information)
+     * @param  string|Stringable  $url  URL to request
+     * @param  array  $headers  Extra headers to send with the request
+     * @param  array|null  $data  Data to send either as a query string for GET/HEAD requests, or in the body for POST requests
+     * @param  string  $type  HTTP request type (use Requests constants)
+     * @param  array  $options  Options for the request (see description for more information)
      * @return \WpOrg\Requests\Response
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $url argument is not a string or Stringable.
@@ -517,8 +517,8 @@ class Requests
      *    per-request basis, although that's a little silly)
      *    (callback)
      *
-     * @param  array  $requests Requests data (see description for more information)
-     * @param  array  $options Global and default options (see {@see \WpOrg\Requests\Requests::request()})
+     * @param  array  $requests  Requests data (see description for more information)
+     * @param  array  $options  Global and default options (see {@see \WpOrg\Requests\Requests::request()})
      * @return array Responses (either \WpOrg\Requests\Response or a \WpOrg\Requests\Exception object)
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $requests argument is not an array or iterable object with array access.
@@ -610,7 +610,7 @@ class Requests
      *
      * @see \WpOrg\Requests\Requests::request() for values returned by this method
      *
-     * @param  bool  $multirequest Is this a multirequest?
+     * @param  bool  $multirequest  Is this a multirequest?
      * @return array Default option values
      */
     protected static function get_default_options($multirequest = false)
@@ -638,7 +638,7 @@ class Requests
     /**
      * Set default certificate path.
      *
-     * @param  string|Stringable|bool  $path Certificate path, pointing to a PEM file.
+     * @param  string|Stringable|bool  $path  Certificate path, pointing to a PEM file.
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $url argument is not a string, Stringable or boolean.
      */
@@ -656,11 +656,11 @@ class Requests
      *
      * The $options parameter is updated with the results.
      *
-     * @param  string  $url URL to request
-     * @param  array  $headers Extra headers to send with the request
-     * @param  array|null  $data Data to send either as a query string for GET/HEAD requests, or in the body for POST requests
-     * @param  string  $type HTTP request type
-     * @param  array  $options Options for the request
+     * @param  string  $url  URL to request
+     * @param  array  $headers  Extra headers to send with the request
+     * @param  array|null  $data  Data to send either as a query string for GET/HEAD requests, or in the body for POST requests
+     * @param  string  $type  HTTP request type
+     * @param  array  $options  Options for the request
      * @return void
      *
      * @throws \WpOrg\Requests\Exception When the $url is not an http(s) URL.
@@ -722,11 +722,11 @@ class Requests
     /**
      * HTTP response parser
      *
-     * @param  string  $headers Full response text including headers and body
-     * @param  string  $url Original request URL
-     * @param  array  $req_headers Original $headers array passed to {@link request()}, in case we need to follow redirects
-     * @param  array  $req_data Original $data array passed to {@link request()}, in case we need to follow redirects
-     * @param  array  $options Original $options array passed to {@link request()}, in case we need to follow redirects
+     * @param  string  $headers  Full response text including headers and body
+     * @param  string  $url  Original request URL
+     * @param  array  $req_headers  Original $headers array passed to {@link request()}, in case we need to follow redirects
+     * @param  array  $req_data  Original $data array passed to {@link request()}, in case we need to follow redirects
+     * @param  array  $options  Original $options array passed to {@link request()}, in case we need to follow redirects
      * @return \WpOrg\Requests\Response
      *
      * @throws \WpOrg\Requests\Exception On missing head/body separator (`requests.no_crlf_separator`)
@@ -844,8 +844,8 @@ class Requests
      *
      * `$response` is either set to a \WpOrg\Requests\Response instance, or a \WpOrg\Requests\Exception object
      *
-     * @param  string  $response Full response text including headers and body (will be overwritten with Response instance)
-     * @param  array  $request Request data as passed into {@see \WpOrg\Requests\Requests::request_multiple()}
+     * @param  string  $response  Full response text including headers and body (will be overwritten with Response instance)
+     * @param  array  $request  Request data as passed into {@see \WpOrg\Requests\Requests::request_multiple()}
      * @return void
      */
     public static function parse_multiple(&$response, $request)
@@ -866,7 +866,7 @@ class Requests
      *
      * @link https://tools.ietf.org/html/rfc2616#section-3.6.1
      *
-     * @param  string  $data Chunked body
+     * @param  string  $data  Chunked body
      * @return string Decoded body
      */
     protected static function decode_chunked($data)
@@ -908,7 +908,7 @@ class Requests
     /**
      * Convert a key => value array to a 'key: value' array for headers
      *
-     * @param  iterable  $dictionary Dictionary of header values
+     * @param  iterable  $dictionary  Dictionary of header values
      * @return array List of headers
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not iterable.
@@ -933,7 +933,7 @@ class Requests
      * Implements gzip, compress and deflate. Guesses which it is by attempting
      * to decode.
      *
-     * @param  string  $data Compressed data in one of the above formats
+     * @param  string  $data  Compressed data in one of the above formats
      * @return string Decompressed string
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not a string.
@@ -1001,7 +1001,7 @@ class Requests
      * @link https://www.php.net/gzinflate#70875
      * @link https://www.php.net/gzinflate#77336
      *
-     * @param  string  $gz_data String to decompress.
+     * @param  string  $gz_data  String to decompress.
      * @return string|bool False on failure.
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not a string.

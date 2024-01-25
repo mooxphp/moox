@@ -11,7 +11,7 @@
  * @since 3.2.0
  * @since 5.6.0 Added the `$version` and `$locale` parameters.
  *
- * @param  string  $version WordPress version. Defaults to the current version.
+ * @param  string  $version  WordPress version. Defaults to the current version.
  * @param  string  $locale  WordPress locale. Defaults to the current user's locale.
  * @return array|false A list of all of the contributors, or false on error.
  */
@@ -65,8 +65,8 @@ function wp_credits($version = '', $locale = '')
  * @since 3.2.0
  *
  * @param  string  $display_name  The contributor's display name (passed by reference).
- * @param  string  $username      The contributor's username.
- * @param  string  $profiles      URL to the contributor's WordPress.org profile page.
+ * @param  string  $username  The contributor's username.
+ * @param  string  $profiles  URL to the contributor's WordPress.org profile page.
  */
 function _wp_credits_add_profile_link(&$display_name, $username, $profiles)
 {
@@ -78,7 +78,7 @@ function _wp_credits_add_profile_link(&$display_name, $username, $profiles)
  *
  * @since 3.2.0
  *
- * @param  string  $data External library data (passed by reference).
+ * @param  string  $data  External library data (passed by reference).
  */
 function _wp_credits_build_object_link(&$data)
 {
@@ -90,7 +90,7 @@ function _wp_credits_build_object_link(&$data)
  *
  * @since 5.3.0
  *
- * @param  array  $group_data The current contributor group.
+ * @param  array  $group_data  The current contributor group.
  */
 function wp_credits_section_title($group_data = [])
 {
@@ -119,8 +119,8 @@ function wp_credits_section_title($group_data = [])
  *
  * @since 5.3.0
  *
- * @param  array  $credits The credits groups returned from the API.
- * @param  string  $slug    The current group to display.
+ * @param  array  $credits  The credits groups returned from the API.
+ * @param  string  $slug  The current group to display.
  */
 function wp_credits_section_list($credits = [], $slug = '')
 {

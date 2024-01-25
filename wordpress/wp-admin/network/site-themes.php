@@ -129,10 +129,10 @@ if ($action) {
                  *
                  * @since 4.7.0
                  *
-                 * @param  string  $redirect_url The redirect URL.
-                 * @param  string  $action       The action being taken.
-                 * @param  array  $items        The items to take the action on.
-                 * @param  int  $site_id      The site ID.
+                 * @param  string  $redirect_url  The redirect URL.
+                 * @param  string  $action  The action being taken.
+                 * @param  array  $items  The items to take the action on.
+                 * @param  int  $site_id  The site ID.
                  */
                 $referer = apply_filters("handle_network_bulk_actions-{$screen}", $referer, $action, $themes, $id); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
             } else {

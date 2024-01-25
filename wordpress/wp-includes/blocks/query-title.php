@@ -8,7 +8,7 @@
  * For now it only supports Archive title,
  * using queried object information
  *
- * @param  array  $attributes Block attributes.
+ * @param  array  $attributes  Block attributes.
  * @return string Returns the query title based on the queried object.
  */
 function render_block_core_query_title($attributes)

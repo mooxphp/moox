@@ -290,15 +290,15 @@ if (isset($_REQUEST['updated']) && $_REQUEST['updated'] === 'true' && ! empty($_
 		<?php
     }
 
-    if (strlen($usersearch)) {
-        echo '<span class="subtitle">';
-        printf(
-            /* translators: %s: Search query. */
-            __('Search results for: %s'),
-            '<strong>'.esc_html($usersearch).'</strong>'
-        );
-        echo '</span>';
-    }
+if (strlen($usersearch)) {
+    echo '<span class="subtitle">';
+    printf(
+        /* translators: %s: Search query. */
+        __('Search results for: %s'),
+        '<strong>'.esc_html($usersearch).'</strong>'
+    );
+    echo '</span>';
+}
 ?>
 
 	<hr class="wp-header-end">

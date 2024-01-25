@@ -6,9 +6,9 @@
 /**
  * Renders the `core/avatar` block on the server.
  *
- * @param  array  $attributes Block attributes.
- * @param  string  $content    Block default content.
- * @param  WP_Block  $block      Block instance.
+ * @param  array  $attributes  Block attributes.
+ * @param  string  $content  Block default content.
+ * @param  WP_Block  $block  Block instance.
  * @return string Return the avatar.
  */
 function render_block_core_avatar($attributes, $content, $block)
@@ -89,7 +89,7 @@ function render_block_core_avatar($attributes, $content, $block)
  * Generates class names and styles to apply the border support styles for
  * the Avatar block.
  *
- * @param  array  $attributes The block attributes.
+ * @param  array  $attributes  The block attributes.
  * @return array The border-related classnames and styles for the block.
  */
 function get_block_core_avatar_border_attributes($attributes)

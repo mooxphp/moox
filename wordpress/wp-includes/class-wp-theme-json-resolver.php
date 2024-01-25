@@ -102,7 +102,7 @@ class WP_Theme_JSON_Resolver
      * @since 5.8.0
      * @since 6.1.0 Added caching.
      *
-     * @param  string  $file_path Path to file. Empty if no file.
+     * @param  string  $file_path  Path to file. Empty if no file.
      * @return array Contents that adhere to the theme.json schema.
      */
     protected static function read_json_file($file_path)
@@ -144,9 +144,9 @@ class WP_Theme_JSON_Resolver
      *
      * @since 5.8.0
      *
-     * @param  array  $theme_json The theme.json to translate.
-     * @param  string  $domain     Optional. Text domain. Unique identifier for retrieving translated strings.
-     *                           Default 'default'.
+     * @param  array  $theme_json  The theme.json to translate.
+     * @param  string  $domain  Optional. Text domain. Unique identifier for retrieving translated strings.
+     *                          Default 'default'.
      * @return array Returns the modified $theme_json_structure.
      */
     protected static function translate($theme_json, $domain = 'default')
@@ -180,7 +180,7 @@ class WP_Theme_JSON_Resolver
          *
          * @since 6.1.0
          *
-         * @param  WP_Theme_JSON_Data  $theme_json Class to access and update the underlying data.
+         * @param  WP_Theme_JSON_Data  $theme_json  Class to access and update the underlying data.
          */
         $theme_json = apply_filters('wp_theme_json_data_default', new WP_Theme_JSON_Data($config, 'default'));
         $config = $theme_json->get_data();
@@ -194,8 +194,8 @@ class WP_Theme_JSON_Resolver
      *
      * @since 6.1.0
      *
-     * @param  string  $origin Data source for which to cache the blocks.
-     *                       Valid values are 'core', 'blocks', 'theme', and 'user'.
+     * @param  string  $origin  Data source for which to cache the blocks.
+     *                          Valid values are 'core', 'blocks', 'theme', and 'user'.
      * @return bool True on success, false otherwise.
      */
     protected static function has_same_registered_blocks($origin)
@@ -233,12 +233,12 @@ class WP_Theme_JSON_Resolver
      * @since 5.9.0 Theme supports have been inlined and the `$theme_support_data` argument removed.
      * @since 6.0.0 Added an `$options` parameter to allow the theme data to be returned without theme supports.
      *
-     * @param  array  $deprecated Deprecated. Not used.
-     * @param  array  $options {
-     *     Options arguments.
+     * @param  array  $deprecated  Deprecated. Not used.
+     * @param  array  $options  {
+     *                          Options arguments.
      *
-     *     @type bool $with_supports Whether to include theme supports in the data. Default true.
-     * }
+     * @type bool $with_supports Whether to include theme supports in the data. Default true.
+     *            }
      *
      * @return WP_Theme_JSON Entity that holds theme data.
      */
@@ -265,7 +265,7 @@ class WP_Theme_JSON_Resolver
              *
              * @since 6.1.0
              *
-             * @param  WP_Theme_JSON_Data  $theme_json Class to access and update the underlying data.
+             * @param  WP_Theme_JSON_Data  $theme_json  Class to access and update the underlying data.
              */
             $theme_json = apply_filters('wp_theme_json_data_theme', new WP_Theme_JSON_Data($theme_json_data, 'theme'));
             $theme_json_data = $theme_json->get_data();
@@ -386,7 +386,7 @@ class WP_Theme_JSON_Resolver
          *
          * @since 6.1.0
          *
-         * @param  WP_Theme_JSON_Data  $theme_json Class to access and update the underlying data.
+         * @param  WP_Theme_JSON_Data  $theme_json  Class to access and update the underlying data.
          */
         $theme_json = apply_filters('wp_theme_json_data_blocks', new WP_Theme_JSON_Data($config, 'blocks'));
         $config = $theme_json->get_data();
@@ -401,7 +401,7 @@ class WP_Theme_JSON_Resolver
      *
      * @since 6.1.0
      *
-     * @param  array  $input_array The array to filter.
+     * @param  array  $input_array  The array to filter.
      * @return array The filtered array.
      */
     private static function remove_json_comments($input_array)
@@ -424,12 +424,12 @@ class WP_Theme_JSON_Resolver
      *
      * @since 5.9.0
      *
-     * @param  WP_Theme  $theme              The theme object. If empty, it
-     *                                     defaults to the active theme.
-     * @param  bool  $create_post        Optional. Whether a new custom post
-     *                                     type should be created if none are
-     *                                     found. Default false.
-     * @param  array  $post_status_filter Optional. Filter custom post type by
+     * @param  WP_Theme  $theme  The theme object. If empty, it
+     *                           defaults to the active theme.
+     * @param  bool  $create_post  Optional. Whether a new custom post
+     *                             type should be created if none are
+     *                             found. Default false.
+     * @param  array  $post_status_filter  Optional. Filter custom post type by
      *                                     post status. Default `array( 'publish' )`,
      *                                     so it only fetches published posts.
      * @return array Custom Post Type for the user's origin config.
@@ -526,7 +526,7 @@ class WP_Theme_JSON_Resolver
                  *
                  * @since 6.1.0
                  *
-                 * @param  WP_Theme_JSON_Data  $theme_json Class to access and update the underlying data.
+                 * @param  WP_Theme_JSON_Data  $theme_json  Class to access and update the underlying data.
                  */
                 $theme_json = apply_filters('wp_theme_json_data_user', new WP_Theme_JSON_Data($config, 'custom'));
                 $config = $theme_json->get_data();
@@ -587,8 +587,8 @@ class WP_Theme_JSON_Resolver
      * @since 6.1.0 Added block data and generation of spacingSizes array.
      * @since 6.2.0 Changed ' $origin' parameter values to 'default', 'blocks', 'theme' or 'custom'.
      *
-     * @param  string  $origin Optional. To what level should we merge data: 'default', 'blocks', 'theme' or 'custom'.
-     *                       'custom' is used as default value as well as fallback value if the origin is unknown.
+     * @param  string  $origin  Optional. To what level should we merge data: 'default', 'blocks', 'theme' or 'custom'.
+     *                          'custom' is used as default value as well as fallback value if the origin is unknown.
      * @return WP_Theme_JSON
      */
     public static function get_merged_data($origin = 'custom')
@@ -670,7 +670,7 @@ class WP_Theme_JSON_Resolver
      * @since 5.8.0
      * @since 5.9.0 Adapted to work with child themes, added the `$template` argument.
      *
-     * @param  string  $file_name Name of the file.
+     * @param  string  $file_name  Name of the file.
      * @param  bool  $template  Optional. Use template theme directory. Default false.
      * @return string The whole file path or empty if the file doesn't exist.
      */
@@ -712,7 +712,7 @@ class WP_Theme_JSON_Resolver
      *
      * @since 6.2.0
      *
-     * @param  string  $dir The directory to recursively iterate and list files of.
+     * @param  string  $dir  The directory to recursively iterate and list files of.
      * @return array The merged array.
      */
     private static function recursively_iterate_json($dir)

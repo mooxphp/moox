@@ -20,7 +20,7 @@ function add_link()
  *
  * @since 2.0.0
  *
- * @param  int  $link_id Optional. ID of the link to edit. Default 0.
+ * @param  int  $link_id  Optional. ID of the link to edit. Default 0.
  * @return int|WP_Error Value 0 or WP_Error on failure. The link ID on success.
  */
 function edit_link($link_id = 0)
@@ -84,7 +84,7 @@ function get_default_link_to_edit()
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  int  $link_id ID of the link to delete.
+ * @param  int  $link_id  ID of the link to delete.
  * @return true Always true.
  */
 function wp_delete_link($link_id)
@@ -95,7 +95,7 @@ function wp_delete_link($link_id)
      *
      * @since 2.0.0
      *
-     * @param  int  $link_id ID of the link to delete.
+     * @param  int  $link_id  ID of the link to delete.
      */
     do_action('delete_link', $link_id);
 
@@ -108,7 +108,7 @@ function wp_delete_link($link_id)
      *
      * @since 2.2.0
      *
-     * @param  int  $link_id ID of the deleted link.
+     * @param  int  $link_id  ID of the deleted link.
      */
     do_action('deleted_link', $link_id);
 
@@ -122,7 +122,7 @@ function wp_delete_link($link_id)
  *
  * @since 2.1.0
  *
- * @param  int  $link_id Link ID to look up.
+ * @param  int  $link_id  Link ID to look up.
  * @return int[] The IDs of the requested link's categories.
  */
 function wp_get_link_cats($link_id = 0)
@@ -137,7 +137,7 @@ function wp_get_link_cats($link_id = 0)
  *
  * @since 2.0.0
  *
- * @param  int|stdClass  $link Link ID or object to retrieve.
+ * @param  int|stdClass  $link  Link ID or object to retrieve.
  * @return object Link object for editing.
  */
 function get_link_to_edit($link)
@@ -155,26 +155,26 @@ function get_link_to_edit($link)
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @param  array  $linkdata {
- *     Elements that make up the link to insert.
+ * @param  array  $linkdata  {
+ *                           Elements that make up the link to insert.
  *
- *     @type int    $link_id          Optional. The ID of the existing link if updating.
- *     @type string $link_url         The URL the link points to.
- *     @type string $link_name        The title of the link.
- *     @type string $link_image       Optional. A URL of an image.
- *     @type string $link_target      Optional. The target element for the anchor tag.
- *     @type string $link_description Optional. A short description of the link.
- *     @type string $link_visible     Optional. 'Y' means visible, anything else means not.
- *     @type int    $link_owner       Optional. A user ID.
- *     @type int    $link_rating      Optional. A rating for the link.
- *     @type string $link_rel         Optional. A relationship of the link to you.
- *     @type string $link_notes       Optional. An extended description of or notes on the link.
- *     @type string $link_rss         Optional. A URL of an associated RSS feed.
- *     @type int    $link_category    Optional. The term ID of the link category.
- *                                    If empty, uses default link category.
- * }
+ * @type int $link_id          Optional. The ID of the existing link if updating.
+ * @type string $link_url         The URL the link points to.
+ * @type string $link_name        The title of the link.
+ * @type string $link_image       Optional. A URL of an image.
+ * @type string $link_target      Optional. The target element for the anchor tag.
+ * @type string $link_description Optional. A short description of the link.
+ * @type string $link_visible     Optional. 'Y' means visible, anything else means not.
+ * @type int $link_owner       Optional. A user ID.
+ * @type int $link_rating      Optional. A rating for the link.
+ * @type string $link_rel         Optional. A relationship of the link to you.
+ * @type string $link_notes       Optional. An extended description of or notes on the link.
+ * @type string $link_rss         Optional. A URL of an associated RSS feed.
+ * @type int $link_category    Optional. The term ID of the link category.
+ *           If empty, uses default link category.
+ *           }
  *
- * @param  bool  $wp_error Optional. Whether to return a WP_Error object on failure. Default false.
+ * @param  bool  $wp_error  Optional. Whether to return a WP_Error object on failure. Default false.
  * @return int|WP_Error Value 0 or WP_Error on failure. The link ID on success.
  */
 function wp_insert_link($linkdata, $wp_error = false)
@@ -255,7 +255,7 @@ function wp_insert_link($linkdata, $wp_error = false)
          *
          * @since 2.0.0
          *
-         * @param  int  $link_id ID of the link that was updated.
+         * @param  int  $link_id  ID of the link that was updated.
          */
         do_action('edit_link', $link_id);
     } else {
@@ -264,7 +264,7 @@ function wp_insert_link($linkdata, $wp_error = false)
          *
          * @since 2.0.0
          *
-         * @param  int  $link_id ID of the link that was added.
+         * @param  int  $link_id  ID of the link that was added.
          */
         do_action('add_link', $link_id);
     }
@@ -278,8 +278,8 @@ function wp_insert_link($linkdata, $wp_error = false)
  *
  * @since 2.1.0
  *
- * @param  int  $link_id         ID of the link to update.
- * @param  int[]  $link_categories Array of link category IDs to add the link to.
+ * @param  int  $link_id  ID of the link to update.
+ * @param  int[]  $link_categories  Array of link category IDs to add the link to.
  */
 function wp_set_link_cats($link_id = 0, $link_categories = [])
 {
@@ -301,7 +301,7 @@ function wp_set_link_cats($link_id = 0, $link_categories = [])
  *
  * @since 2.0.0
  *
- * @param  array  $linkdata Link data to update. See wp_insert_link() for accepted arguments.
+ * @param  array  $linkdata  Link data to update. See wp_insert_link() for accepted arguments.
  * @return int|WP_Error Value 0 or WP_Error on failure. The updated link ID on success.
  */
 function wp_update_link($linkdata)

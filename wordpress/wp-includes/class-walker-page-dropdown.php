@@ -48,15 +48,15 @@ class Walker_PageDropdown extends Walker
      *              to match parent class for PHP 8 named parameter support.
      * @see Walker::start_el()
      *
-     * @param  string  $output            Used to append additional content. Passed by reference.
-     * @param  WP_Post  $data_object       Page data object.
-     * @param  int  $depth             Optional. Depth of page in reference to parent pages.
-     *                                   Used for padding. Default 0.
-     * @param  array  $args              Optional. Uses 'selected' argument for selected page to
-     *                                   set selected HTML attribute for option element. Uses
-     *                                   'value_field' argument to fill "value" attribute.
-     *                                   See wp_dropdown_pages(). Default empty array.
-     * @param  int  $current_object_id Optional. ID of the current page. Default 0.
+     * @param  string  $output  Used to append additional content. Passed by reference.
+     * @param  WP_Post  $data_object  Page data object.
+     * @param  int  $depth  Optional. Depth of page in reference to parent pages.
+     *                      Used for padding. Default 0.
+     * @param  array  $args  Optional. Uses 'selected' argument for selected page to
+     *                       set selected HTML attribute for option element. Uses
+     *                       'value_field' argument to fill "value" attribute.
+     *                       See wp_dropdown_pages(). Default empty array.
+     * @param  int  $current_object_id  Optional. ID of the current page. Default 0.
      */
     public function start_el(&$output, $data_object, $depth = 0, $args = [], $current_object_id = 0)
     {
@@ -86,7 +86,7 @@ class Walker_PageDropdown extends Walker
          *
          * @since 3.1.0
          *
-         * @param  string  $title Page title.
+         * @param  string  $title  Page title.
          * @param  WP_Post  $page  Page data object.
          */
         $title = apply_filters('list_pages', $title, $page);

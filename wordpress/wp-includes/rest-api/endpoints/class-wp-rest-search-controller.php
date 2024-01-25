@@ -57,8 +57,8 @@ class WP_REST_Search_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  array  $search_handlers List of search handlers to use in the controller. Each search
-     *                               handler instance must extend the `WP_REST_Search_Handler` class.
+     * @param  array  $search_handlers  List of search handlers to use in the controller. Each search
+     *                                  handler instance must extend the `WP_REST_Search_Handler` class.
      */
     public function __construct(array $search_handlers)
     {
@@ -109,7 +109,7 @@ class WP_REST_Search_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has search access, WP_Error object otherwise.
      */
     public function get_items_permission_check($request)
@@ -122,7 +122,7 @@ class WP_REST_Search_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -190,8 +190,8 @@ class WP_REST_Search_Controller extends WP_REST_Controller
      * @since 5.6.0 The `$id` parameter can accept a string.
      * @since 5.9.0 Renamed `$id` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  int|string  $item    ID of the item to prepare.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  int|string  $item  ID of the item to prepare.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($item, $request)
@@ -364,8 +364,8 @@ class WP_REST_Search_Controller extends WP_REST_Controller
      * @since 5.0.0
      *
      * @param  string|array  $subtypes  One or more subtypes.
-     * @param  WP_REST_Request  $request   Full details about the request.
-     * @param  string  $parameter Parameter name.
+     * @param  WP_REST_Request  $request  Full details about the request.
+     * @param  string  $parameter  Parameter name.
      * @return string[]|WP_Error List of valid subtypes, or WP_Error object on failure.
      */
     public function sanitize_subtypes($subtypes, $request, $parameter)
@@ -395,7 +395,7 @@ class WP_REST_Search_Controller extends WP_REST_Controller
      *
      * @since 5.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Search_Handler|WP_Error Search handler for the request type, or WP_Error object on failure.
      */
     protected function get_search_handler($request)

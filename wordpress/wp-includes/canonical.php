@@ -33,9 +33,9 @@
  * @global wpdb       $wpdb       WordPress database abstraction object.
  * @global WP         $wp         Current WordPress environment instance.
  *
- * @param  string  $requested_url Optional. The URL that was requested, used to
- *                              figure if redirect is needed.
- * @param  bool  $do_redirect   Optional. Redirect to the new URL.
+ * @param  string  $requested_url  Optional. The URL that was requested, used to
+ *                                 figure if redirect is needed.
+ * @param  bool  $do_redirect  Optional. Redirect to the new URL.
  * @return string|void The string of the URL, if redirect needed.
  */
 function redirect_canonical($requested_url = null, $do_redirect = true)
@@ -763,7 +763,7 @@ function redirect_canonical($requested_url = null, $do_redirect = true)
              *
              * @ignore
              *
-             * @param  array  $matches Hex-encoded octet matches for the requested URL.
+             * @param  array  $matches  Hex-encoded octet matches for the requested URL.
              * @return string Lowercased version of the first match.
              */
             function lowercase_octets($matches)
@@ -805,7 +805,7 @@ function redirect_canonical($requested_url = null, $do_redirect = true)
      * @since 2.3.0
      *
      * @param  string  $redirect_url  The redirect URL.
-     * @param  string  $requested_url The requested URL.
+     * @param  string  $requested_url  The requested URL.
      */
     $redirect_url = apply_filters('redirect_canonical', $redirect_url, $requested_url);
 
@@ -863,7 +863,7 @@ function _remove_qs_args_if_not_in_url($query_string, array $args_to_check, $url
  *
  * @since 4.4.0
  *
- * @param  string  $url The URL to strip.
+ * @param  string  $url  The URL to strip.
  * @return string The altered URL.
  */
 function strip_fragment_from_url($url)
@@ -916,8 +916,8 @@ function redirect_guess_404_permalink()
      *
      * @since 5.5.0
      *
-     * @param  bool  $do_redirect_guess Whether to attempt to guess a redirect URL
-     *                                for a 404 request. Default true.
+     * @param  bool  $do_redirect_guess  Whether to attempt to guess a redirect URL
+     *                                   for a 404 request. Default true.
      */
     if (apply_filters('do_redirect_guess_404_permalink', true) === false) {
         return false;
@@ -931,8 +931,8 @@ function redirect_guess_404_permalink()
      *
      * @since 5.5.0
      *
-     * @param  null|string|false  $pre Whether to short-circuit guessing the redirect for a 404.
-     *                               Default null to continue with the URL guessing.
+     * @param  null|string|false  $pre  Whether to short-circuit guessing the redirect for a 404.
+     *                                  Default null to continue with the URL guessing.
      */
     $pre = apply_filters('pre_redirect_guess_404_permalink', null);
     if ($pre !== null) {
@@ -947,7 +947,7 @@ function redirect_guess_404_permalink()
          *
          * @since 5.5.0
          *
-         * @param  bool  $strict_guess Whether to perform a strict guess. Default false (loose guess).
+         * @param  bool  $strict_guess  Whether to perform a strict guess. Default false (loose guess).
          */
         $strict_guess = apply_filters('strict_redirect_guess_404_permalink', false);
 

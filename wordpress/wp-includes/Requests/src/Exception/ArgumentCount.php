@@ -21,10 +21,10 @@ final class ArgumentCount extends Exception
     /**
      * Create a new argument count exception with a standardized text.
      *
-     * @param  string  $expected The argument count expected as a phrase.
-     *                         For example: `at least 2 arguments` or `exactly 1 argument`.
-     * @param  int  $received The actual argument count received.
-     * @param  string  $type     Exception type.
+     * @param  string  $expected  The argument count expected as a phrase.
+     *                            For example: `at least 2 arguments` or `exactly 1 argument`.
+     * @param  int  $received  The actual argument count received.
+     * @param  string  $type  Exception type.
      * @return \WpOrg\Requests\Exception\ArgumentCount
      */
     public static function create($expected, $received, $type)

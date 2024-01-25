@@ -49,8 +49,8 @@ class File_Upload_Upgrader
      *
      * @since 2.8.0
      *
-     * @param  string  $form      The name of the form the file was uploaded from.
-     * @param  string  $urlholder The name of the `GET` parameter that holds the filename.
+     * @param  string  $form  The name of the form the file was uploaded from.
+     * @param  string  $urlholder  The name of the `GET` parameter that holds the filename.
      */
     public function __construct($form, $urlholder)
     {

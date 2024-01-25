@@ -91,20 +91,20 @@ class WP_Http_Cookie
      * @since 2.8.0
      * @since 5.2.0 Added `host_only` to the `$data` parameter.
      *
-     * @param  string|array  $data {
-     *     Raw cookie data as header string or data array.
+     * @param  string|array  $data  {
+     *                              Raw cookie data as header string or data array.
      *
-     *     @type string          $name      Cookie name.
-     *     @type mixed           $value     Value. Should NOT already be urlencoded.
-     *     @type string|int|null $expires   Optional. Unix timestamp or formatted date. Default null.
-     *     @type string          $path      Optional. Path. Default '/'.
-     *     @type string          $domain    Optional. Domain. Default host of parsed $requested_url.
-     *     @type int|string      $port      Optional. Port or comma-separated list of ports. Default null.
-     *     @type bool            $host_only Optional. host-only storage flag. Default true.
-     * }
+     * @type string $name      Cookie name.
+     * @type mixed $value     Value. Should NOT already be urlencoded.
+     * @type string|int|null $expires   Optional. Unix timestamp or formatted date. Default null.
+     * @type string $path      Optional. Path. Default '/'.
+     * @type string $domain    Optional. Domain. Default host of parsed $requested_url.
+     * @type int|string $port      Optional. Port or comma-separated list of ports. Default null.
+     * @type bool $host_only Optional. host-only storage flag. Default true.
+     *            }
      *
-     * @param  string  $requested_url The URL which the cookie was set on, used for default $domain
-     *                                    and $port values.
+     * @param  string  $requested_url  The URL which the cookie was set on, used for default $domain
+     *                                 and $port values.
      */
     public function __construct($data, $requested_url = '')
     {
@@ -175,7 +175,7 @@ class WP_Http_Cookie
      *
      * @since 2.8.0
      *
-     * @param  string  $url URL you intend to send this cookie to
+     * @param  string  $url  URL you intend to send this cookie to
      * @return bool true if allowed, false otherwise.
      */
     public function test($url)
@@ -239,7 +239,7 @@ class WP_Http_Cookie
          *
          * @since 3.4.0
          *
-         * @param  string  $value The cookie value.
+         * @param  string  $value  The cookie value.
          * @param  string  $name  The cookie name.
          */
         return $this->name.'='.apply_filters('wp_http_cookie_value', $this->value, $this->name);
@@ -263,12 +263,12 @@ class WP_Http_Cookie
      * @since 4.6.0
      *
      * @return array {
-     *     List of attributes.
+     *               List of attributes.
      *
-     *     @type string|int|null $expires When the cookie expires. Unix timestamp or formatted date.
-     *     @type string          $path    Cookie URL path.
-     *     @type string          $domain  Cookie domain.
-     * }
+     * @type string|int|null $expires When the cookie expires. Unix timestamp or formatted date.
+     * @type string $path    Cookie URL path.
+     * @type string $domain  Cookie domain.
+     *              }
      */
     public function get_attributes()
     {

@@ -40,9 +40,9 @@ class WP_Role
      *
      * @since 2.0.0
      *
-     * @param  string  $role         Role name.
-     * @param  bool[]  $capabilities Array of key/value pairs where keys represent a capability name and boolean values
-     *                             represent whether the role has that capability.
+     * @param  string  $role  Role name.
+     * @param  bool[]  $capabilities  Array of key/value pairs where keys represent a capability name and boolean values
+     *                                represent whether the role has that capability.
      */
     public function __construct($role, $capabilities)
     {
@@ -55,8 +55,8 @@ class WP_Role
      *
      * @since 2.0.0
      *
-     * @param  string  $cap   Capability name.
-     * @param  bool  $grant Whether role has capability privilege.
+     * @param  string  $cap  Capability name.
+     * @param  bool  $grant  Whether role has capability privilege.
      */
     public function add_cap($cap, $grant = true)
     {
@@ -69,7 +69,7 @@ class WP_Role
      *
      * @since 2.0.0
      *
-     * @param  string  $cap Capability name.
+     * @param  string  $cap  Capability name.
      */
     public function remove_cap($cap)
     {
@@ -82,7 +82,7 @@ class WP_Role
      *
      * @since 2.0.0
      *
-     * @param  string  $cap Capability name.
+     * @param  string  $cap  Capability name.
      * @return bool Whether the role has the given capability.
      */
     public function has_cap($cap)
@@ -92,10 +92,10 @@ class WP_Role
          *
          * @since 2.0.0
          *
-         * @param  bool[]  $capabilities Array of key/value pairs where keys represent a capability name and boolean values
-         *                             represent whether the role has that capability.
-         * @param  string  $cap          Capability name.
-         * @param  string  $name         Role name.
+         * @param  bool[]  $capabilities  Array of key/value pairs where keys represent a capability name and boolean values
+         *                                represent whether the role has that capability.
+         * @param  string  $cap  Capability name.
+         * @param  string  $name  Role name.
          */
         $capabilities = apply_filters('role_has_cap', $this->capabilities, $cap, $this->name);
 

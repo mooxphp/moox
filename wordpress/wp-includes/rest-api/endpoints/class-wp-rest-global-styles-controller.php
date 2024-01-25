@@ -120,7 +120,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  string  $id_or_stylesheet Global styles ID or stylesheet.
+     * @param  string  $id_or_stylesheet  Global styles ID or stylesheet.
      * @return string Sanitized global styles ID or stylesheet.
      */
     public function _sanitize_global_styles_callback($id_or_stylesheet)
@@ -133,7 +133,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  int  $id Supplied ID.
+     * @param  int  $id  Supplied ID.
      * @return WP_Post|WP_Error Post object if ID is valid, WP_Error otherwise.
      */
     protected function get_post($id)
@@ -162,7 +162,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_item_permissions_check($request)
@@ -196,7 +196,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      * @return bool Whether the post can be read.
      */
     protected function check_read_permission($post)
@@ -209,7 +209,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response|WP_Error
      */
     public function get_item($request)
@@ -227,7 +227,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has write access for the item, WP_Error object otherwise.
      */
     public function update_item_permissions_check($request)
@@ -253,7 +253,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_Post  $post Post object.
+     * @param  WP_Post  $post  Post object.
      * @return bool Whether the post can be edited.
      */
     protected function check_update_permission($post)
@@ -266,7 +266,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function update_item($request)
@@ -305,7 +305,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      * @since 5.9.0
      * @since 6.2.0 Added validation of styles.css property.
      *
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return stdClass|WP_Error Prepared item on success. WP_Error on when the custom CSS is not valid.
      */
     protected function prepare_item_for_database($request)
@@ -364,8 +364,8 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_Post  $post    Global Styles post object.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  WP_Post  $post  Global Styles post object.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response Response object.
      */
     public function prepare_item_for_response($post, $request)
@@ -435,7 +435,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      * @since 5.9.0
      * @since 6.3.0 Adds revisions count and rest URL href to version-history.
      *
-     * @param  int  $id ID.
+     * @param  int  $id  ID.
      * @return array Links for the given post.
      */
     protected function prepare_links($id)
@@ -579,7 +579,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_theme_item_permissions_check($request)
@@ -606,7 +606,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 5.9.0
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response|WP_Error
      */
     public function get_theme_item($request)
@@ -656,7 +656,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      *
      * @since 6.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access for the item, WP_Error object otherwise.
      */
     public function get_theme_items_permissions_check($request)
@@ -684,7 +684,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      * @since 6.0.0
      * @since 6.2.0 Returns parent theme variations, if they exist.
      *
-     * @param  WP_REST_Request  $request The request instance.
+     * @param  WP_REST_Request  $request  The request instance.
      * @return WP_REST_Response|WP_Error
      */
     public function get_theme_items($request)
@@ -711,7 +711,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      * @since 6.2.0
      * @since 6.4.0 Changed method visibility to protected.
      *
-     * @param  string  $css CSS to validate.
+     * @param  string  $css  CSS to validate.
      * @return true|WP_Error True if the input was validated, otherwise WP_Error.
      */
     protected function validate_custom_css($css)

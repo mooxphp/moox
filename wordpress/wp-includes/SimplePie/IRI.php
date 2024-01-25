@@ -141,8 +141,8 @@ class SimplePie_IRI
     /**
      * Overload __set() to provide access via properties
      *
-     * @param  string  $name Property name
-     * @param  mixed  $value Property value
+     * @param  string  $name  Property name
+     * @param  mixed  $value  Property value
      */
     public function __set($name, $value)
     {
@@ -163,7 +163,7 @@ class SimplePie_IRI
     /**
      * Overload __get() to provide access via properties
      *
-     * @param  string  $name Property name
+     * @param  string  $name  Property name
      * @return mixed
      */
     public function __get($name)
@@ -206,7 +206,7 @@ class SimplePie_IRI
     /**
      * Overload __isset() to provide access via properties
      *
-     * @param  string  $name Property name
+     * @param  string  $name  Property name
      * @return bool
      */
     public function __isset($name)
@@ -217,7 +217,7 @@ class SimplePie_IRI
     /**
      * Overload __unset() to provide access via properties
      *
-     * @param  string  $name Property name
+     * @param  string  $name  Property name
      */
     public function __unset($name)
     {
@@ -251,8 +251,8 @@ class SimplePie_IRI
      *
      * Returns false if $base is not absolute, otherwise an IRI.
      *
-     * @param  IRI|string  $base (Absolute) Base IRI
-     * @param  IRI|string  $relative Relative IRI
+     * @param  IRI|string  $base  (Absolute) Base IRI
+     * @param  IRI|string  $relative  Relative IRI
      * @return IRI|false
      */
     public static function absolutize($base, $relative)
@@ -397,10 +397,10 @@ class SimplePie_IRI
     /**
      * Replace invalid character with percent encoding
      *
-     * @param  string  $string Input string
-     * @param  string  $extra_chars Valid characters not in iunreserved or
-     *                            iprivate (this is ASCII-only)
-     * @param  bool  $iprivate Allow iprivate
+     * @param  string  $string  Input string
+     * @param  string  $extra_chars  Valid characters not in iunreserved or
+     *                               iprivate (this is ASCII-only)
+     * @param  bool  $iprivate  Allow iprivate
      * @return string
      */
     protected function replace_invalid_with_pct_encoding($string, $extra_chars, $iprivate = false)
@@ -523,7 +523,7 @@ class SimplePie_IRI
      * Removes sequences of percent encoded bytes that represent UTF-8
      * encoded characters in iunreserved
      *
-     * @param  array  $match PCRE match
+     * @param  array  $match  PCRE match
      * @return string Replacement
      */
     protected function remove_iunreserved_percent_encoded($match)

@@ -557,7 +557,7 @@ class WP_Theme_JSON
      *
      * @since 6.1.0
      *
-     * @param  string  $element The name of the element.
+     * @param  string  $element  The name of the element.
      * @return string The name of the class.
      */
     public static function get_element_class_name($element)
@@ -613,9 +613,9 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $theme_json A structure that follows the theme.json schema.
-     * @param  string  $origin     Optional. What source of data this object represents.
-     *                           One of 'default', 'theme', or 'custom'. Default 'theme'.
+     * @param  array  $theme_json  A structure that follows the theme.json schema.
+     * @param  string  $origin  Optional. What source of data this object represents.
+     *                          One of 'default', 'theme', or 'custom'. Default 'theme'.
      */
     public function __construct($theme_json = [], $origin = 'theme')
     {
@@ -660,7 +660,7 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $theme_json A theme.json structure to modify.
+     * @param  array  $theme_json  A theme.json structure to modify.
      * @return array The modified theme.json structure.
      */
     protected static function maybe_opt_in_into_settings($theme_json)
@@ -690,7 +690,7 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $context The context to which the settings belong.
+     * @param  array  $context  The context to which the settings belong.
      */
     protected static function do_opt_in_into_settings(&$context)
     {
@@ -714,10 +714,10 @@ class WP_Theme_JSON
      * @since 5.9.0 Added the `$valid_block_names` and `$valid_element_name` parameters.
      * @since 6.3.0 Added the `$valid_variations` parameter.
      *
-     * @param  array  $input               Structure to sanitize.
-     * @param  array  $valid_block_names   List of valid block names.
-     * @param  array  $valid_element_names List of valid element names.
-     * @param  array  $valid_variations    List of valid variations per block.
+     * @param  array  $input  Structure to sanitize.
+     * @param  array  $valid_block_names  List of valid block names.
+     * @param  array  $valid_element_names  List of valid element names.
+     * @param  array  $valid_variations  List of valid variations per block.
      * @return array The sanitized output.
      */
     protected static function sanitize($input, $valid_block_names, $valid_element_names, $valid_variations)
@@ -839,7 +839,7 @@ class WP_Theme_JSON
      * @since 6.3.0 Removed append position parameter.
      *
      * @param  string  $selector  Original selector.
-     * @param  string  $to_append Selector to append.
+     * @param  string  $to_append  Selector to append.
      * @return string The new selector.
      */
     protected static function append_to_selector($selector, $to_append)
@@ -865,8 +865,8 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  string  $selector   Original selector.
-     * @param  string  $to_prepend Selector to prepend.
+     * @param  string  $selector  Original selector.
+     * @param  string  $to_prepend  Selector to prepend.
      * @return string The new selector.
      */
     protected static function prepend_to_selector($selector, $to_prepend)
@@ -976,8 +976,8 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $tree   Input to process.
-     * @param  array  $schema Schema to adhere to.
+     * @param  array  $tree  Input to process.
+     * @param  array  $schema  Schema to adhere to.
      * @return array The modified $tree.
      */
     protected static function remove_keys_not_in_schema($tree, $schema)
@@ -1042,12 +1042,12 @@ class WP_Theme_JSON
      * @since 5.9.0 Removed the `$type` parameter, added the `$types` and `$origins` parameters.
      * @since 6.3.0 Add fallback layout styles for Post Template when block gap support isn't available.
      *
-     * @param  string[]  $types   Types of styles to load. Will load all by default. It accepts:
-     *                          - `variables`: only the CSS Custom Properties for presets & custom ones.
-     *                          - `styles`: only the styles section in theme.json.
-     *                          - `presets`: only the classes for the presets.
-     * @param  string[]  $origins A list of origins to include. By default it includes VALID_ORIGINS.
-     * @param  array  $options An array of options for now used for internal purposes only (may change without notice).
+     * @param  string[]  $types  Types of styles to load. Will load all by default. It accepts:
+     *                           - `variables`: only the CSS Custom Properties for presets & custom ones.
+     *                           - `styles`: only the styles section in theme.json.
+     *                           - `presets`: only the classes for the presets.
+     * @param  string[]  $origins  A list of origins to include. By default it includes VALID_ORIGINS.
+     * @param  array  $options  An array of options for now used for internal purposes only (may change without notice).
      *                          The options currently supported are 'scope' that makes sure all style are scoped to a
      *                          given selector, and root_selector which overwrites and forces a given selector to be
      *                          used on the root node.
@@ -1157,8 +1157,8 @@ class WP_Theme_JSON
      *
      * @since 6.2.0
      *
-     * @param  string  $css      The CSS to process.
-     * @param  string  $selector The selector to nest.
+     * @param  string  $css  The CSS to process.
+     * @param  string  $selector  The selector to nest.
      * @return string The processed CSS.
      */
     protected function process_blocks_custom_css($css, $selector)
@@ -1288,7 +1288,7 @@ class WP_Theme_JSON
      *              Removed the `$setting_nodes` parameter.
      * @since 6.1.0 Moved most internal logic to `get_styles_for_block()`.
      *
-     * @param  array  $style_nodes Nodes with styles.
+     * @param  array  $style_nodes  Nodes with styles.
      * @return string The new stylesheet.
      */
     protected function get_block_classes($style_nodes)
@@ -1311,7 +1311,7 @@ class WP_Theme_JSON
      * @since 6.1.0
      * @since 6.3.0 Reduced specificity for layout margin rules.
      *
-     * @param  array  $block_metadata Metadata about the block to get styles for.
+     * @param  array  $block_metadata  Metadata about the block to get styles for.
      * @return string Layout styles for the block.
      */
     protected function get_layout_styles($block_metadata)
@@ -1520,8 +1520,8 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $setting_nodes Nodes with settings.
-     * @param  string[]  $origins       List of origins to process presets from.
+     * @param  array  $setting_nodes  Nodes with settings.
+     * @param  string[]  $origins  List of origins to process presets from.
      * @return string The new stylesheet.
      */
     protected function get_preset_classes($setting_nodes, $origins)
@@ -1558,8 +1558,8 @@ class WP_Theme_JSON
      * @since 5.8.0
      * @since 5.9.0 Added the `$origins` parameter.
      *
-     * @param  array  $nodes   Nodes with settings.
-     * @param  string[]  $origins List of origins to process.
+     * @param  array  $nodes  Nodes with settings.
+     * @param  string[]  $origins  List of origins to process.
      * @return string The new stylesheet.
      */
     protected function get_css_variables($nodes, $origins)
@@ -1591,8 +1591,8 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  string  $selector     CSS selector.
-     * @param  array  $declarations List of declarations.
+     * @param  string  $selector  CSS selector.
+     * @param  array  $declarations  List of declarations.
      * @return string The resulting CSS ruleset.
      */
     protected static function to_ruleset($selector, $declarations)
@@ -1619,8 +1619,8 @@ class WP_Theme_JSON
      * @since 5.8.0
      * @since 5.9.0 Added the `$origins` parameter.
      *
-     * @param  array  $settings Settings to process.
-     * @param  string  $selector Selector wrapping the classes.
+     * @param  array  $settings  Settings to process.
+     * @param  string  $selector  Selector wrapping the classes.
      * @param  string[]  $origins  List of origins to process.
      * @return string The result of processing the presets.
      */
@@ -1676,8 +1676,8 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  string  $scope    Selector to scope to.
-     * @param  string  $selector Original selector.
+     * @param  string  $scope  Selector to scope to.
+     * @param  string  $selector  Original selector.
      * @return string Scoped selector.
      */
     public static function scope_selector($scope, $selector)
@@ -1736,9 +1736,9 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $settings        Settings to process.
-     * @param  array  $preset_metadata One of the PRESETS_METADATA values.
-     * @param  string[]  $origins         List of origins to process.
+     * @param  array  $settings  Settings to process.
+     * @param  array  $preset_metadata  One of the PRESETS_METADATA values.
+     * @param  string[]  $origins  List of origins to process.
      * @return array Array of presets where each key is a slug and each value is the preset value.
      */
     protected static function get_settings_values_by_slug($settings, $preset_metadata, $origins)
@@ -1780,9 +1780,9 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $settings        Settings to process.
-     * @param  array  $preset_metadata One of the PRESETS_METADATA values.
-     * @param  string[]  $origins         List of origins to process.
+     * @param  array  $settings  Settings to process.
+     * @param  array  $preset_metadata  One of the PRESETS_METADATA values.
+     * @param  string[]  $origins  List of origins to process.
      * @return array Array of presets where the key and value are both the slug.
      */
     protected static function get_settings_slugs($settings, $preset_metadata, $origins = null)
@@ -1814,7 +1814,7 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  string  $input String to replace.
+     * @param  string  $input  String to replace.
      * @param  string  $slug  The slug value to use to generate the custom property.
      * @return string The CSS Custom Property. Something along the lines of `--wp--preset--color--black`.
      */
@@ -1836,7 +1836,7 @@ class WP_Theme_JSON
      * @since 5.8.0
      * @since 5.9.0 Added the `$origins` parameter.
      *
-     * @param  array  $settings Settings to process.
+     * @param  array  $settings  Settings to process.
      * @param  string[]  $origins  List of origins to process.
      * @return array The modified $declarations.
      */
@@ -1871,7 +1871,7 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $settings Settings to process.
+     * @param  array  $settings  Settings to process.
      * @return array The modified $declarations.
      */
     protected static function compute_theme_vars($settings)
@@ -1921,8 +1921,8 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $tree   Input tree to process.
-     * @param  string  $prefix Optional. Prefix to prepend to each variable. Default empty string.
+     * @param  array  $tree  Input tree to process.
+     * @param  string  $prefix  Optional. Prefix to prepend to each variable. Default empty string.
      * @param  string  $token  Optional. Token to use between levels. Default '--'.
      * @return array The flattened tree.
      */
@@ -1963,13 +1963,13 @@ class WP_Theme_JSON
      * @since 5.9.0 Added the `$settings` and `$properties` parameters.
      * @since 6.1.0 Added `$theme_json`, `$selector`, and `$use_root_padding` parameters.
      *
-     * @param  array  $styles Styles to process.
-     * @param  array  $settings Theme settings.
-     * @param  array  $properties Properties metadata.
-     * @param  array  $theme_json Theme JSON array.
-     * @param  string  $selector The style block selector.
-     * @param  bool  $use_root_padding Whether to add custom properties at root level.
-     * @return array  Returns the modified $declarations.
+     * @param  array  $styles  Styles to process.
+     * @param  array  $settings  Theme settings.
+     * @param  array  $properties  Properties metadata.
+     * @param  array  $theme_json  Theme JSON array.
+     * @param  string  $selector  The style block selector.
+     * @param  bool  $use_root_padding  Whether to add custom properties at root level.
+     * @return array Returns the modified $declarations.
      */
     protected static function compute_style_properties($styles, $settings = [], $properties = null, $theme_json = null, $selector = null, $use_root_padding = null)
     {
@@ -2066,9 +2066,9 @@ class WP_Theme_JSON
      *              This is already done by the sanitize method,
      *              so every property will be in the standard form.
      *
-     * @param  array  $styles Styles subtree.
-     * @param  array  $path   Which property to process.
-     * @param  array  $theme_json Theme JSON array.
+     * @param  array  $styles  Styles subtree.
+     * @param  array  $path  Which property to process.
+     * @param  array  $theme_json  Theme JSON array.
      * @return string|array Style property value.
      */
     protected static function get_property_value($styles, $path, $theme_json = null)
@@ -2134,7 +2134,7 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $theme_json The tree to extract setting nodes from.
+     * @param  array  $theme_json  The tree to extract setting nodes from.
      * @param  array  $selectors  List of selectors per block.
      * @return array An array of setting nodes metadata.
      */
@@ -2189,7 +2189,7 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $theme_json The tree to extract style nodes from.
+     * @param  array  $theme_json  The tree to extract style nodes from.
      * @param  array  $selectors  List of selectors per block.
      * @return array An array of style nodes metadata.
      */
@@ -2248,7 +2248,7 @@ class WP_Theme_JSON
          *
          * @since 6.1.0
          *
-         * @param  array  $nodes Style nodes with metadata.
+         * @param  array  $nodes  Style nodes with metadata.
          */
         return apply_filters('wp_theme_json_get_style_nodes', $nodes);
     }
@@ -2271,7 +2271,7 @@ class WP_Theme_JSON
      *
      * @since 6.1.1
      *
-     * @param  array  $declarations List of declarations.
+     * @param  array  $declarations  List of declarations.
      * @return array $declarations List of declarations filtered.
      */
     private static function update_separator_declarations($declarations)
@@ -2310,7 +2310,7 @@ class WP_Theme_JSON
      * @since 6.1.0
      * @since 6.3.0 Refactored and stabilized selectors API.
      *
-     * @param  array  $theme_json The theme.json converted to an array.
+     * @param  array  $theme_json  The theme.json converted to an array.
      * @return array The block nodes in theme.json.
      */
     private static function get_block_nodes($theme_json)
@@ -2392,7 +2392,7 @@ class WP_Theme_JSON
      *
      * @since 6.1.0
      *
-     * @param  array  $block_metadata Metadata about the block to get styles for.
+     * @param  array  $block_metadata  Metadata about the block to get styles for.
      * @return string Styles for the block.
      */
     public function get_styles_for_block($block_metadata)
@@ -2534,8 +2534,8 @@ class WP_Theme_JSON
      *
      * @since 6.1.0
      *
-     * @param  string  $selector The root node selector.
-     * @param  array  $block_metadata The metadata for the root block.
+     * @param  string  $selector  The root node selector.
+     * @param  array  $block_metadata  The metadata for the root block.
      * @return string The additional root rules CSS.
      */
     public function get_root_layout_rules($selector, $block_metadata)
@@ -2623,10 +2623,10 @@ class WP_Theme_JSON
      *
      * @since 6.0.0
      *
-     * @param  array  $data          The data to inspect.
-     * @param  bool|array  $path          Boolean or path to a boolean.
-     * @param  bool  $default_value Default value if the referenced path is missing.
-     *                                  Default false.
+     * @param  array  $data  The data to inspect.
+     * @param  bool|array  $path  Boolean or path to a boolean.
+     * @param  bool  $default_value  Default value if the referenced path is missing.
+     *                               Default false.
      * @return bool Value of boolean metadata.
      */
     protected static function get_metadata_boolean($data, $path, $default_value = false)
@@ -2651,7 +2651,7 @@ class WP_Theme_JSON
      * @since 5.8.0
      * @since 5.9.0 Duotone preset also has origins.
      *
-     * @param  WP_Theme_JSON  $incoming Data to merge.
+     * @param  WP_Theme_JSON  $incoming  Data to merge.
      */
     public function merge($incoming)
     {
@@ -2745,7 +2745,7 @@ class WP_Theme_JSON
      *
      * @since 5.9.1
      *
-     * @param  array  $origins List of origins to process.
+     * @param  array  $origins  List of origins to process.
      * @return string SVG filters.
      */
     public function get_svg_filters($origins)
@@ -2781,9 +2781,9 @@ class WP_Theme_JSON
      * @since 5.9.0
      * @deprecated 6.0.0 Use {@see 'get_metadata_boolean'} instead.
      *
-     * @param  array  $theme_json The theme.json like structure to inspect.
-     * @param  array  $path       Path to inspect.
-     * @param  bool|array  $override   Data to compute whether to override the preset.
+     * @param  array  $theme_json  The theme.json like structure to inspect.
+     * @param  array  $path  Path to inspect.
+     * @param  bool|array  $override  Data to compute whether to override the preset.
      * @return bool
      */
     protected static function should_override_preset($theme_json, $path, $override)
@@ -2837,8 +2837,8 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $data      A theme.json like structure.
-     * @param  array  $node_path The path to inspect. It's 'settings' by default.
+     * @param  array  $data  A theme.json like structure.
+     * @param  array  $node_path  The path to inspect. It's 'settings' by default.
      * @return array
      */
     protected static function get_default_slugs($data, $node_path)
@@ -2875,8 +2875,8 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  string  $slug The slug we want to find a match from default presets.
-     * @param  array  $base_path The path to inspect. It's 'settings' by default.
+     * @param  string  $slug  The slug we want to find a match from default presets.
+     * @param  array  $base_path  The path to inspect. It's 'settings' by default.
      * @return string|null
      */
     protected function get_name_from_defaults($slug, $base_path)
@@ -2902,7 +2902,7 @@ class WP_Theme_JSON
      * @since 5.9.0
      *
      * @param  array  $node  The node with the presets to validate.
-     * @param  array  $slugs The slugs that should not be overridden.
+     * @param  array  $slugs  The slugs that should not be overridden.
      * @return array The new node.
      */
     protected static function filter_slugs($node, $slugs)
@@ -2927,7 +2927,7 @@ class WP_Theme_JSON
      * @since 5.9.0
      * @since 6.3.2 Preserves global styles block variations when securing styles.
      *
-     * @param  array  $theme_json Structure to sanitize.
+     * @param  array  $theme_json  Structure to sanitize.
      * @return array Sanitized structure.
      */
     public static function remove_insecure_properties($theme_json)
@@ -3035,7 +3035,7 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $input Node to process.
+     * @param  array  $input  Node to process.
      * @return array
      */
     protected static function remove_insecure_settings($input)
@@ -3098,7 +3098,7 @@ class WP_Theme_JSON
      *
      * @since 5.9.0
      *
-     * @param  array  $input Node to process.
+     * @param  array  $input  Node to process.
      * @return array
      */
     protected static function remove_insecure_styles($input)
@@ -3133,7 +3133,7 @@ class WP_Theme_JSON
      * @since 5.9.0
      *
      * @param  string  $property_name  Property name in a CSS declaration, i.e. the `color` in `color: red`.
-     * @param  string  $property_value Value in a CSS declaration, i.e. the `red` in `color: red`.
+     * @param  string  $property_value  Value in a CSS declaration, i.e. the `red` in `color: red`.
      * @return bool
      */
     protected static function is_safe_css_declaration($property_name, $property_value)
@@ -3151,7 +3151,7 @@ class WP_Theme_JSON
      * @since 6.2.0
      *
      * @param  array  $input  Node to process.
-     * @param  array  $output The processed node. Passed by reference.
+     * @param  array  $output  The processed node. Passed by reference.
      */
     private static function remove_indirect_properties($input, &$output)
     {
@@ -3186,7 +3186,7 @@ class WP_Theme_JSON
      *
      * @since 5.8.0
      *
-     * @param  array  $settings Existing editor settings.
+     * @param  array  $settings  Existing editor settings.
      * @return array Config that adheres to the theme.json schema.
      */
     public static function get_from_editor_settings($settings)
@@ -3574,7 +3574,7 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  string  $value The variable such as var:preset|color|vivid-green-cyan to convert.
+     * @param  string  $value  The variable such as var:preset|color|vivid-green-cyan to convert.
      * @return string The converted variable.
      */
     private static function convert_custom_properties($value)
@@ -3601,7 +3601,7 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  array  $tree   Input to process.
+     * @param  array  $tree  Input to process.
      * @return array The modified $tree.
      */
     private static function resolve_custom_css_format($tree)
@@ -3624,8 +3624,8 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  object  $block_type    The block type.
-     * @param  string  $root_selector The block's root selector.
+     * @param  object  $block_type  The block type.
+     * @param  string  $root_selector  The block's root selector.
      * @return array The custom selectors set by the block.
      */
     protected static function get_block_selectors($block_type, $root_selector)
@@ -3650,7 +3650,7 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  string  $root_selector The block's root CSS selector.
+     * @param  string  $root_selector  The block's root CSS selector.
      * @return array The block's element selectors.
      */
     protected static function get_block_element_selectors($root_selector)
@@ -3684,10 +3684,10 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  object  $metadata The related block metadata containing selectors.
-     * @param  object  $node     A merged theme.json node for block or variation.
+     * @param  object  $metadata  The related block metadata containing selectors.
+     * @param  object  $node  A merged theme.json node for block or variation.
      * @return array The style declarations for the node's features with custom
-     * selectors.
+     *               selectors.
      */
     protected function get_feature_declarations_for_node($metadata, &$node)
     {
@@ -3795,8 +3795,8 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  array  $styles CSS declarations to convert.
-     * @param  array  $values key => value pairs to use for replacement.
+     * @param  array  $styles  CSS declarations to convert.
+     * @param  array  $values  key => value pairs to use for replacement.
      * @return array
      */
     private static function convert_variables_to_value($styles, $values)
@@ -3844,7 +3844,7 @@ class WP_Theme_JSON
      *
      * @since 6.3.0
      *
-     * @param  WP_Theme_JSON  $theme_json The theme json resolver.
+     * @param  WP_Theme_JSON  $theme_json  The theme json resolver.
      * @return WP_Theme_JSON The $theme_json with resolved variables.
      */
     public static function resolve_variables($theme_json)

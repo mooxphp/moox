@@ -40,8 +40,8 @@ abstract class WP_Sitemaps_Provider
      *
      * @since 5.5.0
      *
-     * @param  int  $page_num       Page of results.
-     * @param  string  $object_subtype Optional. Object subtype name. Default empty.
+     * @param  int  $page_num  Page of results.
+     * @param  string  $object_subtype  Optional. Object subtype name. Default empty.
      * @return array[] Array of URL information for a sitemap.
      */
     abstract public function get_url_list($page_num, $object_subtype = '');
@@ -51,7 +51,7 @@ abstract class WP_Sitemaps_Provider
      *
      * @since 5.5.0
      *
-     * @param  string  $object_subtype Optional. Object subtype. Default empty.
+     * @param  string  $object_subtype  Optional. Object subtype. Default empty.
      * @return int Total number of pages.
      */
     abstract public function get_max_num_pages($object_subtype = '');
@@ -122,10 +122,10 @@ abstract class WP_Sitemaps_Provider
                  * @since 5.5.0
                  *
                  * @param  array  $sitemap_entry  Sitemap entry for the post.
-                 * @param  string  $object_type    Object empty name.
-                 * @param  string  $object_subtype Object subtype name.
-                 *                               Empty string if the object type does not support subtypes.
-                 * @param  int  $page           Page number of results.
+                 * @param  string  $object_type  Object empty name.
+                 * @param  string  $object_subtype  Object subtype name.
+                 *                                  Empty string if the object type does not support subtypes.
+                 * @param  int  $page  Page number of results.
                  */
                 $sitemap_entry = apply_filters('wp_sitemaps_index_entry', $sitemap_entry, $this->object_type, $type['name'], $page);
 
@@ -143,8 +143,8 @@ abstract class WP_Sitemaps_Provider
      *
      * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
      *
-     * @param  string  $name The name of the sitemap.
-     * @param  int  $page The page of the sitemap.
+     * @param  string  $name  The name of the sitemap.
+     * @param  int  $page  The page of the sitemap.
      * @return string The composed URL for a sitemap entry.
      */
     public function get_sitemap_url($name, $page)

@@ -59,7 +59,7 @@ class IdnaEncoder
     /**
      * Encode a hostname using Punycode
      *
-     * @param  string|Stringable  $hostname Hostname
+     * @param  string|Stringable  $hostname  Hostname
      * @return string Punycode-encoded hostname
      *
      * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed argument is not a string or a stringable object.
@@ -81,7 +81,7 @@ class IdnaEncoder
     /**
      * Convert a UTF-8 text string to an ASCII string using Punycode
      *
-     * @param  string  $text ASCII or UTF-8 string (max length 64 characters)
+     * @param  string  $text  ASCII or UTF-8 string (max length 64 characters)
      * @return string ASCII string
      *
      * @throws \WpOrg\Requests\Exception Provided string longer than 64 ASCII characters (`idna.provided_too_long`)
@@ -145,7 +145,7 @@ class IdnaEncoder
      *
      * @internal (Testing found regex was the fastest implementation)
      *
-     * @param  string  $text Text to examine.
+     * @param  string  $text  Text to examine.
      * @return bool Is the text string ASCII-only?
      */
     protected static function is_ascii($text)
@@ -158,7 +158,7 @@ class IdnaEncoder
      *
      * @todo Implement this based on RFC 3491 and the newer 5891
      *
-     * @param  string  $text Text to prepare.
+     * @param  string  $text  Text to prepare.
      * @return string Prepared string
      */
     protected static function nameprep($text)
@@ -171,7 +171,7 @@ class IdnaEncoder
      *
      * Based on \WpOrg\Requests\Iri::replace_invalid_with_pct_encoding()
      *
-     * @param  string  $input Text to convert.
+     * @param  string  $input  Text to convert.
      * @return array Unicode code points
      *
      * @throws \WpOrg\Requests\Exception Invalid UTF-8 codepoint (`idna.invalidcodepoint`)
@@ -257,7 +257,7 @@ class IdnaEncoder
      *
      * @internal Pseudo-code from Section 6.3 is commented with "#" next to relevant code
      *
-     * @param  string  $input UTF-8 encoded string to encode
+     * @param  string  $input  UTF-8 encoded string to encode
      * @return string Punycode-encoded string
      *
      * @throws \WpOrg\Requests\Exception On character outside of the domain (never happens with Punycode) (`idna.character_outside_domain`)
@@ -370,7 +370,7 @@ class IdnaEncoder
      *
      * @link https://tools.ietf.org/html/rfc3492#section-5
      *
-     * @param  int  $digit Digit in the range 0-35
+     * @param  int  $digit  Digit in the range 0-35
      * @return string Single character corresponding to digit
      *
      * @throws \WpOrg\Requests\Exception On invalid digit (`idna.invalid_digit`)

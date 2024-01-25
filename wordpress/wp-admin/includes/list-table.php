@@ -12,8 +12,8 @@
  *
  * @global string $hook_suffix
  *
- * @param  string  $class_name The type of the list table, which is the class name.
- * @param  array  $args       Optional. Arguments to pass to the class. Accepts 'screen'.
+ * @param  string  $class_name  The type of the list table, which is the class name.
+ * @param  array  $args  Optional. Arguments to pass to the class. Accepts 'screen'.
  * @return WP_List_Table|false List table object on success, false if the class does not exist.
  */
 function _get_list_table($class_name, $args = [])
@@ -61,8 +61,8 @@ function _get_list_table($class_name, $args = [])
          *
          * @since 6.1.0
          *
-         * @param  string  $class_name The list table class to use.
-         * @param  array  $args       An array containing _get_list_table() arguments.
+         * @param  string  $class_name  The list table class to use.
+         * @param  array  $args  An array containing _get_list_table() arguments.
          */
         $custom_class_name = apply_filters('wp_list_table_class_name', $class_name, $args);
 
@@ -82,10 +82,10 @@ function _get_list_table($class_name, $args = [])
  * @see get_column_headers(), print_column_headers(), get_hidden_columns()
  * @since 2.7.0
  *
- * @param  string  $screen The handle for the screen to register column headers for. This is
+ * @param  string  $screen  The handle for the screen to register column headers for. This is
  *                          usually the hook name returned by the `add_*_page()` functions.
- * @param  string[]  $columns An array of columns with column IDs as the keys and translated
- *                          column names as the values.
+ * @param  string[]  $columns  An array of columns with column IDs as the keys and translated
+ *                             column names as the values.
  */
 function register_column_headers($screen, $columns)
 {
@@ -98,7 +98,7 @@ function register_column_headers($screen, $columns)
  * @since 2.7.0
  *
  * @param  string|WP_Screen  $screen  The screen hook name or screen object.
- * @param  bool  $with_id Whether to set the ID attribute or not.
+ * @param  bool  $with_id  Whether to set the ID attribute or not.
  */
 function print_column_headers($screen, $with_id = true)
 {

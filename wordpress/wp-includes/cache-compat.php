@@ -15,9 +15,9 @@ if (! function_exists('wp_cache_add_multiple')) {
      * @since 6.0.0
      * @see wp_cache_add_multiple()
      *
-     * @param  array  $data   Array of keys and values to be added.
+     * @param  array  $data  Array of keys and values to be added.
      * @param  string  $group  Optional. Where the cache contents are grouped. Default empty.
-     * @param  int  $expire Optional. When to expire the cache contents, in seconds.
+     * @param  int  $expire  Optional. When to expire the cache contents, in seconds.
      *                       Default 0 (no expiration).
      * @return bool[] Array of return values, grouped by key. Each value is either
      *                true on success, or false if cache key and group already exist.
@@ -47,9 +47,9 @@ if (! function_exists('wp_cache_set_multiple')) {
      * @since 6.0.0
      * @see wp_cache_set_multiple()
      *
-     * @param  array  $data   Array of keys and values to be set.
+     * @param  array  $data  Array of keys and values to be set.
      * @param  string  $group  Optional. Where the cache contents are grouped. Default empty.
-     * @param  int  $expire Optional. When to expire the cache contents, in seconds.
+     * @param  int  $expire  Optional. When to expire the cache contents, in seconds.
      *                       Default 0 (no expiration).
      * @return bool[] Array of return values, grouped by key. Each value is either
      *                true on success, or false on failure.
@@ -78,9 +78,9 @@ if (! function_exists('wp_cache_get_multiple')) {
      * @see wp_cache_get_multiple()
      *
      * @param  array  $keys  Array of keys under which the cache contents are stored.
-     * @param  string  $group Optional. Where the cache contents are grouped. Default empty.
-     * @param  bool  $force Optional. Whether to force an update of the local cache
-     *                      from the persistent cache. Default false.
+     * @param  string  $group  Optional. Where the cache contents are grouped. Default empty.
+     * @param  bool  $force  Optional. Whether to force an update of the local cache
+     *                       from the persistent cache. Default false.
      * @return array Array of return values, grouped by key. Each value is either
      *               the cache contents on success, or false on failure.
      */
@@ -108,7 +108,7 @@ if (! function_exists('wp_cache_delete_multiple')) {
      * @see wp_cache_delete_multiple()
      *
      * @param  array  $keys  Array of keys under which the cache to deleted.
-     * @param  string  $group Optional. Where the cache contents are grouped. Default empty.
+     * @param  string  $group  Optional. Where the cache contents are grouped. Default empty.
      * @return bool[] Array of return values, grouped by key. Each value is either
      *                true on success, or false if the contents were not deleted.
      */
@@ -165,7 +165,7 @@ if (! function_exists('wp_cache_flush_group')) {
      *
      * @global WP_Object_Cache $wp_object_cache Object cache global instance.
      *
-     * @param  string  $group Name of group to remove from cache.
+     * @param  string  $group  Name of group to remove from cache.
      * @return bool True if group was flushed, false otherwise.
      */
     function wp_cache_flush_group($group)
@@ -192,9 +192,9 @@ if (! function_exists('wp_cache_supports')) {
      *
      * @since 6.1.0
      *
-     * @param  string  $feature Name of the feature to check for. Possible values include:
-     *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
-     *                        'flush_runtime', 'flush_group'.
+     * @param  string  $feature  Name of the feature to check for. Possible values include:
+     *                           'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+     *                           'flush_runtime', 'flush_group'.
      * @return bool True if the feature is supported, false otherwise.
      */
     function wp_cache_supports($feature)

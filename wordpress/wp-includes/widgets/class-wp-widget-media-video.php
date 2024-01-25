@@ -105,7 +105,7 @@ class WP_Widget_Media_Video extends WP_Widget_Media
      *
      * @since 4.8.0
      *
-     * @param  array  $instance Widget instance props.
+     * @param  array  $instance  Widget instance props.
      */
     public function render_media($instance)
     {
@@ -150,7 +150,7 @@ class WP_Widget_Media_Video extends WP_Widget_Media
      *
      * @since 4.8.0
      *
-     * @param  string  $html Video shortcode HTML output.
+     * @param  string  $html  Video shortcode HTML output.
      * @return string HTML Output.
      */
     public function inject_video_max_width_style($html)

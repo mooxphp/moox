@@ -65,8 +65,8 @@ if (! class_exists('Translations', false)) {
          *
          * TODO: this should be out of this class, it is gettext specific
          *
-         * @param  string  $header header name, without trailing :
-         * @param  string  $value header value, without trailing \n
+         * @param  string  $header  header name, without trailing :
+         * @param  string  $value  header value, without trailing \n
          */
         public function set_header($header, $value)
         {
@@ -128,7 +128,7 @@ if (! class_exists('Translations', false)) {
          * This function should be overridden by the subclasses. For example MO/PO can derive the logic
          * from their headers.
          *
-         * @param  int  $count number of items
+         * @param  int  $count  number of items
          */
         public function select_plural_form($count)
         {
@@ -173,7 +173,7 @@ if (! class_exists('Translations', false)) {
         /**
          * Merge $other in the current object.
          *
-         * @param  object  $other Another Translation object, whose translations will be merged in this one (passed by reference).
+         * @param  object  $other  Another Translation object, whose translations will be merged in this one (passed by reference).
          */
         public function merge_with(&$other)
         {
@@ -271,7 +271,7 @@ if (! class_exists('Translations', false)) {
          * Adds parentheses to the inner parts of ternary operators in
          * plural expressions, because PHP evaluates ternary oerators from left to right
          *
-         * @param  string  $expression the expression without parentheses
+         * @param  string  $expression  the expression without parentheses
          * @return string the expression with parentheses added
          */
         public function parenthesize_plural_exression($expression)

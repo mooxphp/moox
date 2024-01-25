@@ -1604,7 +1604,7 @@ class getid3_lib
 
     /**
      * @param  array  $ThisFileInfo
-     * @param  bool  $option_tags_html default true (just as in the main getID3 class)
+     * @param  bool  $option_tags_html  default true (just as in the main getID3 class)
      * @return bool
      */
     public static function CopyTagsToComments(&$ThisFileInfo, $option_tags_html = true)
@@ -1892,8 +1892,8 @@ class getid3_lib
     /**
      * Workaround for Bug #37268 (https://bugs.php.net/bug.php?id=37268)
      *
-     * @param  string  $path A path.
-     * @param  string  $suffix If the name component ends in suffix this will also be cut off.
+     * @param  string  $path  A path.
+     * @param  string  $suffix  If the name component ends in suffix this will also be cut off.
      * @return string
      */
     public static function mb_basename($path, $suffix = '')

@@ -34,9 +34,9 @@ class WP_Widget_Search extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $args     Display arguments including 'before_title', 'after_title',
-     *                        'before_widget', and 'after_widget'.
-     * @param  array  $instance Settings for the current Search widget instance.
+     * @param  array  $args  Display arguments including 'before_title', 'after_title',
+     *                       'before_widget', and 'after_widget'.
+     * @param  array  $instance  Settings for the current Search widget instance.
      */
     public function widget($args, $instance)
     {
@@ -61,7 +61,7 @@ class WP_Widget_Search extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $instance Current settings.
+     * @param  array  $instance  Current settings.
      */
     public function form($instance)
     {
@@ -80,9 +80,9 @@ class WP_Widget_Search extends WP_Widget
      *
      * @since 2.8.0
      *
-     * @param  array  $new_instance New settings for this instance as input by the user via
-     *                            WP_Widget::form().
-     * @param  array  $old_instance Old settings for this instance.
+     * @param  array  $new_instance  New settings for this instance as input by the user via
+     *                               WP_Widget::form().
+     * @param  array  $old_instance  Old settings for this instance.
      * @return array Updated settings.
      */
     public function update($new_instance, $old_instance)

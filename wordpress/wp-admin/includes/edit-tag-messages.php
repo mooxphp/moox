@@ -41,7 +41,7 @@ $messages['post_tag'] = [
  *
  * @since 3.7.0
  *
- * @param  array[]  $messages Array of arrays of messages to be displayed, keyed by taxonomy name.
+ * @param  array[]  $messages  Array of arrays of messages to be displayed, keyed by taxonomy name.
  */
 $messages = apply_filters('term_updated_messages', $messages);
 

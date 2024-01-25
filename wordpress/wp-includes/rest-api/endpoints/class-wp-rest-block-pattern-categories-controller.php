@@ -50,7 +50,7 @@ class WP_REST_Block_Pattern_Categories_Controller extends WP_REST_Controller
      *
      * @since 6.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
      */
     public function get_items_permissions_check($request)
@@ -77,7 +77,7 @@ class WP_REST_Block_Pattern_Categories_Controller extends WP_REST_Controller
      *
      * @since 6.0.0
      *
-     * @param  WP_REST_Request  $request Full details about the request.
+     * @param  WP_REST_Request  $request  Full details about the request.
      * @return WP_Error|WP_REST_Response Response object on success, or WP_Error object on failure.
      */
     public function get_items($request)
@@ -97,8 +97,8 @@ class WP_REST_Block_Pattern_Categories_Controller extends WP_REST_Controller
      *
      * @since 6.0.0
      *
-     * @param  array  $item    Raw category as registered, before any changes.
-     * @param  WP_REST_Request  $request Request object.
+     * @param  array  $item  Raw category as registered, before any changes.
+     * @param  WP_REST_Request  $request  Request object.
      * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
      */
     public function prepare_item_for_response($item, $request)

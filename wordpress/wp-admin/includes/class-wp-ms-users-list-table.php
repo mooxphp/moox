@@ -206,8 +206,8 @@ class WP_MS_Users_List_Table extends WP_List_Table
          *
          * @since MU (3.0.0)
          *
-         * @param  string[]  $users_columns An array of user columns. Default 'cb', 'username',
-         *                                'name', 'email', 'registered', 'blogs'.
+         * @param  string[]  $users_columns  An array of user columns. Default 'cb', 'username',
+         *                                   'name', 'email', 'registered', 'blogs'.
          */
         return apply_filters('wpmu_users_columns', $users_columns);
     }
@@ -231,7 +231,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$user` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_User  $item The current WP_User object.
+     * @param  WP_User  $item  The current WP_User object.
      */
     public function column_cb($item)
     {
@@ -259,7 +259,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      *
      * @since 4.4.0
      *
-     * @param  WP_User  $user The current WP_User object.
+     * @param  WP_User  $user  The current WP_User object.
      */
     public function column_id($user)
     {
@@ -271,7 +271,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_User  $user The current WP_User object.
+     * @param  WP_User  $user  The current WP_User object.
      */
     public function column_username($user)
     {
@@ -305,7 +305,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_User  $user The current WP_User object.
+     * @param  WP_User  $user  The current WP_User object.
      */
     public function column_name($user)
     {
@@ -333,7 +333,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_User  $user The current WP_User object.
+     * @param  WP_User  $user  The current WP_User object.
      */
     public function column_email($user)
     {
@@ -347,7 +347,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      *
      * @global string $mode List table view mode.
      *
-     * @param  WP_User  $user The current WP_User object.
+     * @param  WP_User  $user  The current WP_User object.
      */
     public function column_registered($user)
     {
@@ -381,7 +381,7 @@ class WP_MS_Users_List_Table extends WP_List_Table
      *
      * @since 4.3.0
      *
-     * @param  WP_User  $user The current WP_User object.
+     * @param  WP_User  $user  The current WP_User object.
      */
     public function column_blogs($user)
     {
@@ -402,10 +402,10 @@ class WP_MS_Users_List_Table extends WP_List_Table
              *
              * @since 5.2.0
              *
-             * @param  string[]  $site_classes Array of class names used within the span tag. Default "site-#" with the site's network ID.
-             * @param  int  $site_id      Site ID.
-             * @param  int  $network_id   Network ID.
-             * @param  WP_User  $user         WP_User object.
+             * @param  string[]  $site_classes  Array of class names used within the span tag. Default "site-#" with the site's network ID.
+             * @param  int  $site_id  Site ID.
+             * @param  int  $network_id  Network ID.
+             * @param  WP_User  $user  WP_User object.
              */
             $site_classes = apply_filters('ms_user_list_site_class', $site_classes, $site->userblog_id, $site->site_id, $user);
             if (is_array($site_classes) && ! empty($site_classes)) {
@@ -441,8 +441,8 @@ class WP_MS_Users_List_Table extends WP_List_Table
              *
              * @since 3.1.0
              *
-             * @param  string[]  $actions     An array of action links to be displayed. Default 'Edit', 'View'.
-             * @param  int  $userblog_id The site ID.
+             * @param  string[]  $actions  An array of action links to be displayed. Default 'Edit', 'View'.
+             * @param  int  $userblog_id  The site ID.
              */
             $actions = apply_filters('ms_user_list_site_actions', $actions, $site->userblog_id);
 
@@ -468,8 +468,8 @@ class WP_MS_Users_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$user` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_User  $item        The current WP_User object.
-     * @param  string  $column_name The current column name.
+     * @param  WP_User  $item  The current WP_User object.
+     * @param  string  $column_name  The current column name.
      */
     public function column_default($item, $column_name)
     {
@@ -522,9 +522,9 @@ class WP_MS_Users_List_Table extends WP_List_Table
      * @since 4.3.0
      * @since 5.9.0 Renamed `$user` to `$item` to match parent class for PHP 8 named parameter support.
      *
-     * @param  WP_User  $item        User being acted upon.
-     * @param  string  $column_name Current column name.
-     * @param  string  $primary     Primary column name.
+     * @param  WP_User  $item  User being acted upon.
+     * @param  string  $column_name  Current column name.
+     * @param  string  $primary  Primary column name.
      * @return string Row actions output for users in Multisite, or an empty string
      *                if the current column is not the primary column.
      */
@@ -554,8 +554,8 @@ class WP_MS_Users_List_Table extends WP_List_Table
          *
          * @since 3.2.0
          *
-         * @param  string[]  $actions An array of action links to be displayed. Default 'Edit', 'Delete'.
-         * @param  WP_User  $user    WP_User object.
+         * @param  string[]  $actions  An array of action links to be displayed. Default 'Edit', 'Delete'.
+         * @param  WP_User  $user  WP_User object.
          */
         $actions = apply_filters('ms_user_row_actions', $actions, $user);
 

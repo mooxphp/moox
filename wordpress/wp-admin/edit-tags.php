@@ -219,8 +219,8 @@ if ($location) {
      *
      * @since 4.6.0
      *
-     * @param  string  $location The destination URL.
-     * @param  WP_Taxonomy  $tax      The taxonomy object.
+     * @param  string  $location  The destination URL.
+     * @param  WP_Taxonomy  $tax  The taxonomy object.
      */
     wp_redirect(apply_filters('redirect_term_location', $location, $tax));
     exit;
@@ -386,7 +386,7 @@ if ($can_edit_terms) {
          * @since 2.1.0
          * @deprecated 3.0.0 Use {@see '{$taxonomy}_pre_add_form'} instead.
          *
-         * @param  object  $arg Optional arguments cast to an object.
+         * @param  object  $arg  Optional arguments cast to an object.
          */
         do_action_deprecated('add_category_form_pre', [(object) ['parent' => 0]], '3.0.0', '{$taxonomy}_pre_add_form');
     } elseif ($taxonomy === 'link_category') {
@@ -396,7 +396,7 @@ if ($can_edit_terms) {
          * @since 2.3.0
          * @deprecated 3.0.0 Use {@see '{$taxonomy}_pre_add_form'} instead.
          *
-         * @param  object  $arg Optional arguments cast to an object.
+         * @param  object  $arg  Optional arguments cast to an object.
          */
         do_action_deprecated('add_link_category_form_pre', [(object) ['parent' => 0]], '3.0.0', '{$taxonomy}_pre_add_form');
     } else {
@@ -406,7 +406,7 @@ if ($can_edit_terms) {
          * @since 2.5.0
          * @deprecated 3.0.0 Use {@see '{$taxonomy}_pre_add_form'} instead.
          *
-         * @param  string  $taxonomy The taxonomy slug.
+         * @param  string  $taxonomy  The taxonomy slug.
          */
         do_action_deprecated('add_tag_form_pre', [$taxonomy], '3.0.0', '{$taxonomy}_pre_add_form');
     }
@@ -423,7 +423,7 @@ if ($can_edit_terms) {
      *
      * @since 3.0.0
      *
-     * @param  string  $taxonomy The taxonomy slug.
+     * @param  string  $taxonomy  The taxonomy slug.
      */
     do_action("{$taxonomy}_pre_add_form", $taxonomy);
     ?>
@@ -483,20 +483,20 @@ if ($can_edit_terms) {
 	     * @since 3.7.0
 	     * @since 4.2.0 Added `$context` parameter.
 	     *
-	     * @param  array  $dropdown_args {
-	     *     An array of taxonomy parent drop-down arguments.
+	     * @param  array  $dropdown_args  {
+	     *                                An array of taxonomy parent drop-down arguments.
 	     *
-	     *     @type int|bool $hide_empty       Whether to hide terms not attached to any posts. Default 0.
-	     *     @type bool     $hide_if_empty    Whether to hide the drop-down if no terms exist. Default false.
-	     *     @type string   $taxonomy         The taxonomy slug.
-	     *     @type string   $name             Value of the name attribute to use for the drop-down select element.
-	     *                                      Default 'parent'.
-	     *     @type string   $orderby          The field to order by. Default 'name'.
-	     *     @type bool     $hierarchical     Whether the taxonomy is hierarchical. Default true.
-	     *     @type string   $show_option_none Label to display if there are no terms. Default 'None'.
-	     * }
+	     * @type int|bool $hide_empty       Whether to hide terms not attached to any posts. Default 0.
+	     * @type bool $hide_if_empty    Whether to hide the drop-down if no terms exist. Default false.
+	     * @type string $taxonomy         The taxonomy slug.
+	     * @type string $name             Value of the name attribute to use for the drop-down select element.
+	     *              Default 'parent'.
+	     * @type string $orderby          The field to order by. Default 'name'.
+	     * @type bool $hierarchical     Whether the taxonomy is hierarchical. Default true.
+	     * @type string $show_option_none Label to display if there are no terms. Default 'None'.
+	     *              }
 	     *
-	     * @param  string  $taxonomy The taxonomy slug.
+	     * @param  string  $taxonomy  The taxonomy slug.
 	     * @param  string  $context  Filter context. Accepts 'new' or 'edit'.
 	     */
 	    $dropdown_args = apply_filters('taxonomy_parent_dropdown_args', $dropdown_args, $taxonomy, 'new');
@@ -525,7 +525,7 @@ if ($can_edit_terms) {
          *
          * @since 3.0.0
          *
-         * @param  string  $taxonomy The taxonomy slug.
+         * @param  string  $taxonomy  The taxonomy slug.
          */
         do_action('add_tag_form_fields', $taxonomy);
     }
@@ -542,7 +542,7 @@ if ($can_edit_terms) {
      *
      * @since 3.0.0
      *
-     * @param  string  $taxonomy The taxonomy slug.
+     * @param  string  $taxonomy  The taxonomy slug.
      */
     do_action("{$taxonomy}_add_form_fields", $taxonomy);
     ?>
@@ -558,7 +558,7 @@ if ($can_edit_terms) {
          * @since 2.1.0
          * @deprecated 3.0.0 Use {@see '{$taxonomy}_add_form'} instead.
          *
-         * @param  object  $arg Optional arguments cast to an object.
+         * @param  object  $arg  Optional arguments cast to an object.
          */
         do_action_deprecated('edit_category_form', [(object) ['parent' => 0]], '3.0.0', '{$taxonomy}_add_form');
     } elseif ($taxonomy === 'link_category') {
@@ -568,7 +568,7 @@ if ($can_edit_terms) {
          * @since 2.3.0
          * @deprecated 3.0.0 Use {@see '{$taxonomy}_add_form'} instead.
          *
-         * @param  object  $arg Optional arguments cast to an object.
+         * @param  object  $arg  Optional arguments cast to an object.
          */
         do_action_deprecated('edit_link_category_form', [(object) ['parent' => 0]], '3.0.0', '{$taxonomy}_add_form');
     } else {
@@ -578,7 +578,7 @@ if ($can_edit_terms) {
          * @since 2.7.0
          * @deprecated 3.0.0 Use {@see '{$taxonomy}_add_form'} instead.
          *
-         * @param  string  $taxonomy The taxonomy slug.
+         * @param  string  $taxonomy  The taxonomy slug.
          */
         do_action_deprecated('add_tag_form', [$taxonomy], '3.0.0', '{$taxonomy}_add_form');
     }
@@ -595,7 +595,7 @@ if ($can_edit_terms) {
      *
      * @since 3.0.0
      *
-     * @param  string  $taxonomy The taxonomy slug.
+     * @param  string  $taxonomy  The taxonomy slug.
      */
     do_action("{$taxonomy}_add_form", $taxonomy);
     ?>
@@ -668,7 +668,7 @@ if ($can_edit_terms) {
  *
  * @since 3.0.0
  *
- * @param  string  $taxonomy The taxonomy name.
+ * @param  string  $taxonomy  The taxonomy name.
  */
 do_action("after-{$taxonomy}-table", $taxonomy);  // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 
