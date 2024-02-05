@@ -1,4 +1,4 @@
-![Moox Page](https://github.com/mooxphp/moox/raw/main/_other/art/banner/page.jpg)
+![Moox Page](https://github.com/mooxphp/moox/raw/main/art/banner/page.jpg)
 
 # Moox Page
 

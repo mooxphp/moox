@@ -1,6 +1,6 @@
 <p align="center">
     <br>
-  	<img src="https://github.com/mooxphp/moox/raw/main/_other/art/moox-logo.png" width="200" alt="Moox Logo">
+  	<img src="https://github.com/mooxphp/moox/raw/main/art/moox-logo.png" width="200" alt="Moox Logo">
     <br>
 </p><br>
 

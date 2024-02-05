@@ -5,20 +5,15 @@ parameters:
     level: 5
     paths:
         - _custom
-        - _other
         - packages
         - app
     excludePaths:
         - 'packages/*/vendor/*'
-        - '_other/*/vendor/*'
-        - '_other/builder/*'
-        - '_other/satis/*'
     ignoreErrors:
         -
             messages:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
             paths:
-                - _components/*/tests/*
                 - packages/*/tests/*
             reportUnmatched: false
         -
@@ -26,6 +21,6 @@ parameters:
             messages:
                 - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
             paths:
-                - _other/builder/*
+                - packages/builder/*
             reportUnmatched: false
     tmpDir: build/phpstan

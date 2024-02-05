@@ -16,23 +16,7 @@
     "repositories": [
         {
             "type": "path",
-            "url": "_other/builder"
-        },
-        {
-            "type": "path",
-            "url": "packages/jobs"
-        },
-        {
-            "type": "path",
-            "url": "packages/page"
-        },
-        {
-            "type": "path",
-            "url": "packages/user"
-        },
-        {
-            "type": "path",
-            "url": "packages/press"
+            "url": "packages/*"
         }
     ],
     "license": "MIT",

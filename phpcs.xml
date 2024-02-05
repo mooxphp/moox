@@ -5,7 +5,6 @@
     <file>_components</file>
     <file>_data</file>
     <file>_icons</file>
-    <file>_other</file>
     <file>packages</file>
     <file>_themes</file>
     <exclude-pattern>bootstrap/cache/*</exclude-pattern>

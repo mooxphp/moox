@@ -1,4 +1,4 @@
-![Moox User](https://github.com/mooxphp/moox/raw/main/_other/art/banner/user.jpg)
+![Moox User](https://github.com/mooxphp/moox/raw/main/art/banner/user.jpg)
 
 # Moox User
 

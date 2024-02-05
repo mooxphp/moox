@@ -1,4 +1,4 @@
-![Moox Jobs](https://github.com/mooxphp/moox/raw/main/_other/art/banner/jobs.jpg)
+![Moox Jobs](https://github.com/mooxphp/moox/raw/main/art/banner/jobs.jpg)
 
 # Moox Jobs
 
@@ -27,7 +27,7 @@ Curious what the install command does? See manual installation below.
 
 Monitor your running and finished jobs:
 
-![screenshot-jobs](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-jobs.jpg)
+![screenshot-jobs](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-jobs.jpg)
 
 This table includes auto-pruning (7 days retention, configurable).
 
@@ -35,21 +35,21 @@ This table includes auto-pruning (7 days retention, configurable).
 
 See all waiting Jobs queued, kill one or many:
 
-![screenshot-waiting](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-waiting.jpg)
+![screenshot-waiting](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-waiting.jpg)
 
 ### Jobs failed
 
 See all failed Jobs including details, retry or delete:
 
-![screenshot-details](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-details.jpg)
+![screenshot-details](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-details.jpg)
 
-![screenshot-detail](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-detail.jpg)
+![screenshot-detail](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-detail.jpg)
 
 ### Job batches
 
 See your job batches, prune batches:
 
-![screenshot-batches](https://github.com/mooxphp/moox/raw/main/_other/art/screenshot/jobs-batches.jpg)
+![screenshot-batches](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-batches.jpg)
 
 ## Manual Installation
 
