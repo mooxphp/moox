@@ -3949,7 +3949,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "_packages/jobs",
+                "url": "packages/jobs",
                 "reference": "28c2c4062e3c1574eedde080bfffb7c1768ab6ac"
             },
             "require": {
@@ -4006,7 +4006,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "_packages/page",
+                "url": "packages/page",
                 "reference": "b68768a0a2f44f321b3af4d43af7b9998334b948"
             },
             "require": {
@@ -4053,7 +4053,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "_packages/press",
+                "url": "packages/press",
                 "reference": "2e5aee579411a62d9a65df7ac0234bbd59a793f6"
             },
             "require": {
@@ -4101,7 +4101,7 @@
             "version": "dev-main",
             "dist": {
                 "type": "path",
-                "url": "_packages/user",
+                "url": "packages/user",
                 "reference": "ab658e6320950b988d76d32d0eb08ed21e5dffd6"
             },
             "require": {

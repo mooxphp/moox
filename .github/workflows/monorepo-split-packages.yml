@@ -28,7 +28,7 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
-          package_directory: "_packages/${{ matrix.package }}"
+          package_directory: "packages/${{ matrix.package }}"
 
           repository_organization: "mooxphp"
           repository_name: "${{ matrix.package }}"

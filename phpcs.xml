@@ -6,7 +6,7 @@
     <file>_data</file>
     <file>_icons</file>
     <file>_other</file>
-    <file>_packages</file>
+    <file>packages</file>
     <file>_themes</file>
     <exclude-pattern>bootstrap/cache/*</exclude-pattern>
     <exclude-pattern>bootstrap/autoload.php</exclude-pattern>

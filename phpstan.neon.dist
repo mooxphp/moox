@@ -6,10 +6,10 @@ parameters:
     paths:
         - _custom
         - _other
-        - _packages
+        - packages
         - app
     excludePaths:
-        - '_packages/*/vendor/*'
+        - 'packages/*/vendor/*'
         - '_other/*/vendor/*'
         - '_other/builder/*'
         - '_other/satis/*'
@@ -19,7 +19,7 @@ parameters:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
             paths:
                 - _components/*/tests/*
-                - _packages/*/tests/*
+                - packages/*/tests/*
             reportUnmatched: false
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!

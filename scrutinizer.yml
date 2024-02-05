@@ -22,7 +22,7 @@ filter:
     - "_data"
     - "_icons"
     - "_other"
-    - "_packages"
+    - "packages"
     - "_themes"
   excluded_paths:
     - "_other/satis/*"

@@ -20,19 +20,19 @@
         },
         {
             "type": "path",
-            "url": "_packages/jobs"
+            "url": "packages/jobs"
         },
         {
             "type": "path",
-            "url": "_packages/page"
+            "url": "packages/page"
         },
         {
             "type": "path",
-            "url": "_packages/user"
+            "url": "packages/user"
         },
         {
             "type": "path",
-            "url": "_packages/press"
+            "url": "packages/press"
         }
     ],
     "license": "MIT",

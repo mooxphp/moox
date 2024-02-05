@@ -38,7 +38,7 @@ This is the Moox Monorepo containing all packages and the Laravel dev app.
 
 ## Packages
 
-All installable Moox packages like Core, Page, Blog, Jobs etc. are in [\_packages](./_packages/README.md). Things like Art (logo, banners, screenshots), Satis, Builder and the VS Code Pack are in [\_other](./_other/README.md).
+All installable Moox packages like Core, Page, Blog, Jobs etc. are in [\packages](./packages/README.md). Things like Art (logo, banners, screenshots), Satis, Builder and the VS Code Pack are in [\_other](./_other/README.md).
 
 ## Installation
 
