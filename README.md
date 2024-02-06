@@ -289,6 +289,13 @@ Moox is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/comradekingu">
+            <img src="https://avatars.githubusercontent.com/u/13802408?v=4" width="100;" alt="comradekingu"/>
+            <br />
+            <sub><b>comradekingu</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/milotype">
             <img src="https://avatars.githubusercontent.com/u/43657314?v=4" width="100;" alt="milotype"/>
             <br />
