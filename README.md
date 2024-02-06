@@ -192,7 +192,7 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 
 Moox is made by these nice people, and bots ...
 
-<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,Givx,OccTherapist,somzoli -start -->
+<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -start -->
 <table>
 <tr>
     <td align="center">
@@ -317,7 +317,7 @@ Moox is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,Givx,OccTherapist,somzoli -end -->
+<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -end -->
 
 ## Contribute
 
