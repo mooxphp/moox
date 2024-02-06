@@ -231,18 +231,18 @@ Moox is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/laravel-shift">
-            <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
-            <br />
-            <sub><b>laravel-shift</b></sub>
-        </a>
-    </td></tr>
-<tr>
-    <td align="center">
         <a href="https://github.com/mooxbot">
             <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="mooxbot"/>
             <br />
             <sub><b>mooxbot</b></sub>
+        </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/laravel-shift">
+            <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
+            <br />
+            <sub><b>laravel-shift</b></sub>
         </a>
     </td>
     <td align="center">
