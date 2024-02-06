@@ -228,9 +228,11 @@ class JobMonitorDemo implements ShouldQueue
 }
 ```
 
+Now you can monitor the progress of your job in the Filament UI.
+
 ## Authorization
 
-I use Filament Shield instead, so that code is not heavily tested. Please leave a feedback, if you struggle.
+We use Filament Shield instead, so that code is not heavily tested. Please leave a feedback, if you struggle.
 
 If you would like to prevent certain users from accessing your page, you can register a policy:
 
@@ -275,15 +277,25 @@ This will prevent the navigation item(s) from being registered.
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## License
+## Contribute
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+We welcome every contribution! It would be awesome, if you:
+
+-   Create an Issue in this Repo that contains information about the problem or idea. We'll reply within a couple of days.
+-   Create a Pull Request in the [Monorepo](https://github.com/mooxphp/moox). Please do not PR to our read-only repos, they are not prepared for code changes. Only the monorepo has quality gates and automated tests.
+-   Translate Moox using [Weblate](https://hosted.weblate.org/engage/moox/).
+-   Tell other people about Moox or link to us.
+-   Consider a [donation or sponsorship](https://github.com/sponsors/mooxphp).
 
 ## Sponsors
 
-The initial development of this plugin was sponsored by [heco gmbh, Germany](https://heco.de). A huge thank you for investing in Open Source!
+The initial development of Moox was sponsored by [heco gmbh, Germany](https://heco.de). A huge thank you for investing in Open Source!
 
-If you use this plugin, please consider a small donation to keep this project under maintenance. Especially if it is a commercial project, it is pretty easy to calculate. A few bucks for a developer to build a great product or a hungry developer that produces bugs or - the worst case - needs to abandon the project. Yes, I am happy about every little sunshine in my wallet ;-)
+If you use this plugin, please consider a small donation to keep this project under maintenance. Especially if it is a commercial project, it is pretty easy to calculate. A few bucks for a developer to build a great product or a hungry developer that produces bugs or - the worst case - needs to abandon the project. Yes, we are happy about every little sunshine in our wallet ;-)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
 ## Credits
 

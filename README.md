@@ -32,13 +32,14 @@
 
 # Moox Monorepo
 
-Welcome to the Moox project. We are in an early stage of development. We will soon publish our first components and packages for Laravel and the TALL-Stack. Stay tuned.
-
-This is the Moox Monorepo containing all packages and the Laravel dev app.
+Welcome to the Moox project. This is the Moox Monorepo. It is an installable Laravel App meant for development of our Filament Plugins aka Laravel Packages. We are in an early stage of development but there are already some plugins you might consider useful:
 
 ## Packages
 
-All installable Moox packages like Builder, Jobs, User etc. are in [\packages](./packages/README.md).
+-   [Moox Jobs](jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
+-   [Moox Builder](builder/README.md), is our Skeleton Package to create new Filament Plugins
+
+All others are in the making. Stay tuned.
 
 ## Installation
 
@@ -187,18 +188,11 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 -   Coverage: `composer test-coverage ` or `./vendor/bin/pest --coverage`, for packages `../../vendor/bin/pest --coverage`
 -   Pint: `composer format ` or `./vendor/bin/pint`, for packages `../../vendor/bin/pint`
 
-## Translation
-
-Moox is translated with Weblate. More information about the languages, translation status and how to contribute in our [translation documentation](./TRANSLATE.md).
-
-<a href="https://hosted.weblate.org/engage/moox/">
-<img src="https://hosted.weblate.org/widgets/moox/-/open-graph.png" alt="Translation status" /></a>
-
 ## Contributors
 
-Mood is made by these nice people, and bots ...
+Moox is made by these nice people, and bots ...
 
-<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype -start -->
+<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,Givx,OccTherapist,somzoli -start -->
 <table>
 <tr>
     <td align="center">
@@ -302,7 +296,24 @@ Mood is made by these nice people, and bots ...
         </a>
     </td></tr>
 </table>
-<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype -end -->
+<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,Givx,OccTherapist,somzoli -end -->
+
+## Contribute
+
+We welcome every contribution! It would be awesome, if you:
+
+-   Create an Issue in the Repo that fits best and add information about the problem or idea. We'll reply within a couple of days.
+-   Create a Pull Request in this Monorepo. Please do not PR to our read-only repos, they are not prepared for code changes. Only the monorepo has quality gates and automated tests.
+-   Translate Moox using [Weblate](https://hosted.weblate.org/engage/moox/).
+-   Tell other people about Moox or link to us.
+-   Consider a [donation or sponsorship](https://github.com/sponsors/mooxphp).
+
+## Translation
+
+Moox is translated with Weblate. Of course you can also directly edit the translation files in the packages, but using a full-featured translation platform like Weblate might be more convenient.
+
+<a href="https://hosted.weblate.org/engage/moox/">
+<img src="https://hosted.weblate.org/widgets/moox/-/open-graph.png" alt="Translation status" /></a>
 
 ## License
 
