@@ -294,6 +294,27 @@ Moox is made by these nice people, and bots ...
             <br />
             <sub><b>milotype</b></sub>
         </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/givx">
+            <img src="https://avatars.githubusercontent.com/u/1196652?v=4" width="100;" alt="givx"/>
+            <br />
+            <sub><b>givx</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/occtherapist">
+            <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
+            <br />
+            <sub><b>occtherapist</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/somzoli">
+            <img src="https://avatars.githubusercontent.com/u/34423715?v=4" width="100;" alt="somzoli"/>
+            <br />
+            <sub><b>somzoli</b></sub>
+        </a>
     </td></tr>
 </table>
 <!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,milotype,Givx,OccTherapist,somzoli -end -->
