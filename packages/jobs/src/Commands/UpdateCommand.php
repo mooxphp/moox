@@ -21,6 +21,8 @@ class UpdateJobManagerTable extends Command
     {
         $this->art();
         $this->update_schema();
+        $this->publish_migrations();
+        $this->run_migrations();
     }
 
     public function art(): void

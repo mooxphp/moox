@@ -66,11 +66,28 @@ class InstallCommand extends Command
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('job_manager')) {
-            warning('The job monitor table already exists. The migrations will not be published.');
+        if (Schema::hasTable('job_batch_manager')) {
+            warning('The job_batch_manager table already exists. The migrations will not be published.');
         } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Jobs Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-migrations']);
+            info('Publishing job_batch_manager Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-batch-migration']);
+        }
+
+        if (Schema::hasTable('job_queue_workers')) {
+            warning('The job_queue_workers table already exists. The migrations will not be published.');
+        } elseif (confirm('Do you wish to publish the migrations?', true)) {
+            info('Publishing job_queue_workers Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-queue-migration']);
+        }
+
+        if (Schema::hasTable('job_manager')) {
+            warning('The jobs-manager-migration table already exists. The migrations will not be published.');
+        } elseif (confirm('Do you wish to publish the migrations?', true)) {
+            info('Publishing jobs-manager-migration...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
+
+            info('Publishing job_manager foreigns Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-foreigns-migration']);
         }
     }
 
