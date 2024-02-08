@@ -240,6 +240,12 @@ class JobMonitorDemo implements ShouldQueue
 
 Now you can monitor the progress of your job in the Filament UI.
 
+## Model
+
+The database model for Moox Jobs is designed with [Vemto](https://vemto.app):
+
+![jobs-model](https://github.com/mooxphp/moox/raw/main/art/vemto/jobs-jobs.jpg)
+
 ## Authorization
 
 We use Filament Shield instead, so that code is not heavily tested. Please leave a feedback, if you struggle.
