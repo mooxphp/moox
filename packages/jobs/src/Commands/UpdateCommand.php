@@ -78,10 +78,8 @@ class UpdateJobManagerTable extends Command
 
                 info('job_manager table updated successfully.');
             } else {
-                warning('The job_manager table does not exist. Let\'s create it.');
-
+                warning('The job_manager table does not exist. Let\'s publish the migration for it.');
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
-
             }
 
         }
@@ -89,11 +87,24 @@ class UpdateJobManagerTable extends Command
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('job_manager')) {
-            warning('The job monitor table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Jobs Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-migrations']);
+        if (confirm('We publish the new table migrations, OK?', true)) {
+
+            if (Schema::hasTable('job_batch_manager')) {
+                warning('The job_batch_manager table already exists. The migrations will not be published.');
+            } elseif (confirm('Do you wish to publish the migrations?', true)) {
+                info('Publishing job_batch_manager Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-batch-migration']);
+            }
+
+            if (Schema::hasTable('job_queue_workers')) {
+                warning('The job_queue_workers table already exists. The migrations will not be published.');
+            } elseif (confirm('Do you wish to publish the migrations?', true)) {
+                info('Publishing job_queue_workers Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-queue-migration']);
+            }
+
+            info('Publishing job_manager foreigns Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-foreigns-migration']);
         }
     }
 
@@ -104,19 +115,4 @@ class UpdateJobManagerTable extends Command
             $this->call('migrate');
         }
     }
-}
-
-
-if ($this->app->runningInConsole()) {
-    $this->publishes([
-        __DIR__.'/../database/migrations/create_job_manager_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_job_manager_table.php'),
-    ], 'jobs-manager-migration');
-    $this->publishes([
-        __DIR__.'/../database/migrations/create_job_batch_manager_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_job_batch_manager_table.php'),
-    ], 'jobs-batch-migration');
-    $this->publishes([
-        __DIR__.'/../database/migrations/create_job_queue_workers_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_job_queue_workers_table.php'),
-    ], 'jobs-queue-migration');
-}
-}
 }
