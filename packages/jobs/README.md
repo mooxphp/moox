@@ -244,7 +244,7 @@ Now you can monitor the progress of your job in the Filament UI.
 
 The database model for Moox Jobs is designed with [Vemto](https://vemto.app):
 
-![jobs-model](https://github.com/mooxphp/moox/raw/main/art/vemto/jobs-jobs.jpg)
+![jobs-model](https://github.com/mooxphp/moox/raw/main/art/vemto/moox-jobs.jpg)
 
 ## Authorization
 
