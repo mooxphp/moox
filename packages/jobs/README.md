@@ -4,11 +4,18 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
-Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis (currently not able to provide waiting jobs for Redis).
+Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See Limitations below for more information.
 
-## Upgrading
+## Upgrading from Moox Jobs V2
 
-Do a `composer remove adrolli/filament-job-manager`, if installed. Database tables are fully compatible, Moox Jobs will proceed working after installation.
+Moox Jobs V3 changes the database schema. We made an convenient update command for you:
+
+```bash
+composer update
+php artisan mooxjobs:update
+```
+
+The update command takes care about changing and creating the new fields without loosing data. Alternatively you may delete the job-manager table and simply run the following install command.
 
 ## Quick installation
 
@@ -64,7 +71,10 @@ composer require moox/jobs
 Create the necessary tables:
 
 ```bash
-php artisan vendor:publish --tag="jobs-migrations"
+php artisan vendor:publish --tag="jobs-manager-migration"
+php artisan vendor:publish --tag="jobs-batch-migration"
+php artisan vendor:publish --tag="jobs-queue-migration"
+php artisan vendor:publish --tag="jobs-manager-foreigns-migration"
 
 # Queue tables, if using the database driver instead of Redis queue backend
 php artisan queue:table
@@ -272,6 +282,16 @@ class FailedJobPolicy
 same for FailedJobPolicy and JobBatchPolicy.
 
 This will prevent the navigation item(s) from being registered.
+
+## Limitations
+
+Moox Jobs is the perfect fit for the database queue driver. It runs fine on shared hostings and provides a job monitor, pending jobs, failed jobs and the possibility to retry failed jobs, where all other Laravel packages do not fit.
+
+The job monitor and failed jobs are also working with Redis, SQS and Beanstalkd, but it does not show waiting jobs and there might be problems with job batches. For Redis we recommend using [Laravel Horizon](https://horizon.laravel.com), for Amazon SQS the AWS Dashboard. The solutions for Beanstalkd seem outdated, but you might give [Laravel Beanstalkd Admin UI](https://github.com/Dionera/laravel-beanstalkd-admin-ui) a try.
+
+Another thing is using the Sync driver. As the Sync driver in Laravel is intended for development and testing, it executes jobs immediately (synchronously) and does not utilize queues. Therefore, it doesn't use the failed_jobs, jobs, or job_batches tables. Jobs are executed immediately within the same request lifecycle, so there's no queuing or storing of jobs. If a job fails, it's handled immediately within the execution context, not logged in the failed_jobs table. Jobs running with the sync driver may appear as running jobs and stay running forever, even if they are already completed or failed.
+
+We plan to extend support for all queue drivers in the future. Watch the changelog.
 
 ## Changelog
 
