@@ -14,23 +14,10 @@ use function Laravel\Prompts\warning;
 
 class InstallCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'mooxjobs:install';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Install Moox Jobs, publishes configuration, migrations and registers plugins.';
 
-    /**
-     * Execute the console command.
-     */
     public function handle(): void
     {
         $this->art();
