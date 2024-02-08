@@ -9028,16 +9028,16 @@
         },
         {
             "name": "fidry/cpu-core-counter",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theofidry/cpu-core-counter.git",
-                "reference": "85193c0b0cb5c47894b5eaec906e946f054e7077"
+                "reference": "f92996c4d5c1a696a6a970e20f7c4216200fcc42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theofidry/cpu-core-counter/zipball/85193c0b0cb5c47894b5eaec906e946f054e7077",
-                "reference": "85193c0b0cb5c47894b5eaec906e946f054e7077",
+                "url": "https://api.github.com/repos/theofidry/cpu-core-counter/zipball/f92996c4d5c1a696a6a970e20f7c4216200fcc42",
+                "reference": "f92996c4d5c1a696a6a970e20f7c4216200fcc42",
                 "shasum": ""
             },
             "require": {
@@ -9077,7 +9077,7 @@
             ],
             "support": {
                 "issues": "https://github.com/theofidry/cpu-core-counter/issues",
-                "source": "https://github.com/theofidry/cpu-core-counter/tree/1.0.0"
+                "source": "https://github.com/theofidry/cpu-core-counter/tree/1.1.0"
             },
             "funding": [
                 {
@@ -9085,7 +9085,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-17T21:38:23+00:00"
+            "time": "2024-02-07T09:43:46+00:00"
         },
         {
             "name": "filp/whoops",
@@ -9740,16 +9740,16 @@
         },
         {
             "name": "orchestra/canvas",
-            "version": "v8.11.6",
+            "version": "v8.11.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/canvas.git",
-                "reference": "6ab236c7a190f7f53ce2e9c65fd9ee781e5aeb6c"
+                "reference": "e4a0157f522222725f1559bde0da1091a91542fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/canvas/zipball/6ab236c7a190f7f53ce2e9c65fd9ee781e5aeb6c",
-                "reference": "6ab236c7a190f7f53ce2e9c65fd9ee781e5aeb6c",
+                "url": "https://api.github.com/repos/orchestral/canvas/zipball/e4a0157f522222725f1559bde0da1091a91542fb",
+                "reference": "e4a0157f522222725f1559bde0da1091a91542fb",
                 "shasum": ""
             },
             "require": {
@@ -9809,9 +9809,9 @@
             "description": "Code Generators for Laravel Applications and Packages",
             "support": {
                 "issues": "https://github.com/orchestral/canvas/issues",
-                "source": "https://github.com/orchestral/canvas/tree/v8.11.6"
+                "source": "https://github.com/orchestral/canvas/tree/v8.11.7"
             },
-            "time": "2023-12-28T15:08:19+00:00"
+            "time": "2024-02-07T10:29:23+00:00"
         },
         {
             "name": "orchestra/canvas-core",
