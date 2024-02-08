@@ -3,7 +3,6 @@
 namespace Moox\Jobs\Models;
 
 use Illuminate\Contracts\Queue\Job as JobContract;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
@@ -25,6 +24,7 @@ class JobManager extends Model
         'attempt',
         'progress',
         'exception_message',
+        'status',
     ];
 
     protected $casts = [
@@ -32,19 +32,6 @@ class JobManager extends Model
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
     ];
-
-    public function status(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                if ($this->isFinished()) {
-                    return $this->failed ? 'failed' : 'succeeded';
-                }
-
-                return 'running';
-            },
-        );
-    }
 
     public static function getJobId(JobContract $job): string|int
     {
