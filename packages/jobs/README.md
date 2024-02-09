@@ -4,11 +4,28 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
-Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See Limitations below for more information.
+Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See Limitations below for more information. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
+
+## Requirements
+
+Moos Jobs requires 
+
+- [PHP 8.1](https://www.php.net/) or higher
+- [Laravel 10](https://laravel.com/docs/installation) or higher
+- [Filament 3](https://filamentphp.com/docs/panels/installation) or higher
+
+in short
+
+```bash
+composer create-project laravel/laravel moox-jobs-demo
+composer require filament/filament
+php artisan filament:install --panels
+php artisan make:filament-user
+```
 
 ## Upgrading from Moox Jobs V2
 
-Moox Jobs V3 changes the database schema. We made an convenient update command for you:
+Moox Jobs V3 requires changes to the database schema. We made an convenient update command for you:
 
 ```bash
 composer update
@@ -26,27 +43,25 @@ composer require moox/jobs
 php artisan mooxjobs:install
 ```
 
-Curious what the install command does? See manual installation below.
+Curious what the install command does? See [manual installation](#manual-installation) below.
 
 ## Features
 
 ### Jobs
 
-Monitor your running and finished jobs:
+Monitor your running and finished jobs.
 
 ![screenshot-jobs](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-jobs.jpg)
 
-This table includes auto-pruning (7 days retention, configurable).
-
 ### Jobs waiting
 
-See all waiting Jobs queued, kill one or many:
+See all waiting Jobs queued, delete one, many or even all waiting jobs at once before they hit the queue. And, yes we do not only have dark mode.
 
 ![screenshot-waiting](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-waiting.jpg)
 
 ### Jobs failed
 
-See all failed Jobs including details, retry or delete:
+See all failed Jobs including details, retry or delete single jobs, many jobs or even all failed jobs at once.
 
 ![screenshot-details](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-details.jpg)
 
@@ -54,13 +69,13 @@ See all failed Jobs including details, retry or delete:
 
 ### Job batches
 
-See your job batches, prune batches:
+Monitor your job batches, prune batches.
 
 ![screenshot-batches](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-batches.jpg)
 
 ## Manual Installation
 
-This Laravel package is made for Filament 3 and the awesome TALL-Stack. If you don't want to use our install command, follow thes manual steps to install the package.
+This Laravel package is made for FilamentPHP and the awesome TALL-Stack. If you don't want to use our install command, follow thes manual steps to install the package.
 
 Install the package via Composer:
 
@@ -76,7 +91,8 @@ php artisan vendor:publish --tag="jobs-batch-migration"
 php artisan vendor:publish --tag="jobs-queue-migration"
 php artisan vendor:publish --tag="jobs-manager-foreigns-migration"
 
-# Queue tables, if using the database driver instead of Redis queue backend
+# Queue tables, if using the database driver
+# Not required for Redis, Amazon SQS or Beanstalkd
 php artisan queue:table
 php artisan queue:failed-table
 php artisan queue:batches-table
@@ -189,7 +205,18 @@ Instead of publishing and modifying the config-file, you can also do all setting
 
 You don't need to register all Resources. If you don't use Job Batches, you can hide this feature by not registering it.
 
-## Usage
+## Jobs for Beginners
+
+Job queues are very useful. Every task that needs more than a couple of seconds can be handled in the background and Moox Jobs gives you full control in your applications UI. But starting with Laravel Job Queues needs some preparation.
+
+The first decision depends on your hosting:
+
+- Forge
+- Shared
+- Vapor
+- ....
+
+
 
 Start your queue with `php artisan queue:work`, run a Background Job (use following example, if you need one) and go to the route
 
