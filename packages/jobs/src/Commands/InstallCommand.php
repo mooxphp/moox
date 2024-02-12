@@ -37,7 +37,7 @@ class InstallCommand extends Command
         $this->create_queue_tables();
         $this->run_migrations();
         $this->register_plugins();
-        $this->finish();
+        $this->say_goodbye();
     }
 
     public function art(): void
@@ -236,7 +236,7 @@ class InstallCommand extends Command
         }
     }
 
-    public function finish(): void
+    public function say_goodbye(): void
     {
         note('Moox Jobs installed successfully. Enjoy!');
     }

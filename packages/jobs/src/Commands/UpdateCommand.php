@@ -4,6 +4,7 @@ namespace Moox\Jobs\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 use function Laravel\Prompts\confirm;
@@ -23,6 +24,8 @@ class UpdateCommand extends Command
         $this->update_schema();
         $this->publish_migrations();
         $this->run_migrations();
+        $this->migrate_data();
+        $this->say_goodbye();
     }
 
     public function art(): void
@@ -63,6 +66,7 @@ class UpdateCommand extends Command
                     }
                     if (! Schema::hasColumn('job_manager', 'status')) {
                         $table->string('status');
+                        $table->index(['status'], 'job_manager_status_index');
                     }
                     if (! Schema::hasColumn('job_manager', 'connection')) {
                         $table->string('connection')->nullable();
@@ -70,11 +74,13 @@ class UpdateCommand extends Command
                     if (! Schema::hasColumn('job_manager', 'job_queue_worker_id')) {
                         $table->unsignedBigInteger('job_queue_worker_id')->nullable();
                     }
+                    if (Schema::hasColumn('job_manager', 'job_id')) {
+                        $table->index(['job_id'], 'job_manager_job_id_index');
+                    }
+                    if (Schema::hasColumn('job_manager', 'queue')) {
+                        $table->index(['queue'], 'job_manager_queue_index');
+                    }
 
-                    // Todo: this is not stable, how to check for indexes?
-                    //                   $table->index(['job_id'], 'job_manager_job_id_index');
-                    //                   $table->index(['queue'], 'job_manager_queue_index');
-                    //                   $table->index(['status'], 'job_manager_status_index');
                 });
 
                 info('job_manager table updated successfully.');
@@ -115,5 +121,38 @@ class UpdateCommand extends Command
             info('Running Jobs Migrations...');
             $this->call('migrate');
         }
+    }
+
+    public function migrate_data(): void
+    {
+        $jobCount = DB::table('job_manager')->count();
+
+        if ($jobCount > 0) {
+            info("There are {$jobCount} entries in your job_manager table.");
+            if (confirm('Do you want to migrate the jobs to show a correct status?')) {
+                $jobs = DB::table('job_manager')->get();
+
+                foreach ($jobs as $job) {
+                    $status = 'Migrated';
+
+                    if ($job->finished_at) {
+                        $status = $job->failed ? 'Failed' : 'Completed';
+                    } elseif ($job->started_at && is_null($job->finished_at)) {
+                        $status = 'Running';
+                    }
+
+                    DB::table('job_manager')
+                        ->where('id', $job->id)
+                        ->update(['status' => $status]);
+                }
+
+                info('Existing job_manager data migration completed.');
+            }
+        }
+    }
+
+    public function say_goodbye(): void
+    {
+        info('Moox Jobs is updated. Enjoy!');
     }
 }
