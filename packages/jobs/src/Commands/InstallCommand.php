@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
 use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\note;
@@ -18,10 +19,19 @@ class InstallCommand extends Command
 
     protected $description = 'Install Moox Jobs, publishes configuration, migrations and registers plugins.';
 
+    protected $providerPath;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
+    }
+
     public function handle(): void
     {
         $this->art();
         $this->welcome();
+        $this->check_for_filament();
         $this->publish_configuration();
         $this->publish_migrations();
         $this->create_queue_tables();
@@ -54,6 +64,25 @@ class InstallCommand extends Command
     public function welcome(): void
     {
         note('Welcome to the Moox Jobs installer');
+    }
+
+    public function check_for_filament(): void
+    {
+
+        if (! File::exists($this->providerPath)) {
+
+            error('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist.');
+            info(' ');
+            warning('You should install FilamentPHP first, see https://filamentphp.com/docs/panels/installation');
+            info(' ');
+            warning('You may proceed installing Moox Jobs anyway, but things might not work!');
+            info(' ');
+            if (! $this->confirm('Do you want to proceed anyway?', false)) {
+                $this->info('Installation cancelled.');
+
+                return; // cancel installation
+            }
+        }
     }
 
     public function publish_configuration(): void
@@ -137,9 +166,7 @@ class InstallCommand extends Command
             $queueDriver = 'database';
         }
 
-        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
-
-        if (! File::exists($providerPath)) {
+        if (! File::exists($this->providerPath)) {
 
             info('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist. We try to install now ...');
 
@@ -149,9 +176,9 @@ class InstallCommand extends Command
 
         }
 
-        if (File::exists($providerPath)) {
+        if (File::exists($this->providerPath)) {
 
-            $content = File::get($providerPath);
+            $content = File::get($this->providerPath);
 
             $intend = '                ';
 
@@ -204,7 +231,7 @@ class InstallCommand extends Command
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
 
-                File::put($providerPath, $newContent);
+                File::put($this->providerPath, $newContent);
             }
         }
     }
