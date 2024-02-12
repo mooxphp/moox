@@ -20,19 +20,22 @@ class JobManagerProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Running
         Queue::before(static function (JobProcessing $event) {
             self::jobStarted($event->job);
         });
 
+        // Succeeded
         Queue::after(static function (JobProcessed $event) {
             self::jobFinished($event->job);
         });
 
+        // Failed
         Queue::failing(static function (JobFailed $event) {
             self::jobFinished($event->job, true, $event->exception);
         });
 
+        // Failed (retries exhausted)
         Queue::exceptionOccurred(static function (JobExceptionOccurred $event) {
             self::jobFinished($event->job, true, $event->exception);
         });
@@ -61,6 +64,7 @@ class JobManagerProvider extends ServiceProvider
             'started_at' => $now,
             'attempt' => $job->attempts(),
             'progress' => 0,
+            'status' => 'running',
         ]);
 
         JobManager::query()
@@ -95,6 +99,16 @@ class JobManagerProvider extends ServiceProvider
             'finished_at' => now(),
             'failed' => $failed,
         ];
+
+        if ($failed === false) {
+            $attributes += [
+                'status' => 'succeeded',
+            ];
+        } else {
+            $attributes += [
+                'status' => 'failed',
+            ];
+        }
 
         if ($exception !== null) {
             $attributes += [
