@@ -4,7 +4,7 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
-Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See Limitations below for more information. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
+Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See [Limitations](#limitations) below for more information. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
 
 ## Requirements
 
@@ -209,13 +209,15 @@ You don't need to register all Resources. If you don't use Job Batches, you can 
 
 Job queues are very useful. Every task that needs more than a couple of seconds can be handled in the background and Moox Jobs gives you full control in your applications UI. But starting with Laravel Job Queues needs some preparation.
 
-The first decision depends on your hosting:
+The first decision depends on your hosting and deployment:
 
 ### Laravel Forge
 
-Laravel Forge supports Redis, Horizon and Supervisor. The best way is to install Horizon and to enable it in the Forge UI.
+Laravel Forge supports Redis, Horizon and Supervisor. The best way is to install Horizon and to enable it in the Forge UI. You can then schedule any job (or command dispatching your job). Do schedule any command without the need to change code (in kernel.php), you might consider using the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule).
 
-Todo: Link to Forge docs for mor information.
+More information:
+
+- [Laravel Forge docs: Queues](https://forge.laravel.com/docs/sites/queues.html)
 
 ### Shared Hosting
 
@@ -225,32 +227,32 @@ On most Shared Hosting and Managed Servers Redis and Supervisor are not availabl
 php artisan queue:work
 ```
 
-Todo: how to control the queue worker on shared environments.
+The best way, to automate your jobs (and care for re-running the queue:worker after failure), is to create a crontab to run the Laravel Scheduler minutely and to use the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule) to run your jobs (or commands).
+
+More information:
+
+- [Laravel Queues for Beginners](https://sagardhiman021.medium.com/demystifying-queues-and-jobs-in-laravel-a-beginners-guide-with-examples-in-2023-a8e52698a298)
+- [Using Laravel Queues on Shared Hosting](https://talltips.novate.co.uk/laravel/using-queues-on-shared-hosting-with-laravel)
 
 ### Root Server
 
-On a Root Server the easiest way is to do it like shared hosting. With root privileges (aka superuser, su or sudo) you may be able to install Redis and Supervisor manually.
+On a Root Server, VPS or Cloud Server Droplet the fastest way is to do job queuing like shared hosting. But as the combination Redis with Supervisor is much more stable and minimum twice as fast, you may also consider installing Redis and Supervisor manually using root privileges or (depending on your provider and deployment, maybe Forge, Envoyer or Ploi.io) a more convenient UI.
 
-Todo: Link to more detailed information.
+More information: 
+
+- [Laravel Horizon on Ubuntu](https://dev.to/shuv1824/laravel-horizon-with-nginx-and-ubuntu-18-04-on-digitalocean-1fod)
 
 ### Laravel Vapor
 
-Todo: Laravel Vapor is currently not tested.
+On Laravel Vapor, the first-party deployment tool for going Serverless (using Amazon AWS Lambda Services), Laravel will automatically use Amazon SQS (Simple Queue Services) as queue driver. Laravel SQS is partly supported by Moox Jobs, means you can monitor jobs and failed jobs, retry failed jobs and use the progress feature. Pending jobs and batches are currently not implemented.
 
+More information: 
 
+- [Laravel Vapor Docs: Queues](https://docs.vapor.build/resources/queues.html)
 
-// This is old
+When you got your job queues up and running, a good way to test Moox Jobs is using our
 
-Start your queue with `php artisan queue:work`, run a Background Job (use following example, if you need one) and go to the route
-
--   `/admin/jobs` to see the jobs running and done
--   `/admin/waiting-jobs` to see or delete waiting jobs
--   `/admin/failed-jobs` to see, retry or delete failed jobs
--   `/admin/job-batches` to see job batches, or prune the batch table
-
-// End this is old
-
-## Example Job
+### Demo Job
 
 You do not need to change anything in your Jobs to work with Filament Job Monitor. But especially for long running jobs you may find this example interesting:
 
@@ -302,6 +304,10 @@ class DemoJob implements ShouldQueue
 
 ```
 
+Create a file named DemoJob.php in app/Jobs/ and copy over the contents above.
+
+### Demo Job Command
+
 This example command will start the job:
 
 ```php
@@ -335,7 +341,7 @@ class DemoJobCommand extends Command
 
 ```
 
-Then do a
+Create a file DemoJobCommand.php in app/Console/Commands. Then do a
 
 ```bash
 php artisan moox:demojob
@@ -345,7 +351,15 @@ to dispatch one Demo Job.
 
 Now you can monitor the progress of your job in the Filament UI.
 
-Todo: add some details, explain the progress feature.
+## Progress
+
+As shown in the Demo Job above, Moox Jobs comes with a progress feature. Using the JobProgress trait in your jobs is an optional thing. Jobs without the JobProgress-trait run and show up in the Moox Jobs UI, just missing the comfort of having the progress shown. 
+
+If you want to use the progress feature, be reminded that:
+
+- Your jobs will not run without Moox Jobs installed, when using the progress feature. If your jobs are part of an installable package, you should consider requiring Moox Jobs with your package. 
+- If you want to remove Moox Jobs from your app, you have to remove the progress feature from your jobs prior to uninstalling Moox Jobs.
+- Coding the setProgress may not give an exact information about the progress. But especially for long running jobs it might be interesting to see where the job hangs (or just makes a long break). Debugging jobs without any glue about the progress may be much harder.
 
 ## Model
 
@@ -398,9 +412,9 @@ This will prevent the navigation item(s) from being registered.
 
 ## Limitations
 
-Moox Jobs is the perfect fit for the database queue driver. It runs fine on shared hostings and provides a job monitor, pending jobs, failed jobs and the possibility to retry failed jobs, where all other Laravel packages do not fit.
+Moox Jobs is the perfect fit for the database queue driver. It runs fine on shared hostings and provides a job monitor, pending jobs, failed jobs and the possibility to retry failed jobs, where other Laravel packages like Horizon do not fit.
 
-The job monitor and failed jobs are also working with Redis, SQS and Beanstalkd, but it does not show waiting jobs and there might be problems with job batches. For Redis we recommend using [Laravel Horizon](https://horizon.laravel.com), for Amazon SQS the AWS Dashboard. The solutions for Beanstalkd seem outdated, but you might give [Laravel Beanstalkd Admin UI](https://github.com/Dionera/laravel-beanstalkd-admin-ui) a try.
+The job monitor and failed jobs are also working with Redis, SQS and Beanstalkd, but it does not show waiting jobs and job batches. For Redis we recommend using [Laravel Horizon](https://horizon.laravel.com), for Amazon SQS the AWS Dashboard. The solutions for Beanstalkd seem outdated, but you might give [Laravel Beanstalkd Admin UI](https://github.com/Dionera/laravel-beanstalkd-admin-ui) a try.
 
 Another thing is using the Sync driver. As the Sync driver in Laravel is intended for development and testing, it executes jobs immediately (synchronously) and does not utilize queues. Therefore, it doesn't use the failed_jobs, jobs, or job_batches tables. Jobs are executed immediately within the same request lifecycle, so there's no queuing or storing of jobs. If a job fails, it's handled immediately within the execution context, not logged in the failed_jobs table. Jobs running with the sync driver may appear as running jobs and stay running forever, even if they are already completed or failed.
 
