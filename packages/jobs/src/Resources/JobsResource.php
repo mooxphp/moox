@@ -51,6 +51,7 @@ class JobsResource extends Resource
             ->columns([
                 TextColumn::make('status')
                     ->badge()
+                    ->sortable()
                     ->label(__('jobs::translations.status'))
                     ->formatStateUsing(fn (string $state): string => __("jobs::translations.{$state}"))
                     ->color(fn (string $state): string => match ($state) {
