@@ -211,12 +211,35 @@ Job queues are very useful. Every task that needs more than a couple of seconds 
 
 The first decision depends on your hosting:
 
-- Forge
-- Shared
-- Vapor
-- ....
+### Laravel Forge
+
+Laravel Forge supports Redis, Horizon and Supervisor. The best way is to install Horizon and to enable it in the Forge UI.
+
+Todo: Link to Forge docs for mor information.
+
+### Shared Hosting
+
+On most Shared Hosting and Managed Servers Redis and Supervisor are not available. You need SSH access or a CRON to start the queue worker like this:
+
+```bash
+php artisan queue:work
+```
+
+Todo: how to control the queue worker on shared environments.
+
+### Root Server
+
+On a Root Server the easiest way is to do it like shared hosting. With root privileges (aka superuser, su or sudo) you may be able to install Redis and Supervisor manually.
+
+Todo: Link to more detailed information.
+
+### Laravel Vapor
+
+Todo: Laravel Vapor is currently not tested.
 
 
+
+// This is old
 
 Start your queue with `php artisan queue:work`, run a Background Job (use following example, if you need one) and go to the route
 
@@ -224,6 +247,8 @@ Start your queue with `php artisan queue:work`, run a Background Job (use follow
 -   `/admin/waiting-jobs` to see or delete waiting jobs
 -   `/admin/failed-jobs` to see, retry or delete failed jobs
 -   `/admin/job-batches` to see job batches, or prune the batch table
+
+// End this is old
 
 ## Example Job
 
@@ -234,20 +259,31 @@ You do not need to change anything in your Jobs to work with Filament Job Monito
 
 namespace App\Jobs;
 
-use Moox\Jobs\Traits\JobProgress;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use
-class JobMonitorDemo implements ShouldQueue
+use Moox\Jobs\Traits\JobProgress;
+
+class DemoJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, QueueProgress;
+    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
+
+    public $tries;
+
+    public $timeout;
+
+    public $maxExceptions;
+
+    public $backoff;
 
     public function __construct()
     {
-        //
+        $this->tries = 10;
+        $this->timeout = 120;
+        $this->maxExceptions = 3;
+        $this->backoff = 240;
     }
 
     public function handle()
@@ -259,13 +295,57 @@ class JobMonitorDemo implements ShouldQueue
         while ($count < $final) {
             $this->setProgress($count);
             $count = $count + $steps;
-          	sleep(10);
+            sleep(10);
         }
     }
 }
+
 ```
 
+This example command will start the job:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use App\Jobs\DemoJob;
+use Illuminate\Console\Command;
+
+class DemoJobCommand extends Command
+{
+    protected $signature = 'moox:demojob';
+
+    protected $description = 'Start the Moox Demo Job';
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function handle()
+    {
+        $this->info('Starting Moox Demo Job');
+
+        DemoJob::dispatch();
+
+        $this->info('Moox Demo Job finished');
+    }
+}
+
+```
+
+Then do a
+
+```bash
+php artisan moox:demojob
+```
+
+to dispatch one Demo Job.
+
 Now you can monitor the progress of your job in the Filament UI.
+
+Todo: add some details, explain the progress feature.
 
 ## Model
 
