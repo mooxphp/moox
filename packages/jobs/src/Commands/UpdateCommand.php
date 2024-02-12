@@ -71,6 +71,7 @@ class UpdateCommand extends Command
                         $table->unsignedBigInteger('job_queue_worker_id')->nullable();
                     }
 
+                    // Todo: this is not stable, how to check for indexes?
                     //                   $table->index(['job_id'], 'job_manager_job_id_index');
                     //                   $table->index(['queue'], 'job_manager_queue_index');
                     //                   $table->index(['status'], 'job_manager_status_index');
