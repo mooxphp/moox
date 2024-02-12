@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Moox\Jobs\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -11,7 +11,7 @@ use function Laravel\Prompts\info;
 use function Laravel\Prompts\note;
 use function Laravel\Prompts\warning;
 
-class UpdateJobManagerTable extends Command
+class UpdateCommand extends Command
 {
     protected $signature = 'mooxjobs:update';
 
@@ -65,17 +65,15 @@ class UpdateJobManagerTable extends Command
                         $table->string('status');
                     }
                     if (! Schema::hasColumn('job_manager', 'connection')) {
-                        $table->string('connection');
+                        $table->string('connection')->nullable();
                     }
                     if (! Schema::hasColumn('job_manager', 'job_queue_worker_id')) {
                         $table->unsignedBigInteger('job_queue_worker_id')->nullable();
-
-                        $table->foreign('job_queue_worker_id')->references('id')->on('job_queue_workers')->onDelete('set null');
                     }
 
-                    $table->index(['job_id'], 'job_manager_job_id_index');
-                    $table->index(['queue'], 'job_manager_queue_index');
-                    $table->index(['status'], 'job_manager_status_index');
+                    //                   $table->index(['job_id'], 'job_manager_job_id_index');
+                    //                   $table->index(['queue'], 'job_manager_queue_index');
+                    //                   $table->index(['status'], 'job_manager_status_index');
                 });
 
                 info('job_manager table updated successfully.');

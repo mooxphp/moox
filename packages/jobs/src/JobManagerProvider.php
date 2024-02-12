@@ -64,7 +64,7 @@ class JobManagerProvider extends ServiceProvider
             'started_at' => $now,
             'attempt' => $job->attempts(),
             'progress' => 0,
-            'status' => 'Running',
+            'status' => 'running',
         ]);
 
         JobManager::query()
@@ -102,11 +102,11 @@ class JobManagerProvider extends ServiceProvider
 
         if ($failed === false) {
             $attributes += [
-                'status' => 'Succeeded',
+                'status' => 'succeeded',
             ];
         } else {
             $attributes += [
-                'status' => 'Failed',
+                'status' => 'failed',
             ];
         }
 

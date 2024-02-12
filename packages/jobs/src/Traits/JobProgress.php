@@ -6,6 +6,8 @@ use Moox\Jobs\Models\JobManager;
 
 trait JobProgress
 {
+    public $progressLastUpdated;
+
     /**
      * Update progress.
      */

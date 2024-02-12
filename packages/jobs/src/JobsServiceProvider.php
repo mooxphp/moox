@@ -3,6 +3,7 @@
 namespace Moox\Jobs;
 
 use Moox\Jobs\Commands\InstallCommand;
+use Moox\Jobs\Commands\UpdateCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -13,7 +14,7 @@ class JobsServiceProvider extends PackageServiceProvider
         $package->name('jobs')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasCommand(InstallCommand::class);
+            ->hasCommands(InstallCommand::class, UpdateCommand::class);
     }
 
     public function boot()
