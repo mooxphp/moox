@@ -1,37 +1,18 @@
 # Changelog
 
-All notable changes to `jobs` will be documented in this file.
+All notable changes to `Moox Jobs` will be documented in this file.
 
-## v0.6.1 - 2022-12-08
+## Planned
 
--   focus relevant information in failed jobs index table
+-   Enhanced support for Redis
+-   Enhanced support for SQS
+-   Enhanced support for Beanstalkd
+-   Support for managing queue workers and Supervisor
 
-## v0.6.0 - 2022-10-06
+## v3.0 - 2024/02/12
 
--   introduce https://github.com/invaders-xx/filament-jsoneditor for `payload`
-
-## v0.5.1 - 2022-09-08
-
--   do not show 'options' column in JobBatchesResource
-
-## v0.5.0 - 2022-09-08
-
--   place FailedJobResource and JobBatchesResource in 'jobs' Navigation Group
-
-## v0.4.0 - 2022-08-29
-
--   introduced ability to delete failed jobs or job batches
-
-## v0.3.2 - 2022-08-29
-
--   introduced `job_batches` Resource (if the sql table is present)
-
-## v0.2.0 - 2022-08-09
-
--   introduced 'view' ViewAction to see job details as popup
--   introduced Bulk Action for Retry
--   introduced 'Retry all failed jobs' Button
-
-## v0.1.0 - 2022-08-09
-
--   initial release
+-   Provide an update command
+-   Changed database scheme for bugfixes and future development for Redis, SQS and Beanstalkd
+-   UI improvements, sorting
+-   Enhanced support for Sync driver
+-   Improved docs

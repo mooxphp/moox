@@ -1,16 +1,3 @@
 # Changelog
 
-# Planned
-
--   Enhanced support for Redis
--   Enhanced support for SQS
--   Enhanced support for Beanstalkd
--   Support for managing queue workers and Supervisor
-
-# 3.0
-
--   Provide an update command
--   Changed database scheme for bugfixes and future development for Redis, SQS and Beanstalkd
--   UI improvements, sorting
--   Enhanced support for Sync driver
--   Improved docs
+This is the changelog of the monorepo. It is currently not used. If you want to know more about what fixes and improvements we made, take a look at the Changelogs of the Moox packages.

@@ -21,11 +21,11 @@ class UpdateCommand extends Command
     public function handle(): void
     {
         $this->art();
-        $this->update_schema();
-        $this->publish_migrations();
-        $this->run_migrations();
-        $this->migrate_data();
-        $this->say_goodbye();
+        $this->updateSchema();
+        $this->publishMigrations();
+        $this->runMigrations();
+        $this->migrateData();
+        $this->sayGoodbye();
     }
 
     public function art(): void
@@ -54,7 +54,7 @@ class UpdateCommand extends Command
         note('Welcome to the Moox Jobs updater V2 to V3');
     }
 
-    public function update_schema(): void
+    public function updateSchema(): void
     {
         if (confirm('We make necessary updates to the database schema, OK?', true)) {
             info('Updating job_manager table...');
@@ -92,7 +92,7 @@ class UpdateCommand extends Command
         }
     }
 
-    public function publish_migrations(): void
+    public function publishMigrations(): void
     {
         if (confirm('We publish the new table migrations, OK?', true)) {
 
@@ -115,7 +115,7 @@ class UpdateCommand extends Command
         }
     }
 
-    public function run_migrations(): void
+    public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Jobs Migrations...');
@@ -123,7 +123,7 @@ class UpdateCommand extends Command
         }
     }
 
-    public function migrate_data(): void
+    public function migrateData(): void
     {
         $jobCount = DB::table('job_manager')->count();
 
@@ -151,7 +151,7 @@ class UpdateCommand extends Command
         }
     }
 
-    public function say_goodbye(): void
+    public function sayGoodbye(): void
     {
         info('Moox Jobs is updated. Enjoy!');
     }
