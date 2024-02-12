@@ -4,7 +4,7 @@
 
 Managing Job Queues, Failed Jobs and Batches in Filament.
 
-Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See [Limitations](#limitations) below for more information. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
+Alternative to Laravel Horizon, if you use the database driver for queues. Nice addon to Laravel Horizon, if you use Redis. See [Limitations](#limitations) below for more information about Redis, Amazon SQS and Beanstalkd compatibility. More information about Laravel Job Queues and how Moox Jobs works in our [Jobs for Beginners Guide](#jobs-for-beginners).
 
 ## Requirements
 
@@ -409,6 +409,14 @@ class FailedJobPolicy
 same for FailedJobPolicy and JobBatchPolicy.
 
 This will prevent the navigation item(s) from being registered.
+
+## Scaling 
+
+While Laravels queue system and Laravel Horizon are made for spawning (specially batches) across multiple servers, Moox Jobs is not fully prepared for this kind of usage. The core strength of Moox Jobs is the Filament integration and the possibility to manage Jobs running on a non-Redis driver, not managing enterprise server farms.
+
+Besides this, Moox Jobs is tested managing thousands of jobs per hour or millions of jobs per month.
+
+![screenshot-batches](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-scale.jpg)
 
 ## Limitations
 
