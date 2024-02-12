@@ -68,17 +68,20 @@ class InstallCommand extends Command
 
     public function checkForFilament(): void
     {
-
         if (! File::exists($this->providerPath)) {
-
             error('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist.');
             info(' ');
             warning('You should install FilamentPHP first, see https://filamentphp.com/docs/panels/installation');
             info(' ');
-            warning('You may proceed installing Moox Jobs anyway, but things might not work!');
-            info(' ');
-            if (! $this->confirm('Do you want to proceed anyway?', false)) {
-                $this->info('Installation cancelled.');
+            if (confirm('Do you want to install Filament now?', true)) {
+                info('Starting Filament installer...');
+                $this->call('filament:install', ['--panels' => true]);
+            }
+        }
+
+        if (! File::exists($this->providerPath)) {
+            if (! confirm('Filament is not installed properly. Do you want to proceed anyway?', false)) {
+                info('Installation cancelled.');
 
                 return; // cancel installation
             }
@@ -164,12 +167,6 @@ class InstallCommand extends Command
 
         if (config('queue.default') == 'database') {
             $queueDriver = 'database';
-        }
-
-        if (! File::exists($this->providerPath)) {
-            info('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist. We try to install now ...');
-            $this->call('filament:install', ['--panels' => true]);
-            info('Filament seems to be installed. Now proceeding with Moox Jobs installation ...');
         }
 
         if (File::exists($this->providerPath)) {
