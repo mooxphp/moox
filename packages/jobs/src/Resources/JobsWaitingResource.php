@@ -50,7 +50,6 @@ class JobsWaitingResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->label(__('jobs::translations.status'))
-                    ->sortable()
                     ->formatStateUsing(fn (string $state): string => __("jobs::translations.{$state}"))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
