@@ -24,6 +24,10 @@ Instead of using the install-command `php artisan mooxcore:install` you are able
 php artisan vendor:publish --tag="core-config"
 ```
 
+then manually register the plugins from:
+
+- https://github.com/leandrocfe/filament-apex-charts
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
