@@ -21,10 +21,7 @@
         }
     ],
     "require": {
-        "php": "^8.0.2",
-        "spatie/laravel-package-tools": "^1.9.2",
-        "invaders-xx/filament-jsoneditor": "^3.0",
-        "filament/filament": "^3.0"
+        "moox/core": "^1.0"
     },
     "require-dev": {},
     "autoload": {

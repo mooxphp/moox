@@ -1,0 +1,41 @@
+{
+    "name": "moox/core",
+    "description": "The Moox Core package cares for many common features. It is required by all Moox packages.",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1.0",
+        "spatie/laravel-package-tools": "^1.13.0",
+        "filament/filament": "^3.2",
+        "invaders-xx/filament-jsoneditor": "^3.0",
+        "leandrocfe/filament-apex-charts": "^3.1",
+        "ryangjchandler/filament-progress-column": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Core\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Core\\CoreServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
