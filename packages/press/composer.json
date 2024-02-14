@@ -17,9 +17,7 @@
         }
     ],
     "require": {
-        "spatie/laravel-package-tools": "^1.13.0",
-        "roots/wordpress": "^6.4",
-        "filament/filament": "^3.0"
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {
