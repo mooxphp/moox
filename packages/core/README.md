@@ -1,4 +1,4 @@
-![Moox Core](https://github.com/mooxphp/moox/raw/main/_other/art/banner/core.jpg)
+![Moox Core](https://github.com/mooxphp/moox/raw/main/art/banner/core.jpg)
 
 # Moox Core
 
