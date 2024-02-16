@@ -84,6 +84,9 @@ class AdminPanelProvider extends PanelProvider
                     ->enableTwoFactorAuthentication(
                         force: false,
                     ),
+
+                \Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin::make(),
+
             ]);
     }
 }

@@ -90,7 +90,7 @@ class InstallCommand extends Command
             $content = File::get($this->providerPath);
             $intend = '                ';
 
-            $pluginsToAdd = ['Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin'];
+            $pluginsToAdd = ['\Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin'];
 
             $function = '::make(),';
 
@@ -105,6 +105,8 @@ class InstallCommand extends Command
                     info("$pluginName already registered.");
                 } else {
                     $newPlugins .= $intend.$plugin.$function."\n";
+                    info("$pluginName registered.");
+
                 }
             }
 
