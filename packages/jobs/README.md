@@ -312,6 +312,21 @@ class DemoJob implements ShouldQueue
 
 Create a file named DemoJob.php in app/Jobs/ and copy over the contents above.
 
+### Customize Job Name
+
+By default, the name of the tasks comes from the name of the class. This can be rewritten based on the following example.
+
+```php
+use Illuminate\Support\Carbon;
+...
+public function displayName()
+{
+    $now = Carbon::now();
+    return "Demo Job | Started: ".$now;
+}
+
+```
+
 ### Demo Job Command
 
 This example command will start the job:
