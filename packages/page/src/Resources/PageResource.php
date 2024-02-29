@@ -21,6 +21,8 @@ class PageResource extends Resource
 {
     protected static ?string $model = Page::class;
 
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -79,48 +81,35 @@ class PageResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return PagePlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
     public static function getModelLabel(): string
     {
-        return PagePlugin::make()->getLabel();
+        return __('page::translations.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return PagePlugin::make()->getPluralLabel();
+        return __('page::translations.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel());
+        return __('page::translations.navigation_label');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return PagePlugin::make()->getNavigationGroup();
+        return __('page::translations.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return PagePlugin::make()->getNavigationSort();
+        return 1;
     }
 
     public static function getBreadcrumb(): string
     {
-        return PagePlugin::make()->getBreadcrumb();
+        return __('page::translations.breadcrumb');
     }
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return PagePlugin::make()->shouldRegisterNavigation();
-    }
 
-    public static function getNavigationIcon(): string
-    {
-        return PagePlugin::make()->getNavigationIcon();
-    }
 }
