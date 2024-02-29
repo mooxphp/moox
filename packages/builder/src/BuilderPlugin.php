@@ -5,6 +5,7 @@ namespace Moox\Builder;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Builder\Resources\BuilderResource;
 
 class BuilderPlugin implements Plugin
 {

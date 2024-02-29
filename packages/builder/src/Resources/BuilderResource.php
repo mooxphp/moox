@@ -79,48 +79,4 @@ class BuilderResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return BuilderPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
-    public static function getModelLabel(): string
-    {
-        return BuilderPlugin::make()->getLabel();
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return BuilderPlugin::make()->getPluralLabel();
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return BuilderPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return BuilderPlugin::make()->getNavigationSort();
-    }
-
-    public static function getBreadcrumb(): string
-    {
-        return BuilderPlugin::make()->getBreadcrumb();
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return BuilderPlugin::make()->shouldRegisterNavigation();
-    }
-
-    public static function getNavigationIcon(): string
-    {
-        return BuilderPlugin::make()->getNavigationIcon();
-    }
 }
