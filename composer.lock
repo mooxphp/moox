@@ -3680,12 +3680,13 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "73d9996d3b2d22948a651df5e963fd914155f65f"
+                "reference": "13fa9868435a48f8fac2e50a90374b2518b45619"
             },
             "require": {
                 "filament/filament": "^3.2",
                 "invaders-xx/filament-jsoneditor": "^3.0",
                 "leandrocfe/filament-apex-charts": "^3.1",
+                "pharaonic/laravel-readable": "^1.0.5",
                 "php": "^8.1.0",
                 "ryangjchandler/filament-progress-column": "*",
                 "spatie/laravel-package-tools": "^1.13.0"
@@ -4478,6 +4479,81 @@
                 "source": "https://github.com/paragonie/constant_time_encoding"
             },
             "time": "2022-06-14T06:56:20+00:00"
+        },
+        {
+            "name": "pharaonic/laravel-readable",
+            "version": "1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Pharaonic/laravel-readable.git",
+                "reference": "cda54a05c6b0bc0ed8d740243a4c392d79f4621c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Pharaonic/laravel-readable/zipball/cda54a05c6b0bc0ed8d740243a4c392d79f4621c",
+                "reference": "cda54a05c6b0bc0ed8d740243a4c392d79f4621c",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=6.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": ">=5.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Pharaonic\\Laravel\\Readable\\ReadableServiceProvider"
+                    ],
+                    "aliases": {
+                        "Readable": "Pharaonic\\Laravel\\Readable\\Readable"
+                    }
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Helpers.php"
+                ],
+                "psr-4": {
+                    "Pharaonic\\Laravel\\Readable\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Raggi",
+                    "email": "support@pharaonic.io",
+                    "homepage": "https://pharaonic.io"
+                }
+            ],
+            "description": "Laravel - Readable Number (Integer|decimal) & DateTime & Time Length & File Size.",
+            "keywords": [
+                "human readable",
+                "laravel",
+                "pharaonic",
+                "php",
+                "readable"
+            ],
+            "support": {
+                "issues": "https://github.com/Pharaonic/laravel-readable/issues",
+                "source": "https://github.com/Pharaonic/laravel-readable/tree/1.0.5"
+            },
+            "funding": [
+                {
+                    "url": "https://liberapay.com/Pharaonic",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "https://www.patreon.com/Pharaonic",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2022-02-14T09:56:07+00:00"
         },
         {
             "name": "phpoption/phpoption",

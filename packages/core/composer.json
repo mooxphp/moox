@@ -22,7 +22,8 @@
         "filament/filament": "^3.2",
         "invaders-xx/filament-jsoneditor": "^3.0",
         "leandrocfe/filament-apex-charts": "^3.1",
-        "ryangjchandler/filament-progress-column": "*"
+        "ryangjchandler/filament-progress-column": "*",
+        "pharaonic/laravel-readable": "^1.0.5"
     },
     "autoload": {
         "psr-4": {
