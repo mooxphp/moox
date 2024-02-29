@@ -11,8 +11,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Builder\BuilderPlugin;
 use Moox\Builder\Models\Builder;
 use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
@@ -78,5 +76,4 @@ class BuilderResource extends Resource
             BuilderWidgets::class,
         ];
     }
-
 }
