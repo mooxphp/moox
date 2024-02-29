@@ -17,8 +17,9 @@
         }
     ],
     "require": {
-        "php": "^8.1.0",
+        "php": "^8.2.0",
         "spatie/laravel-package-tools": "^1.13.0",
+        "laravel/framework": "^10.0",
         "filament/filament": "^3.2",
         "invaders-xx/filament-jsoneditor": "^3.0",
         "leandrocfe/filament-apex-charts": "^3.1",
@@ -37,6 +38,6 @@
             ]
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
