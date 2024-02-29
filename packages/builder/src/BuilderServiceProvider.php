@@ -17,7 +17,7 @@ class BuilderServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigration('create_builder_table')
+            ->hasMigrations(['create_builders_table'])
             ->hasCommand(InstallCommand::class);
     }
 }

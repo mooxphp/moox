@@ -11,8 +11,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Builder\BuilderPlugin;
 use Moox\Builder\Models\Builder;
 use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
@@ -77,50 +75,5 @@ class BuilderResource extends Resource
         return [
             BuilderWidgets::class,
         ];
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return BuilderPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
-    public static function getModelLabel(): string
-    {
-        return BuilderPlugin::make()->getLabel();
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return BuilderPlugin::make()->getPluralLabel();
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return BuilderPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return BuilderPlugin::make()->getNavigationSort();
-    }
-
-    public static function getBreadcrumb(): string
-    {
-        return BuilderPlugin::make()->getBreadcrumb();
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return BuilderPlugin::make()->shouldRegisterNavigation();
-    }
-
-    public static function getNavigationIcon(): string
-    {
-        return BuilderPlugin::make()->getNavigationIcon();
     }
 }

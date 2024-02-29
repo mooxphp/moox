@@ -3305,7 +3305,7 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
@@ -3351,7 +3351,7 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
@@ -3404,11 +3404,11 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "959a51311b759262f0f12ac8b8f239d2ea840e8c"
+                "reference": "ebe36400839c92b647dcb68b641004ea00cb8e84"
             },
             "require": {
                 "moox/core": "*"
@@ -3458,11 +3458,11 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "cc2869f56c528aebbf78a6fa34818159d2b9d03a"
+                "reference": "4fbf65f00c88b365f9832c18962d616ba77ede0e"
             },
             "require": {
                 "moox/core": "*"
@@ -3504,11 +3504,11 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "8338edde3b82b4980b2e1fe625d1ee9b578b34d4"
+                "reference": "33962f59f0b39547ec543a379589d0009f8214b7"
             },
             "require": {
                 "moox/core": "*"
@@ -3550,11 +3550,11 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-main",
+            "version": "dev-feature/builder",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "866a60b5dfe83f94c78023a1ef1ce354b40d77f3"
+                "reference": "286f61ee5aa8233102c387324a509225faf8b213"
             },
             "require": {
                 "bezhansalleh/filament-shield": "^3.0",
@@ -13097,5 +13097,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
