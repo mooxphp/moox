@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::table('job_manager', function (Blueprint $table) {
             $table
-                ->foreign('job_queue_worker_id')
+                ->foreignId('job_queue_worker_id')
                 ->references('id')
                 ->on('job_queue_workers')
                 ->onUpdate('CASCADE')
