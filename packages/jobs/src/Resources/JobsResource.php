@@ -91,9 +91,7 @@ class JobsResource extends Resource
 
     public static function getPages(): array
     {
-        return [
-            'index' => ListJobs::route('/'),
-        ];
+        return ['index' => ListJobs::route('/'),];
     }
 
     public static function getWidgets(): array

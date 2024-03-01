@@ -11,6 +11,16 @@ return [
         'plural' => '',
         'navigation_label' => '',
     ],
+    'jobs_failed' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
+    'jobs_bachtes' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Jobb-håndterer',
     'navigation_group' => 'Jobb-håndterer',
     'total_jobs' => 'Totalt antall jobber kjørt',

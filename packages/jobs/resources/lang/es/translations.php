@@ -11,6 +11,16 @@ return [
         'plural' => '',
         'navigation_label' => '',
     ],
+    'jobs_failed' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
+    'jobs_bachtes' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Monitor de Trabajos En Cola',
     'navigation_label' => 'Trabajos',
     'navigation_group' => 'Sistema',
