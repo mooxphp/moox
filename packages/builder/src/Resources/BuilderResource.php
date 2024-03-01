@@ -19,6 +19,8 @@ class BuilderResource extends Resource
 {
     protected static ?string $model = Builder::class;
 
+    protected static ?string $navigationIcon = 'heroicon-o-play';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -75,5 +77,45 @@ class BuilderResource extends Resource
         return [
             BuilderWidgets::class,
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('builder::translations.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('builder::translations.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('builder::translations.navigation_label');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('builder::translations.breadcrumb');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('builder::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 3;
     }
 }
