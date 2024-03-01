@@ -2,7 +2,6 @@
 
 namespace Moox\Jobs;
 
-use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;

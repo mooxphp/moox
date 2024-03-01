@@ -18,6 +18,7 @@ use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
 class JobsWaitingResource extends Resource
 {
     protected static ?string $model = Job::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-pause';
 
     public static function form(Form $form): Form
@@ -101,8 +102,6 @@ class JobsWaitingResource extends Resource
         ];
     }
 
-
-
     public static function getModelLabel(): string
     {
         return __('jobs::translations.jobs_waiting.title');
@@ -142,6 +141,4 @@ class JobsWaitingResource extends Resource
     {
         return 2;
     }
-
-
 }
