@@ -148,6 +148,6 @@ class JobsFailedResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 3;
+        return 1003;
     }
 }
