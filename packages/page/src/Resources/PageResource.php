@@ -11,15 +11,15 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Moox\Page\Models\Page;
-use Moox\Page\PagePlugin;
 use Moox\Page\Resources\PageResource\Pages\ListPage;
 use Moox\Page\Resources\PageResource\Widgets\PageWidgets;
 
 class PageResource extends Resource
 {
     protected static ?string $model = Page::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -79,48 +79,33 @@ class PageResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return PagePlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
     public static function getModelLabel(): string
     {
-        return PagePlugin::make()->getLabel();
+        return __('page::translations.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return PagePlugin::make()->getPluralLabel();
+        return __('page::translations.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel());
+        return __('page::translations.navigation_label');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return PagePlugin::make()->getNavigationGroup();
+        return __('page::translations.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return PagePlugin::make()->getNavigationSort();
+        return 1;
     }
 
     public static function getBreadcrumb(): string
     {
-        return PagePlugin::make()->getBreadcrumb();
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return PagePlugin::make()->shouldRegisterNavigation();
-    }
-
-    public static function getNavigationIcon(): string
-    {
-        return PagePlugin::make()->getNavigationIcon();
+        return __('page::translations.breadcrumb');
     }
 }

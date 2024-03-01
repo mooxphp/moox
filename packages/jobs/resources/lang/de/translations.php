@@ -1,9 +1,17 @@
 <?php
 
 return [
+    'jobs' => [
+        'single' => 'Job',
+        'plural' => 'Jobs',
+        'navigation_label' => 'Jobs',
+    ],
+    'jobs_waiting' => [
+        'single' => 'Job waiting',
+        'plural' => 'Jobs waiting',
+        'navigation_label' => 'Jobs Waiting',
+    ],
     'breadcrumb' => 'Jobs',
-    'title' => 'Jobs',
-    'navigation_label' => 'Jobs',
     'navigation_group' => 'Job Manager',
     'total_jobs' => 'Anzahl ausgeführter Jobs',
     'waiting_jobs' => 'Anzahl wartender Jobs',

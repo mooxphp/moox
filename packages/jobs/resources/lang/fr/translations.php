@@ -1,9 +1,17 @@
 <?php
 
 return [
+    'jobs' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
+    'jobs_waiting' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Monitor de Jobs En File',
-    'title' => 'Jobs',
-    'navigation_label' => 'Jobs',
     'navigation_group' => 'Système',
     'total_jobs' => 'Total Jobs Executé(s)',
     'execution_time' => "Temps Total d'Execution",

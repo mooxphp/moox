@@ -11,8 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
 use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
@@ -20,6 +18,8 @@ use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
 class JobsResource extends Resource
 {
     protected static ?string $model = JobManager::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-play';
 
     public static function form(Form $form): Form
     {
@@ -103,48 +103,43 @@ class JobsResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return JobsPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
     public static function getModelLabel(): string
     {
-        return JobsPlugin::make()->getLabel();
+        return __('jobs::translations.jobs.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return JobsPlugin::make()->getPluralLabel();
+        return __('jobs::translations.jobs.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return JobsPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return JobsPlugin::make()->getNavigationSort();
+        return __('jobs::translations.jobs.navigation_label');
     }
 
     public static function getBreadcrumb(): string
     {
-        return JobsPlugin::make()->getBreadcrumb();
+        return __('jobs::translations.breadcrumb');
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return JobsPlugin::make()->shouldRegisterNavigation();
+        return true;
     }
 
-    public static function getNavigationIcon(): string
+    public static function getNavigationBadge(): ?string
     {
-        return JobsPlugin::make()->getNavigationIcon();
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('jobs::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1;
     }
 }

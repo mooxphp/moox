@@ -1,8 +1,17 @@
 <?php
 
 return [
+    'jobs' => [
+        'single' => 'Trabajo En Cola',
+        'plural' => 'Trabajos En Cola',
+        'navigation_label' => '',
+    ],
+    'jobs_waiting' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Monitor de Trabajos En Cola',
-    'title' => 'Trabajos En Cola',
     'navigation_label' => 'Trabajos',
     'navigation_group' => 'Sistema',
     'total_jobs' => 'Total Trabajos Ejecutados',

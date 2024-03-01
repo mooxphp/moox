@@ -17,7 +17,7 @@ class PageServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigration('create_page_table')
+            ->hasMigrations(['create_pages_table'])
             ->hasCommand(InstallCommand::class);
     }
 }

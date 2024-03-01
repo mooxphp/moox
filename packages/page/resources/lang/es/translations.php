@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'single' => 'Page',
+    'plural' => 'Page',
     'breadcrumb' => 'Page',
     'title' => 'Page',
     'navigation_label' => 'Page',
