@@ -13,7 +13,7 @@ class JobsWaitingPlugin implements Plugin
 
     public function getId(): string
     {
-        return 'filament-jobs_waiting';
+        return 'filament-jobs-waiting';
     }
 
     public function register(Panel $panel): void

@@ -11,6 +11,16 @@ return [
         'plural' => '',
         'navigation_label' => '',
     ],
+    'jobs_failed' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
+    'jobs_bachtes' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Monitor de Jobs En File',
     'navigation_group' => 'Système',
     'total_jobs' => 'Total Jobs Executé(s)',

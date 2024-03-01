@@ -11,6 +11,16 @@ return [
         'plural' => 'Jobs waiting',
         'navigation_label' => 'Jobs Waiting',
     ],
+    'jobs_failed' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
+    'jobs_bachtes' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Jobs',
     'navigation_group' => 'Job Manager',
     'total_jobs' => 'Anzahl ausgeführter Jobs',
