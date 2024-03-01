@@ -1,15 +1,14 @@
 <?php
-
 return [
     'jobs' => [
         'single' => 'Trabajo En Cola',
         'plural' => 'Trabajos En Cola',
-        'navigation_label' => '',
+        'navigation_label' => 'Trabajos',
     ],
     'jobs_waiting' => [
-        'single' => '',
-        'plural' => '',
-        'navigation_label' => '',
+        'single' => 'Trabajo en espera',
+        'plural' => 'Trabajos en espera',
+        'navigation_label' => 'Trabajos en espera',
     ],
     'jobs_failed' => [
         'single' => '',
