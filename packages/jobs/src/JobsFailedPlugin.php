@@ -32,6 +32,4 @@ class JobsFailedPlugin implements Plugin
     {
         return app(static::class);
     }
-
-
 }

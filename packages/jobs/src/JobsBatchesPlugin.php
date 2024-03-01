@@ -2,10 +2,10 @@
 
 namespace Moox\Jobs;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
-use Moox\Jobs\Resources\JobBatchesResource;
+use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\Jobs\Resources\JobBatchesResource;
 
 class JobsBatchesPlugin implements Plugin
 {
@@ -32,5 +32,4 @@ class JobsBatchesPlugin implements Plugin
     {
         return app(static::class);
     }
-
 }
