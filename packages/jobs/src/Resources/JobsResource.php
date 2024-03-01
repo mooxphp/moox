@@ -118,7 +118,6 @@ class JobsResource extends Resource
         return __('jobs::translations.jobs.navigation_label');
     }
 
-
     public static function getBreadcrumb(): string
     {
         return __('jobs::translations.breadcrumb');
@@ -143,6 +142,4 @@ class JobsResource extends Resource
     {
         return 1;
     }
-
-
 }
