@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'single' => 'Job',
+    'plural' => 'Jobs',
     'breadcrumb' => 'Jobs',
     'title' => 'Jobs',
     'navigation_label' => 'Jobs',

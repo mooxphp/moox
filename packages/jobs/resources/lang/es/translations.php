@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'single' => 'Trabajo En Cola',
+    'plural' => 'Trabajos En Cola',
     'breadcrumb' => 'Monitor de Trabajos En Cola',
     'title' => 'Trabajos En Cola',
     'navigation_label' => 'Trabajos',
