@@ -1,11 +1,17 @@
 <?php
 
 return [
-    'single' => 'Job',
-    'plural' => 'Jobs',
+    'jobs' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
+    'jobs_waiting' => [
+        'single' => '',
+        'plural' => '',
+        'navigation_label' => '',
+    ],
     'breadcrumb' => 'Jobb-håndterer',
-    'title' => 'Jobber',
-    'navigation_label' => 'Jobber',
     'navigation_group' => 'Jobb-håndterer',
     'total_jobs' => 'Totalt antall jobber kjørt',
     'waiting_jobs' => 'Totalt antall jobber som venter',
