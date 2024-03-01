@@ -3650,7 +3650,7 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-feature/cleanup",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
@@ -3696,11 +3696,11 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-feature/cleanup",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "70a8650e517729f761f66995bb2c8621fa7cea9e"
+                "reference": "83b08ac7b241fe0c755dc28a87f0f830d3383d6f"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3749,7 +3749,7 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-feature/cleanup",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
@@ -3803,7 +3803,7 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-feature/cleanup",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
@@ -3849,7 +3849,7 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-feature/cleanup",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
@@ -3895,7 +3895,7 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-feature/cleanup",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
@@ -13444,5 +13444,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
