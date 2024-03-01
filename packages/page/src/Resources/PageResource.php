@@ -99,13 +99,13 @@ class PageResource extends Resource
         return __('page::translations.navigation_group');
     }
 
-    public static function getNavigationSort(): ?int
-    {
-        return 1;
-    }
-
     public static function getBreadcrumb(): string
     {
         return __('page::translations.breadcrumb');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 101;
     }
 }

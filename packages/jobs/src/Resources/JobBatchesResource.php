@@ -92,6 +92,6 @@ class JobBatchesResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 4;
+        return 1004;
     }
 }
