@@ -1,5 +1,4 @@
 <?php
-
 return [
     'jobs' => [
         'single' => 'Trabajo En Cola',
@@ -12,9 +11,9 @@ return [
         'navigation_label' => 'Trabajos en espera',
     ],
     'jobs_failed' => [
-        'single' => '',
-        'plural' => '',
-        'navigation_label' => '',
+        'single' => 'Trabajo no realizado',
+        'plural' => 'Trabajos no realizados',
+        'navigation_label' => 'Trabajos fallidos',
     ],
     'jobs_bachtes' => [
         'single' => '',
@@ -40,4 +39,9 @@ return [
     'waiting_jobs' => 'Número de trabajos en espera',
     'attempts' => 'Intentos',
     'waiting' => 'En espera',
+    'jobs_batches' => [
+        'single' => 'Lote de tareas',
+        'plural' => 'Lotes de trabajos',
+        'navigation_label' => 'Lotes de trabajos',
+    ],
 ];
