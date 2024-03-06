@@ -17,7 +17,10 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Sync\Models\Platform;
+use Moox\Sync\Resources\PlatformResource\Pages\CreatePlatform;
+use Moox\Sync\Resources\PlatformResource\Pages\EditPlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\ListPlatforms;
+use Moox\Sync\Resources\PlatformResource\Pages\ViewPlatform;
 
 class PlatformResource extends Resource
 {
@@ -183,7 +186,7 @@ class PlatformResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // PlatformResource\RelationManagers\SyncsRelationManager::class,
+            PlatformResource\RelationManagers\SyncsRelationManager::class,
             // PlatformResource\RelationManagers\SyncsRelationManager::class,
         ];
     }
@@ -192,9 +195,9 @@ class PlatformResource extends Resource
     {
         return [
             'index' => ListPlatforms::route('/'),
-            // 'create' => Pages\CreatePlatform::route('/create'),
-            // 'view' => Pages\ViewPlatform::route('/{record}'),
-            // 'edit' => Pages\EditPlatform::route('/{record}/edit'),
+            'create' => CreatePlatform::route('/create'),
+            'view' => ViewPlatform::route('/{record}'),
+            'edit' => EditPlatform::route('/{record}/edit'),
         ];
     }
 

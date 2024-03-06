@@ -16,7 +16,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Sync\Models\Sync;
+use Moox\Sync\Resources\SyncResource\Pages\CreateSync;
+use Moox\Sync\Resources\SyncResource\Pages\EditSync;
 use Moox\Sync\Resources\SyncResource\Pages\ListSyncs;
+use Moox\Sync\Resources\SyncResource\Pages\ViewSync;
 
 class SyncResource extends Resource
 {
@@ -133,9 +136,9 @@ class SyncResource extends Resource
     {
         return [
             'index' => ListSyncs::route('/'),
-            //'create' => Pages\CreateSync::route('/create'),
-            //'view' => Pages\ViewSync::route('/{record}'),
-            //'edit' => Pages\EditSync::route('/{record}/edit'),
+            'create' => CreateSync::route('/create'),
+            'view' => ViewSync::route('/{record}'),
+            'edit' => EditSync::route('/{record}/edit'),
         ];
     }
 
