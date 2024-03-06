@@ -80,10 +80,12 @@ class InstallCommand extends Command
     public function publish_migrations(): void
     {
         if (Schema::hasTable('user')) {
-            warning('The user table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing User Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'user-migrations']);
+            warning('The user table already exists. The migrations add fields required by Moox User.');
+
+            if (confirm('Do you wish to publish the migrations?', true)) {
+                info('Publishing User Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'user-migrations']);
+            }
         }
     }
 

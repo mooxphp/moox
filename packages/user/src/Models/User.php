@@ -2,22 +2,42 @@
 
 namespace Moox\User\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\User as BaseUser;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Model
+class User extends BaseUser
 {
-    protected $table = 'user';
+    use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name',
-        'started_at',
-        'finished_at',
-        'failed',
+        'slug',
+        'gender',
+        'title',
+        'first_name',
+        'last_name',
+        'email',
+        'website',
+        'description',
+        'password',
+        'profile_photo_path',
+    ];
+
+    protected $searchableFields = ['*'];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected $casts = [
-        'failed' => 'bool',
-        'started_at' => 'datetime',
-        'finished_at' => 'datetime',
+        'email_verified_at' => 'datetime',
+        'two_factor_confirmed_at' => 'datetime',
     ];
 }
