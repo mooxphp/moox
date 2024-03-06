@@ -19,7 +19,7 @@ class BuilderResource extends Resource
 {
     protected static ?string $model = Builder::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-play';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {

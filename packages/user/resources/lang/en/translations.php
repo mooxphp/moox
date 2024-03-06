@@ -1,10 +1,12 @@
 <?php
 
 return [
+    'single' => 'User',
+    'plural' => 'Users',
     'breadcrumb' => 'User',
     'title' => 'User',
     'navigation_label' => 'User',
-    'navigation_group' => 'User Group',
+    'navigation_group' => 'User',
     'totalone' => 'User One',
     'totaltwo' => 'User Two',
     'totalthree' => 'User Three',
