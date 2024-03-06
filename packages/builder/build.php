@@ -159,13 +159,13 @@ $authorEmail = ask('Author email', 'dev@moox.org');
 $currentDirectory = getcwd();
 $folderName = basename($currentDirectory);
 
-if(!isValidPackageName($folderName)){
+if (! isValidPackageName($folderName)) {
     do {
         writeln('Invalid package name: "builder" is not allowed.');
         $name = ask('Package name');
         $packageName = $name;
     } while (! isValidPackageName($packageName));
-}else{
+} else {
     $packageName = $folderName;
 }
 
