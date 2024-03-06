@@ -111,8 +111,8 @@ class InstallCommand extends Command
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['SyncPlugin'],
-                default: ['SyncPlugin'],
+                options: ['SyncPlugin', 'PlatformPlugin'],
+                default: ['SyncPlugin', 'PlatformPlugin'],
             );
 
             $function = '::make(),';

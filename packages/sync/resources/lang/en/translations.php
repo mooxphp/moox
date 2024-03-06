@@ -3,10 +3,12 @@
 return [
     'single' => 'Sync',
     'plural' => 'Syncs',
+    'platform' => 'Platform',
+    'platforms' => 'Platforms',
     'breadcrumb' => 'Sync',
     'title' => 'Sync',
     'navigation_label' => 'Sync',
-    'navigation_group' => 'Sync Group',
+    'navigation_group' => 'Sync',
     'totalone' => 'Sync One',
     'totaltwo' => 'Sync Two',
     'totalthree' => 'Sync Three',

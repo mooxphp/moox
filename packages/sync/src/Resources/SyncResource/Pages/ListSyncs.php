@@ -7,7 +7,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource;
 
-class ListPage extends ListRecords
+class ListSyncs extends ListRecords
 {
     public static string $resource = SyncResource::class;
 

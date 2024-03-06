@@ -7,7 +7,7 @@ use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\Sync\Resources\PlatformResource;
 
-class SyncPlugin implements Plugin
+class PlatformPlugin implements Plugin
 {
     use EvaluatesClosures;
 

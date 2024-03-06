@@ -16,12 +16,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Sync\Models\Sync;
+use Moox\Sync\Resources\SyncResource\Pages\ListSyncs;
 
 class SyncResource extends Resource
 {
     protected static ?string $model = Sync::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-play';
+    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
 
     protected static ?string $recordTitleAttribute = 'syncable_type';
 
@@ -128,15 +129,10 @@ class SyncResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
-    public static function getRelations(): array
-    {
-        return [];
-    }
-
     public static function getPages(): array
     {
         return [
-            //'index' => Pages\ListSyncs::route('/'),
+            'index' => ListSyncs::route('/'),
             //'create' => Pages\CreateSync::route('/create'),
             //'view' => Pages\ViewSync::route('/{record}'),
             //'edit' => Pages\EditSync::route('/{record}/edit'),
@@ -180,6 +176,6 @@ class SyncResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 2001;
+        return 1801;
     }
 }

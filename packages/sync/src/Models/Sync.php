@@ -22,12 +22,12 @@ class Sync extends Model
 
     public function sourcePlatform()
     {
-        //return $this->belongsTo(Platform::class, 'source_platform_id');
+        return $this->belongsTo(Platform::class, 'source_platform_id');
     }
 
     public function targetPlatform()
     {
-        //return $this->belongsTo(Platform::class, 'target_platform_id');
+        return $this->belongsTo(Platform::class, 'target_platform_id');
     }
 
     public function syncable()

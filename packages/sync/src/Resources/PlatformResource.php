@@ -2,7 +2,6 @@
 
 namespace Moox\Sync\Resources;
 
-use App\Filament\Resources\PlatformResource\Pages;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -14,15 +13,17 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Sync\Models\Platform;
+use Moox\Sync\Resources\PlatformResource\Pages\ListPlatforms;
 
 class PlatformResource extends Resource
 {
     protected static ?string $model = Platform::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-collection';
+    protected static ?string $navigationIcon = 'heroicon-o-server-stack';
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -190,10 +191,50 @@ class PlatformResource extends Resource
     public static function getPages(): array
     {
         return [
-            // 'index' => Pages\ListPlatforms::route('/'),
+            'index' => ListPlatforms::route('/'),
             // 'create' => Pages\CreatePlatform::route('/create'),
             // 'view' => Pages\ViewPlatform::route('/{record}'),
             // 'edit' => Pages\EditPlatform::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('sync::translations.platform');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('sync::translations.platforms');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('sync::translations.platforms');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('sync::translations.breadcrumb');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('sync::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1801;
     }
 }
