@@ -25,6 +25,18 @@ function confirm(string $question, bool $default = false): bool
     return strtolower($answer) === 'y';
 }
 
+function isValidPackageName($packageName){
+    if (empty($packageName)) {
+        return false;
+    }
+
+    $reservedName = 'builder';
+    if (str_contains(strtolower($packageName), $reservedName)) {
+        return false;
+    }
+    return true;
+}
+
 function writeln(string $line): void
 {
     echo $line.PHP_EOL;
@@ -145,7 +157,12 @@ $authorEmail = ask('Author email', 'dev@moox.org');
 $currentDirectory = getcwd();
 $folderName = basename($currentDirectory);
 
-$packageName = ask('Package name', $folderName);
+do {
+    writeln('Invalid package name: "builder" is not allowed.');
+    $packageName = ask('Package name', $folderName);
+} while (!isValidPackageName($packageName));
+
+$packageName = $packageName;
 $packageSlug = slugify($packageName);
 $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 
@@ -153,6 +170,8 @@ $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
 $description = ask('Package description', "This is my package {$packageSlug}");
+$entity = ask('Package Entity', "{$className}");
+$entityPlural = ask('Tablename', lcfirst($className).'s');
 
 writeln('------');
 writeln("Author : {$authorName}");
@@ -160,6 +179,8 @@ writeln("Author Email : {$authorEmail}");
 writeln("Namespace  : Moox\\{$className}");
 writeln("Packagename : moox\\{$packageSlug}");
 writeln("Class name : {$className}Plugin");
+writeln("Entity : {$entity}");
+writeln("Tablename : {$entityPlural}");
 writeln('------');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
@@ -176,7 +197,9 @@ foreach ($files as $file) {
         'dev@moox.org' => $authorEmail,
         'Builder' => $className,
         'builder' => $packageSlug,
-        'create_builder_table' => title_snake($packageSlug),
+        'Item' => $entity,
+        'items' => $entityPlural,
+        'create_items_table' => 'create_'.title_snake($entityPlural).'_table',
         'This template is used for generating all Moox packages.' => $description,
         'Here are some things missing, like an overview with screenshots about this package, or simply a link to the package\'s docs.' => $description,
     ]);
@@ -187,7 +210,7 @@ foreach ($files as $file) {
         str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
         str_contains($file, determineSeparator('src/Models/Builder.php')) => rename($file, determineSeparator('./src/Models/'.$className.'.php')),
         str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
-        str_contains($file, determineSeparator('database/migrations/create_builder_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($packageSlugWithoutPrefix).'_table.php.stub')),
+        str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
         str_contains($file, determineSeparator('config/builder.php')) => rename($file, determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
