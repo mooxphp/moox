@@ -72,14 +72,19 @@ class InstallCommand extends Command
     public function publish_configuration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            info('Publishing Builder Configuration...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+            if(!config()->has('builder')){
+                info('Publishing Builder Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+            }else{
+                warning('The Builder config already exist. The config will not be published.');
+            }
         }
     }
 
     public function publish_migrations(): void
     {
-        if (confirm('Do you wish to publish the mugrations?', true)) {
+        $confirmed = confirm('Do you wish to publish the migrations?', true);
+        if ($confirmed) {
             if (Schema::hasTable('items')) {
                 warning('The items table already exists. The migrations will not be published.');
             } elseif (confirm('Do you wish to publish the migrations?', true)) {
@@ -99,7 +104,8 @@ class InstallCommand extends Command
 
     public function register_plugins(): void
     {
-        if (confirm('Do you wish to publish the configuration?', true)) {
+        $confirmed = confirm('Do you register the plugin?', true);
+        if ($confirmed) {
             note('Registering the Filament Resources...');
 
             $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
