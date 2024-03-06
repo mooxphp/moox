@@ -159,12 +159,16 @@ $authorEmail = ask('Author email', 'dev@moox.org');
 $currentDirectory = getcwd();
 $folderName = basename($currentDirectory);
 
-do {
-    writeln('Invalid package name: "builder" is not allowed.');
-    $packageName = ask('Package name', $folderName);
-} while (! isValidPackageName($packageName));
+if(!isValidPackageName($folderName)){
+    do {
+        writeln('Invalid package name: "builder" is not allowed.');
+        $name = ask('Package name');
+        $packageName = $name;
+    } while (! isValidPackageName($packageName));
+}else{
+    $packageName = $folderName;
+}
 
-$packageName = $packageName;
 $packageSlug = slugify($packageName);
 $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 

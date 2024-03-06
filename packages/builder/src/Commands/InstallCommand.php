@@ -99,6 +99,7 @@ class InstallCommand extends Command
 
     public function register_plugins(): void
     {
+        if (confirm('Do you wish to publish the configuration?', true)) {
         note('Registering the Filament Resources...');
 
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
@@ -155,6 +156,7 @@ class InstallCommand extends Command
 
             alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
+    }
     }
 
     public function finish(): void
