@@ -25,7 +25,8 @@ function confirm(string $question, bool $default = false): bool
     return strtolower($answer) === 'y';
 }
 
-function isValidPackageName($packageName){
+function isValidPackageName($packageName)
+{
     if (empty($packageName)) {
         return false;
     }
@@ -34,6 +35,7 @@ function isValidPackageName($packageName){
     if (str_contains(strtolower($packageName), $reservedName)) {
         return false;
     }
+
     return true;
 }
 
@@ -160,7 +162,7 @@ $folderName = basename($currentDirectory);
 do {
     writeln('Invalid package name: "builder" is not allowed.');
     $packageName = ask('Package name', $folderName);
-} while (!isValidPackageName($packageName));
+} while (! isValidPackageName($packageName));
 
 $packageName = $packageName;
 $packageSlug = slugify($packageName);
