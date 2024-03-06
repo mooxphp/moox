@@ -11,13 +11,13 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Builder\Models\Builder;
+use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
 
 class BuilderResource extends Resource
 {
-    protected static ?string $model = Builder::class;
+    protected static ?string $model = Item::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
