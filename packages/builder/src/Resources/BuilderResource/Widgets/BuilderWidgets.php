@@ -5,7 +5,7 @@ namespace Moox\Builder\Resources\BuilderResource\Widgets;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
-use Moox\Builder\Models\Builder;
+use Moox\Builder\Models\Item;
 
 class BuilderWidgets extends BaseWidget
 {
@@ -17,7 +17,7 @@ class BuilderWidgets extends BaseWidget
             DB::raw('COUNT(*) as count'),
         ];
 
-        $aggregatedInfo = Builder::query()
+        $aggregatedInfo = Item::query()
             ->select($aggregationColumns)
             ->first();
 
