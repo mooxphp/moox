@@ -6,7 +6,6 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource;
-use Moox\Sync\Resources\SyncResource\Widgets\SyncWidgets;
 
 class ListPage extends ListRecords
 {
@@ -15,13 +14,6 @@ class ListPage extends ListRecords
     public function getActions(): array
     {
         return [];
-    }
-
-    public function getHeaderWidgets(): array
-    {
-        return [
-            SyncWidgets::class,
-        ];
     }
 
     public function getTitle(): string
