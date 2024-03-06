@@ -162,8 +162,7 @@ $folderName = basename($currentDirectory);
 if (! isValidPackageName($folderName)) {
     do {
         writeln('Invalid package name: "builder" is not allowed.');
-        $name = ask('Package name');
-        $packageName = $name;
+        $packageName = ask('Package name');
     } while (! isValidPackageName($packageName));
 } else {
     $packageName = $folderName;
