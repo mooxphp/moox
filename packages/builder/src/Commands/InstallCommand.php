@@ -72,10 +72,10 @@ class InstallCommand extends Command
     public function publish_configuration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if(!config()->has('builder')){
+            if (! config()->has('builder')) {
                 info('Publishing Builder Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
-            }else{
+            } else {
                 warning('The Builder config already exist. The config will not be published.');
             }
         }
