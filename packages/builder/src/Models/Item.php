@@ -4,9 +4,9 @@ namespace Moox\Builder\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Builder extends Model
+class Item extends Model
 {
-    protected $table = 'builder';
+    protected $table = 'items';
 
     protected $fillable = [
         'name',

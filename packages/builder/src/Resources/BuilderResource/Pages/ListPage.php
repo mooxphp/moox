@@ -4,7 +4,7 @@ namespace Moox\Builder\Resources\BuilderResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Builder\Models\Builder;
+use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\BuilderResource;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
 
@@ -33,7 +33,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Builder {
+                ->using(function (array $data, string $model): Item {
                     return $model::create($data);
                 }),
         ];
