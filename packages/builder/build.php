@@ -206,7 +206,6 @@ foreach ($files as $file) {
         'Here are some things missing, like an overview with screenshots about this package, or simply a link to the package\'s docs.' => $description,
     ]);
 
-
     match (true) {
         str_contains($file, determineSeparator('src/BuilderPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
         str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
