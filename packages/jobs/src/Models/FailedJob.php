@@ -17,6 +17,6 @@ class FailedJob extends Model
         'uuid',
         'connection',
         'queue',
-        'failed_at'
+        'failed_at',
     ];
 }
