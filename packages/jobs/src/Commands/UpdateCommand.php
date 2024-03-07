@@ -74,6 +74,13 @@ class UpdateCommand extends Command
                     if (! Schema::hasColumn('job_manager', 'job_queue_worker_id')) {
                         $table->unsignedBigInteger('job_queue_worker_id')->nullable();
                     }
+                    if (Schema::hasColumn('job_manager', 'job_id')) {
+                        $table->index(['job_id'], 'job_manager_job_id_index');
+                    }
+                    if (Schema::hasColumn('job_manager', 'queue')) {
+                        $table->index(['queue'], 'job_manager_queue_index');
+                    }
+
                 });
 
                 info('job_manager table updated successfully.');

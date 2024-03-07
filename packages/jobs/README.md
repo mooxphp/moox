@@ -213,6 +213,29 @@ The first decision depends on your hosting and deployment:
 
 ### Laravel Forge
 
+Laravel Forge supports Redis, Horizon and Supervisor. The best way is to install Horizon and to enable it in the Forge UI. You can then schedule any job (or command dispatching your job). Do schedule any command without the need to change code (in kernel.php), you might consider using the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule).
+
+More information:
+
+- [Laravel Forge docs: Queues](https://forge.laravel.com/docs/sites/queues.html)
+
+### Shared Hosting
+
+On most Shared Hosting and Managed Servers Redis and Supervisor are not available. You need SSH access or a CRON to start the queue worker like this:
+
+```bash
+php artisan queue:work
+```
+
+The best way, to automate your jobs (and care for re-running the queue:worker after failure), is to create a crontab to run the Laravel Scheduler minutely and to use the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule) to run your jobs (or commands).
+
+More information:
+
+- [Laravel Queues for Beginners](https://sagardhiman021.medium.com/demystifying-queues-and-jobs-in-laravel-a-beginners-guide-with-examples-in-2023-a8e52698a298)
+- [Using Laravel Queues on Shared Hosting](https://talltips.novate.co.uk/laravel/using-queues-on-shared-hosting-with-laravel)
+
+### Root Server
+
 Laravel Forge supports Redis, Horizon and Supervisor. The best way is to install Horizon and to enable it in the Forge UI. You can then schedule any job (or command dispatching your job). To schedule any command without the need to change code (in kernel.php), you might consider using the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule).
 
 More information:
@@ -250,7 +273,7 @@ More information:
 
 ### Laravel Vapor
 
-On Laravel Vapor, the first-party deployment tool for going Serverless (using Amazon AWS Lambda Services), Laravel will automatically use Amazon SQS (Simple Queue Services) as queue driver. Laravel SQS is partly supported by Moox Jobs, means you can monitor jobs and failed jobs, retry failed jobs and use the progress feature. Monitoring pending jobs is currently not possible.
+On Laravel Vapor, the first-party deployment tool for going Serverless (using Amazon AWS Lambda Services), Laravel will automatically use Amazon SQS (Simple Queue Services) as queue driver. Laravel SQS is partly supported by Moox Jobs, means you can monitor jobs and failed jobs, retry failed jobs and use the progress feature. Pending jobs and batches are currently not implemented.
 
 More information: 
 
