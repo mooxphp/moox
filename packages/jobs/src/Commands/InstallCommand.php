@@ -75,7 +75,7 @@ class InstallCommand extends Command
             info(' ');
             if (confirm('Do you want to install Filament now?', true)) {
                 info('Starting Filament installer...');
-                $this->call('filament:install', ['--panels' => true]);
+                $this->callSilent('filament:install', ['--panels' => true]);
             }
         }
 
@@ -163,7 +163,7 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Jobs Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 

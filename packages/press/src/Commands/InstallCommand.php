@@ -74,7 +74,7 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the configuration?', true)) {
             if (! File::exists('config/press.php')) {
                 info('Publishing Press Configuration...');
-                $this->call('vendor:publish', ['--tag' => 'press-config']);
+                $this->callSilent('vendor:publish', ['--tag' => 'press-config']);
             } else {
                 warning('The Press config already exist. The config will not be published.');
             }
@@ -97,7 +97,7 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Press Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 

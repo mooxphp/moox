@@ -74,7 +74,7 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the configuration?', true)) {
             if (! File::exists('config/page.php')) {
                 info('Publishing Page Configuration...');
-                $this->call('vendor:publish', ['--tag' => 'page-config']);
+                $this->callSilent('vendor:publish', ['--tag' => 'page-config']);
             } else {
                 warning('The Page config already exist. The config will not be published.');
             }
@@ -97,7 +97,7 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Page Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 

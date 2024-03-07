@@ -66,7 +66,7 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the configuration?', true)) {
             if (! File::exists('config/core.php')) {
                 info('Publishing Core Configuration...');
-                $this->call('vendor:publish', ['--tag' => 'core-config']);
+                $this->callSilent('vendor:publish', ['--tag' => 'core-config']);
             } else {
                 warning('The Core config already exist. The config will not be published.');
             }
@@ -82,7 +82,7 @@ class InstallCommand extends Command
             info(' ');
             if (confirm('Do you want to install Filament now?', true)) {
                 info('Starting Filament installer...');
-                $this->call('filament:install', ['--panels' => true]);
+                $this->callSilent('filament:install', ['--panels' => true]);
             }
         }
 

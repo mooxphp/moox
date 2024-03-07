@@ -99,7 +99,7 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running User Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 
