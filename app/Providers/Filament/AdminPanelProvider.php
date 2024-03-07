@@ -72,6 +72,9 @@ class AdminPanelProvider extends PanelProvider
 
                 \Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin::make(),
 
+            
+                \Moox\User\UserPlugin::make(),
+
             ]);
     }
 }
