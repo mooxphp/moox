@@ -19,14 +19,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
-use Moox\Builder\BuilderPlugin;
-use Moox\Jobs\JobsBatchesPlugin;
-use Moox\Jobs\JobsFailedPlugin;
-use Moox\Jobs\JobsPlugin;
-use Moox\Jobs\JobsWaitingPlugin;
-use Moox\Page\PagePlugin;
-use Moox\Sync\SyncPlugin;
-use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -79,7 +71,6 @@ class AdminPanelProvider extends PanelProvider
                     ),
 
                 \Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin::make(),
-
 
             ]);
     }
