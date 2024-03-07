@@ -11,9 +11,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Moox\Press\Models\Press;
-use Moox\Press\PressPlugin;
 use Moox\Press\Resources\PressResource\Pages\ListPage;
 use Moox\Press\Resources\PressResource\Widgets\PressWidgets;
 
