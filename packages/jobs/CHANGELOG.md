@@ -2,6 +2,13 @@
 
 All notable changes to `Moox Jobs` will be documented in this file.
 
+## Planned
+
+-   Enhanced support for Redis
+-   Enhanced support for SQS
+-   Enhanced support for Beanstalkd
+-   Support for managing queue workers and Supervisor
+
 ## v3.0 - 2024/02/15
 
 -   Breaking changes: database scheme
