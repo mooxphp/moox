@@ -3650,11 +3650,11 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-feature/builder",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
+                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
             },
             "require": {
                 "moox/core": "*"
@@ -3696,11 +3696,11 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-feature/builder",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "70a8650e517729f761f66995bb2c8621fa7cea9e"
+                "reference": "83b08ac7b241fe0c755dc28a87f0f830d3383d6f"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3749,11 +3749,11 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-feature/builder",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
+                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
             },
             "require": {
                 "moox/core": "*"
@@ -3803,11 +3803,11 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-feature/builder",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
+                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
             },
             "require": {
                 "moox/core": "*"
@@ -3849,11 +3849,11 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-feature/builder",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
+                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
             },
             "require": {
                 "moox/core": "*"
@@ -3895,11 +3895,11 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-feature/builder",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "c5aa0b285e083f0e69040a04554e7aa0b98cb9af"
+                "reference": "a6982686c9bec5bab73bdfe96bcf8087dee87d7f"
             },
             "require": {
                 "bezhansalleh/filament-shield": "^3.0",
@@ -13453,5 +13453,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
