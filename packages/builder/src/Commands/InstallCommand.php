@@ -103,60 +103,60 @@ class InstallCommand extends Command
 
     public function register_plugins(): void
     {
-            $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
+        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
-            if (File::exists($providerPath)) {
+        if (File::exists($providerPath)) {
 
-                $content = File::get($providerPath);
+            $content = File::get($providerPath);
 
-                $intend = '                ';
+            $intend = '                ';
 
-                $namespace = "\Moox\Builder";
+            $namespace = "\Moox\Builder";
 
-                $pluginsToAdd = multiselect(
-                    label: 'These plugins will be installed:',
-                    options: ['BuilderPlugin'],
-                    default: ['BuilderPlugin'],
-                );
+            $pluginsToAdd = multiselect(
+                label: 'These plugins will be installed:',
+                options: ['BuilderPlugin'],
+                default: ['BuilderPlugin'],
+            );
 
-                $function = '::make(),';
+            $function = '::make(),';
 
-                $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
-                $newPlugins = '';
+            $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
+            $newPlugins = '';
 
-                foreach ($pluginsToAdd as $plugin) {
-                    $searchPlugin = '/'.$plugin.'/';
-                    if (preg_match($searchPlugin, $content)) {
-                        warning("$plugin already registered.");
-                    } else {
-                        $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
-                    }
+            foreach ($pluginsToAdd as $plugin) {
+                $searchPlugin = '/'.$plugin.'/';
+                if (preg_match($searchPlugin, $content)) {
+                    warning("$plugin already registered.");
+                } else {
+                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }
-
-                if ($newPlugins) {
-
-                    if (preg_match($pattern, $content)) {
-                        info('Plugins section found. Adding new plugins...');
-
-                        $replacement = "->plugins([$1\n$newPlugins\n            ]);";
-                        $newContent = preg_replace($pattern, $replacement, $content);
-
-                    } else {
-                        info('Plugins section created. Adding new plugins...');
-
-                        $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
-                        $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                        $replacement = "$1\n".$pluginsSection;
-                        $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
-                    }
-
-                    File::put($providerPath, $newContent);
-                }
-
-            } else {
-
-                alert('AdminPanelProvider not found. You need to add the plugins manually.');
             }
+
+            if ($newPlugins) {
+
+                if (preg_match($pattern, $content)) {
+                    info('Plugins section found. Adding new plugins...');
+
+                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                    $newContent = preg_replace($pattern, $replacement, $content);
+
+                } else {
+                    info('Plugins section created. Adding new plugins...');
+
+                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                    $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
+                    $replacement = "$1\n".$pluginsSection;
+                    $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
+                }
+
+                File::put($providerPath, $newContent);
+            }
+
+        } else {
+
+            alert('AdminPanelProvider not found. You need to add the plugins manually.');
+        }
 
     }
 
