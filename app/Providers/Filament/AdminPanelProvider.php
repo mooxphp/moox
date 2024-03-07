@@ -66,15 +66,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->spa()
             ->plugins([
-                BuilderPlugin::make(),
-                JobsPlugin::make(),
-                JobsWaitingPlugin::make(),
-                JobsFailedPlugin::make(),
-                JobsBatchesPlugin::make(),
-                JobsPlugin::make(),
-                PagePlugin::make(),
-                UserPlugin::make(),
-                SyncPlugin::make(),
                 FilamentShieldPlugin::make(),
                 BreezyCore::make()
                     ->myProfile(
@@ -89,8 +80,6 @@ class AdminPanelProvider extends PanelProvider
 
                 \Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin::make(),
 
-                \Moox\Audit\AuditPlugin::make(),
-                \Moox\Sync\PlatformPlugin::make(),
 
             ]);
     }
