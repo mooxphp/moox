@@ -118,6 +118,6 @@ class PressResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 2001;
+        return 1901;
     }
 }
