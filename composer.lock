@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f87b172dbed2f3d69e27505dba6e965",
+    "content-hash": "49d530b7c695bda57d0b179c843010e7",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3650,7 +3650,7 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
@@ -3696,7 +3696,7 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
@@ -3742,7 +3742,7 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
@@ -3795,7 +3795,7 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
@@ -3849,7 +3849,7 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
@@ -3895,7 +3895,7 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
@@ -3940,8 +3940,54 @@
             }
         },
         {
+            "name": "moox/sync",
+            "version": "dev-feature/sync",
+            "dist": {
+                "type": "path",
+                "url": "packages/sync",
+                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
+            },
+            "require": {
+                "moox/core": "*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Moox\\Sync\\SyncServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Moox\\Sync\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Moox Developer",
+                    "email": "dev@moox.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is my package sync",
+            "homepage": "https://moox.org/",
+            "keywords": [
+                "Filament",
+                "Filament plugin",
+                "Laravel",
+                "Laravel package"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "moox/user",
-            "version": "dev-main",
+            "version": "dev-feature/sync",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
