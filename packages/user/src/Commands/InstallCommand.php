@@ -75,7 +75,7 @@ class InstallCommand extends Command
             if (! File::exists('config/user.php')) {
                 info('Publishing User Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'user-config']);
-            }else {
+            } else {
                 warning('The User config already exist. The config will not be published.');
             }
 
@@ -87,11 +87,11 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('user')) {
                 warning('The user table already exists. The migrations add fields required by Moox User.');
-            }else {
-                    info('Publishing User Migrations...');
-                    $this->callSilent('vendor:publish', ['--tag' => 'user-migrations']);
-                }
+            } else {
+                info('Publishing User Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'user-migrations']);
             }
+        }
 
     }
 
