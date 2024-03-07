@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6daa79078c89070c5c6ba765c8812123",
+    "content-hash": "3f87b172dbed2f3d69e27505dba6e965",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -3649,6 +3649,52 @@
             "time": "2023-10-27T15:32:31+00:00"
         },
         {
+            "name": "moox/audit",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "packages/audit",
+                "reference": "e133b42a547d1eb9988a451b92954afb1d99dbe3"
+            },
+            "require": {
+                "moox/core": "*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Moox\\Audit\\AuditServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Moox\\Audit\\": "src"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Moox Developer",
+                    "email": "dev@moox.org",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This is my package audit",
+            "homepage": "https://moox.org/",
+            "keywords": [
+                "Filament",
+                "Filament plugin",
+                "Laravel",
+                "Laravel package"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "moox/builder",
             "version": "dev-main",
             "dist": {
@@ -5649,16 +5695,16 @@
         },
         {
             "name": "spatie/laravel-package-tools",
-            "version": "1.16.2",
+            "version": "1.16.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-package-tools.git",
-                "reference": "e62eeb1fe8a8a0b2e83227a6c279c8c59f7d3a15"
+                "reference": "59db18c2e20d49a0b6d447bb1c654f6c123beb9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/e62eeb1fe8a8a0b2e83227a6c279c8c59f7d3a15",
-                "reference": "e62eeb1fe8a8a0b2e83227a6c279c8c59f7d3a15",
+                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/59db18c2e20d49a0b6d447bb1c654f6c123beb9e",
+                "reference": "59db18c2e20d49a0b6d447bb1c654f6c123beb9e",
                 "shasum": ""
             },
             "require": {
@@ -5697,7 +5743,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-package-tools/issues",
-                "source": "https://github.com/spatie/laravel-package-tools/tree/1.16.2"
+                "source": "https://github.com/spatie/laravel-package-tools/tree/1.16.3"
             },
             "funding": [
                 {
@@ -5705,7 +5751,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-01-11T08:43:00+00:00"
+            "time": "2024-03-07T07:35:57+00:00"
         },
         {
             "name": "spatie/laravel-permission",

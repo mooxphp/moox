@@ -27,6 +27,7 @@
         "moox/page": "*",
         "moox/user": "*",
         "moox/press": "*",
+        "moox/audit": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

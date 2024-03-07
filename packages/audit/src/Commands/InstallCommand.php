@@ -72,9 +72,9 @@ class InstallCommand extends Command
     public function publish_configuration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! config()->has('audit')) {
+            if (! File::exists('config/audit.php')) {
                 info('Publishing Audit Configuration...');
-                $this->callSilent('vendor:publish', ['--tag' => 'audit-config']);
+                $this->call('vendor:publish', ['--tag' => 'audit-config']);
             } else {
                 warning('The Audit config already exist. The config will not be published.');
             }
@@ -83,13 +83,14 @@ class InstallCommand extends Command
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('activity_log')) {
-            warning('The activity_log table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Audit Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'audit-migrations']);
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('activity_log')) {
+                warning('The activity_log table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing Audit Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'audit-migrations']);
+            }
         }
-
     }
 
     public function run_migrations(): void
@@ -102,65 +103,61 @@ class InstallCommand extends Command
 
     public function register_plugins(): void
     {
-        $confirmed = confirm('Do you register the plugin?', true);
-        if ($confirmed) {
-            note('Registering the Filament Resources...');
+        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
-            $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
+        if (File::exists($providerPath)) {
 
-            if (File::exists($providerPath)) {
+            $content = File::get($providerPath);
 
-                $content = File::get($providerPath);
+            $intend = '                ';
 
-                $intend = '                ';
+            $namespace = "\Moox\Audit";
 
-                $namespace = "\Moox\Audit";
+            $pluginsToAdd = multiselect(
+                label: 'Which plugins do you want to register?',
+                options: ['AuditPlugin'],
+                default: ['AuditPlugin'],
+            );
 
-                $pluginsToAdd = multiselect(
-                    label: 'These plugins will be installed:',
-                    options: ['AuditPlugin'],
-                    default: ['AuditPlugin'],
-                );
+            $function = '::make(),';
 
-                $function = '::make(),';
+            $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
+            $newPlugins = '';
 
-                $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
-                $newPlugins = '';
-
-                foreach ($pluginsToAdd as $plugin) {
-                    $searchPlugin = '/'.$plugin.'/';
-                    if (preg_match($searchPlugin, $content)) {
-                        info("$plugin already registered.");
-                    } else {
-                        $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
-                    }
+            foreach ($pluginsToAdd as $plugin) {
+                $searchPlugin = '/'.$plugin.'/';
+                if (preg_match($searchPlugin, $content)) {
+                    warning("$plugin already registered.");
+                } else {
+                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }
-
-                if ($newPlugins) {
-
-                    if (preg_match($pattern, $content)) {
-                        info('Plugins section found. Adding new plugins...');
-
-                        $replacement = "->plugins([$1\n$newPlugins\n            ]);";
-                        $newContent = preg_replace($pattern, $replacement, $content);
-
-                    } else {
-                        info('Plugins section created. Adding new plugins...');
-
-                        $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
-                        $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                        $replacement = "$1\n".$pluginsSection;
-                        $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
-                    }
-
-                    File::put($providerPath, $newContent);
-                }
-
-            } else {
-
-                alert('AdminPanelProvider not found. You need to add the plugins manually.');
             }
+
+            if ($newPlugins) {
+
+                if (preg_match($pattern, $content)) {
+                    info('Plugins section found. Adding new plugins...');
+
+                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                    $newContent = preg_replace($pattern, $replacement, $content);
+
+                } else {
+                    info('Plugins section created. Adding new plugins...');
+
+                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                    $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
+                    $replacement = "$1\n".$pluginsSection;
+                    $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
+                }
+
+                File::put($providerPath, $newContent);
+            }
+
+        } else {
+
+            alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
+
     }
 
     public function finish(): void
