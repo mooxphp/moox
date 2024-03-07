@@ -14,11 +14,6 @@ class JobManager extends Model
 
     protected $table = 'job_manager';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'job_id',
         'name',
@@ -32,11 +27,6 @@ class JobManager extends Model
         'status',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'failed' => 'bool',
         'started_at' => 'datetime',
