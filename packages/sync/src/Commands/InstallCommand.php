@@ -72,18 +72,24 @@ class InstallCommand extends Command
     public function publish_configuration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            info('Publishing Sync Configuration...');
-            $this->callSilent('vendor:publish', ['--tag' => 'sync-config']);
+            if (! File::exists('config/sync.php')) {
+                info('Publishing Sync Configuration...');
+                $this->call('vendor:publish', ['--tag' => 'sync-config']);
+            } else {
+                warning('The Sync config already exist. The config will not be published.');
+            }
         }
     }
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('sync')) {
-            warning('The sync table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Sync Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'sync-migrations']);
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('sync')) {
+                warning('The sync table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing Sync Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'sync-migrations']);
+            }
         }
     }
 
@@ -97,7 +103,6 @@ class InstallCommand extends Command
 
     public function register_plugins(): void
     {
-        note('Registering the Filament Resources...');
 
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
@@ -123,7 +128,7 @@ class InstallCommand extends Command
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    info("$plugin already registered.");
+                    warning("$plugin already registered.");
                 } else {
                     $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }
