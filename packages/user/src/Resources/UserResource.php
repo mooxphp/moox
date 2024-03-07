@@ -2,33 +2,30 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Components\Card;
-use Livewire\Component;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\User\Models\User;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
-use Illuminate\Support\Facades\Hash;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Split;
-use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Moox\User\Resources\UserResource\Pages\EditUser;
-use Moox\User\Resources\UserResource\Pages\ViewUser;
-use Moox\User\Resources\UserResource\Pages\ListUsers;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Livewire\Component;
+use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
+use Moox\User\Resources\UserResource\Pages\EditUser;
+use Moox\User\Resources\UserResource\Pages\ListUsers;
+use Moox\User\Resources\UserResource\Pages\ViewUser;
 use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
@@ -54,8 +51,7 @@ class UserResource extends Resource
                         ]),
 
                     FileUpload::make('avatar_url'),
-                    
-  
+
                     TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
@@ -169,8 +165,8 @@ class UserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
-                    ]),
                 ]),
+            ]),
 
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
@@ -226,8 +222,8 @@ class UserResource extends Resource
 
                 ])->statePath('data'),
             ]),
-        
-    ]);
+
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -236,7 +232,7 @@ class UserResource extends Resource
             ->poll('60s')
             ->columns([
                 ImageColumn::make('profile_photo_path')
-                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->name)
+                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
                     ->circular()
                     ->toggleable(),
                 TextColumn::make('name')
@@ -250,7 +246,7 @@ class UserResource extends Resource
                 TextColumn::make('first_name')
                     ->label(__('Fullname'))
                     ->formatStateUsing(function ($state, User $user) {
-                    return $user->first_name . ' ' . $user->last_name;
+                        return $user->first_name.' '.$user->last_name;
                     })
                     ->toggleable()
                     ->sortable()
@@ -260,9 +256,8 @@ class UserResource extends Resource
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                IconColumn::make('email_verified_at')
-                , 
-                TextColumn::make('roles.name'), 
+                IconColumn::make('email_verified_at'),
+                TextColumn::make('roles.name'),
 
             ])
             ->filters([
@@ -272,7 +267,7 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->actions([Impersonate::make()->redirectTo(route('filament.moox.pages.profile')),ViewAction::make(), EditAction::make()])
+            ->actions([Impersonate::make()->redirectTo(route('filament.moox.pages.profile')), ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 

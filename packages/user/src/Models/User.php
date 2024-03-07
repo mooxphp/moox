@@ -4,19 +4,16 @@ namespace Moox\User\Models;
 
 use App\Models\User as BaseUser;
 use Filament\Models\Contracts\HasAvatar;
-use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Storage;
 
 class User extends BaseUser implements HasAvatar
 {
     use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
-
-   
 
     protected $fillable = [
         'name',
@@ -30,8 +27,8 @@ class User extends BaseUser implements HasAvatar
         'description',
         'password',
         'profile_photo_path',
-        
-     ];
+
+    ];
 
     protected $searchableFields = ['*'];
 
@@ -49,8 +46,6 @@ class User extends BaseUser implements HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar_url ? Storage::url($this->avatar_url) : null ;
+        return $this->avatar_url ? Storage::url($this->avatar_url) : null;
     }
-
-    
 }
