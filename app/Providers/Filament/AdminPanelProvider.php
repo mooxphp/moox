@@ -74,6 +74,27 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\User\UserPlugin::make(),
 
+            
+                \Moox\Sync\SyncPlugin::make(),
+                \Moox\Sync\PlatformPlugin::make(),
+
+            
+                \Moox\Press\PressPlugin::make(),
+
+            
+                \Moox\Page\PagePlugin::make(),
+
+            
+                \Moox\Jobs\JobsPlugin::make(),
+                \Moox\Jobs\JobsFailedPlugin::make(),
+                \Moox\Jobs\JobsBatchesPlugin::make(),
+
+            
+                \Moox\Builder\BuilderPlugin::make(),
+
+            
+                \Moox\Audit\AuditPlugin::make(),
+
             ]);
     }
 }
