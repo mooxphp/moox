@@ -11,15 +11,15 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Builder\BuilderPlugin;
-use Moox\Builder\Models\Builder;
+use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
 
 class BuilderResource extends Resource
 {
-    protected static ?string $model = Builder::class;
+    protected static ?string $model = Item::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -79,48 +79,43 @@ class BuilderResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return BuilderPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
     public static function getModelLabel(): string
     {
-        return BuilderPlugin::make()->getLabel();
+        return __('builder::translations.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return BuilderPlugin::make()->getPluralLabel();
+        return __('builder::translations.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return BuilderPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return BuilderPlugin::make()->getNavigationSort();
+        return __('builder::translations.navigation_label');
     }
 
     public static function getBreadcrumb(): string
     {
-        return BuilderPlugin::make()->getBreadcrumb();
+        return __('builder::translations.breadcrumb');
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return BuilderPlugin::make()->shouldRegisterNavigation();
+        return true;
     }
 
-    public static function getNavigationIcon(): string
+    public static function getNavigationBadge(): ?string
     {
-        return BuilderPlugin::make()->getNavigationIcon();
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('builder::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 2001;
     }
 }

@@ -21,17 +21,14 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "filament/filament": "^3.1",
-        "guzzlehttp/guzzle": "^7.8",
-        "laravel/framework": "^10.0",
         "laravel/tinker": "^2.8",
-        "livewire/livewire": "^3.0",
         "moox/builder": "*",
         "moox/jobs": "*",
         "moox/page": "*",
         "moox/user": "*",
         "moox/press": "*",
+        "moox/audit": "*",
+        "moox/sync": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

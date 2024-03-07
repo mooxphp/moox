@@ -24,6 +24,6 @@ class ListJobs extends ListRecords
 
     public function getTitle(): string
     {
-        return __('jobs::translations.title');
+        return __('jobs::translations.jobs.plural');
     }
 }

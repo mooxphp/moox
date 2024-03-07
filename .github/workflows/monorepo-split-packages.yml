@@ -16,10 +16,13 @@ jobs:
       fail-fast: false
       matrix:
         package:
+          - core
           - builder
           - jobs
           - press
           - user
+          - sync
+          - audit
 
     steps:
       - uses: actions/checkout@v4

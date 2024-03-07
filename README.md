@@ -267,20 +267,27 @@ Moox is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/somzoli">
+            <img src="https://avatars.githubusercontent.com/u/34423715?v=4" width="100;" alt="somzoli"/>
+            <br />
+            <sub><b>somzoli</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/renovate[bot]">
             <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
             <br />
             <sub><b>renovate[bot]</b></sub>
         </a>
-    </td>
+    </td></tr>
+<tr>
     <td align="center">
         <a href="https://github.com/github-actions[bot]">
             <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
             <br />
             <sub><b>github-actions[bot]</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
     <td align="center">
         <a href="https://github.com/dependabot[bot]">
             <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
@@ -314,13 +321,6 @@ Moox is made by these nice people, and bots ...
             <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
             <br />
             <sub><b>occtherapist</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/somzoli">
-            <img src="https://avatars.githubusercontent.com/u/34423715?v=4" width="100;" alt="somzoli"/>
-            <br />
-            <sub><b>somzoli</b></sub>
         </a>
     </td></tr>
 </table>

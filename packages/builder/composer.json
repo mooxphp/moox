@@ -17,8 +17,7 @@
         }
     ],
     "require": {
-        "spatie/laravel-package-tools": "^1.13.0",
-        "filament/filament": "^3.0"
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {
@@ -32,6 +31,6 @@
             ]
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

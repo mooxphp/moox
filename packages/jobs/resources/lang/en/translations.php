@@ -1,9 +1,27 @@
 <?php
 
 return [
+    'jobs' => [
+        'single' => 'Job',
+        'plural' => 'Jobs',
+        'navigation_label' => 'Jobs',
+    ],
+    'jobs_waiting' => [
+        'single' => 'Job waiting',
+        'plural' => 'Jobs waiting',
+        'navigation_label' => 'Jobs Waiting',
+    ],
+    'jobs_failed' => [
+        'single' => 'Job Failed',
+        'plural' => 'Jobs Failed',
+        'navigation_label' => 'Jobs Failed',
+    ],
+    'jobs_batches' => [
+        'single' => 'Job Batch',
+        'plural' => 'Jobs Batches',
+        'navigation_label' => 'Job Batches',
+    ],
     'breadcrumb' => 'Job Manager',
-    'title' => 'Jobs',
-    'navigation_label' => 'Jobs',
     'navigation_group' => 'Job Manager',
     'total_jobs' => 'Total Jobs Executed',
     'waiting_jobs' => 'Total Jobs Waiting',

@@ -1,0 +1,167 @@
+<?php
+
+namespace Moox\Audit\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
+
+use function Laravel\Prompts\alert;
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\multiselect;
+use function Laravel\Prompts\note;
+use function Laravel\Prompts\warning;
+
+class InstallCommand extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'mooxaudit:install';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Installs Moox Audit, publishes configuration, migrations and registers plugins.';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $this->art();
+        $this->welcome();
+        $this->publish_configuration();
+        $this->publish_migrations();
+        $this->run_migrations();
+        $this->register_plugins();
+        $this->finish();
+    }
+
+    public function art(): void
+    {
+        info('
+
+        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ ▓▓▓▓▓▓▓▓▓▓▓       ▓▓▓▓▓▓▓▓▓▓▓▓           ▓▓▓▓▓▓▓▓▓▓▓▓   ▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓
+        ▓▓▒░░▒▓▓▒▒░░░░░░▒▒▓▓▓▒░░░░░░░▒▓▓   ▓▓▓▓▒░░░░░░░▒▓▓▓▓     ▓▓▓▓▓▒░░░░░░░▒▒▓▓▓▓▓▒▒▒▒▓▓      ▓▓▓▒▒▒▒▓▓
+        ▓▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▓▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓░░░░░▒▓▓   ▓▓▒░░░░░▓▓
+        ▓▒░░░░░░▒▓▓▓▓▒░░░░░░░▒▓▓▓▓░░░░░▒▓▓▓░░░░░▒▓▓▓▓▒░░░░░░░▓▓▓▓░░░░░░▒▓▓▓▓▓░░░░░░▒▓▓░░░░░▒▓▓▓▓▓░░░░░▒▓▓
+        ▓▒░░░░▓▓▓▓  ▓▓░░░░░▓▓▓  ▓▓▓░░░░▒▓▓░░░░▒▓▓▓   ▓▓▓▓░░░░░▓░░░░░░▓▓▓▓   ▓▓▓▒░░░░▓▓▓▒░░░░░▓▓▓░░░░░▓▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▓░░▒░░░░░▓▓▓        ▓▓░░░░▒▓▓▓▓░░░░░░░░░░░▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓          ▓▓▓░░░░░▒▓▓          ▓▓▒░░░░▓ ▓▓▓░░░░░░░░░▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▒░░░░░▒░░▒▓▓        ▓▓░░░░▒▓▓▓▒░░░░░▒░░░░░▒▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓░░░░▒▓▓▓   ▓▓▓▒░░░░░▒▒░░░░░▒▓▓▓   ▓▓▓░░░░░▓▓▓░░░░░▒▓▓▓░░░░░▒▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓░░░░░░▒▒▓▓▒░░░░░░▒▓▓▓▓░░░░░░░▒▒▓▓▒░░░░░░▓▓▓░░░░░▒▓▓▓▓▓▒░░░░░▓▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▒░░░░░▓▓▓   ▓▓▒░░░░░▒▓
+        ▓▓░░░▒▓▓    ▓▓▒░░░▒▓▓    ▓▓░░░░▓▓  ▓▓▓▓▒░░░░░░▒▒▓▓▓▓     ▓▓▓▓▓▒▒░░░░░▒▒▓▓▓▓▓░░░░▒▓▓      ▓▓▓░░░░▒▓
+        ▓▓▓▓▓▓▓      ▓▓▓▓▓▓▓     ▓▓▓▓▓▓▓▓    ▓▓▓▓▓▓▓▓▓▓▓▓           ▓▓▓▓▓▓▓▓▓▓▓▓  ▓▓▓▓▓▓▓▓        ▓▓▓▓▓▓▓▓
+
+        ');
+    }
+
+    public function welcome(): void
+    {
+        info('Welcome to Moox Audit Installer');
+    }
+
+    public function publish_configuration(): void
+    {
+        if (confirm('Do you wish to publish the configuration?', true)) {
+            if (! File::exists('config/audit.php')) {
+                info('Publishing Audit Configuration...');
+                $this->call('vendor:publish', ['--tag' => 'audit-config']);
+            } else {
+                warning('The Audit config already exist. The config will not be published.');
+            }
+        }
+    }
+
+    public function publish_migrations(): void
+    {
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('activity_log')) {
+                warning('The activity_log table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing Audit Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'audit-migrations']);
+            }
+        }
+    }
+
+    public function run_migrations(): void
+    {
+        if (confirm('Do you wish to run the migrations?', true)) {
+            info('Running Audit Migrations...');
+            $this->call('migrate');
+        }
+    }
+
+    public function register_plugins(): void
+    {
+        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
+
+        if (File::exists($providerPath)) {
+
+            $content = File::get($providerPath);
+
+            $intend = '                ';
+
+            $namespace = "\Moox\Audit";
+
+            $pluginsToAdd = multiselect(
+                label: 'Which plugins do you want to register?',
+                options: ['AuditPlugin'],
+                default: ['AuditPlugin'],
+            );
+
+            $function = '::make(),';
+
+            $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
+            $newPlugins = '';
+
+            foreach ($pluginsToAdd as $plugin) {
+                $searchPlugin = '/'.$plugin.'/';
+                if (preg_match($searchPlugin, $content)) {
+                    warning("$plugin already registered.");
+                } else {
+                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
+                }
+            }
+
+            if ($newPlugins) {
+
+                if (preg_match($pattern, $content)) {
+                    info('Plugins section found. Adding new plugins...');
+
+                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                    $newContent = preg_replace($pattern, $replacement, $content);
+
+                } else {
+                    info('Plugins section created. Adding new plugins...');
+
+                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                    $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
+                    $replacement = "$1\n".$pluginsSection;
+                    $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
+                }
+
+                File::put($providerPath, $newContent);
+            }
+
+        } else {
+
+            alert('AdminPanelProvider not found. You need to add the plugins manually.');
+        }
+
+    }
+
+    public function finish(): void
+    {
+        note('Moox Audit installed successfully. Enjoy!');
+    }
+}

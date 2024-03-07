@@ -11,8 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Jobs\Models\Job;
 use Moox\Jobs\Resources\JobsWaitingResource\Pages\ListJobsWaiting;
 use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
@@ -20,6 +18,8 @@ use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
 class JobsWaitingResource extends Resource
 {
     protected static ?string $model = Job::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-pause';
 
     public static function form(Form $form): Form
     {
@@ -102,48 +102,43 @@ class JobsWaitingResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return JobsWaitingPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
     public static function getModelLabel(): string
     {
-        return JobsWaitingPlugin::make()->getLabel();
+        return __('jobs::translations.jobs_waiting.title');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return JobsWaitingPlugin::make()->getPluralLabel();
+        return __('jobs::translations.jobs_waiting.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return JobsWaitingPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return JobsWaitingPlugin::make()->getNavigationSort();
+        return __('jobs::translations.jobs_waiting.navigation_label');
     }
 
     public static function getBreadcrumb(): string
     {
-        return JobsWaitingPlugin::make()->getBreadcrumb();
+        return __('jobs::translations.breadcrumb');
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return JobsWaitingPlugin::make()->shouldRegisterNavigation();
+        return true;
     }
 
-    public static function getNavigationIcon(): string
+    public static function getNavigationBadge(): ?string
     {
-        return JobsWaitingPlugin::make()->getNavigationIcon();
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('jobs::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1002;
     }
 }

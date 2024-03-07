@@ -236,6 +236,35 @@ More information:
 
 ### Root Server
 
+Laravel Forge supports Redis, Horizon and Supervisor. The best way is to install Horizon and to enable it in the Forge UI. You can then schedule any job (or command dispatching your job). To schedule any command without the need to change code (in kernel.php), you might consider using the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule).
+
+More information:
+
+- [Laravel Forge docs: Queues](https://forge.laravel.com/docs/sites/queues.html)
+
+### Shared Hosting
+
+On most Shared Hosting and Managed Servers Redis and Supervisor are not available. You need SSH access or a CRON to start the queue worker like this:
+
+```bash
+php artisan queue:work
+```
+
+and the Laravel Scheduler like this:
+
+```bash
+php artisan schedule:work
+```
+
+The best way, to automate your jobs (and care for re-running the queue:worker after failure), is to create a crontab to run the Laravel Scheduler minutely and to use the [Filament Database Schedule plugin](https://filamentphp.com/plugins/husam-tariq-database-schedule) to run your jobs (or commands).
+
+More information:
+
+- [Laravel Queues for Beginners](https://sagardhiman021.medium.com/demystifying-queues-and-jobs-in-laravel-a-beginners-guide-with-examples-in-2023-a8e52698a298)
+- [Using Laravel Queues on Shared Hosting](https://talltips.novate.co.uk/laravel/using-queues-on-shared-hosting-with-laravel)
+
+### Root Server
+
 On a Root Server, VPS or Cloud Server Droplet the fastest way is to do job queuing like shared hosting. But as the combination Redis with Supervisor is much more stable and minimum twice as fast, you may also consider installing Redis and Supervisor manually using root privileges or (depending on your provider and deployment, maybe Forge, Envoyer or Ploi.io) a more convenient UI.
 
 More information: 
@@ -305,6 +334,21 @@ class DemoJob implements ShouldQueue
 ```
 
 Create a file named DemoJob.php in app/Jobs/ and copy over the contents above.
+
+### Customize Job Name
+
+By default, the name of the tasks comes from the name of the class. This can be rewritten based on the following example.
+
+```php
+use Illuminate\Support\Carbon;
+...
+public function displayName()
+{
+    $now = Carbon::now();
+    return "Demo Job | Started: ".$now;
+}
+
+```
 
 ### Demo Job Command
 
@@ -432,6 +476,68 @@ We plan to extend support for all queue drivers in the future. Watch the changel
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
+## Roadmap
+
+As there are many parts (plugins) of Moox that need to be developed, there is no ETA on the following ... let's call them ideas.
+
+### 3.0.1 Preparation
+
+- [ ] How to change the navigation? Delete or change existing modules in AdminPanelProvider
+- [ ] Add moox/core dependency to prepare for the new UI
+- [ ] Run all tests manually
+
+### 3.0.2 Stability
+
+The planned next release focuses on stability:
+
+- [ ] Improve update and install command, if necessary
+- [ ] Cleanup code: remove resource-config and unnecessary code for config
+- [ ] Improve testing: more jobs with different settings, batch with name etc.
+- [ ] Automate testing and deployment
+- [ ] Enable Logging with moox/logs, extend demojob and others
+- [ ] Cleanup, Pruning, Detention (and config / docs for that) - https://github.com/croustibat/filament-jobs-monitor/commit/4616bb4b2f82d542cbbfe88d5143c9c43ec5196b
+- [ ] Improve Batches, see https://laravel.com/docs/10.x/queues#inspecting-batches and https://cosme.dev/post/how-to-handle-longrunning-jobs-in-laravel
+- [ ] Auto-handle the never-ending Jobs running with the sync driver
+- [ ] Maybe there is an easy way to support Jobs waiting with Redis?
+### 3.1 UX
+
+The planned V3.1 release will contain major UX improvements and a new dashboard:
+
+- [ ] Create a nicer UI (Charts, Apex?) and Dashboard (the Monitor)
+- [ ] Test progress bars
+- [ ] Instead of delete, it is better to Cancel jobs, mark them as Cancelled
+- [ ] Distinct between Failed (retry) and finally Failed or show retries left (like attempts show, but more obvious)
+- [ ] Improve Batches (Partly failing / non failing, see if job belongs to a batch, click-filter the jobs of a batch)
+- [ ] Failed job resource does not show the job name
+- [ ] Add filters and simplify usage
+- [ ] Configuration UX, in Navigation
+
+### 3.2 Notifications
+
+- [ ] Notifications / Mailables for failed jobs and daily stats
+### 3.2 Redis
+
+- [ ] Improve the support for Redis
+- [ ] Add "soft" dependencies to installer (Horizon or Predis?)
+
+### 3.3 Queue Worker and Supervisor
+
+- [ ] Improve the support for queue workers and Supervisor
+
+### 3.4 SQS
+
+- [ ] Improve the support for Amazon SQS
+- [ ] Add "soft" dependencies to installer (AWS SDK for PHP)
+
+### 3.5 Beanstalkd
+
+- [ ] Improve the support for Beanstalkd
+### 3.6 API, Scheduler, CRON
+
+- [ ] API
+- [ ] Scheduler (maybe an additional plugin)
+- [ ] CRON (maybe an additional plugin)
+
 ## Contribute
 
 We welcome every contribution! It would be awesome, if you:
@@ -441,6 +547,97 @@ We welcome every contribution! It would be awesome, if you:
 -   Translate Moox using [Weblate](https://hosted.weblate.org/engage/moox/).
 -   Tell other people about Moox or link to us.
 -   Consider a [donation or sponsorship](https://github.com/sponsors/mooxphp).
+
+## Testing
+
+Moox Jobs has currently no fully automated tests (besides Laravel Pint, PHPStan and Codacy as Quality Gates), but we are on the way to automate testing. We need two kind of tests:
+
+1) The install and update commands
+2) The installed application itself
+
+and there are some things to consider:
+
+- Is Filament already installed or not? Our installer provides auto-installation including Filament.
+- Is there data to migrate? Our updater migrates existing data and needs demo data for this.
+- It is important to test different platforms (Linux, Mac, Windows), environments (Forge-Server, Shared Hosts, Local development) and queue drivers (Redis, Database, Sync, SQS, Beanstalkd)
+
+### Test installation
+
+This installation runs for a few hours on Forge, Vapor, Shared Hosting, Mac and Windows:
+
+```bash
+composer create-project laravel/laravel moox-test
+cd moox-test
+mysqladmin -u root -p create moox-test
+composer require filament/filament
+php artisan filament:install --panels
+php artisan make:filament-user
+composer require moox/jobs
+php artisan mooxjobs:install
+mkdir monorepo
+cd monorepo
+git clone https://github.com/mooxphp/moox
+cp app/Jobs/* ../app/Jobs/
+cp app/Console/Commands/* ../app/Console/Commands/
+cp app/Console/kernel.php ../app/Console/kernel.php
+# final steps depend on the target system
+composer require laravel/horizon # Forge only
+php artisan queue:work
+php artisan schedule:work
+```
+
+### Test the update
+
+```bash
+composer create-project laravel/laravel moox-test
+cd moox-test
+mysqladmin -u root -p create moox-test
+composer require filament/filament
+php artisan filament:install --panels
+php artisan make:filament-user
+composer require moox/jobs:2.0.9
+php artisan mooxjobs:install
+mkdir monorepo
+cd monorepo
+git clone https://github.com/mooxphp/moox
+mysql -u root -p moox-test < database/sql/jobs/v2/failed_jobs.sql
+mysql -u root -p moox-test < database/sql/jobs/v2/job_batches.sql
+mysql -u root -p moox-test < database/sql/jobs/v2/job_manager.sql
+mysql -u root -p moox-test < database/sql/jobs/v2/jobs.sql
+cd ..
+composer require moox/jobs:3.0
+composer update
+php artisan mooxjobs:update
+```
+
+### Test installation with Filament install
+
+```bash
+composer create-project laravel/laravel moox-test
+cd moox-test
+mysqladmin -u root -p create moox-test
+composer require filament/filament
+composer require moox/jobs
+php artisan mooxjobs:install
+```
+
+### Test installation with Filament require
+
+```bash
+composer create-project laravel/laravel moox-test
+cd moox-test
+mysqladmin -u root -p create moox-test
+composer require moox/jobs
+php artisan mooxjobs:install
+```
+
+### Cleanup after testing
+
+```bash
+mysql -u root -p drop database moox-test
+cd ..
+rm -Rf moox-test
+```
 
 ## Sponsors
 

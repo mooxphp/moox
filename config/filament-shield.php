@@ -4,7 +4,7 @@ return [
     'shield_resource' => [
         'should_register_navigation' => true,
         'slug' => 'user/roles',
-        'navigation_sort' => 10,
+        'navigation_sort' => 702,
         'navigation_badge' => true,
         'navigation_group' => true,
         'is_globally_searchable' => false,

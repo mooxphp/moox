@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'single' => 'Bygger',
+    'plural' => 'Bygger',
     'breadcrumb' => 'Bygger',
     'title' => 'Bygger',
     'navigation_label' => 'Bygger',

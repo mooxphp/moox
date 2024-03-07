@@ -15,9 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Str;
 use InvadersXX\FilamentJsoneditor\Forms\JSONEditor;
-use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\Models\FailedJob;
 use Moox\Jobs\Resources\JobsFailedResource\Pages\ListFailedJobs;
 
@@ -25,50 +23,7 @@ class JobsFailedResource extends Resource
 {
     protected static ?string $model = FailedJob::class;
 
-    public static function getNavigationBadge(): ?string
-    {
-        return JobsFailedPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
-    public static function getModelLabel(): string
-    {
-        return JobsFailedPlugin::make()->getLabel();
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return JobsFailedPlugin::make()->getPluralLabel();
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return JobsFailedPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return JobsFailedPlugin::make()->getNavigationSort();
-    }
-
-    public static function getBreadcrumb(): string
-    {
-        return JobsFailedPlugin::make()->getBreadcrumb();
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return JobsFailedPlugin::make()->shouldRegisterNavigation();
-    }
-
-    public static function getNavigationIcon(): string
-    {
-        return JobsFailedPlugin::make()->getNavigationIcon();
-    }
+    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
 
     public static function form(Form $form): Form
     {
@@ -135,10 +90,64 @@ class JobsFailedResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => ListFailedJobs::route('/'),
         ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('jobs::translations.jobs_failed.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('jobs::translations.jobs_failed.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('jobs::translations.jobs_failed.navigation_label');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('jobs::translations.breadcrumb');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('jobs::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1003;
     }
 }

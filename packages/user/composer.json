@@ -17,11 +17,10 @@
         }
     ],
     "require": {
-        "spatie/laravel-package-tools": "^1.13.0",
+        "moox/core": "*",
         "bezhansalleh/filament-shield": "^3.0",
         "stechstudio/filament-impersonate": "^3.5",
-        "jeffgreco13/filament-breezy": "^2.2",
-        "filament/filament": "^3.0"
+        "jeffgreco13/filament-breezy": "^2.2"
     },
     "autoload": {
         "psr-4": {
@@ -35,6 +34,6 @@
             ]
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
