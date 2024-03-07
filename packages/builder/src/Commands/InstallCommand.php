@@ -72,9 +72,9 @@ class InstallCommand extends Command
     public function publish_configuration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! config()->has('builder')) {
+            if (! File::exists('config/builder.php')) {
                 info('Publishing Builder Configuration...');
-                $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+                $this->call('vendor:publish', ['--tag' => 'builder-config']);
             } else {
                 warning('The Builder config already exist. The config will not be published.');
             }
@@ -83,13 +83,14 @@ class InstallCommand extends Command
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('items')) {
-            warning('The items table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Builder Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('items')) {
+                warning('The items table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing Items Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            }
         }
-
     }
 
     public function run_migrations(): void
@@ -102,10 +103,6 @@ class InstallCommand extends Command
 
     public function register_plugins(): void
     {
-        $confirmed = confirm('Do you register the plugin?', true);
-        if ($confirmed) {
-            note('Registering the Filament Resources...');
-
             $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
             if (File::exists($providerPath)) {
@@ -130,7 +127,7 @@ class InstallCommand extends Command
                 foreach ($pluginsToAdd as $plugin) {
                     $searchPlugin = '/'.$plugin.'/';
                     if (preg_match($searchPlugin, $content)) {
-                        info("$plugin already registered.");
+                        warning("$plugin already registered.");
                     } else {
                         $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                     }
@@ -160,7 +157,7 @@ class InstallCommand extends Command
 
                 alert('AdminPanelProvider not found. You need to add the plugins manually.');
             }
-        }
+
     }
 
     public function finish(): void
