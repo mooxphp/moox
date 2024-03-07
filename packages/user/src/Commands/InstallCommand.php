@@ -36,10 +36,10 @@ class InstallCommand extends Command
     {
         $this->art();
         $this->welcome();
-        $this->publish_configuration();
-        $this->publish_migrations();
-        $this->run_migrations();
-        $this->register_plugins();
+        $this->publishConfiguration();
+        $this->publishMigrations();
+        $this->runMigrations();
+        $this->registerPlugins();
         $this->finish();
     }
 
@@ -69,7 +69,7 @@ class InstallCommand extends Command
         info('Welcome to Moox User Installer');
     }
 
-    public function publish_configuration(): void
+    public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
             if (! File::exists('config/user.php')) {
@@ -82,7 +82,7 @@ class InstallCommand extends Command
         }
     }
 
-    public function publish_migrations(): void
+    public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('user')) {
@@ -95,7 +95,7 @@ class InstallCommand extends Command
 
     }
 
-    public function run_migrations(): void
+    public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running User Migrations...');
@@ -103,7 +103,7 @@ class InstallCommand extends Command
         }
     }
 
-    public function register_plugins(): void
+    public function registerPlugins(): void
     {
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 

@@ -29,7 +29,7 @@ class InstallCommand extends Command
     {
         $this->art();
         $this->welcome();
-        $this->publish_configuration();
+        $this->publishConfiguration();
         $this->checkForFilament();
         $this->registerPlugins();
         $this->sayGoodbye();
@@ -61,7 +61,7 @@ class InstallCommand extends Command
         note('Welcome to the Moox Core installer');
     }
 
-    public function publish_configuration(): void
+    public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
             if (! File::exists('config/core.php')) {
