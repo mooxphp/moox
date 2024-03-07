@@ -1,12 +1,12 @@
 <?php
 
-namespace Moox\Builder\Models;
+namespace Moox\Audit\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class ActivityLog extends Model
 {
-    protected $table = 'items';
+    protected $table = 'activity_log';
 
     protected $fillable = [
         'name',

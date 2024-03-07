@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Commands;
+namespace Moox\Audit\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -20,14 +20,14 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxbuilder:install';
+    protected $signature = 'mooxaudit:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Installs Moox Builder, publishes configuration, migrations and registers plugins.';
+    protected $description = 'Installs Moox Audit, publishes configuration, migrations and registers plugins.';
 
     /**
      * Execute the console command.
@@ -66,28 +66,28 @@ class InstallCommand extends Command
 
     public function welcome(): void
     {
-        info('Welcome to Moox Builder Installer');
+        info('Welcome to Moox Audit Installer');
     }
 
     public function publish_configuration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! config()->has('builder')) {
-                info('Publishing Builder Configuration...');
-                $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+            if (! config()->has('audit')) {
+                info('Publishing Audit Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'audit-config']);
             } else {
-                warning('The Builder config already exist. The config will not be published.');
+                warning('The Audit config already exist. The config will not be published.');
             }
         }
     }
 
     public function publish_migrations(): void
     {
-        if (Schema::hasTable('items')) {
-            warning('The items table already exists. The migrations will not be published.');
+        if (Schema::hasTable('activity_log')) {
+            warning('The activity_log table already exists. The migrations will not be published.');
         } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Builder Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            info('Publishing Audit Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'audit-migrations']);
         }
 
     }
@@ -95,7 +95,7 @@ class InstallCommand extends Command
     public function run_migrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
-            info('Running Builder Migrations...');
+            info('Running Audit Migrations...');
             $this->call('migrate');
         }
     }
@@ -114,12 +114,12 @@ class InstallCommand extends Command
 
                 $intend = '                ';
 
-                $namespace = "\Moox\Builder";
+                $namespace = "\Moox\Audit";
 
                 $pluginsToAdd = multiselect(
                     label: 'These plugins will be installed:',
-                    options: ['BuilderPlugin'],
-                    default: ['BuilderPlugin'],
+                    options: ['AuditPlugin'],
+                    default: ['AuditPlugin'],
                 );
 
                 $function = '::make(),';
@@ -165,6 +165,6 @@ class InstallCommand extends Command
 
     public function finish(): void
     {
-        note('Moox Builder installed successfully. Enjoy!');
+        note('Moox Audit installed successfully. Enjoy!');
     }
 }
