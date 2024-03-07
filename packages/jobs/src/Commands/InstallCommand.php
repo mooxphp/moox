@@ -133,7 +133,7 @@ class InstallCommand extends Command
 
     public function createQueueTables(): void
     {
-        if ($createQueueTables = confirm('Do you wish to create the queue tables?', true)) {
+        if (confirm('Do you wish to create the queue tables?', true)) {
             note('Your Jobs are using the database queue driver. Creating Queue Tables...');
 
             if (Schema::hasTable('jobs')) {
