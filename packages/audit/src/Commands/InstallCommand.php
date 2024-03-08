@@ -75,9 +75,10 @@ class InstallCommand extends Command
             if (! File::exists('config/audit.php')) {
                 info('Publishing Audit Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'audit-config']);
-            } else {
-                warning('The Audit config already exist. The config will not be published.');
+
+                return;
             }
+            warning('The Audit config already exist. The config will not be published.');
         }
     }
 
@@ -106,7 +107,6 @@ class InstallCommand extends Command
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
         if (File::exists($providerPath)) {
-
             $content = File::get($providerPath);
 
             $intend = '                ';
@@ -134,13 +134,11 @@ class InstallCommand extends Command
             }
 
             if ($newPlugins) {
-
                 if (preg_match($pattern, $content)) {
                     info('Plugins section found. Adding new plugins...');
 
                     $replacement = "->plugins([$1\n$newPlugins\n            ]);";
                     $newContent = preg_replace($pattern, $replacement, $content);
-
                 } else {
                     info('Plugins section created. Adding new plugins...');
 
@@ -154,10 +152,8 @@ class InstallCommand extends Command
             }
 
         } else {
-
             alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
-
     }
 
     public function finish(): void

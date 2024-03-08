@@ -67,9 +67,11 @@ class InstallCommand extends Command
             if (! File::exists('config/core.php')) {
                 info('Publishing Core Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'core-config']);
-            } else {
-                warning('The Core config already exist. The config will not be published.');
+
+                return;
             }
+            warning('The Core config already exist. The config will not be published.');
+
         }
     }
 
@@ -119,7 +121,6 @@ class InstallCommand extends Command
                 } else {
                     $newPlugins .= $intend.$plugin.$function."\n";
                     info("$pluginName registered.");
-
                 }
             }
 

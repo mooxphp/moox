@@ -94,9 +94,11 @@ class InstallCommand extends Command
             if (! File::exists('config/jobs.php')) {
                 info('Publishing Jobs Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
-            } else {
-                warning('The Jobs config already exist. The config will not be published.');
+
+                return;
             }
+            warning('The Jobs config already exist. The config will not be published.');
+
         }
     }
 
@@ -128,7 +130,6 @@ class InstallCommand extends Command
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-foreigns-migration']);
             }
         }
-
     }
 
     public function createQueueTables(): void

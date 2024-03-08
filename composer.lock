@@ -73,6 +73,65 @@
             "time": "2024-03-03T05:05:13+00:00"
         },
         {
+            "name": "awcodes/filament-gravatar",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/awcodes/filament-gravatar.git",
+                "reference": "4d09f62b85a89e5f0b51c6cc129be04ab4b843b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/awcodes/filament-gravatar/zipball/4d09f62b85a89e5f0b51c6cc129be04ab4b843b5",
+                "reference": "4d09f62b85a89e5f0b51c6cc129be04ab4b843b5",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Awcodes\\FilamentGravatar\\GravatarServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Awcodes\\FilamentGravatar\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Adam Weston",
+                    "email": "awcodes1@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Replace Filament's default avatar url provider with one for Gravatar.",
+            "keywords": [
+                "filament",
+                "framework",
+                "gravatar",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/awcodes/filament-gravatar/issues",
+                "source": "https://github.com/awcodes/filament-gravatar/tree/v2.0.1"
+            },
+            "time": "2024-01-06T15:24:00+00:00"
+        },
+        {
             "name": "bacon/bacon-qr-code",
             "version": "2.0.8",
             "source": {
@@ -3654,7 +3713,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
-                "reference": "bbf59c69f4fdc8e70e61a2fb4cd9f748a4bad3a7"
+                "reference": "25d4597135b6398ad3ddd4804897d6bd344b7318"
             },
             "require": {
                 "moox/core": "*",
@@ -3701,7 +3760,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
+                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
             },
             "require": {
                 "moox/core": "*"
@@ -3747,7 +3806,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "83b08ac7b241fe0c755dc28a87f0f830d3383d6f"
+                "reference": "70a8650e517729f761f66995bb2c8621fa7cea9e"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3800,7 +3859,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
+                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
             },
             "require": {
                 "moox/core": "*"
@@ -3854,7 +3913,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
+                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
             },
             "require": {
                 "moox/core": "*"
@@ -3900,7 +3959,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
+                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
             },
             "require": {
                 "moox/core": "*"
@@ -3946,7 +4005,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
-                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
+                "reference": "dc50c8759948ba794e1978b8f199e4e0bc08efaf"
             },
             "require": {
                 "moox/core": "*"
@@ -3992,9 +4051,10 @@
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "a6982686c9bec5bab73bdfe96bcf8087dee87d7f"
+                "reference": "8b57060c46654cebac2b007d6611e7089e7b6740"
             },
             "require": {
+                "awcodes/filament-gravatar": "^2.0",
                 "bezhansalleh/filament-shield": "^3.0",
                 "jeffgreco13/filament-breezy": "^2.2",
                 "moox/core": "*",
@@ -9180,16 +9240,16 @@
         },
         {
             "name": "jean85/pretty-package-versions",
-            "version": "2.0.5",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jean85/pretty-package-versions.git",
-                "reference": "ae547e455a3d8babd07b96966b17d7fd21d9c6af"
+                "reference": "f9fdd29ad8e6d024f52678b570e5593759b550b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/ae547e455a3d8babd07b96966b17d7fd21d9c6af",
-                "reference": "ae547e455a3d8babd07b96966b17d7fd21d9c6af",
+                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/f9fdd29ad8e6d024f52678b570e5593759b550b4",
+                "reference": "f9fdd29ad8e6d024f52678b570e5593759b550b4",
                 "shasum": ""
             },
             "require": {
@@ -9197,9 +9257,9 @@
                 "php": "^7.1|^8.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.17",
+                "friendsofphp/php-cs-fixer": "^3.2",
                 "jean85/composer-provided-replaced-stub-package": "^1.0",
-                "phpstan/phpstan": "^0.12.66",
+                "phpstan/phpstan": "^1.4",
                 "phpunit/phpunit": "^7.5|^8.5|^9.4",
                 "vimeo/psalm": "^4.3"
             },
@@ -9233,9 +9293,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Jean85/pretty-package-versions/issues",
-                "source": "https://github.com/Jean85/pretty-package-versions/tree/2.0.5"
+                "source": "https://github.com/Jean85/pretty-package-versions/tree/2.0.6"
             },
-            "time": "2021-10-08T21:21:46+00:00"
+            "time": "2024-03-08T09:58:59+00:00"
         },
         {
             "name": "larastan/larastan",
@@ -13637,5 +13697,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

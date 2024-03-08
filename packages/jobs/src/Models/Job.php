@@ -19,9 +19,9 @@ class Job extends Model
             get: function () {
                 if ($this->reserved_at) {
                     return 'running';
-                } else {
-                    return 'waiting';
                 }
+
+                return 'waiting';
             },
         );
     }

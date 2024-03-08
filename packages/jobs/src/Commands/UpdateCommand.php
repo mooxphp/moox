@@ -80,22 +80,20 @@ class UpdateCommand extends Command
                     if (Schema::hasColumn('job_manager', 'queue')) {
                         $table->index(['queue'], 'job_manager_queue_index');
                     }
-
                 });
 
                 info('job_manager table updated successfully.');
-            } else {
-                warning('The job_manager table does not exist. Let\'s publish the migration for it.');
-                $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
-            }
 
+                return;
+            }
+            warning('The job_manager table does not exist. Let\'s publish the migration for it.');
+            $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
         }
     }
 
     public function publishMigrations(): void
     {
         if (confirm('We publish the new table migrations, OK?', true)) {
-
             if (Schema::hasTable('job_batch_manager')) {
                 warning('The job_batch_manager table already exists. The migrations will not be published.');
             } elseif (confirm('Do you wish to publish the migrations?', true)) {

@@ -22,7 +22,6 @@ class JobsServiceProvider extends PackageServiceProvider
         parent::boot();
 
         if ($this->app->runningInConsole()) {
-
             $this->publishes([
                 __DIR__.'/../database/migrations/01_create_job_manager_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_01_create_job_manager_table.php'),
             ], 'jobs-manager-migration');

@@ -104,11 +104,11 @@ class JobManagerProvider extends ServiceProvider
             $attributes += [
                 'status' => 'succeeded',
             ];
-        } else {
-            $attributes += [
-                'status' => 'failed',
-            ];
+
+            return;
         }
+
+        $attributes += ['status' => 'failed'];
 
         if ($exception !== null) {
             $attributes += [
