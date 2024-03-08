@@ -29,8 +29,10 @@ class JobsWaitingOverview extends BaseWidget
             ->first();
 
         if ($aggregatedInfo) {
-            $averageTime = property_exists($aggregatedInfo, 'average_time_elapsed') ? ceil((float) $aggregatedInfo->average_time_elapsed).'s' : '0';
-            $totalTime = property_exists($aggregatedInfo, 'total_time_elapsed') ? $this->formatSeconds($aggregatedInfo->total_time_elapsed).'s' : '0';
+            $averageTime = property_exists($aggregatedInfo, 'average_time_elapsed')
+            ? ceil((float) $aggregatedInfo->average_time_elapsed).'s' : '0';
+            $totalTime = property_exists($aggregatedInfo, 'total_time_elapsed')
+            ? $this->formatSeconds($aggregatedInfo->total_time_elapsed).'s' : '0';
         } else {
             $averageTime = '0';
             $totalTime = '0';

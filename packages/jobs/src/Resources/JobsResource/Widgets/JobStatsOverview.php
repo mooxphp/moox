@@ -41,6 +41,5 @@ class JobStatsOverview extends BaseWidget
             Stat::make(__('jobs::translations.execution_time'), $totalTime),
             Stat::make(__('jobs::translations.average_time'), $averageTime),
         ];
-
     }
 }

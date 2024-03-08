@@ -31,6 +31,5 @@ class BatchJob implements ShouldQueue
             new ShortJob(),
             new ShortJob(),
         ])->dispatch();
-
     }
 }
