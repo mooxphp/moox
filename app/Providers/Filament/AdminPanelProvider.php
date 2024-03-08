@@ -92,7 +92,7 @@ class AdminPanelProvider extends PanelProvider
                     ),
 
                 \Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin::make(),
-                
+
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Press\PressPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
