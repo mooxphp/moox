@@ -246,17 +246,17 @@ Moox is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/FMorlock">
-            <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
-            <br />
-            <sub><b>FMorlock</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/Kim-the-Diamond">
             <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
             <br />
             <sub><b>Kim-the-Diamond</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/FMorlock">
+            <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
+            <br />
+            <sub><b>FMorlock</b></sub>
         </a>
     </td>
     <td align="center">
