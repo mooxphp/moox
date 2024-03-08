@@ -121,15 +121,12 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/',
-        run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ "Builder builder Item items create_items_table"'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ "Builder builder Item items create_items_table"'));
 }
 
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL,
-        run('grep -E -r -l -i "Builder|builder|create_items_table|Item|items" --exclude-dir=vendor ./* | grep -v '
-        .basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "Builder|builder|create_items_table|Item|items" --exclude-dir=vendor ./* | grep -v '.basename(__FILE__)));
 }
 
 writeln(' ');
