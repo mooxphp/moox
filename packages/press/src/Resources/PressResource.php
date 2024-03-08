@@ -116,6 +116,6 @@ class PressResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 1901;
+        return config('press.navigation_sort');
     }
 }

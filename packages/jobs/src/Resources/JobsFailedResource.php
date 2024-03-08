@@ -148,6 +148,6 @@ class JobsFailedResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 1003;
+        return config('jobs.resources.failed_jobs.navigation_sort');
     }
 }

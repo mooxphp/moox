@@ -238,6 +238,6 @@ class PlatformResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 1801;
+        return config('sync.plattforms.navigation_sort');
     }
 }
