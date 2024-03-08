@@ -175,7 +175,7 @@ class UserResource extends Resource
                         ->required()
                         ->password()
                         ->rule('current_password')
-                        ->visible(filament('filament-breezy')->getPasswordUpdateRequiresCurrent())
+                        //->visible(filament('filament-breezy')->getPasswordUpdateRequiresCurrent())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -184,7 +184,7 @@ class UserResource extends Resource
                     TextInput::make('new_password')
                         ->label(__('filament-breezy::default.fields.new_password'))
                         ->password()
-                        ->rules(filament('filament-breezy')->getPasswordUpdateRules())
+                        //->rules(filament('filament-breezy')->getPasswordUpdateRules())
                         ->required()
                         ->columnSpan([
                             'default' => 12,
