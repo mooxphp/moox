@@ -79,7 +79,6 @@ class InstallCommand extends Command
                 return;
             }
             warning('The Sync config already exist. The config will not be published.');
-
         }
     }
 

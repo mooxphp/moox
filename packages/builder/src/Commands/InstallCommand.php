@@ -92,7 +92,6 @@ class InstallCommand extends Command
             }
             info('Publishing Items Migrations...');
             $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
-
         }
     }
 
