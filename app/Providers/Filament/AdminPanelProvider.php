@@ -89,7 +89,6 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\Audit\AuditPlugin::make(),
 
-            
                 \Moox\Jobs\JobsWaitingPlugin::make(),
 
             ]);
