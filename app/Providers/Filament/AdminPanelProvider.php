@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use Awcodes\FilamentGravatar\GravatarPlugin;
+use Awcodes\FilamentGravatar\GravatarProvider;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -19,12 +21,21 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
+use Moox\Builder\BuilderPlugin;
+use Moox\Jobs\JobsBatchesPlugin;
+use Moox\Jobs\JobsFailedPlugin;
+use Moox\Jobs\JobsPlugin;
+use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Page\PagePlugin;
+use Moox\Sync\SyncPlugin;
+use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
+            // ->defaultAvatarProvider(GravatarProvider::class)
             ->default()
             ->id('moox')
             ->path('moox')
@@ -58,6 +69,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->spa()
             ->plugins([
+                // GravatarPlugin::make(),
+                BuilderPlugin::make(),
+                JobsPlugin::make(),
+                JobsWaitingPlugin::make(),
+                JobsFailedPlugin::make(),
+                JobsBatchesPlugin::make(),
+                JobsPlugin::make(),
+                PagePlugin::make(),
+                UserPlugin::make(),
+                SyncPlugin::make(),
                 FilamentShieldPlugin::make(),
                 BreezyCore::make()
                     ->myProfile(
@@ -72,25 +93,9 @@ class AdminPanelProvider extends PanelProvider
 
                 \Leandrocfe\FilamentApexCharts\FilamentApexChartsPlugin::make(),
 
-                \Moox\User\UserPlugin::make(),
-
-                \Moox\Sync\SyncPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
-
                 \Moox\Press\PressPlugin::make(),
-
-                \Moox\Page\PagePlugin::make(),
-
-                \Moox\Jobs\JobsPlugin::make(),
-                \Moox\Jobs\JobsFailedPlugin::make(),
-                \Moox\Jobs\JobsBatchesPlugin::make(),
-
-                \Moox\Builder\BuilderPlugin::make(),
-
                 \Moox\Audit\AuditPlugin::make(),
-
-                \Moox\Jobs\JobsWaitingPlugin::make(),
-
             ]);
     }
 }

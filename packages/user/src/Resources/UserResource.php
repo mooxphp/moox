@@ -13,8 +13,8 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -26,6 +26,7 @@ use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
 {
@@ -40,6 +41,17 @@ class UserResource extends Resource
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
+                    FileUpload::make('profile_photo_path')
+                        ->avatar()
+                        ->nullable()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    FileUpload::make('avatar_url'),
+
                     TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
@@ -54,6 +66,17 @@ class UserResource extends Resource
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->placeholder('Slug')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Select::make('roles')
+                        ->relationship('roles', 'name')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -142,35 +165,64 @@ class UserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
-
-                    TextInput::make('password')
-                        ->required()
-                        ->password()
-                        ->required(
-                            fn (Component $livewire) => $livewire instanceof CreateUser
-                        )
-                        ->dehydrateStateUsing(static function ($state) use ($form) {
-                            return ! empty($state)
-                                ? Hash::make($state)
-                                : User::find($form->getColumns())?->password;
-                        })
-                        ->placeholder('Password')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    FileUpload::make('profile_photo_path')
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
                 ]),
             ]),
+
+            Section::make()->schema([
+                Grid::make(['default' => 0])->schema([
+                    TextInput::make('current_password')
+                        ->label(__('filament-breezy::default.password_confirm.current_password'))
+                        ->required()
+                        ->password()
+                        ->rule('current_password')
+                        //->visible(filament('filament-breezy')->getPasswordUpdateRequiresCurrent())
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+                    TextInput::make('new_password')
+                        ->label(__('filament-breezy::default.fields.new_password'))
+                        ->password()
+                        //->rules(filament('filament-breezy')->getPasswordUpdateRules())
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+                    TextInput::make('new_password_confirmation')
+                        ->label(__('filament-breezy::default.fields.new_password_confirmation'))
+                        ->password()
+                        ->same('new_password')
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    // TextInput::make('password')
+                    //     ->required()
+                    //     ->password()
+                    //     ->required(
+                    //         fn (Component $livewire) => $livewire instanceof CreateUser
+                    //     )
+                    //     ->dehydrateStateUsing(static function ($state) use ($form) {
+                    //         return ! empty($state)
+                    //             ? Hash::make($state)
+                    //             : User::find($form->getColumns())?->password;
+                    //     })
+                    //     ->placeholder('Password')
+                    //     ->columnSpan([
+                    //         'default' => 12,
+                    //         'md' => 12,
+                    //         'lg' => 12,
+                    //     ]),
+
+                ])->statePath('data'),
+            ]),
+
         ]);
     }
 
@@ -180,39 +232,33 @@ class UserResource extends Resource
             ->poll('60s')
             ->columns([
                 ImageColumn::make('profile_photo_path')
+                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
+                    ->circular()
                     ->toggleable(),
                 TextColumn::make('name')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 TextColumn::make('slug')
                     ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                SelectColumn::make('gender')
-                    ->toggleable()
                     ->searchable()
-                    ->options([
-                        'male' => 'Male',
-                        'female' => 'Female',
-                        'other' => 'Other',
-                    ]),
-                TextColumn::make('title')
-                    ->toggleable()
-                    ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('first_name')
+                    ->label(__('Fullname'))
+                    ->formatStateUsing(function ($state, User $user) {
+                        return $user->first_name.' '.$user->last_name;
+                    })
                     ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                TextColumn::make('last_name')
-                    ->toggleable()
-                    ->searchable(true, null, true)
+                    ->sortable()
+                    ->searchable()
                     ->limit(50),
                 TextColumn::make('email')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
+                IconColumn::make('email_verified_at'),
+                TextColumn::make('roles.name'),
+
             ])
             ->filters([
                 SelectFilter::make('language_id')
@@ -221,7 +267,7 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->actions([ViewAction::make(), EditAction::make()])
+            ->actions([Impersonate::make()->redirectTo(route('filament.moox.pages.profile')), ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 

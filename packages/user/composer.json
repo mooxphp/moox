@@ -20,7 +20,8 @@
         "moox/core": "*",
         "bezhansalleh/filament-shield": "^3.0",
         "stechstudio/filament-impersonate": "^3.5",
-        "jeffgreco13/filament-breezy": "^2.2"
+        "jeffgreco13/filament-breezy": "^2.2",
+        "awcodes/filament-gravatar": "^2.0"
     },
     "autoload": {
         "psr-4": {
