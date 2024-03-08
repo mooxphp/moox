@@ -3650,7 +3650,7 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
@@ -3696,7 +3696,7 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
@@ -3742,7 +3742,7 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
@@ -3795,7 +3795,7 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
@@ -3849,7 +3849,7 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
@@ -3895,7 +3895,7 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
@@ -3941,7 +3941,7 @@
         },
         {
             "name": "moox/sync",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
@@ -3987,7 +3987,7 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-feature/installer",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
