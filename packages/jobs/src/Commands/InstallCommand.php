@@ -98,7 +98,6 @@ class InstallCommand extends Command
                 return;
             }
             warning('The Jobs config already exist. The config will not be published.');
-
         }
     }
 

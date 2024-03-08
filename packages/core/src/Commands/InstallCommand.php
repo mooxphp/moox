@@ -71,17 +71,14 @@ class InstallCommand extends Command
                 return;
             }
             warning('The Core config already exist. The config will not be published.');
-
         }
     }
 
     public function checkForFilament(): void
     {
         if (! File::exists($this->providerPath)) {
-            error('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist.');
-            info(' ');
-            warning('You should install FilamentPHP first, see https://filamentphp.com/docs/panels/installation');
-            info(' ');
+            error('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist.\n');
+            warning('You should install FilamentPHP first, see https://filamentphp.com/docs/panels/installation \n');
             if (confirm('Do you want to install Filament now?', true)) {
                 info('Starting Filament installer...');
                 $this->callSilent('filament:install', ['--panels' => true]);
@@ -118,10 +115,11 @@ class InstallCommand extends Command
                 $searchPlugin = '/'.$pluginName.'/';
                 if (preg_match($searchPlugin, $content)) {
                     info("$pluginName already registered.");
-                } else {
-                    $newPlugins .= $intend.$plugin.$function."\n";
-                    info("$pluginName registered.");
+
+                    continue;
                 }
+                $newPlugins .= $intend.$plugin.$function."\n";
+                info("$pluginName registered.");
             }
 
             if ($newPlugins) {

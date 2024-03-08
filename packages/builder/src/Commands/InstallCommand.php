@@ -87,10 +87,12 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('items')) {
                 warning('The items table already exists. The migrations will not be published.');
-            } else {
-                info('Publishing Items Migrations...');
-                $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+
+                return;
             }
+            info('Publishing Items Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+
         }
     }
 
@@ -107,7 +109,6 @@ class InstallCommand extends Command
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
         if (File::exists($providerPath)) {
-
             $content = File::get($providerPath);
 
             $intend = '                ';

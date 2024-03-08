@@ -25,13 +25,15 @@ class JobStatsOverview extends BaseWidget
             ->first();
 
         if (isset($aggregatedInfo->average_time_elapsed)) {
-            $averageTime = ($aggregatedInfo->average_time_elapsed) ? ceil((float) $aggregatedInfo->average_time_elapsed).'s' : '0';
+            $averageTime = ($aggregatedInfo->average_time_elapsed)
+            ? ceil((float) $aggregatedInfo->average_time_elapsed).'s' : '0';
         } else {
             $averageTime = '0';
         }
 
         if (isset($aggregatedInfo->total_time_elapsed)) {
-            $totalTime = ($aggregatedInfo->total_time_elapsed) ? $this->formatSeconds($aggregatedInfo->total_time_elapsed) : '0';
+            $totalTime = ($aggregatedInfo->total_time_elapsed)
+            ? $this->formatSeconds($aggregatedInfo->total_time_elapsed) : '0';
         } else {
             $totalTime = '0';
         }

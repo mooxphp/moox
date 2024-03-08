@@ -87,10 +87,12 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('activity_log')) {
                 warning('The activity_log table already exists. The migrations will not be published.');
-            } else {
-                info('Publishing Audit Migrations...');
-                $this->callSilent('vendor:publish', ['--tag' => 'activitylog-migrations']);
+
+                return;
             }
+            info('Publishing Audit Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'activitylog-migrations']);
+
         }
     }
 
@@ -150,7 +152,6 @@ class InstallCommand extends Command
 
                 File::put($providerPath, $newContent);
             }
-
         } else {
             alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
