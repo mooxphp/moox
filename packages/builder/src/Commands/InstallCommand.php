@@ -87,10 +87,11 @@ class InstallCommand extends Command
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('items')) {
                 warning('The items table already exists. The migrations will not be published.');
+
                 return;
             }
-                info('Publishing Items Migrations...');
-                $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            info('Publishing Items Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
 
         }
     }

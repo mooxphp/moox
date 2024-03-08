@@ -67,6 +67,7 @@ class InstallCommand extends Command
             if (! File::exists('config/core.php')) {
                 info('Publishing Core Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'core-config']);
+
                 return;
             }
             warning('The Core config already exist. The config will not be published.');
@@ -114,10 +115,11 @@ class InstallCommand extends Command
                 $searchPlugin = '/'.$pluginName.'/';
                 if (preg_match($searchPlugin, $content)) {
                     info("$pluginName already registered.");
+
                     continue;
                 }
-                    $newPlugins .= $intend.$plugin.$function."\n";
-                    info("$pluginName registered.");
+                $newPlugins .= $intend.$plugin.$function."\n";
+                info("$pluginName registered.");
             }
 
             if ($newPlugins) {

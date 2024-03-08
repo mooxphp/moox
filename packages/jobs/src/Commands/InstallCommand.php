@@ -82,6 +82,7 @@ class InstallCommand extends Command
         if (! File::exists($this->providerPath)) {
             if (! confirm('Filament is not installed properly. Do you want to proceed anyway?', false)) {
                 info('Installation cancelled.');
+
                 return; // cancel installation
             }
         }
