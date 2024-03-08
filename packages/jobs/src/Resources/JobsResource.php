@@ -138,6 +138,6 @@ class JobsResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 1001;
+        return config('jobs.resources.jobs.navigation_sort');
     }
 }
