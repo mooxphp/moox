@@ -88,7 +88,7 @@ class InstallCommand extends Command
                 warning('The activity_log table already exists. The migrations will not be published.');
             } else {
                 info('Publishing Audit Migrations...');
-                $this->callSilent('vendor:publish', ['--tag' => 'audit-migrations']);
+                $this->callSilent('vendor:publish', ['--tag' => 'activitylog-migrations']);
             }
         }
     }
