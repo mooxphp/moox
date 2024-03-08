@@ -11,13 +11,13 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Audit\Models\ActivityLog;
 use Moox\Audit\Resources\AuditResource\Pages\ListPage;
 use Moox\Audit\Resources\AuditResource\Widgets\AuditWidgets;
+use Spatie\Activitylog\Models\Activity;
 
 class AuditResource extends Resource
 {
-    protected static ?string $model = ActivityLog::class;
+    protected static ?string $model = Activity::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
