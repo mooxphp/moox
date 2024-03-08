@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'navigation_sort' => 701
+    'navigation_sort' => 701,
 ];
