@@ -2,15 +2,15 @@
 
 return [
     'resources' => [
-        'blog' => [
+        'page' => [
             'enabled' => true,
-            'label' => 'Blog',
-            'plural_label' => 'Blogs',
-            'navigation_group' => 'Blog Group',
+            'label' => 'Page',
+            'plural_label' => 'Pages',
+            'navigation_group' => 'Page Group',
             'navigation_icon' => 'heroicon-o-play',
             'navigation_sort' => 1,
             'navigation_count_badge' => true,
-            'resource' => Moox\Blog\Resources\BlogResource::class,
+            'resource' => Moox\Page\Resources\PageResource::class,
         ],
     ],
     'pruning' => [

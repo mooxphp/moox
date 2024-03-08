@@ -1,5 +1,3 @@
 <?php
 
-return [
-    // not used
-];
+return [];

@@ -75,7 +75,7 @@ class InstallCommand extends Command
             info(' ');
             if (confirm('Do you want to install Filament now?', true)) {
                 info('Starting Filament installer...');
-                $this->call('filament:install', ['--panels' => true]);
+                $this->callSilent('filament:install', ['--panels' => true]);
             }
         }
 
@@ -91,41 +91,49 @@ class InstallCommand extends Command
     public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            info('Publishing Jobs Configuration...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
+            if (! File::exists('config/jobs.php')) {
+                info('Publishing Jobs Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
+            } else {
+                warning('The Jobs config already exist. The config will not be published.');
+            }
         }
     }
 
     public function publishMigrations(): void
     {
-        if (Schema::hasTable('job_batch_manager')) {
-            warning('The job_batch_manager table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing job_batch_manager Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-batch-migration']);
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('job_batch_manager')) {
+                warning('The job_batch_manager table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing job_batch_manager Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-batch-migration']);
+            }
+        }
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('job_queue_workers')) {
+                warning('The job_queue_workers table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing job_queue_workers Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-queue-migration']);
+            }
+        }
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('job_manager')) {
+                warning('The job_manager table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing jobs_manager Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
+                info('Publishing job_manager foreigns Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-foreigns-migration']);
+            }
         }
 
-        if (Schema::hasTable('job_queue_workers')) {
-            warning('The job_queue_workers table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing job_queue_workers Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-queue-migration']);
-        }
-
-        if (Schema::hasTable('job_manager')) {
-            warning('The jobs-manager-migration table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing jobs-manager-migration...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
-
-            info('Publishing job_manager foreigns Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-foreigns-migration']);
-        }
     }
 
     public function createQueueTables(): void
     {
-        if ($createQueueTables = confirm('Do you wish to create the queue tables?', true)) {
+        if (confirm('Do you wish to create the queue tables?', true)) {
             note('Your Jobs are using the database queue driver. Creating Queue Tables...');
 
             if (Schema::hasTable('jobs')) {
@@ -155,14 +163,12 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Jobs Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 
     public function registerPlugins(): void
     {
-        note('Registering the Filament Resources...');
-
         $queueDriver = '';
 
         if (config('queue.default') == 'database') {
@@ -198,7 +204,7 @@ class InstallCommand extends Command
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    info("$plugin already registered.");
+                    warning("$plugin already registered.");
                 } else {
                     $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }

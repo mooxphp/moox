@@ -36,10 +36,10 @@ class InstallCommand extends Command
     {
         $this->art();
         $this->welcome();
-        $this->publish_configuration();
-        $this->publish_migrations();
-        $this->run_migrations();
-        $this->register_plugins();
+        $this->publishConfiguration();
+        $this->publishMigrations();
+        $this->runMigrations();
+        $this->registerPlugins();
         $this->finish();
     }
 
@@ -69,35 +69,40 @@ class InstallCommand extends Command
         info('Welcome to Moox Press Installer');
     }
 
-    public function publish_configuration(): void
+    public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            info('Publishing Press Configuration...');
-            $this->callSilent('vendor:publish', ['--tag' => 'press-config']);
+            if (! File::exists('config/press.php')) {
+                info('Publishing Press Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'press-config']);
+            } else {
+                warning('The Press config already exist. The config will not be published.');
+            }
         }
     }
 
-    public function publish_migrations(): void
+    public function publishMigrations(): void
     {
-        if (Schema::hasTable('press')) {
-            warning('The press table already exists. The migrations will not be published.');
-        } elseif (confirm('Do you wish to publish the migrations?', true)) {
-            info('Publishing Press Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'press-migrations']);
+        if (confirm('Do you wish to publish the migrations?', true)) {
+            if (Schema::hasTable('press')) {
+                warning('The press table already exists. The migrations will not be published.');
+            } else {
+                info('Publishing Press Migrations...');
+                $this->callSilent('vendor:publish', ['--tag' => 'press-migrations']);
+            }
         }
     }
 
-    public function run_migrations(): void
+    public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Press Migrations...');
-            $this->call('migrate');
+            $this->callSilent('migrate');
         }
     }
 
-    public function register_plugins(): void
+    public function registerPlugins(): void
     {
-        note('Registering the Filament Resources...');
 
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
 
@@ -123,7 +128,7 @@ class InstallCommand extends Command
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    info("$plugin already registered.");
+                    warning("$plugin already registered.");
                 } else {
                     $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }

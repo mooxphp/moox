@@ -1,8 +1,9 @@
 <?php
 
 return [
+    'single' => 'Press',
+    'plural' => 'Press',
     'breadcrumb' => 'Press',
-    'title' => 'Press',
     'navigation_label' => 'Press',
     'navigation_group' => 'Press Gruppe',
     'totalone' => 'Press Eins',

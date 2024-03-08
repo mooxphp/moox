@@ -11,17 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_manager', function (Blueprint $table) {
+        Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->string('job_id')->index();
             $table->string('name')->nullable();
-            $table->string('queue')->nullable();
             $table->timestamp('started_at')->nullable()->index();
             $table->timestamp('finished_at')->nullable();
             $table->boolean('failed')->default(false)->index();
-            $table->integer('attempt')->default(0);
-            $table->integer('progress')->nullable();
-            $table->text('exception_message')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_manager');
+        Schema::dropIfExists('page');
     }
 };

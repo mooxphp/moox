@@ -11,15 +11,15 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Moox\Press\Models\Press;
-use Moox\Press\PressPlugin;
 use Moox\Press\Resources\PressResource\Pages\ListPage;
 use Moox\Press\Resources\PressResource\Widgets\PressWidgets;
 
 class PressResource extends Resource
 {
     protected static ?string $model = Press::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     public static function form(Form $form): Form
     {
@@ -79,48 +79,43 @@ class PressResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return PressPlugin::make()->getNavigationCountBadge() ? number_format(static::getModel()::count()) : null;
-    }
-
     public static function getModelLabel(): string
     {
-        return PressPlugin::make()->getLabel();
+        return __('press::translations.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return PressPlugin::make()->getPluralLabel();
+        return __('press::translations.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return Str::title(static::getPluralModelLabel());
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return PressPlugin::make()->getNavigationGroup();
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return PressPlugin::make()->getNavigationSort();
+        return __('press::translations.navigation_label');
     }
 
     public static function getBreadcrumb(): string
     {
-        return PressPlugin::make()->getBreadcrumb();
+        return __('press::translations.breadcrumb');
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return PressPlugin::make()->shouldRegisterNavigation();
+        return true;
     }
 
-    public static function getNavigationIcon(): string
+    public static function getNavigationBadge(): ?string
     {
-        return PressPlugin::make()->getNavigationIcon();
+        return number_format(static::getModel()::count());
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('press::translations.navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1901;
     }
 }

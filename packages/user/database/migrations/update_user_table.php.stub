@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::table('users', function (Blueprint $table) {
             // name and email are part of Laravel's default
             if (!Schema::hasColumn('users', 'slug')) {
-                $table->string('slug')->after('name');
+                $table->string('slug')->nullable()->after('name');
             }
             if (!Schema::hasColumn('users', 'gender')) {
                 $table->enum('gender', ['unknown', 'male', 'female', 'other'])->after('slug')->default('unknown');
@@ -22,10 +22,10 @@ return new class extends Migration {
                 $table->string('title')->nullable()->after('gender');
             }
             if (!Schema::hasColumn('users', 'first_name')) {
-                $table->string('first_name')->after('title');
+                $table->string('first_name')->nullable()->after('title');
             }
             if (!Schema::hasColumn('users', 'last_name')) {
-                $table->string('last_name')->after('first_name');
+                $table->string('last_name')->nullable()->after('first_name');
             }
             if (!Schema::hasColumn('users', 'website')) {
                 $table->string('website')->nullable()->after('email');

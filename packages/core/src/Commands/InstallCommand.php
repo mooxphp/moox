@@ -29,6 +29,7 @@ class InstallCommand extends Command
     {
         $this->art();
         $this->welcome();
+        $this->publishConfiguration();
         $this->checkForFilament();
         $this->registerPlugins();
         $this->sayGoodbye();
@@ -60,6 +61,18 @@ class InstallCommand extends Command
         note('Welcome to the Moox Core installer');
     }
 
+    public function publishConfiguration(): void
+    {
+        if (confirm('Do you wish to publish the configuration?', true)) {
+            if (! File::exists('config/core.php')) {
+                info('Publishing Core Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'core-config']);
+            } else {
+                warning('The Core config already exist. The config will not be published.');
+            }
+        }
+    }
+
     public function checkForFilament(): void
     {
         if (! File::exists($this->providerPath)) {
@@ -69,7 +82,7 @@ class InstallCommand extends Command
             info(' ');
             if (confirm('Do you want to install Filament now?', true)) {
                 info('Starting Filament installer...');
-                $this->call('filament:install', ['--panels' => true]);
+                $this->callSilent('filament:install', ['--panels' => true]);
             }
         }
 
