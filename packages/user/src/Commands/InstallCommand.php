@@ -139,7 +139,6 @@ class InstallCommand extends Command
 
                     $replacement = "->plugins([$1\n$newPlugins\n            ]);";
                     $newContent = preg_replace($pattern, $replacement, $content);
-
                 } else {
                     info('Plugins section created. Adding new plugins...');
 

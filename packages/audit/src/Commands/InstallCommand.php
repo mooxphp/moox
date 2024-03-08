@@ -92,7 +92,6 @@ class InstallCommand extends Command
             }
             info('Publishing Audit Migrations...');
             $this->callSilent('vendor:publish', ['--tag' => 'activitylog-migrations']);
-
         }
     }
 
