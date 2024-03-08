@@ -83,6 +83,7 @@ class UpdateCommand extends Command
                 });
 
                 info('job_manager table updated successfully.');
+
                 return;
             }
             warning('The job_manager table does not exist. Let\'s publish the migration for it.');

@@ -75,6 +75,7 @@ class InstallCommand extends Command
             if (! File::exists('config/audit.php')) {
                 info('Publishing Audit Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'audit-config']);
+
                 return;
             }
             warning('The Audit config already exist. The config will not be published.');

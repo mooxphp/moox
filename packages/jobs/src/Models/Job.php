@@ -19,7 +19,7 @@ class Job extends Model
             get: function () {
                 if ($this->reserved_at) {
                     return 'running';
-                    }
+                }
 
                 return 'waiting';
             },

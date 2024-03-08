@@ -75,9 +75,10 @@ class InstallCommand extends Command
             if (! File::exists('config/sync.php')) {
                 info('Publishing Sync Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'sync-config']);
+
                 return;
             }
-                warning('The Sync config already exist. The config will not be published.');
+            warning('The Sync config already exist. The config will not be published.');
 
         }
     }

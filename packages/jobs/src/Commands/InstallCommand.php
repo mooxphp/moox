@@ -94,6 +94,7 @@ class InstallCommand extends Command
             if (! File::exists('config/jobs.php')) {
                 info('Publishing Jobs Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
+
                 return;
             }
             warning('The Jobs config already exist. The config will not be published.');

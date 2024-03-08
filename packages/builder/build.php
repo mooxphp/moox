@@ -122,15 +122,15 @@ function determineSeparator(string $path): string
 function replaceForWindows(): array
 {
     return preg_split('/\\r\\n|\\r|\\n/',
-    run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).
-    ' | findstr /r /i /M /F:/ "Builder builder Item items create_items_table"'));
+        run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).
+        ' | findstr /r /i /M /F:/ "Builder builder Item items create_items_table"'));
 }
 
 function replaceForAllOtherOSes(): array
 {
     return explode(PHP_EOL,
-    run('grep -E -r -l -i "Builder|builder|create_items_table|Item|items" --exclude-dir=vendor ./* | grep -v '
-    .basename(__FILE__)));
+        run('grep -E -r -l -i "Builder|builder|create_items_table|Item|items" --exclude-dir=vendor ./* | grep -v '
+        .basename(__FILE__)));
 }
 
 writeln(' ');
@@ -214,18 +214,12 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/BuilderPlugin.php'))
-        => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
-        str_contains($file, determineSeparator('src/BuilderServiceProvider.php'))
-        => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource.php'))
-        => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
-        str_contains($file, determineSeparator('src/Models/Item.php'))
-        => rename($file, determineSeparator('./src/Models/'.$entity.'.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php'))
-        => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
-        str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub'))
-        => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
+        str_contains($file, determineSeparator('src/BuilderPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
+        str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
+        str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
+        str_contains($file, determineSeparator('src/Models/Item.php')) => rename($file, determineSeparator('./src/Models/'.$entity.'.php')),
+        str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
+        str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };

@@ -75,6 +75,7 @@ class InstallCommand extends Command
             if (! File::exists('config/builder.php')) {
                 info('Publishing Builder Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+
                 return;
             }
             warning('The Builder config already exist. The config will not be published.');

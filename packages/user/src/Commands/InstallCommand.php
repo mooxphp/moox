@@ -75,9 +75,10 @@ class InstallCommand extends Command
             if (! File::exists('config/user.php')) {
                 info('Publishing User Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'user-config']);
+
                 return;
             }
-                warning('The User config already exist. The config will not be published.');
+            warning('The User config already exist. The config will not be published.');
 
         }
     }

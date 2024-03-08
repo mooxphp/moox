@@ -75,9 +75,10 @@ class InstallCommand extends Command
             if (! File::exists('config/press.php')) {
                 info('Publishing Press Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'press-config']);
+
                 return;
             }
-                warning('The Press config already exist. The config will not be published.');
+            warning('The Press config already exist. The config will not be published.');
 
         }
     }

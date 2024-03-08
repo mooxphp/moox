@@ -75,6 +75,7 @@ class InstallCommand extends Command
             if (! File::exists('config/page.php')) {
                 info('Publishing Page Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'page-config']);
+
                 return;
             }
             warning('The Page config already exist. The config will not be published.');
