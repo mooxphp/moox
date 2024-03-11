@@ -21,27 +21,49 @@ return [
         'plural' => 'Jobs Batches',
         'navigation_label' => 'Job Batches',
     ],
-    'breadcrumb' => 'Job Manager',
+    //general
+    'breadcrumb' => 'Jobs',
     'navigation_group' => 'Job Manager',
-    'total_jobs' => 'Anzahl ausgeführter Jobs',
-    'waiting_jobs' => 'Anzahl wartender Jobs',
-    'execution_time' => 'Gesamt Ausführungszeit',
-    'average_time' => 'Durchschnittliche Ausführungszeit',
-    'succeeded' => 'Erfolgreich',
-    'failed' => 'Fehlgeschlagen',
-    'running' => 'In Bearbeitung',
-    'waiting' => 'Wartend',
-    'status' => 'Status',
-    'attempts' => 'Versuche',
-    'name' => 'Name',
+
+    //used by multiple plugins
+    'id' => 'ID',
+    'failed_at' => 'Fehlgeschlagen am',
+    'delete' => 'Löschen',
     'queue' => 'Warteschlange',
-    'progress' => 'Fortschritt',
+    'name' => 'Name',
     'started_at' => 'Gestartet am',
+    'finished_at' => 'Fertiggestellt am',
+    'failed' => 'Fehlgeschlagen',
+    'waiting' => 'Wartend',
+    'exception_message' => 'Exception message',
     'created_at' => 'Erstellt am',
+
+    //jobs
+    'status' => 'Status',
+    'running' => 'In Bearbeitung',
+    'succeeded' => 'Erfolgreich',
+    'progress' => 'Fortschritt',
+
+    //Jobswaiting
+    'attempts' => 'Versuche',
     'reserved_at' => 'Reserviert am',
-    'jobs_batches' => [
-        'plural' => 'Jobs Batches',
-        'navigation_label' => 'Job Batches',
-        'single' => 'Job Batch',
-    ],
+    'waiting_jobs' => 'Anzahl wartende Jobs',
+    'execution_time' => 'Gesamte Ausfürhungszeit',
+    'average_time' => 'Durchschnittliche Ausführungszeit',
+
+    //jobfailed
+    'uuid' => 'Uuid',
+    'payload' => 'Warteschlange',
+    'connection' => 'Verbindung',
+    'exception' => 'Ausnahme',
+    'retry' => 'Wiederholen',
+    'jobs_pushed_back_notification' => 'Jobs sind wieder in der Warteschlange.',
+    'job_pushed_back_notification' => 'ist wieder zurück in der Warteschlange',
+
+    //jobbatches
+    'canceled_at' => 'Abgebrochen am',
+    'failed_jobs' => 'Fehlgeschlagene Jobs',
+    'failed_job_id' => 'Fehlgeschlagener Job ID',
+    'pending_jobs' => 'Ausstehende Jobs',
+    'total_jobs' => 'Anzahl ausgeführter Jobs',
 ];
