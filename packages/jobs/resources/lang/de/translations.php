@@ -1,5 +1,4 @@
 <?php
-
 return [
     'jobs' => [
         'single' => 'Job',
@@ -12,16 +11,16 @@ return [
         'navigation_label' => 'Jobs Waiting',
     ],
     'jobs_failed' => [
-        'single' => '',
-        'plural' => '',
-        'navigation_label' => '',
+        'single' => 'Job Failed',
+        'plural' => 'Jobs Failed',
+        'navigation_label' => 'Jobs Faled',
     ],
     'jobs_bachtes' => [
         'single' => '',
         'plural' => '',
         'navigation_label' => '',
     ],
-    'breadcrumb' => 'Jobs',
+    'breadcrumb' => 'Job Manager',
     'navigation_group' => 'Job Manager',
     'total_jobs' => 'Anzahl ausgeführter Jobs',
     'waiting_jobs' => 'Anzahl wartender Jobs',
@@ -39,4 +38,9 @@ return [
     'started_at' => 'Gestartet am',
     'created_at' => 'Erstellt am',
     'reserved_at' => 'Reserviert am',
+    'jobs_batches' => [
+        'plural' => 'Jobs Batches',
+        'navigation_label' => 'Job Batches',
+        'single' => 'Job Batch',
+    ],
 ];
