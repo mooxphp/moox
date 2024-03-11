@@ -72,6 +72,6 @@ return [
     'pending_jobs' => 'Pending Jobs',
     'total_jobs' => 'Total Jobs Executed',
     'prune_batches' => 'Prune all batches',
-    'prune_batches_notification' => 'All batches have been pruned.'
+    'prune_batches_notification' => 'All batches have been pruned.',
 
 ];

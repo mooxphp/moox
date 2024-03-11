@@ -72,6 +72,6 @@ return [
     'pending_jobs' => 'Ausstehende Jobs',
     'total_jobs' => 'Anzahl ausgeführter Jobs',
     'prune_batches' => 'Prune alle Batches',
-    'prune_batches_notification' => 'Alle Batches wurden gepruned'
+    'prune_batches_notification' => 'Alle Batches wurden gepruned',
 
 ];
