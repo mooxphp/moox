@@ -110,7 +110,7 @@ class JobsWaitingResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('jobs::translations.jobs_waiting.title');
+        return __('jobs::translations.jobs_waiting.single');
     }
 
     public static function getPluralModelLabel(): string
