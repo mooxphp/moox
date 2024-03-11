@@ -16,7 +16,7 @@ return [
         'plural' => 'Trabajos no realizados',
         'navigation_label' => 'Trabajos fallidos',
     ],
-    'jobs_bachtes' => [
+    'jobs_batches' => [
         'single' => '',
         'plural' => '',
         'navigation_label' => '',

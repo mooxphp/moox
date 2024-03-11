@@ -12,14 +12,14 @@ return [
         'navigation_label' => 'Jobs Waiting',
     ],
     'jobs_failed' => [
-        'single' => '',
-        'plural' => '',
-        'navigation_label' => '',
+        'single' => 'Job Failed',
+        'plural' => 'Jobs Failed',
+        'navigation_label' => 'Jobs Failed',
     ],
-    'jobs_bachtes' => [
-        'single' => '',
-        'plural' => '',
-        'navigation_label' => '',
+    'jobs_batches' => [
+        'single' => 'Job Batch',
+        'plural' => 'Jobs Batches',
+        'navigation_label' => 'Job Batches',
     ],
     'breadcrumb' => 'Jobs',
     'navigation_group' => 'Job Manager',
