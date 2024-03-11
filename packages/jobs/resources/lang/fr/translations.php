@@ -16,7 +16,7 @@ return [
         'plural' => '',
         'navigation_label' => '',
     ],
-    'jobs_bachtes' => [
+    'jobs_batches' => [
         'single' => '',
         'plural' => '',
         'navigation_label' => '',

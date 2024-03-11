@@ -16,10 +16,10 @@ return [
         'plural' => 'Jobs Failed',
         'navigation_label' => 'Jobs Faled',
     ],
-    'jobs_bachtes' => [
-        'single' => '',
-        'plural' => '',
-        'navigation_label' => '',
+    'jobs_batches' => [
+        'single' => 'Job Batch',
+        'plural' => 'Jobs Batches',
+        'navigation_label' => 'Job Batches',
     ],
     'breadcrumb' => 'Job Manager',
     'navigation_group' => 'Job Manager',
