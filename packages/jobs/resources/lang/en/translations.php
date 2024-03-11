@@ -58,6 +58,10 @@ return [
     'connection' => 'Connection',
     'exception' => 'Exception',
     'retry' => 'Retry',
+    'retry_all_failed_jobs' => 'Retry all failed Jobs',
+    'retry_all_failed_jobs_notification' => 'All failed jobs have been pushed back onto the queue.',
+    'delete_all_failed_jobs' => 'Deleted all failed Jobs',
+    'delete_all_failed_jobs_notification' => 'All failed jobs have been removed.',
     'jobs_pushed_back_notification' => 'jobs have been pushed back onto the queue.',
     'job_pushed_back_notification' => 'has been pushed back onto the queue.',
 
@@ -67,5 +71,7 @@ return [
     'failed_job_id' => 'Failed Job id',
     'pending_jobs' => 'Pending Jobs',
     'total_jobs' => 'Total Jobs Executed',
+    'prune_batches' => 'Prune all batches',
+    'prune_batches_notification' => 'All batches have been pruned.'
 
 ];
