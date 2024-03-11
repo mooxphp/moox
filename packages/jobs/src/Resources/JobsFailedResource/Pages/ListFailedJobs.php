@@ -2,8 +2,8 @@
 
 namespace Moox\Jobs\Resources\JobsFailedResource\Pages;
 
-use Filament\Notifications\Notification;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Jobs\Models\FailedJob;
