@@ -84,7 +84,7 @@ class JobsFailedResource extends Resource
                     ->action(function (FailedJob $record): void {
                         Artisan::call("queue:retry {$record->uuid}");
                         Notification::make()
-                            ->title(__('jobs::translations.jobs.single')." {$record->uuid} ". __('jobs::translations.job_pushed_back_notification'))
+                            ->title(__('jobs::translations.jobs.single')." {$record->uuid} ".__('jobs::translations.job_pushed_back_notification'))
                             ->success()
                             ->send();
                     }),
