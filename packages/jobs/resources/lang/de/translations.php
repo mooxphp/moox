@@ -21,6 +21,7 @@ return [
         'plural' => 'Jobs Batches',
         'navigation_label' => 'Job Batches',
     ],
+
     //general
     'breadcrumb' => 'Jobs',
     'navigation_group' => 'Job Manager',
@@ -47,8 +48,8 @@ return [
     //Jobswaiting
     'attempts' => 'Versuche',
     'reserved_at' => 'Reserviert am',
-    'waiting_jobs' => 'Anzahl wartende Jobs',
-    'execution_time' => 'Gesamte Ausfürhungszeit',
+    'waiting_jobs' => 'Wartende Jobs',
+    'execution_time' => 'Gesamte Ausführungszeit',
     'average_time' => 'Durchschnittliche Ausführungszeit',
 
     //jobfailed
@@ -57,6 +58,10 @@ return [
     'connection' => 'Verbindung',
     'exception' => 'Ausnahme',
     'retry' => 'Wiederholen',
+    'retry_all_failed_jobs' => 'Alle Jobs wiederholen',
+    'retry_all_failed_jobs_notification' => 'Alle fehlgeschlagenen Jobs wurden in die Warteschlage eingereiht',
+    'delete_all_failed_jobs' => 'Alle fehlgeschlagenen Jobs löschen',
+    'delete_all_failed_jobs_notification' => 'All fehlgeschlagenen Jobs wurden gelöscht',
     'jobs_pushed_back_notification' => 'Jobs sind wieder in der Warteschlange.',
     'job_pushed_back_notification' => 'ist wieder zurück in der Warteschlange',
 
@@ -66,4 +71,7 @@ return [
     'failed_job_id' => 'Fehlgeschlagener Job ID',
     'pending_jobs' => 'Ausstehende Jobs',
     'total_jobs' => 'Anzahl ausgeführter Jobs',
+    'prune_batches' => 'Prune alle Batches',
+    'prune_batches_notification' => 'Alle Batches wurden gepruned'
+
 ];

@@ -16,13 +16,13 @@ class ListJobBatches extends ListRecords
     {
         return [
             Action::make('prune_batches')
-                ->label('Prune all batches')
+                ->label(__('jobs::translations.prune_batches'))
                 ->requiresConfirmation()
                 ->color('danger')
                 ->action(function (): void {
                     Artisan::call('queue:prune-batches');
                     Notification::make()
-                        ->title('All batches have been pruned.')
+                        ->title(__('jobs::translations.prune_batches_notification'))
                         ->success()
                         ->send();
                 }),
