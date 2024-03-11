@@ -27,7 +27,7 @@ return [
     'navigation_group' => 'Job Manager',
 
     //used by multiple plugins
-    'id' => 'id',
+    'id' => 'ID',
     'failed_at' => 'Failed at',
     'delete' => 'Delete',
     'queue' => 'Queue',
@@ -53,7 +53,7 @@ return [
     'average_time' => 'Average Execution Time',
 
     //jobfailed
-    'uuid' => 'uuid',
+    'uuid' => 'Uuid',
     'payload' => 'Queue',
     'connection' => 'Connection',
     'exception' => 'Exception',
