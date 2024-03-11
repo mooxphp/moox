@@ -1,5 +1,4 @@
 <?php
-
 return [
     'single' => 'Builder',
     'plural' => 'Builders',
@@ -11,6 +10,6 @@ return [
     'totaltwo' => 'Builder Zwei',
     'totalthree' => 'Builder Drei',
     'name' => 'Name',
-    'started_at' => 'Gestartet',
+    'started_at' => 'Gestartet am',
     'failed' => 'failed',
 ];
