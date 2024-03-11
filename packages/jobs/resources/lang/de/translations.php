@@ -61,7 +61,7 @@ return [
     'retry_all_failed_jobs' => 'Alle Jobs wiederholen',
     'retry_all_failed_jobs_notification' => 'Alle fehlgeschlagenen Jobs wurden in die Warteschlage eingereiht',
     'delete_all_failed_jobs' => 'Alle fehlgeschlagenen Jobs löschen',
-    'delete_all_failed_jobs_notification' => 'All fehlgeschlagenen Jobs wurden gelöscht',
+    'delete_all_failed_jobs_notification' => 'Alle fehlgeschlagenen Jobs wurden gelöscht',
     'jobs_pushed_back_notification' => 'Jobs sind wieder in der Warteschlange.',
     'job_pushed_back_notification' => 'ist wieder zurück in der Warteschlange',
 
