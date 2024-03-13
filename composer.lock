@@ -2346,16 +2346,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v10.47.0",
+            "version": "v10.48.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "fce29b8de62733cdecbe12e3bae801f83fff2ea4"
+                "reference": "32a8bb151d748b579c3794dea53b56bd40dfbbd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/fce29b8de62733cdecbe12e3bae801f83fff2ea4",
-                "reference": "fce29b8de62733cdecbe12e3bae801f83fff2ea4",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/32a8bb151d748b579c3794dea53b56bd40dfbbd3",
+                "reference": "32a8bb151d748b579c3794dea53b56bd40dfbbd3",
                 "shasum": ""
             },
             "require": {
@@ -2403,6 +2403,7 @@
             "conflict": {
                 "carbonphp/carbon-doctrine-types": ">=3.0",
                 "doctrine/dbal": ">=4.0",
+                "mockery/mockery": "1.6.8",
                 "phpunit/phpunit": ">=11.0.0",
                 "tightenco/collect": "<5.5.33"
             },
@@ -2548,7 +2549,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-03-05T15:18:36+00:00"
+            "time": "2024-03-12T16:35:43+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -3012,16 +3013,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.24.0",
+            "version": "3.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "b25a361508c407563b34fac6f64a8a17a8819675"
+                "reference": "4c44347133618cccd9b3df1729647a1577b4ad99"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/b25a361508c407563b34fac6f64a8a17a8819675",
-                "reference": "b25a361508c407563b34fac6f64a8a17a8819675",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/4c44347133618cccd9b3df1729647a1577b4ad99",
+                "reference": "4c44347133618cccd9b3df1729647a1577b4ad99",
                 "shasum": ""
             },
             "require": {
@@ -3049,7 +3050,7 @@
                 "friendsofphp/php-cs-fixer": "^3.5",
                 "google/cloud-storage": "^1.23",
                 "microsoft/azure-storage-blob": "^1.1",
-                "phpseclib/phpseclib": "^3.0.34",
+                "phpseclib/phpseclib": "^3.0.36",
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^9.5.11|^10.0",
                 "sabre/dav": "^4.6.0"
@@ -3086,7 +3087,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.24.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.25.0"
             },
             "funding": [
                 {
@@ -3098,7 +3099,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-04T12:10:17+00:00"
+            "time": "2024-03-09T17:06:45+00:00"
         },
         {
             "name": "league/flysystem-local",
@@ -3713,7 +3714,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
-                "reference": "25d4597135b6398ad3ddd4804897d6bd344b7318"
+                "reference": "bbf59c69f4fdc8e70e61a2fb4cd9f748a4bad3a7"
             },
             "require": {
                 "moox/core": "*",
@@ -3760,7 +3761,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
+                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
             },
             "require": {
                 "moox/core": "*"
@@ -3806,7 +3807,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "70a8650e517729f761f66995bb2c8621fa7cea9e"
+                "reference": "83b08ac7b241fe0c755dc28a87f0f830d3383d6f"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3859,7 +3860,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
+                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
             },
             "require": {
                 "moox/core": "*"
@@ -3913,7 +3914,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
+                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
             },
             "require": {
                 "moox/core": "*"
@@ -3959,7 +3960,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
+                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
             },
             "require": {
                 "moox/core": "*"
@@ -4005,7 +4006,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
-                "reference": "dc50c8759948ba794e1978b8f199e4e0bc08efaf"
+                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
             },
             "require": {
                 "moox/core": "*"
@@ -4051,7 +4052,7 @@
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "8b57060c46654cebac2b007d6611e7089e7b6740"
+                "reference": "c225f20432998050cf49992e50bf21d945d070af"
             },
             "require": {
                 "awcodes/filament-gravatar": "^2.0",
@@ -9914,16 +9915,16 @@
         },
         {
             "name": "orchestra/testbench",
-            "version": "v8.21.1",
+            "version": "v8.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench.git",
-                "reference": "c22a81802a68e746e032edf65cbb68af28a52670"
+                "reference": "77e857d3f57c892dbe76e71d4212f5f03a66887f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench/zipball/c22a81802a68e746e032edf65cbb68af28a52670",
-                "reference": "c22a81802a68e746e032edf65cbb68af28a52670",
+                "url": "https://api.github.com/repos/orchestral/testbench/zipball/77e857d3f57c892dbe76e71d4212f5f03a66887f",
+                "reference": "77e857d3f57c892dbe76e71d4212f5f03a66887f",
                 "shasum": ""
             },
             "require": {
@@ -9931,8 +9932,8 @@
                 "fakerphp/faker": "^1.21",
                 "laravel/framework": "^10.40",
                 "mockery/mockery": "^1.5.1",
-                "orchestra/testbench-core": "^8.21.1",
-                "orchestra/workbench": "^1.2 || ^8.2",
+                "orchestra/testbench-core": "^8.23",
+                "orchestra/workbench": "^1.4 || ^8.4",
                 "php": "^8.1",
                 "phpunit/phpunit": "^9.6 || ^10.1",
                 "symfony/process": "^6.2",
@@ -9963,22 +9964,22 @@
             ],
             "support": {
                 "issues": "https://github.com/orchestral/testbench/issues",
-                "source": "https://github.com/orchestral/testbench/tree/v8.21.1"
+                "source": "https://github.com/orchestral/testbench/tree/v8.22.0"
             },
-            "time": "2024-01-22T03:22:22+00:00"
+            "time": "2024-03-13T06:52:48+00:00"
         },
         {
             "name": "orchestra/testbench-core",
-            "version": "v8.22.1",
+            "version": "v8.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench-core.git",
-                "reference": "b0006c092694828f4b0fa409a369b798e5e26f8d"
+                "reference": "35936ff29b42439fda75dbb635cc57e113f17c98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/b0006c092694828f4b0fa409a369b798e5e26f8d",
-                "reference": "b0006c092694828f4b0fa409a369b798e5e26f8d",
+                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/35936ff29b42439fda75dbb635cc57e113f17c98",
+                "reference": "35936ff29b42439fda75dbb635cc57e113f17c98",
                 "shasum": ""
             },
             "require": {
@@ -9988,7 +9989,7 @@
             },
             "conflict": {
                 "brianium/paratest": "<6.4.0 || >=7.0.0 <7.1.4 || >=8.0.0",
-                "laravel/framework": "<10.40 || >=11.0.0",
+                "laravel/framework": "<10.48.2 || >=11.0.0",
                 "nunomaduro/collision": "<6.4.0 || >=7.0.0 <7.4.0 || >=8.0.0",
                 "orchestra/testbench-dusk": "<8.21.0 || >=9.0.0",
                 "orchestra/workbench": "<1.0.0",
@@ -9996,7 +9997,7 @@
             },
             "require-dev": {
                 "fakerphp/faker": "^1.21",
-                "laravel/framework": "^10.40",
+                "laravel/framework": "^10.48.2",
                 "laravel/pint": "^1.6",
                 "mockery/mockery": "^1.5.1",
                 "phpstan/phpstan": "^1.10.7",
@@ -10010,7 +10011,7 @@
                 "brianium/paratest": "Allow using parallel testing (^6.4 || ^7.1.4).",
                 "ext-pcntl": "Required to use all features of the console signal trapping.",
                 "fakerphp/faker": "Allow using Faker for testing (^1.21).",
-                "laravel/framework": "Required for testing (^10.40).",
+                "laravel/framework": "Required for testing (^10.48.2).",
                 "mockery/mockery": "Allow using Mockery for testing (^1.5.1).",
                 "nunomaduro/collision": "Allow using Laravel style tests output and parallel testing (^6.4 || ^7.4).",
                 "orchestra/testbench-browser-kit": "Allow using legacy Laravel BrowserKit for testing (^8.0).",
@@ -10057,20 +10058,20 @@
                 "issues": "https://github.com/orchestral/testbench/issues",
                 "source": "https://github.com/orchestral/testbench-core"
             },
-            "time": "2024-02-21T23:33:22+00:00"
+            "time": "2024-03-13T04:02:37+00:00"
         },
         {
             "name": "orchestra/workbench",
-            "version": "v8.3.0",
+            "version": "v8.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/workbench.git",
-                "reference": "1246c7ffd0ab8b1cbf9a9b346a50921dd83bc24b"
+                "reference": "7db7009377fd1afe25c783e9092af911cd04b3a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/workbench/zipball/1246c7ffd0ab8b1cbf9a9b346a50921dd83bc24b",
-                "reference": "1246c7ffd0ab8b1cbf9a9b346a50921dd83bc24b",
+                "url": "https://api.github.com/repos/orchestral/workbench/zipball/7db7009377fd1afe25c783e9092af911cd04b3a9",
+                "reference": "7db7009377fd1afe25c783e9092af911cd04b3a9",
                 "shasum": ""
             },
             "require": {
@@ -10125,9 +10126,9 @@
             ],
             "support": {
                 "issues": "https://github.com/orchestral/workbench/issues",
-                "source": "https://github.com/orchestral/workbench/tree/v8.3.0"
+                "source": "https://github.com/orchestral/workbench/tree/v8.4.0"
             },
-            "time": "2024-03-03T14:32:38+00:00"
+            "time": "2024-03-13T06:02:29+00:00"
         },
         {
             "name": "pestphp/pest",
@@ -13697,5 +13698,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
