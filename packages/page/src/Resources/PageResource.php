@@ -106,6 +106,6 @@ class PageResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 101;
+        return config('page.navigation_sort');
     }
 }

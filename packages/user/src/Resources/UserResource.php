@@ -318,6 +318,6 @@ class UserResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 701;
+        return config('user.navigation_sort');
     }
 }

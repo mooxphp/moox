@@ -1,3 +1,5 @@
 <?php
 
-return [];
+return [
+    'navigation_sort' => 701,
+];

@@ -179,6 +179,6 @@ class SyncResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return 1801;
+        return config('sync.sync.navigation_sort');
     }
 }
