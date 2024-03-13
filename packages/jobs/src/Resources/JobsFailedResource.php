@@ -15,7 +15,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
-use InvadersXX\FilamentJsoneditor\Forms\JSONEditor;
 use Moox\Jobs\Models\FailedJob;
 use Moox\Jobs\Resources\JobsFailedResource\Pages\ListFailedJobs;
 
@@ -37,7 +36,7 @@ class JobsFailedResource extends Resource
 
                 // make text a little bit smaller because often a complete Stack Trace is shown:
                 TextArea::make('exception')->disabled()->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;']),
-                JSONEditor::make('payload')->disabled()->columnSpan(4),
+                TextArea::make('payload')->disabled()->columnSpan(4),
             ])->columns(4);
     }
 
