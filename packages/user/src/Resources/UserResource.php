@@ -20,7 +20,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
-use Livewire\Component;
+use Illuminate\Validation\Rules\Password;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
@@ -35,6 +35,8 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public $user;
 
     public static function form(Form $form): Form
     {
@@ -64,7 +66,6 @@ class UserResource extends Resource
 
                     TextInput::make('slug')
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->placeholder('Slug')
                         ->columnSpan([
                             'default' => 12,
@@ -112,7 +113,6 @@ class UserResource extends Resource
 
                     TextInput::make('first_name')
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->placeholder('First Name')
                         ->columnSpan([
                             'default' => 12,
@@ -122,7 +122,6 @@ class UserResource extends Resource
 
                     TextInput::make('last_name')
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->placeholder('Last Name')
                         ->columnSpan([
                             'default' => 12,
@@ -158,8 +157,33 @@ class UserResource extends Resource
 
                     RichEditor::make('description')
                         ->rules(['max:255', 'string'])
-                        ->nullable()
                         ->placeholder('Description')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    TextInput::make('password')
+                        ->revealable()
+                        ->required()
+                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->password()
+                        ->visibleOn('create')
+                        ->rule(Password::default())
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    TextInput::make('password_confirmation')
+                        ->revealable()
+                        ->requiredWith('password')
+                        ->password()
+                        ->same('password')
+                        ->visibleOn('create')
+                        ->rule(Password::default())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -168,60 +192,37 @@ class UserResource extends Resource
                 ]),
             ]),
 
-            Section::make()->schema([
+            Section::make('Update Password')->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('current_password')
-                        ->label(__('filament-breezy::default.password_confirm.current_password'))
-                        ->required()
+                        ->required(fn (string $context): bool => $context === 'create')
                         ->password()
                         ->rule('current_password')
-                        //->visible(filament('filament-breezy')->getPasswordUpdateRequiresCurrent())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password')
-                        ->label(__('filament-breezy::default.fields.new_password'))
                         ->password()
-                        //->rules(filament('filament-breezy')->getPasswordUpdateRules())
-                        ->required()
+                        ->rule(Password::default())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password_confirmation')
-                        ->label(__('filament-breezy::default.fields.new_password_confirmation'))
                         ->password()
                         ->same('new_password')
-                        ->required()
+                        ->requiredWith('new_password')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
 
-                    // TextInput::make('password')
-                    //     ->required()
-                    //     ->password()
-                    //     ->required(
-                    //         fn (Component $livewire) => $livewire instanceof CreateUser
-                    //     )
-                    //     ->dehydrateStateUsing(static function ($state) use ($form) {
-                    //         return ! empty($state)
-                    //             ? Hash::make($state)
-                    //             : User::find($form->getColumns())?->password;
-                    //     })
-                    //     ->placeholder('Password')
-                    //     ->columnSpan([
-                    //         'default' => 12,
-                    //         'md' => 12,
-                    //         'lg' => 12,
-                    //     ]),
-
-                ])->statePath('data'),
-            ]),
+                ]),
+            ])->visibleOn('edit'),
 
         ]);
     }

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Moox\User\Models\User;
 use Spatie\Permission\Models\Role;
 
 class RolePolicy

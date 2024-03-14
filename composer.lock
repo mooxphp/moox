@@ -3539,7 +3539,7 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
@@ -3586,7 +3586,7 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
@@ -3632,7 +3632,7 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
@@ -3682,7 +3682,7 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
@@ -3736,7 +3736,7 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
@@ -3782,7 +3782,7 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
@@ -3828,7 +3828,7 @@
         },
         {
             "name": "moox/sync",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
@@ -3874,7 +3874,7 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/user",

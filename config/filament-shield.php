@@ -12,7 +12,7 @@ return [
     ],
 
     'auth_provider_model' => [
-        'fqcn' => 'App\\Models\\User',
+        'fqcn' => 'Moox\\User\\Models\\User',
     ],
 
     'super_admin' => [
