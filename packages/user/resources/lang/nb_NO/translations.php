@@ -1,14 +1,9 @@
 <?php
 
 return [
-    'breadcrumb' => 'Bygger',
-    'title' => 'Bygger',
-    'navigation_label' => 'Bygger',
-    'navigation_group' => 'Moox Builder',
-    'totalone' => 'Bygger én',
-    'totaltwo' => 'Bygger to',
-    'totalthree' => 'Bygger tre',
+    'breadcrumb' => 'User',
+    'title' => 'User',
+    'navigation_label' => 'Users',
+    'navigation_group' => 'Moox User',
     'name' => 'Navn',
-    'started_at' => 'Startet',
-    'failed' => 'mislyktes',
 ];
