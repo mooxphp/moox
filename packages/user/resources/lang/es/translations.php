@@ -1,4 +1,5 @@
 <?php
+
 return [
     'breadcrumb' => 'Usuario',
     'title' => 'Usuario',
