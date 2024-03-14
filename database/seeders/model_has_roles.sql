@@ -19,16 +19,16 @@
 
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
-(1, 'App\\Models\\User', 1),
-(1, 'App\\Models\\User', 2),
-(1, 'App\\Models\\User', 3),
-(1, 'App\\Models\\User', 4),
-(1, 'App\\Models\\User', 5),
-(2, 'App\\Models\\User', 1),
-(2, 'App\\Models\\User', 2),
-(2, 'App\\Models\\User', 3),
-(2, 'App\\Models\\User', 4),
-(2, 'App\\Models\\User', 5);
+(1, 'Moox\\User\\Models\\User', 1),
+(1, 'Moox\\User\\Models\\User', 2),
+(1, 'Moox\\User\\Models\\User', 3),
+(1, 'Moox\\User\\Models\\User', 4),
+(1, 'Moox\\User\\Models\\User', 5),
+(2, 'Moox\\User\\Models\\User', 1),
+(2, 'Moox\\User\\Models\\User', 2),
+(2, 'Moox\\User\\Models\\User', 3),
+(2, 'Moox\\User\\Models\\User', 4),
+(2, 'Moox\\User\\Models\\User', 5);
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
