@@ -124,7 +124,6 @@ class InstallCommand extends Command
         foreach ($locales as $localePath) {
             $files = File::files($localePath);
             foreach ($files as $file) {
-
                 $translations = include $file->getPathname();
                 if (isset($translations['nav']['group'])) {
                     $translations['nav']['group'] = 'Moox User';
