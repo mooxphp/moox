@@ -6,7 +6,7 @@ return [
     'breadcrumb' => 'Page',
     'title' => 'Page',
     'navigation_label' => 'Page',
-    'navigation_group' => 'Page Group',
+    'navigation_group' => 'Moox Page',
     'totalone' => 'Page One',
     'totaltwo' => 'Page Two',
     'totalthree' => 'Page Three',

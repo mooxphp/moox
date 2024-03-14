@@ -24,7 +24,7 @@ return [
 
     //general
     'breadcrumb' => 'Jobs',
-    'navigation_group' => 'Job Manager',
+    'navigation_group' => 'Moox Jobs',
 
     //used by multiple plugins
     'id' => 'ID',

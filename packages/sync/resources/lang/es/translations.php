@@ -6,7 +6,7 @@ return [
     'breadcrumb' => 'Sync',
     'title' => 'Sync',
     'navigation_label' => 'Sync',
-    'navigation_group' => 'Sync Grupo',
+    'navigation_group' => 'Moox Sync',
     'totalone' => 'Sync Uno',
     'totaltwo' => 'Sync Dos',
     'totalthree' => 'Sync Trés',
