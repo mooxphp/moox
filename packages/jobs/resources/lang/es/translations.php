@@ -1,4 +1,5 @@
 <?php
+
 return [
     'jobs' => [
         'single' => 'Trabajo En Cola',
