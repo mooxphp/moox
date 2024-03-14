@@ -1,4 +1,5 @@
 <?php
+
 return [
     'breadcrumb' => 'Núcleo',
     'title' => 'Núcleo',
