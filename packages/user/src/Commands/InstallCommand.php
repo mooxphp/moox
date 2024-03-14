@@ -102,6 +102,43 @@ class InstallCommand extends Command
         }
     }
 
+    public function customizeFilament(): void
+    {
+        info('Customizing Filament Shield translations...');
+
+        $translationPath = resource_path('lang/vendor/filament-shield');
+
+        if (! File::exists($translationPath)) {
+            $this->call('vendor:publish', [
+                '--provider' => 'BezhanSalleh\FilamentShield\FilamentShieldServiceProvider',
+                '--tag' => 'translations',
+            ]);
+
+            info('Filament Shield translations published.');
+
+            return;
+        }
+
+        $locales = File::directories($translationPath);
+
+        foreach ($locales as $localePath) {
+            $files = File::files($localePath);
+            foreach ($files as $file) {
+
+                $translations = include $file->getPathname();
+                if (isset($translations['nav']['group'])) {
+                    $translations['nav']['group'] = 'Moox User';
+                    $outputPath = $file->getPathname();
+                    $content = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                    File::put($outputPath, $content);
+                    $this->info("Updated {$file->getFilename()} in {$localePath}");
+                }
+            }
+        }
+
+        info('Filament Shield translations customization complete.');
+    }
+
     public function registerPlugins(): void
     {
         $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
