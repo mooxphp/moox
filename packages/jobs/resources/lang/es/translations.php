@@ -1,5 +1,4 @@
 <?php
-
 return [
     'jobs' => [
         'single' => 'Trabajo En Cola',
@@ -22,7 +21,7 @@ return [
         'navigation_label' => 'Lotes de trabajos',
     ],
     //general
-    'breadcrumb' => 'Monitor de Trabajos En Cola',
+    'breadcrumb' => 'Trabajo en Moox',
     'navigation_group' => 'Sistema',
     //used by multiple plugins
     'queue' => 'Cola',
