@@ -1,5 +1,4 @@
 <?php
-
 return [
     'jobs' => [
         'single' => 'Job',
@@ -21,11 +20,9 @@ return [
         'plural' => 'Jobs Batches',
         'navigation_label' => 'Job Batches',
     ],
-
     //general
     'breadcrumb' => 'Jobs',
     'navigation_group' => 'Moox Jobs',
-
     //used by multiple plugins
     'id' => 'ID',
     'failed_at' => 'Fehlgeschlagen am',
@@ -38,20 +35,17 @@ return [
     'waiting' => 'Wartend',
     'exception_message' => 'Exception message',
     'created_at' => 'Erstellt am',
-
     //jobs
     'status' => 'Status',
     'running' => 'In Bearbeitung',
     'succeeded' => 'Erfolgreich',
     'progress' => 'Fortschritt',
-
     //Jobswaiting
     'attempts' => 'Versuche',
     'reserved_at' => 'Reserviert am',
     'waiting_jobs' => 'Wartende Jobs',
     'execution_time' => 'Gesamte Ausführungszeit',
     'average_time' => 'Durchschnittliche Ausführungszeit',
-
     //jobfailed
     'uuid' => 'Uuid',
     'payload' => 'Warteschlange',
@@ -64,7 +58,6 @@ return [
     'delete_all_failed_jobs_notification' => 'Alle fehlgeschlagenen Jobs wurden gelöscht',
     'jobs_pushed_back_notification' => 'Jobs sind wieder in der Warteschlange.',
     'job_pushed_back_notification' => 'ist wieder zurück in der Warteschlange',
-
     //jobbatches
     'canceled_at' => 'Abgebrochen am',
     'failed_jobs' => 'Fehlgeschlagene Jobs',
@@ -73,5 +66,4 @@ return [
     'total_jobs' => 'Anzahl ausgeführter Jobs',
     'prune_batches' => 'Prune alle Batches',
     'prune_batches_notification' => 'Alle Batches wurden gepruned',
-
 ];
