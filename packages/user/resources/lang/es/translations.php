@@ -1,9 +1,10 @@
 <?php
-
 return [
-    'breadcrumb' => 'User',
-    'title' => 'User',
-    'navigation_label' => 'Users',
-    'navigation_group' => 'Moox User',
+    'breadcrumb' => 'Usuario',
+    'title' => 'Usuario',
+    'navigation_label' => 'Usuarios',
+    'navigation_group' => 'Usuario de Moox',
     'name' => 'Nombre',
+    'single' => 'Usuario',
+    'plural' => 'Usuarios',
 ];
