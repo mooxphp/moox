@@ -5,7 +5,7 @@ return [
     'plural' => 'Bygger',
     'breadcrumb' => 'Bygger',
     'navigation_label' => 'Bygger',
-    'navigation_group' => 'Byggergruppe',
+    'navigation_group' => 'Moox Press',
     'totalone' => 'Bygger én',
     'totaltwo' => 'Bygger to',
     'totalthree' => 'Bygger tre',

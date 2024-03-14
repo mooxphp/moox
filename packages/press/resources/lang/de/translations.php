@@ -5,7 +5,7 @@ return [
     'plural' => 'Press',
     'breadcrumb' => 'Press',
     'navigation_label' => 'Press',
-    'navigation_group' => 'Press Gruppe',
+    'navigation_group' => 'Moox Press',
     'totalone' => 'Press Eins',
     'totaltwo' => 'Press Zwei',
     'totalthree' => 'Press Drei',

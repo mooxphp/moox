@@ -3,12 +3,7 @@
 return [
     'breadcrumb' => 'User',
     'title' => 'User',
-    'navigation_label' => 'User',
-    'navigation_group' => 'User Grupo',
-    'totalone' => 'User Uno',
-    'totaltwo' => 'User Dos',
-    'totalthree' => 'User Trés',
+    'navigation_label' => 'Users',
+    'navigation_group' => 'Moox User',
     'name' => 'Nombre',
-    'started_at' => 'Empezó a las',
-    'failed' => 'failed',
 ];

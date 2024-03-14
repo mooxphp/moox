@@ -6,7 +6,7 @@ return [
     'breadcrumb' => 'Builder',
     'title' => 'Builder',
     'navigation_label' => 'Builder',
-    'navigation_group' => 'Builder Gruppe',
+    'navigation_group' => 'Moox Builder',
     'totalone' => 'Builder Eins',
     'totaltwo' => 'Builder Zwei',
     'totalthree' => 'Builder Drei',

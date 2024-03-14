@@ -23,7 +23,7 @@ return [
     ],
 
     //general
-    'breadcrumb' => 'Job Manager',
+    'breadcrumb' => 'Moox Job',
     'navigation_group' => 'Job Manager',
 
     //used by multiple plugins

@@ -6,7 +6,7 @@ return [
     'breadcrumb' => 'Audit',
     'title' => 'Audit',
     'navigation_label' => 'Audit',
-    'navigation_group' => 'Audit Gruppe',
+    'navigation_group' => 'Moox Audit',
     'totalone' => 'Audit Eins',
     'totaltwo' => 'Audit Zwei',
     'totalthree' => 'Audit Drei',
