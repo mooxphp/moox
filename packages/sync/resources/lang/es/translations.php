@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Sincronización',
     'plural' => 'Sincronizaciones',
