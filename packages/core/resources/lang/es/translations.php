@@ -1,8 +1,7 @@
 <?php
-
 return [
-    'breadcrumb' => 'Core',
-    'title' => 'Core',
-    'navigation_label' => 'Core',
-    'navigation_group' => 'Moox Core',
+    'breadcrumb' => 'Núcleo',
+    'title' => 'Núcleo',
+    'navigation_label' => 'Núcleo',
+    'navigation_group' => 'Núcleo de Moox',
 ];
