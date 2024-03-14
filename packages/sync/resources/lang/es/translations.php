@@ -1,5 +1,4 @@
 <?php
-
 return [
     'single' => 'Sync',
     'plural' => 'Syncs',
@@ -13,4 +12,6 @@ return [
     'name' => 'Nombre',
     'started_at' => 'Empezó a las',
     'failed' => 'failed',
+    'platform' => 'Plataforma',
+    'platforms' => 'Plataformas',
 ];
