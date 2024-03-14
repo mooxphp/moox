@@ -27,6 +27,7 @@ class User extends BaseUser implements HasAvatar
         'description',
         'password',
         'profile_photo_path',
+        'avatar',
 
     ];
 

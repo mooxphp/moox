@@ -2,30 +2,33 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Livewire\Component;
 use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Moox\User\Models\User;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Grid;
+use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
-use Livewire\Component;
-use Moox\User\Models\User;
-use Moox\User\Resources\UserResource\Pages\CreateUser;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Validation\Rules\Password;
 use Moox\User\Resources\UserResource\Pages\EditUser;
-use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
+use Moox\User\Resources\UserResource\Pages\ListUsers;
+use Moox\User\Resources\UserResource\Pages\CreateUser;
 use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
@@ -35,6 +38,10 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public $user;
+
+    
 
     public static function form(Form $form): Form
     {
@@ -64,7 +71,6 @@ class UserResource extends Resource
 
                     TextInput::make('slug')
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->placeholder('Slug')
                         ->columnSpan([
                             'default' => 12,
@@ -112,7 +118,6 @@ class UserResource extends Resource
 
                     TextInput::make('first_name')
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->placeholder('First Name')
                         ->columnSpan([
                             'default' => 12,
@@ -122,7 +127,6 @@ class UserResource extends Resource
 
                     TextInput::make('last_name')
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->placeholder('Last Name')
                         ->columnSpan([
                             'default' => 12,
@@ -158,73 +162,77 @@ class UserResource extends Resource
 
                     RichEditor::make('description')
                         ->rules(['max:255', 'string'])
-                        ->nullable()
                         ->placeholder('Description')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
+
+                    TextInput::make('password')
+                        ->revealable()
+                        ->required()
+                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->password()
+                        ->visibleOn('create')
+                        ->rule(Password::default())
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    TextInput::make('password_confirmation')
+                        ->revealable()
+                        ->requiredWith('password')
+                        ->password()
+                        ->same('password')
+                        ->visibleOn('create')
+                        ->rule(Password::default())
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),    
                 ]),
             ]),
 
-            Section::make()->schema([
+            Section::make('Update Password')->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('current_password')
-                        ->label(__('filament-breezy::default.password_confirm.current_password'))
-                        ->required()
+                        ->required(fn (string $context): bool => $context === 'create')
                         ->password()
                         ->rule('current_password')
-                        //->visible(filament('filament-breezy')->getPasswordUpdateRequiresCurrent())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password')
-                        ->label(__('filament-breezy::default.fields.new_password'))
                         ->password()
-                        //->rules(filament('filament-breezy')->getPasswordUpdateRules())
-                        ->required()
+                        ->rule(Password::default())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password_confirmation')
-                        ->label(__('filament-breezy::default.fields.new_password_confirmation'))
                         ->password()
                         ->same('new_password')
-                        ->required()
+                        ->requiredWith('new_password')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
 
-                    // TextInput::make('password')
-                    //     ->required()
-                    //     ->password()
-                    //     ->required(
-                    //         fn (Component $livewire) => $livewire instanceof CreateUser
-                    //     )
-                    //     ->dehydrateStateUsing(static function ($state) use ($form) {
-                    //         return ! empty($state)
-                    //             ? Hash::make($state)
-                    //             : User::find($form->getColumns())?->password;
-                    //     })
-                    //     ->placeholder('Password')
-                    //     ->columnSpan([
-                    //         'default' => 12,
-                    //         'md' => 12,
-                    //         'lg' => 12,
-                    //     ]),
-
-                ])->statePath('data'),
-            ]),
+                ]),
+            ])->visibleOn('edit'),
 
         ]);
     }
+
+    
 
     public static function table(Table $table): Table
     {
