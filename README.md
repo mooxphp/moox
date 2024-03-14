@@ -36,8 +36,8 @@ Welcome to the Moox project. This is the Moox Monorepo. It is an installable Lar
 
 ## Packages
 
--   [Moox Jobs](jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
--   [Moox Builder](builder/README.md), is our Skeleton Package to create new Filament Plugins
+-   [Moox Jobs](packages/jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
+-   [Moox Builder](packages/builder/README.md), is our Skeleton Package to create new Filament Plugins
 
 All others are in the making. Stay tuned.
 
