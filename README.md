@@ -127,15 +127,11 @@ Your commit messages will be merged into Changelog.md, means they become part of
 -   for breaking changes add "!" to any type to craft a major release
 -   followed by the shortname of the package, in []
     -   All - multiple or all packages
-    -   AdminPanel
+    -   Repo - Monorepo things
     -   Core
-    -   PackageBuilder
-    -   IconsBuilder
-    -   AppComponents
-    -   ChartComponents
-    -   FormComponents
-    -   WebComponents
-    -   Monorepo
+    -   Builder
+    -   Jobs
+    -   ...
 -   reference an issue, linked by issue number, e. g. #138
 -   prepare auto-closing the issue by using "Close #138"
 
@@ -176,7 +172,6 @@ We test Moox using:
     -   [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
     -   [Codacy](https://app.codacy.com/gh/mooxphp/moox/) and [Code climate](https://codeclimate.com/github/mooxphp/moox)
 -   Packages
-    -   [Orchestra Testbench](https://orchestraplatform.readme.io/docs/testbench)
     -   [Larastan](https://github.com/nunomaduro/larastan), [PHPStan](https://phpstan.org/) Level 5
     -   [Laravel Pint](https://laravel.com/docs/pint), PHP CS Fixer
     -   [Pest](https://pestphp.com/)
