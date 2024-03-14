@@ -14,7 +14,7 @@ return [
     'jobs_failed' => [
         'single' => 'Job Failed',
         'plural' => 'Jobs Failed',
-        'navigation_label' => 'Jobs Faled',
+        'navigation_label' => 'Jobs Failed',
     ],
     'jobs_batches' => [
         'single' => 'Job Batch',
