@@ -19,16 +19,16 @@ class JobBatchesResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('created_at')->dateTime()->sortable()->searchable()->toggleable(),
-                TextColumn::make('id')->sortable()->searchable()->toggleable(),
-                TextColumn::make('name')->sortable()->searchable()->toggleable(),
-                TextColumn::make('cancelled_at')->dateTime()->sortable()->searchable()->toggleable(),
-                TextColumn::make('failed_at')->dateTime()->sortable()->searchable()->toggleable(),
-                TextColumn::make('finished_at')->dateTime()->sortable()->searchable()->toggleable(),
-                TextColumn::make('total_jobs')->sortable()->searchable()->toggleable(),
-                TextColumn::make('pending_jobs')->sortable()->searchable()->toggleable(),
-                TextColumn::make('failed_jobs')->sortable()->searchable()->toggleable(),
-                TextColumn::make('failed_job_ids')->sortable()->searchable()->toggleable(),
+                TextColumn::make('created_at')->dateTime()->sortable()->searchable()->toggleable()->label(__('jobs::translations.created_at')),
+                TextColumn::make('id')->sortable()->searchable()->toggleable()->label(__('jobs::translations.id')),
+                TextColumn::make('name')->sortable()->searchable()->toggleable()->label(__('jobs::translations.jobs_batches.single')),
+                TextColumn::make('cancelled_at')->dateTime()->sortable()->searchable()->toggleable()->label(__('jobs::translations.canceled_at')),
+                TextColumn::make('failed_at')->dateTime()->sortable()->searchable()->toggleable()->label(__('jobs::translations.failed_at')),
+                TextColumn::make('finished_at')->dateTime()->sortable()->searchable()->toggleable()->label(__('jobs::translations.finished_at')),
+                TextColumn::make('total_jobs')->sortable()->searchable()->toggleable()->label(__('jobs::translations.total_jobs')),
+                TextColumn::make('pending_jobs')->sortable()->searchable()->toggleable()->label(__('jobs::translations.pending_jobs')),
+                TextColumn::make('failed_jobs')->sortable()->searchable()->toggleable()->label(__('jobs::translations.failed_jobs')),
+                TextColumn::make('failed_job_ids')->sortable()->searchable()->toggleable()->label(__('jobs::translations.failed_job_id')),
             ])
             ->actions([
                 DeleteAction::make('Delete'),

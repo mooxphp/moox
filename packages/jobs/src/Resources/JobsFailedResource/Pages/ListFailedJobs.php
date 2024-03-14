@@ -2,8 +2,8 @@
 
 namespace Moox\Jobs\Resources\JobsFailedResource\Pages;
 
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Filament\Pages\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Artisan;
 use Moox\Jobs\Models\FailedJob;
@@ -17,24 +17,24 @@ class ListFailedJobs extends ListRecords
     {
         return [
             Action::make('retry_all')
-                ->label('Retry all failed Jobs')
+                ->label(__('jobs::translations.retry_all_failed_jobs'))
                 ->requiresConfirmation()
                 ->action(function (): void {
                     Artisan::call('queue:retry all');
                     Notification::make()
-                        ->title('All failed jobs have been pushed back onto the queue.')
+                        ->title(__('jobs::translations.retry_all_failed_jobs_notification'))
                         ->success()
                         ->send();
                 }),
 
             Action::make('delete_all')
-                ->label('Delete all failed Jobs')
+                ->label(__('jobs::translations.delete_all_failed_jobs'))
                 ->requiresConfirmation()
                 ->color('danger')
                 ->action(function (): void {
                     FailedJob::truncate();
                     Notification::make()
-                        ->title('All failed jobs have been removed.')
+                        ->title(__('jobs::translations.delete_all_failed_jobs_notification'))
                         ->success()
                         ->send();
                 }),

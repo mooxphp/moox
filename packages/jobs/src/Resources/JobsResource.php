@@ -27,19 +27,24 @@ class JobsResource extends Resource
             ->schema([
                 TextInput::make('job_id')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label(__('jobs::translations.id')),
                 TextInput::make('name')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label(__('jobs::translations.name')),
                 TextInput::make('queue')
                     ->maxLength(255),
-                DateTimePicker::make('started_at'),
+                DateTimePicker::make('started_at')
+                    ->label(__('jobs::translations.started_at')),
                 DateTimePicker::make('finished_at'),
                 Toggle::make('failed')
-                    ->required(),
+                    ->required()
+                    ->label(__('jobs::translations.failed_at')),
                 TextInput::make('attempt')
                     ->required(),
                 Textarea::make('exception_message')
-                    ->maxLength(65535),
+                    ->maxLength(65535)
+                    ->label(__('jobs::translations.exception_message')),
             ]);
     }
 

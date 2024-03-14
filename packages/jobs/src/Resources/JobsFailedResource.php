@@ -28,15 +28,15 @@ class JobsFailedResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('uuid')->disabled()->columnSpan(4),
-                TextInput::make('failed_at')->disabled(),
-                TextInput::make('id')->disabled(),
-                TextInput::make('connection')->disabled(),
-                TextInput::make('queue')->disabled(),
+                TextInput::make('uuid')->disabled()->columnSpan(4)->label(__('jobs::translations.uuid')),
+                TextInput::make('failed_at')->disabled()->label(__('jobs::translations.failed_at')),
+                TextInput::make('id')->disabled()->label(__('jobs::translations.id')),
+                TextInput::make('connection')->disabled()->label(__('jobs::translations.connection')),
+                TextInput::make('queue')->disabled()->label(__('jobs::translations.queue')),
 
                 // make text a little bit smaller because often a complete Stack Trace is shown:
-                TextArea::make('exception')->disabled()->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;']),
-                TextArea::make('payload')->disabled()->columnSpan(4),
+                TextArea::make('exception')->disabled()->columnSpan(4)->extraInputAttributes(['style' => 'font-size: 80%;'])->label(__('jobs::translations.connection')),
+                TextArea::make('payload')->disabled()->columnSpan(4)->label(__('jobs::translations.payload')),
             ])->columns(4);
     }
 
@@ -45,44 +45,45 @@ class JobsFailedResource extends Resource
         return $table
             ->defaultSort('id', 'desc')
             ->columns([
-                TextColumn::make('id')->sortable()->searchable()->toggleable(),
-                TextColumn::make('failed_at')->sortable()->searchable(false)->toggleable(),
+                TextColumn::make('id')->sortable()->searchable()->toggleable()->label(__('jobs::translations.id')),
+                TextColumn::make('failed_at')->sortable()->searchable(false)->toggleable()->label(__('jobs::translations.failed_at')),
                 TextColumn::make('exception')
                     ->sortable()
                     ->searchable()
                     ->toggleable()
                     ->wrap()
                     ->limit(200)
-                    ->tooltip(fn (FailedJob $record) => "{$record->failed_at} UUID: {$record->uuid}; Connection: {$record->connection}; Queue: {$record->queue};"),
-                TextColumn::make('uuid')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('connection')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('queue')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true),
+                    ->tooltip(fn (FailedJob $record) => "{$record->failed_at} UUID: {$record->uuid}; Connection: {$record->connection}; Queue: {$record->queue};")
+                    ->label(__('jobs::translations.exception')),
+                TextColumn::make('uuid')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true)->label(__('jobs::translations.uuid')),
+                TextColumn::make('connection')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true)->label(__('jobs::translations.connection')),
+                TextColumn::make('queue')->sortable()->searchable()->toggleable(isToggledHiddenByDefault: true)->label(__('jobs::translations.queue')),
             ])
             ->filters([])
             ->bulkActions([
                 BulkAction::make('retry')
-                    ->label('Retry')
+                    ->label(__('jobs::translations.retry'))
                     ->requiresConfirmation()
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
                             Artisan::call("queue:retry {$record->uuid}");
                         }
                         Notification::make()
-                            ->title("{$records->count()} jobs have been pushed back onto the queue.")
+                            ->title($records->count().__('jobs::translations.pushed_back_notification'))
                             ->success()
                             ->send();
                     }),
             ])
             ->actions([
-                DeleteAction::make('Delete'),
+                DeleteAction::make('Delete')->label(__('jobs::translations.delete')),
                 ViewAction::make('View'),
                 Action::make('retry')
-                    ->label('Retry')
+                    ->label(__('jobs::translations.retry'))
                     ->requiresConfirmation()
                     ->action(function (FailedJob $record): void {
                         Artisan::call("queue:retry {$record->uuid}");
                         Notification::make()
-                            ->title("The job with uuid '{$record->uuid}' has been pushed back onto the queue.")
+                            ->title(__('jobs::translations.jobs.single')." {$record->uuid} ".__('jobs::translations.job_pushed_back_notification'))
                             ->success()
                             ->send();
                     }),

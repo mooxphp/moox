@@ -27,19 +27,25 @@ class JobsWaitingResource extends Resource
             ->schema([
                 TextInput::make('job_id')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label(__('jobs::translations.id')),
                 TextInput::make('name')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label(__('jobs::translations.name')),
                 TextInput::make('queue')
                     ->maxLength(255),
-                DateTimePicker::make('started_at'),
-                DateTimePicker::make('finished_at'),
+                DateTimePicker::make('started_at')
+                    ->label(__('jobs::translations.started_at')),
+                DateTimePicker::make('finished_at')
+                    ->label(__('jobs::translations.finished_at')),
                 Toggle::make('failed')
-                    ->required(),
+                    ->required()
+                    ->label(__('jobs::translations.failed')),
                 TextInput::make('attempt')
                     ->required(),
                 Textarea::make('exception_message')
-                    ->maxLength(65535),
+                    ->maxLength(65535)
+                    ->label(__('jobs::translations.exception_message')),
             ]);
     }
 
@@ -104,7 +110,7 @@ class JobsWaitingResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('jobs::translations.jobs_waiting.title');
+        return __('jobs::translations.jobs_waiting.single');
     }
 
     public static function getPluralModelLabel(): string
