@@ -2,9 +2,9 @@
 
 namespace Moox\User\Models;
 
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
-use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,7 +15,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
+    use HasFactory, HasPanelShield, HasRoles, Notifiable, SoftDeletes, TwoFactorAuthenticatable;
 
     protected $fillable = [
         'name',
@@ -46,11 +46,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'email_verified_at' => 'datetime',
         'two_factor_confirmed_at' => 'datetime',
     ];
-
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return $this->hasAnyRole(['super_admin', 'filament_user']);
-    }
 
     public function getFilamentAvatarUrl(): ?string
     {

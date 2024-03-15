@@ -22,9 +22,9 @@ return [
         'intercept_gate' => 'before', // after
     ],
 
-    'filament_user' => [
+    'panel_user' => [
         'enabled' => true,
-        'name' => 'filament_user',
+        'name' => 'panel_user',
     ],
 
     'permission_prefixes' => [
