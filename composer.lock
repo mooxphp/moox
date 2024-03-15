@@ -3539,11 +3539,11 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
-                "reference": "bbf59c69f4fdc8e70e61a2fb4cd9f748a4bad3a7"
+                "reference": "25d4597135b6398ad3ddd4804897d6bd344b7318"
             },
             "require": {
                 "moox/core": "*",
@@ -3586,11 +3586,11 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
+                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
             },
             "require": {
                 "moox/core": "*"
@@ -3632,11 +3632,11 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "1154fcf49ee001dd13cf01e9e4f152d15f14b7ed"
+                "reference": "d5937c7bbb65e8c17b756363508bdde9ea6eb058"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3682,11 +3682,11 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
+                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
             },
             "require": {
                 "moox/core": "*"
@@ -3736,11 +3736,11 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
+                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
             },
             "require": {
                 "moox/core": "*"
@@ -3782,11 +3782,11 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
+                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
             },
             "require": {
                 "moox/core": "*"
@@ -3828,11 +3828,11 @@
         },
         {
             "name": "moox/sync",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
-                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
+                "reference": "dc50c8759948ba794e1978b8f199e4e0bc08efaf"
             },
             "require": {
                 "moox/core": "*"
@@ -3874,11 +3874,11 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "c225f20432998050cf49992e50bf21d945d070af"
+                "reference": "8b57060c46654cebac2b007d6611e7089e7b6740"
             },
             "require": {
                 "awcodes/filament-gravatar": "^2.0",
@@ -5098,16 +5098,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.0",
+            "version": "v0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "750bf031a48fd07c673dbe3f11f72362ea306d0d"
+                "reference": "39621c73e0754328252f032c6997b983afc50431"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/750bf031a48fd07c673dbe3f11f72362ea306d0d",
-                "reference": "750bf031a48fd07c673dbe3f11f72362ea306d0d",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/39621c73e0754328252f032c6997b983afc50431",
+                "reference": "39621c73e0754328252f032c6997b983afc50431",
                 "shasum": ""
             },
             "require": {
@@ -5171,9 +5171,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.0"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.1"
             },
-            "time": "2023-12-20T15:28:09+00:00"
+            "time": "2024-03-15T03:22:57+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
