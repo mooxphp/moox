@@ -36,8 +36,6 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public $user;
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -170,7 +168,8 @@ class UserResource extends Resource
                         ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                         ->password()
                         ->visibleOn('create')
-                        ->rule(Password::default())
+                        ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
+                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -178,12 +177,10 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('password_confirmation')
-                        ->revealable()
                         ->requiredWith('password')
                         ->password()
                         ->same('password')
                         ->visibleOn('create')
-                        ->rule(Password::default())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -195,7 +192,7 @@ class UserResource extends Resource
             Section::make('Update Password')->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('current_password')
-                        ->required(fn (string $context): bool => $context === 'create')
+                        ->revealable()
                         ->password()
                         ->rule('current_password')
                         ->columnSpan([
@@ -204,8 +201,10 @@ class UserResource extends Resource
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password')
+                        ->revealable()
                         ->password()
-                        ->rule(Password::default())
+                        ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
+                        ->helperText('Your password must be at least 8 characters long and contain a mix of uppercase and lowercase letters, numbers, and symbols.')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -213,6 +212,7 @@ class UserResource extends Resource
                         ]),
                     TextInput::make('new_password_confirmation')
                         ->password()
+                        ->label('Confirm new password')
                         ->same('new_password')
                         ->requiredWith('new_password')
                         ->columnSpan([

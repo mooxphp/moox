@@ -3296,16 +3296,16 @@
         },
         {
             "name": "livewire/livewire",
-            "version": "v3.4.8",
+            "version": "v3.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/livewire.git",
-                "reference": "0335b8f022ac535fc3cf29fd8a8fcb275353a470"
+                "reference": "c65b3f0798ab2c9338213ede3588c3cdf4e6fcc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/livewire/zipball/0335b8f022ac535fc3cf29fd8a8fcb275353a470",
-                "reference": "0335b8f022ac535fc3cf29fd8a8fcb275353a470",
+                "url": "https://api.github.com/repos/livewire/livewire/zipball/c65b3f0798ab2c9338213ede3588c3cdf4e6fcc0",
+                "reference": "c65b3f0798ab2c9338213ede3588c3cdf4e6fcc0",
                 "shasum": ""
             },
             "require": {
@@ -3359,7 +3359,7 @@
             "description": "A front-end framework for Laravel.",
             "support": {
                 "issues": "https://github.com/livewire/livewire/issues",
-                "source": "https://github.com/livewire/livewire/tree/v3.4.8"
+                "source": "https://github.com/livewire/livewire/tree/v3.4.9"
             },
             "funding": [
                 {
@@ -3367,7 +3367,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-08T13:01:50+00:00"
+            "time": "2024-03-14T14:03:32+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -3539,11 +3539,11 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
-                "reference": "bbf59c69f4fdc8e70e61a2fb4cd9f748a4bad3a7"
+                "reference": "25d4597135b6398ad3ddd4804897d6bd344b7318"
             },
             "require": {
                 "moox/core": "*",
@@ -3586,11 +3586,11 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
+                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
             },
             "require": {
                 "moox/core": "*"
@@ -3632,11 +3632,11 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "1154fcf49ee001dd13cf01e9e4f152d15f14b7ed"
+                "reference": "d5937c7bbb65e8c17b756363508bdde9ea6eb058"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3682,11 +3682,11 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
+                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
             },
             "require": {
                 "moox/core": "*"
@@ -3736,11 +3736,11 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
+                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
             },
             "require": {
                 "moox/core": "*"
@@ -3782,11 +3782,11 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
+                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
             },
             "require": {
                 "moox/core": "*"
@@ -3828,11 +3828,11 @@
         },
         {
             "name": "moox/sync",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
-                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
+                "reference": "dc50c8759948ba794e1978b8f199e4e0bc08efaf"
             },
             "require": {
                 "moox/core": "*"
@@ -3874,11 +3874,11 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-main",
+            "version": "dev-feature/user",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "c225f20432998050cf49992e50bf21d945d070af"
+                "reference": "8b57060c46654cebac2b007d6611e7089e7b6740"
             },
             "require": {
                 "awcodes/filament-gravatar": "^2.0",
@@ -5098,16 +5098,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.12.0",
+            "version": "v0.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "750bf031a48fd07c673dbe3f11f72362ea306d0d"
+                "reference": "39621c73e0754328252f032c6997b983afc50431"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/750bf031a48fd07c673dbe3f11f72362ea306d0d",
-                "reference": "750bf031a48fd07c673dbe3f11f72362ea306d0d",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/39621c73e0754328252f032c6997b983afc50431",
+                "reference": "39621c73e0754328252f032c6997b983afc50431",
                 "shasum": ""
             },
             "require": {
@@ -5171,9 +5171,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.0"
+                "source": "https://github.com/bobthecow/psysh/tree/v0.12.1"
             },
-            "time": "2023-12-20T15:28:09+00:00"
+            "time": "2024-03-15T03:22:57+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -9480,16 +9480,16 @@
         },
         {
             "name": "pestphp/pest",
-            "version": "v2.34.2",
+            "version": "v2.34.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pestphp/pest.git",
-                "reference": "853f6efce6bc86636f48a0e921a44ccee9a66cf3"
+                "reference": "6a1161ead830294ef8e21fab83c0bd118b0df7cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pestphp/pest/zipball/853f6efce6bc86636f48a0e921a44ccee9a66cf3",
-                "reference": "853f6efce6bc86636f48a0e921a44ccee9a66cf3",
+                "url": "https://api.github.com/repos/pestphp/pest/zipball/6a1161ead830294ef8e21fab83c0bd118b0df7cc",
+                "reference": "6a1161ead830294ef8e21fab83c0bd118b0df7cc",
                 "shasum": ""
             },
             "require": {
@@ -9499,10 +9499,10 @@
                 "pestphp/pest-plugin": "^2.1.1",
                 "pestphp/pest-plugin-arch": "^2.7.0",
                 "php": "^8.1.0",
-                "phpunit/phpunit": "^10.5.12"
+                "phpunit/phpunit": "^10.5.13"
             },
             "conflict": {
-                "phpunit/phpunit": ">10.5.12",
+                "phpunit/phpunit": ">10.5.13",
                 "sebastian/exporter": "<5.1.0",
                 "webmozart/assert": "<1.11.0"
             },
@@ -9572,7 +9572,7 @@
             ],
             "support": {
                 "issues": "https://github.com/pestphp/pest/issues",
-                "source": "https://github.com/pestphp/pest/tree/v2.34.2"
+                "source": "https://github.com/pestphp/pest/tree/v2.34.4"
             },
             "funding": [
                 {
@@ -9584,7 +9584,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-11T18:05:47+00:00"
+            "time": "2024-03-14T19:44:18+00:00"
         },
         {
             "name": "pestphp/pest-plugin",
@@ -10817,16 +10817,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.12",
+            "version": "10.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "41a9886b85ac7bf3929853baf96b95361cd69d2b"
+                "reference": "20a63fc1c6db29b15da3bd02d4b6cf59900088a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/41a9886b85ac7bf3929853baf96b95361cd69d2b",
-                "reference": "41a9886b85ac7bf3929853baf96b95361cd69d2b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/20a63fc1c6db29b15da3bd02d4b6cf59900088a7",
+                "reference": "20a63fc1c6db29b15da3bd02d4b6cf59900088a7",
                 "shasum": ""
             },
             "require": {
@@ -10898,7 +10898,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.12"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.13"
             },
             "funding": [
                 {
@@ -10914,7 +10914,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-09T12:04:07+00:00"
+            "time": "2024-03-12T15:37:41+00:00"
         },
         {
             "name": "pimple/pimple",
@@ -10971,16 +10971,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "7596fa6da06c6a20c012efe6bb3d9188a9113b11"
+                "reference": "c59507a9090b465d65e1aceed91e5b81986e375b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/7596fa6da06c6a20c012efe6bb3d9188a9113b11",
-                "reference": "7596fa6da06c6a20c012efe6bb3d9188a9113b11",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/c59507a9090b465d65e1aceed91e5b81986e375b",
+                "reference": "c59507a9090b465d65e1aceed91e5b81986e375b",
                 "shasum": ""
             },
             "require": {
@@ -11015,7 +11015,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/1.0.2"
+                "source": "https://github.com/rectorphp/rector/tree/1.0.3"
             },
             "funding": [
                 {
@@ -11023,7 +11023,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-03T12:32:31+00:00"
+            "time": "2024-03-14T15:04:18+00:00"
         },
         {
             "name": "sebastian/cli-parser",

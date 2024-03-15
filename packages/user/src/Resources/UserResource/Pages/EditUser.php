@@ -2,11 +2,13 @@
 
 namespace Moox\User\Resources\UserResource\Pages;
 
-use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Hash;
 use Moox\User\Models\User;
+use Filament\Facades\Filament;
+use Filament\Actions\DeleteAction;
+use Illuminate\Support\Facades\Hash;
 use Moox\User\Resources\UserResource;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord
@@ -28,5 +30,21 @@ class EditUser extends EditRecord
         }
 
         return $data;
+    }
+
+    public function afterSave()
+    {
+        session()->forget('password_hash_'.Filament::getCurrentPanel()->getAuthGuard());
+        $this->refreshFormData(['new_password', 'current_password', 'new_password_confirmation']);
+
+        return redirect('moox/users');
+    }
+
+    protected function getSavedNotification(): ?Notification
+    {
+        return Notification::make()
+        ->success()
+        ->title('User updated')
+        ->body('The user has been saved successfully.');
     }
 }
