@@ -2,13 +2,13 @@
 
 namespace Moox\User\Resources\UserResource\Pages;
 
-use Moox\User\Models\User;
-use Filament\Facades\Filament;
 use Filament\Actions\DeleteAction;
-use Illuminate\Support\Facades\Hash;
-use Moox\User\Resources\UserResource;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Hash;
+use Moox\User\Models\User;
+use Moox\User\Resources\UserResource;
 use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord
@@ -43,8 +43,8 @@ class EditUser extends EditRecord
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()
-        ->success()
-        ->title('User updated')
-        ->body('The user has been saved successfully.');
+            ->success()
+            ->title('User updated')
+            ->body('The user has been saved successfully.');
     }
 }
