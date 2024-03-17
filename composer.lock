@@ -2251,16 +2251,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v11.0.6",
+            "version": "v11.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "5e2f7cd41a3ca048e2b164d2bfbfc4702993fe38"
+                "reference": "28eabe9dcdcb017a21ce226eda4538c5c8c93b1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/5e2f7cd41a3ca048e2b164d2bfbfc4702993fe38",
-                "reference": "5e2f7cd41a3ca048e2b164d2bfbfc4702993fe38",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/28eabe9dcdcb017a21ce226eda4538c5c8c93b1c",
+                "reference": "28eabe9dcdcb017a21ce226eda4538c5c8c93b1c",
                 "shasum": ""
             },
             "require": {
@@ -2452,7 +2452,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-03-14T14:27:59+00:00"
+            "time": "2024-03-15T23:17:58+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -2916,16 +2916,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.25.0",
+            "version": "3.25.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "4c44347133618cccd9b3df1729647a1577b4ad99"
+                "reference": "abbd664eb4381102c559d358420989f835208f18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/4c44347133618cccd9b3df1729647a1577b4ad99",
-                "reference": "4c44347133618cccd9b3df1729647a1577b4ad99",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/abbd664eb4381102c559d358420989f835208f18",
+                "reference": "abbd664eb4381102c559d358420989f835208f18",
                 "shasum": ""
             },
             "require": {
@@ -2990,7 +2990,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.25.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.25.1"
             },
             "funding": [
                 {
@@ -3002,20 +3002,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-09T17:06:45+00:00"
+            "time": "2024-03-16T12:53:19+00:00"
         },
         {
             "name": "league/flysystem-local",
-            "version": "3.23.1",
+            "version": "3.25.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-local.git",
-                "reference": "b884d2bf9b53bb4804a56d2df4902bb51e253f00"
+                "reference": "61a6a90d6e999e4ddd9ce5adb356de0939060b92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/b884d2bf9b53bb4804a56d2df4902bb51e253f00",
-                "reference": "b884d2bf9b53bb4804a56d2df4902bb51e253f00",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-local/zipball/61a6a90d6e999e4ddd9ce5adb356de0939060b92",
+                "reference": "61a6a90d6e999e4ddd9ce5adb356de0939060b92",
                 "shasum": ""
             },
             "require": {
@@ -3049,8 +3049,7 @@
                 "local"
             ],
             "support": {
-                "issues": "https://github.com/thephpleague/flysystem-local/issues",
-                "source": "https://github.com/thephpleague/flysystem-local/tree/3.23.1"
+                "source": "https://github.com/thephpleague/flysystem-local/tree/3.25.1"
             },
             "funding": [
                 {
@@ -3062,7 +3061,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-01-26T18:25:23+00:00"
+            "time": "2024-03-15T19:58:44+00:00"
         },
         {
             "name": "league/mime-type-detection",
@@ -3539,11 +3538,11 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
-                "reference": "25d4597135b6398ad3ddd4804897d6bd344b7318"
+                "reference": "bbf59c69f4fdc8e70e61a2fb4cd9f748a4bad3a7"
             },
             "require": {
                 "moox/core": "*",
@@ -3586,11 +3585,11 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
+                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
             },
             "require": {
                 "moox/core": "*"
@@ -3632,11 +3631,11 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "d5937c7bbb65e8c17b756363508bdde9ea6eb058"
+                "reference": "1154fcf49ee001dd13cf01e9e4f152d15f14b7ed"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3682,11 +3681,11 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
+                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
             },
             "require": {
                 "moox/core": "*"
@@ -3736,11 +3735,11 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
+                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
             },
             "require": {
                 "moox/core": "*"
@@ -3782,11 +3781,11 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
+                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
             },
             "require": {
                 "moox/core": "*"
@@ -3828,11 +3827,11 @@
         },
         {
             "name": "moox/sync",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
-                "reference": "dc50c8759948ba794e1978b8f199e4e0bc08efaf"
+                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
             },
             "require": {
                 "moox/core": "*"
@@ -3874,11 +3873,11 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-feature/user",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "8b57060c46654cebac2b007d6611e7089e7b6740"
+                "reference": "c225f20432998050cf49992e50bf21d945d070af"
             },
             "require": {
                 "awcodes/filament-gravatar": "^2.0",
