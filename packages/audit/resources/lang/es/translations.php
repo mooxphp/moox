@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Auditoría',
     'plural' => 'Auditorías',
