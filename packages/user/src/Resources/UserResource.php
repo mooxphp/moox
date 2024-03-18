@@ -70,17 +70,6 @@ class UserResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Select::make('roles')
-                        ->relationship('roles', 'name')
-                        ->multiple()
-                        ->preload()
-                        ->searchable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
                     Select::make('gender')
                         ->rules(['in:unknown,male,female,other'])
                         ->required()
@@ -265,16 +254,6 @@ class UserResource extends Resource
                     ->colors([
                         'success' => fn ($record) => $record->email_verified_at !== null,
                         'danger' => fn ($record) => $record->email_verified_at === null,
-                    ]),
-                IconColumn::make('roles.name')
-                    ->label(__('Admin'))
-                    ->sortable()
-                    ->alignCenter()
-                    ->icons([
-                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
-                    ])
-                    ->colors([
-                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([
