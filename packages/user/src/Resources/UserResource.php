@@ -26,7 +26,6 @@ use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
-use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
 {
@@ -285,7 +284,7 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->actions([Impersonate::make()->redirectTo(route('filament.moox.pages.profile')), ViewAction::make(), EditAction::make()])
+            ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
