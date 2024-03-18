@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Tilsyn',
     'plural' => 'Tilsyn',
