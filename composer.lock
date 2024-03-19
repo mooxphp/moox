@@ -3147,11 +3147,11 @@
         },
         {
             "name": "moox/audit",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/audit",
-                "reference": "bbf59c69f4fdc8e70e61a2fb4cd9f748a4bad3a7"
+                "reference": "25d4597135b6398ad3ddd4804897d6bd344b7318"
             },
             "require": {
                 "moox/core": "*",
@@ -3194,11 +3194,11 @@
         },
         {
             "name": "moox/builder",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/builder",
-                "reference": "9caacf039b39da25f82c15d94127b90a587c237d"
+                "reference": "01b30ed16881edff98cc438c4152ba8711bc6771"
             },
             "require": {
                 "moox/core": "*"
@@ -3240,11 +3240,11 @@
         },
         {
             "name": "moox/core",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/core",
-                "reference": "1154fcf49ee001dd13cf01e9e4f152d15f14b7ed"
+                "reference": "d5937c7bbb65e8c17b756363508bdde9ea6eb058"
             },
             "require": {
                 "filament/filament": "^3.2",
@@ -3290,11 +3290,11 @@
         },
         {
             "name": "moox/jobs",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/jobs",
-                "reference": "10ee64375bc69c0245ee63998d210f616e082d36"
+                "reference": "b81a8859b79567676e69e3cb1618987757b020b5"
             },
             "require": {
                 "moox/core": "*"
@@ -3344,11 +3344,11 @@
         },
         {
             "name": "moox/page",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/page",
-                "reference": "017d564053cf4b9171a6b8c4ca2803649f3f6494"
+                "reference": "9317e8b6b51c148df0513062399e439768efbed8"
             },
             "require": {
                 "moox/core": "*"
@@ -3390,11 +3390,11 @@
         },
         {
             "name": "moox/press",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/press",
-                "reference": "1ec8020e2617d66bf74001d539ea30e57d858443"
+                "reference": "ab0f6a94d4865b0d4e95e4680d813acba8801e7b"
             },
             "require": {
                 "moox/core": "*"
@@ -3436,11 +3436,11 @@
         },
         {
             "name": "moox/sync",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/sync",
-                "reference": "f68d4a91382621507d438704c5d1f4373a6edfa9"
+                "reference": "dc50c8759948ba794e1978b8f199e4e0bc08efaf"
             },
             "require": {
                 "moox/core": "*"
@@ -3482,11 +3482,11 @@
         },
         {
             "name": "moox/user",
-            "version": "dev-feature/newuser",
+            "version": "dev-feature/policies",
             "dist": {
                 "type": "path",
                 "url": "packages/user",
-                "reference": "2c72ee573749ad1ee359fbddb967a6bd9f1ab6c3"
+                "reference": "62beedae2d2474087bebfbcb6fc1478842ce24d1"
             },
             "require": {
                 "moox/core": "*"
@@ -9695,16 +9695,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.62",
+            "version": "1.10.63",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "cd5c8a1660ed3540b211407c77abf4af193a6af9"
+                "reference": "ad12836d9ca227301f5fb9960979574ed8628339"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cd5c8a1660ed3540b211407c77abf4af193a6af9",
-                "reference": "cd5c8a1660ed3540b211407c77abf4af193a6af9",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ad12836d9ca227301f5fb9960979574ed8628339",
+                "reference": "ad12836d9ca227301f5fb9960979574ed8628339",
                 "shasum": ""
             },
             "require": {
@@ -9753,7 +9753,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-13T12:27:20+00:00"
+            "time": "2024-03-18T16:53:53+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",
@@ -12362,5 +12362,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
