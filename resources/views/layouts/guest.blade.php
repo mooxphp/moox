@@ -74,7 +74,6 @@
         @yield('content')
 
     </div>
-    <x-impersonate::banner/>
 </body>
 
 </html>

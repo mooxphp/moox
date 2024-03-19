@@ -17,7 +17,7 @@ class UserServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['update_user_table'])
+            ->hasMigrations(['create_moox_users_table'])
             ->hasCommand(InstallCommand::class);
     }
 }

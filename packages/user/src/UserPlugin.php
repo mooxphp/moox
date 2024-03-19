@@ -5,6 +5,8 @@ namespace Moox\User;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\User\Resources\PermissionResource;
+use Moox\User\Resources\RoleResource;
 use Moox\User\Resources\UserResource;
 
 class UserPlugin implements Plugin
@@ -20,6 +22,8 @@ class UserPlugin implements Plugin
     {
         $panel->resources([
             UserResource::class,
+            PermissionResource::class,
+            RoleResource::class,
         ]);
     }
 
