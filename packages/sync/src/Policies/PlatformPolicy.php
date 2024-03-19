@@ -2,9 +2,9 @@
 
 namespace Moox\Sync\Policies;
 
-use Moox\Sync\Models\Platform;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Contracts\Auth\Access\Authorizable;
+use Moox\Sync\Models\Platform;
 
 class PlatformPolicy
 {

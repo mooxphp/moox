@@ -3,9 +3,8 @@
 namespace Moox\Sync\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Moox\Sync\Models\Sync;
 use Illuminate\Contracts\Auth\Access\Authorizable;
-
+use Moox\Sync\Models\Sync;
 
 class SyncPolicy
 {
