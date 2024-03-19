@@ -1,27 +1,30 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Database\Eloquent\Builder;
-use Moox\User\Traits\HasExtendableSchema;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Moox\User\Resources\PermissionResource\Pages\CreatePermission;
 use Moox\User\Resources\PermissionResource\Pages\EditPermission;
 use Moox\User\Resources\PermissionResource\Pages\ListPermissions;
-use Moox\User\Resources\PermissionResource\Pages\CreatePermission;
+use Moox\User\Traits\HasExtendableSchema;
+use Spatie\Permission\Models\Permission;
 
 class PermissionResource extends Resource
 {
     use HasExtendableSchema;
 
     protected static ?string $model = Permission::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-lock-closed';
 
     public static function getModel(): string

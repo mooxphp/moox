@@ -1,21 +1,23 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use Moox\User\Traits\HasExtendableSchema;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Moox\User\Fields\PermissionGroup;
+use Moox\User\Resources\RoleResource\Pages\CreateRole;
 use Moox\User\Resources\RoleResource\Pages\EditRole;
 use Moox\User\Resources\RoleResource\Pages\ListRoles;
-use Moox\User\Resources\RoleResource\Pages\CreateRole;
-use Moox\User\Fields\PermissionGroup;
+use Moox\User\Traits\HasExtendableSchema;
 
 class RoleResource extends Resource
 {

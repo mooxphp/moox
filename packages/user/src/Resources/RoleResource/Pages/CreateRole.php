@@ -1,16 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Moox\User\Resources\RoleResource\Pages;
 
-use Moox\User\Resources\RoleResource;
 use Filament\Resources\Pages\CreateRecord;
+use Moox\User\Resources\RoleResource;
 use Spatie\Permission\PermissionRegistrar;
 
 class CreateRole extends CreateRecord
 {
     public static function getResource(): string
     {
-        return  RoleResource::class;
+        return RoleResource::class;
     }
 
     public function afterCreate(): void

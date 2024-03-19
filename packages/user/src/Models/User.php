@@ -14,7 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, Notifiable, SoftDeletes, HasRoles;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     protected $table = 'moox_users';
 

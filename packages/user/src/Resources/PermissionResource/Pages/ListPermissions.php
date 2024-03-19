@@ -1,10 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Moox\User\Resources\PermissionResource\Pages;
 
-use Moox\User\Resources\PermissionResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Moox\User\Resources\PermissionResource;
 
 class ListPermissions extends ListRecords
 {

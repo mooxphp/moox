@@ -1,17 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Moox\User\Resources\RoleResource\Pages;
 
-use Moox\User\Resources\RoleResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Moox\User\Resources\RoleResource;
 
 class ListRoles extends ListRecords
 {
-
     public static function getResource(): string
     {
-        return  RoleResource::class;
+        return RoleResource::class;
     }
 
     protected function getHeaderActions(): array
