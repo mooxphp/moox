@@ -14,6 +14,4 @@ class EditWpUser extends EditRecord
     {
         return [DeleteAction::make()];
     }
-
-
 }

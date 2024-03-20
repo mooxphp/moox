@@ -2,23 +2,23 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Tables;
-use Moox\Press\Models\WpUser;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Toggle;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
-use Moox\Press\Resources\WpUserResource\Pages\ListWpUsers;
-use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Table;
+use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
 use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
+use Moox\Press\Resources\WpUserResource\Pages\ListWpUsers;
+use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
 
 class WpUserResource extends Resource
 {

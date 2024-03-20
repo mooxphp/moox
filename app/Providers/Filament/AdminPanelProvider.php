@@ -28,7 +28,6 @@ use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Page\PagePlugin;
 use Moox\Sync\SyncPlugin;
-use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
