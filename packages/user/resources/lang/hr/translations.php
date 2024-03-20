@@ -1,10 +1,10 @@
 <?php
 return [
-    'single' => '',
-    'plural' => '',
-    'breadcrumb' => '',
-    'title' => '',
-    'navigation_label' => '',
-    'navigation_group' => '',
-    'name' => '',
+    'single' => 'Korisnik',
+    'plural' => 'Korisnici',
+    'breadcrumb' => 'Korisnik',
+    'title' => 'Korisnik',
+    'navigation_label' => 'Korisnici',
+    'navigation_group' => 'Moox korisnik',
+    'name' => 'Ime',
 ];
