@@ -1,33 +1,30 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\User\Fields\PermissionGroup;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\User\Fields\PermissionGroup;
-use Moox\User\Resources\RoleResource\Pages\CreateRole;
+use Moox\User\Traits\HasExtendableSchema;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\User\Resources\RoleResource\Pages\EditRole;
 use Moox\User\Resources\RoleResource\Pages\ListRoles;
-use Moox\User\Traits\HasExtendableSchema;
+use Moox\User\Resources\RoleResource\Pages\CreateRole;
 
 class RoleResource extends Resource
 {
     use HasExtendableSchema;
-
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function getModel(): string
     {
-        return RoleResource::class;
+        return config('permission.models.role');
     }
 
     public static function form(Form $form): Form
@@ -37,14 +34,14 @@ class RoleResource extends Resource
             ->schema([
                 ...static::insertBeforeFormSchema(),
                 TextInput::make('name')
-                    ->label(__('user::translations.fields.name'))
-                    ->validationAttribute(__('user::translations.fields.name'))
+                    ->label(__('user::translation.fields.name'))
+                    ->validationAttribute(__('user::translation.fields.name'))
                     ->required()
                     ->maxLength(255)
                     ->unique(config('permission.table_names.roles'), 'name', static fn ($record) => $record),
                 PermissionGroup::make('permissions')
-                    ->label(__('user::translations.fields.permissions'))
-                    ->validationAttribute(__('user::translationsfields.permissions')),
+                    ->label(__('user::translation.fields.permissions'))
+                    ->validationAttribute(__('user::translation.fields.permissions')),
                 ...static::insertAfterFormSchema(),
             ]);
     }
@@ -55,16 +52,16 @@ class RoleResource extends Resource
             ->columns([
                 ...static::insertBeforeTableSchema(),
                 TextColumn::make('id')
-                    ->label(__('user::translations.fields.id'))
+                    ->label(__('user::translation.fields.id'))
                     ->sortable(),
                 TextColumn::make('description')
-                    ->label(__('user::translations.fields.description'))
+                    ->label(__('user::translation.fields.description'))
                     ->getStateUsing(static fn ($record) => __($record->name)),
                 TextColumn::make('name')
-                    ->label(__('user::translations.fields.name'))
+                    ->label(__('user::translation.fields.name'))
                     ->searchable(),
                 TextColumn::make('created_at')
-                    ->label(__('user::translations.fields.created_at'))
+                    ->label(__('user::translation.fields.created_at'))
                     ->dateTime(),
                 ...static::insertAfterTableSchema(),
             ])
@@ -94,9 +91,9 @@ class RoleResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $model = PermissionResource::class;
+        $model = RoleResource::class;
 
-        return $model::query()->where('guard_name', '=', config('user.guard_name'));
+        return $model::query()->where('guard_name', '=', config('guard_name'));
     }
 
     public static function getNavigationGroup(): ?string

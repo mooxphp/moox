@@ -22,8 +22,8 @@ class UserPlugin implements Plugin
     {
         $panel->resources([
             UserResource::class,
-            PermissionResource::class,
             RoleResource::class,
+            PermissionResource::class,
         ]);
     }
 
