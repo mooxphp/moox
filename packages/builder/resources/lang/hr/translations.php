@@ -9,7 +9,7 @@ return [
     'totalone' => '',
     'totaltwo' => '',
     'totalthree' => '',
-    'name' => '',
-    'started_at' => '',
-    'failed' => '',
+    'name' => 'Ime',
+    'started_at' => 'Pokrenuto',
+    'failed' => 'neuspjelo',
 ];
