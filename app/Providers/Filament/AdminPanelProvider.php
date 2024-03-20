@@ -4,7 +4,6 @@ namespace App\Providers\Filament;
 
 use Awcodes\FilamentGravatar\GravatarPlugin;
 use Awcodes\FilamentGravatar\GravatarProvider;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -20,7 +19,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Moox\Builder\BuilderPlugin;
 use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
@@ -77,22 +75,9 @@ class AdminPanelProvider extends PanelProvider
                 JobsBatchesPlugin::make(),
                 JobsPlugin::make(),
                 PagePlugin::make(),
-                UserPlugin::make(),
                 SyncPlugin::make(),
-                FilamentShieldPlugin::make(),
-                BreezyCore::make()
-                    ->myProfile(
-                        shouldRegisterUserMenu: true,
-                        shouldRegisterNavigation: false,
-                        hasAvatars: true,
-                        slug: 'profile',
-                    )
-                    ->enableTwoFactorAuthentication(
-                        force: false,
-                    ),
-
+                UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
-                \Moox\Press\PressPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
             ]);
     }

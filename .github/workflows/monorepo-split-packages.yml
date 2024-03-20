@@ -19,7 +19,6 @@ jobs:
           - core
           - builder
           - jobs
-          - press
           - user
           - sync
           - audit
