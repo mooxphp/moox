@@ -77,7 +77,6 @@ class AdminPanelProvider extends PanelProvider
                 JobsBatchesPlugin::make(),
                 JobsPlugin::make(),
                 PagePlugin::make(),
-                UserPlugin::make(),
                 SyncPlugin::make(),
                 FilamentShieldPlugin::make(),
                 BreezyCore::make()
@@ -92,7 +91,7 @@ class AdminPanelProvider extends PanelProvider
                     ),
 
                 \Moox\Sync\PlatformPlugin::make(),
-                \Moox\Press\PressPlugin::make(),
+                \Moox\Press\WpUserPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
             ]);
     }

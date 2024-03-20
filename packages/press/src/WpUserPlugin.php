@@ -5,21 +5,21 @@ namespace Moox\Press;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Press\Resources\PressResource;
+use Moox\Press\Resources\WpUserResource;
 
-class PressPlugin implements Plugin
+class WpUserPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'audit';
+        return 'wp-user';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            PressResource::class,
+            WpUserResource::class,
         ]);
     }
 
