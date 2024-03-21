@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Korisnik',
     'plural' => 'Korisnici',

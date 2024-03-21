@@ -1,4 +1,5 @@
 <?php
+
 return [
     'breadcrumb' => 'Core',
     'title' => 'Core',
