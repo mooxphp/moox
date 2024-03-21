@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Revizija',
     'plural' => 'Revizije',
