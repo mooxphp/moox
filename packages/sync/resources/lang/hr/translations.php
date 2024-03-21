@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Sinkronizacija',
     'plural' => 'Sinkronizacije',
