@@ -1,10 +1,10 @@
 <?php
 return [
-    'single' => '',
-    'plural' => '',
-    'breadcrumb' => '',
-    'title' => '',
-    'navigation_label' => '',
-    'navigation_group' => '',
-    'name' => '',
+    'single' => 'Gebruiker',
+    'plural' => 'Gebruikers',
+    'breadcrumb' => 'Gebruiker',
+    'title' => 'Gebruiker',
+    'navigation_label' => 'Gebruikers',
+    'navigation_group' => 'Moox-gebruiker',
+    'name' => 'Naam',
 ];
