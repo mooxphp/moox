@@ -1,4 +1,5 @@
 <?php
+
 return [
     'breadcrumb' => 'Ядро',
     'title' => 'Ядро',
