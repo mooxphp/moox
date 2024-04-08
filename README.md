@@ -212,10 +212,10 @@ Moox is made by these nice people, and bots ...
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/azizovic12">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="azizovic12"/>
+        <a href="https://github.com/AzGasim">
+            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="AzGasim"/>
             <br />
-            <sub><b>azizovic12</b></sub>
+            <sub><b>AzGasim</b></sub>
         </a>
     </td>
     <td align="center">
