@@ -1,8 +1,7 @@
 <?php
-
 return [
-    'breadcrumb' => '',
-    'title' => '',
-    'navigation_label' => '',
-    'navigation_group' => '',
+    'breadcrumb' => 'Ядро',
+    'title' => 'Ядро',
+    'navigation_label' => 'Ядро',
+    'navigation_group' => 'Ядро Moox',
 ];
