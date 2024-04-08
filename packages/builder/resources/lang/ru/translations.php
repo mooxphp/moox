@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => 'Сборщик',
     'plural' => 'Сборщики',
