@@ -22,6 +22,7 @@ jobs:
           - user
           - sync
           - audit
+          - redis-model
 
     steps:
       - uses: actions/checkout@v4
