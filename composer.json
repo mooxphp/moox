@@ -29,6 +29,7 @@
         "moox/user": "*",
         "moox/audit": "*",
         "moox/sync": "*",
+        "moox/redis-model": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

@@ -6,6 +6,18 @@ use Illuminate\Support\Facades\Redis;
 
 trait UsesRedis
 {
+    public static function query()
+    {
+        $redisConnection = Redis::connection();
+
+        return new Builder(new RedisRepository($redisConnection));
+    }
+
+    public function newCollection(array $models = [])
+    {
+        return new RedisCollection($models);
+    }
+
     /**
      * Determine if Redis is enabled for the model.
      */
