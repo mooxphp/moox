@@ -21,16 +21,17 @@
     ],
     "license": "MIT",
     "require": {
+        "jenssegers/agent": "^2.6",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
+        "moox/audit": "*",
         "moox/builder": "*",
         "moox/jobs": "*",
         "moox/page": "*",
+        "moox/redis-model": "*",
+        "moox/sync": "*",
         "moox/user": "*",
         "moox/user-device": "*",
-        "moox/audit": "*",
-        "moox/sync": "*",
-        "moox/redis-model": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

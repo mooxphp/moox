@@ -4,6 +4,7 @@ namespace Moox\UserDevice\Listeners;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
+use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 
 class StoreUserDevice
@@ -22,6 +23,12 @@ class StoreUserDevice
         $userAgent = $this->request->userAgent();
         $user_id = $user->getAuthIdentifier();
 
+        $agent = new Agent();
+        $agent->setUserAgent($userAgent);
+
+        $browser = $agent->browser();
+        $os = $agent->platform();
+
         $device = UserDevice::firstOrCreate([
             'user_id' => $user_id,
             'user_type' => get_class($user),
@@ -31,8 +38,8 @@ class StoreUserDevice
             'title' => $userAgent,
             'slug' => $userAgent,
             'active' => true,
-            'os' => $userAgent,
-            'browser' => $userAgent,
+            'os' => $os,
+            'browser' => $browser,
             'country' => $userAgent,
             'location' => $userAgent,
             'whitelisted' => true,

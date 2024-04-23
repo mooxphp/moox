@@ -17,6 +17,7 @@
         }
     ],
     "require": {
+        "jenssegers/agent": "*",
         "moox/core": "*"
     },
     "autoload": {
