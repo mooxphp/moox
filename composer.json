@@ -27,6 +27,7 @@
         "moox/jobs": "*",
         "moox/page": "*",
         "moox/user": "*",
+        "moox/user-device": "*",
         "moox/audit": "*",
         "moox/sync": "*",
         "moox/redis-model": "*",

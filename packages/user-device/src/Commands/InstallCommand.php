@@ -20,7 +20,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxuser-device:install';
+    protected $signature = 'mooxuserdevice:install';
 
     /**
      * The console command description.

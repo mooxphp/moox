@@ -20,6 +20,7 @@ jobs:
           - builder
           - jobs
           - user
+          - user-device
           - sync
           - audit
           - redis-model
