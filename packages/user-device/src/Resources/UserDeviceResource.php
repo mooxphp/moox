@@ -11,7 +11,6 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
@@ -35,10 +34,9 @@ class UserDeviceResource extends Resource
 
                 Select::make('user_type')
                     ->options(function () {
-                        return collect(Config::get('user-device.user_models', []))
-                            ->mapWithKeys(function ($model) {
-                                return [$model => (new $model)->getTable()];
-                            })->toArray();
+                        $models = Config::get('user-device.user_models', []);
+
+                        return array_flip($models);
                     })
                     ->reactive()
                     ->afterStateUpdated(function (Set $set, $state) {
@@ -76,12 +74,13 @@ class UserDeviceResource extends Resource
                 TextColumn::make('active')
                     ->label(__('user-device::translations.active'))
                     ->sortable(),
-                SelectColumn::make('user_id')
-                    ->label(__('user-device::translations.user'))
-                    ->options(function () {
-                        $userModel = Config::get('user-device.user_model');
-
-                        return $userModel::query()->pluck('name', 'id')->toArray();
+                TextColumn::make('user_type')
+                    ->label(__('user-device::translations.user_type'))
+                    ->sortable(),
+                TextColumn::make('user_id')
+                    ->label(__('user-device::translations.username'))
+                    ->getStateUsing(function ($record) {
+                        return optional($record->user)->name ?? 'unknown';
                     })
                     ->sortable(),
             ])
