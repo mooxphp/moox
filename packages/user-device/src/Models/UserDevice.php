@@ -11,7 +11,7 @@ class UserDevice extends Model
 
     protected $fillable = [
         'title', 'slug', 'user_id', 'user_type', 'user_agent',
-        'os', 'browser', 'country', 'location', 'whitelisted', 'active', 'ip_address'
+        'os', 'browser', 'country', 'location', 'whitelisted', 'active', 'ip_address',
     ];
 
     /**
@@ -32,7 +32,7 @@ class UserDevice extends Model
      */
     public function user()
     {
-        return $this->morphTo();
+        return $this->belongsTo($this->user_type, 'user_id');
     }
 
     /**
