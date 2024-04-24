@@ -21,6 +21,7 @@
     ],
     "license": "MIT",
     "require": {
+        "geoip2/geoip2": "^3.0",
         "jenssegers/agent": "^2.6",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",

@@ -17,8 +17,10 @@ return new class extends Migration
             $table->string('user_agent')->nullable();
             $table->string('os')->nullable();
             $table->string('browser')->nullable();
+            $table->string('platform')->nullable();
             $table->string('country')->nullable();
-            $table->string('location')->nullable();
+            $table->string('city')->nullable();
+            $table->json('location')->nullable();
             $table->boolean('whitelisted')->default(false);
             $table->boolean('active')->default(false);
             $table->ipAddress('ip_address')->nullable();

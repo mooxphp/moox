@@ -11,7 +11,7 @@ class UserDevice extends Model
 
     protected $fillable = [
         'title', 'slug', 'user_id', 'user_type', 'user_agent',
-        'os', 'browser', 'country', 'location', 'whitelisted', 'active', 'ip_address',
+        'platform', 'os', 'browser', 'city', 'country', 'location', 'whitelisted', 'active', 'ip_address',
     ];
 
     /**
