@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "jenssegers/agent": "*",
+        "geoip2/geoip2": "^3.0",
+        "jenssegers/agent": "^2.6",
         "moox/core": "*"
     },
     "autoload": {
