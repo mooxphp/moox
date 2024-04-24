@@ -79,7 +79,7 @@ class AdminPanelProvider extends PanelProvider
                 UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
-            
+
                 \Moox\UserDevice\UserDevicePlugin::make(),
 
             ]);
