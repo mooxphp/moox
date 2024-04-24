@@ -21,14 +21,17 @@
     ],
     "license": "MIT",
     "require": {
+        "geoip2/geoip2": "^3.0",
+        "jenssegers/agent": "^2.6",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
+        "moox/audit": "*",
         "moox/builder": "*",
         "moox/jobs": "*",
         "moox/page": "*",
-        "moox/user": "*",
-        "moox/audit": "*",
         "moox/sync": "*",
+        "moox/user": "*",
+        "moox/user-device": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

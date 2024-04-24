@@ -1,0 +1,37 @@
+{
+    "name": "moox/user-device",
+    "description": "This is my package user-device",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "jenssegers/agent": "*",
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\UserDevice\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\UserDevice\\UserDeviceServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
