@@ -29,7 +29,6 @@
         "moox/builder": "*",
         "moox/jobs": "*",
         "moox/page": "*",
-        "moox/redis-model": "*",
         "moox/sync": "*",
         "moox/user": "*",
         "moox/user-device": "*",

@@ -23,7 +23,6 @@ jobs:
           - user-device
           - sync
           - audit
-          - redis-model
 
     steps:
       - uses: actions/checkout@v4
