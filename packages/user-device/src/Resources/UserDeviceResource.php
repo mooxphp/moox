@@ -10,12 +10,14 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
+use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
 
 class UserDeviceResource extends Resource
@@ -29,7 +31,12 @@ class UserDeviceResource extends Resource
         return $form
             ->schema([
                 TextInput::make('title')
+                    ->label(__('user-device::translations.title'))
                     ->maxLength(255),
+                TextInput::make('slug')
+                    ->label(__('user-device::translations.slug'))
+                    ->maxLength(255),
+                DateTimePicker::make('updated_at'),
                 DateTimePicker::make('created_at'),
 
                 Select::make('user_type')
@@ -64,18 +71,20 @@ class UserDeviceResource extends Resource
     {
         return $table
             ->columns([
+                IconColumn::make('platform')
+                    ->label('')
+                    ->icon(function ($record) {
+                        switch ($record->platform) {
+                            case 'Mobile':
+                                return 'heroicon-o-device-mobile';
+                            case 'Desktop':
+                                return 'heroicon-o-computer-desktop';
+                            default:
+                                return 'heroicon-o-computer-desktop';
+                        }
+                    }),
                 TextColumn::make('title')
                     ->label(__('user-device::translations.title'))
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('user-device::translations.created_at'))
-                    ->since()
-                    ->sortable(),
-                TextColumn::make('active')
-                    ->label(__('user-device::translations.active'))
-                    ->sortable(),
-                TextColumn::make('user_type')
-                    ->label(__('user-device::translations.user_type'))
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('user-device::translations.username'))
@@ -83,10 +92,22 @@ class UserDeviceResource extends Resource
                         return optional($record->user)->name ?? 'unknown';
                     })
                     ->sortable(),
+                IconColumn::make('active')
+                    ->label(__('user-device::translations.active'))
+                    ->toggleable()
+                    ->boolean(),
+                TextColumn::make('updated_at')
+                    ->label(__('user-device::translations.updated_at'))
+                    ->since()
+                    ->sortable(),
+                TextColumn::make('created_at')
+                    ->label(__('user-device::translations.created_at'))
+                    ->since()
+                    ->sortable(),
             ])
             ->defaultSort('title', 'desc')
             ->actions([
-                EditAction::make(),
+                ViewAction::make(),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
@@ -104,6 +125,7 @@ class UserDeviceResource extends Resource
     {
         return [
             'index' => ListPage::route('/'),
+            //'view' => ViewPage::route('/{record}'),
         ];
     }
 
