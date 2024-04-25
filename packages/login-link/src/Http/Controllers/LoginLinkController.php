@@ -31,6 +31,13 @@ class LoginLinkController extends Controller
 
         $user = $result->user;
 
+        $this->sendLinkInternal($user);
+
+        return back()->with('message', 'Login link has been sent!');
+    }
+
+    public function sendLinkInternal($user)
+    {
         $token = Str::random(40);
 
         $loginLink = LoginLink::create([
@@ -42,8 +49,6 @@ class LoginLinkController extends Controller
         ]);
 
         Mail::to($user->email)->send(new LoginLinkEmail($loginLink));
-
-        return back()->with('message', 'Login link has been sent!');
     }
 
     public function authenticate($userId, $token)
