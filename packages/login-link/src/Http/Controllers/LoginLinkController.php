@@ -59,22 +59,19 @@ class LoginLinkController extends Controller
             ->where('user_id', $userId)
             ->firstOrFail();
 
-        // Todo: fix the model
         if (isset($loginLink->user_type)) {
             $userType = $loginLink->user_type;
         } else {
             $userType = 'App\Models\User';
         }
 
+        $loginLink->update(['token' => 'used']);
+
         $userModel = Config::get('login-link.user_models.'.$userType, User::class);
         $user = $userModel::findOrFail($userId);
         Auth::login($user);
 
-        // Todo
-        // mark the thing used
-
-        return back()->with('message', 'Login done!');
-        //return redirect()->to('/');
+        return redirect('/moox')->with('message', 'You have been successfully logged in!');
     }
 
     private function findUserByEmail($email)
