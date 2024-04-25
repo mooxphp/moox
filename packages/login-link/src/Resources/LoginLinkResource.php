@@ -3,14 +3,16 @@
 namespace Moox\LoginLink\Resources;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Config;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
@@ -25,11 +27,41 @@ class LoginLinkResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
+                TextInput::make('email')
+                    ->label(__('login-link::translations.email'))
                     ->maxLength(255),
-                DateTimePicker::make('started_at'),
-                DateTimePicker::make('finished_at'),
-                Toggle::make('failed')
+                TextInput::make('ip_address')
+                    ->label(__('login-link::translations.ip_address'))
+                    ->maxLength(255),
+                TextInput::make('user_agent')
+                    ->label(__('login-link::translations.user_agent'))
+                    ->maxLength(255)
+                    ->columnSpan(2),
+                TextInput::make('token')
+                    ->label(__('login-link::translations.token'))
+                    ->maxLength(255),
+                DateTimePicker::make('expires_at'),
+                Select::make('user_type')
+                    ->options(function () {
+                        $models = Config::get('login-link.user_models', []);
+
+                        return array_flip($models);
+                    })
+                    ->reactive()
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        $set('user_id', null);
+                    })
+                    ->required(),
+
+                Select::make('user_id')
+                    ->options(function ($get) {
+                        $userType = $get('user_type');
+                        if (! $userType) {
+                            return [];
+                        }
+
+                        return $userType::query()->pluck('name', 'id')->toArray();
+                    })
                     ->required(),
             ]);
     }
@@ -38,18 +70,35 @@ class LoginLinkResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('login-link::translations.name'))
+                TextColumn::make('email')
+                    ->label(__('login-link::translations.email'))
                     ->sortable(),
-                TextColumn::make('started_at')
-                    ->label(__('login-link::translations.started_at'))
+                TextColumn::make('token')
+                    ->label(__('login-link::translations.token'))
+                    ->sortable(),
+                TextColumn::make('expires_at')
+                    ->label(__('login-link::translations.expires_at'))
+                    ->sortable(),
+                TextColumn::make('user_agent')
+                    ->label(__('login-link::translations.user_agent'))
+                    ->sortable(),
+                TextColumn::make('expires_at')
+                    ->label(__('login-link::translations.expires_at'))
                     ->since()
                     ->sortable(),
-                TextColumn::make('failed')
-                    ->label(__('login-link::translations.failed'))
+                TextColumn::make('ip_address')
+                    ->label(__('login-link::translations.ip_address'))
+                    ->sortable(),
+                TextColumn::make('user_type')
+                    ->label(__('login-link::translations.user_type'))
+                    ->sortable(),
+                TextColumn::make('user_id')
+                    ->label(__('login-link::translations.username'))
+                    ->getStateUsing(function ($record) {
+                        return optional($record->user)->name ?? 'unknown';
+                    })
                     ->sortable(),
             ])
-            ->defaultSort('name', 'desc')
             ->actions([
                 EditAction::make(),
             ])

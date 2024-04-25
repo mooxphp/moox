@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('login_links', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable;
-            $table->string('user_type')->nullable;
+            $table->string('user_type');
             $table->string('email')->index();
             $table->string('token')->index()->nullable;
             $table->dateTime('expires_at');

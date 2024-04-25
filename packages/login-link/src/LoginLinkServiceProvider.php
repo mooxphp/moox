@@ -17,6 +17,7 @@ class LoginLinkServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
+            ->hasRoute('web')
             ->hasMigrations(['create_login_links_table'])
             ->hasCommand(InstallCommand::class);
     }

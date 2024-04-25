@@ -31,16 +31,9 @@ class LoginLink extends Model
         parent::boot();
 
         LoginLink::creating(function ($item) {
-            $baseSlug = Str::slug($item->title);
-            $slug = $baseSlug;
-            $counter = 1;
-
-            while (LoginLink::where('slug', $slug)->exists()) {
-                $slug = "{$baseSlug}-{$counter}";
-                $counter++;
+            if (empty($item->token)) {
+                $item->token = Str::random(40);
             }
-
-            $item->slug = $slug;
         });
     }
 
@@ -49,6 +42,10 @@ class LoginLink extends Model
      */
     public function user()
     {
-        return $this->belongsTo($this->user_type, 'user_id');
+        if (isset($this->user_type)) {
+            return $this->belongsTo($this->user_type, 'user_id');
+        } else {
+            return $this->belongsTo('App\Models\User', 'user_id');
+        }
     }
 }
