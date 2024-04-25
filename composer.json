@@ -30,6 +30,7 @@
         "moox/sync": "*",
         "moox/user": "*",
         "moox/user-device": "*",
+        "moox/login-link": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

@@ -82,6 +82,9 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\UserDevice\UserDevicePlugin::make(),
 
+            
+                \Moox\LoginLink\LoginLinkPlugin::make(),
+
             ]);
     }
 }
