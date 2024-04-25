@@ -1,12 +1,12 @@
 <?php
 
-namespace Moox\Builder\Models;
+namespace Moox\UserSession\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class UserSession extends Model
 {
-    protected $table = 'items';
+    protected $table = 'user_sessions';
 
     protected $fillable = [
         'name',

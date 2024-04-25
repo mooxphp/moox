@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder;
+namespace Moox\UserSession;
 
-use Moox\Builder\Commands\InstallCommand;
+use Moox\UserSession\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class BuilderServiceProvider extends PackageServiceProvider
+class UserSessionServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('builder')
+            ->name('user-session')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['create_items_table'])
+            ->hasMigrations(['create_user_sessions_table'])
             ->hasCommand(InstallCommand::class);
     }
 }

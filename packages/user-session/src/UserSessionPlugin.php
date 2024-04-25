@@ -1,25 +1,25 @@
 <?php
 
-namespace Moox\Builder;
+namespace Moox\UserSession;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Builder\Resources\BuilderResource;
+use Moox\UserSession\Resources\UserSessionResource;
 
-class BuilderPlugin implements Plugin
+class UserSessionPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'builder';
+        return 'user-session';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            BuilderResource::class,
+            UserSessionResource::class,
         ]);
     }
 

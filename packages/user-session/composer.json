@@ -1,6 +1,6 @@
 {
-    "name": "moox/builder",
-    "description": "This template is used for generating all Moox packages.",
+    "name": "moox/user-session",
+    "description": "This is my package user-session",
     "keywords": [
         "Laravel",
         "Filament",
@@ -21,13 +21,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Builder\\": "src"
+            "Moox\\UserSession\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Builder\\BuilderServiceProvider"
+                "Moox\\UserSession\\UserSessionServiceProvider"
             ]
         }
     },
