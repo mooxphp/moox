@@ -8,7 +8,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Moox\LoginLink\Mail\LoginLinkEmail;
@@ -32,11 +31,11 @@ class LoginLinkController extends Controller
 
         $user = $result->user;
 
-        $token = Hash::make(Str::random(40));
+        $token = Str::random(40);
 
         $loginLink = LoginLink::create([
             'user_id' => $user->id,
-            'user_type' => array_search(get_class($user), Config::get('login-link.user_models')),
+            'user_type' => get_class($user),
             'email' => $user->email,
             'token' => $token,
             'expires_at' => now()->addHours(config('login-link.expiration_time')),
@@ -60,9 +59,14 @@ class LoginLinkController extends Controller
             ->where('user_id', $userId)
             ->firstOrFail();
 
-        // Todo:
-        // Access to an undefined property Moox\LoginLink\Models\LoginLink::$user_type.
-        $userModel = Config::get('login-link.user_models.'.$loginLink->user_type, User::class);
+        // Todo: fix the model
+        if (isset($loginLink->user_type)) {
+            $userType = $loginLink->user_type;
+        } else {
+            $userType = 'App\Models\User';
+        }
+
+        $userModel = Config::get('login-link.user_models.'.$userType, User::class);
         $user = $userModel::findOrFail($userId);
         Auth::login($user);
 
