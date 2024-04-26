@@ -76,7 +76,7 @@ class UserDeviceResource extends Resource
                     ->icon(function ($record) {
                         switch ($record->platform) {
                             case 'Mobile':
-                                return 'heroicon-o-device-mobile';
+                                return 'heroicon-o-device-phone-mobile';
                             case 'Desktop':
                                 return 'heroicon-o-computer-desktop';
                             default:
