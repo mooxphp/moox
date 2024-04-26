@@ -10,8 +10,25 @@ class UserDevice extends Model
     protected $table = 'user_devices';
 
     protected $fillable = [
-        'title', 'slug', 'user_id', 'user_type', 'user_agent',
-        'platform', 'os', 'browser', 'city', 'country', 'location', 'whitelisted', 'active', 'ip_address',
+        'title',
+        'slug',
+        'user_id',
+        'user_type',
+        'user_agent',
+        'platform',
+        'os',
+        'browser',
+        'city',
+        'country',
+        'location',
+        'whitelisted',
+        'active',
+        'ip_address',
+    ];
+
+    protected $casts = [
+        'active' => 'bool',
+        'whitelisted' => 'bool',
     ];
 
     /**
@@ -21,9 +38,17 @@ class UserDevice extends Model
     {
         parent::boot();
 
-        // Automatically generate a slug when creating a new device.
-        static::creating(function ($device) {
-            $device->slug = Str::slug($device->title);
+        UserDevice::creating(function ($item) {
+            $baseSlug = Str::slug($item->title);
+            $slug = $baseSlug;
+            $counter = 1;
+
+            while (UserDevice::where('slug', $slug)->exists()) {
+                $slug = "{$baseSlug}-{$counter}";
+                $counter++;
+            }
+
+            $item->slug = $slug;
         });
     }
 

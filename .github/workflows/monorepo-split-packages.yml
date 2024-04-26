@@ -21,6 +21,7 @@ jobs:
           - jobs
           - user
           - user-device
+          - user-session
           - sync
           - audit
 

@@ -5,7 +5,6 @@ namespace Moox\UserDevice\Listeners;
 use GeoIp2\Database\Reader;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Services\LocationService;
@@ -42,8 +41,6 @@ class StoreUserDevice
 
         $title = $platform.' '.$browser.' on '.$os.' in '.($location['city'] ?? '- Unknown').' - '.($location['country'] ?? null);
 
-        $slug = Str::slug($title);
-
         $device = UserDevice::updateOrCreate([
             'user_id' => $user_id,
             'user_type' => get_class($user),
@@ -51,7 +48,6 @@ class StoreUserDevice
             'user_agent' => $userAgent,
         ], [
             'title' => $title,
-            'slug' => $slug,
             'active' => true,
             'os' => $os,
             'platform' => $platform,

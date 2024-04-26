@@ -24,7 +24,7 @@ class UserDeviceResource extends Resource
 {
     protected static ?string $model = UserDevice::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
 
     public static function form(Form $form): Form
     {
