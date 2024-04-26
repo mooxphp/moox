@@ -2,9 +2,8 @@
 
 namespace Moox\UserSession\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -19,18 +18,23 @@ class UserSessionResource extends Resource
 {
     protected static ?string $model = UserSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('name')
+                //TextInput::make('id')
+                //    ->maxLength(255),
+                TextInput::make('user_id')
                     ->maxLength(255),
-                DateTimePicker::make('started_at'),
-                DateTimePicker::make('finished_at'),
-                Toggle::make('failed')
-                    ->required(),
+                TextInput::make('ip_address')
+                    ->maxLength(255),
+                TextInput::make('user_agent')
+                    ->maxLength(255),
+                //Textarea::make('payload'),
+                //TextInput::make('last_activity')
+                //    ->maxLength(255),
             ]);
     }
 
@@ -38,18 +42,17 @@ class UserSessionResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('user-session::translations.name'))
+                TextColumn::make('id')
+                    ->label(__('user-session::translations.id'))
                     ->sortable(),
-                TextColumn::make('started_at')
-                    ->label(__('user-session::translations.started_at'))
-                    ->since()
+                TextColumn::make('user_id')
+                    ->label(__('user-session::translations.user_id'))
                     ->sortable(),
-                TextColumn::make('failed')
-                    ->label(__('user-session::translations.failed'))
+                TextColumn::make('ip_address')
+                    ->label(__('user-session::translations.ip_address'))
                     ->sortable(),
             ])
-            ->defaultSort('name', 'desc')
+            ->defaultSort('id', 'desc')
             ->actions([
                 EditAction::make(),
             ])

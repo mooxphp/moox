@@ -6,18 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserSession extends Model
 {
-    protected $table = 'user_sessions';
+    protected $table = 'sessions';
 
     protected $fillable = [
-        'name',
-        'started_at',
-        'finished_at',
-        'failed',
-    ];
-
-    protected $casts = [
-        'failed' => 'bool',
-        'started_at' => 'datetime',
-        'finished_at' => 'datetime',
+        'id',
+        'user_id',
+        'ip_address',
+        'user_agent',
+        'payload',
+        'last_activity',
     ];
 }
