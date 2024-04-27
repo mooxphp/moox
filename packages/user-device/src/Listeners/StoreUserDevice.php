@@ -5,6 +5,9 @@ namespace Moox\UserDevice\Listeners;
 use GeoIp2\Database\Reader;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Services\LocationService;
@@ -15,10 +18,15 @@ class StoreUserDevice
 
     protected $reader;
 
-    public function __construct(Request $request)
+    protected $agent;
+
+    protected $locationService;
+
+    public function __construct(Request $request, Agent $agent, LocationService $locationService)
     {
         $this->request = $request;
-
+        $this->agent = $agent;
+        $this->locationService = $locationService;
         $this->reader = new Reader(__DIR__.'/../../database/geoip/GeoLite2-City.mmdb');
     }
 
@@ -28,16 +36,12 @@ class StoreUserDevice
         $ipAddress = $this->request->ip();
         $userAgent = $this->request->userAgent();
         $user_id = $user->getAuthIdentifier();
-        $locationService = new LocationService();
-        $location = $locationService->getLocation($ipAddress);
+        $location = $this->locationService->getLocation($ipAddress);
 
-        $agent = new Agent();
-        $agent->setUserAgent($userAgent);
-
-        $browser = $agent->browser();
-        $os = $agent->platform();
-
-        $platform = $agent->isMobile() ? 'Mobile' : 'Desktop';
+        $this->agent->setUserAgent($userAgent);
+        $browser = $this->agent->browser();
+        $os = $this->agent->platform();
+        $platform = $this->agent->isMobile() ? 'Mobile' : 'Desktop';
 
         $title = $platform.' '.$browser.' on '.$os.' in '.($location['city'] ?? '- Unknown').' - '.($location['country'] ?? null);
 
@@ -58,8 +62,19 @@ class StoreUserDevice
             'whitelisted' => true,
         ]);
 
+        if (Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
+            sleep(1);
+            $debug = DB::table('sessions')->where('id', session()->getId())->get();
+            var_dump($debug);
+            $debug = DB::table('sessions')->where('id', session()->getId())->update(['device_id' => $device->id]);
+            dd($debug);
+        } else {
+            Log::warning('The session-table does not have a device_id column. Install Moox User Devices package to add this feature.');
+        }
+
         if ($device->wasRecentlyCreated) {
-            // currently this is an unknown device
+            // TODO:
+            // Send a notification to the user about the new device.
         }
     }
 }

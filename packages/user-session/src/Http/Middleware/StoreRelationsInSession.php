@@ -24,8 +24,15 @@ class StoreRelationsInSession
             $userType = get_class($user);
 
             UserSession::updateOrCreate(
-                ['id' => $sessionId],
-                ['user_type' => $userType, 'user_id' => $user->id]
+                [
+                    'id' => $sessionId,
+                ],
+                [
+                    'user_type' => $userType,
+                    'user_id' => $user->id,
+                    'payload' => json_encode([]),
+                    'last_activity' => now()->getTimestamp(),
+                ]
             );
         }
 

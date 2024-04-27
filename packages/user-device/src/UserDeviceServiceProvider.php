@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\UserDevice;
 
 use Illuminate\Auth\Events\Login;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Moox\UserDevice\Commands\InstallCommand;
 use Moox\UserDevice\Listeners\StoreUserDevice;
@@ -28,9 +29,13 @@ class UserDeviceServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        Event::listen(
-            Login::class,
-            [StoreUserDevice::class, 'handle']
-        );
+        /*        Event::listen(
+                    Login::class,
+                    [StoreUserDevice::class, 'handle']
+                );
+        */
+
+        $router = $this->app->make(Router::class);
+        $router->pushMiddlewareToGroup('web', \Moox\UserDevice\Http\Middleware\StoreUserDevice::class);
     }
 }
