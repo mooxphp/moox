@@ -5,11 +5,14 @@ namespace Moox\UserSession\Resources;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Log;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
@@ -63,7 +66,24 @@ class UserSessionResource extends Resource
             ])
             ->defaultSort('id', 'desc')
             ->actions([
-                DeleteAction::make(),
+                ViewAction::make(),
+                DeleteAction::make()
+                    ->label('Drop')
+                    ->action(function ($record) {
+                        try {
+                            $record->delete();
+                            Notification::make()
+                                ->title('Deleted successfully')
+                                ->success()
+                                ->send();
+                        } catch (\Exception $e) {
+                            Log::error('Failed to delete record: '.$e->getMessage());
+                            Notification::make()
+                                ->title('Error on deleting')
+                                ->success()
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),

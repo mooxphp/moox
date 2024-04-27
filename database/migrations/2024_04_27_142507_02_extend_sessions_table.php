@@ -15,6 +15,8 @@ return new class extends Migration
             $table->string('user_type')->nullable()->after('id');
             $table->unsignedBigInteger('device_id')->nullable()->after('user_id');
             $table->boolean('whitlisted')->nullable()->after('last_activity');
+
+            $table->timestamps();
         });
     }
 
