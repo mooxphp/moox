@@ -76,7 +76,9 @@ class LoginLinkController extends Controller
         $user = $userModel::findOrFail($userId);
         Auth::login($user);
 
-        return redirect('/moox')->with('message', 'You have been successfully logged in!');
+        $redirectTo = config('login-link.redirect_to');
+
+        return redirect($redirectTo)->with('message', 'You have been successfully logged in!');
     }
 
     private function findUserByEmail($email)

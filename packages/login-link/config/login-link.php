@@ -7,4 +7,5 @@ return [
         'App Users' => \App\Models\User::class,
         'Moox Users' => \Moox\User\Models\User::class,
     ],
+    'redirect_to' => '/moox',
 ];
