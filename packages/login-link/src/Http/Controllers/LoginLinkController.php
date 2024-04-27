@@ -70,7 +70,7 @@ class LoginLinkController extends Controller
             $userType = 'App\Models\User';
         }
 
-        $loginLink->update(['token' => 'used']);
+        $loginLink->update(['used_at' => now()]);
 
         $userModel = Config::get('login-link.user_models.'.$userType, User::class);
         $user = $userModel::findOrFail($userId);

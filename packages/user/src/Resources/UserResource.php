@@ -262,20 +262,23 @@ class UserResource extends Resource
                     ->label('Verified')
                     ->sortable()
                     ->alignStart()
-                    ->icon(fn ($record): string => is_null($record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->icon(
+                        fn ($record): string => is_null(
+                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                    )
                     ->colors([
-                        'success' => fn ($record) => $record->email_verified_at !== null,
-                        'danger' => fn ($record) => $record->email_verified_at === null,
+                    'success' => fn ($record) => $record->email_verified_at !== null,
+                    'danger' => fn ($record) => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('Admin'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([
-                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                    'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ])
                     ->colors([
-                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                    'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([

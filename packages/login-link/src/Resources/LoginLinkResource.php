@@ -10,6 +10,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
@@ -39,8 +40,10 @@ class LoginLinkResource extends Resource
                     ->columnSpan(2),
                 TextInput::make('token')
                     ->label(__('login-link::translations.token'))
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpan(2),
                 DateTimePicker::make('expires_at'),
+                DateTimePicker::make('used_at'),
                 Select::make('user_type')
                     ->options(function () {
                         $models = Config::get('login-link.user_models', []);
@@ -70,24 +73,28 @@ class LoginLinkResource extends Resource
     {
         return $table
             ->columns([
+                IconColumn::make('used')
+                    ->label('Valid')
+                    ->icons([
+                        'heroicon-o-x-circle' => fn ($record) => empty($record->used_at),
+                        'heroicon-o-check-circle' => fn ($record) => ! empty($record->used_at),
+                    ])
+                    ->tooltip(fn ($record) => empty($record->used_at) ? 'Not Used' : 'Used')
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label(__('login-link::translations.email'))
                     ->sortable(),
-                TextColumn::make('token')
-                    ->label(__('login-link::translations.token'))
-                    ->sortable(),
-                TextColumn::make('expires_at')
+                TextColumn::make('created_at')
                     ->label(__('login-link::translations.expires_at'))
-                    ->sortable(),
-                TextColumn::make('user_agent')
-                    ->label(__('login-link::translations.user_agent'))
+                    ->since()
                     ->sortable(),
                 TextColumn::make('expires_at')
                     ->label(__('login-link::translations.expires_at'))
                     ->since()
                     ->sortable(),
-                TextColumn::make('ip_address')
-                    ->label(__('login-link::translations.ip_address'))
+                TextColumn::make('used_at')
+                    ->label(__('login-link::translations.used_at'))
+                    ->since()
                     ->sortable(),
                 TextColumn::make('user_type')
                     ->label(__('login-link::translations.user_type'))

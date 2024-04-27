@@ -15,12 +15,14 @@ class LoginLink extends Model
         'email',
         'token',
         'expires_at',
+        'used_at',
         'user_agent',
         'ip_address',
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
+        'used_at' => 'datetime',
     ];
 
     /**
