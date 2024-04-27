@@ -16,4 +16,13 @@ return [
     'user_id' => 'User ID',
     'id' => 'Session',
     'ip_address' => 'IP-Address',
+    'whitelisted' => 'Whitelisted',
+    'device_id' => 'Device ID',
+    'user_agent' => 'User Agent',
+    'last_activity' => 'Last Activity',
+    'payload' => 'Payload',
+    'created_at' => 'Created at',
+    'updated_at' => 'Updated at',
+    'deleted_at' => 'Deleted at',
+    'user_type' => 'User Model',
 ];

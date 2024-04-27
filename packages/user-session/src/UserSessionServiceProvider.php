@@ -17,7 +17,21 @@ class UserSessionServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['create_user_sessions_table'])
             ->hasCommand(InstallCommand::class);
+    }
+
+    public function boot()
+    {
+        parent::boot();
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../database/migrations/create_sessions_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_01_create_sessions_table.php'),
+            ], 'create-sessions-table');
+
+            $this->publishes([
+                __DIR__.'/../database/migrations/extend_sessions_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_02_extend_sessions_table.php'),
+            ], 'extend-sessions-table');
+        }
     }
 }

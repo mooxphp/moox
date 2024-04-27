@@ -20,7 +20,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxuser-session:install';
+    protected $signature = 'mooxusersession:install';
 
     /**
      * The console command description.
@@ -85,20 +85,24 @@ class InstallCommand extends Command
     public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
-            if (Schema::hasTable('user_sessions')) {
-                warning('The user_sessions table already exists. The migrations will not be published.');
-
-                return;
+            if (Schema::hasTable('sessions')) {
+                warning('The sessions table already exists. The migrations will not be published.');
+            } else {
+                info('Creating sessions table...');
+                $this->callSilent('vendor:publish', ['--tag' => 'create_sessions-table']);
             }
-            info('Publishing UserSessions Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'user-session-migrations']);
+
+            if (! Schema::hasColumn('sessions', 'user_type')) {
+                info('Extending sessions table...');
+                $this->callSilent('vendor:publish', ['--tag' => 'extend-sessions-table']);
+            }
         }
     }
 
     public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
-            info('Running UserSession Migrations...');
+            info('Running User Session Migrations...');
             $this->callSilent('migrate');
         }
     }

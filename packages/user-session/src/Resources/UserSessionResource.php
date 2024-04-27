@@ -6,8 +6,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\UserSession\Models\UserSession;
@@ -45,16 +45,25 @@ class UserSessionResource extends Resource
                 TextColumn::make('id')
                     ->label(__('user-session::translations.id'))
                     ->sortable(),
+                TextColumn::make('user_type')
+                    ->label(__('user-session::translations.user_type'))
+                    ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('user-session::translations.user_id'))
+                    ->sortable(),
+                TextColumn::make('device_id')
+                    ->label(__('user-session::translations.device_id'))
                     ->sortable(),
                 TextColumn::make('ip_address')
                     ->label(__('user-session::translations.ip_address'))
                     ->sortable(),
+                TextColumn::make('whitlisted')
+                    ->label(__('user-session::translations.whitelisted'))
+                    ->sortable(),
             ])
             ->defaultSort('id', 'desc')
             ->actions([
-                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
