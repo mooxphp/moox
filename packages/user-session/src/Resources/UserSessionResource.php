@@ -13,6 +13,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
+use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
@@ -22,6 +23,8 @@ class UserSessionResource extends Resource
     protected static ?string $model = UserSession::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+
+    protected static ?string $recordTitleAttribute = 'id';
 
     public static function form(Form $form): Form
     {
@@ -48,11 +51,11 @@ class UserSessionResource extends Resource
                 TextColumn::make('id')
                     ->label(__('user-session::translations.id'))
                     ->sortable(),
-                TextColumn::make('user_type')
-                    ->label(__('user-session::translations.user_type'))
-                    ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('user-session::translations.user_id'))
+                    ->sortable(),
+                TextColumn::make('user_type')
+                    ->label(__('user-session::translations.user_type'))
                     ->sortable(),
                 TextColumn::make('device_id')
                     ->label(__('user-session::translations.device_id'))
@@ -64,7 +67,7 @@ class UserSessionResource extends Resource
                     ->label(__('user-session::translations.whitelisted'))
                     ->sortable(),
             ])
-            ->defaultSort('id', 'desc')
+            ->defaultSort('user_id', 'desc')
             ->actions([
                 ViewAction::make(),
                 DeleteAction::make()
@@ -101,6 +104,8 @@ class UserSessionResource extends Resource
     {
         return [
             'index' => ListPage::route('/'),
+            //'view' => ViewPage::route('/{record}'),
+
         ];
     }
 

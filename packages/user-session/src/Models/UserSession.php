@@ -22,6 +22,7 @@ class UserSession extends Model
     ];
 
     protected $casts = [
+        'id' => 'string',
         'payload' => 'array',
         'last_activity' => 'integer',
         'whitelisted' => 'boolean',

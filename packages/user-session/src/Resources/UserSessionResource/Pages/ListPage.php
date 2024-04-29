@@ -2,9 +2,7 @@
 
 namespace Moox\UserSession\Resources\UserSessionResource\Pages;
 
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
 
@@ -31,11 +29,6 @@ class ListPage extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make()
-                ->using(function (array $data, string $model): UserSession {
-                    return $model::create($data);
-                }),
-        ];
+        return [];
     }
 }
