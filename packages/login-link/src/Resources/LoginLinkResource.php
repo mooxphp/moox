@@ -22,7 +22,7 @@ class LoginLinkResource extends Resource
 {
     protected static ?string $model = LoginLink::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-link';
+    protected static ?string $navigationIcon = 'heroicon-o-key';
 
     public static function form(Form $form): Form
     {

@@ -21,6 +21,8 @@ class Passkey extends Model
 
     protected $casts = [
         'session_id' => 'string',
+        'credential_id' => 'encrypted',
+        'public_key' => 'encrypted:json',
     ];
 
     /**
