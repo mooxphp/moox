@@ -1,16 +1,16 @@
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Pages;
+namespace Moox\Passkey\Resources\PasskeyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\BuilderResource;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Passkey\Models\Passkey;
+use Moox\Passkey\Resources\PasskeyResource;
+use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 
 class ListPage extends ListRecords
 {
-    public static string $resource = BuilderResource::class;
+    public static string $resource = PasskeyResource::class;
 
     public function getActions(): array
     {
@@ -20,20 +20,20 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            PasskeyWidgets::class,
         ];
     }
 
     public function getTitle(): string
     {
-        return __('builder::translations.title');
+        return __('passkey::translations.title');
     }
 
     protected function getHeaderActions(): array
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Item {
+                ->using(function (array $data, string $model): Passkey {
                     return $model::create($data);
                 }),
         ];

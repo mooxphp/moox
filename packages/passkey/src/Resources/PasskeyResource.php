@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Resources;
+namespace Moox\Passkey\Resources;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
@@ -11,13 +11,13 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Passkey\Models\Passkey;
+use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
+use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 
-class BuilderResource extends Resource
+class PasskeyResource extends Resource
 {
-    protected static ?string $model = Item::class;
+    protected static ?string $model = Passkey::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -39,14 +39,14 @@ class BuilderResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('builder::translations.name'))
+                    ->label(__('passkey::translations.name'))
                     ->sortable(),
                 TextColumn::make('started_at')
-                    ->label(__('builder::translations.started_at'))
+                    ->label(__('passkey::translations.started_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('failed')
-                    ->label(__('builder::translations.failed'))
+                    ->label(__('passkey::translations.failed'))
                     ->sortable(),
             ])
             ->defaultSort('name', 'desc')
@@ -75,28 +75,28 @@ class BuilderResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            PasskeyWidgets::class,
         ];
     }
 
     public static function getModelLabel(): string
     {
-        return __('builder::translations.single');
+        return __('passkey::translations.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('builder::translations.plural');
+        return __('passkey::translations.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('builder::translations.navigation_label');
+        return __('passkey::translations.navigation_label');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('builder::translations.breadcrumb');
+        return __('passkey::translations.breadcrumb');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -111,11 +111,11 @@ class BuilderResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('builder::translations.navigation_group');
+        return __('passkey::translations.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('builder.navigation_sort');
+        return config('passkey.navigation_sort');
     }
 }

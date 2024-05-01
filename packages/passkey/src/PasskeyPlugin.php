@@ -1,25 +1,25 @@
 <?php
 
-namespace Moox\Builder;
+namespace Moox\Passkey;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Builder\Resources\BuilderResource;
+use Moox\Passkey\Resources\PasskeyResource;
 
-class BuilderPlugin implements Plugin
+class PasskeyPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'builder';
+        return 'passkey';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            BuilderResource::class,
+            PasskeyResource::class,
         ]);
     }
 

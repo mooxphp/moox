@@ -1,13 +1,13 @@
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Widgets;
+namespace Moox\Passkey\Resources\PasskeyResource\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
-use Moox\Builder\Models\Item;
+use Moox\Passkey\Models\Passkey;
 
-class BuilderWidgets extends BaseWidget
+class PasskeyWidgets extends BaseWidget
 {
     protected function getCards(): array
     {
@@ -17,14 +17,14 @@ class BuilderWidgets extends BaseWidget
             DB::raw('COUNT(*) as count'),
         ];
 
-        $aggregatedInfo = Item::query()
+        $aggregatedInfo = Passkey::query()
             ->select($aggregationColumns)
             ->first();
 
         return [
-            Stat::make(__('builder::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('passkey::translations.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('passkey::translations.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('passkey::translations.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

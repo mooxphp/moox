@@ -1,12 +1,12 @@
 <?php
 
-namespace Moox\Builder\Models;
+namespace Moox\Passkey\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Item extends Model
+class Passkey extends Model
 {
-    protected $table = 'items';
+    protected $table = 'passkeys';
 
     protected $fillable = [
         'name',
