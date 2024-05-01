@@ -3,6 +3,7 @@
 namespace Moox\LoginLink\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class LoginLink extends Model
@@ -25,9 +26,15 @@ class LoginLink extends Model
         'used_at' => 'datetime',
     ];
 
-    /**
-     * The "booting" method of the model.
-     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        // Todo: Add the appends here.
+        //$this->appends = [
+        //];
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -41,8 +48,10 @@ class LoginLink extends Model
 
     /**
      * Get the owning user model.
+     *
+     * TODO: Doing a fallback to the User model for now, but this is not ideal.
      */
-    public function user()
+    public function user(): BelongsTo
     {
         if (isset($this->user_type)) {
             return $this->belongsTo($this->user_type, 'user_id');
