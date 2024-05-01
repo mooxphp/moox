@@ -11,7 +11,7 @@ jobs:
     name: Add contributors to READMEs
     steps:
       - name: Contributors in Monorepo
-        uses: akhilmhdh/contributors-readme-action@v2.3.6
+        uses: akhilmhdh/contributors-readme-action@v2.3.8
         with:
           readme_path: "README.md"
           use_username: true
