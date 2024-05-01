@@ -25,6 +25,7 @@ jobs:
           - login-link
           - sync
           - audit
+          - passkey
 
     steps:
       - uses: actions/checkout@v4
