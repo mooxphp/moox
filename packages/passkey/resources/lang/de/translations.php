@@ -6,7 +6,7 @@ return [
     'breadcrumb' => 'Passkey',
     'title' => 'Passkey',
     'navigation_label' => 'Passkey',
-    'navigation_group' => 'Moox Passkey',
+    'navigation_group' => 'Moox User',
     'totalone' => 'Passkey Eins',
     'totaltwo' => 'Passkey Zwei',
     'totalthree' => 'Passkey Drei',
