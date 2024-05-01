@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('passkeys', function (Blueprint $table) {
             $table->id();
-            $table->string('title);
+            $table->string('title');
             $table->unsignedBigInteger('user_id');
             $table->string('user_type');
             $table->text('credential_id');
