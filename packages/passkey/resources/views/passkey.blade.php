@@ -1,3 +1,7 @@
+@extends('passkey::layout')
+
+@section('content')
+
 <div x-data="authForm" x-cloak>
     <div x-show="!browserSupported">
         <div>
@@ -64,3 +68,4 @@
         </form>
     </div>
 </div>
+@endsection
