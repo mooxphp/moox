@@ -2,29 +2,18 @@
 
 namespace Moox\Core\Base;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 if (config('core.use_advanced_tables') === true && trait_exists('\Archilex\AdvancedTables\AdvancedTables')) {
-    class BaseUser implements FilamentUser
+    class BaseUser extends Authenticatable
     {
         use \Archilex\AdvancedTables\Concerns\HasViews;
 
         public bool $useAdvancedViews = true;
-
-        public function canAccessPanel(Panel $panel): bool
-        {
-            return true;
-        }
     }
 } else {
-    class BaseUser implements FilamentUser
+    class BaseUser extends Authenticatable
     {
         public bool $useAdvancedViews = false;
-
-        public function canAccessPanel(Panel $panel): bool
-        {
-            return true;
-        }
     }
 }
