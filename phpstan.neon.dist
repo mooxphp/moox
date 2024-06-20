@@ -23,7 +23,7 @@ parameters:
             paths:
                 - packages/builder/*
             reportUnmatched: false
-        - '#Class Moox\\Core\\Base\\BaseWidget uses unknown trait Archilex\AdvancedTables\AdvancedTables#'
-        - '#Class Moox\\Core\\Base\\BaseResource uses unknown trait Archilex\AdvancedTables\AdvancedTables#'
-        - '#Class Moox\\Core\\Base\\BaseRelationManager uses unknown Archilex\AdvancedTables\AdvancedTables#'
+        - '#Class Moox\\Core\\Base\\BaseWidget uses unknown trait Archilex\\AdvancedTables\\AdvancedTables#'
+        - '#Class Moox\\Core\\Base\\BaseResource uses unknown trait Archilex\\AdvancedTables\\AdvancedTables#'
+        - '#Class Moox\\Core\\Base\\BaseRelationManager uses unknown Archilex\\AdvancedTables\\AdvancedTables#'
     tmpDir: build/phpstan
