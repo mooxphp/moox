@@ -8,10 +8,12 @@ if (config('core.use_advanced_tables') === true && trait_exists('\Archilex\Advan
     class BaseWidget extends TableWidget
     {
         use \Archilex\AdvancedTables\AdvancedTables;
+
+        public bool $useAdvancedTables = true;
     }
 } else {
     class BaseWidget extends TableWidget
     {
-        //
+        public bool $useAdvancedTables = false;
     }
 }

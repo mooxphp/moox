@@ -8,10 +8,12 @@ if (config('core.use_advanced_tables') === true && trait_exists('\Archilex\Advan
     class BaseRelationManager extends RelationManager
     {
         use \Archilex\AdvancedTables\AdvancedTables;
+
+        public bool $useAdvancedTables = true;
     }
 } else {
     class BaseRelationManager extends RelationManager
     {
-        //
+        public bool $useAdvancedTables = false;
     }
 }
