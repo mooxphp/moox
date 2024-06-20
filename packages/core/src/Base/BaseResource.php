@@ -7,7 +7,6 @@ use Filament\Resources\Resource;
 if (config('core.use_advanced_tables') === true && trait_exists('\Archilex\AdvancedTables\AdvancedTables')) {
     class BaseResource extends Resource
     {
-        // @phpstan-ignore-next-line
         use \Archilex\AdvancedTables\AdvancedTables;
     }
 } else {
