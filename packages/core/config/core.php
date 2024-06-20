@@ -1,5 +1,7 @@
 <?php
 
 return [
-    // No config atm
+
+    'use_advanced_tables' => true,
+
 ];
