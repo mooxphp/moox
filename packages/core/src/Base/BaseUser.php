@@ -2,10 +2,10 @@
 
 namespace Moox\Core\Base;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 if (config('core.use_advanced_tables') === true && trait_exists('\Archilex\AdvancedTables\AdvancedTables')) {
-    abstract class BaseUser extends Authenticatable
+    class BaseUser extends Authenticatable
     {
         use \Archilex\AdvancedTables\Concerns\HasViews;
 
