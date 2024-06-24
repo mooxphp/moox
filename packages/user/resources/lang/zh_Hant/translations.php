@@ -1,4 +1,5 @@
 <?php
+
 return [
     'single' => '使用者',
     'plural' => '使用者',
