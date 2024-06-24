@@ -6,14 +6,21 @@ trait FormatSeconds
 {
     public function formatSeconds(int $seconds): string
     {
-        $days = floor($seconds / (60 * 60 * 24));
-        $seconds -= $days * (60 * 60 * 24);
 
-        $hours = floor($seconds / (60 * 60));
-        $seconds -= $hours * (60 * 60);
+        $days = 0;
+        $hours = 0;
+        $minutes = 0;
 
-        $minutes = floor($seconds / 60);
-        $seconds = $seconds - ($minutes * 60);
+        if ($seconds > 60) {
+            $days = floor($seconds / (60 * 60 * 24));
+            $seconds -= $days * (60 * 60 * 24);
+
+            $hours = floor($seconds / (60 * 60));
+            $seconds -= $hours * (60 * 60);
+
+            $minutes = floor($seconds / 60);
+            $seconds = $seconds - ($minutes * 60);
+        }
 
         $formattedSeconds = '';
 

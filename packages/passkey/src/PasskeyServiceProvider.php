@@ -16,6 +16,7 @@ class PasskeyServiceProvider extends PackageServiceProvider
             ->name('passkey')
             ->hasConfigFile()
             ->hasViews()
+            ->hasRoute('web')
             ->hasTranslations()
             ->hasMigrations(['create_passkeys_table'])
             ->hasCommand(InstallCommand::class);
