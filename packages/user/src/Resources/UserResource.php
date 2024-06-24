@@ -262,7 +262,10 @@ class UserResource extends Resource
                     ->label('Verified')
                     ->sortable()
                     ->alignStart()
-                    ->icon(fn ($record): string => is_null($record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->icon(
+                        fn ($record): string => is_null(
+                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                    )
                     ->colors([
                         'success' => fn ($record) => $record->email_verified_at !== null,
                         'danger' => fn ($record) => $record->email_verified_at === null,

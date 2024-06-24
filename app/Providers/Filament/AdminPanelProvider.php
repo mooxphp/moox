@@ -79,6 +79,15 @@ class AdminPanelProvider extends PanelProvider
                 UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
+
+                \Moox\UserDevice\UserDevicePlugin::make(),
+
+                \Moox\LoginLink\LoginLinkPlugin::make(),
+
+                \Moox\UserSession\UserSessionPlugin::make(),
+
+                \Moox\Passkey\PasskeyPlugin::make(),
+
             ]);
     }
 }

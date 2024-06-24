@@ -15,12 +15,13 @@ parameters:
                 -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
             paths:
                 - packages/*/tests/*
-            reportUnmatched: false
         -
             # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
             messages:
                 - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
             paths:
                 - packages/builder/*
-            reportUnmatched: false
+        - '#^Class Moox\\Core\\Base\\BaseWidget uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
+        - '#^Class Moox\\Core\\Base\\BaseResource uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
+        - '#^Class Moox\\Core\\Base\\BaseRelationManager uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
     tmpDir: build/phpstan

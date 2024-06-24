@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'single' => 'Session',
+    'plural' => 'Sessions',
+    'breadcrumb' => 'Session',
+    'title' => 'Sessions',
+    'navigation_label' => 'Sessions',
+    'navigation_group' => 'Moox User',
+    'totalone' => 'Active Sessions',
+    'totaltwo' => 'Unused Sessions',
+    'totalthree' => 'Expired Sessions',
+    'name' => 'Name',
+    'started_at' => 'Started at',
+    'failed' => 'failed',
+    'user_id' => 'User ID',
+    'id' => 'Session',
+    'ip_address' => 'IP-Address',
+    'whitelisted' => 'Whitelisted',
+    'device_id' => 'Device ID',
+    'user_agent' => 'User Agent',
+    'last_activity' => 'Last Activity',
+    'payload' => 'Payload',
+    'created_at' => 'Created at',
+    'updated_at' => 'Updated at',
+    'deleted_at' => 'Deleted at',
+    'user_type' => 'User Model',
+];

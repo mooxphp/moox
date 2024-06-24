@@ -20,8 +20,12 @@ jobs:
           - builder
           - jobs
           - user
+          - user-device
+          - user-session
+          - login-link
           - sync
           - audit
+          - passkey
 
     steps:
       - uses: actions/checkout@v4

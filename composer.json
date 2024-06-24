@@ -23,12 +23,16 @@
     "require": {
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
+        "moox/audit": "*",
         "moox/builder": "*",
         "moox/jobs": "*",
         "moox/page": "*",
-        "moox/user": "*",
-        "moox/audit": "*",
         "moox/sync": "*",
+        "moox/user": "*",
+        "moox/user-device": "*",
+        "moox/login-link": "*",
+        "moox/user-session": "*",
+        "moox/passkey": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
