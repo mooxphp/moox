@@ -189,135 +189,140 @@ Moox is made by these nice people, and bots ...
 
 <!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -start -->
 <table>
-<tr>
-    <td align="center">
-        <a href="https://github.com/adrolli">
-            <img src="https://avatars.githubusercontent.com/u/40421928?v=4" width="100;" alt="adrolli"/>
-            <br />
-            <sub><b>adrolli</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/weblate">
-            <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
-            <br />
-            <sub><b>weblate</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/wp1111">
-            <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
-            <br />
-            <sub><b>wp1111</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/AzGasim">
-            <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="AzGasim"/>
-            <br />
-            <sub><b>AzGasim</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/KimSpeer">
-            <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
-            <br />
-            <sub><b>KimSpeer</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/mooxbot">
-            <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="mooxbot"/>
-            <br />
-            <sub><b>mooxbot</b></sub>
-        </a>
-    </td></tr>
-<tr>
-    <td align="center">
-        <a href="https://github.com/laravel-shift">
-            <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
-            <br />
-            <sub><b>laravel-shift</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/Kim-the-Diamond">
-            <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
-            <br />
-            <sub><b>Kim-the-Diamond</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/FMorlock">
-            <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
-            <br />
-            <sub><b>FMorlock</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/janakeks">
-            <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
-            <br />
-            <sub><b>janakeks</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/somzoli">
-            <img src="https://avatars.githubusercontent.com/u/34423715?v=4" width="100;" alt="somzoli"/>
-            <br />
-            <sub><b>somzoli</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/renovate[bot]">
-            <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
-            <br />
-            <sub><b>renovate[bot]</b></sub>
-        </a>
-    </td></tr>
-<tr>
-    <td align="center">
-        <a href="https://github.com/dependabot[bot]">
-            <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
-            <br />
-            <sub><b>dependabot[bot]</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/github-actions[bot]">
-            <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
-            <br />
-            <sub><b>github-actions[bot]</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/comradekingu">
-            <img src="https://avatars.githubusercontent.com/u/13802408?v=4" width="100;" alt="comradekingu"/>
-            <br />
-            <sub><b>comradekingu</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/milotype">
-            <img src="https://avatars.githubusercontent.com/u/43657314?v=4" width="100;" alt="milotype"/>
-            <br />
-            <sub><b>milotype</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/givx">
-            <img src="https://avatars.githubusercontent.com/u/1196652?v=4" width="100;" alt="givx"/>
-            <br />
-            <sub><b>givx</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/occtherapist">
-            <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
-            <br />
-            <sub><b>occtherapist</b></sub>
-        </a>
-    </td></tr>
+	<tbody>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/adrolli">
+                    <img src="https://avatars.githubusercontent.com/u/40421928?v=4" width="100;" alt="adrolli"/>
+                    <br />
+                    <sub><b>adrolli</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/weblate">
+                    <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
+                    <br />
+                    <sub><b>weblate</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/wp1111">
+                    <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
+                    <br />
+                    <sub><b>wp1111</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/AzGasim">
+                    <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="AzGasim"/>
+                    <br />
+                    <sub><b>AzGasim</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/KimSpeer">
+                    <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
+                    <br />
+                    <sub><b>KimSpeer</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/mooxbot">
+                    <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="mooxbot"/>
+                    <br />
+                    <sub><b>mooxbot</b></sub>
+                </a>
+            </td>
+		</tr>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/laravel-shift">
+                    <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
+                    <br />
+                    <sub><b>laravel-shift</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/Kim-the-Diamond">
+                    <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
+                    <br />
+                    <sub><b>Kim-the-Diamond</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/FMorlock">
+                    <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
+                    <br />
+                    <sub><b>FMorlock</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/janakeks">
+                    <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
+                    <br />
+                    <sub><b>janakeks</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/somzoli">
+                    <img src="https://avatars.githubusercontent.com/u/34423715?v=4" width="100;" alt="somzoli"/>
+                    <br />
+                    <sub><b>somzoli</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/renovate[bot]">
+                    <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
+                    <br />
+                    <sub><b>renovate[bot]</b></sub>
+                </a>
+            </td>
+		</tr>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/dependabot[bot]">
+                    <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
+                    <br />
+                    <sub><b>dependabot[bot]</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/github-actions[bot]">
+                    <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
+                    <br />
+                    <sub><b>github-actions[bot]</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/comradekingu">
+                    <img src="https://avatars.githubusercontent.com/u/13802408?v=4" width="100;" alt="comradekingu"/>
+                    <br />
+                    <sub><b>comradekingu</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/milotype">
+                    <img src="https://avatars.githubusercontent.com/u/43657314?v=4" width="100;" alt="milotype"/>
+                    <br />
+                    <sub><b>milotype</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/givx">
+                    <img src="https://avatars.githubusercontent.com/u/1196652?v=4" width="100;" alt="givx"/>
+                    <br />
+                    <sub><b>givx</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/occtherapist">
+                    <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
+                    <br />
+                    <sub><b>occtherapist</b></sub>
+                </a>
+            </td>
+		</tr>
+	<tbody>
 </table>
 <!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -end -->
 
