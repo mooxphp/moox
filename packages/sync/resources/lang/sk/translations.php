@@ -1,7 +1,6 @@
 <?php
-
 return [
-    'single' => '',
+    'single' => 'Synchronizácia',
     'plural' => '',
     'platform' => '',
     'platforms' => '',
