@@ -2,21 +2,19 @@
 
 namespace Moox\Notification\Resources;
 
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Toggle;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Table;
 use Moox\Notification\Models\Notification;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;
-use Moox\Notification\Resources\NotificationResource\Pages\ViewNotification;
-use Moox\Notification\Resources\NotificationResource\Pages\ListNotifications;
 use Moox\Notification\Resources\NotificationResource\Pages\CreateNotification;
-use Moox\Notification\Resources\NotificationResource\Pages\ListNoticiations;
+use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;
+use Moox\Notification\Resources\NotificationResource\Pages\ListNotifications;
+use Moox\Notification\Resources\NotificationResource\Pages\ViewNotification;
 use Moox\Notification\Resources\NotificationResource\Widgets\NotificationWidgets;
 
 class NotificationResource extends Resource
@@ -34,9 +32,6 @@ class NotificationResource extends Resource
                 TextInput::make('notifiable_id'),
                 TextInput::make('data'),
                 DatePicker::make('read_at'),
-
-
-
 
             ]);
     }

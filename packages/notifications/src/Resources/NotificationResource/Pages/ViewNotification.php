@@ -2,9 +2,8 @@
 
 namespace Moox\Notification\Resources\NotificationResource\Pages;
 
-use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
-use Moox\User\Resources\UserResource;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Notification\Resources\NotificationResource;
 

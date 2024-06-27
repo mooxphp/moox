@@ -2,15 +2,16 @@
 
 namespace Moox\Notification\Models;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Notification extends Model
 {
     use HasUuids;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected static function boot()
@@ -31,6 +32,6 @@ class Notification extends Model
         'notifiable_type',
         'notifiable_id',
         'data',
-        'read_at'
+        'read_at',
     ];
 }
