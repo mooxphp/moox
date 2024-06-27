@@ -33,6 +33,7 @@
         "moox/login-link": "*",
         "moox/user-session": "*",
         "moox/passkey": "*",
+        "moox/notifications": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
