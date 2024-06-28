@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Route;
 use Moox\Notification\Commands\InstallCommand;
 use Moox\Notification\Http\Controllers\NotificationController;
 use Spatie\LaravelPackageTools\Package;
+use Moox\Notification\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Notification\Http\Controllers\NotificationController;
 
 class NotificationServiceProvider extends PackageServiceProvider
 {
