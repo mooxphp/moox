@@ -17,7 +17,7 @@ class NotificationServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            // ->hasMigrations(['create_notifications_table']) only for testing purposes
+            ->hasMigrations(['create_notifications_table'])
             ->hasCommand(InstallCommand::class);
     }
 }
