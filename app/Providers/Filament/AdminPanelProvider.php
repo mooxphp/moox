@@ -87,6 +87,9 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\UserSession\UserSessionPlugin::make(),
 
                 \Moox\Passkey\PasskeyPlugin::make(),
+
+
+            
                 \Moox\Notification\NotificationPlugin::make(),
 
             ]);
