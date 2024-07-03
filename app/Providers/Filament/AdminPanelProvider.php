@@ -90,6 +90,8 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\Notification\NotificationPlugin::make(),
 
+                \TomatoPHP\FilamentTranslations\FilamentTranslationsPlugin::make(),
+
             ]);
     }
 }
