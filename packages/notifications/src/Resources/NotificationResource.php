@@ -42,11 +42,12 @@ class NotificationResource extends Resource
             ->columns([
                 TextColumn::make('type'),
                 TextColumn::make('notifiable_type'),
-                TextColumn::make('notifiable_id'),
+                TextColumn::make('notifiable_id')
+                    ->sortable(),
                 TextColumn::make('data'),
                 TextColumn::make('read_at'),
 
-            ])
+            ])->searchable()
             ->defaultSort('type', 'desc')
             ->actions([
                 EditAction::make(),
