@@ -43,7 +43,7 @@ class NotificationResource extends Resource
                 TextColumn::make('type'),
                 TextColumn::make('notifiable_type'),
                 TextColumn::make('notifiable_id')
-                ->sortable(),
+                    ->sortable(),
                 TextColumn::make('data'),
                 TextColumn::make('read_at'),
 
