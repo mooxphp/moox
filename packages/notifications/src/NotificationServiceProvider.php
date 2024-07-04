@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Notification;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Moox\Notification\Commands\InstallCommand;
-use Moox\Notification\Http\Controllers\NotificationController;
 use Spatie\LaravelPackageTools\Package;
+use Moox\Notification\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Notification\Http\Controllers\NotificationController;
 
 class NotificationServiceProvider extends PackageServiceProvider
 {
@@ -25,6 +26,8 @@ class NotificationServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
-        Route::get('notification', [NotificationController::class, 'index']);
+        if(config('notifications.api')){
+            Route::get('/api/notifications/user/{user}/notificationBell', [NotificationController::class, 'getView']);
+        }
     }
 }
