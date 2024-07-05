@@ -7,7 +7,7 @@
     <title>Bell Api</title>
 
     <style>
-            @keyframes ringAnimation {
+        @keyframes ringAnimation {
         0% { transform: rotate(0); }
         10% { transform: rotate(30deg); }
         20% { transform: rotate(-28deg); }
@@ -21,18 +21,14 @@
         100% { transform: rotate(0); }
     }
     .bell-icon {
-    animation: ringAnimation 1s ease-in-out 1s, colorChange 2s ease-in-out 1s;
+    animation: ringAnimation 1s ease-in-out 1s;
     position: relative;
     }
 
     .gray{
         color:gray;
     }
-        @keyframes colorChange {
-            0%, 100% { fill: transparent; }   /* Original color at the start and end */
-            /* 50% { fill: rgb(216, 132, 36); }          Amber color in the middle of the animation */
-            50% { fill: #005d9d; }          Amber color in the middle of the animation
-        }
+
     </style>
 
 </head>
