@@ -7,7 +7,7 @@
     <title>Bell Api</title>
 
     <style>
-            @keyframes ringAnimation {
+        @keyframes ringAnimation {
         0% { transform: rotate(0); }
         10% { transform: rotate(30deg); }
         20% { transform: rotate(-28deg); }
@@ -25,18 +25,33 @@
     position: relative;
     }
 
+    .gray{
+        color:gray;
+    }
+
     </style>
 
 </head>
 <body>
+    @if ($unreadNotificationsCount != 0)
     <div class="notification">
       <a href="/admin" style="display:flex;">
-          <div style="display:flex;" >
-            <x-heroicon-o-bell class="bell-icon" style="width:25px;" />
-            <div class="countBadge" style="font-family:Arial; display:inline-block; position:relative; top:-8px;">{{$unreadNotificationsCount}}</div>
-        </div>
-      </a>
+            <div style="display:flex;" >
+                <x-heroicon-o-bell class="bell-icon" style="width:25px;" />
+                <div class="countBadge" style="font-family:Arial; display:inline-block; position:relative; top:-8px;">{{$unreadNotificationsCount}}</div>
+            </div>
+        </a>
     </div>
+    @else
+    <div class="gray">
+        <a href="/admin" style="display:flex;" class="gray">
+                <div style="display:flex;" >
+                    <x-heroicon-o-bell class="gray" style="width:25px;" />
+                </div>
+          </a>
+      </div>
+    @endif
+
 
 
 </body>
