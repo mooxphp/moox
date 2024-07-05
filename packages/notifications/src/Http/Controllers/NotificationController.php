@@ -29,5 +29,4 @@ class NotificationController extends Controller
 
         return view('notifications::notificationBell', ['unreadNotificationsCount' => $notifications]);
     }
-
 }
