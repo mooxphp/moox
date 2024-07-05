@@ -30,14 +30,4 @@ class NotificationController extends Controller
         return view('notifications::notificationBell', ['unreadNotificationsCount' => $notifications]);
     }
 
-     /**
-     * Display Notification by UserId
-     */
-    public function getView($user)
-    {
-        $notifications = Notification::where('notifiable_id',$user)->count();
-
-        return view('notifications::notificationBell',['unreadNotificationsCount'=>$notifications]);
-    }
-
 }
