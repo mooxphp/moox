@@ -5,21 +5,21 @@ namespace Moox\Locate;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Locate\Resources\LocateResource;
+use Moox\Locate\Resources\AreaResource;
 
-class LocatePlugin implements Plugin
+class AreaPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'locate';
+        return 'area';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            LocateResource::class,
+            AreaResource::class,
         ]);
     }
 

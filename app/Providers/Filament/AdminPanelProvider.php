@@ -82,7 +82,7 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Audit\AuditPlugin::make(),
 
                 //LocatePlugin::make(), macht keinen Sinn, war nur für Demo
-                //\Moox\Locate\AreaPlugin::make(),
+                \Moox\Locate\AreaPlugin::make(),
                 //\Moox\Locate\CountryPlugin::make(),
                 //\Moox\Locate\LanguagePlugin::make(),
                 //\Moox\Locate\TimezonePlugin::make(),

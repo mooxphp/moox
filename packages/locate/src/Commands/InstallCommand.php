@@ -91,7 +91,7 @@ class InstallCommand extends Command
                 return;
             }
             info('Publishing Locates Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'create_areas_table']);
+            $this->callSilent('vendor:publish', ['--tag' => 'locate-migrations']);
         }
     }
 
@@ -116,8 +116,8 @@ class InstallCommand extends Command
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['LocatePlugin'],
-                default: ['LocatePlugin'],
+                options: ['AreaPlugin'],
+                default: ['AreaPlugin'],
             );
 
             $function = '::make(),';
