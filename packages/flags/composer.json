@@ -1,12 +1,20 @@
 {
-    "name": "blade-organization/blade-heroicons",
-    "description": "A package to easily make use of Heroicons in your Laravel Blade views.",
-    "keywords": ["Blade", "Heroicons", "Laravel"],
-    "homepage": "https://github.com/blade-organization/blade-heroicons",
+    "name": "moox/flags",
+    "description": "A package to easily make use of beautiful stylable country and language flags in your Laravel Blade views and Filament resources.",
+    "keywords": [
+        "Blade",
+        "Icons",
+        "Country Flags",
+        "Language Flags",
+        "Flags",
+        "SVG",
+        "Laravel"
+    ],
+    "homepage": "https://github.com/mooxphp/flags",
     "license": "MIT",
     "authors": [
         {
-            "name": "Blade Developer"
+            "name": "Moox Devs"
         }
     ],
     "require": {
@@ -20,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "BladeUI\\Heroicons\\": "src"
+            "Moox\\Flags\\": "src"
         }
     },
     "autoload-dev": {
@@ -31,7 +39,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BladeUI\\Heroicons\\BladeHeroiconsServiceProvider"
+                "Moox\\Flags\\FlagsServiceProvider"
             ]
         }
     },

@@ -24,6 +24,7 @@ use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Locate\LocatePlugin;
 use Moox\Page\PagePlugin;
 use Moox\Sync\SyncPlugin;
 use Moox\User\UserPlugin;
@@ -73,12 +74,18 @@ class AdminPanelProvider extends PanelProvider
                 JobsWaitingPlugin::make(),
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
-                JobsPlugin::make(),
+
                 PagePlugin::make(),
                 SyncPlugin::make(),
                 UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
+
+                //LocatePlugin::make(), macht keinen Sinn, war nur für Demo
+                //\Moox\Locate\AreaPlugin::make(),
+                //\Moox\Locate\CountryPlugin::make(),
+                //\Moox\Locate\LanguagePlugin::make(),
+                //\Moox\Locate\TimezonePlugin::make(),
 
                 \Moox\UserDevice\UserDevicePlugin::make(),
 

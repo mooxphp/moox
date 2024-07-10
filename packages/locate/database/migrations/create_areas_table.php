@@ -6,26 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('continents', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('areas', function (Blueprint $table) {
+            $table->id();
             $table->string('title');
             $table->string('slug');
-            $table->unsignedBigInteger('parent_continent_id')->nullable();
-
+            $table->enum('area_type', ['continent', 'sub-continent', 'union', 'other']);
+            $table->text('description');
+            $table->json('nutrition');
+            $table->boolean('tropical');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('continents');
+        Schema::dropIfExists('areas');
     }
 };

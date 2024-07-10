@@ -17,7 +17,7 @@ class LocateServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['create_locates_table'])
+            ->hasMigrations(['create_areas_table'])
             ->hasCommand(InstallCommand::class);
     }
 }
