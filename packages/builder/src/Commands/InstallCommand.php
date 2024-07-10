@@ -105,7 +105,7 @@ class InstallCommand extends Command
 
     public function registerPlugins(): void
     {
-        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
+        $providerPath = $this->getPanelProviderPath();
 
         if (File::exists($providerPath)) {
             $content = File::get($providerPath);
@@ -154,6 +154,28 @@ class InstallCommand extends Command
         } else {
             alert('AdminPanelProvider not found. You need to add the plugins manually.');
         }
+    }
+
+    public function getPanelProviderPath(): string
+    {
+        $providerPath = app_path('Providers\Filament');
+        $providers = File::allFiles($providerPath);
+        if (count($providers) > 1) {
+            $providerNames = [];
+            foreach ($providers as $provider) {
+                $providerNames[] = $provider->getBasename();
+            }
+            $providerPath .= '/'.$this->choice(
+                'Which Panel should it be registered',
+                [...$providerNames]
+            );
+        }
+        if (count($providers) == 1) {
+            $providerPath .= '/'.$providers[0]->getBasename();
+        }
+
+        return $providerPath;
+
     }
 
     public function finish(): void
