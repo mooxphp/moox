@@ -15,7 +15,7 @@ return new class extends Migration
             $table
                 ->foreign('parent_area_id')
                 ->references('id')
-                ->on('continents')
+                ->on('areas')
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
         });

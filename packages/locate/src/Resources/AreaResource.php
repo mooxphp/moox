@@ -56,6 +56,7 @@ class AreaResource extends Resource
     {
         return [
             'index' => ListPage::route('/'),
+
         ];
     }
 }
