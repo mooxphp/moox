@@ -28,6 +28,7 @@ class PressPanelProvider extends PanelProvider
         return $panel
             ->id('press')
             ->path('press')
+            ->authGuard('press')
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
             ->login(Login::class)
             ->colors([

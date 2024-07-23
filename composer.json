@@ -34,6 +34,8 @@
         "moox/security": "*",
         "moox/sync": "*",
         "moox/user": "*",
+        "moox/expiry": "*",
+        "moox/trainings": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
         "wikimedia/composer-merge-plugin": "^2.1"

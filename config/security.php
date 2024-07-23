@@ -13,6 +13,11 @@ return [
             'email' => 'email',
             'password' => 'password',
         ],
+        'press' => [
+            'username' => 'name',
+            'email' => 'email',
+            'password' => 'password',
+        ],
     ],
 
     // Using Laravel Password Validation
