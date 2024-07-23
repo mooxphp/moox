@@ -2,52 +2,52 @@
 /**
  * IXR_ClientMulticall
  *
- * @package IXR
  * @since 1.5.0
  */
 class IXR_ClientMulticall extends IXR_Client
 {
-    var $calls = array();
+    public $calls = [];
 
-	/**
-	 * PHP5 constructor.
-	 */
-    function __construct( $server, $path = false, $port = 80 )
+    /**
+     * PHP5 constructor.
+     */
+    public function __construct($server, $path = false, $port = 80)
     {
         parent::IXR_Client($server, $path, $port);
         $this->useragent = 'The Incutio XML-RPC PHP Library (multicall client)';
     }
 
-	/**
-	 * PHP4 constructor.
-	 */
-	public function IXR_ClientMulticall( $server, $path = false, $port = 80 ) {
-		self::__construct( $server, $path, $port );
-	}
+    /**
+     * PHP4 constructor.
+     */
+    public function IXR_ClientMulticall($server, $path = false, $port = 80)
+    {
+        self::__construct($server, $path, $port);
+    }
 
-	/**
-	 * @since 1.5.0
-	 * @since 5.5.0 Formalized the existing `...$args` parameter by adding it
-	 *              to the function signature.
-	 */
-    function addCall( ...$args )
+    /**
+     * @since 1.5.0
+     * @since 5.5.0 Formalized the existing `...$args` parameter by adding it
+     *              to the function signature.
+     */
+    public function addCall(...$args)
     {
         $methodName = array_shift($args);
-        $struct = array(
+        $struct = [
             'methodName' => $methodName,
-            'params' => $args
-        );
+            'params' => $args,
+        ];
         $this->calls[] = $struct;
     }
 
-	/**
-	 * @since 1.5.0
-	 * @since 5.5.0 Formalized the existing `...$args` parameter by adding it
-	 *              to the function signature.
-	 *
-	 * @return bool
-	 */
-    function query( ...$args )
+    /**
+     * @since 1.5.0
+     * @since 5.5.0 Formalized the existing `...$args` parameter by adding it
+     *              to the function signature.
+     *
+     * @return bool
+     */
+    public function query(...$args)
     {
         // Prepare multicall, then call the parent::query() method
         return parent::query('system.multicall', $this->calls);

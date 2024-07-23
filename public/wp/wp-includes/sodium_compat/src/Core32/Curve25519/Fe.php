@@ -14,7 +14,7 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     /**
      * @var array<int, ParagonIE_Sodium_Core32_Int32>
      */
-    protected $container = array();
+    protected $container = [];
 
     /**
      * @var int
@@ -24,9 +24,10 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     /**
      * @internal You should not use this directly from another application
      *
-     * @param array<int, ParagonIE_Sodium_Core32_Int32> $array
-     * @param bool $save_indexes
+     * @param  array<int, ParagonIE_Sodium_Core32_Int32>  $array
+     * @param  bool  $save_indexes
      * @return self
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -42,28 +43,30 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
 
         $obj = new ParagonIE_Sodium_Core32_Curve25519_Fe();
         if ($save_indexes) {
-            for ($i = 0; $i < $count; ++$i) {
+            for ($i = 0; $i < $count; $i++) {
                 $array[$i]->overflow = 0;
                 $obj->offsetSet($keys[$i], $array[$i]);
             }
         } else {
-            for ($i = 0; $i < $count; ++$i) {
-                if (!($array[$i] instanceof ParagonIE_Sodium_Core32_Int32)) {
+            for ($i = 0; $i < $count; $i++) {
+                if (! ($array[$i] instanceof ParagonIE_Sodium_Core32_Int32)) {
                     throw new TypeError('Expected ParagonIE_Sodium_Core32_Int32');
                 }
                 $array[$i]->overflow = 0;
                 $obj->offsetSet($i, $array[$i]);
             }
         }
+
         return $obj;
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param array<int, int> $array
-     * @param bool $save_indexes
+     * @param  array<int, int>  $array
+     * @param  bool  $save_indexes
      * @return self
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -76,7 +79,7 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
             $keys = range(0, $count - 1);
         }
         $array = array_values($array);
-        $set = array();
+        $set = [];
         /** @var int $i */
         /** @var int $v */
         foreach ($array as $i => $v) {
@@ -85,32 +88,34 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
 
         $obj = new ParagonIE_Sodium_Core32_Curve25519_Fe();
         if ($save_indexes) {
-            for ($i = 0; $i < $count; ++$i) {
+            for ($i = 0; $i < $count; $i++) {
                 $set[$i]->overflow = 0;
                 $obj->offsetSet($keys[$i], $set[$i]);
             }
         } else {
-            for ($i = 0; $i < $count; ++$i) {
+            for ($i = 0; $i < $count; $i++) {
                 $set[$i]->overflow = 0;
                 $obj->offsetSet($i, $set[$i]);
             }
         }
+
         return $obj;
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param mixed $offset
-     * @param mixed $value
+     * @param  mixed  $offset
+     * @param  mixed  $value
      * @return void
+     *
      * @throws SodiumException
      * @throws TypeError
      */
     #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        if (!($value instanceof ParagonIE_Sodium_Core32_Int32)) {
+        if (! ($value instanceof ParagonIE_Sodium_Core32_Int32)) {
             throw new InvalidArgumentException('Expected an instance of ParagonIE_Sodium_Core32_Int32');
         }
         if (is_null($offset)) {
@@ -124,8 +129,9 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     /**
      * @internal You should not use this directly from another application
      *
-     * @param mixed $offset
+     * @param  mixed  $offset
      * @return bool
+     *
      * @psalm-suppress MixedArrayOffset
      */
     #[ReturnTypeWillChange]
@@ -137,8 +143,9 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     /**
      * @internal You should not use this directly from another application
      *
-     * @param mixed $offset
+     * @param  mixed  $offset
      * @return void
+     *
      * @psalm-suppress MixedArrayOffset
      */
     #[ReturnTypeWillChange]
@@ -150,18 +157,20 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     /**
      * @internal You should not use this directly from another application
      *
-     * @param mixed $offset
+     * @param  mixed  $offset
      * @return ParagonIE_Sodium_Core32_Int32
+     *
      * @psalm-suppress MixedArrayOffset
      */
     #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        if (!isset($this->container[$offset])) {
+        if (! isset($this->container[$offset])) {
             $this->container[(int) $offset] = new ParagonIE_Sodium_Core32_Int32();
         }
         /** @var ParagonIE_Sodium_Core32_Int32 $get */
         $get = $this->container[$offset];
+
         return $get;
     }
 
@@ -173,9 +182,9 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     public function __debugInfo()
     {
         if (empty($this->container)) {
-            return array();
+            return [];
         }
-        $c = array(
+        $c = [
             (int) ($this->container[0]->toInt()),
             (int) ($this->container[1]->toInt()),
             (int) ($this->container[2]->toInt()),
@@ -185,8 +194,9 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
             (int) ($this->container[6]->toInt()),
             (int) ($this->container[7]->toInt()),
             (int) ($this->container[8]->toInt()),
-            (int) ($this->container[9]->toInt())
-        );
-        return array(implode(', ', $c));
+            (int) ($this->container[9]->toInt()),
+        ];
+
+        return [implode(', ', $c)];
     }
 }

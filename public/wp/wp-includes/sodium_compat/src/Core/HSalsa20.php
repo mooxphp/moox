@@ -17,37 +17,38 @@ abstract class ParagonIE_Sodium_Core_HSalsa20 extends ParagonIE_Sodium_Core_Sals
      *
      * @internal You should not use this directly from another application
      *
-     * @param string $in
-     * @param string $k
-     * @param string|null $c
+     * @param  string  $in
+     * @param  string  $k
+     * @param  string|null  $c
      * @return string
+     *
      * @throws TypeError
      */
     public static function hsalsa20($in, $k, $c = null)
     {
         if ($c === null) {
-            $x0  = 0x61707865;
-            $x5  = 0x3320646e;
-            $x10 = 0x79622d32;
-            $x15 = 0x6b206574;
+            $x0 = 0x61707865;
+            $x5 = 0x3320646E;
+            $x10 = 0x79622D32;
+            $x15 = 0x6B206574;
         } else {
-            $x0  = self::load_4(self::substr($c, 0, 4));
-            $x5  = self::load_4(self::substr($c, 4, 4));
+            $x0 = self::load_4(self::substr($c, 0, 4));
+            $x5 = self::load_4(self::substr($c, 4, 4));
             $x10 = self::load_4(self::substr($c, 8, 4));
             $x15 = self::load_4(self::substr($c, 12, 4));
         }
-        $x1  = self::load_4(self::substr($k, 0, 4));
-        $x2  = self::load_4(self::substr($k, 4, 4));
-        $x3  = self::load_4(self::substr($k, 8, 4));
-        $x4  = self::load_4(self::substr($k, 12, 4));
+        $x1 = self::load_4(self::substr($k, 0, 4));
+        $x2 = self::load_4(self::substr($k, 4, 4));
+        $x3 = self::load_4(self::substr($k, 8, 4));
+        $x4 = self::load_4(self::substr($k, 12, 4));
         $x11 = self::load_4(self::substr($k, 16, 4));
         $x12 = self::load_4(self::substr($k, 20, 4));
         $x13 = self::load_4(self::substr($k, 24, 4));
         $x14 = self::load_4(self::substr($k, 28, 4));
-        $x6  = self::load_4(self::substr($in, 0, 4));
-        $x7  = self::load_4(self::substr($in, 4, 4));
-        $x8  = self::load_4(self::substr($in, 8, 4));
-        $x9  = self::load_4(self::substr($in, 12, 4));
+        $x6 = self::load_4(self::substr($in, 0, 4));
+        $x7 = self::load_4(self::substr($in, 4, 4));
+        $x8 = self::load_4(self::substr($in, 8, 4));
+        $x9 = self::load_4(self::substr($in, 12, 4));
 
         for ($i = self::ROUNDS; $i > 0; $i -= 2) {
             $x4 ^= self::rotate($x0 + $x12, 7);
@@ -84,13 +85,13 @@ abstract class ParagonIE_Sodium_Core_HSalsa20 extends ParagonIE_Sodium_Core_Sals
             $x15 ^= self::rotate($x14 + $x13, 18);
         }
 
-        return self::store32_le($x0) .
-            self::store32_le($x5) .
-            self::store32_le($x10) .
-            self::store32_le($x15) .
-            self::store32_le($x6) .
-            self::store32_le($x7) .
-            self::store32_le($x8) .
+        return self::store32_le($x0).
+            self::store32_le($x5).
+            self::store32_le($x10).
+            self::store32_le($x15).
+            self::store32_le($x6).
+            self::store32_le($x7).
+            self::store32_le($x8).
             self::store32_le($x9);
     }
 }

@@ -2,8 +2,6 @@
 /**
  * HTML API: WP_HTML_Unsupported_Exception class
  *
- * @package WordPress
- * @subpackage HTML-API
  * @since 6.4.0
  */
 
@@ -21,11 +19,6 @@
  * operation and signify that the given HTML cannot be processed.
  *
  * @since 6.4.0
- *
- * @access private
- *
  * @see WP_HTML_Processor
  */
-class WP_HTML_Unsupported_Exception extends Exception {
-
-}
+class WP_HTML_Unsupported_Exception extends Exception {}

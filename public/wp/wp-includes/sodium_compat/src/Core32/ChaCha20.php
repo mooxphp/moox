@@ -14,11 +14,8 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
      *
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core32_Int32 $a
-     * @param ParagonIE_Sodium_Core32_Int32 $b
-     * @param ParagonIE_Sodium_Core32_Int32 $c
-     * @param ParagonIE_Sodium_Core32_Int32 $d
      * @return array<int, ParagonIE_Sodium_Core32_Int32>
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -33,32 +30,31 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
         /** @var ParagonIE_Sodium_Core32_Int32 $c */
         /** @var ParagonIE_Sodium_Core32_Int32 $d */
 
-        # a = PLUS(a,b); d = ROTATE(XOR(d,a),16);
+        // a = PLUS(a,b); d = ROTATE(XOR(d,a),16);
         $a = $a->addInt32($b);
         $d = $d->xorInt32($a)->rotateLeft(16);
 
-        # c = PLUS(c,d); b = ROTATE(XOR(b,c),12);
+        // c = PLUS(c,d); b = ROTATE(XOR(b,c),12);
         $c = $c->addInt32($d);
         $b = $b->xorInt32($c)->rotateLeft(12);
 
-        # a = PLUS(a,b); d = ROTATE(XOR(d,a), 8);
+        // a = PLUS(a,b); d = ROTATE(XOR(d,a), 8);
         $a = $a->addInt32($b);
         $d = $d->xorInt32($a)->rotateLeft(8);
 
-        # c = PLUS(c,d); b = ROTATE(XOR(b,c), 7);
+        // c = PLUS(c,d); b = ROTATE(XOR(b,c), 7);
         $c = $c->addInt32($d);
         $b = $b->xorInt32($c)->rotateLeft(7);
 
-        return array($a, $b, $c, $d);
+        return [$a, $b, $c, $d];
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core32_ChaCha20_Ctx $ctx
-     * @param string $message
-     *
+     * @param  string  $message
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -104,25 +100,25 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
         j15 = ctx->input[15];
         */
         /** @var ParagonIE_Sodium_Core32_Int32 $j0 */
-        $j0  = $ctx[0];
+        $j0 = $ctx[0];
         /** @var ParagonIE_Sodium_Core32_Int32 $j1 */
-        $j1  = $ctx[1];
+        $j1 = $ctx[1];
         /** @var ParagonIE_Sodium_Core32_Int32 $j2 */
-        $j2  = $ctx[2];
+        $j2 = $ctx[2];
         /** @var ParagonIE_Sodium_Core32_Int32 $j3 */
-        $j3  = $ctx[3];
+        $j3 = $ctx[3];
         /** @var ParagonIE_Sodium_Core32_Int32 $j4 */
-        $j4  = $ctx[4];
+        $j4 = $ctx[4];
         /** @var ParagonIE_Sodium_Core32_Int32 $j5 */
-        $j5  = $ctx[5];
+        $j5 = $ctx[5];
         /** @var ParagonIE_Sodium_Core32_Int32 $j6 */
-        $j6  = $ctx[6];
+        $j6 = $ctx[6];
         /** @var ParagonIE_Sodium_Core32_Int32 $j7 */
-        $j7  = $ctx[7];
+        $j7 = $ctx[7];
         /** @var ParagonIE_Sodium_Core32_Int32 $j8 */
-        $j8  = $ctx[8];
+        $j8 = $ctx[8];
         /** @var ParagonIE_Sodium_Core32_Int32 $j9 */
-        $j9  = $ctx[9];
+        $j9 = $ctx[9];
         /** @var ParagonIE_Sodium_Core32_Int32 $j10 */
         $j10 = $ctx[10];
         /** @var ParagonIE_Sodium_Core32_Int32 $j11 */
@@ -137,21 +133,21 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
         $j15 = $ctx[15];
 
         $c = '';
-        for (;;) {
+        for (; ;) {
             if ($bytes < 64) {
                 $message .= str_repeat("\x00", 64 - $bytes);
             }
 
-            $x0 =  clone $j0;
-            $x1 =  clone $j1;
-            $x2 =  clone $j2;
-            $x3 =  clone $j3;
-            $x4 =  clone $j4;
-            $x5 =  clone $j5;
-            $x6 =  clone $j6;
-            $x7 =  clone $j7;
-            $x8 =  clone $j8;
-            $x9 =  clone $j9;
+            $x0 = clone $j0;
+            $x1 = clone $j1;
+            $x2 = clone $j2;
+            $x3 = clone $j3;
+            $x4 = clone $j4;
+            $x5 = clone $j5;
+            $x6 = clone $j6;
+            $x7 = clone $j7;
+            $x8 = clone $j8;
+            $x9 = clone $j9;
             $x10 = clone $j10;
             $x11 = clone $j11;
             $x12 = clone $j12;
@@ -159,31 +155,31 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
             $x14 = clone $j14;
             $x15 = clone $j15;
 
-            # for (i = 20; i > 0; i -= 2) {
+            // for (i = 20; i > 0; i -= 2) {
             for ($i = 20; $i > 0; $i -= 2) {
-                # QUARTERROUND( x0,  x4,  x8,  x12)
-                list($x0, $x4, $x8, $x12) = self::quarterRound($x0, $x4, $x8, $x12);
+                // QUARTERROUND( x0,  x4,  x8,  x12)
+                [$x0, $x4, $x8, $x12] = self::quarterRound($x0, $x4, $x8, $x12);
 
-                # QUARTERROUND( x1,  x5,  x9,  x13)
-                list($x1, $x5, $x9, $x13) = self::quarterRound($x1, $x5, $x9, $x13);
+                // QUARTERROUND( x1,  x5,  x9,  x13)
+                [$x1, $x5, $x9, $x13] = self::quarterRound($x1, $x5, $x9, $x13);
 
-                # QUARTERROUND( x2,  x6,  x10,  x14)
-                list($x2, $x6, $x10, $x14) = self::quarterRound($x2, $x6, $x10, $x14);
+                // QUARTERROUND( x2,  x6,  x10,  x14)
+                [$x2, $x6, $x10, $x14] = self::quarterRound($x2, $x6, $x10, $x14);
 
-                # QUARTERROUND( x3,  x7,  x11,  x15)
-                list($x3, $x7, $x11, $x15) = self::quarterRound($x3, $x7, $x11, $x15);
+                // QUARTERROUND( x3,  x7,  x11,  x15)
+                [$x3, $x7, $x11, $x15] = self::quarterRound($x3, $x7, $x11, $x15);
 
-                # QUARTERROUND( x0,  x5,  x10,  x15)
-                list($x0, $x5, $x10, $x15) = self::quarterRound($x0, $x5, $x10, $x15);
+                // QUARTERROUND( x0,  x5,  x10,  x15)
+                [$x0, $x5, $x10, $x15] = self::quarterRound($x0, $x5, $x10, $x15);
 
-                # QUARTERROUND( x1,  x6,  x11,  x12)
-                list($x1, $x6, $x11, $x12) = self::quarterRound($x1, $x6, $x11, $x12);
+                // QUARTERROUND( x1,  x6,  x11,  x12)
+                [$x1, $x6, $x11, $x12] = self::quarterRound($x1, $x6, $x11, $x12);
 
-                # QUARTERROUND( x2,  x7,  x8,  x13)
-                list($x2, $x7, $x8, $x13) = self::quarterRound($x2, $x7, $x8, $x13);
+                // QUARTERROUND( x2,  x7,  x8,  x13)
+                [$x2, $x7, $x8, $x13] = self::quarterRound($x2, $x7, $x8, $x13);
 
-                # QUARTERROUND( x3,  x4,  x9,  x14)
-                list($x3, $x4, $x9, $x14) = self::quarterRound($x3, $x4, $x9, $x14);
+                // QUARTERROUND( x3,  x4,  x9,  x14)
+                [$x3, $x4, $x9, $x14] = self::quarterRound($x3, $x4, $x9, $x14);
             }
             /*
             x0 = PLUS(x0, j0);
@@ -238,16 +234,16 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
             x14 = XOR(x14, LOAD32_LE(m + 56));
             x15 = XOR(x15, LOAD32_LE(m + 60));
             */
-            $x0  =  $x0->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message,  0, 4)));
-            $x1  =  $x1->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message,  4, 4)));
-            $x2  =  $x2->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message,  8, 4)));
-            $x3  =  $x3->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 12, 4)));
-            $x4  =  $x4->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 16, 4)));
-            $x5  =  $x5->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 20, 4)));
-            $x6  =  $x6->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 24, 4)));
-            $x7  =  $x7->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 28, 4)));
-            $x8  =  $x8->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 32, 4)));
-            $x9  =  $x9->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 36, 4)));
+            $x0 = $x0->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 0, 4)));
+            $x1 = $x1->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 4, 4)));
+            $x2 = $x2->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 8, 4)));
+            $x3 = $x3->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 12, 4)));
+            $x4 = $x4->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 16, 4)));
+            $x5 = $x5->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 20, 4)));
+            $x6 = $x6->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 24, 4)));
+            $x7 = $x7->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 28, 4)));
+            $x8 = $x8->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 32, 4)));
+            $x9 = $x9->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 36, 4)));
             $x10 = $x10->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 40, 4)));
             $x11 = $x11->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 44, 4)));
             $x12 = $x12->xorInt32(ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($message, 48, 4)));
@@ -286,21 +282,21 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
             STORE32_LE(c + 60, x15);
             */
 
-            $block = $x0->toReverseString() .
-                $x1->toReverseString() .
-                $x2->toReverseString() .
-                $x3->toReverseString() .
-                $x4->toReverseString() .
-                $x5->toReverseString() .
-                $x6->toReverseString() .
-                $x7->toReverseString() .
-                $x8->toReverseString() .
-                $x9->toReverseString() .
-                $x10->toReverseString() .
-                $x11->toReverseString() .
-                $x12->toReverseString() .
-                $x13->toReverseString() .
-                $x14->toReverseString() .
+            $block = $x0->toReverseString().
+                $x1->toReverseString().
+                $x2->toReverseString().
+                $x3->toReverseString().
+                $x4->toReverseString().
+                $x5->toReverseString().
+                $x6->toReverseString().
+                $x7->toReverseString().
+                $x8->toReverseString().
+                $x9->toReverseString().
+                $x10->toReverseString().
+                $x11->toReverseString().
+                $x12->toReverseString().
+                $x13->toReverseString().
+                $x14->toReverseString().
                 $x15->toReverseString();
 
             /* Partial block */
@@ -321,16 +317,18 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
 
         $ctx[12] = $j12;
         $ctx[13] = $j13;
+
         return $c;
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $len
-     * @param string $nonce
-     * @param string $key
+     * @param  int  $len
+     * @param  string  $nonce
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -345,10 +343,11 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $len
-     * @param string $nonce
-     * @param string $key
+     * @param  int  $len
+     * @param  string  $nonce
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -363,11 +362,12 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $message
-     * @param string $nonce
-     * @param string $key
-     * @param string $ic
+     * @param  string  $message
+     * @param  string  $nonce
+     * @param  string  $key
+     * @param  string  $ic
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -382,11 +382,12 @@ class ParagonIE_Sodium_Core32_ChaCha20 extends ParagonIE_Sodium_Core32_Util
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $message
-     * @param string $nonce
-     * @param string $key
-     * @param string $ic
+     * @param  string  $message
+     * @param  string  $nonce
+     * @param  string  $key
+     * @param  string  $ic
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
