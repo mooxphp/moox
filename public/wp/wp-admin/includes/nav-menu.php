@@ -582,7 +582,7 @@ function wp_nav_menu_item_post_type_meta_box($data_object, $box)
     ?>
 	<div id="<?php echo esc_attr("posttype-{$post_type_name}"); ?>" class="posttypediv">
 		<ul id="<?php echo esc_attr("posttype-{$post_type_name}-tabs"); ?>" class="posttype-tabs add-menu-item-tabs">
-			<li <?php echo  $current_tab === 'most-recent' ? ' class="tabs"' : ''; ?>>
+			<li <?php echo $current_tab === 'most-recent' ? ' class="tabs"' : ''; ?>>
 				<a class="nav-tab-link"
 					data-type="<?php echo esc_attr("tabs-panel-posttype-{$post_type_name}-most-recent"); ?>"
 					href="<?php echo esc_url($most_recent_url."#tabs-panel-posttype-{$post_type_name}-most-recent"); ?>"
@@ -590,7 +590,7 @@ function wp_nav_menu_item_post_type_meta_box($data_object, $box)
 					<?php _e('Most Recent'); ?>
 				</a>
 			</li>
-			<li <?php echo  $current_tab === 'all' ? ' class="tabs"' : ''; ?>>
+			<li <?php echo $current_tab === 'all' ? ' class="tabs"' : ''; ?>>
 				<a class="nav-tab-link"
 					data-type="<?php echo esc_attr("{$post_type_name}-all"); ?>"
 					href="<?php echo esc_url($view_all_url."#{$post_type_name}-all"); ?>"
@@ -598,7 +598,7 @@ function wp_nav_menu_item_post_type_meta_box($data_object, $box)
 					<?php _e('View All'); ?>
 				</a>
 			</li>
-			<li <?php echo  $current_tab === 'search' ? ' class="tabs"' : ''; ?>>
+			<li <?php echo $current_tab === 'search' ? ' class="tabs"' : ''; ?>>
 				<a class="nav-tab-link"
 					data-type="<?php echo esc_attr("tabs-panel-posttype-{$post_type_name}-search"); ?>"
 					href="<?php echo esc_url($search_url."#tabs-panel-posttype-{$post_type_name}-search"); ?>"
@@ -609,7 +609,7 @@ function wp_nav_menu_item_post_type_meta_box($data_object, $box)
 		</ul><!-- .posttype-tabs -->
 
 		<div id="<?php echo esc_attr("tabs-panel-posttype-{$post_type_name}-most-recent"); ?>"
-			class="tabs-panel <?php echo  $current_tab === 'most-recent' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
+			class="tabs-panel <?php echo $current_tab === 'most-recent' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
 			role="region" aria-label="<?php esc_attr_e('Most Recent'); ?>" tabindex="0"
 		>
 			<ul id="<?php echo esc_attr("{$post_type_name}checklist-most-recent"); ?>"
@@ -665,7 +665,7 @@ function wp_nav_menu_item_post_type_meta_box($data_object, $box)
 		</div><!-- /.tabs-panel -->
 
 		<div id="<?php echo esc_attr("tabs-panel-posttype-{$post_type_name}-search"); ?>"
-			class="tabs-panel <?php echo  $current_tab === 'search' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
+			class="tabs-panel <?php echo $current_tab === 'search' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
 			role="region" aria-label="<?php echo esc_attr($post_type->labels->search_items); ?>" tabindex="0"
 		>
 			<?php
@@ -730,7 +730,7 @@ function wp_nav_menu_item_post_type_meta_box($data_object, $box)
 		</div><!-- /.tabs-panel -->
 
 		<div id="<?php echo esc_attr("{$post_type_name}-all"); ?>"
-			class="tabs-panel tabs-panel-view-all <?php echo  $current_tab === 'all' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
+			class="tabs-panel tabs-panel-view-all <?php echo $current_tab === 'all' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
 			role="region" aria-label="<?php echo esc_attr($post_type->labels->all_items); ?>" tabindex="0"
 		>
 			<?php if (! empty($page_links)) { ?>
@@ -955,7 +955,7 @@ function wp_nav_menu_item_taxonomy_meta_box($data_object, $box)
     ?>
 	<div id="<?php echo esc_attr("taxonomy-{$taxonomy_name}"); ?>" class="taxonomydiv">
 		<ul id="<?php echo esc_attr("taxonomy-{$taxonomy_name}-tabs"); ?>" class="taxonomy-tabs add-menu-item-tabs">
-			<li <?php echo  $current_tab === 'most-used' ? ' class="tabs"' : ''; ?>>
+			<li <?php echo $current_tab === 'most-used' ? ' class="tabs"' : ''; ?>>
 				<a class="nav-tab-link"
 					data-type="<?php echo esc_attr("tabs-panel-{$taxonomy_name}-pop"); ?>"
 					href="<?php echo esc_url($most_used_url."#tabs-panel-{$taxonomy_name}-pop"); ?>"
@@ -963,7 +963,7 @@ function wp_nav_menu_item_taxonomy_meta_box($data_object, $box)
 					<?php echo esc_html($taxonomy->labels->most_used); ?>
 				</a>
 			</li>
-			<li <?php echo  $current_tab === 'all' ? ' class="tabs"' : ''; ?>>
+			<li <?php echo $current_tab === 'all' ? ' class="tabs"' : ''; ?>>
 				<a class="nav-tab-link"
 					data-type="<?php echo esc_attr("tabs-panel-{$taxonomy_name}-all"); ?>"
 					href="<?php echo esc_url($view_all_url."#tabs-panel-{$taxonomy_name}-all"); ?>"
@@ -971,7 +971,7 @@ function wp_nav_menu_item_taxonomy_meta_box($data_object, $box)
 					<?php _e('View All'); ?>
 				</a>
 			</li>
-			<li <?php echo  $current_tab === 'search' ? ' class="tabs"' : ''; ?>>
+			<li <?php echo $current_tab === 'search' ? ' class="tabs"' : ''; ?>>
 				<a class="nav-tab-link"
 					data-type="<?php echo esc_attr("tabs-panel-search-taxonomy-{$taxonomy_name}"); ?>"
 					href="<?php echo esc_url($search_url."#tabs-panel-search-taxonomy-{$taxonomy_name}"); ?>"
@@ -982,7 +982,7 @@ function wp_nav_menu_item_taxonomy_meta_box($data_object, $box)
 		</ul><!-- .taxonomy-tabs -->
 
 		<div id="<?php echo esc_attr("tabs-panel-{$taxonomy_name}-pop"); ?>"
-			class="tabs-panel <?php echo  $current_tab === 'most-used' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
+			class="tabs-panel <?php echo $current_tab === 'most-used' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
 			role="region" aria-label="<?php echo esc_attr($taxonomy->labels->most_used); ?>" tabindex="0"
 		>
 			<ul id="<?php echo esc_attr("{$taxonomy_name}checklist-pop"); ?>"
@@ -1010,7 +1010,7 @@ function wp_nav_menu_item_taxonomy_meta_box($data_object, $box)
 		</div><!-- /.tabs-panel -->
 
 		<div id="<?php echo esc_attr("tabs-panel-{$taxonomy_name}-all"); ?>"
-			class="tabs-panel tabs-panel-view-all <?php echo  $current_tab === 'all' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
+			class="tabs-panel tabs-panel-view-all <?php echo $current_tab === 'all' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
 			role="region" aria-label="<?php echo esc_attr($taxonomy->labels->all_items); ?>" tabindex="0"
 		>
 			<?php if (! empty($page_links)) { ?>
@@ -1041,7 +1041,7 @@ function wp_nav_menu_item_taxonomy_meta_box($data_object, $box)
 		</div><!-- /.tabs-panel -->
 
 		<div id="<?php echo esc_attr("tabs-panel-search-taxonomy-{$taxonomy_name}"); ?>"
-			class="tabs-panel <?php echo  $current_tab === 'search' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
+			class="tabs-panel <?php echo $current_tab === 'search' ? 'tabs-panel-active' : 'tabs-panel-inactive'; ?>"
 			role="region" aria-label="<?php echo esc_attr($taxonomy->labels->search_items); ?>" tabindex="0">
 			<?php
             if (isset($_REQUEST["quick-search-taxonomy-{$taxonomy_name}"])) {

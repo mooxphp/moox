@@ -2143,7 +2143,7 @@ final class WP_Customize_Widgets
      */
     protected function is_option_capture_ignored($option_name)
     {
-        return  str_starts_with($option_name, '_transient_');
+        return str_starts_with($option_name, '_transient_');
     }
 
     /**

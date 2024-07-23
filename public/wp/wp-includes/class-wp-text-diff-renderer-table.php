@@ -302,7 +302,8 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
      * @return string
      */
     public function _changed($orig, $final) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.finalFound
-    {$r = '';
+    {
+        $r = '';
 
         /*
          * Does the aforementioned additional processing:

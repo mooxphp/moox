@@ -2580,11 +2580,12 @@ function convert_invalid_entities($content)
  * @return string Balanced text
  */
 function balanceTags($text, $force = false)  // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{if ($force || (int) get_option('use_balanceTags') === 1) {
-    return force_balance_tags($text);
-} else {
-    return $text;
-}
+{
+    if ($force || (int) get_option('use_balanceTags') === 1) {
+        return force_balance_tags($text);
+    } else {
+        return $text;
+    }
 }
 
 /**

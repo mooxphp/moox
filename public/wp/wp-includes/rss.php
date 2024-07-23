@@ -938,7 +938,8 @@ if (! function_exists('get_rss')) {
      * @return bool False on failure.
      */
     function get_rss($url, $num_items = 5) // Like get posts, but for RSS
-    {$rss = fetch_rss($url);
+    {
+        $rss = fetch_rss($url);
         if ($rss) {
             $rss->items = array_slice($rss->items, 0, $num_items);
             foreach ((array) $rss->items as $item) {

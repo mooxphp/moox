@@ -229,9 +229,10 @@ class WP_Http_Cookie
      * @return string Header encoded cookie name and value.
      */
     public function getHeaderValue() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-    {if (! isset($this->name) || ! isset($this->value)) {
-        return '';
-    }
+    {
+        if (! isset($this->name) || ! isset($this->value)) {
+            return '';
+        }
 
         /**
          * Filters the header-encoded cookie value.
@@ -252,7 +253,8 @@ class WP_Http_Cookie
      * @return string
      */
     public function getFullHeader() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-    {return 'Cookie: '.$this->getHeaderValue();
+    {
+        return 'Cookie: '.$this->getHeaderValue();
     }
 
     /**

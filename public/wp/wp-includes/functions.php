@@ -1621,7 +1621,7 @@ function get_num_queries()
  */
 function bool_from_yn($yn)
 {
-    return  strtolower($yn) === 'y';
+    return strtolower($yn) === 'y';
 }
 
 /**
@@ -2190,7 +2190,7 @@ function path_is_absolute($path)
     }
 
     // A path starting with / or \ is absolute; anything else is relative.
-    return  $path[0] === '/' || $path[0] === '\\';
+    return $path[0] === '/' || $path[0] === '\\';
 }
 
 /**
@@ -6202,7 +6202,7 @@ function is_lighttpd_before_150()
     $server_parts = explode('/', isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '');
     $server_parts[1] = isset($server_parts[1]) ? $server_parts[1] : '';
 
-    return  $server_parts[0] === 'lighttpd' && version_compare($server_parts[1], '1.5.0') === -1;
+    return $server_parts[0] === 'lighttpd' && version_compare($server_parts[1], '1.5.0') === -1;
 }
 
 /**
@@ -6532,7 +6532,7 @@ function is_main_network($network_id = null)
 
     $network_id = (int) $network_id;
 
-    return  get_main_network_id() === $network_id;
+    return get_main_network_id() === $network_id;
 }
 
 /**
@@ -7030,7 +7030,8 @@ function get_file_data($file, $default_headers, $context = '')
  * @return true True.
  */
 function __return_true() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{return true;
+{
+    return true;
 }
 
 /**
@@ -7044,7 +7045,8 @@ function __return_true() // phpcs:ignore WordPress.NamingConventions.ValidFuncti
  * @return false False.
  */
 function __return_false() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{return false;
+{
+    return false;
 }
 
 /**
@@ -7057,7 +7059,8 @@ function __return_false() // phpcs:ignore WordPress.NamingConventions.ValidFunct
  * @return int 0.
  */
 function __return_zero() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{return 0;
+{
+    return 0;
 }
 
 /**
@@ -7070,7 +7073,8 @@ function __return_zero() // phpcs:ignore WordPress.NamingConventions.ValidFuncti
  * @return array Empty array.
  */
 function __return_empty_array() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{return [];
+{
+    return [];
 }
 
 /**
@@ -7083,7 +7087,8 @@ function __return_empty_array() // phpcs:ignore WordPress.NamingConventions.Vali
  * @return null Null value.
  */
 function __return_null() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{return null;
+{
+    return null;
 }
 
 /**
@@ -7097,7 +7102,8 @@ function __return_null() // phpcs:ignore WordPress.NamingConventions.ValidFuncti
  * @return string Empty string.
  */
 function __return_empty_string() // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{return '';
+{
+    return '';
 }
 
 /**

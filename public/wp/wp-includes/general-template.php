@@ -2240,7 +2240,7 @@ function calendar_week_mod($num)
 {
     $base = 7;
 
-    return  $num - $base * floor($num / $base);
+    return $num - $base * floor($num / $base);
 }
 
 /**
@@ -5233,11 +5233,12 @@ if (PHP_VERSION_ID < 80100) {
  * @return string HTML attribute or empty string.
  */
 function __checked_selected_helper($helper, $current, $display, $type) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{if ((string) $helper === (string) $current) {
-    $result = " $type='$type'";
-} else {
-    $result = '';
-}
+{
+    if ((string) $helper === (string) $current) {
+        $result = " $type='$type'";
+    } else {
+        $result = '';
+    }
 
     if ($display) {
         echo $result;

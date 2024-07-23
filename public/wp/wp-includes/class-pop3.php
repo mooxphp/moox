@@ -671,7 +671,7 @@ class POP3
         if (empty($cmd)) {
             return false;
         } else {
-            return  stripos($cmd, '+OK') !== false;
+            return stripos($cmd, '+OK') !== false;
         }
     }
 

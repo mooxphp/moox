@@ -56,7 +56,8 @@ if (! function_exists('mb_substr')) {
      * @return string Extracted substring.
      */
     function mb_substr($string, $start, $length = null, $encoding = null) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.stringFound
-    {return _mb_substr($string, $start, $length, $encoding);
+    {
+        return _mb_substr($string, $start, $length, $encoding);
     }
 }
 
@@ -151,7 +152,8 @@ if (! function_exists('mb_strlen')) {
      * @return int String length of `$string`.
      */
     function mb_strlen($string, $encoding = null) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.stringFound
-    {return _mb_strlen($string, $encoding);
+    {
+        return _mb_strlen($string, $encoding);
     }
 }
 
@@ -361,7 +363,7 @@ if (! function_exists('is_countable')) {
      */
     function is_countable($value)
     {
-        return  is_array($value)
+        return is_array($value)
             || $value instanceof Countable
             || $value instanceof SimpleXMLElement
             || $value instanceof ResourceBundle;
@@ -382,7 +384,7 @@ if (! function_exists('is_iterable')) {
      */
     function is_iterable($value)
     {
-        return  is_array($value) || $value instanceof Traversable;
+        return is_array($value) || $value instanceof Traversable;
     }
 }
 
@@ -400,9 +402,10 @@ if (! function_exists('array_key_first')) {
      *                         is not empty; `null` otherwise.
      */
     function array_key_first(array $array) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.arrayFound
-    {foreach ($array as $key => $value) {
-        return $key;
-    }
+    {
+        foreach ($array as $key => $value) {
+            return $key;
+        }
     }
 }
 
@@ -420,9 +423,10 @@ if (! function_exists('array_key_last')) {
      *.                        is not empty; `null` otherwise.
      */
     function array_key_last(array $array) // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.arrayFound
-    {if (empty($array)) {
-        return null;
-    }
+    {
+        if (empty($array)) {
+            return null;
+        }
 
         end($array);
 

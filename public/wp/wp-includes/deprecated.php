@@ -1979,7 +1979,8 @@ function _nc($single, $plural, $number, $domain = 'default')
  * @see _n()
  */
 function __ngettext(...$args) // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{_deprecated_function(__FUNCTION__, '2.8.0', '_n()');
+{
+    _deprecated_function(__FUNCTION__, '2.8.0', '_n()');
 
     return _n(...$args);
 }
@@ -1992,7 +1993,8 @@ function __ngettext(...$args) // phpcs:ignore PHPCompatibility.FunctionNameRestr
  * @see _n_noop()
  */
 function __ngettext_noop(...$args) // phpcs:ignore PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{_deprecated_function(__FUNCTION__, '2.8.0', '_n_noop()');
+{
+    _deprecated_function(__FUNCTION__, '2.8.0', '_n_noop()');
 
     return _n_noop(...$args);
 

@@ -18,7 +18,7 @@ function is_subdomain_install()
         return SUBDOMAIN_INSTALL;
     }
 
-    return  defined('VHOST') && 'yes' === VHOST;
+    return defined('VHOST') && 'yes' === VHOST;
 }
 
 /**

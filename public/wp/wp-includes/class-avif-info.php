@@ -80,7 +80,7 @@ function read($handle, $num_bytes)
 // Skips 'num_bytes' from the 'stream'. 'num_bytes' can be zero.
 function skip($handle, $num_bytes)
 {
-    return  fseek($handle, $num_bytes, SEEK_CUR) == 0;
+    return fseek($handle, $num_bytes, SEEK_CUR) == 0;
 }
 
 //------------------------------------------------------------------------------

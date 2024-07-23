@@ -251,7 +251,7 @@ class WP_Site_Health
             return;
         }
 
-        echo  has_filter('wp_version_check', 'wp_version_check') ? 'yes' : 'no';
+        echo has_filter('wp_version_check', 'wp_version_check') ? 'yes' : 'no';
 
         exit();
     }
@@ -3407,7 +3407,7 @@ class WP_Site_Health
                 return strtolower($header_value) === 'true';
             },
             'x-cache-disabled' => static function ($header_value) {
-                return  strtolower($header_value) !== 'on';
+                return strtolower($header_value) !== 'on';
             },
             'x-srcache-store-status' => $cache_hit_callback,
             'x-srcache-fetch-status' => $cache_hit_callback,

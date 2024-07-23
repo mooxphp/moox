@@ -359,7 +359,7 @@ class WP_Widget
     {
         global $wp_customize;
 
-        return  isset($wp_customize) && $wp_customize->is_preview();
+        return isset($wp_customize) && $wp_customize->is_preview();
     }
 
     /**

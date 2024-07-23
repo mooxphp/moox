@@ -2371,7 +2371,7 @@ function users_can_register_signup_filter()
 {
     $registration = get_site_option('registration');
 
-    return  $registration === 'all' || $registration === 'user';
+    return $registration === 'all' || $registration === 'user';
 }
 
 /**
@@ -2441,9 +2441,10 @@ function force_ssl_content($force = '')
  * @return string URL with https as the scheme.
  */
 function filter_SSL($url)  // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{if (! is_string($url)) {
-    return get_bloginfo('url'); // Return home site URL with proper scheme.
-}
+{
+    if (! is_string($url)) {
+        return get_bloginfo('url'); // Return home site URL with proper scheme.
+    }
 
     if (force_ssl_content() && is_ssl()) {
         $url = set_url_scheme($url, 'https');
