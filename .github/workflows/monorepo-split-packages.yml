@@ -28,6 +28,7 @@ jobs:
           - passkey
           - notifications
           - security
+          - press
 
     steps:
       - uses: actions/checkout@v4
