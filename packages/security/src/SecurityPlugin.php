@@ -5,7 +5,6 @@ namespace Moox\Security;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Security\Resources\ResetPasswordResource;
 use Moox\Security\Resources\SecurityResource;
 
 class SecurityPlugin implements Plugin

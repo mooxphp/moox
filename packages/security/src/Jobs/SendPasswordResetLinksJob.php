@@ -7,9 +7,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Moox\Jobs\Traits\JobProgress;
-use Moox\Press\Models\WpUser;
 
 class SendPasswordResetLinksJob implements ShouldQueue
 {
@@ -34,7 +32,7 @@ class SendPasswordResetLinksJob implements ShouldQueue
     public function handle()
     {
         $usermodel = config('auth.providers.users.model');
-        $users= $usermodel::all();
+        $users = $usermodel::all();
 
         foreach ($users as $user) {
             $token = app('auth.password.broker')->createToken($user);
@@ -45,6 +43,4 @@ class SendPasswordResetLinksJob implements ShouldQueue
 
         }
     }
-
-
 }

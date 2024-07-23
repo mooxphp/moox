@@ -8,7 +8,6 @@ use Moox\Security\Models\Security;
 use Moox\Security\Resources\ResetPasswordResource;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 
-
 class ListPage extends ListRecords
 {
     public static string $resource = ResetPasswordResource::class;
@@ -30,13 +29,13 @@ class ListPage extends ListRecords
         return __('security::translations.title');
     }
 
-//    protected function getHeaderActions(): array
-//    {
-//        return [
-//            CreateAction::make()
-//                ->using(function (array $data, string $model): Security {
-//                    return $model::create($data);
-//                }),
-//        ];
-//    }
+    //    protected function getHeaderActions(): array
+    //    {
+    //        return [
+    //            CreateAction::make()
+    //                ->using(function (array $data, string $model): Security {
+    //                    return $model::create($data);
+    //                }),
+    //        ];
+    //    }
 }
