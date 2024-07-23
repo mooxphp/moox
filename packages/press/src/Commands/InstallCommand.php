@@ -159,7 +159,7 @@ class InstallCommand extends Command
                 File::put($providerPath, $newContent);
             }
         } else {
-            alert('AdminPanelProvider not found. You need to add the plugins manually.');
+            alert($providerPath.' not found. You need to add the plugins manually.');
         }
     }
 
