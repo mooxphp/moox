@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Livewire\Attributes\Locked;
-use Moox\Press\Helper\PasswordHash;
+use Moox\Security\Helper\PasswordHash;
 
 /**
  * @property Form $form
