@@ -2,27 +2,26 @@
 
 namespace Moox\Security\Services;
 
-use Filament\Forms\Form;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
-use Moox\Press\Models\WpUser;
-use Filament\Facades\Filament;
-use Filament\Pages\SimplePage;
 use Filament\Actions\ActionGroup;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\HtmlString;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Blade;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Validation\ValidationException;
-use DanHarrin\LivewireRateLimiting\WithRateLimiting;
-use Filament\Pages\Concerns\InteractsWithFormActions;
+use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Notifications\Notification;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use Filament\Pages\SimplePage;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
+use Illuminate\Validation\ValidationException;
 
 /**
  * @property Form $form
@@ -89,6 +88,7 @@ class Login extends SimplePage
                 ]) : null)
                 ->danger()
                 ->send();
+
             return null;
         }
         $guard = Filament::auth();
@@ -100,23 +100,23 @@ class Login extends SimplePage
         $userModelUsername = config("press.auth.$guard->name.username");
         $userModelEmail = config("press.auth.$guard->name.email");
         $query = $userModel::query();
-        if (!empty($userModelUsername) && $credentialKey === 'name') {
+        if (! empty($userModelUsername) && $credentialKey === 'name') {
             $query->orWhere($userModelUsername, $credentials[$credentialKey]);
         }
-        if (!empty($userModelEmail && $credentialKey === 'email')) {
+        if (! empty($userModelEmail && $credentialKey === 'email')) {
             $query->orWhere($userModelEmail, $credentials[$credentialKey]);
         }
         $user = $query->first();
-        if(config('security.wpModel') && $user instanceof (config('security.wpModel'))){
+        if (config('security.wpModel') && $user instanceof (config('security.wpModel'))) {
             $wpAuthService = new \Moox\Security\Services\WordPressAuthService();
 
             if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
-        }else{
+        } else {
             if (! Auth::guard($guard->name)->attempt($credentials, $data['remember'] ?? false)) {
-                 $this->throwFailureValidationException();
-             }
+                $this->throwFailureValidationException();
+            }
         }
         Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
         session()->regenerate();
@@ -125,6 +125,7 @@ class Login extends SimplePage
             $payload = base64_encode($user->ID);
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
+
             return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
         } else {
             return app(LoginResponse::class);
@@ -133,7 +134,7 @@ class Login extends SimplePage
 
     protected function getCredentialsFromFormData(array $data): array
     {
-        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL ) ? 'email' : 'name';
+        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
         return [
             $login_type => $data['login'],
