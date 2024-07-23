@@ -37,8 +37,8 @@ class InstallCommand extends Command
         $this->art();
         $this->welcome();
         $this->publishConfiguration();
-//        $this->publishMigrations();
-//        $this->runMigrations();
+        //        $this->publishMigrations();
+        //        $this->runMigrations();
         $this->registerPlugins();
         $this->finish();
     }
@@ -82,26 +82,26 @@ class InstallCommand extends Command
         }
     }
 
-//    public function publishMigrations(): void
-//    {
-//        if (confirm('Do you wish to publish the migrations?', true)) {
-//            if (Schema::hasTable('securities')) {
-//                warning('The securities table already exists. The migrations will not be published.');
-//
-//                return;
-//            }
-//            info('Publishing Securitys Migrations...');
-//            $this->callSilent('vendor:publish', ['--tag' => 'security-migrations']);
-//        }
-//    }
-//
-//    public function runMigrations(): void
-//    {
-//        if (confirm('Do you wish to run the migrations?', true)) {
-//            info('Running Security Migrations...');
-//            $this->callSilent('migrate');
-//        }
-//    }
+    //    public function publishMigrations(): void
+    //    {
+    //        if (confirm('Do you wish to publish the migrations?', true)) {
+    //            if (Schema::hasTable('securities')) {
+    //                warning('The securities table already exists. The migrations will not be published.');
+    //
+    //                return;
+    //            }
+    //            info('Publishing Securitys Migrations...');
+    //            $this->callSilent('vendor:publish', ['--tag' => 'security-migrations']);
+    //        }
+    //    }
+    //
+    //    public function runMigrations(): void
+    //    {
+    //        if (confirm('Do you wish to run the migrations?', true)) {
+    //            info('Running Security Migrations...');
+    //            $this->callSilent('migrate');
+    //        }
+    //    }
 
     public function registerPlugins(): void
     {

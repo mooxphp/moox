@@ -51,7 +51,6 @@ class Login extends SimplePage
         $this->form->fill();
     }
 
-
     public function form(Form $form): Form
     {
         return $form

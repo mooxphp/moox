@@ -18,7 +18,6 @@ use Filament\Pages\SimplePage;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 
 /**
@@ -83,7 +82,6 @@ class RequestPasswordReset extends SimplePage
                 $notification->url = Filament::getResetPasswordUrl($token, $user);
 
                 $user->notify($notification);
-
 
             },
         );

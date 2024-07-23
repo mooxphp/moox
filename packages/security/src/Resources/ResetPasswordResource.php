@@ -12,7 +12,6 @@ use Moox\Security\Models\ResetPassword;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 
-
 class ResetPasswordResource extends Resource
 {
     protected static ?string $modelLabel = 'Reset Tokens';
@@ -25,7 +24,7 @@ class ResetPasswordResource extends Resource
     {
         return $form
             ->schema([
-               //
+                //
             ]);
     }
 
@@ -69,13 +68,4 @@ class ResetPasswordResource extends Resource
             ResetPasswordWidgets::class,
         ];
     }
-
-
-
-
-
-
-
-
-
 }

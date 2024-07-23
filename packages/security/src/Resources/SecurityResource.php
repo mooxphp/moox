@@ -8,11 +8,9 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Security\Models\ResetPassword;
 use Moox\Security\Models\Security;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
-
 
 class SecurityResource extends Resource
 {
@@ -39,8 +37,8 @@ class SecurityResource extends Resource
                 TextColumn::make('created_at')
                     ->since()
                     ->sortable(),
-//                TextColumn::make('user_type')
-//                    ->sortable(),
+                //                TextColumn::make('user_type')
+                //                    ->sortable(),
             ])
             ->actions([
                 EditAction::make(),
@@ -70,13 +68,4 @@ class SecurityResource extends Resource
             ResetPasswordWidgets::class,
         ];
     }
-
-
-
-
-
-
-
-
-
 }

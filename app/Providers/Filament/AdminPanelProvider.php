@@ -25,9 +25,7 @@ use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Page\PagePlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\SecurityPlugin;
-use Moox\Security\Services\Login;
 use Moox\Security\Services\RequestPasswordReset;
-use Moox\Security\Services\ResetPassword;
 use Moox\Sync\SyncPlugin;
 use Moox\User\UserPlugin;
 
@@ -95,7 +93,7 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Notification\NotificationPlugin::make(),
 
                 SecurityPlugin::make(),
-                ResetPasswordPlugin::make()
+                ResetPasswordPlugin::make(),
 
             ]);
     }
