@@ -91,6 +91,7 @@ class Login extends SimplePage
 
             return null;
         }
+
         $guard = Filament::auth();
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
@@ -118,6 +119,7 @@ class Login extends SimplePage
                 $this->throwFailureValidationException();
             }
         }
+
         Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
         session()->regenerate();
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
