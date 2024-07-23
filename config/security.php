@@ -26,6 +26,6 @@ return [
     ],
 
     'password_reset_links' => [
-    'model' => App\Models\User::class,
+        'model' => App\Models\User::class,
     ],
 ];
