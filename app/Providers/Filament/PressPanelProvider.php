@@ -67,6 +67,15 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Press\WpUserPlugin::make(),
                 \Moox\Press\WpOptionPlugin::make(),
 
+            
+                \Moox\Expiry\ExpiryPlugin::make(),
+
+            
+                \Moox\Training\TrainingPlugin::make(),
+                \Moox\Training\TrainingInvitationPlugin::make(),
+                \Moox\Training\TrainingDatePlugin::make(),
+                \Moox\Training\TrainingTypePlugin::make(),
+
             ]);
     }
 }
