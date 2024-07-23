@@ -2,8 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use Awcodes\FilamentGravatar\GravatarPlugin;
-use Awcodes\FilamentGravatar\GravatarProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -25,6 +23,9 @@ use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Page\PagePlugin;
+use Moox\Security\ResetPasswordPlugin;
+use Moox\Security\SecurityPlugin;
+use Moox\Security\Services\RequestPasswordReset;
 use Moox\Sync\SyncPlugin;
 use Moox\User\UserPlugin;
 
@@ -37,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('moox')
             ->path('moox')
+            ->passwordReset(RequestPasswordReset::class)
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -89,6 +91,9 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Passkey\PasskeyPlugin::make(),
 
                 \Moox\Notification\NotificationPlugin::make(),
+
+                SecurityPlugin::make(),
+                ResetPasswordPlugin::make(),
 
             ]);
     }

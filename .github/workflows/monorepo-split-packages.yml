@@ -27,6 +27,7 @@ jobs:
           - audit
           - passkey
           - notifications
+          - security
 
     steps:
       - uses: actions/checkout@v4
