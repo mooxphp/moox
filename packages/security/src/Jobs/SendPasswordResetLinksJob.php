@@ -31,7 +31,7 @@ class SendPasswordResetLinksJob implements ShouldQueue
 
     public function handle()
     {
-        $usermodel = config('auth.providers.users.model');
+        $usermodel = config('security.password_reset_links.model');
         $users = $usermodel::all();
 
         foreach ($users as $user) {

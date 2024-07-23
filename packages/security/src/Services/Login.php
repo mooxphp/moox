@@ -2,26 +2,27 @@
 
 namespace Moox\Security\Services;
 
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Forms\Form;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
+use Moox\Press\Models\WpUser;
 use Filament\Facades\Filament;
+use Filament\Pages\SimplePage;
+use Filament\Actions\ActionGroup;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
-use Filament\Pages\Concerns\InteractsWithFormActions;
-use Filament\Pages\SimplePage;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
+use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 
 /**
  * @property Form $form
@@ -88,46 +89,54 @@ class Login extends SimplePage
                 ]) : null)
                 ->danger()
                 ->send();
-
             return null;
         }
-
+        $guard = Filament::auth();
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
-
-        $userModel = config('auth.providers.wpusers.model');
-        $user = $userModel::where('user_email', $credentials['login'])
-            ->orWhere('user_login', $credentials['login'])
-            ->first();
-
-        $wpAuthService = new WordPressAuthService();
-
-        if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
-            $this->throwFailureValidationException();
+        $credentialKey = array_key_first($credentials);
+        $guardProvider = config("auth.guards.$guard->name.provider");
+        $userModel = config("auth.providers.$guardProvider.model");
+        $userModelUsername = config("press.auth.$guard->name.username");
+        $userModelEmail = config("press.auth.$guard->name.email");
+        $query = $userModel::query();
+        if (!empty($userModelUsername) && $credentialKey === 'name') {
+            $query->orWhere($userModelUsername, $credentials[$credentialKey]);
         }
+        if (!empty($userModelEmail && $credentialKey === 'email')) {
+            $query->orWhere($userModelEmail, $credentials[$credentialKey]);
+        }
+        $user = $query->first();
+        if(config('security.wpModel') && $user instanceof (config('security.wpModel'))){
+            $wpAuthService = new \Moox\Security\Services\WordPressAuthService();
 
-        Auth::login($user, $data['remember'] ?? false);
-
+            if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
+                $this->throwFailureValidationException();
+            }
+        }else{
+            if (! Auth::guard($guard->name)->attempt($credentials, $data['remember'] ?? false)) {
+                 $this->throwFailureValidationException();
+             }
+        }
+        Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
         session()->regenerate();
-
-        if (config('press.auth_wordpress') === true) {
+        if (config('security.wpModel') & $user instanceof (config('security.wpModel'))
+             && config('press.auth_wordpress') === true) {
             $payload = base64_encode($user->ID);
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
-
             return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
-
         } else {
             return app(LoginResponse::class);
         }
-
     }
 
     protected function getCredentialsFromFormData(array $data): array
     {
+        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL ) ? 'email' : 'name';
 
         return [
-            'login' => $data['login'],
+            $login_type => $data['login'],
             'password' => $data['password'],
         ];
     }
