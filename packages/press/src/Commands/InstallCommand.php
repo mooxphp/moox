@@ -41,11 +41,11 @@ class InstallCommand extends Command
         //$this->runMigrations();
         $providerPath = app_path('Providers\Filament');
         $panelsToregister = $this->getPanelProviderPath();
-        if(count($panelsToregister)>0 && $panelsToregister != null){
+        if (count($panelsToregister) > 0 && $panelsToregister != null) {
             foreach ($panelsToregister as $panelprovider) {
                 $this->registerPlugins($providerPath.'/'.$panelprovider);
             }
-        }else{
+        } else {
             $this->registerPlugins($panelsToregister[0]);
         }
 
@@ -173,9 +173,9 @@ class InstallCommand extends Command
                 $providerNames[] = $provider->getBasename();
             }
             $providerPath = multiselect(
-                label:'Which Panel should it be registered',
-                options:[...$providerNames],
-                default:[$providerNames[0]],
+                label: 'Which Panel should it be registered',
+                options: [...$providerNames],
+                default: [$providerNames[0]],
             );
 
         }

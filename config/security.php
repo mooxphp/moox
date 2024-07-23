@@ -17,12 +17,12 @@ return [
 
     // Using Laravel Password Validation
     'password' => [
-    //     'rules' => Password::min(20)
-    //         ->max(64)
-    //         ->mixedCase()
-    //         ->numbers()
-    //         ->symbols()
-    //         ->uncompromised(),
+        //     'rules' => Password::min(20)
+        //         ->max(64)
+        //         ->mixedCase()
+        //         ->numbers()
+        //         ->symbols()
+        //         ->uncompromised(),
     ],
 
     'password_reset_links' => [
