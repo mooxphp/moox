@@ -120,7 +120,7 @@ class Login extends SimplePage
         }
         Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
         session()->regenerate();
-        if (config('security.wpModel') & $user instanceof (config('security.wpModel'))
+        if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
              && config('press.auth_wordpress') === true) {
             $payload = base64_encode($user->ID);
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
