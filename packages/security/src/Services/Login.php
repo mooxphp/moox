@@ -102,11 +102,11 @@ class Login extends SimplePage
         $userModelEmail = config("security.auth.$guard->name.email");
         $query = $userModel::query();
 
-        if (!empty($userModelUsername) && $credentialKey === 'name') {
+        if (! empty($userModelUsername) && $credentialKey === 'name') {
             $query->where($userModelUsername, $credentials[$credentialKey]);
         }
 
-        if (!empty($userModelEmail) && $credentialKey === 'email') {
+        if (! empty($userModelEmail) && $credentialKey === 'email') {
 
             if ($query->getQuery()->wheres) { // Check if there's already a condition
                 $query->orWhere($userModelEmail, $credentials[$credentialKey]);
