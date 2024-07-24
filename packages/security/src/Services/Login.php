@@ -98,30 +98,43 @@ class Login extends SimplePage
         $credentialKey = array_key_first($credentials);
         $guardProvider = config("auth.guards.$guard->name.provider");
         $userModel = config("auth.providers.$guardProvider.model");
-        $userModelUsername = config("press.auth.$guard->name.username");
-        $userModelEmail = config("press.auth.$guard->name.email");
+        $userModelUsername = config("security.auth.$guard->name.username");
+        $userModelEmail = config("security.auth.$guard->name.email");
         $query = $userModel::query();
-        if (! empty($userModelUsername) && $credentialKey === 'name') {
-            $query->orWhere($userModelUsername, $credentials[$credentialKey]);
+
+        if (!empty($userModelUsername) && $credentialKey === 'name') {
+            $query->where($userModelUsername, $credentials[$credentialKey]);
         }
-        if (! empty($userModelEmail && $credentialKey === 'email')) {
-            $query->orWhere($userModelEmail, $credentials[$credentialKey]);
+
+        if (!empty($userModelEmail) && $credentialKey === 'email') {
+
+            if ($query->getQuery()->wheres) { // Check if there's already a condition
+                $query->orWhere($userModelEmail, $credentials[$credentialKey]);
+            } else {
+                $query->where($userModelEmail, $credentials[$credentialKey]);
+            }
         }
+
         $user = $query->first();
+
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))) {
             $wpAuthService = new \Moox\Security\Services\WordPressAuthService;
 
             if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
+
         } else {
+
             if (! Auth::guard($guard->name)->attempt($credentials, $data['remember'] ?? false)) {
                 $this->throwFailureValidationException();
             }
         }
 
         Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
+
         session()->regenerate();
+
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
              && config('press.auth_wordpress') === true) {
             $payload = base64_encode($user->ID);
