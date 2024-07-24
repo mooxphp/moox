@@ -74,3 +74,4 @@ Thumbs.db
 build/phpstan
 
 auth.json
+LocalValetDriver.php
