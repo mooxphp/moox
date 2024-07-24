@@ -17,7 +17,7 @@ require_once ABSPATH.WPINC.'/class-wp-object-cache.php';
  */
 function wp_cache_init()
 {
-    $GLOBALS['wp_object_cache'] = new WP_Object_Cache();
+    $GLOBALS['wp_object_cache'] = new WP_Object_Cache;
 }
 
 /**

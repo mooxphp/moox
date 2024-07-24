@@ -298,7 +298,7 @@ class WP_Site_Query
         $this->parse_query();
 
         // Parse meta query.
-        $this->meta_query = new WP_Meta_Query();
+        $this->meta_query = new WP_Meta_Query;
         $this->meta_query->parse_query_vars($this->query_vars);
 
         /**

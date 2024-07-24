@@ -528,7 +528,7 @@ function _build_block_template_result_from_file($template_file, $template_type)
     $default_template_types = get_default_block_template_types();
     $theme = get_stylesheet();
 
-    $template = new WP_Block_Template();
+    $template = new WP_Block_Template;
     $template->id = $theme.'//'.$template_file['slug'];
     $template->theme = $theme;
     $template->content = file_get_contents($template_file['path']);
@@ -668,7 +668,7 @@ function _wp_build_title_and_description_for_taxonomy_block_template($taxonomy, 
         'update_term_meta_cache' => false,
     ];
 
-    $term_query = new WP_Term_Query();
+    $term_query = new WP_Term_Query;
 
     $args = [
         'number' => 1,
@@ -704,7 +704,7 @@ function _wp_build_title_and_description_for_taxonomy_block_template($taxonomy, 
         $term_title
     );
 
-    $term_query = new WP_Term_Query();
+    $term_query = new WP_Term_Query;
 
     $args = [
         'number' => 2,
@@ -752,7 +752,7 @@ function _build_block_template_object_from_post_object($post, $terms = [], $meta
     $template_file = _get_block_template_file($post->post_type, $post->post_name);
     $has_theme_file = get_stylesheet() === $theme && $template_file !== null;
 
-    $template = new WP_Block_Template();
+    $template = new WP_Block_Template;
     $template->wp_id = $post->ID;
     $template->id = $theme.'//'.$post->post_name;
     $template->theme = $theme;
@@ -1309,7 +1309,7 @@ function wp_generate_block_templates_export_file()
     $theme_name = basename(get_stylesheet());
     $filename = get_temp_dir().$theme_name.$obscura.'.zip';
 
-    $zip = new ZipArchive();
+    $zip = new ZipArchive;
     if ($zip->open($filename, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
         return new WP_Error('unable_to_create_zip', __('Unable to open export file (archive) for writing.'));
     }

@@ -402,7 +402,7 @@ add_action('after_setup_theme', [wp_interactivity(), 'add_hooks']);
  *
  * @global WP_Embed $wp_embed WordPress Embed object.
  */
-$GLOBALS['wp_embed'] = new WP_Embed();
+$GLOBALS['wp_embed'] = new WP_Embed;
 
 /**
  * WordPress Textdomain Registry object.
@@ -413,7 +413,7 @@ $GLOBALS['wp_embed'] = new WP_Embed();
  *
  * @global WP_Textdomain_Registry $wp_textdomain_registry WordPress Textdomain Registry.
  */
-$GLOBALS['wp_textdomain_registry'] = new WP_Textdomain_Registry();
+$GLOBALS['wp_textdomain_registry'] = new WP_Textdomain_Registry;
 $GLOBALS['wp_textdomain_registry']->init();
 
 // Load multisite-specific files.
@@ -567,7 +567,7 @@ do_action('sanitize_comment_cookies');
  *
  * @global WP_Query $wp_the_query WordPress Query object.
  */
-$GLOBALS['wp_the_query'] = new WP_Query();
+$GLOBALS['wp_the_query'] = new WP_Query;
 
 /**
  * Holds the reference to {@see $wp_the_query}.
@@ -586,7 +586,7 @@ $GLOBALS['wp_query'] = $GLOBALS['wp_the_query'];
  *
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
  */
-$GLOBALS['wp_rewrite'] = new WP_Rewrite();
+$GLOBALS['wp_rewrite'] = new WP_Rewrite;
 
 /**
  * WordPress Object
@@ -595,7 +595,7 @@ $GLOBALS['wp_rewrite'] = new WP_Rewrite();
  *
  * @global WP $wp Current WordPress environment instance.
  */
-$GLOBALS['wp'] = new WP();
+$GLOBALS['wp'] = new WP;
 
 /**
  * WordPress Widget Factory Object
@@ -604,7 +604,7 @@ $GLOBALS['wp'] = new WP();
  *
  * @global WP_Widget_Factory $wp_widget_factory
  */
-$GLOBALS['wp_widget_factory'] = new WP_Widget_Factory();
+$GLOBALS['wp_widget_factory'] = new WP_Widget_Factory;
 
 /**
  * WordPress User Roles
@@ -613,7 +613,7 @@ $GLOBALS['wp_widget_factory'] = new WP_Widget_Factory();
  *
  * @global WP_Roles $wp_roles WordPress role management object.
  */
-$GLOBALS['wp_roles'] = new WP_Roles();
+$GLOBALS['wp_roles'] = new WP_Roles;
 
 /**
  * Fires before the theme is loaded.
@@ -643,7 +643,7 @@ unset($locale_file);
  *
  * @global WP_Locale $wp_locale WordPress date and time locale object.
  */
-$GLOBALS['wp_locale'] = new WP_Locale();
+$GLOBALS['wp_locale'] = new WP_Locale;
 
 /**
  * WordPress Locale Switcher object for switching locales.
@@ -652,7 +652,7 @@ $GLOBALS['wp_locale'] = new WP_Locale();
  *
  * @global WP_Locale_Switcher $wp_locale_switcher WordPress locale switcher object.
  */
-$GLOBALS['wp_locale_switcher'] = new WP_Locale_Switcher();
+$GLOBALS['wp_locale_switcher'] = new WP_Locale_Switcher;
 $GLOBALS['wp_locale_switcher']->init();
 
 // Load the functions for the active theme, for both parent and child theme if applicable.

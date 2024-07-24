@@ -1436,7 +1436,7 @@ function update_core($from, $to)
                      */
                     if (is_wp_error($_result)) {
                         if (! is_wp_error($result)) {
-                            $result = new WP_Error();
+                            $result = new WP_Error;
                         }
 
                         $result->add(

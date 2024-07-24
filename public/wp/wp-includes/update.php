@@ -44,7 +44,7 @@ function wp_version_check($extra_stats = [], $force_check = false)
     }
 
     if (! is_object($current)) {
-        $current = new stdClass();
+        $current = new stdClass;
         $current->updates = [];
         $current->version_checked = $wp_version;
     }
@@ -262,7 +262,7 @@ function wp_version_check($extra_stats = [], $force_check = false)
         );
     }
 
-    $updates = new stdClass();
+    $updates = new stdClass;
     $updates->updates = $offers;
     $updates->last_checked = time();
     $updates->version_checked = $wp_version;
@@ -330,10 +330,10 @@ function wp_update_plugins($extra_stats = [])
     $current = get_site_transient('update_plugins');
 
     if (! is_object($current)) {
-        $current = new stdClass();
+        $current = new stdClass;
     }
 
-    $updates = new stdClass();
+    $updates = new stdClass;
     $updates->last_checked = time();
     $updates->response = [];
     $updates->translations = [];
@@ -599,7 +599,7 @@ function wp_update_themes($extra_stats = [])
     $last_update = get_site_transient('update_themes');
 
     if (! is_object($last_update)) {
-        $last_update = new stdClass();
+        $last_update = new stdClass;
     }
 
     $themes = [];
@@ -738,7 +738,7 @@ function wp_update_themes($extra_stats = [])
         return;
     }
 
-    $new_update = new stdClass();
+    $new_update = new stdClass;
     $new_update->last_checked = time();
     $new_update->checked = $checked;
 
@@ -851,7 +851,7 @@ function wp_maybe_auto_update()
     require_once ABSPATH.'wp-admin/includes/admin.php';
     require_once ABSPATH.'wp-admin/includes/class-wp-upgrader.php';
 
-    $upgrader = new WP_Automatic_Updater();
+    $upgrader = new WP_Automatic_Updater;
     $upgrader->run();
 }
 

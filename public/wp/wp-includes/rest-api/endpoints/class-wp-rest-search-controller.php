@@ -201,7 +201,7 @@ class WP_REST_Search_Controller extends WP_REST_Controller
 
         $handler = $this->get_search_handler($request);
         if (is_wp_error($handler)) {
-            return new WP_REST_Response();
+            return new WP_REST_Response;
         }
 
         $fields = $this->get_fields_for_response($request);

@@ -131,7 +131,7 @@ function _wp_oembed_get_object()
     static $wp_oembed = null;
 
     if (is_null($wp_oembed)) {
-        $wp_oembed = new WP_oEmbed();
+        $wp_oembed = new WP_oEmbed;
     }
 
     return $wp_oembed;
@@ -332,7 +332,7 @@ function wp_embed_handler_video($matches, $attr, $url, $rawattr)
  */
 function wp_oembed_register_route()
 {
-    $controller = new WP_oEmbed_Controller();
+    $controller = new WP_oEmbed_Controller;
     $controller->register_routes();
 }
 

@@ -980,7 +980,7 @@ function user_can($user, $capability, ...$args)
     if (empty($user)) {
         // User is logged out, create anonymous user object.
         $user = new WP_User(0);
-        $user->init(new stdClass());
+        $user->init(new stdClass);
     }
 
     return $user->has_cap($capability, ...$args);
@@ -1000,7 +1000,7 @@ function wp_roles()
     global $wp_roles;
 
     if (! isset($wp_roles)) {
-        $wp_roles = new WP_Roles();
+        $wp_roles = new WP_Roles;
     }
 
     return $wp_roles;

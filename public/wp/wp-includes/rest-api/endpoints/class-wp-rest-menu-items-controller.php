@@ -298,7 +298,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
             return new WP_Error('rest_cannot_delete', __('The post cannot be deleted.'), ['status' => 500]);
         }
 
-        $response = new WP_REST_Response();
+        $response = new WP_REST_Response;
         $response->set_data(
             [
                 'deleted' => true,
@@ -415,7 +415,7 @@ class WP_REST_Menu_Items_Controller extends WP_REST_Posts_Controller
             }
         }
 
-        $error = new WP_Error();
+        $error = new WP_Error;
 
         // Check if object id exists before saving.
         if (! $prepared_nav_item['menu-item-object']) {

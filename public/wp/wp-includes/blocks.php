@@ -1777,7 +1777,7 @@ function parse_blocks($content)
      */
     $parser_class = apply_filters('block_parser_class', 'WP_Block_Parser');
 
-    $parser = new $parser_class();
+    $parser = new $parser_class;
 
     return $parser->parse($content);
 }

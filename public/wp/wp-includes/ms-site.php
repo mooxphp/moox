@@ -223,7 +223,7 @@ function wp_delete_site($site_id)
         return new WP_Error('site_not_exist', __('Site does not exist.'));
     }
 
-    $errors = new WP_Error();
+    $errors = new WP_Error;
 
     /**
      * Fires before a site should be deleted from the database.
@@ -451,7 +451,7 @@ function update_sitemeta_cache($site_ids)
  */
 function get_sites($args = [])
 {
-    $query = new WP_Site_Query();
+    $query = new WP_Site_Query;
 
     return $query->query($args);
 }
@@ -493,7 +493,7 @@ function wp_prepare_site_data($data, $defaults, $old_site = null)
     $allowed_data_fields = ['domain', 'path', 'network_id', 'registered', 'last_updated', 'public', 'archived', 'mature', 'spam', 'deleted', 'lang_id'];
     $data = array_intersect_key(wp_parse_args($data, $defaults), array_flip($allowed_data_fields));
 
-    $errors = new WP_Error();
+    $errors = new WP_Error;
 
     /**
      * Fires when data should be validated for a site prior to inserting or updating in the database.
@@ -758,7 +758,7 @@ function wp_initialize_site($site_id, array $args = [])
 
     // Populate the site's roles.
     populate_roles();
-    $wp_roles = new WP_Roles();
+    $wp_roles = new WP_Roles;
 
     // Populate metadata for the site.
     populate_site_meta($site->id, $args['meta']);
@@ -1175,7 +1175,7 @@ function wp_maybe_transition_site_statuses_on_update($new_site, $old_site = null
 
     // Use the default values for a site if no previous state is given.
     if (! $old_site) {
-        $old_site = new WP_Site(new stdClass());
+        $old_site = new WP_Site(new stdClass);
     }
 
     if ($new_site->spam !== $old_site->spam) {

@@ -93,8 +93,8 @@ class Response
      */
     public function __construct()
     {
-        $this->headers = new Headers();
-        $this->cookies = new Jar();
+        $this->headers = new Headers;
+        $this->cookies = new Jar;
     }
 
     /**

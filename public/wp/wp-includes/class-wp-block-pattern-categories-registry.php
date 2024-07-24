@@ -167,7 +167,7 @@ final class WP_Block_Pattern_Categories_Registry
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

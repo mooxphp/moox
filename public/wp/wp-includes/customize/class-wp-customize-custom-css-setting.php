@@ -167,7 +167,7 @@ final class WP_Customize_Custom_CSS_Setting extends WP_Customize_Setting
         // Restores the more descriptive, specific name for use within this method.
         $css = $value;
 
-        $validity = new WP_Error();
+        $validity = new WP_Error;
 
         if (preg_match('#</?\w+#', $css)) {
             $validity->add('illegal_markup', __('Markup is not allowed in CSS.'));

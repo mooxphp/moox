@@ -1226,7 +1226,7 @@ function wp_metadata_lazyloader()
     static $wp_metadata_lazyloader;
 
     if ($wp_metadata_lazyloader === null) {
-        $wp_metadata_lazyloader = new WP_Metadata_Lazyloader();
+        $wp_metadata_lazyloader = new WP_Metadata_Lazyloader;
     }
 
     return $wp_metadata_lazyloader;

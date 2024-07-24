@@ -324,7 +324,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer
         foreach ($orig_matches as $o => $f) {
             if (is_numeric($o) && is_numeric($f)) {
                 $text_diff = new Text_Diff('auto', [[$orig[$o]], [$final[$f]]]);
-                $renderer = new $this->inline_diff_renderer();
+                $renderer = new $this->inline_diff_renderer;
                 $diff = $renderer->render($text_diff);
 
                 // If they're too different, don't include any <ins> or <del>'s.

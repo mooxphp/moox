@@ -362,7 +362,7 @@ class Parser
     public function __construct($handle)
     {
         $this->handle = $handle;
-        $this->features = new Features();
+        $this->features = new Features;
     }
 
     /**
@@ -379,7 +379,7 @@ class Parser
     {
         $box_index = 1; // 1-based index. Used for iterating over properties.
         do {
-            $box = new Box();
+            $box = new Box;
             $status = $box->parse($this->handle, $this->num_parsed_boxes, $num_remaining_bytes);
             if ($status != FOUND) {
                 return $status;
@@ -401,7 +401,7 @@ class Parser
                 if (count($this->features->dim_props) <= MAX_FEATURES &&
                      $box_index <= MAX_VALUE) {
                     $dim_prop_count = count($this->features->dim_props);
-                    $this->features->dim_props[$dim_prop_count] = new Dim_Prop();
+                    $this->features->dim_props[$dim_prop_count] = new Dim_Prop;
                     $this->features->dim_props[$dim_prop_count]->property_index = $box_index;
                     $this->features->dim_props[$dim_prop_count]->width = $width;
                     $this->features->dim_props[$dim_prop_count]->height = $height;
@@ -449,7 +449,7 @@ class Parser
                      $box_index <= MAX_VALUE && $bit_depth <= MAX_VALUE &&
                      $num_channels <= MAX_VALUE) {
                     $chan_prop_count = count($this->features->chan_props);
-                    $this->features->chan_props[$chan_prop_count] = new Chan_Prop();
+                    $this->features->chan_props[$chan_prop_count] = new Chan_Prop;
                     $this->features->chan_props[$chan_prop_count]->property_index = $box_index;
                     $this->features->chan_props[$chan_prop_count]->bit_depth = $bit_depth;
                     $this->features->chan_props[$chan_prop_count]->num_channels = $num_channels;
@@ -479,7 +479,7 @@ class Parser
                 if (count($this->features->chan_props) <= MAX_FEATURES &&
                      $box_index <= MAX_VALUE) {
                     $chan_prop_count = count($this->features->chan_props);
-                    $this->features->chan_props[$chan_prop_count] = new Chan_Prop();
+                    $this->features->chan_props[$chan_prop_count] = new Chan_Prop;
                     $this->features->chan_props[$chan_prop_count]->property_index = $box_index;
                     $this->features->chan_props[$chan_prop_count]->bit_depth =
                         $high_bitdepth ? $twelve_bit ? 12 : 10 : 8;
@@ -536,7 +536,7 @@ class Parser
     private function parse_iprp($num_remaining_bytes)
     {
         do {
-            $box = new Box();
+            $box = new Box;
             $status = $box->parse($this->handle, $this->num_parsed_boxes, $num_remaining_bytes);
             if ($status != FOUND) {
                 return $status;
@@ -597,7 +597,7 @@ class Parser
                         $property_index = ($value & ~$essential_bit_mask);
                         if ($property_index <= MAX_VALUE && $item_id <= MAX_VALUE) {
                             $prop_count = count($this->features->props);
-                            $this->features->props[$prop_count] = new Prop();
+                            $this->features->props[$prop_count] = new Prop;
                             $this->features->props[$prop_count]->property_index = $property_index;
                             $this->features->props[$prop_count]->item_id = $item_id;
                         } else {
@@ -644,7 +644,7 @@ class Parser
     private function parse_iref($num_remaining_bytes)
     {
         do {
-            $box = new Box();
+            $box = new Box;
             $status = $box->parse($this->handle, $this->num_parsed_boxes, $num_remaining_bytes);
             if ($status != FOUND) {
                 return $status;
@@ -679,7 +679,7 @@ class Parser
                     $tile_count = count($this->features->tiles);
                     if ($from_item_id <= MAX_VALUE && $to_item_id <= MAX_VALUE &&
                          $tile_count < MAX_TILES) {
-                        $this->features->tiles[$tile_count] = new Tile();
+                        $this->features->tiles[$tile_count] = new Tile;
                         $this->features->tiles[$tile_count]->tile_item_id = $to_item_id;
                         $this->features->tiles[$tile_count]->parent_item_id = $from_item_id;
                     } else {
@@ -721,7 +721,7 @@ class Parser
     private function parse_meta($num_remaining_bytes)
     {
         do {
-            $box = new Box();
+            $box = new Box;
             $status = $box->parse($this->handle, $this->num_parsed_boxes, $num_remaining_bytes);
             if ($status != FOUND) {
                 return $status;
@@ -776,7 +776,7 @@ class Parser
      */
     public function parse_ftyp()
     {
-        $box = new Box();
+        $box = new Box;
         $status = $box->parse($this->handle, $this->num_parsed_boxes);
         if ($status != FOUND) {
             return false;
@@ -817,7 +817,7 @@ class Parser
      */
     public function parse_file()
     {
-        $box = new Box();
+        $box = new Box;
         while ($box->parse($this->handle, $this->num_parsed_boxes) == FOUND) {
             if ($box->type === 'meta') {
                 if ($this->parse_meta($box->content_size) != FOUND) {

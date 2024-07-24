@@ -143,7 +143,7 @@ abstract class WP_REST_Meta_Fields
     public function update_value($meta, $object_id)
     {
         $fields = $this->get_registered_fields();
-        $error = new WP_Error();
+        $error = new WP_Error;
 
         foreach ($fields as $meta_key => $args) {
             $name = $args['name'];

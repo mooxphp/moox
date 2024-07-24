@@ -67,7 +67,7 @@ class WP_HTTP_Requests_Response extends WP_HTTP_Response
     public function get_headers()
     {
         // Ensure headers remain case-insensitive.
-        $converted = new WpOrg\Requests\Utility\CaseInsensitiveDictionary();
+        $converted = new WpOrg\Requests\Utility\CaseInsensitiveDictionary;
 
         foreach ($this->response->headers->getAll() as $key => $value) {
             if (count($value) === 1) {

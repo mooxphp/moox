@@ -95,7 +95,7 @@ class Session
         $this->options = $options;
 
         if (empty($this->options['cookies'])) {
-            $this->options['cookies'] = new Jar();
+            $this->options['cookies'] = new Jar;
         }
     }
 

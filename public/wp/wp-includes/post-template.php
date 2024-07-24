@@ -1572,7 +1572,7 @@ function wp_page_menu($args = [])
 function walk_page_tree($pages, $depth, $current_page, $args)
 {
     if (empty($args['walker'])) {
-        $walker = new Walker_Page();
+        $walker = new Walker_Page;
     } else {
         /**
          * @var Walker $walker
@@ -1606,7 +1606,7 @@ function walk_page_tree($pages, $depth, $current_page, $args)
 function walk_page_dropdown_tree(...$args)
 {
     if (empty($args[2]['walker'])) { // The user's options are the third parameter.
-        $walker = new Walker_PageDropdown();
+        $walker = new Walker_PageDropdown;
     } else {
         /**
          * @var Walker $walker

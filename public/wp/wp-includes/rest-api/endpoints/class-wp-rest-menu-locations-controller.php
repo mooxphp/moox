@@ -103,7 +103,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
         $data = [];
 
         foreach (get_registered_nav_menus() as $name => $description) {
-            $location = new stdClass();
+            $location = new stdClass;
             $location->name = $name;
             $location->description = $description;
 
@@ -150,7 +150,7 @@ class WP_REST_Menu_Locations_Controller extends WP_REST_Controller
             return new WP_Error('rest_menu_location_invalid', __('Invalid menu location.'), ['status' => 404]);
         }
 
-        $location = new stdClass();
+        $location = new stdClass;
         $location->name = $request['location'];
         $location->description = $registered_menus[$location->name];
 

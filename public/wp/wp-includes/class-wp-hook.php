@@ -447,7 +447,7 @@ final class WP_Hook implements ArrayAccess, Iterator
                 continue;
             }
 
-            $hook = new WP_Hook();
+            $hook = new WP_Hook;
 
             // Loop through callback groups.
             foreach ($callback_groups as $priority => $callbacks) {

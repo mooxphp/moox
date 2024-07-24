@@ -2456,7 +2456,7 @@ final class WP_Customize_Manager
             }
             if (! is_wp_error($validity)) {
                 /** This filter is documented in wp-includes/class-wp-customize-setting.php */
-                $late_validity = apply_filters("customize_validate_{$setting->id}", new WP_Error(), $unsanitized_value, $setting);
+                $late_validity = apply_filters("customize_validate_{$setting->id}", new WP_Error, $unsanitized_value, $setting);
                 if (is_wp_error($late_validity) && $late_validity->has_errors()) {
                     $validity = $late_validity;
                 }

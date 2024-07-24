@@ -167,7 +167,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
         } while (! empty($hierarchy) && empty($fallback_template->content));
 
         // To maintain original behavior, return an empty object rather than a 404 error when no template is found.
-        $response = $fallback_template ? $this->prepare_item_for_response($fallback_template, $request) : new stdClass();
+        $response = $fallback_template ? $this->prepare_item_for_response($fallback_template, $request) : new stdClass;
 
         return rest_ensure_response($response);
     }
@@ -504,7 +504,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
         if ($force) {
             $previous = $this->prepare_item_for_response($template, $request);
             $result = wp_delete_post($id, true);
-            $response = new WP_REST_Response();
+            $response = new WP_REST_Response;
             $response->set_data(
                 [
                     'deleted' => true,
@@ -552,7 +552,7 @@ class WP_REST_Templates_Controller extends WP_REST_Controller
     protected function prepare_item_for_database($request)
     {
         $template = $request['id'] ? get_block_template($request['id'], $this->post_type) : null;
-        $changes = new stdClass();
+        $changes = new stdClass;
         if ($template === null) {
             $changes->post_type = $this->post_type;
             $changes->post_status = 'publish';

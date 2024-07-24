@@ -105,7 +105,7 @@ class WP_Http_Curl
         $handle = curl_init();
 
         // cURL offers really easy proxy support.
-        $proxy = new WP_HTTP_Proxy();
+        $proxy = new WP_HTTP_Proxy;
 
         if ($proxy->is_enabled() && $proxy->send_through_proxy($url)) {
 

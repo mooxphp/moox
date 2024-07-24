@@ -772,7 +772,7 @@ if (! class_exists('Services_JSON')) {
                                 $obj = [];
                             } else {
                                 $stk = [SERVICES_JSON_IN_OBJ];
-                                $obj = new stdClass();
+                                $obj = new stdClass;
                             }
                         }
 

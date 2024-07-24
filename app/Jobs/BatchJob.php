@@ -16,20 +16,20 @@ class BatchJob implements ShouldQueue
     public function handle(): void
     {
         Bus::batch([
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
-            new ShortJob(),
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
+            new ShortJob,
         ])->dispatch();
     }
 }

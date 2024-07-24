@@ -201,7 +201,7 @@ final class WP_Block_Styles_Registry
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

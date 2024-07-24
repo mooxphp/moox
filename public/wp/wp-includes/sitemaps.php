@@ -23,7 +23,7 @@ function wp_sitemaps_get_server()
 
     // If there isn't a global instance, set and bootstrap the sitemaps system.
     if (empty($wp_sitemaps)) {
-        $wp_sitemaps = new WP_Sitemaps();
+        $wp_sitemaps = new WP_Sitemaps;
         $wp_sitemaps->init();
 
         /**

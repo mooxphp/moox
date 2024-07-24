@@ -620,7 +620,7 @@ function wp_clear_scheduled_hook($hook, $args = [], $wp_error = false)
     }
 
     $errors = array_filter($results, 'is_wp_error');
-    $error = new WP_Error();
+    $error = new WP_Error;
 
     if ($errors) {
         if ($wp_error) {

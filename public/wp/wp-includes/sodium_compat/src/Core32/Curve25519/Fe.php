@@ -41,7 +41,7 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
         }
         $array = array_values($array);
 
-        $obj = new ParagonIE_Sodium_Core32_Curve25519_Fe();
+        $obj = new ParagonIE_Sodium_Core32_Curve25519_Fe;
         if ($save_indexes) {
             for ($i = 0; $i < $count; $i++) {
                 $array[$i]->overflow = 0;
@@ -86,7 +86,7 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
             $set[$i] = ParagonIE_Sodium_Core32_Int32::fromInt($v);
         }
 
-        $obj = new ParagonIE_Sodium_Core32_Curve25519_Fe();
+        $obj = new ParagonIE_Sodium_Core32_Curve25519_Fe;
         if ($save_indexes) {
             for ($i = 0; $i < $count; $i++) {
                 $set[$i]->overflow = 0;
@@ -166,7 +166,7 @@ class ParagonIE_Sodium_Core32_Curve25519_Fe implements ArrayAccess
     public function offsetGet($offset)
     {
         if (! isset($this->container[$offset])) {
-            $this->container[(int) $offset] = new ParagonIE_Sodium_Core32_Int32();
+            $this->container[(int) $offset] = new ParagonIE_Sodium_Core32_Int32;
         }
         /** @var ParagonIE_Sodium_Core32_Int32 $get */
         $get = $this->container[$offset];

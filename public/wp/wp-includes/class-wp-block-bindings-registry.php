@@ -299,11 +299,11 @@ final class WP_Block_Bindings_Registry
             return;
         }
         if (! is_array($this->sources)) {
-            throw new UnexpectedValueException();
+            throw new UnexpectedValueException;
         }
         foreach ($this->sources as $value) {
             if (! $value instanceof WP_Block_Bindings_Source) {
-                throw new UnexpectedValueException();
+                throw new UnexpectedValueException;
             }
         }
     }
@@ -320,7 +320,7 @@ final class WP_Block_Bindings_Registry
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

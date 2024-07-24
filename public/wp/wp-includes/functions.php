@@ -4456,7 +4456,7 @@ function _wp_json_sanity_check($value, $depth)
             }
         }
     } elseif (is_object($value)) {
-        $output = new stdClass();
+        $output = new stdClass;
         foreach ($value as $id => $el) {
             if (is_string($id)) {
                 $clean_id = _wp_json_convert_string($id);

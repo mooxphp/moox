@@ -719,8 +719,8 @@ if (! class_exists('SimplePie', false)) {
             }
 
             // Other objects, instances created here so we can set options on them
-            $this->sanitize = new SimplePie_Sanitize();
-            $this->registry = new SimplePie_Registry();
+            $this->sanitize = new SimplePie_Sanitize;
+            $this->registry = new SimplePie_Registry;
 
             if (func_num_args() > 0) {
                 $level = defined('E_USER_DEPRECATED') ? E_USER_DEPRECATED : E_USER_WARNING;
@@ -1692,7 +1692,7 @@ if (! class_exists('SimplePie', false)) {
                     try {
                         $microformats = false;
                         if (class_exists('DOMXpath') && function_exists('Mf2\parse')) {
-                            $doc = new DOMDocument();
+                            $doc = new DOMDocument;
                             @$doc->loadHTML($file->body);
                             $xpath = new DOMXpath($doc);
                             // Check for both h-feed and h-entry, as both a feed with no entries

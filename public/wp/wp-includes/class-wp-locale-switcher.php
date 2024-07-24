@@ -296,7 +296,7 @@ class WP_Locale_Switcher
 
         $this->load_translations($locale);
 
-        $wp_locale = new WP_Locale();
+        $wp_locale = new WP_Locale;
 
         WP_Translation_Controller::get_instance()->set_locale($locale);
 

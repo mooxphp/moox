@@ -145,7 +145,7 @@ class WP_Font_Library
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

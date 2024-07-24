@@ -29,16 +29,16 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
     {
         return ParagonIE_Sodium_Core32_Curve25519_Fe::fromArray(
             [
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
             ]
         );
     }
@@ -58,15 +58,15 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         return ParagonIE_Sodium_Core32_Curve25519_Fe::fromArray(
             [
                 ParagonIE_Sodium_Core32_Int32::fromInt(1),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
-                new ParagonIE_Sodium_Core32_Int32(),
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
+                new ParagonIE_Sodium_Core32_Int32,
             ]
         );
     }
@@ -746,7 +746,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
      */
     public static function fe_neg(ParagonIE_Sodium_Core32_Curve25519_Fe $f)
     {
-        $h = new ParagonIE_Sodium_Core32_Curve25519_Fe();
+        $h = new ParagonIE_Sodium_Core32_Curve25519_Fe;
         for ($i = 0; $i < 10; $i++) {
             $h[$i] = $h[$i]->subInt32($f[$i]);
         }
@@ -1372,7 +1372,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         ParagonIE_Sodium_Core32_Curve25519_Ge_P3 $p,
         ParagonIE_Sodium_Core32_Curve25519_Ge_Cached $q
     ) {
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1;
         $r->X = self::fe_add($p->Y, $p->X);
         $r->Y = self::fe_sub($p->Y, $p->X);
         $r->Z = self::fe_mul($r->X, $q->YplusX);
@@ -1619,7 +1619,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
      */
     public static function ge_p1p1_to_p2(ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1 $p)
     {
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P2();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P2;
         $r->X = self::fe_mul($p->X, $p->T);
         $r->Y = self::fe_mul($p->Y, $p->Z);
         $r->Z = self::fe_mul($p->Z, $p->T);
@@ -1637,7 +1637,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
      */
     public static function ge_p1p1_to_p3(ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1 $p)
     {
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P3();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P3;
         $r->X = self::fe_mul($p->X, $p->T);
         $r->Y = self::fe_mul($p->Y, $p->Z);
         $r->Z = self::fe_mul($p->Z, $p->T);
@@ -1673,7 +1673,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
      */
     public static function ge_p2_dbl(ParagonIE_Sodium_Core32_Curve25519_Ge_P2 $p)
     {
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1;
 
         $r->X = self::fe_sq($p->X);
         $r->Z = self::fe_sq($p->Y);
@@ -1734,7 +1734,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
             );
         }
         /** @var ParagonIE_Sodium_Core32_Curve25519_Fe $d2 */
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_Cached();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_Cached;
         $r->YplusX = self::fe_add($p->Y, $p->X);
         $r->YminusX = self::fe_sub($p->Y, $p->X);
         $r->Z = self::fe_copy($p->Z);
@@ -1988,7 +1988,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         ParagonIE_Sodium_Core32_Curve25519_Ge_P3 $p,
         ParagonIE_Sodium_Core32_Curve25519_Ge_Cached $q
     ) {
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1;
 
         $r->X = self::fe_add($p->Y, $p->X);
         $r->Y = self::fe_sub($p->Y, $p->X);
@@ -2218,7 +2218,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
     {
         /** @var array<int, int> $e */
         $e = [];
-        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1();
+        $r = new ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1;
 
         for ($i = 0; $i < 32; $i++) {
             /** @var int $dbl */
@@ -2403,7 +2403,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         $s20 = $a9->mulInt64($b11, 24)->addInt64($a10->mulInt64($b10, 24))->addInt64($a11->mulInt64($b9, 24));
         $s21 = $a10->mulInt64($b11, 24)->addInt64($a11->mulInt64($b10, 24));
         $s22 = $a11->mulInt64($b11, 24);
-        $s23 = new ParagonIE_Sodium_Core32_Int64();
+        $s23 = new ParagonIE_Sodium_Core32_Int64;
 
         $carry0 = $s0->addInt(1 << 20)->shiftRight(21);
         $s1 = $s1->addInt64($carry0);
@@ -2594,7 +2594,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         $s3 = $s3->subInt64($s12->mulInt(997805, 20));
         $s4 = $s4->addInt64($s12->mulInt(136657, 18));
         $s5 = $s5->subInt64($s12->mulInt(683901, 20));
-        $s12 = new ParagonIE_Sodium_Core32_Int64();
+        $s12 = new ParagonIE_Sodium_Core32_Int64;
 
         $carry0 = $s0->addInt(1 << 20)->shiftRight(21);
         $s1 = $s1->addInt64($carry0);
@@ -2640,7 +2640,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         $s3 = $s3->subInt64($s12->mulInt(997805, 20));
         $s4 = $s4->addInt64($s12->mulInt(136657, 18));
         $s5 = $s5->subInt64($s12->mulInt(683901, 20));
-        $s12 = new ParagonIE_Sodium_Core32_Int64();
+        $s12 = new ParagonIE_Sodium_Core32_Int64;
 
         $carry0 = $s0->shiftRight(21);
         $s1 = $s1->addInt64($carry0);
@@ -2954,7 +2954,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         $s3 = $s3->subInt64($s12->mulInt(997805, 20));
         $s4 = $s4->addInt64($s12->mulInt(136657, 18));
         $s5 = $s5->subInt64($s12->mulInt(683901, 20));
-        $s12 = new ParagonIE_Sodium_Core32_Int64();
+        $s12 = new ParagonIE_Sodium_Core32_Int64;
 
         $carry0 = $s0->addInt(1 << 20)->shiftRight(21);
         $s1 = $s1->addInt64($carry0);
@@ -2999,7 +2999,7 @@ abstract class ParagonIE_Sodium_Core32_Curve25519 extends ParagonIE_Sodium_Core3
         $s3 = $s3->subInt64($s12->mulInt(997805, 20));
         $s4 = $s4->addInt64($s12->mulInt(136657, 18));
         $s5 = $s5->subInt64($s12->mulInt(683901, 20));
-        $s12 = new ParagonIE_Sodium_Core32_Int64();
+        $s12 = new ParagonIE_Sodium_Core32_Int64;
 
         $carry0 = $s0->shiftRight(21);
         $s1 = $s1->addInt64($carry0);

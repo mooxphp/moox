@@ -659,7 +659,7 @@ class WP_Tax_Query
             $args['number'] = count($terms);
         }
 
-        $term_query = new WP_Term_Query();
+        $term_query = new WP_Term_Query;
         $term_list = $term_query->query($args);
 
         if (is_wp_error($term_list)) {

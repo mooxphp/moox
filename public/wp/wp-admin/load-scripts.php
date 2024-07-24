@@ -40,7 +40,7 @@ require ABSPATH.WPINC.'/version.php';
 $expires_offset = 31536000; // 1 year.
 $out = '';
 
-$wp_scripts = new WP_Scripts();
+$wp_scripts = new WP_Scripts;
 wp_default_scripts($wp_scripts);
 wp_default_packages_vendor($wp_scripts);
 wp_default_packages_scripts($wp_scripts);

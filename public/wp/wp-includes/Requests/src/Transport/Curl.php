@@ -258,7 +258,7 @@ final class Curl implements Transport
 
         $class = get_class($this);
         foreach ($requests as $id => $request) {
-            $subrequests[$id] = new $class();
+            $subrequests[$id] = new $class;
             $subhandles[$id] = $subrequests[$id]->get_subrequest_handle($request['url'], $request['headers'], $request['data'], $request['options']);
             $request['options']['hooks']->dispatch('curl.before_multi_add', [&$subhandles[$id]]);
             curl_multi_add_handle($multihandle, $subhandles[$id]);

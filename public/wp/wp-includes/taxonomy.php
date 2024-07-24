@@ -1322,7 +1322,7 @@ function get_term_to_edit($id, $taxonomy)
  */
 function get_terms($args = [], $deprecated = '')
 {
-    $term_query = new WP_Term_Query();
+    $term_query = new WP_Term_Query;
 
     $defaults = [
         'suppress_filter' => false,

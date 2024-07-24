@@ -175,7 +175,7 @@ class ParagonIE_Sodium_Core_Ristretto255 extends ParagonIE_Sodium_Core_Ed25519
         $inv_sqrt = $result['x'];
         $notsquare = $result['nonsquare'];
 
-        $h = new ParagonIE_Sodium_Core_Curve25519_Ge_P3();
+        $h = new ParagonIE_Sodium_Core_Curve25519_Ge_P3;
 
         $h->X = self::fe_mul($inv_sqrt, $u2);
         $h->Y = self::fe_mul(self::fe_mul($inv_sqrt, $h->X), $v);

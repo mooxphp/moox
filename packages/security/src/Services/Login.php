@@ -109,7 +109,7 @@ class Login extends SimplePage
         }
         $user = $query->first();
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))) {
-            $wpAuthService = new \Moox\Security\Services\WordPressAuthService();
+            $wpAuthService = new \Moox\Security\Services\WordPressAuthService;
 
             if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();

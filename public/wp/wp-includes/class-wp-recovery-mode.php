@@ -85,8 +85,8 @@ class WP_Recovery_Mode
      */
     public function __construct()
     {
-        $this->cookie_service = new WP_Recovery_Mode_Cookie_Service();
-        $this->key_service = new WP_Recovery_Mode_Key_Service();
+        $this->cookie_service = new WP_Recovery_Mode_Cookie_Service;
+        $this->key_service = new WP_Recovery_Mode_Key_Service;
         $this->link_service = new WP_Recovery_Mode_Link_Service($this->cookie_service, $this->key_service);
         $this->email_service = new WP_Recovery_Mode_Email_Service($this->link_service);
     }

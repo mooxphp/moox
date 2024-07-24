@@ -178,7 +178,7 @@ function get_approved_comments($post_id, $args = [])
     ];
     $parsed_args = wp_parse_args($args, $defaults);
 
-    $query = new WP_Comment_Query();
+    $query = new WP_Comment_Query;
 
     return $query->query($parsed_args);
 }
@@ -251,7 +251,7 @@ function get_comment($comment = null, $output = OBJECT)
  */
 function get_comments($args = '')
 {
-    $query = new WP_Comment_Query();
+    $query = new WP_Comment_Query;
 
     return $query->query($args);
 }
@@ -1043,7 +1043,7 @@ function get_comment_pages_count($comments = null, $per_page = null, $threaded =
     }
 
     if ($threaded) {
-        $walker = new Walker_Comment();
+        $walker = new Walker_Comment;
         $count = ceil($walker->get_number_of_root_elements($comments) / $per_page);
     } else {
         $count = ceil(count($comments) / $per_page);
@@ -1180,7 +1180,7 @@ function get_page_of_comment($comment_id, $args = [])
          */
         $comment_args = apply_filters('get_page_of_comment_query_args', $comment_args);
 
-        $comment_query = new WP_Comment_Query();
+        $comment_query = new WP_Comment_Query;
         $older_comment_count = $comment_query->query($comment_args);
 
         // No older comments? Then it's page #1.

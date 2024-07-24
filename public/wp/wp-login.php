@@ -47,7 +47,7 @@ function login_header($title = 'Log In', $message = '', $wp_error = null)
     add_action('login_head', 'wp_login_viewport_meta');
 
     if (! is_wp_error($wp_error)) {
-        $wp_error = new WP_Error();
+        $wp_error = new WP_Error;
     }
 
     // Shake it!
@@ -471,7 +471,7 @@ function wp_login_viewport_meta()
  */
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'login';
-$errors = new WP_Error();
+$errors = new WP_Error;
 
 if (isset($_GET['key'])) {
     $action = 'resetpass';
@@ -962,7 +962,7 @@ switch ($action) {
             exit;
         }
 
-        $errors = new WP_Error();
+        $errors = new WP_Error;
 
         // Check if password is one or all empty spaces.
         if (! empty($_POST['pass1'])) {
@@ -1203,7 +1203,7 @@ switch ($action) {
 
     case 'checkemail':
         $redirect_to = admin_url();
-        $errors = new WP_Error();
+        $errors = new WP_Error;
 
         if ($_GET['checkemail'] === 'confirm') {
             $errors->add(
@@ -1419,7 +1419,7 @@ switch ($action) {
         $errors = $user;
         // Clear errors if loggedout is set.
         if (! empty($_GET['loggedout']) || $reauth) {
-            $errors = new WP_Error();
+            $errors = new WP_Error;
         }
 
         if (empty($_POST) && $errors->get_error_codes() === ['empty_username', 'empty_password']) {

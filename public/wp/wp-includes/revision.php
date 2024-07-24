@@ -742,7 +742,7 @@ function wp_get_latest_revision_id_and_total_count($post = 0)
         'ignore_sticky_posts' => true,
     ];
 
-    $revision_query = new WP_Query();
+    $revision_query = new WP_Query;
     $revisions = $revision_query->query($args);
 
     if (! $revisions) {

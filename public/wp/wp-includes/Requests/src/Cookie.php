@@ -453,7 +453,7 @@ class Cookie
         $value = trim($value);
 
         // Attribute keys are handled case-insensitively
-        $attributes = new CaseInsensitiveDictionary();
+        $attributes = new CaseInsensitiveDictionary;
 
         if (! empty($parts)) {
             foreach ($parts as $part) {

@@ -667,7 +667,7 @@ function install_blog($blog_id, $blog_title = '')
     populate_roles();
 
     // populate_roles() clears previous role definitions so we start over.
-    $wp_roles = new WP_Roles();
+    $wp_roles = new WP_Roles;
 
     $siteurl = $home = untrailingslashit($url);
 

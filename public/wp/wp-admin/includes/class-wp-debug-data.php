@@ -390,7 +390,7 @@ class WP_Debug_Data
                 'debug' => $site_id,
             ];
 
-            $network_query = new WP_Network_Query();
+            $network_query = new WP_Network_Query;
             $network_ids = $network_query->query(
                 [
                     'fields' => 'ids',
@@ -522,7 +522,7 @@ class WP_Debug_Data
         // Get ImageMagic information, if available.
         if (class_exists('Imagick')) {
             // Save the Imagick instance for later use.
-            $imagick = new Imagick();
+            $imagick = new Imagick;
             $imagemagick_version = $imagick->getVersion();
         } else {
             $imagemagick_version = __('Not available');
@@ -1037,7 +1037,7 @@ class WP_Debug_Data
                         'banners_rtl' => [],
                         'tested' => '',
                         'requires_php' => '',
-                        'compatibility' => new stdClass(),
+                        'compatibility' => new stdClass,
                     ];
                     $item = wp_parse_args($plugin, $item);
                 }

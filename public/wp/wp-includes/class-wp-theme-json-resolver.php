@@ -486,7 +486,7 @@ class WP_Theme_JSON_Resolver
             ],
         ];
 
-        $global_style_query = new WP_Query();
+        $global_style_query = new WP_Query;
         $recent_posts = $global_style_query->query($args);
         if (count($recent_posts) === 1) {
             $user_cpt = get_object_vars($recent_posts[0]);
@@ -610,7 +610,7 @@ class WP_Theme_JSON_Resolver
             _deprecated_argument(__FUNCTION__, '5.9.0');
         }
 
-        $result = new WP_Theme_JSON();
+        $result = new WP_Theme_JSON;
         $result->merge(static::get_core_data());
         if ($origin === 'default') {
             $result->set_spacing_sizes();

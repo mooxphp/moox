@@ -115,7 +115,7 @@ class WP_Http_Streams
             $ssl_verify = apply_filters('https_ssl_verify', $ssl_verify, $url);
         }
 
-        $proxy = new WP_HTTP_Proxy();
+        $proxy = new WP_HTTP_Proxy;
 
         $context = stream_context_create(
             [

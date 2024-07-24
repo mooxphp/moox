@@ -359,7 +359,7 @@ class WP_Customize_Setting
          * then the preview short-circuits because there is nothing that needs
          * to be previewed.
          */
-        $undefined = new stdClass();
+        $undefined = new stdClass;
         $needs_preview = ($undefined !== $this->post_value($undefined));
         $value = null;
 
@@ -475,7 +475,7 @@ class WP_Customize_Setting
             return $original;
         }
 
-        $undefined = new stdClass(); // Symbol hack.
+        $undefined = new stdClass; // Symbol hack.
         $post_value = $this->post_value($undefined);
         if ($undefined !== $post_value) {
             $value = $post_value;
@@ -624,7 +624,7 @@ class WP_Customize_Setting
             return new WP_Error('invalid_value', __('Invalid value.'));
         }
 
-        $validity = new WP_Error();
+        $validity = new WP_Error;
 
         /**
          * Validates a Customize setting value.

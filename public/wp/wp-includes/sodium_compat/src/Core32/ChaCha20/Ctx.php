@@ -54,8 +54,8 @@ class ParagonIE_Sodium_Core32_ChaCha20_Ctx extends ParagonIE_Sodium_Core32_Util 
         $this->container[11] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($key, 28, 4));
 
         if (empty($counter)) {
-            $this->container[12] = new ParagonIE_Sodium_Core32_Int32();
-            $this->container[13] = new ParagonIE_Sodium_Core32_Int32();
+            $this->container[12] = new ParagonIE_Sodium_Core32_Int32;
+            $this->container[13] = new ParagonIE_Sodium_Core32_Int32;
         } else {
             $this->container[12] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($counter, 0, 4));
             $this->container[13] = ParagonIE_Sodium_Core32_Int32::fromReverseString(self::substr($counter, 4, 4));

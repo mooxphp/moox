@@ -99,7 +99,7 @@ class SimplePie_Cache_Memcached implements SimplePie_Cache_Base
 
         $this->name = $this->options['extras']['prefix'].md5("$name:$type");
 
-        $this->cache = new Memcached();
+        $this->cache = new Memcached;
         $this->cache->addServer($this->options['host'], (int) $this->options['port']);
     }
 

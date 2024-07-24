@@ -316,7 +316,7 @@ class SimplePie_Sanitize
                 if (! class_exists('DOMDocument')) {
                     throw new SimplePie_Exception('DOMDocument not found, unable to use sanitizer');
                 }
-                $document = new DOMDocument();
+                $document = new DOMDocument;
                 $document->encoding = 'UTF-8';
 
                 $data = $this->preprocess($data, $type);

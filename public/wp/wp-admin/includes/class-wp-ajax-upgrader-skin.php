@@ -61,7 +61,7 @@ class WP_Ajax_Upgrader_Skin extends Automatic_Upgrader_Skin
     {
         parent::__construct($args);
 
-        $this->errors = new WP_Error();
+        $this->errors = new WP_Error;
     }
 
     /**

@@ -92,7 +92,7 @@ function wp_register_fatal_error_handler()
     }
 
     if (! is_object($handler) || ! is_callable([$handler, 'handle'])) {
-        $handler = new WP_Fatal_Error_Handler();
+        $handler = new WP_Fatal_Error_Handler;
     }
 
     register_shutdown_function([$handler, 'handle']);
@@ -155,7 +155,7 @@ function wp_recovery_mode()
     static $wp_recovery_mode;
 
     if (! $wp_recovery_mode) {
-        $wp_recovery_mode = new WP_Recovery_Mode();
+        $wp_recovery_mode = new WP_Recovery_Mode;
     }
 
     return $wp_recovery_mode;

@@ -372,7 +372,7 @@ final class Fsockopen implements Transport
         $class = get_class($this);
         foreach ($requests as $id => $request) {
             try {
-                $handler = new $class();
+                $handler = new $class;
                 $responses[$id] = $handler->request($request['url'], $request['headers'], $request['data'], $request['options']);
 
                 $request['options']['hooks']->dispatch('transport.internal.parse_response', [&$responses[$id], $request]);

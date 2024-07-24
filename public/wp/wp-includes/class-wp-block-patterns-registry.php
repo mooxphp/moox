@@ -283,11 +283,11 @@ final class WP_Block_Patterns_Registry
             return;
         }
         if (! is_array($this->registered_patterns)) {
-            throw new UnexpectedValueException();
+            throw new UnexpectedValueException;
         }
         foreach ($this->registered_patterns as $value) {
             if (! is_array($value)) {
-                throw new UnexpectedValueException();
+                throw new UnexpectedValueException;
             }
         }
         $this->registered_patterns_outside_init = [];
@@ -305,7 +305,7 @@ final class WP_Block_Patterns_Registry
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

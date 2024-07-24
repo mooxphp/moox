@@ -58,7 +58,7 @@ class WP_Style_Engine_CSS_Rules_Store
             return;
         }
         if (! isset(static::$stores[$store_name])) {
-            static::$stores[$store_name] = new static();
+            static::$stores[$store_name] = new static;
             // Set the store name.
             static::$stores[$store_name]->set_name($store_name);
         }

@@ -19,7 +19,7 @@ function wp_styles()
     global $wp_styles;
 
     if (! ($wp_styles instanceof WP_Styles)) {
-        $wp_styles = new WP_Styles();
+        $wp_styles = new WP_Styles;
     }
 
     return $wp_styles;

@@ -88,7 +88,7 @@ function wp_interactivity(): WP_Interactivity_API
 {
     global $wp_interactivity;
     if (! ($wp_interactivity instanceof WP_Interactivity_API)) {
-        $wp_interactivity = new WP_Interactivity_API();
+        $wp_interactivity = new WP_Interactivity_API;
     }
 
     return $wp_interactivity;

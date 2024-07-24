@@ -812,14 +812,14 @@ final class WP_Theme implements ArrayAccess
     public function __wakeup()
     {
         if ($this->parent && ! $this->parent instanceof self) {
-            throw new UnexpectedValueException();
+            throw new UnexpectedValueException;
         }
         if ($this->headers && ! is_array($this->headers)) {
-            throw new UnexpectedValueException();
+            throw new UnexpectedValueException;
         }
         foreach ($this->headers as $value) {
             if (! is_string($value)) {
-                throw new UnexpectedValueException();
+                throw new UnexpectedValueException;
             }
         }
         $this->headers_sanitized = [];

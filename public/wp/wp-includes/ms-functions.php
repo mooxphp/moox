@@ -469,7 +469,7 @@ function wpmu_validate_user_signup($user_name, $user_email)
 {
     global $wpdb;
 
-    $errors = new WP_Error();
+    $errors = new WP_Error;
 
     $orig_username = $user_name;
     $user_name = preg_replace('/\s+/', '', sanitize_user($user_name, true));
@@ -641,7 +641,7 @@ function wpmu_validate_blog_signup($blogname, $blog_title, $user = '')
 
     $blog_title = strip_tags($blog_title);
 
-    $errors = new WP_Error();
+    $errors = new WP_Error;
     $illegal_names = get_site_option('illegal_names');
     if ($illegal_names == false) {
         $illegal_names = ['www', 'web', 'root', 'admin', 'main', 'invite', 'administrator'];

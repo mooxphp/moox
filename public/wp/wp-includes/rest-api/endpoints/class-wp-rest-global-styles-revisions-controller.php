@@ -195,7 +195,7 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
                 }
             }
 
-            $revisions_query = new WP_Query();
+            $revisions_query = new WP_Query;
             $revisions = $revisions_query->query($query_args);
             $offset = isset($query_args['offset']) ? (int) $query_args['offset'] : 0;
             $page = (int) $query_args['paged'];
@@ -204,7 +204,7 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
             if ($total_revisions < 1) {
                 // Out-of-bounds, run the query again without LIMIT for total count.
                 unset($query_args['paged'], $query_args['offset']);
-                $count_query = new WP_Query();
+                $count_query = new WP_Query;
                 $count_query->query($query_args);
 
                 $total_revisions = $count_query->found_posts;
@@ -375,10 +375,10 @@ class WP_REST_Global_Styles_Revisions_Controller extends WP_REST_Controller
         if (! empty($global_styles_config['styles']) || ! empty($global_styles_config['settings'])) {
             $global_styles_config = (new WP_Theme_JSON($global_styles_config, 'custom'))->get_raw_data();
             if (rest_is_field_included('settings', $fields)) {
-                $data['settings'] = ! empty($global_styles_config['settings']) ? $global_styles_config['settings'] : new stdClass();
+                $data['settings'] = ! empty($global_styles_config['settings']) ? $global_styles_config['settings'] : new stdClass;
             }
             if (rest_is_field_included('styles', $fields)) {
-                $data['styles'] = ! empty($global_styles_config['styles']) ? $global_styles_config['styles'] : new stdClass();
+                $data['styles'] = ! empty($global_styles_config['styles']) ? $global_styles_config['styles'] : new stdClass;
             }
         }
 

@@ -268,15 +268,15 @@ function create_initial_rest_routes()
     }
 
     // Post types.
-    $controller = new WP_REST_Post_Types_Controller();
+    $controller = new WP_REST_Post_Types_Controller;
     $controller->register_routes();
 
     // Post statuses.
-    $controller = new WP_REST_Post_Statuses_Controller();
+    $controller = new WP_REST_Post_Statuses_Controller;
     $controller->register_routes();
 
     // Taxonomies.
-    $controller = new WP_REST_Taxonomies_Controller();
+    $controller = new WP_REST_Taxonomies_Controller;
     $controller->register_routes();
 
     // Terms.
@@ -291,21 +291,21 @@ function create_initial_rest_routes()
     }
 
     // Users.
-    $controller = new WP_REST_Users_Controller();
+    $controller = new WP_REST_Users_Controller;
     $controller->register_routes();
 
     // Application Passwords
-    $controller = new WP_REST_Application_Passwords_Controller();
+    $controller = new WP_REST_Application_Passwords_Controller;
     $controller->register_routes();
 
     // Comments.
-    $controller = new WP_REST_Comments_Controller();
+    $controller = new WP_REST_Comments_Controller;
     $controller->register_routes();
 
     $search_handlers = [
-        new WP_REST_Post_Search_Handler(),
-        new WP_REST_Term_Search_Handler(),
-        new WP_REST_Post_Format_Search_Handler(),
+        new WP_REST_Post_Search_Handler,
+        new WP_REST_Term_Search_Handler,
+        new WP_REST_Post_Format_Search_Handler,
     ];
 
     /**
@@ -323,59 +323,59 @@ function create_initial_rest_routes()
     $controller->register_routes();
 
     // Block Renderer.
-    $controller = new WP_REST_Block_Renderer_Controller();
+    $controller = new WP_REST_Block_Renderer_Controller;
     $controller->register_routes();
 
     // Block Types.
-    $controller = new WP_REST_Block_Types_Controller();
+    $controller = new WP_REST_Block_Types_Controller;
     $controller->register_routes();
 
     // Global Styles revisions.
-    $controller = new WP_REST_Global_Styles_Revisions_Controller();
+    $controller = new WP_REST_Global_Styles_Revisions_Controller;
     $controller->register_routes();
 
     // Global Styles.
-    $controller = new WP_REST_Global_Styles_Controller();
+    $controller = new WP_REST_Global_Styles_Controller;
     $controller->register_routes();
 
     // Settings.
-    $controller = new WP_REST_Settings_Controller();
+    $controller = new WP_REST_Settings_Controller;
     $controller->register_routes();
 
     // Themes.
-    $controller = new WP_REST_Themes_Controller();
+    $controller = new WP_REST_Themes_Controller;
     $controller->register_routes();
 
     // Plugins.
-    $controller = new WP_REST_Plugins_Controller();
+    $controller = new WP_REST_Plugins_Controller;
     $controller->register_routes();
 
     // Sidebars.
-    $controller = new WP_REST_Sidebars_Controller();
+    $controller = new WP_REST_Sidebars_Controller;
     $controller->register_routes();
 
     // Widget Types.
-    $controller = new WP_REST_Widget_Types_Controller();
+    $controller = new WP_REST_Widget_Types_Controller;
     $controller->register_routes();
 
     // Widgets.
-    $controller = new WP_REST_Widgets_Controller();
+    $controller = new WP_REST_Widgets_Controller;
     $controller->register_routes();
 
     // Block Directory.
-    $controller = new WP_REST_Block_Directory_Controller();
+    $controller = new WP_REST_Block_Directory_Controller;
     $controller->register_routes();
 
     // Pattern Directory.
-    $controller = new WP_REST_Pattern_Directory_Controller();
+    $controller = new WP_REST_Pattern_Directory_Controller;
     $controller->register_routes();
 
     // Block Patterns.
-    $controller = new WP_REST_Block_Patterns_Controller();
+    $controller = new WP_REST_Block_Patterns_Controller;
     $controller->register_routes();
 
     // Block Pattern Categories.
-    $controller = new WP_REST_Block_Pattern_Categories_Controller();
+    $controller = new WP_REST_Block_Pattern_Categories_Controller;
     $controller->register_routes();
 
     // Site Health.
@@ -384,23 +384,23 @@ function create_initial_rest_routes()
     $controller->register_routes();
 
     // URL Details.
-    $controller = new WP_REST_URL_Details_Controller();
+    $controller = new WP_REST_URL_Details_Controller;
     $controller->register_routes();
 
     // Menu Locations.
-    $controller = new WP_REST_Menu_Locations_Controller();
+    $controller = new WP_REST_Menu_Locations_Controller;
     $controller->register_routes();
 
     // Site Editor Export.
-    $controller = new WP_REST_Edit_Site_Export_Controller();
+    $controller = new WP_REST_Edit_Site_Export_Controller;
     $controller->register_routes();
 
     // Navigation Fallback.
-    $controller = new WP_REST_Navigation_Fallback_Controller();
+    $controller = new WP_REST_Navigation_Fallback_Controller;
     $controller->register_routes();
 
     // Font Collections.
-    $font_collections_controller = new WP_REST_Font_Collections_Controller();
+    $font_collections_controller = new WP_REST_Font_Collections_Controller;
     $font_collections_controller->register_routes();
 }
 
@@ -598,7 +598,7 @@ function rest_get_server()
          * @param  string  $class_name  The name of the server class. Default 'WP_REST_Server'.
          */
         $wp_rest_server_class = apply_filters('wp_rest_server_class', 'WP_REST_Server');
-        $wp_rest_server = new $wp_rest_server_class();
+        $wp_rest_server = new $wp_rest_server_class;
 
         /**
          * Fires when preparing to serve a REST API request.
@@ -802,7 +802,7 @@ function rest_handle_options_request($response, $handler, $request)
         return $response;
     }
 
-    $response = new WP_REST_Response();
+    $response = new WP_REST_Response;
     $data = [];
 
     foreach ($handler->get_routes() as $route => $endpoints) {

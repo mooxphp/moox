@@ -138,7 +138,7 @@ if (! class_exists('MO', false)) {
             $current_addr++;
             $originals_table = "\0";
 
-            $reader = new POMO_Reader();
+            $reader = new POMO_Reader;
 
             foreach ($entries as $entry) {
                 $originals_table .= $this->export_original($entry)."\0";
@@ -334,7 +334,7 @@ if (! class_exists('MO', false)) {
          */
         public function &make_entry($original, $translation)
         {
-            $entry = new Translation_Entry();
+            $entry = new Translation_Entry;
             // Look for context, separated by \4.
             $parts = explode("\4", $original);
             if (isset($parts[1])) {

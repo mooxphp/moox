@@ -533,7 +533,7 @@ function wp_privacy_generate_personal_data_export_file($request_id)
         wp_delete_file($archive_pathname);
     }
 
-    $zip = new ZipArchive();
+    $zip = new ZipArchive;
     if ($zip->open($archive_pathname, ZipArchive::CREATE) === true) {
         if (! $zip->addFile($json_report_pathname, 'export.json')) {
             $error = __('Unable to archive the personal data export file (JSON format).');

@@ -184,11 +184,11 @@ final class WP_Block_Type_Registry
             return;
         }
         if (! is_array($this->registered_block_types)) {
-            throw new UnexpectedValueException();
+            throw new UnexpectedValueException;
         }
         foreach ($this->registered_block_types as $value) {
             if (! $value instanceof WP_Block_Type) {
-                throw new UnexpectedValueException();
+                throw new UnexpectedValueException;
             }
         }
     }
@@ -205,7 +205,7 @@ final class WP_Block_Type_Registry
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

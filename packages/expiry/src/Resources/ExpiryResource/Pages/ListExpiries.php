@@ -30,7 +30,7 @@ class ListExpiries extends BaseListRecords
     {
         $jobs = config('expiry.collect_expiries_jobs', []);
         foreach ($jobs as $jobClass) {
-            dispatch(new $jobClass());
+            dispatch(new $jobClass);
         }
 
         Notification::make()

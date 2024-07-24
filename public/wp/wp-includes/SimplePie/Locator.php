@@ -90,7 +90,7 @@ class SimplePie_Locator
         $this->curl_options = $curl_options;
 
         if (class_exists('DOMDocument') && $this->file->body != '') {
-            $this->dom = new DOMDocument();
+            $this->dom = new DOMDocument;
 
             set_error_handler(['SimplePie_Misc', 'silence_errors']);
             try {

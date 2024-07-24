@@ -306,8 +306,8 @@ function _wp_get_iframed_editor_assets()
     $current_wp_scripts = $wp_scripts;
 
     // Create new instances to collect the assets.
-    $wp_styles = new WP_Styles();
-    $wp_scripts = new WP_Scripts();
+    $wp_styles = new WP_Styles;
+    $wp_scripts = new WP_Scripts;
 
     /*
      * Register all currently registered styles and scripts. The actions that

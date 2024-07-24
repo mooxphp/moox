@@ -738,7 +738,7 @@ final class WP_Style_Engine
      */
     public static function compile_stylesheet_from_css_rules($css_rules, $options = [])
     {
-        $processor = new WP_Style_Engine_Processor();
+        $processor = new WP_Style_Engine_Processor;
         $processor->add_rules($css_rules);
 
         return $processor->get_css($options);

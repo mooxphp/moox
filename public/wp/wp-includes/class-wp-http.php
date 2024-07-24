@@ -435,7 +435,7 @@ class WP_Http
         $options['verify'] = apply_filters('https_ssl_verify', $options['verify'], $url);
 
         // Check for proxies.
-        $proxy = new WP_HTTP_Proxy();
+        $proxy = new WP_HTTP_Proxy;
         if ($proxy->is_enabled() && $proxy->send_through_proxy($url)) {
             $options['proxy'] = new WpOrg\Requests\Proxy\Http($proxy->host().':'.$proxy->port());
 
@@ -515,7 +515,7 @@ class WP_Http
      */
     public static function normalize_cookies($cookies)
     {
-        $cookie_jar = new WpOrg\Requests\Cookie\Jar();
+        $cookie_jar = new WpOrg\Requests\Cookie\Jar;
 
         foreach ($cookies as $name => $value) {
             if ($value instanceof WP_Http_Cookie) {
@@ -648,7 +648,7 @@ class WP_Http
 
         // Transport claims to support request, instantiate it and give it a whirl.
         if (empty($transports[$class])) {
-            $transports[$class] = new $class();
+            $transports[$class] = new $class;
         }
 
         $response = $transports[$class]->request($url, $args);

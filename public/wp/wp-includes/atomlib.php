@@ -105,7 +105,7 @@ class AtomParser
     public function __construct()
     {
 
-        $this->feed = new AtomFeed();
+        $this->feed = new AtomFeed;
         $this->current = null;
         $this->map_attrs_func = [__CLASS__, 'map_attrs'];
         $this->map_xmlns_func = [__CLASS__, 'map_xmlns'];
@@ -223,7 +223,7 @@ class AtomParser
                 $this->current = $this->feed;
                 break;
             case $this->NS.':entry':
-                $this->current = new AtomEntry();
+                $this->current = new AtomEntry;
                 break;
         }
 

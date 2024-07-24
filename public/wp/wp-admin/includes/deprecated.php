@@ -1248,7 +1248,7 @@ function wp_update_core($current, $feedback = '')
     }
 
     require ABSPATH.'wp-admin/includes/class-wp-upgrader.php';
-    $upgrader = new Core_Upgrader();
+    $upgrader = new Core_Upgrader;
 
     return $upgrader->upgrade($current);
 
@@ -1274,7 +1274,7 @@ function wp_update_plugin($plugin, $feedback = '')
     }
 
     require ABSPATH.'wp-admin/includes/class-wp-upgrader.php';
-    $upgrader = new Plugin_Upgrader();
+    $upgrader = new Plugin_Upgrader;
 
     return $upgrader->upgrade($plugin);
 }
@@ -1299,7 +1299,7 @@ function wp_update_theme($theme, $feedback = '')
     }
 
     require ABSPATH.'wp-admin/includes/class-wp-upgrader.php';
-    $upgrader = new Theme_Upgrader();
+    $upgrader = new Theme_Upgrader;
 
     return $upgrader->upgrade($theme);
 }

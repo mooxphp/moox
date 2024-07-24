@@ -13,7 +13,7 @@ class WordPressUserProvider extends EloquentUserProvider
     public function __construct($hasher, $model)
     {
         parent::__construct($hasher, $model);
-        $this->wpAuthService = new WordPressAuthService();
+        $this->wpAuthService = new WordPressAuthService;
     }
 
     public function validateCredentials(UserContract $user, array $credentials)

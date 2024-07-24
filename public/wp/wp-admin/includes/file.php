@@ -1598,7 +1598,7 @@ function wp_zip_file_is_valid($file)
 {
     /** This filter is documented in wp-admin/includes/file.php */
     if (class_exists('ZipArchive', false) && apply_filters('unzip_file_use_ziparchive', true)) {
-        $archive = new ZipArchive();
+        $archive = new ZipArchive;
         $archive_is_valid = $archive->open($file, ZipArchive::CHECKCONS);
         if ($archive_is_valid === true) {
             $archive->close();
@@ -1712,7 +1712,7 @@ function _unzip_file_ziparchive($file, $to, $needed_dirs = [])
 {
     global $wp_filesystem;
 
-    $z = new ZipArchive();
+    $z = new ZipArchive;
 
     $zopen = $z->open($file, ZIPARCHIVE::CHECKCONS);
 

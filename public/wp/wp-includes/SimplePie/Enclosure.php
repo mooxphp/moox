@@ -277,7 +277,7 @@ class SimplePie_Enclosure
         $this->width = $width;
 
         if (class_exists('idna_convert')) {
-            $idn = new idna_convert();
+            $idn = new idna_convert;
             $parsed = SimplePie_Misc::parse_url($link);
             $this->link = SimplePie_Misc::compress_parse_url($parsed['scheme'], $idn->encode($parsed['authority']), $parsed['path'], $parsed['query'], $parsed['fragment']);
         }

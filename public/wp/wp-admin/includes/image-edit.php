@@ -824,7 +824,7 @@ function wp_restore_image($post_id)
     $backup_sizes = get_post_meta($post_id, '_wp_attachment_backup_sizes', true);
     $old_backup_sizes = $backup_sizes;
     $restored = false;
-    $msg = new stdClass();
+    $msg = new stdClass;
 
     if (! is_array($backup_sizes)) {
         $msg->error = __('Cannot load image metadata.');
@@ -918,7 +918,7 @@ function wp_save_image($post_id)
 {
     $_wp_additional_image_sizes = wp_get_additional_image_sizes();
 
-    $return = new stdClass();
+    $return = new stdClass;
     $success = false;
     $delete = false;
     $scaled = false;

@@ -1513,7 +1513,7 @@ function comments_template($file = '/comments.php', $separate_comments = false)
             $comment_args['offset'] = 0;
         } else {
             // If fetching the first page of 'newest', we need a top-level comment count.
-            $top_level_query = new WP_Comment_Query();
+            $top_level_query = new WP_Comment_Query;
             $top_level_args = [
                 'count' => true,
                 'orderby' => false,
@@ -2424,7 +2424,7 @@ function wp_list_comments($args = [], $comments = null)
     }
 
     if (empty($parsed_args['walker'])) {
-        $walker = new Walker_Comment();
+        $walker = new Walker_Comment;
     } else {
         $walker = $parsed_args['walker'];
     }

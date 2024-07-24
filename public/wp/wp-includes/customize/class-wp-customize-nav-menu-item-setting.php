@@ -220,7 +220,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
     public function value()
     {
         if ($this->is_previewed && get_current_blog_id() === $this->_previewed_blog_id) {
-            $undefined = new stdClass(); // Symbol.
+            $undefined = new stdClass; // Symbol.
             $post_value = $this->post_value($undefined);
 
             if ($undefined === $post_value) {
@@ -451,7 +451,7 @@ class WP_Customize_Nav_Menu_Item_Setting extends WP_Customize_Setting
             return false;
         }
 
-        $undefined = new stdClass();
+        $undefined = new stdClass;
         $is_placeholder = ($this->post_id < 0);
         $is_dirty = ($undefined !== $this->post_value($undefined));
         if (! $is_placeholder && ! $is_dirty) {

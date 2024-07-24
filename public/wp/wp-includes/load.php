@@ -1530,7 +1530,7 @@ function wp_load_translations_early()
     $locations = [];
 
     if (! $wp_textdomain_registry instanceof WP_Textdomain_Registry) {
-        $wp_textdomain_registry = new WP_Textdomain_Registry();
+        $wp_textdomain_registry = new WP_Textdomain_Registry;
     }
 
     while (true) {
@@ -1588,7 +1588,7 @@ function wp_load_translations_early()
         break;
     }
 
-    $wp_locale = new WP_Locale();
+    $wp_locale = new WP_Locale;
 }
 
 /**

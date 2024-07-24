@@ -143,7 +143,7 @@ function wp_authenticate_username_password($user, $username, $password)
             return $user;
         }
 
-        $error = new WP_Error();
+        $error = new WP_Error;
 
         if (empty($username)) {
             $error->add('empty_username', __('<strong>Error:</strong> The username field is empty.'));
@@ -222,7 +222,7 @@ function wp_authenticate_email_password($user, $email, $password)
             return $user;
         }
 
-        $error = new WP_Error();
+        $error = new WP_Error;
 
         if (empty($email)) {
             // Uses 'empty_username' for back-compat with wp_signon().
@@ -415,7 +415,7 @@ function wp_authenticate_application_password($input_user, $username, $password)
             continue;
         }
 
-        $error = new WP_Error();
+        $error = new WP_Error;
 
         /**
          * Fires when an application password has been successfully checked as valid.
@@ -982,7 +982,7 @@ function get_blogs_of_user($user_id, $all = false)
 
     if (! is_multisite()) {
         $site_id = get_current_blog_id();
-        $sites = [$site_id => new stdClass()];
+        $sites = [$site_id => new stdClass];
         $sites[$site_id]->userblog_id = $site_id;
         $sites[$site_id]->blogname = get_option('blogname');
         $sites[$site_id]->domain = '';
@@ -3109,7 +3109,7 @@ function check_password_reset_key($key, $login)
  */
 function retrieve_password($user_login = null)
 {
-    $errors = new WP_Error();
+    $errors = new WP_Error;
     $user_data = false;
 
     // Use the passed $user_login if available, otherwise use $_POST['user_login'].
@@ -3388,7 +3388,7 @@ function reset_password($user, $new_pass)
  */
 function register_new_user($user_login, $user_email)
 {
-    $errors = new WP_Error();
+    $errors = new WP_Error;
 
     $sanitized_user_login = sanitize_user($user_login);
     /**
@@ -3722,7 +3722,7 @@ function send_confirmation_on_profile_email()
 
     $current_user = wp_get_current_user();
     if (! is_object($errors)) {
-        $errors = new WP_Error();
+        $errors = new WP_Error;
     }
 
     if ($current_user->ID != $_POST['user_id']) {

@@ -266,7 +266,7 @@ class Requests
             throw new Exception('No working transports found', 'notransport', self::$transports);
         }
 
-        return new $class();
+        return new $class;
     }
 
     /**
@@ -463,7 +463,7 @@ class Requests
             $transport = $options['transport'];
 
             if (is_string($options['transport'])) {
-                $transport = new $transport();
+                $transport = new $transport;
             }
         } else {
             $need_ssl = (stripos($url, 'https://') === 0);
@@ -582,7 +582,7 @@ class Requests
             $transport = $options['transport'];
 
             if (is_string($options['transport'])) {
-                $transport = new $transport();
+                $transport = new $transport;
             }
         } else {
             $transport = self::get_transport();
@@ -670,7 +670,7 @@ class Requests
         }
 
         if (empty($options['hooks'])) {
-            $options['hooks'] = new Hooks();
+            $options['hooks'] = new Hooks;
         }
 
         if (is_array($options['auth'])) {
@@ -692,7 +692,7 @@ class Requests
         if (is_array($options['cookies'])) {
             $options['cookies'] = new Jar($options['cookies']);
         } elseif (empty($options['cookies'])) {
-            $options['cookies'] = new Jar();
+            $options['cookies'] = new Jar;
         }
 
         if ($options['cookies'] !== false) {
@@ -733,7 +733,7 @@ class Requests
      */
     protected static function parse_response($headers, $url, $req_headers, $req_data, $options)
     {
-        $return = new Response();
+        $return = new Response;
         if (! $options['blocking']) {
             return $return;
         }

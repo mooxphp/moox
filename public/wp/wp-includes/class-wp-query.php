@@ -1965,7 +1965,7 @@ class WP_Query
         remove_all_filters('wp_allow_query_attachment_by_filename');
 
         // Parse meta query.
-        $this->meta_query = new WP_Meta_Query();
+        $this->meta_query = new WP_Meta_Query;
         $this->meta_query->parse_query_vars($q);
 
         // Set a flag if a 'pre_get_posts' hook changed the query vars.
@@ -3271,7 +3271,7 @@ class WP_Query
                         $post_parents = wp_cache_get_multiple($post_parent_cache_keys, 'posts');
 
                         foreach ($post_parents as $cache_key => $post_parent) {
-                            $obj = new stdClass();
+                            $obj = new stdClass;
                             $obj->ID = (int) str_replace('post_parent:', '', $cache_key);
                             $obj->post_parent = (int) $post_parent;
 

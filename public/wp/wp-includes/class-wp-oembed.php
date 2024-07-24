@@ -661,7 +661,7 @@ class WP_oEmbed
             return false;
         }
 
-        $dom = new DOMDocument();
+        $dom = new DOMDocument;
         $success = $dom->loadXML($response_body);
         if (! $success) {
             return false;
@@ -682,7 +682,7 @@ class WP_oEmbed
             return false;
         }
 
-        $return = new stdClass();
+        $return = new stdClass;
         foreach ($xml as $key => $value) {
             $return->$key = (string) $value;
         }

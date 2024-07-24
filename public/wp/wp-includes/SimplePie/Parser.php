@@ -90,7 +90,7 @@ class SimplePie_Parser
     public function parse(&$data, $encoding, $url = '')
     {
         if (class_exists('DOMXpath') && function_exists('Mf2\parse')) {
-            $doc = new DOMDocument();
+            $doc = new DOMDocument;
             @$doc->loadHTML($data);
             $xpath = new DOMXpath($doc);
             // Check for both h-feed and h-entry, as both a feed with no entries
@@ -192,7 +192,7 @@ class SimplePie_Parser
         }
 
         libxml_clear_errors();
-        $xml = new XMLReader();
+        $xml = new XMLReader;
         $xml->xml($data);
         while (@$xml->read()) {
             switch ($xml->nodeType) {

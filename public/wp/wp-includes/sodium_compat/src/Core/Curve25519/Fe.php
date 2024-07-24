@@ -38,7 +38,7 @@ class ParagonIE_Sodium_Core_Curve25519_Fe implements ArrayAccess
         }
         $array = array_values($array);
         /** @var array<int, int> $keys */
-        $obj = new ParagonIE_Sodium_Core_Curve25519_Fe();
+        $obj = new ParagonIE_Sodium_Core_Curve25519_Fe;
         if ($save_indexes) {
             for ($i = 0; $i < $count; $i++) {
                 $obj->offsetSet($keys[$i], $array[$i]);

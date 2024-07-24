@@ -384,7 +384,7 @@ class getid3_matroska extends getid3_handler
                                 }
 
                                 // create temp instance
-                                $getid3_temp = new getID3();
+                                $getid3_temp = new getID3;
                                 if ($track_info['dataformat'] != 'flac') {
                                     $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                                 }
@@ -450,7 +450,7 @@ class getid3_matroska extends getid3_handler
                                 getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio.ogg.php', __FILE__, true);
 
                                 // create temp instance
-                                $getid3_temp = new getID3();
+                                $getid3_temp = new getID3;
 
                                 // analyze
                                 $getid3_ogg = new getid3_ogg($getid3_temp);

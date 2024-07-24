@@ -28,7 +28,7 @@ function add_user()
 function edit_user($user_id = 0)
 {
     $wp_roles = wp_roles();
-    $user = new stdClass();
+    $user = new stdClass;
     $user_id = (int) $user_id;
     if ($user_id) {
         $update = true;
@@ -144,7 +144,7 @@ function edit_user($user_id = 0)
         $user->use_ssl = 1;
     }
 
-    $errors = new WP_Error();
+    $errors = new WP_Error;
 
     /* checking that username has been typed */
     if ($user->user_login === '') {
@@ -665,7 +665,7 @@ Please click the following link to activate your user account:
  */
 function wp_is_authorize_application_password_request_valid($request, $user)
 {
-    $error = new WP_Error();
+    $error = new WP_Error;
 
     if (isset($request['success_url'])) {
         $validated_success_url = wp_is_authorize_application_redirect_url_valid($request['success_url']);

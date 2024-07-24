@@ -106,7 +106,7 @@ if (! function_exists('get_user_by')) {
             return false;
         }
 
-        $user = new WP_User();
+        $user = new WP_User;
         $user->init($userdata);
 
         return $user;

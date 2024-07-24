@@ -340,7 +340,7 @@ final class WP_Site
 
             switch_to_blog($this->blog_id);
             // Create a raw copy of the object for backward compatibility with the filter below.
-            $details = new stdClass();
+            $details = new stdClass;
             foreach (get_object_vars($this) as $key => $value) {
                 $details->$key = $value;
             }

@@ -365,7 +365,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller
         $args = apply_filters("rest_{$this->post_type}_query", $args, $request);
         $query_args = $this->prepare_items_query($args, $request);
 
-        $posts_query = new WP_Query();
+        $posts_query = new WP_Query;
         $query_result = $posts_query->query($query_args);
 
         // Allow access to all password protected posts if the context is edit.
@@ -403,7 +403,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller
             // Out-of-bounds, run the query again without LIMIT for total count.
             unset($query_args['paged']);
 
-            $count_query = new WP_Query();
+            $count_query = new WP_Query;
             $count_query->query($query_args);
             $total_posts = $count_query->found_posts;
         }
@@ -1053,7 +1053,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller
         if ($force) {
             $previous = $this->prepare_item_for_response($post, $request);
             $result = wp_delete_post($id, true);
-            $response = new WP_REST_Response();
+            $response = new WP_REST_Response;
             $response->set_data(
                 [
                     'deleted' => true,
@@ -1203,7 +1203,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller
      */
     protected function prepare_item_for_database($request)
     {
-        $prepared_post = new stdClass();
+        $prepared_post = new stdClass;
         $current_status = '';
 
         // Post ID.

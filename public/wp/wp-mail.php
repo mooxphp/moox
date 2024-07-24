@@ -46,7 +46,7 @@ $time_difference = get_option('gmt_offset') * HOUR_IN_SECONDS;
 
 $phone_delim = '::';
 
-$pop3 = new POP3();
+$pop3 = new POP3;
 
 if (! $pop3->connect(get_option('mailserver_url'), get_option('mailserver_port')) || ! $pop3->user(get_option('mailserver_login'))) {
     wp_die(esc_html($pop3->ERROR));

@@ -61,7 +61,7 @@ function get_network($network = null)
  */
 function get_networks($args = [])
 {
-    $query = new WP_Network_Query();
+    $query = new WP_Network_Query;
 
     return $query->query($args);
 }

@@ -310,7 +310,7 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
      */
     protected function prepare_item_for_database($request)
     {
-        $changes = new stdClass();
+        $changes = new stdClass;
         $changes->ID = $request['id'];
 
         $post = get_post($request['id']);
@@ -400,11 +400,11 @@ class WP_REST_Global_Styles_Controller extends WP_REST_Controller
         }
 
         if (rest_is_field_included('settings', $fields)) {
-            $data['settings'] = ! empty($config['settings']) && $is_global_styles_user_theme_json ? $config['settings'] : new stdClass();
+            $data['settings'] = ! empty($config['settings']) && $is_global_styles_user_theme_json ? $config['settings'] : new stdClass;
         }
 
         if (rest_is_field_included('styles', $fields)) {
-            $data['styles'] = ! empty($config['styles']) && $is_global_styles_user_theme_json ? $config['styles'] : new stdClass();
+            $data['styles'] = ! empty($config['styles']) && $is_global_styles_user_theme_json ? $config['styles'] : new stdClass;
         }
 
         $context = ! empty($request['context']) ? $request['context'] : 'view';

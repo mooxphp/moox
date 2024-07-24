@@ -22,7 +22,7 @@ function wp_script_modules(): WP_Script_Modules
     global $wp_script_modules;
 
     if (! ($wp_script_modules instanceof WP_Script_Modules)) {
-        $wp_script_modules = new WP_Script_Modules();
+        $wp_script_modules = new WP_Script_Modules;
     }
 
     return $wp_script_modules;

@@ -998,7 +998,7 @@ function populate_network($network_id = 1, $domain = '', $email = '', $site_name
 
     $network_id = (int) $network_id;
 
-    $errors = new WP_Error();
+    $errors = new WP_Error;
     if ($domain === '') {
         $errors->add('empty_domain', __('You must provide a domain name.'));
     }
@@ -1065,7 +1065,7 @@ function populate_network($network_id = 1, $domain = '', $email = '', $site_name
      * created.
      */
     if (! is_multisite()) {
-        $current_site = new stdClass();
+        $current_site = new stdClass;
         $current_site->domain = $domain;
         $current_site->path = $path;
         $current_site->site_name = ucfirst($domain);

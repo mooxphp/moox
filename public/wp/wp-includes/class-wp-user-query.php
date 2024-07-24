@@ -400,7 +400,7 @@ class WP_User_Query
         }
 
         // Meta query.
-        $this->meta_query = new WP_Meta_Query();
+        $this->meta_query = new WP_Meta_Query;
         $this->meta_query->parse_query_vars($qv);
 
         if (isset($qv['who']) && $qv['who'] === 'authors' && $blog_id) {

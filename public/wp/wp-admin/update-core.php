@@ -328,7 +328,7 @@ function core_auto_updates_settings()
     }
 
     require_once ABSPATH.'wp-admin/includes/class-wp-upgrader.php';
-    $updater = new WP_Automatic_Updater();
+    $updater = new WP_Automatic_Updater;
 
     // Defaults:
     $upgrade_dev = get_site_option('auto_update_core_dev', 'enabled') === 'enabled';
@@ -910,7 +910,7 @@ function do_core_upgrade($reinstall = false)
 
     add_filter('update_feedback', 'show_message');
 
-    $upgrader = new Core_Upgrader();
+    $upgrader = new Core_Upgrader;
     $result = $upgrader->upgrade(
         $update,
         [

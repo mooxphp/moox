@@ -32,7 +32,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller
         $this->namespace = 'wp/v2';
         $this->rest_base = 'users';
 
-        $this->meta = new WP_REST_User_Meta_Fields();
+        $this->meta = new WP_REST_User_Meta_Fields;
     }
 
     /**
@@ -939,7 +939,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller
             );
         }
 
-        $response = new WP_REST_Response();
+        $response = new WP_REST_Response;
         $response->set_data(
             [
                 'deleted' => true,
@@ -1138,7 +1138,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller
      */
     protected function prepare_item_for_database($request)
     {
-        $prepared_user = new stdClass();
+        $prepared_user = new stdClass;
 
         $schema = $this->get_item_schema();
 

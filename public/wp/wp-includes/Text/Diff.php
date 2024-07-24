@@ -49,7 +49,7 @@ class Text_Diff
         // WP #7391
         require_once dirname(__FILE__).'/Diff/Engine/'.$engine.'.php';
         $class = 'Text_Diff_Engine_'.$engine;
-        $diff_engine = new $class();
+        $diff_engine = new $class;
 
         $this->_edits = call_user_func_array([$diff_engine, 'diff'], $params);
     }

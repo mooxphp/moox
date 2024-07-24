@@ -397,7 +397,7 @@ final class WP_Screen
                 return $screen;
             }
         } else {
-            $screen = new self();
+            $screen = new self;
             $screen->id = $id;
         }
 

@@ -364,7 +364,7 @@ class WP_Term_Query
         $args = &$this->query_vars;
 
         // Set up meta_query so it's available to 'pre_get_terms'.
-        $this->meta_query = new WP_Meta_Query();
+        $this->meta_query = new WP_Meta_Query;
         $this->meta_query->parse_query_vars($args);
 
         /**
@@ -896,7 +896,7 @@ class WP_Term_Query
         if ($_fields === 'all_with_object_id' && ! empty($args['object_ids'])) {
             $term_cache = [];
             foreach ($term_objects as $term) {
-                $object = new stdClass();
+                $object = new stdClass;
                 $object->term_id = $term->term_id;
                 $object->object_id = $term->object_id;
                 $term_cache[] = $object;
@@ -904,7 +904,7 @@ class WP_Term_Query
         } elseif ($_fields === 'all' && $args['pad_counts']) {
             $term_cache = [];
             foreach ($term_objects as $term) {
-                $object = new stdClass();
+                $object = new stdClass;
                 $object->term_id = $term->term_id;
                 $object->count = $term->count;
                 $term_cache[] = $object;

@@ -355,7 +355,7 @@ if (! class_exists('PO', false)) {
          */
         public function read_entry($f, $lineno = 0)
         {
-            $entry = new Translation_Entry();
+            $entry = new Translation_Entry;
             // Where were we in the last step.
             // Can be: comment, msgctxt, msgid, msgid_plural, msgstr, msgstr_plural.
             $context = '';

@@ -62,7 +62,7 @@ final class WP_Translation_Controller
     public static function get_instance(): WP_Translation_Controller
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;

@@ -1242,7 +1242,7 @@ class getid3_riff extends getid3_handler
                 if (! empty($thisfile_riff['CDXA']['data'][0]['size'])) {
                     getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.audio-video.mpeg.php', __FILE__, true);
 
-                    $getid3_temp = new getID3();
+                    $getid3_temp = new getID3;
                     $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                     $getid3_mpeg = new getid3_mpeg($getid3_temp);
                     $getid3_mpeg->Analyze();
@@ -1328,7 +1328,7 @@ class getid3_riff extends getid3_handler
                 if (isset($thisfile_riff[$RIFFsubtype]['id3 '])) {
                     getid3_lib::IncludeDependency(GETID3_INCLUDEPATH.'module.tag.id3v2.php', __FILE__, true);
 
-                    $getid3_temp = new getID3();
+                    $getid3_temp = new getID3;
                     $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                     $getid3_id3v2 = new getid3_id3v2($getid3_temp);
                     $getid3_id3v2->StartingOffset = $thisfile_riff[$RIFFsubtype]['id3 '][0]['offset'] + 8;
@@ -1626,7 +1626,7 @@ class getid3_riff extends getid3_handler
                                     if (preg_match('/^\xFF[\xE2-\xE7\xF2-\xF7\xFA-\xFF][\x00-\xEB]/s', $FirstFourBytes)) {
                                         // MP3
                                         if (getid3_mp3::MPEGaudioHeaderBytesValid($FirstFourBytes)) {
-                                            $getid3_temp = new getID3();
+                                            $getid3_temp = new getID3;
                                             $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                                             $getid3_temp->info['avdataoffset'] = $this->ftell() - 4;
                                             $getid3_temp->info['avdataend'] = $this->ftell() + $AudioChunkSize;
@@ -1647,7 +1647,7 @@ class getid3_riff extends getid3_handler
 
                                     } elseif (strpos($FirstFourBytes, $AC3syncwordBytes) === 0) {
                                         // AC3
-                                        $getid3_temp = new getID3();
+                                        $getid3_temp = new getID3;
                                         $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                                         $getid3_temp->info['avdataoffset'] = $this->ftell() - 4;
                                         $getid3_temp->info['avdataend'] = $this->ftell() + $AudioChunkSize;
@@ -1708,7 +1708,7 @@ class getid3_riff extends getid3_handler
 
                                     // Probably is MP3 data
                                     if (getid3_mp3::MPEGaudioHeaderBytesValid(substr($testData, 0, 4))) {
-                                        $getid3_temp = new getID3();
+                                        $getid3_temp = new getID3;
                                         $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                                         $getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
                                         $getid3_temp->info['avdataend'] = $info['avdataend'];
@@ -1724,7 +1724,7 @@ class getid3_riff extends getid3_handler
                                 } elseif (($isRegularAC3 = (substr($testData, 0, 2) == $AC3syncwordBytes)) || substr($testData, 8, 2) == strrev($AC3syncwordBytes)) {
 
                                     // This is probably AC-3 data
-                                    $getid3_temp = new getID3();
+                                    $getid3_temp = new getID3;
                                     if ($isRegularAC3) {
                                         $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                                         $getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
@@ -1761,7 +1761,7 @@ class getid3_riff extends getid3_handler
                                 } elseif (preg_match('/^('.implode('|', array_map('preg_quote', getid3_dts::$syncwords)).')/', $testData)) {
 
                                     // This is probably DTS data
-                                    $getid3_temp = new getID3();
+                                    $getid3_temp = new getID3;
                                     $getid3_temp->openfile($this->getid3->filename, $this->getid3->info['filesize'], $this->getid3->fp);
                                     $getid3_temp->info['avdataoffset'] = $info['avdataoffset'];
                                     $getid3_dts = new getid3_dts($getid3_temp);
@@ -1955,7 +1955,7 @@ class getid3_riff extends getid3_handler
             fwrite($fp_temp, $RIFFdata);
             fclose($fp_temp);
 
-            $getid3_temp = new getID3();
+            $getid3_temp = new getID3;
             $getid3_temp->openfile($tempfile);
             $getid3_temp->info['filesize'] = $RIFFdataLength;
             $getid3_temp->info['filenamepath'] = $info['filenamepath'];

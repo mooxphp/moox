@@ -32,7 +32,7 @@ class WP_REST_Comments_Controller extends WP_REST_Controller
         $this->namespace = 'wp/v2';
         $this->rest_base = 'comments';
 
-        $this->meta = new WP_REST_Comment_Meta_Fields();
+        $this->meta = new WP_REST_Comment_Meta_Fields;
     }
 
     /**
@@ -274,7 +274,7 @@ class WP_REST_Comments_Controller extends WP_REST_Controller
          */
         $prepared_args = apply_filters('rest_comment_query', $prepared_args, $request);
 
-        $query = new WP_Comment_Query();
+        $query = new WP_Comment_Query;
         $query_result = $query->query($prepared_args);
 
         $comments = [];
@@ -295,7 +295,7 @@ class WP_REST_Comments_Controller extends WP_REST_Controller
             // Out-of-bounds, run the query again without LIMIT for total count.
             unset($prepared_args['number'], $prepared_args['offset']);
 
-            $query = new WP_Comment_Query();
+            $query = new WP_Comment_Query;
             $prepared_args['count'] = true;
             $prepared_args['orderby'] = 'none';
 
@@ -986,7 +986,7 @@ class WP_REST_Comments_Controller extends WP_REST_Controller
         if ($force) {
             $previous = $this->prepare_item_for_response($comment, $request);
             $result = wp_delete_comment($comment->comment_ID, true);
-            $response = new WP_REST_Response();
+            $response = new WP_REST_Response;
             $response->set_data(
                 [
                     'deleted' => true,

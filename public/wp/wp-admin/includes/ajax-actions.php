@@ -1066,7 +1066,7 @@ function wp_ajax_add_link_category($action)
     }
 
     $names = explode(',', wp_unslash($_POST['newcat']));
-    $x = new WP_Ajax_Response();
+    $x = new WP_Ajax_Response;
 
     foreach ($names as $cat_name) {
         $cat_name = trim($cat_name);
@@ -1114,7 +1114,7 @@ function wp_ajax_add_tag()
         wp_die(-1);
     }
 
-    $x = new WP_Ajax_Response();
+    $x = new WP_Ajax_Response;
 
     $tag = wp_insert_term($_POST['tag-name'], $taxonomy, $_POST);
 
@@ -1294,7 +1294,7 @@ function wp_ajax_get_comments($action)
         wp_die(1);
     }
 
-    $x = new WP_Ajax_Response();
+    $x = new WP_Ajax_Response;
 
     ob_start();
     foreach ($wp_list_table->items as $comment) {
@@ -1472,7 +1472,7 @@ function wp_ajax_replyto_comment($action)
         $response['supplemental']['parent_post_id'] = $parent->comment_post_ID;
     }
 
-    $x = new WP_Ajax_Response();
+    $x = new WP_Ajax_Response;
     $x->add($response);
     $x->send();
 }
@@ -1519,7 +1519,7 @@ function wp_ajax_edit_comment()
     $wp_list_table->single_row($comment);
     $comment_list_item = ob_get_clean();
 
-    $x = new WP_Ajax_Response();
+    $x = new WP_Ajax_Response;
 
     $x->add(
         [
@@ -1615,7 +1615,7 @@ function wp_ajax_add_menu_item()
             'before' => '',
             'link_after' => '',
             'link_before' => '',
-            'walker' => new $walker_class_name(),
+            'walker' => new $walker_class_name,
         ];
 
         echo walk_nav_menu_tree($menu_items, 0, (object) $args);
@@ -3135,7 +3135,7 @@ function wp_ajax_query_attachments()
         // Out-of-bounds, run the query again without LIMIT for total count.
         unset($query['paged']);
 
-        $count_query = new WP_Query();
+        $count_query = new WP_Query;
         $count_query->query($query);
         $total_posts = $count_query->found_posts;
     }
@@ -4087,7 +4087,7 @@ function wp_ajax_crop_image()
     switch ($context) {
         case 'site-icon':
             require_once ABSPATH.'wp-admin/includes/class-wp-site-icon.php';
-            $wp_site_icon = new WP_Site_Icon();
+            $wp_site_icon = new WP_Site_Icon;
 
             // Skip creating a new attachment if the attachment is a Site Icon.
             if (get_post_meta($attachment_id, '_wp_attachment_context', true) == $context) {
@@ -4255,7 +4255,7 @@ function wp_ajax_install_theme()
         wp_send_json_error($status);
     }
 
-    $skin = new WP_Ajax_Upgrader_Skin();
+    $skin = new WP_Ajax_Upgrader_Skin;
     $upgrader = new Theme_Upgrader($skin);
     $result = $upgrader->install($api->download_link);
 
@@ -4378,7 +4378,7 @@ function wp_ajax_update_theme()
         wp_update_themes();
     }
 
-    $skin = new WP_Ajax_Upgrader_Skin();
+    $skin = new WP_Ajax_Upgrader_Skin;
     $upgrader = new Theme_Upgrader($skin);
     $result = $upgrader->bulk_upgrade([$stylesheet]);
 
@@ -4552,7 +4552,7 @@ function wp_ajax_install_plugin()
 
     $status['pluginName'] = $api->name;
 
-    $skin = new WP_Ajax_Upgrader_Skin();
+    $skin = new WP_Ajax_Upgrader_Skin;
     $upgrader = new Plugin_Upgrader($skin);
     $result = $upgrader->install($api->download_link);
 
@@ -4709,7 +4709,7 @@ function wp_ajax_update_plugin()
 
     wp_update_plugins();
 
-    $skin = new WP_Ajax_Upgrader_Skin();
+    $skin = new WP_Ajax_Upgrader_Skin;
     $upgrader = new Plugin_Upgrader($skin);
     $result = $upgrader->bulk_upgrade([$plugin]);
 

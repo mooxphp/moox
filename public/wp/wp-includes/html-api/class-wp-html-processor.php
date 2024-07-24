@@ -293,7 +293,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor
             );
         }
 
-        $this->state = new WP_HTML_Processor_State();
+        $this->state = new WP_HTML_Processor_State;
 
         /*
          * Create this wrapper so that it's possible to pass

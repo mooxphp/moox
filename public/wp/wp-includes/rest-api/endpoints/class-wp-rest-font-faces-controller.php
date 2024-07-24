@@ -833,7 +833,7 @@ class WP_REST_Font_Faces_Controller extends WP_REST_Posts_Controller
      */
     protected function prepare_item_for_database($request)
     {
-        $prepared_post = new stdClass();
+        $prepared_post = new stdClass;
 
         // Settings have already been decoded by ::sanitize_font_face_settings().
         $settings = $request->get_param('font_face_settings');

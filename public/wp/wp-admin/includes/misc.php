@@ -838,7 +838,7 @@ function iis7_rewrite_rule_exists($filename)
         return false;
     }
 
-    $doc = new DOMDocument();
+    $doc = new DOMDocument;
 
     if ($doc->load($filename) === false) {
         return false;
@@ -873,7 +873,7 @@ function iis7_delete_rewrite_rule($filename)
         return false;
     }
 
-    $doc = new DOMDocument();
+    $doc = new DOMDocument;
     $doc->preserveWhiteSpace = false;
 
     if ($doc->load($filename) === false) {
@@ -916,7 +916,7 @@ function iis7_add_rewrite_rule($filename, $rewrite_rule)
         fclose($fp);
     }
 
-    $doc = new DOMDocument();
+    $doc = new DOMDocument;
     $doc->preserveWhiteSpace = false;
 
     if ($doc->load($filename) === false) {

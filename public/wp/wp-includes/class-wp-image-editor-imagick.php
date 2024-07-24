@@ -142,7 +142,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor
         wp_raise_memory_limit('image');
 
         try {
-            $this->image = new Imagick();
+            $this->image = new Imagick;
             $file_extension = strtolower(pathinfo($this->file, PATHINFO_EXTENSION));
 
             if ($file_extension === 'pdf') {

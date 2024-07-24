@@ -148,7 +148,7 @@ class WP_Upgrader
     public function __construct($skin = null)
     {
         if ($skin === null) {
-            $this->skin = new WP_Upgrader_Skin();
+            $this->skin = new WP_Upgrader_Skin;
         } else {
             $this->skin = $skin;
         }
@@ -1164,7 +1164,7 @@ class WP_Upgrader
     {
         global $wp_filesystem;
 
-        $errors = new WP_Error();
+        $errors = new WP_Error;
 
         foreach ($this->temp_restores as $args) {
             if (empty($args['slug']) || empty($args['src']) || empty($args['dir'])) {
@@ -1221,7 +1221,7 @@ class WP_Upgrader
     {
         global $wp_filesystem;
 
-        $errors = new WP_Error();
+        $errors = new WP_Error;
 
         foreach ($this->temp_backups as $args) {
             if (empty($args['slug']) || empty($args['dir'])) {

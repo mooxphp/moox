@@ -40,19 +40,19 @@ class ParagonIE_Sodium_Core_Curve25519_Ge_P1p1
         ?ParagonIE_Sodium_Core_Curve25519_Fe $t = null
     ) {
         if ($x === null) {
-            $x = new ParagonIE_Sodium_Core_Curve25519_Fe();
+            $x = new ParagonIE_Sodium_Core_Curve25519_Fe;
         }
         $this->X = $x;
         if ($y === null) {
-            $y = new ParagonIE_Sodium_Core_Curve25519_Fe();
+            $y = new ParagonIE_Sodium_Core_Curve25519_Fe;
         }
         $this->Y = $y;
         if ($z === null) {
-            $z = new ParagonIE_Sodium_Core_Curve25519_Fe();
+            $z = new ParagonIE_Sodium_Core_Curve25519_Fe;
         }
         $this->Z = $z;
         if ($t === null) {
-            $t = new ParagonIE_Sodium_Core_Curve25519_Fe();
+            $t = new ParagonIE_Sodium_Core_Curve25519_Fe;
         }
         $this->T = $t;
     }

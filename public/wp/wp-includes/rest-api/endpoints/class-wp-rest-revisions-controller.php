@@ -297,7 +297,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
             $args = apply_filters('rest_revision_query', $args, $request);
             $query_args = $this->prepare_items_query($args, $request);
 
-            $revisions_query = new WP_Query();
+            $revisions_query = new WP_Query;
             $revisions = $revisions_query->query($query_args);
             $offset = isset($query_args['offset']) ? (int) $query_args['offset'] : 0;
             $page = (int) $query_args['paged'];
@@ -307,7 +307,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
                 // Out-of-bounds, run the query again without LIMIT for total count.
                 unset($query_args['paged'], $query_args['offset']);
 
-                $count_query = new WP_Query();
+                $count_query = new WP_Query;
                 $count_query->query($query_args);
 
                 $total_revisions = $count_query->found_posts;
@@ -520,7 +520,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller
             );
         }
 
-        $response = new WP_REST_Response();
+        $response = new WP_REST_Response;
         $response->set_data(
             [
                 'deleted' => true,

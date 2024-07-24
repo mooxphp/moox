@@ -89,7 +89,7 @@ class WP_Site_Health
     public static function get_instance()
     {
         if (self::$instance === null) {
-            self::$instance = new WP_Site_Health();
+            self::$instance = new WP_Site_Health;
         }
 
         return self::$instance;
@@ -1870,7 +1870,7 @@ class WP_Site_Health
          * Run the auto-update tests in a separate class,
          * as there are many considerations to be made.
          */
-        $automatic_updates = new WP_Site_Health_Auto_Updates();
+        $automatic_updates = new WP_Site_Health_Auto_Updates;
         $tests = $automatic_updates->run_tests();
 
         $output = '<ul>';
@@ -3109,7 +3109,7 @@ class WP_Site_Health
             'banners_rtl' => [],
             'tested' => '5.5.0',
             'requires_php' => '5.6.20',
-            'compatibility' => new stdClass(),
+            'compatibility' => new stdClass,
         ];
 
         $mock_theme = (object) [

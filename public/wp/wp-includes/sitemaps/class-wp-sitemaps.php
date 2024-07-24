@@ -49,8 +49,8 @@ class WP_Sitemaps
      */
     public function __construct()
     {
-        $this->registry = new WP_Sitemaps_Registry();
-        $this->renderer = new WP_Sitemaps_Renderer();
+        $this->registry = new WP_Sitemaps_Registry;
+        $this->renderer = new WP_Sitemaps_Renderer;
         $this->index = new WP_Sitemaps_Index($this->registry);
     }
 
@@ -114,9 +114,9 @@ class WP_Sitemaps
     public function register_sitemaps()
     {
         $providers = [
-            'posts' => new WP_Sitemaps_Posts(),
-            'taxonomies' => new WP_Sitemaps_Taxonomies(),
-            'users' => new WP_Sitemaps_Users(),
+            'posts' => new WP_Sitemaps_Posts,
+            'taxonomies' => new WP_Sitemaps_Taxonomies,
+            'users' => new WP_Sitemaps_Users,
         ];
 
         /* @var WP_Sitemaps_Provider $provider */
@@ -187,7 +187,7 @@ class WP_Sitemaps
 
         // Render stylesheet if this is stylesheet route.
         if ($stylesheet_type) {
-            $stylesheet = new WP_Sitemaps_Stylesheet();
+            $stylesheet = new WP_Sitemaps_Stylesheet;
 
             $stylesheet->render_stylesheet($stylesheet_type);
             exit;

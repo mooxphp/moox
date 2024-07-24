@@ -313,7 +313,7 @@ class WP_REST_Plugins_Controller extends WP_REST_Controller
             return $api;
         }
 
-        $skin = new WP_Ajax_Upgrader_Skin();
+        $skin = new WP_Ajax_Upgrader_Skin;
         $upgrader = new Plugin_Upgrader($skin);
 
         $result = $upgrader->install($api->download_link);

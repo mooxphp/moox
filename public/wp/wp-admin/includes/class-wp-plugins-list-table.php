@@ -225,7 +225,7 @@ class WP_Plugins_List_Table extends WP_List_Table
                 'banners_rtl' => [],
                 'tested' => '',
                 'requires_php' => '',
-                'compatibility' => new stdClass(),
+                'compatibility' => new stdClass,
             ];
 
             $filter_payload = (object) wp_parse_args($plugin_data, $filter_payload);

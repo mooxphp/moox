@@ -89,7 +89,7 @@ class WP_Translations
      */
     private function make_entry($original, $translations): Translation_Entry
     {
-        $entry = new Translation_Entry();
+        $entry = new Translation_Entry;
 
         // Look for context, separated by \4.
         $parts = explode("\4", $original);

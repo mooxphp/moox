@@ -1433,7 +1433,7 @@ function get_translations_for_domain($domain)
 
     static $noop_translations = null;
     if ($noop_translations === null) {
-        $noop_translations = new NOOP_Translations();
+        $noop_translations = new NOOP_Translations;
     }
 
     $l10n[$domain] = &$noop_translations;

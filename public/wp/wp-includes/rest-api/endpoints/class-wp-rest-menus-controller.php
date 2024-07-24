@@ -393,7 +393,7 @@ class WP_REST_Menus_Controller extends WP_REST_Terms_Controller
             return new WP_Error('rest_cannot_delete', __('The menu cannot be deleted.'), ['status' => 500]);
         }
 
-        $response = new WP_REST_Response();
+        $response = new WP_REST_Response;
         $response->set_data(
             [
                 'deleted' => true,

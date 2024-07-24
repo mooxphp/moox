@@ -110,7 +110,7 @@ function wp_get_https_detection_errors()
         return $support_errors->errors;
     }
 
-    $support_errors = new WP_Error();
+    $support_errors = new WP_Error;
 
     $response = wp_remote_request(
         home_url('/', 'https'),

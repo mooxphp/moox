@@ -76,7 +76,7 @@ class SimplePie_File
     public function __construct($url, $timeout = 10, $redirects = 5, $headers = null, $useragent = null, $force_fsockopen = false, $curl_options = [])
     {
         if (class_exists('idna_convert')) {
-            $idn = new idna_convert();
+            $idn = new idna_convert;
             $parsed = SimplePie_Misc::parse_url($url);
             $url = SimplePie_Misc::compress_parse_url($parsed['scheme'], $idn->encode($parsed['authority']), $parsed['path'], $parsed['query'], null);
         }
