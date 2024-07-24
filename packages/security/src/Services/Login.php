@@ -92,42 +92,54 @@ class Login extends SimplePage
             return null;
         }
 
+        $guard = Filament::auth();
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
+        $credentialKey = array_key_first($credentials);
+        $guardProvider = config("auth.guards.$guard->name.provider");
+        $userModel = config("auth.providers.$guardProvider.model");
+        $userModelUsername = config("press.auth.$guard->name.username");
+        $userModelEmail = config("press.auth.$guard->name.email");
+        $query = $userModel::query();
+        if (! empty($userModelUsername) && $credentialKey === 'name') {
+            $query->orWhere($userModelUsername, $credentials[$credentialKey]);
+        }
+        if (! empty($userModelEmail && $credentialKey === 'email')) {
+            $query->orWhere($userModelEmail, $credentials[$credentialKey]);
+        }
+        $user = $query->first();
+        if (config('security.wpModel') && $user instanceof (config('security.wpModel'))) {
+            $wpAuthService = new \Moox\Security\Services\WordPressAuthService();
 
-        $userModel = config('auth.providers.wpusers.model');
-        $user = $userModel::where('user_email', $credentials['login'])
-            ->orWhere('user_login', $credentials['login'])
-            ->first();
-
-        $wpAuthService = new WordPressAuthService();
-
-        if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
-            $this->throwFailureValidationException();
+            if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
+                $this->throwFailureValidationException();
+            }
+        } else {
+            if (! Auth::guard($guard->name)->attempt($credentials, $data['remember'] ?? false)) {
+                $this->throwFailureValidationException();
+            }
         }
 
-        Auth::login($user, $data['remember'] ?? false);
-
+        Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
         session()->regenerate();
-
-        if (config('press.auth_wordpress') === true) {
+        if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
+             && config('press.auth_wordpress') === true) {
             $payload = base64_encode($user->ID);
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
 
             return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
-
         } else {
             return app(LoginResponse::class);
         }
-
     }
 
     protected function getCredentialsFromFormData(array $data): array
     {
+        $login_type = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'name';
 
         return [
-            'login' => $data['login'],
+            $login_type => $data['login'],
             'password' => $data['password'],
         ];
     }
