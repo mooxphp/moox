@@ -5,6 +5,7 @@ namespace Moox\Sync\Resources;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -35,20 +36,11 @@ class PlatformResource extends Resource
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
-                    TextInput::make('title')
+                    TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Title')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('slug')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Slug')
+                        ->unique()
+                        ->placeholder('Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -65,7 +57,7 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Toggle::make('selection')
+                    Toggle::make('show_in_menu')
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -78,6 +70,15 @@ class PlatformResource extends Resource
                         ->rules(['max:255'])
                         ->nullable()
                         ->placeholder('Order')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Toggle::make('read_only')
+                        ->rules(['boolean'])
+                        ->nullable()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -113,6 +114,18 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    Select::make('platformable_type')
+                        ->required()
+                        ->options([
+                            'App\Models\User' => 'Moox User',
+                        ])
+                        ->placeholder('Platformable Type')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
                     TextInput::make('platformable_id')
                         ->rules(['max:255'])
                         ->required()
@@ -123,15 +136,6 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    TextInput::make('platformable_type')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Platformable Type')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
                 ]),
             ]),
         ]);
@@ -142,11 +146,7 @@ class PlatformResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                TextColumn::make('title')
-                    ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                TextColumn::make('slug')
+                TextColumn::make('name')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -154,13 +154,16 @@ class PlatformResource extends Resource
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                IconColumn::make('selection')
+                IconColumn::make('show_in_menu')
                     ->toggleable()
                     ->boolean(),
                 TextColumn::make('order')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
+                IconColumn::make('read_only')
+                    ->toggleable()
+                    ->boolean(),
                 IconColumn::make('locked')
                     ->toggleable()
                     ->boolean(),
@@ -178,6 +181,8 @@ class PlatformResource extends Resource
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
+                TextColumn::make('created_at')
+                    ->dateTime(),
             ])
             ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
@@ -187,7 +192,6 @@ class PlatformResource extends Resource
     {
         return [
             PlatformResource\RelationManagers\SyncsRelationManager::class,
-            // PlatformResource\RelationManagers\SyncsRelationManager::class,
         ];
     }
 

@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Platform extends Model
 {
     protected $fillable = [
-        'title',
-        'slug',
+        'name',
         'domain',
-        'selection',
+        'show_in_menu',
         'order',
+        'read_only',
         'locked',
         'master',
         'thumbnail',
@@ -23,6 +23,7 @@ class Platform extends Model
 
     protected $casts = [
         'selection' => 'boolean',
+        'read_only' => 'boolean',
         'locked' => 'boolean',
         'master' => 'boolean',
     ];
@@ -35,6 +36,11 @@ class Platform extends Model
     public function targets()
     {
         return $this->hasMany(Sync::class, 'target_platform_id');
+    }
+
+    public function syncs()
+    {
+        return $this->sources()->union($this->targets());
     }
 
     public function platformable()

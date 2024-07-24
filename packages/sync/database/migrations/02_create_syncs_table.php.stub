@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('syncs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('syncable_id');
-            $table->string('syncable_type');
+            $table->string('title')->unique();
+            $table->string('model');
             $table->unsignedBigInteger('source_platform_id');
             $table->unsignedBigInteger('target_platform_id');
-            $table->timestamp('last_sync');
+            $table->timestamp('last_sync')->nullable();
+            $table->json('field_mappings');
 
-            $table->index('syncable_id');
-            $table->index('syncable_type');
+            $table->foreign('source_platform_id')->references('id')->on('platforms')->onDelete('cascade');
+            $table->foreign('target_platform_id')->references('id')->on('platforms')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -30,8 +31,11 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-
     {
-        Schema::dropIfExists('sync');
+        Schema::table('syncs', function (Blueprint $table) {
+            $table->dropForeign(['source_platform_id']);
+            $table->dropForeign(['target_platform_id']);
+        });
+        Schema::dropIfExists('syncs');
     }
 };
