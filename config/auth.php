@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'press' => [
+            'driver' => 'session',
+            'provider' => 'wpusers',
+        ],
     ],
 
     /*
@@ -63,6 +67,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => \Moox\User\Models\User::class,
+        ],
+        'wpusers' => [
+            'driver' => 'eloquent',
+            'model' => \Moox\Press\Models\WpUser::class,
         ],
 
         // 'users' => [

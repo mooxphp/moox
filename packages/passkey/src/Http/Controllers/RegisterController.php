@@ -113,7 +113,7 @@ class RegisterController extends Controller
     public function verify(Request $request, ServerRequestInterface $serverRequest)
     {
         // This is a repo of our public key credentials
-        $pkSourceRepo = new CredentialSourceRepository();
+        $pkSourceRepo = new CredentialSourceRepository;
 
         $attestationManager = AttestationStatementSupportManager::create();
         $attestationManager->add(NoneAttestationStatementSupport::create());

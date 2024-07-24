@@ -1,0 +1,12 @@
+<?php
+/**
+ * Class for generating SQL clauses that filter a primary query according to date.
+ *
+ * This file is deprecated, use 'wp-includes/class-wp-date-query.php' instead.
+ *
+ * @deprecated 5.3.0
+ */
+_deprecated_file(basename(__FILE__), '5.3.0', WPINC.'/class-wp-date-query.php');
+
+/** WP_Date_Query class */
+require_once ABSPATH.WPINC.'/class-wp-date-query.php';

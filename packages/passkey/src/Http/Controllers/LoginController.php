@@ -60,7 +60,7 @@ class LoginController extends Controller
         );
 
         // A repo of our public key credentials
-        $pkSourceRepo = new CredentialSourceRepository();
+        $pkSourceRepo = new CredentialSourceRepository;
 
         // A user can have multiple authenticators, so we need to get all of them to check against
         $registeredAuthenticators = $pkSourceRepo->findAllForUserEntity($userEntity);
@@ -98,7 +98,7 @@ class LoginController extends Controller
     public function verify(Request $request, ServerRequestInterface $serverRequest)
     {
         // A repo of our public key credentials
-        $pkSourceRepo = new CredentialSourceRepository();
+        $pkSourceRepo = new CredentialSourceRepository;
 
         $attestationManager = AttestationStatementSupportManager::create();
         $attestationManager->add(NoneAttestationStatementSupport::create());

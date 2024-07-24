@@ -28,6 +28,9 @@ jobs:
           - passkey
           - notifications
           - security
+          - press
+          - expiry
+          - trainings
 
     steps:
       - uses: actions/checkout@v4

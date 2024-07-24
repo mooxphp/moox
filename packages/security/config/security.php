@@ -5,6 +5,8 @@ use Illuminate\Validation\Rules\Password;
 return [
     'navigation_sort' => 2001,
 
+    'wpModel' => Moox\Press\Models\WpUser::class,
+
     'auth' => [
         'web' => [
             'username' => 'name',
@@ -21,5 +23,9 @@ return [
             ->numbers()
             ->symbols()
             ->uncompromised(),
+    ],
+
+    'password_reset_links' => [
+        'model' => App\Models\User::class,
     ],
 ];
