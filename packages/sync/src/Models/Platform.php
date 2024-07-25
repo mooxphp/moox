@@ -15,8 +15,7 @@ class Platform extends Model
         'locked',
         'master',
         'thumbnail',
-        'platformable_id',
-        'platformable_type',
+        'api_token',
     ];
 
     protected $searchableFields = ['*'];
@@ -47,4 +46,11 @@ class Platform extends Model
     {
         return $this->morphTo();
     }
+
+    /* TODO: this model must be dynamic, not user
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_platform');
+    }
+    */
 }

@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,10 +20,8 @@ return new class extends Migration
             $table->boolean('locked')->nullable();
             $table->boolean('master')->nullable();
             $table->string('thumbnail')->nullable();
-            $table->string('platformable_type');
-            $table->unsignedBigInteger('platformable_id');
+            $table->string('api_token', 80)->unique()->nullable();
 
-            $table->index(['platformable_id', 'platformable_type']);
             $table->index('name');
             $table->index('domain');
 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('source_platform_id');
             $table->unsignedBigInteger('target_platform_id');
             $table->timestamp('last_sync')->nullable();
+            $table->boolean('has_errors')->default(false);
             $table->json('field_mappings');
 
             $table->foreign('source_platform_id')->references('id')->on('platforms')->onDelete('cascade');

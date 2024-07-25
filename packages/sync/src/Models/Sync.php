@@ -12,6 +12,7 @@ class Sync extends Model
         'source_platform_id',
         'target_platform_id',
         'last_sync',
+        'has_errors',
         'field_mappings',
     ];
 

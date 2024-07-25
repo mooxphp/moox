@@ -20,10 +20,8 @@ return new class extends Migration {
             $table->boolean('locked')->nullable();
             $table->boolean('master')->nullable();
             $table->string('thumbnail')->nullable();
-            $table->string('platformable_type');
-            $table->unsignedBigInteger('platformable_id');
+            $table->string('api_token', 80)->unique()->nullable();
 
-            $table->index(['platformable_id', 'platformable_type']);
             $table->index('name');
             $table->index('domain');
 

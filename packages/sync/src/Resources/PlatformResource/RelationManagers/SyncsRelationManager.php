@@ -75,10 +75,10 @@ class SyncsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('syncable_id')->limit(50),
                 TextColumn::make('syncable_type')->limit(50),
-                TextColumn::make('sourcePlatform.title')->limit(
+                TextColumn::make('sourcePlatform.name')->limit(
                     50
                 ),
-                TextColumn::make('targetPlatform.title')->limit(
+                TextColumn::make('targetPlatform.name')->limit(
                     50
                 ),
                 TextColumn::make('last_sync')->date(),

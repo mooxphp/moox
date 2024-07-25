@@ -17,7 +17,7 @@ class SyncServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasMigrations(['01_create_platforms_table', '02_create_syncs_table'])
+            ->hasMigrations(['01_create_platforms_table', '02_create_syncs_table', '03_create_user_platform_table'])
             ->hasCommand(InstallCommand::class);
     }
 }

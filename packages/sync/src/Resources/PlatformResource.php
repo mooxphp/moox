@@ -2,13 +2,14 @@
 
 namespace Moox\Sync\Resources;
 
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -114,27 +115,23 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Select::make('platformable_type')
-                        ->required()
-                        ->options([
-                            'App\Models\User' => 'Moox User',
+                    TextInput::make('api_token')
+                        ->rules(['max:80'])
+                        ->unique()
+                        ->nullable()
+                        ->placeholder('Api Token')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
                         ])
-                        ->placeholder('Platformable Type')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('platformable_id')
-                        ->rules(['max:255'])
-                        ->required()
-                        ->placeholder('Platformable Id')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                        ->suffixAction(
+                            Action::make('generateToken')
+                                ->label('Generate Token')
+                                ->icon('heroicon-o-arrow-path')
+                                ->action('generateToken')
+                                ->hidden(fn ($livewire) => $livewire instanceof ViewRecord)
+                        ),
 
                 ]),
             ]),
@@ -173,14 +170,10 @@ class PlatformResource extends Resource
                 ImageColumn::make('thumbnail')
                     ->toggleable()
                     ->circular(),
-                TextColumn::make('platformable_id')
+                TextColumn::make('api_token')
                     ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                TextColumn::make('platformable_type')
-                    ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
+                    ->searchable()
+                    ->limit(30),
                 TextColumn::make('created_at')
                     ->dateTime(),
             ])
@@ -191,7 +184,8 @@ class PlatformResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PlatformResource\RelationManagers\SyncsRelationManager::class,
+            // Todo: debug - SQLSTATE[42000]: Syntax error or access violation: 1250 Table 'syncs' from one of the SELECTs cannot be used in global ORDER clause
+            // PlatformResource\RelationManagers\SyncsRelationManager::class,
         ];
     }
 
