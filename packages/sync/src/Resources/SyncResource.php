@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -66,7 +67,20 @@ class SyncResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
-                        ]),
+                        ])
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            $targetPlatformId = $get('target_platform_id');
+                            if ($state === $targetPlatformId) {
+                                $set('source_platform_id', null);
+
+                                Notification::make()
+                                    ->title('Sync Error')
+                                    ->body('Source and Target Platform cannot be the same.')
+                                    ->danger()
+                                    ->send();
+                            }
+                        }),
 
                     Select::make('target_platform_id')
                         ->rules(['exists:platforms,id'])
@@ -77,7 +91,20 @@ class SyncResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
-                        ]),
+                        ])
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            $sourcePlatformId = $get('source_platform_id');
+                            if ($state === $sourcePlatformId) {
+                                $set('target_platform_id', null);
+
+                                Notification::make()
+                                    ->title('Sync Error')
+                                    ->body('Source and Target Platform cannot be the same.')
+                                    ->danger()
+                                    ->send();
+                            }
+                        }),
 
                     DatePicker::make('last_sync')
                         ->rules(['date'])

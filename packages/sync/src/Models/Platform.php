@@ -11,8 +11,8 @@ class Platform extends Model
         'domain',
         'show_in_menu',
         'order',
-        'read_only',
         'locked',
+        'lock_reason',
         'master',
         'thumbnail',
         'api_token',
@@ -22,7 +22,6 @@ class Platform extends Model
 
     protected $casts = [
         'selection' => 'boolean',
-        'read_only' => 'boolean',
         'locked' => 'boolean',
         'master' => 'boolean',
     ];

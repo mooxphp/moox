@@ -21,8 +21,8 @@ return new class extends Migration
             $table->boolean('has_errors')->default(false);
             $table->json('field_mappings');
 
-            $table->foreign('source_platform_id')->references('id')->on('platforms')->onDelete('cascade');
-            $table->foreign('target_platform_id')->references('id')->on('platforms')->onDelete('cascade');
+            $table->foreign('source_platform_id')->references('id')->on('platforms')->onDelete('RESTRICT');
+            $table->foreign('target_platform_id')->references('id')->on('platforms')->onDelete('RESTRICT');
 
             $table->timestamps();
         });

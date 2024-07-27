@@ -18,10 +18,6 @@ class EditPlatform extends EditRecord
 
     public function generateToken(): void
     {
-        $formData = $this->form->getState();
-
-        $formData['api_token'] = Str::random(80);
-
-        $this->form->fill($formData);
+        $this->data['api_token'] = Str::random(80);
     }
 }

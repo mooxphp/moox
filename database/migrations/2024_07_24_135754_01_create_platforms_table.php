@@ -15,13 +15,13 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('domain')->unique();
-            $table->boolean('show_in_menu')->nullable();
-            $table->tinyInteger('order')->nullable();
-            $table->boolean('read_only')->nullable();
-            $table->boolean('locked')->nullable();
-            $table->boolean('master')->nullable();
             $table->string('thumbnail')->nullable();
             $table->string('api_token', 80)->unique()->nullable();
+            $table->boolean('master')->nullable();
+            $table->boolean('locked')->nullable();
+            $table->string('lock_reason')->nullable();
+            $table->boolean('show_in_menu')->nullable();
+            $table->tinyInteger('order')->nullable();
 
             $table->index('name');
             $table->index('domain');

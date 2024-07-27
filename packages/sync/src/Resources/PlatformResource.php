@@ -30,7 +30,7 @@ class PlatformResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-server-stack';
 
-    protected static ?string $recordTitleAttribute = 'title';
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form
     {
@@ -40,7 +40,7 @@ class PlatformResource extends Resource
                     TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->unique()
+                        ->unique(ignoreRecord: true)
                         ->placeholder('Name')
                         ->columnSpan([
                             'default' => 12,
@@ -51,53 +51,8 @@ class PlatformResource extends Resource
                     TextInput::make('domain')
                         ->rules(['max:255', 'string'])
                         ->required()
+                        ->unique(ignoreRecord: true)
                         ->placeholder('Domain')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    Toggle::make('show_in_menu')
-                        ->rules(['boolean'])
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('order')
-                        ->rules(['max:255'])
-                        ->nullable()
-                        ->placeholder('Order')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    Toggle::make('read_only')
-                        ->rules(['boolean'])
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    Toggle::make('locked')
-                        ->rules(['boolean'])
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    Toggle::make('master')
-                        ->rules(['boolean'])
-                        ->nullable()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -117,7 +72,7 @@ class PlatformResource extends Resource
 
                     TextInput::make('api_token')
                         ->rules(['max:80'])
-                        ->unique()
+                        ->unique(ignoreRecord: true)
                         ->nullable()
                         ->placeholder('Api Token')
                         ->columnSpan([
@@ -133,6 +88,67 @@ class PlatformResource extends Resource
                                 ->hidden(fn ($livewire) => $livewire instanceof ViewRecord)
                         ),
 
+                    Toggle::make('master')
+                        ->rules(['boolean'])
+                        ->nullable()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Toggle::make('locked')
+                        ->rules(['boolean'])
+                        ->nullable()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ])
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (! $state) {
+                                $set('lock_reason', null);
+                            }
+                        }),
+
+                    TextInput::make('lock_reason')
+                        ->rules(['max:255'])
+                        ->nullable()
+                        ->label('Reason')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ])
+                        ->visible(fn ($get) => $get('locked')),
+
+                    Toggle::make('show_in_menu')
+                        ->rules(['boolean'])
+                        ->nullable()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ])
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (! $state) {
+                                $set('order', null);
+                            }
+                        }),
+
+                    TextInput::make('order')
+                        ->rules(['max:255'])
+                        ->nullable()
+                        ->unique(ignoreRecord: true)
+                        ->placeholder('Order')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ])
+                        ->visible(fn ($get) => $get('show_in_menu')),
                 ]),
             ]),
         ]);
@@ -143,39 +159,48 @@ class PlatformResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
+                ImageColumn::make('thumbnail')
+                    ->toggleable()
+                    ->label('')
+                    ->square(),
                 TextColumn::make('name')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->sortable()
+                    ->searchable()
                     ->limit(50),
                 TextColumn::make('domain')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->sortable()
+                    ->searchable()
                     ->limit(50),
-                IconColumn::make('show_in_menu')
+                IconColumn::make('master')
                     ->toggleable()
-                    ->boolean(),
-                TextColumn::make('order')
-                    ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                IconColumn::make('read_only')
-                    ->toggleable()
+                    ->sortable()
                     ->boolean(),
                 IconColumn::make('locked')
                     ->toggleable()
+                    ->sortable()
                     ->boolean(),
-                IconColumn::make('master')
+                IconColumn::make('api_token')
+                    ->boolean()
+                    ->sortable()
+                    ->label('Token')
+                    ->toggleable(),
+                IconColumn::make('show_in_menu')
                     ->toggleable()
+                    ->sortable()
+                    ->label('Menu')
                     ->boolean(),
-                ImageColumn::make('thumbnail')
+                TextColumn::make('order')
                     ->toggleable()
-                    ->circular(),
-                TextColumn::make('api_token')
-                    ->toggleable()
+                    ->sortable()
                     ->searchable()
-                    ->limit(30),
+                    ->limit(50),
                 TextColumn::make('created_at')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable()
+                    ->since(),
             ])
             ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
@@ -216,7 +241,7 @@ class PlatformResource extends Resource
 
     public static function getBreadcrumb(): string
     {
-        return __('sync::translations.breadcrumb');
+        return __('sync::translations.platforms');
     }
 
     public static function shouldRegisterNavigation(): bool

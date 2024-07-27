@@ -8,12 +8,14 @@ class Sync extends Model
 {
     protected $fillable = [
         'title',
-        'model',
         'source_platform_id',
+        'source_model',
         'target_platform_id',
-        'last_sync',
-        'has_errors',
+        'target_model',
+        'all_fields',
         'field_mappings',
+        'has_errors',
+        'last_sync',
     ];
 
     protected $searchableFields = ['*'];
