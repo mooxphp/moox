@@ -233,7 +233,7 @@ class UserResource extends Resource
             ->poll('60s')
             ->columns([
                 ImageColumn::make('profile_photo_path')
-                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
+                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->name)
                     ->circular()
                     ->label(__('Avatar'))
                     ->toggleable(),
@@ -245,7 +245,7 @@ class UserResource extends Resource
                 TextColumn::make('last_name')
                     ->label(__('Fullname'))
                     ->formatStateUsing(function ($state, User $user) {
-                        return $user->first_name.' '.$user->last_name;
+                        return $user->first_name . ' ' . $user->last_name;
                     })
                     ->toggleable()
                     ->sortable()
@@ -264,7 +264,8 @@ class UserResource extends Resource
                     ->alignStart()
                     ->icon(
                         fn ($record): string => is_null(
-                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                            $record->email_verified_at
+                        ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
                         'success' => fn ($record) => $record->email_verified_at !== null,
@@ -288,7 +289,6 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->actions([Impersonate::make()->redirectTo(route('filament.moox.pages.profile')), ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 

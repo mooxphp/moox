@@ -2,16 +2,18 @@
 
 namespace Moox\Press\Models;
 
-use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Support\Str;
+use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Moox\Press\Traits\HasUserMetaAttributes;
+use Moox\Press\QueryBuilder\UserQueryBuilder;
+use Moox\Press\Database\Factories\WpUserFactory;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
-use Moox\Press\Database\Factories\WpUserFactory;
-use Moox\Press\QueryBuilder\UserQueryBuilder;
+use Moox\Press\Traits\UserMetaAttributes;
 
 /**
  * @property int $ID
@@ -23,6 +25,7 @@ class WpUser extends Authenticatable implements FilamentUser
 {
     use HasFactory;
     use Notifiable;
+    use UserMetaAttributes;
 
     protected $fillable = [
         'user_login',
@@ -48,28 +51,28 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public $timestamps = false;
 
-    protected $appends;
+    protected $tempMetaAttributes = [];
+
+    protected $appends = [
+        'nickname',
+        'first_name',
+        'last_name',
+        'description',
+        'created_at',
+        'updated_at',
+        'session_tokens',
+        'remember_token',
+        'email_verified_at',
+        'mm_sua_attachment_id',
+        'moox_user_attachment_id',
+    ];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix.'users';
-        $this->metatable = $this->wpPrefix.'usermeta';
-
-        $this->appends = [
-            'nickname',
-            'first_name',
-            'last_name',
-            'description',
-            'created_at',
-            'updated_at',
-            'session_tokens',
-            'remember_token',
-            'email_verified_at',
-            'mm_sua_attachment_id',
-            'moox_user_attachment_id',
-        ];
+        $this->table = $this->wpPrefix . 'users';
+        $this->metatable = $this->wpPrefix . 'usermeta';
     }
 
     protected static function boot()
@@ -82,6 +85,10 @@ class WpUser extends Authenticatable implements FilamentUser
 
         static::updated(function ($model) {
             $model->addOrUpdateMeta('updated_at', now()->toDateTimeString());
+        });
+
+        static::deleted(function ($model) {
+            $model->userMeta()->delete();
         });
 
         static::addGlobalScope('addAttributes', function (Builder $builder) {
@@ -114,156 +121,6 @@ class WpUser extends Authenticatable implements FilamentUser
         'deleted' => 'boolean',
     ];
 
-    public function getEmailAttribute()
-    {
-        return $this->attributes['user_email'] ?? null;
-    }
-
-    public function setEmailAttribute($value)
-    {
-        $this->addOrUpdateMeta('user_email', $value);
-    }
-
-    public function getNameAttribute()
-    {
-        return $this->attributes['user_login'] ?? null;
-    }
-
-    public function setNameAttribute($value)
-    {
-        $this->addOrUpdateMeta('user_login', $value);
-    }
-
-    public function getPasswordAttribute()
-    {
-        return $this->attributes['user_pass'] ?? null;
-    }
-
-    public function setPasswordAttribute($value)
-    {
-        $this->addOrUpdateMeta('user_pass', $value);
-    }
-
-    public function getDisplayNameAttribute()
-    {
-        return $this->attributes['display_name'] ?? null;
-    }
-
-    public function setDisplayNameAttribute($value)
-    {
-        $this->addOrUpdateMeta('display_name', $value);
-    }
-
-    public function getNicknameAttribute()
-    {
-        return $this->getMeta('nickname') ?? null;
-    }
-
-    public function setNicknameAttribute($value)
-    {
-        $this->addOrUpdateMeta('nickname', $value);
-    }
-
-    public function getFirstNameAttribute()
-    {
-        return $this->getMeta('first_name') ?? null;
-    }
-
-    public function setFirstNameAttribute($value)
-    {
-        $this->addOrUpdateMeta('first_name', $value);
-    }
-
-    public function getLastNameAttribute()
-    {
-        return $this->getMeta('last_name') ?? null;
-    }
-
-    public function setLastNameAttribute($value)
-    {
-        $this->addOrUpdateMeta('last_name', $value);
-    }
-
-    public function getDescriptionAttribute()
-    {
-        return $this->getMeta('description') ?? null;
-    }
-
-    public function setDescriptionAttribute($value)
-    {
-        $this->addOrUpdateMeta('description', $value);
-    }
-
-    public function getSessionTokensAttribute()
-    {
-        return $this->getMeta('session_tokens') ?? null;
-    }
-
-    public function setSessionTokenAttribute($value)
-    {
-        $this->addOrUpdateMeta('session_tokens', $value);
-    }
-
-    public function getRememberTokenAttribute()
-    {
-        return $this->getMeta('remember_token') ?? null;
-    }
-
-    public function setRememberTokenAttribute($value)
-    {
-        $this->addOrUpdateMeta('remember_token', $value);
-    }
-
-    public function getEmailVerifiedAtAttribute()
-    {
-        return $this->getMeta('email_verified_at') ?? null;
-    }
-
-    public function setEmailVerifiedAtAttribute($value)
-    {
-        $this->addOrUpdateMeta('email_verified_at', $value);
-    }
-
-    public function getCreatedAtAttribute()
-    {
-        return $this->getMeta('created_at') ?? null;
-    }
-
-    public function setCreatedAtAttribute($value)
-    {
-        $this->addOrUpdateMeta('created_at', $value);
-    }
-
-    public function getUpdatedAtAttribute()
-    {
-        return $this->getMeta('updated_at') ?? null;
-    }
-
-    public function setUpdatedAtAttribute($value)
-    {
-        $this->addOrUpdateMeta('updated_at', $value);
-    }
-
-    public function getMmSuaAttachmentIdAttribute()
-    {
-        return $this->getMeta('mm_sua_attachment_id') ?? null;
-    }
-
-    public function setMmSuaAttachmentIdAttribute($value)
-    {
-        $this->addOrUpdateMeta('mm_sua_attachment_id', $value);
-    }
-
-    public function getMooxUserAttachmentIdAttribute()
-    {
-        return $this->getMeta('moox_user_attachment_id') ?? null;
-    }
-
-    public function setMooxUserAttachmentIdAttribute($value)
-    {
-        $this->addOrUpdateMeta('moox_user_attachment_id', $value);
-    }
-
     protected static function newFactory(): Factory
     {
         return WpUserFactory::new();
@@ -281,32 +138,39 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function meta($key)
     {
-        if (! Str::startsWith($key, $this->wpPrefix)) {
+        if (!Str::startsWith($key, $this->wpPrefix)) {
             $key = "{$this->wpPrefix}{$key}";
         }
 
         return $this->getMeta($key);
     }
 
-    protected function getMeta($key)
+    public function fill(array $attributes)
     {
-        $meta = $this->userMeta()->where('meta_key', $key)->first();
+        $userAttributes = [];
+        $this->tempMetaAttributes = [];
 
-        return $meta ? $meta->meta_value : null;
+        foreach ($attributes as $key => $value) {
+            if (in_array($key, $this->fillable)) {
+                $userAttributes[$key] = $value;
+            } else {
+                $this->tempMetaAttributes[$key] = $value;
+            }
+        }
+
+        parent::fill($userAttributes);
+
+        return $this;
     }
 
-    protected function addOrUpdateMeta($key, $value)
+    public function save(array $options = [])
     {
-        $meta = $this->userMeta()->where('meta_key', $key)->first();
+        $saved = parent::save($options);
 
-        if ($meta) {
-            $meta->meta_value = $value;
-            $meta->save();
-        } else {
-            $this->userMeta()->create([
-                'meta_key' => $key,
-                'meta_value' => $value,
-            ]);
+        foreach ($this->tempMetaAttributes as $key => $value) {
+            $this->addOrUpdateMeta($key, $value);
         }
+
+        return $saved;
     }
 }

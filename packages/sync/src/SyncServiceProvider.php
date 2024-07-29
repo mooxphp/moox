@@ -7,6 +7,7 @@ namespace Moox\Sync;
 use Moox\Sync\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
 
 class SyncServiceProvider extends PackageServiceProvider
 {
@@ -19,5 +20,15 @@ class SyncServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasMigrations(['01_create_platforms_table', '02_create_syncs_table', '03_create_user_platform_table'])
             ->hasCommand(InstallCommand::class);
+    }
+
+    public function boot()
+    {
+        parent::boot();
+
+        $this->app->make('router')->aliasMiddleware(
+            'auth.platformtoken',
+            PlatformTokenAuthMiddleware::class
+        );
     }
 }
