@@ -12,9 +12,10 @@ class PlatformTokenAuthMiddleware
     {
         $token = $request->header('Authorization');
 
-        if (!$token  || !Platform::where('api_token', $token) === $token) {
+        if (! $token || ! Platform::where('api_token', $token) === $token) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+
         return $next($request);
     }
 }

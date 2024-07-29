@@ -6,9 +6,9 @@ namespace Moox\Press;
 
 use Illuminate\Support\Facades\Auth;
 use Moox\Press\Commands\InstallCommand;
-use Spatie\LaravelPackageTools\Package;
 use Moox\Press\Commands\UpdateWordPressURL;
 use Moox\Press\Providers\WordPressUserProvider;
+use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class PressServiceProvider extends PackageServiceProvider
