@@ -11,9 +11,10 @@ class PlatformTokenAuthMiddleware
     {
         $token = $request->header('Authorization');
         // if (!$token || !config('press.api.api.model')::where('api_token', $token)->exists()) {
-        if (!$token) {
+        if (! $token) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+
         return $next($request);
     }
 }

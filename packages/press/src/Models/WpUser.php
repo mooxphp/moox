@@ -2,17 +2,16 @@
 
 namespace Moox\Press\Models;
 
-use Filament\Panel;
-use Illuminate\Support\Str;
-use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
-use Moox\Press\Traits\HasUserMetaAttributes;
-use Moox\Press\QueryBuilder\UserQueryBuilder;
-use Moox\Press\Database\Factories\WpUserFactory;
+use Filament\Panel;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+use Moox\Press\Database\Factories\WpUserFactory;
+use Moox\Press\QueryBuilder\UserQueryBuilder;
 use Moox\Press\Traits\UserMetaAttributes;
 
 /**
@@ -71,8 +70,8 @@ class WpUser extends Authenticatable implements FilamentUser
     {
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix . 'users';
-        $this->metatable = $this->wpPrefix . 'usermeta';
+        $this->table = $this->wpPrefix.'users';
+        $this->metatable = $this->wpPrefix.'usermeta';
     }
 
     protected static function boot()
@@ -138,7 +137,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function meta($key)
     {
-        if (!Str::startsWith($key, $this->wpPrefix)) {
+        if (! Str::startsWith($key, $this->wpPrefix)) {
             $key = "{$this->wpPrefix}{$key}";
         }
 

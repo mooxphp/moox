@@ -11,8 +11,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -26,7 +24,6 @@ use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
-use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
 {
@@ -233,7 +230,7 @@ class UserResource extends Resource
             ->poll('60s')
             ->columns([
                 ImageColumn::make('profile_photo_path')
-                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name=' . $record->name)
+                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
                     ->circular()
                     ->label(__('Avatar'))
                     ->toggleable(),
@@ -245,7 +242,7 @@ class UserResource extends Resource
                 TextColumn::make('last_name')
                     ->label(__('Fullname'))
                     ->formatStateUsing(function ($state, User $user) {
-                        return $user->first_name . ' ' . $user->last_name;
+                        return $user->first_name.' '.$user->last_name;
                     })
                     ->toggleable()
                     ->sortable()

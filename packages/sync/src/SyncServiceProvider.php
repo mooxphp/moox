@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\Sync;
 
 use Moox\Sync\Commands\InstallCommand;
+use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
 
 class SyncServiceProvider extends PackageServiceProvider
 {
