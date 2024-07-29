@@ -88,7 +88,8 @@ class WpUserController extends Controller
 
         $wpUser = WpUser::findOrFail($id);
 
-        $wpUser->update($request->all());
+        $wpUser->fill($request->all());
+        $wpUser->save();
 
         return new WpUserResource($wpUser);
     }
