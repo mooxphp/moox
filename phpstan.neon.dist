@@ -16,12 +16,4 @@ parameters:
             paths:
                 - packages/*/tests/*
         -
-            # Builder(s) are packages not wired with Composer. If they were composered, PHPStan would not throw this error!
-            messages:
-                - '#^Parameter \#1 \$view of function view expects view-string|null, string given.$#'
-            paths:
-                - packages/builder/*
-        - '#^Class Moox\\Core\\Base\\BaseWidget uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
-        - '#^Class Moox\\Core\\Base\\BaseResource uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
-        - '#^Class Moox\\Core\\Base\\BaseRelationManager uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
     tmpDir: build/phpstan
