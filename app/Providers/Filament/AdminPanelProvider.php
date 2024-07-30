@@ -82,8 +82,6 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\UserDevice\UserDevicePlugin::make(),
 
-                \Moox\LoginLink\LoginLinkPlugin::make(),
-
                 \Moox\UserSession\UserSessionPlugin::make(),
 
                 \Moox\Passkey\PasskeyPlugin::make(),
@@ -95,6 +93,9 @@ class AdminPanelProvider extends PanelProvider
                 ResetPasswordPlugin::make(),
 
                 \Moox\Builder\BuilderPlugin::make(),
+
+            
+                \Moox\LoginLink\LoginLinkPlugin::make(),
 
             ]);
     }
