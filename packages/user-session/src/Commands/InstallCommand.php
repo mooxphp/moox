@@ -51,7 +51,6 @@ class InstallCommand extends Command
         $this->finish();
     }
 
-
     public function art(): void
     {
         info('
@@ -116,7 +115,8 @@ class InstallCommand extends Command
         }
     }
 
-    public function registerPlugins(string $providerPath): void    {
+    public function registerPlugins(string $providerPath): void
+    {
         if (File::exists($providerPath)) {
             $content = File::get($providerPath);
 

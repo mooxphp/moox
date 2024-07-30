@@ -186,6 +186,7 @@ class InstallCommand extends Command
         return $providerPath;
 
     }
+
     public function finish(): void
     {
         note('Moox Builder installed successfully. Enjoy!');

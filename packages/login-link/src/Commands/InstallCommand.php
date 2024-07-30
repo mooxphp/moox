@@ -161,6 +161,7 @@ class InstallCommand extends Command
             alert($providerPath.' not found. You need to add the plugins manually.');
         }
     }
+
     public function getPanelProviderPath(): string|array
     {
         $providerPath = app_path('Providers\Filament');
@@ -184,7 +185,6 @@ class InstallCommand extends Command
         return $providerPath;
 
     }
-
 
     public function finish(): void
     {

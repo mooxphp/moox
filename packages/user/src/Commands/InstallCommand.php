@@ -221,7 +221,6 @@ class InstallCommand extends Command
 
     }
 
-
     public function finish(): void
     {
         note('Moox User installed successfully. Enjoy!');
