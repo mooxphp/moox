@@ -21,7 +21,6 @@ use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
-use Moox\Page\PagePlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\SecurityPlugin;
 use Moox\Security\Services\RequestPasswordReset;
@@ -74,7 +73,6 @@ class AdminPanelProvider extends PanelProvider
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
                 JobsPlugin::make(),
-                PagePlugin::make(),
                 SyncPlugin::make(),
                 UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
@@ -97,6 +95,8 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\LoginLink\LoginLinkPlugin::make(),
 
                 \Moox\Notification\NotificationPlugin::make(),
+
+                \Moox\Page\PagePlugin::make(),
 
             ]);
     }
