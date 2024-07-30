@@ -51,7 +51,6 @@ class InstallCommand extends Command
         $this->finish();
     }
 
-
     public function art(): void
     {
         info('

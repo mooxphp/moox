@@ -51,7 +51,6 @@ class InstallCommand extends Command
         $this->finish();
     }
 
-
     public function art(): void
     {
         info('
@@ -185,6 +184,7 @@ class InstallCommand extends Command
         return $providerPath;
 
     }
+
     public function finish(): void
     {
         note('Moox Sync installed successfully. Enjoy!');

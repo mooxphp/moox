@@ -100,7 +100,6 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\UserSession\UserSessionPlugin::make(),
 
-            
                 \Moox\Press\WpPostPlugin::make(),
                 \Moox\Press\WpPagePlugin::make(),
                 \Moox\Press\WpMediaPlugin::make(),
