@@ -82,10 +82,6 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\UserSession\UserSessionPlugin::make(),
 
-                \Moox\Passkey\PasskeyPlugin::make(),
-
-
-
                 SecurityPlugin::make(),
 
                 ResetPasswordPlugin::make(),
@@ -97,6 +93,8 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Notification\NotificationPlugin::make(),
 
                 \Moox\Page\PagePlugin::make(),
+
+                \Moox\Passkey\PasskeyPlugin::make(),
 
             ]);
     }
