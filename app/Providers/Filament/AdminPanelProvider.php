@@ -93,6 +93,7 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Notification\NotificationPlugin::make(),
 
                 SecurityPlugin::make(),
+
                 ResetPasswordPlugin::make(),
 
             ]);

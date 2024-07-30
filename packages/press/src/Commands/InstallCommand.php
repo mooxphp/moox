@@ -84,6 +84,7 @@ class InstallCommand extends Command
             if (! File::exists('config/press.php')) {
                 info('Publishing Press Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'press-config']);
+                info('finished publishing...');
 
                 return;
             }
@@ -97,7 +98,7 @@ class InstallCommand extends Command
             if (Schema::hasTable('press')) {
                 warning('The press table already exists. The migrations will not be published.');
             } else {
-                info('Publishing Press Migrations...');
+                info('Publishing Press and Sanctum Migrations...');
                 $this->callSilent('vendor:publish', ['--tag' => 'press-migrations']);
             }
         }
@@ -177,14 +178,12 @@ class InstallCommand extends Command
                 options: [...$providerNames],
                 default: [$providerNames[0]],
             );
-
         }
         if (count($providers) == 1) {
             $providerPath .= '/'.$providers[0]->getBasename();
         }
 
         return $providerPath;
-
     }
 
     public function finish(): void

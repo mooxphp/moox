@@ -74,6 +74,12 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
 
+                \Moox\Security\SecurityPlugin::make(),
+                \Moox\Security\ResetPasswordPlugin::make(),
+
+                \Moox\Sync\PlatformPlugin::make(),
+                \Moox\Sync\SyncPlugin::make(),
+
             ]);
     }
 }

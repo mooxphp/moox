@@ -11,8 +11,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -26,7 +24,6 @@ use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
-use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 class UserResource extends Resource
 {
@@ -264,7 +261,8 @@ class UserResource extends Resource
                     ->alignStart()
                     ->icon(
                         fn ($record): string => is_null(
-                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                            $record->email_verified_at
+                        ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
                         'success' => fn ($record) => $record->email_verified_at !== null,
@@ -288,7 +286,6 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->actions([Impersonate::make()->redirectTo(route('filament.moox.pages.profile')), ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
