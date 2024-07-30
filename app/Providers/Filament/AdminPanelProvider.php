@@ -73,8 +73,6 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
 
-                \Moox\UserDevice\UserDevicePlugin::make(),
-
                 \Moox\UserSession\UserSessionPlugin::make(),
 
                 ResetPasswordPlugin::make(),
@@ -99,6 +97,8 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Training\TrainingTypePlugin::make(),
 
                 \Moox\User\UserPlugin::make(),
+
+                \Moox\UserDevice\UserDevicePlugin::make(),
 
             ]);
     }
