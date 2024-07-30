@@ -23,7 +23,6 @@ use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\Services\RequestPasswordReset;
-use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -71,7 +70,6 @@ class AdminPanelProvider extends PanelProvider
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
                 JobsPlugin::make(),
-                UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
 
@@ -99,6 +97,8 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Training\TrainingInvitationPlugin::make(),
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
+
+                \Moox\User\UserPlugin::make(),
 
             ]);
     }
