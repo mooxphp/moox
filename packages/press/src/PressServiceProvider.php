@@ -20,7 +20,7 @@ class PressServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
-            ->hasRoutes(['web', 'api'])
+            ->hasRoutes(['api', 'web'])
             ->hasCommands(InstallCommand::class, UpdateWordPressURL::class);
     }
 
