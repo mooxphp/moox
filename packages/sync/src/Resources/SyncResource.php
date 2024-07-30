@@ -4,14 +4,17 @@ namespace Moox\Sync\Resources;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -57,8 +60,7 @@ class SyncResource extends Resource
                     Select::make('source_platform_id')
                         ->rules(['exists:platforms,id'])
                         ->required()
-                        ->relationship('sourcePlatform', 'title')
-                        ->searchable()
+                        ->relationship('sourcePlatform', 'name')
                         ->placeholder('Source Platform')
                         ->columnSpan([
                             'default' => 12,
@@ -69,8 +71,7 @@ class SyncResource extends Resource
                     Select::make('target_platform_id')
                         ->rules(['exists:platforms,id'])
                         ->required()
-                        ->relationship('targetPlatform', 'title')
-                        ->searchable()
+                        ->relationship('targetPlatform', 'name')
                         ->placeholder('Target Platform')
                         ->columnSpan([
                             'default' => 12,
@@ -80,8 +81,23 @@ class SyncResource extends Resource
 
                     DatePicker::make('last_sync')
                         ->rules(['date'])
-                        ->required()
                         ->placeholder('Last Sync')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Toggle::make('has_errors')
+                        ->rules(['boolean'])
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    KeyValue::make('field_mappings')
+                        ->rules(['array'])
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -105,25 +121,35 @@ class SyncResource extends Resource
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                TextColumn::make('sourcePlatform.title')
+                TextColumn::make('sourcePlatform.name')
                     ->toggleable()
                     ->limit(50),
-                TextColumn::make('targetPlatform.title')
+                TextColumn::make('targetPlatform.name')
                     ->toggleable()
                     ->limit(50),
                 TextColumn::make('last_sync')
                     ->toggleable()
                     ->date(),
+                IconColumn::make('has_errors')
+                    ->toggleable()
+                    ->boolean(),
+                IconColumn::make('field_mappings')
+                    ->label('Mappings')
+                    ->toggleable()
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->getStateUsing(fn ($record) => ! empty($record->field_mappings)),
             ])
             ->filters([
                 SelectFilter::make('source_platform_id')
-                    ->relationship('sourcePlatform', 'title')
+                    ->relationship('sourcePlatform', 'name')
                     ->indicator('Platform')
                     ->multiple()
                     ->label('Platform'),
 
                 SelectFilter::make('target_platform_id')
-                    ->relationship('targetPlatform', 'title')
+                    ->relationship('targetPlatform', 'name')
                     ->indicator('Platform')
                     ->multiple()
                     ->label('Platform'),

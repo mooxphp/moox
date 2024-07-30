@@ -2,12 +2,14 @@
 
 namespace Moox\Sync\Resources;
 
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -35,20 +37,11 @@ class PlatformResource extends Resource
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
-                    TextInput::make('title')
+                    TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Title')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
-                    TextInput::make('slug')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Slug')
+                        ->unique()
+                        ->placeholder('Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -65,7 +58,7 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Toggle::make('selection')
+                    Toggle::make('show_in_menu')
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -78,6 +71,15 @@ class PlatformResource extends Resource
                         ->rules(['max:255'])
                         ->nullable()
                         ->placeholder('Order')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Toggle::make('read_only')
+                        ->rules(['boolean'])
+                        ->nullable()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -113,25 +115,24 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    TextInput::make('platformable_id')
-                        ->rules(['max:255'])
-                        ->required()
-                        ->placeholder('Platformable Id')
+                    TextInput::make('api_token')
+                        ->rules(['max:80'])
+                        ->unique()
+                        ->nullable()
+                        ->placeholder('Api Token')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
-                        ]),
+                        ])
+                        ->suffixAction(
+                            Action::make('generateToken')
+                                ->label('Generate Token')
+                                ->icon('heroicon-o-arrow-path')
+                                ->action('generateToken')
+                                ->hidden(fn ($livewire) => $livewire instanceof ViewRecord)
+                        ),
 
-                    TextInput::make('platformable_type')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Platformable Type')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
                 ]),
             ]),
         ]);
@@ -142,11 +143,7 @@ class PlatformResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                TextColumn::make('title')
-                    ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                TextColumn::make('slug')
+                TextColumn::make('name')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -154,13 +151,16 @@ class PlatformResource extends Resource
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                IconColumn::make('selection')
+                IconColumn::make('show_in_menu')
                     ->toggleable()
                     ->boolean(),
                 TextColumn::make('order')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
+                IconColumn::make('read_only')
+                    ->toggleable()
+                    ->boolean(),
                 IconColumn::make('locked')
                     ->toggleable()
                     ->boolean(),
@@ -170,14 +170,12 @@ class PlatformResource extends Resource
                 ImageColumn::make('thumbnail')
                     ->toggleable()
                     ->circular(),
-                TextColumn::make('platformable_id')
+                TextColumn::make('api_token')
                     ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
-                TextColumn::make('platformable_type')
-                    ->toggleable()
-                    ->searchable(true, null, true)
-                    ->limit(50),
+                    ->searchable()
+                    ->limit(30),
+                TextColumn::make('created_at')
+                    ->dateTime(),
             ])
             ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
@@ -186,7 +184,7 @@ class PlatformResource extends Resource
     public static function getRelations(): array
     {
         return [
-            PlatformResource\RelationManagers\SyncsRelationManager::class,
+            // Todo: debug - SQLSTATE[42000]: Syntax error or access violation: 1250 Table 'syncs' from one of the SELECTs cannot be used in global ORDER clause
             // PlatformResource\RelationManagers\SyncsRelationManager::class,
         ];
     }

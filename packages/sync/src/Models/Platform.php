@@ -7,22 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 class Platform extends Model
 {
     protected $fillable = [
-        'title',
-        'slug',
+        'name',
         'domain',
-        'selection',
+        'show_in_menu',
         'order',
+        'read_only',
         'locked',
         'master',
         'thumbnail',
-        'platformable_id',
-        'platformable_type',
+        'api_token',
     ];
 
     protected $searchableFields = ['*'];
 
     protected $casts = [
         'selection' => 'boolean',
+        'read_only' => 'boolean',
         'locked' => 'boolean',
         'master' => 'boolean',
     ];
@@ -37,8 +37,20 @@ class Platform extends Model
         return $this->hasMany(Sync::class, 'target_platform_id');
     }
 
+    public function syncs()
+    {
+        return $this->sources()->union($this->targets());
+    }
+
     public function platformable()
     {
         return $this->morphTo();
     }
+
+    /* TODO: this model must be dynamic, not user
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_platform');
+    }
+    */
 }

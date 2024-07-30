@@ -33,4 +33,16 @@ return [
         'capabilities' => 'Subscriber',
         'mm_sua_attachment_id' => '',
     ],
+
+    'use_api' => true,
+    'entities' => [
+        'wp_users' => [
+            'api' => [
+                'enabled' => true,
+                'public' => true, // false for private, true for public
+                'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
+                'route_only' => ['index', 'show', 'create', 'destroy'],
+            ],
+        ],
+    ],
 ];

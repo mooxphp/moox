@@ -12,19 +12,18 @@ return new class extends Migration {
     {
         Schema::create('platforms', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('title');
-            $table->string('slug');
-            $table->string('domain');
-            $table->boolean('selection')->nullable();
+            $table->string('name')->unique();
+            $table->string('domain')->unique();
+            $table->boolean('show_in_menu')->nullable();
             $table->tinyInteger('order')->nullable();
+            $table->boolean('read_only')->nullable();
             $table->boolean('locked')->nullable();
             $table->boolean('master')->nullable();
             $table->string('thumbnail')->nullable();
-            $table->unsignedBigInteger('platformable_id');
-            $table->string('platformable_type');
+            $table->string('api_token', 80)->unique()->nullable();
 
-            $table->index('platformable_id');
-            $table->index('platformable_type');
+            $table->index('name');
+            $table->index('domain');
 
             $table->timestamps();
         });

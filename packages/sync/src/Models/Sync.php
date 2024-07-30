@@ -7,17 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 class Sync extends Model
 {
     protected $fillable = [
-        'syncable_id',
-        'syncable_type',
+        'title',
+        'model',
         'source_platform_id',
         'target_platform_id',
         'last_sync',
+        'has_errors',
+        'field_mappings',
     ];
 
     protected $searchableFields = ['*'];
 
     protected $casts = [
         'last_sync' => 'datetime',
+        'field_mappings' => 'array',
     ];
 
     public function sourcePlatform()
@@ -28,10 +31,5 @@ class Sync extends Model
     public function targetPlatform()
     {
         return $this->belongsTo(Platform::class, 'target_platform_id');
-    }
-
-    public function syncable()
-    {
-        return $this->morphTo();
     }
 }
