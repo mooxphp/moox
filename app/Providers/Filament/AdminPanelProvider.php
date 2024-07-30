@@ -17,7 +17,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Moox\Builder\BuilderPlugin;
 use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
@@ -70,7 +69,6 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->plugins([
                 // GravatarPlugin::make(),
-                BuilderPlugin::make(),
                 JobsPlugin::make(),
                 JobsWaitingPlugin::make(),
                 JobsFailedPlugin::make(),
@@ -95,6 +93,8 @@ class AdminPanelProvider extends PanelProvider
                 SecurityPlugin::make(),
 
                 ResetPasswordPlugin::make(),
+
+                \Moox\Builder\BuilderPlugin::make(),
 
             ]);
     }
