@@ -95,6 +95,11 @@ class AdminPanelProvider extends PanelProvider
 
                 \Moox\Sync\SyncPlugin::make(),
 
+                \Moox\Training\TrainingPlugin::make(),
+                \Moox\Training\TrainingInvitationPlugin::make(),
+                \Moox\Training\TrainingDatePlugin::make(),
+                \Moox\Training\TrainingTypePlugin::make(),
+
             ]);
     }
 }
