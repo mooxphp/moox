@@ -14,7 +14,6 @@ return [
     'started_at' => 'Gestartet am',
     'failed' => 'failed',
 
-
     'Password reset links sent' => 'Passwort-Reset-Links gesendet',
     'Reset Password Message' => 'Zurücksetzen des Passworts',
     'Hello' => 'Hallo',
