@@ -162,12 +162,4 @@ trait UserMetaAttributes
 
         return $meta ? $meta->meta_value : null;
     }
-
-    public function addOrUpdateMeta($key, $value)
-    {
-        WpUserMeta::updateOrCreate(
-            ['user_id' => $this->ID, 'meta_key' => $key],
-            ['meta_value' => $value]
-        );
-    }
 }

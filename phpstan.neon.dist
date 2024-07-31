@@ -9,4 +9,14 @@ parameters:
         - app
     excludePaths:
         - 'packages/*/vendor/*'
+    ignoreErrors:
+        -
+            messages:
+                -   '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:guessFactoryNamesUsing\(\) expects callable\(class\-string\<Illuminate\\Database\\Eloquent\\Model\>\)\: class\-string\<Illuminate\\Database\\Eloquent\\Factories\\Factory\>, Closure\(string\)\: non\-falsy\-string given\.$#'
+            paths:
+                - packages/*/tests/*
+
+        - '#^Class Moox\\Core\\Base\\BaseWidget uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
+        - '#^Class Moox\\Core\\Base\\BaseResource uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
+        - '#^Class Moox\\Core\\Base\\BaseRelationManager uses unknown trait Archilex\\AdvancedTables\\AdvancedTables.$#'
     tmpDir: build/phpstan
