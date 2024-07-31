@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('domain')->unique();
             $table->string('ip_address');
             $table->string('thumbnail')->nullable();
-<<<<<<<< HEAD:database/migrations/2024_07_24_135754_01_create_platforms_table.php
             $table->string('api_token', 80)->unique()->nullable();
             $table->boolean('master')->nullable();
             $table->boolean('locked')->nullable();
@@ -25,12 +24,6 @@ return new class extends Migration
             $table->boolean('show_in_menu')->nullable();
             $table->tinyInteger('order')->nullable();
 
-========
-            $table->string('platformable_type');
-            $table->unsignedBigInteger('platformable_id');
-
-            $table->index(['platformable_id', 'platformable_type']);
->>>>>>>> a748b85f (Sync wip):database/migrations/2024_07_22_104905_01_create_platforms_table.php
             $table->index('name');
             $table->index('domain');
 
