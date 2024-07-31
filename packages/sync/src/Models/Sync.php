@@ -23,6 +23,8 @@ class Sync extends Model
         'error_message',
         'interval', // in minutes
         'last_sync',
+        'has_errors',
+        'field_mappings',
     ];
 
     protected $searchableFields = ['*'];

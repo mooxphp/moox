@@ -12,6 +12,7 @@ class Platform extends Model
         'ip_address',
         'show_in_menu',
         'order',
+        'read_only',
         'locked',
         'lock_reason',
         'master',
@@ -23,6 +24,7 @@ class Platform extends Model
 
     protected $casts = [
         'selection' => 'boolean',
+        'read_only' => 'boolean',
         'locked' => 'boolean',
         'master' => 'boolean',
     ];
