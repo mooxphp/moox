@@ -26,7 +26,7 @@ return [
                 ->mixedCase()
                 ->numbers()
                 ->symbols()
-                ->uncompromised(),
+                ->uncompromised()
         ],
         'helperText' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],
