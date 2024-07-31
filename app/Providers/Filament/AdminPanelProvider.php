@@ -25,7 +25,6 @@ use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Page\PagePlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\Services\RequestPasswordReset;
-use Moox\Sync\SyncPlugin;
 use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
