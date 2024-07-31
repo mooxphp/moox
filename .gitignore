@@ -58,20 +58,23 @@ Thumbs.db
 /routes/custom_*.php
 !/routes/custom_example.php
 
-# Moox Press
 /public/vendor/*
-/storage/app/wp-uploads
-/storage/app/wp-languages
 /public/wp/*
+!/public/wp/composer.json
 !/public/wp/wp-config.php
 /public/wp/wp-admin/*
 !/public/wp/wp-content/
+/public/wp/wp-content/*
+!/public/wp/wp-content/plugins/
+/public/wp/wp-content/plugins/*
+!/public/wp/wp-content/plugins/moox-press
+!/public/wp/wp-content/themes/
+/public/wp/wp-content/themes/*
+#! Exclude themes here
 /public/wp/wp-content/uploads
 /public/wp/wp-includes/*
 /public/wp/wp-content/languages
-/packages/press/vendor
-/packages/expiry/vendor
-build/phpstan
+
 
 auth.json
 LocalValetDriver.php
