@@ -12,8 +12,6 @@ class CreatePlatform extends CreateRecord
 
     public function generateToken(): void
     {
-        $this->form->fill([
-            'api_token' => Str::random(80),
-        ]);
+        $this->data['api_token'] = Str::random(80);
     }
 }
