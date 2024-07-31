@@ -17,6 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\Services\Login;
 use Moox\Security\Services\RequestPasswordReset;
 use Moox\Security\Services\ResetPassword;
@@ -31,6 +32,7 @@ class PressPanelProvider extends PanelProvider
             ->authGuard('press')
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
             ->login(Login::class)
+            ->authPasswordBroker('wpusers')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -74,7 +76,6 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
 
-                \Moox\Security\SecurityPlugin::make(),
                 \Moox\Security\ResetPasswordPlugin::make(),
 
                 \Moox\Sync\PlatformPlugin::make(),

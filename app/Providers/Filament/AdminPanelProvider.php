@@ -17,8 +17,16 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Moox\Builder\BuilderPlugin;
+use Moox\Jobs\JobsBatchesPlugin;
+use Moox\Jobs\JobsFailedPlugin;
+use Moox\Jobs\JobsPlugin;
+use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Page\PagePlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\Services\RequestPasswordReset;
+use Moox\Sync\SyncPlugin;
+use Moox\User\UserPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -61,33 +69,29 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->plugins([
                 // GravatarPlugin::make(),
-
-                ResetPasswordPlugin::make(),
-
-                \Moox\Builder\BuilderPlugin::make(),
-
-                \Moox\LoginLink\LoginLinkPlugin::make(),
-
-                \Moox\Notification\NotificationPlugin::make(),
-
-                \Moox\Page\PagePlugin::make(),
-
-                \Moox\Passkey\PasskeyPlugin::make(),
-
-                \Moox\Security\SecurityPlugin::make(),
-
-                \Moox\Sync\SyncPlugin::make(),
-
-                \Moox\User\UserPlugin::make(),
+                BuilderPlugin::make(),
+                JobsPlugin::make(),
+                JobsWaitingPlugin::make(),
+                JobsFailedPlugin::make(),
+                JobsBatchesPlugin::make(),
+                JobsPlugin::make(),
+                PagePlugin::make(),
+                SyncPlugin::make(),
+                UserPlugin::make(),
+                \Moox\Sync\PlatformPlugin::make(),
+                \Moox\Audit\AuditPlugin::make(),
 
                 \Moox\UserDevice\UserDevicePlugin::make(),
 
+                \Moox\LoginLink\LoginLinkPlugin::make(),
+
                 \Moox\UserSession\UserSessionPlugin::make(),
 
-                \Moox\Jobs\JobsPlugin::make(),
-                \Moox\Jobs\JobsWaitingPlugin::make(),
-                \Moox\Jobs\JobsFailedPlugin::make(),
-                \Moox\Jobs\JobsBatchesPlugin::make(),
+                \Moox\Passkey\PasskeyPlugin::make(),
+
+                \Moox\Notification\NotificationPlugin::make(),
+
+                ResetPasswordPlugin::make(),
 
             ]);
     }

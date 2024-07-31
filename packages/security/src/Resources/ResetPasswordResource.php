@@ -5,7 +5,6 @@ namespace Moox\Security\Resources;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Security\Models\ResetPassword;
@@ -41,7 +40,7 @@ class ResetPasswordResource extends Resource
                     ->sortable(),
             ])
             ->actions([
-                EditAction::make(),
+                //
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
@@ -67,5 +66,15 @@ class ResetPasswordResource extends Resource
         return [
             ResetPasswordWidgets::class,
         ];
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Security';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('security.navigation_sort');
     }
 }

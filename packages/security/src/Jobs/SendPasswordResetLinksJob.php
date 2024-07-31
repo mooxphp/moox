@@ -8,6 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Jobs\Traits\JobProgress;
+use Moox\Security\Notifications\PasswordResetNotification;
 
 class SendPasswordResetLinksJob implements ShouldQueue
 {
@@ -36,11 +37,9 @@ class SendPasswordResetLinksJob implements ShouldQueue
 
         foreach ($users as $user) {
             $token = app('auth.password.broker')->createToken($user);
-            $notification = new \Filament\Notifications\Auth\ResetPassword($token);
-            $notification->url = \Filament\Facades\Filament::getResetPasswordUrl($token, $user);
+            $notification = new PasswordResetNotification($token);
 
             $user->notify($notification);
-
         }
     }
 }
