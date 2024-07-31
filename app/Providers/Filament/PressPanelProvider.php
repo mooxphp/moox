@@ -31,6 +31,7 @@ class PressPanelProvider extends PanelProvider
             ->authGuard('press')
             ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
             ->login(Login::class)
+            ->authPasswordBroker('wpusers')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -74,7 +75,6 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
 
-                \Moox\Security\SecurityPlugin::make(),
                 \Moox\Security\ResetPasswordPlugin::make(),
 
                 \Moox\Sync\PlatformPlugin::make(),

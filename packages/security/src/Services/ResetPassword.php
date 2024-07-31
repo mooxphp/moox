@@ -140,10 +140,10 @@ class ResetPassword extends SimplePage
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->rules(config('security.password'))
+            ->rules(config('security.password.validation'))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::pages/auth/password-reset/reset-password.form.password.validation_attribute'))
-            ->helperText('Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
+            ->helperText(config('security.password.helperText'));
     }
 
     protected function getPasswordConfirmationFormComponent(): Component

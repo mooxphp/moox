@@ -20,6 +20,7 @@ use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
 use Moox\Press\Resources\WpUserResource\Pages\ListWpUsers;
 use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
 use Moox\Press\Resources\WpUserResource\RelationManagers\WpUserMetaRelationManager;
+use Moox\Security\FilamentActions\SendPasswordResetLinksBulkAction;
 use Moox\Security\Helper\PasswordHash;
 
 class WpUserResource extends Resource
@@ -264,7 +265,11 @@ class WpUserResource extends Resource
             ])
             ->filters([])
             ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->bulkActions(array_filter([
+                DeleteBulkAction::make(),
+                (config('security.actions.bulkactions.sendPasswordResetLinkBulkAction')) ?
+                    SendPasswordResetLinksBulkAction::make() : null,
+            ]));
     }
 
     public static function getRelations(): array

@@ -185,7 +185,7 @@ class Login extends SimplePage
             ->autocomplete('current-password')
             ->required()
             ->extraInputAttributes(['tabindex' => 2])
-            ->rules(config('security.password'))
+            ->rules(config('security.password.validation'))
             ->validationMessages([
                 'min' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
                 'max' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',

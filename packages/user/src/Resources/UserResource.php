@@ -11,6 +11,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -19,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Moox\Security\FilamentActions\SendPasswordResetLinksBulkAction;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
@@ -261,8 +264,7 @@ class UserResource extends Resource
                     ->alignStart()
                     ->icon(
                         fn ($record): string => is_null(
-                            $record->email_verified_at
-                        ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
                         'success' => fn ($record) => $record->email_verified_at !== null,
@@ -286,7 +288,12 @@ class UserResource extends Resource
                     ->multiple()
                     ->label('Language'),
             ])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ->actions([ViewAction::make(), EditAction::make()])
+            ->bulkActions(array_filter([
+                DeleteBulkAction::make(),
+                (config('security.actions.bulkactions.sendPasswordResetLinkBulkAction')) ?
+                SendPasswordResetLinksBulkAction::make() : null,
+            ]));
     }
 
     public static function getRelations(): array

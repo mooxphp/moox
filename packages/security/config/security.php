@@ -13,19 +13,37 @@ return [
             'email' => 'email',
             'password' => 'password',
         ],
+        'press' => [
+            'username' => 'name',
+            'email' => 'email',
+            'password' => 'password',
+        ],
     ],
 
     // Using Laravel Password Validation
     'password' => [
-        'rules' => Password::min(20)
-            ->max(64)
-            ->mixedCase()
-            ->numbers()
-            ->symbols()
-            ->uncompromised(),
+        'validation' => [
+            'rules' => Password::min(20)
+                ->max(64)
+                ->mixedCase()
+                ->numbers()
+                ->symbols()
+                ->uncompromised(),
+        ],
+        'helper_text' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],
 
+    // The column-name in your user-table
+    'mail_recipient_name' => 'name',
+
     'password_reset_links' => [
-        'model' => App\Models\User::class,
+        'model' => Moox\User\Models\User::class,
+    ],
+
+    'actions' => [
+        'bulkactions' => [
+            'sendPasswordResetLinkBulkAction' => true,
+        ],
+
     ],
 ];

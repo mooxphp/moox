@@ -11,7 +11,6 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Notifications\Auth\ResetPassword as ResetPasswordNotification;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\SimplePage;
@@ -19,6 +18,7 @@ use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Password;
+use Moox\Security\Notifications\PasswordResetNotification;
 
 /**
  * @property Form $form
@@ -78,8 +78,7 @@ class RequestPasswordReset extends SimplePage
                     throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
                 }
 
-                $notification = new ResetPasswordNotification($token);
-                $notification->url = Filament::getResetPasswordUrl($token, $user);
+                $notification = new PasswordResetNotification($token);
 
                 $user->notify($notification);
 
