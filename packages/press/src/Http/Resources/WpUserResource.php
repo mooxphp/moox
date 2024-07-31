@@ -25,5 +25,12 @@ class WpUserResource extends JsonResource
             'created_at' => $this->resource->created_at,
             'updated_at' => $this->resource->updated_at,
         ];
+
+        // Include all user metas as attributes
+        foreach ($this->getAllMetaAttributes() as $key => $value) {
+            $data[$key] = $value;
+        }
+
+        return $data;
     }
 }
