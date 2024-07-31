@@ -50,6 +50,7 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                     $user = $record;
 
                     $token = app('auth.password.broker')->createToken($user);
+
                     if (! method_exists($user, 'notify')) {
                         $userClass = $user::class;
 
