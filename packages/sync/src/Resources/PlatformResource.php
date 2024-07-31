@@ -55,7 +55,7 @@ class PlatformResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->placeholder('Domain')
-                        ->reactive()
+                        ->live(debounce: 500)
                         ->afterStateUpdated(function ($state, callable $set) {
                             if (empty($state)) {
                                 $set('ip_address', 'The host is not resolvable');
