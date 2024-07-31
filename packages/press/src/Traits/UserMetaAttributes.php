@@ -2,8 +2,6 @@
 
 namespace Moox\Press\Traits;
 
-use Moox\Press\Models\WpUserMeta;
-
 trait UserMetaAttributes
 {
     public function getEmailAttribute()
