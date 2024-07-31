@@ -9,6 +9,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -18,6 +19,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Services\DnsLookupService;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Resources\PlatformResource\Pages\CreatePlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\EditPlatform;
@@ -53,6 +55,25 @@ class PlatformResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->placeholder('Domain')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (empty($state)) {
+                                $set('ip_address', 'The host is not resolvable');
+                            } else {
+                                $ipAddress = DnsLookupService::getIpAddress($state);
+                                $set('ip_address', $ipAddress ?: 'The host is not resolvable');
+                            }
+                        })
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    TextInput::make('ip_address')
+                        ->rules(['max:255', 'string'])
+                        ->required()
+                        ->placeholder('IP Address')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -95,7 +116,24 @@ class PlatformResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
-                        ]),
+                        ])
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            if ($state) {
+                                $existingMaster = Platform::where('master', true)
+                                    ->where('id', '!=', $get('id'))
+                                    ->first();
+
+                                if ($existingMaster) {
+                                    $set('master', false);
+                                    Notification::make()
+                                        ->title('Sync Error')
+                                        ->body('There can only be one master platform.')
+                                        ->danger()
+                                        ->send();
+                                }
+                            }
+                        }),
 
                     Toggle::make('locked')
                         ->rules(['boolean'])
@@ -199,7 +237,7 @@ class PlatformResource extends Resource
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->since(),
             ])
             ->actions([ViewAction::make(), EditAction::make()])

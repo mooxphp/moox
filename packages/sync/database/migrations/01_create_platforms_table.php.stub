@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('domain')->unique();
+            $table->string('ip_address');
             $table->string('thumbnail')->nullable();
             $table->string('api_token', 80)->unique()->nullable();
             $table->boolean('master')->nullable();
