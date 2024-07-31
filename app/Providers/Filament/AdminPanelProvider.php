@@ -77,6 +77,7 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Security\SecurityPlugin::make(),
 
                 \Moox\Sync\SyncPlugin::make(),
+                \Moox\Sync\PlatformPlugin::make(),
 
                 \Moox\User\UserPlugin::make(),
 
