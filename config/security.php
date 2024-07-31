@@ -44,12 +44,12 @@ return [
     // Using Laravel Password Validation
     'password' => [
         'validation' => [
-            'rules' => Password::min(20)
-                ->max(64)
-                ->mixedCase()
-                ->numbers()
-                ->symbols()
-                ->uncompromised(),
+            //'rules' => Password::min(20)
+                //->max(64)
+                //->mixedCase()
+                //->numbers()
+                //->symbols()
+                //->uncompromised(),
         ],
         'helper_text' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],

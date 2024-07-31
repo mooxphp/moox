@@ -135,6 +135,15 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
+    public function getAllMetaAttributes()
+    {
+        $metas = $this->userMeta->pluck('meta_value', 'meta_key')->toArray();
+        foreach ($metas as $key => $value) {
+            $metas[$key] = $this->getMeta($key);
+        }
+        return $metas;
+    }
+
     public function meta($key)
     {
         if (! Str::startsWith($key, $this->wpPrefix)) {
@@ -171,5 +180,13 @@ class WpUser extends Authenticatable implements FilamentUser
         }
 
         return $saved;
+    }
+
+    public function addOrUpdateMeta($key, $value)
+    {
+        WpUserMeta::updateOrCreate(
+            ['user_id' => $this->ID, 'meta_key' => $key],
+            ['meta_value' => $value]
+        );
     }
 }
