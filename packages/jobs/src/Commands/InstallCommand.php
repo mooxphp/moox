@@ -3,15 +3,16 @@
 namespace Moox\Jobs\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Schema;
-
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
-use function Laravel\Prompts\multiselect;
+
 use function Laravel\Prompts\note;
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\alert;
+use Illuminate\Support\Facades\File;
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\warning;
+use Illuminate\Support\Facades\Schema;
+use function Laravel\Prompts\multiselect;
 
 class InstallCommand extends Command
 {
@@ -24,19 +25,25 @@ class InstallCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
     }
 
     public function handle(): void
     {
         $this->art();
         $this->welcome();
-        $this->checkForFilament();
         $this->publishConfiguration();
         $this->publishMigrations();
         $this->createQueueTables();
         $this->runMigrations();
-        $this->registerPlugins();
+        $providerPath = app_path('Providers\Filament');
+        $panelsToregister = $this->getPanelProviderPath();
+        if (count($panelsToregister) > 0 && $panelsToregister != null) {
+            foreach ($panelsToregister as $panelprovider) {
+                $this->registerPlugins($providerPath . '/' . $panelprovider);
+            }
+        } else {
+            $this->registerPlugins($panelsToregister[0]);
+        }
         $this->sayGoodbye();
     }
 
@@ -66,32 +73,11 @@ class InstallCommand extends Command
         note('Welcome to the Moox Jobs installer');
     }
 
-    public function checkForFilament(): void
-    {
-        if (! File::exists($this->providerPath)) {
-            error('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist.');
-            info(' ');
-            warning('You should install FilamentPHP first, see https://filamentphp.com/docs/panels/installation');
-            info(' ');
-            if (confirm('Do you want to install Filament now?', true)) {
-                info('Starting Filament installer...');
-                $this->callSilent('filament:install', ['--panels' => true]);
-            }
-        }
-
-        if (! File::exists($this->providerPath)) {
-            if (! confirm('Filament is not installed properly. Do you want to proceed anyway?', false)) {
-                info('Installation cancelled.');
-
-                return; // cancel installation
-            }
-        }
-    }
 
     public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! File::exists('config/jobs.php')) {
+            if (!File::exists('config/jobs.php')) {
                 info('Publishing Jobs Configuration...');
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-config']);
 
@@ -167,7 +153,7 @@ class InstallCommand extends Command
         }
     }
 
-    public function registerPlugins(): void
+    public function registerPlugins(string $providerPath): void
     {
         $queueDriver = '';
 
@@ -175,8 +161,8 @@ class InstallCommand extends Command
             $queueDriver = 'database';
         }
 
-        if (File::exists($this->providerPath)) {
-            $content = File::get($this->providerPath);
+        if (File::exists($providerPath)) {
+            $content = File::get($providerPath);
             $intend = '                ';
             $namespace = "\Moox\Jobs";
 
@@ -202,11 +188,11 @@ class InstallCommand extends Command
             $newPlugins = '';
 
             foreach ($pluginsToAdd as $plugin) {
-                $searchPlugin = '/'.$plugin.'/';
+                $searchPlugin = '/' . $plugin . '/';
                 if (preg_match($searchPlugin, $content)) {
                     warning("$plugin already registered.");
                 } else {
-                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
+                    $newPlugins .= $intend . $namespace . '\\' . $plugin . $function . "\n";
                 }
             }
 
@@ -221,12 +207,36 @@ class InstallCommand extends Command
 
                     $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
                     $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                    $replacement = "$1\n".$pluginsSection;
+                    $replacement = "$1\n" . $pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
-                File::put($this->providerPath, $newContent);
+                File::put($providerPath, $newContent);
+            } else {
+                alert($providerPath . ' not found. You need to add the plugins manually.');
             }
         }
+    }
+
+    public function getPanelProviderPath(): string|array
+    {
+        $providerPath = app_path('Providers\Filament');
+        $providers = File::allFiles($providerPath);
+        if (count($providers) > 1) {
+            $providerNames = [];
+            foreach ($providers as $provider) {
+                $providerNames[] = $provider->getBasename();
+            }
+            $providerPath = multiselect(
+                label: 'Which Panel should it be registered',
+                options: [...$providerNames],
+                default: [$providerNames[0]],
+            );
+        }
+        if (count($providers) == 1) {
+            $providerPath .= '/' . $providers[0]->getBasename();
+        }
+
+        return $providerPath;
     }
 
     public function sayGoodbye(): void
