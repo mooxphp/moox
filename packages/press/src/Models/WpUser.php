@@ -141,6 +141,7 @@ class WpUser extends Authenticatable implements FilamentUser
         foreach ($metas as $key => $value) {
             $metas[$key] = $this->getMeta($key);
         }
+
         return $metas;
     }
 
