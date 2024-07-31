@@ -76,7 +76,6 @@ class AdminPanelProvider extends PanelProvider
                 JobsBatchesPlugin::make(),
                 JobsPlugin::make(),
                 PagePlugin::make(),
-                SyncPlugin::make(),
                 UserPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
@@ -90,6 +89,15 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Passkey\PasskeyPlugin::make(),
 
                 \Moox\Notification\NotificationPlugin::make(),
+
+                \Moox\Sync\SyncPlugin::make(),
+                \Moox\Sync\PlatformPlugin::make(),
+
+                \Moox\User\UserPlugin::make(),
+
+                \Moox\UserDevice\UserDevicePlugin::make(),
+
+                \Moox\UserSession\UserSessionPlugin::make(),
 
                 ResetPasswordPlugin::make(),
 

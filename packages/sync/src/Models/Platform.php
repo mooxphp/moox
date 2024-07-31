@@ -9,10 +9,12 @@ class Platform extends Model
     protected $fillable = [
         'name',
         'domain',
+        'ip_address',
         'show_in_menu',
         'order',
         'read_only',
         'locked',
+        'lock_reason',
         'master',
         'thumbnail',
         'api_token',

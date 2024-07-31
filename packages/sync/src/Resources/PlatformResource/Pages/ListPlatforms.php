@@ -18,7 +18,7 @@ class ListPlatforms extends ListRecords
 
     public function getTitle(): string
     {
-        return __('sync::translations.title');
+        return __('sync::translations.platforms');
     }
 
     protected function getHeaderActions(): array
