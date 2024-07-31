@@ -7,7 +7,6 @@ use Filament\Panel;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -20,7 +19,6 @@ use Moox\Press\Traits\UserMetaAttributes;
  * @property string $user_login
  * @property string $user_nicename
  * @property string $user_email
- * @property \Illuminate\Database\Eloquent\Collection $userMeta
  */
 class WpUser extends Authenticatable implements FilamentUser
 {
@@ -132,7 +130,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return true;
     }
 
-    public function userMeta(): HasMany
+    public function userMeta()
     {
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
@@ -143,7 +141,6 @@ class WpUser extends Authenticatable implements FilamentUser
         foreach ($metas as $key => $value) {
             $metas[$key] = $this->getMeta($key);
         }
-
         return $metas;
     }
 

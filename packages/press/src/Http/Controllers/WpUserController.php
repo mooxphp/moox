@@ -16,7 +16,6 @@ class WpUserController extends Controller
     public function index()
     {
         $users = WpUser::with('userMeta')->get();
-
         return WpUserResource::collection($users);
     }
 
@@ -51,7 +50,6 @@ class WpUserController extends Controller
     public function show($id)
     {
         $user = WpUser::with('userMeta')->findOrFail($id);
-
         return new WpUserResource($user);
     }
 

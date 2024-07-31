@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Validation\Rules\Password;
+
 return [
 
     /*
@@ -43,13 +45,13 @@ return [
     'password' => [
         'validation' => [
             //'rules' => Password::min(20)
-            //->max(64)
-            //->mixedCase()
-            //->numbers()
-            //->symbols()
-            //->uncompromised(),
+                //->max(64)
+                //->mixedCase()
+                //->numbers()
+                //->symbols()
+                //->uncompromised(),
         ],
-        'helperText' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
+        'helper_text' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],
 
     // The column-name in your user-table
