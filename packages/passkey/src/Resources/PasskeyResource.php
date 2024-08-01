@@ -21,7 +21,7 @@ class PasskeyResource extends Resource
 {
     protected static ?string $model = Passkey::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-finger-print';
+    protected static ?string $navigationIcon = 'gmdi-fingerprint-o';
 
     public static function form(Form $form): Form
     {

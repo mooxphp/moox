@@ -5,7 +5,7 @@ return [
     'plural' => 'Devices',
     'breadcrumb' => 'Device',
     'title' => 'Device',
-    'navigation_label' => 'User Device',
+    'navigation_label' => 'Devices',
     'navigation_group' => 'Moox User',
     'totalone' => 'Devices',
     'totaltwo' => 'Users',
