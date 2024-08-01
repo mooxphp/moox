@@ -61,8 +61,8 @@ class UserDevice extends Model
         if (class_exists($userModel)) {
             return $this->belongsTo($userModel, 'user_id');
         }
-        
-        return $this->belongsTo('\App\Models\User', 'user_id');;
+
+        return $this->belongsTo('\App\Models\User', 'user_id');
     }
 
     /**
