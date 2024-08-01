@@ -190,8 +190,6 @@ class InstallCommand extends Command
             $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
             $newPlugins = '';
 
-            var_dump($pluginsToAdd);
-
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/' . $plugin . '/';
                 if (preg_match($searchPlugin, $content)) {
