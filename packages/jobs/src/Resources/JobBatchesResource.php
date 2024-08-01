@@ -13,7 +13,7 @@ class JobBatchesResource extends Resource
 {
     protected static ?string $model = JobBatch::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static ?string $navigationIcon = 'gmdi-all-inbox';
 
     public static function table(Table $table): Table
     {

@@ -22,7 +22,7 @@ class UserSessionResource extends Resource
 {
     protected static ?string $model = UserSession::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationIcon = 'gmdi-event-seat-o';
 
     protected static ?string $recordTitleAttribute = 'id';
 
@@ -48,11 +48,15 @@ class UserSessionResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('user_id')
+                    ->label(__('user-device::translations.username'))
+                    ->getStateUsing(function ($record) {
+                        return optional($record->user)->name ?? 'unknown';
+                    })
+                    ->sortable(),
+
                 TextColumn::make('id')
                     ->label(__('user-session::translations.id'))
-                    ->sortable(),
-                TextColumn::make('user_id')
-                    ->label(__('user-session::translations.user_id'))
                     ->sortable(),
                 TextColumn::make('user_type')
                     ->label(__('user-session::translations.user_type'))
@@ -66,6 +70,10 @@ class UserSessionResource extends Resource
                 TextColumn::make('whitlisted')
                     ->label(__('user-session::translations.whitelisted'))
                     ->sortable(),
+                TextColumn::make('last_activity')
+                    ->label(__('user-session::translations.last_activity'))
+                    ->sortable()
+                    ->since(),
             ])
             ->defaultSort('user_id', 'desc')
             ->actions([
@@ -139,11 +147,6 @@ class UserSessionResource extends Resource
     public static function shouldRegisterNavigation(): bool
     {
         return true;
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
     }
 
     public static function getNavigationGroup(): ?string

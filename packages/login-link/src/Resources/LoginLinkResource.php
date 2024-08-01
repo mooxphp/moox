@@ -22,7 +22,7 @@ class LoginLinkResource extends Resource
 {
     protected static ?string $model = LoginLink::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-key';
+    protected static ?string $navigationIcon = 'gmdi-lock-clock-o';
 
     public static function form(Form $form): Form
     {
@@ -158,11 +158,6 @@ class LoginLinkResource extends Resource
     public static function shouldRegisterNavigation(): bool
     {
         return true;
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
     }
 
     public static function getNavigationGroup(): ?string

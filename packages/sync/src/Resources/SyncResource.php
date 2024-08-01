@@ -30,7 +30,7 @@ class SyncResource extends Resource
 {
     protected static ?string $model = Sync::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static ?string $navigationIcon = 'gmdi-sync';
 
     protected static ?string $recordTitleAttribute = 'title';
 

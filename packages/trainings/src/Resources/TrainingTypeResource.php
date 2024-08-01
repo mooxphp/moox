@@ -22,7 +22,7 @@ class TrainingTypeResource extends Resource
 {
     protected static ?string $model = TrainingType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-assignment';
 
     protected static ?string $navigationGroup = 'heco Schulungen';
 

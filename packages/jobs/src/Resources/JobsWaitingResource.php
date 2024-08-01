@@ -19,7 +19,7 @@ class JobsWaitingResource extends Resource
 {
     protected static ?string $model = Job::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-pause';
+    protected static ?string $navigationIcon = 'gmdi-pause';
 
     public static function form(Form $form): Form
     {

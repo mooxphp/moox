@@ -19,7 +19,7 @@ class JobsResource extends Resource
 {
     protected static ?string $model = JobManager::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-play';
+    protected static ?string $navigationIcon = 'gmdi-play-arrow';
 
     public static function form(Form $form): Form
     {

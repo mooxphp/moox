@@ -17,7 +17,7 @@ class ResetPasswordResource extends Resource
 
     protected static ?string $model = ResetPassword::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-password';
 
     public static function form(Form $form): Form
     {
@@ -70,7 +70,7 @@ class ResetPasswordResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Security';
+        return 'Moox User';
     }
 
     public static function getNavigationSort(): ?int

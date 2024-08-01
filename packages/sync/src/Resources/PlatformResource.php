@@ -30,7 +30,7 @@ class PlatformResource extends Resource
 {
     protected static ?string $model = Platform::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-server-stack';
+    protected static ?string $navigationIcon = 'gmdi-dns';
 
     protected static ?string $recordTitleAttribute = 'name';
 
