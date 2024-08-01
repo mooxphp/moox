@@ -22,7 +22,7 @@ class JobsFailedResource extends Resource
 {
     protected static ?string $model = FailedJob::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-error';
 
     public static function form(Form $form): Form
     {

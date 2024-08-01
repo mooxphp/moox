@@ -23,7 +23,7 @@ class TrainingInvitationResource extends Resource
 {
     protected static ?string $model = TrainingInvitation::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-insert-invitation';
 
     protected static ?string $navigationGroup = 'heco Schulungen';
 

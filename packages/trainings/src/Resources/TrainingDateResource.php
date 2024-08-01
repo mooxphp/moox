@@ -23,7 +23,7 @@ class TrainingDateResource extends Resource
 {
     protected static ?string $model = TrainingDate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-date-range';
 
     protected static ?string $navigationGroup = 'heco Schulungen';
 

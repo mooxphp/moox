@@ -22,7 +22,7 @@ return [
     ],
 
     /*
-    | Whitelisted IPs or IP ranges are can be used to extend the session expiry.
+    | Whitelisted IPs or IP ranges can be used to extend the session expiry.
     | They are also used to distinguish between internal and external IPs
     | in the user session list.
     */

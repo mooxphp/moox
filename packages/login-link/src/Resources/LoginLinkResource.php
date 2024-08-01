@@ -160,11 +160,6 @@ class LoginLinkResource extends Resource
         return true;
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
-    }
-
     public static function getNavigationGroup(): ?string
     {
         return __('login-link::translations.navigation_group');
