@@ -70,28 +70,4 @@ class MyExpiry extends BaseWidget
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
-
-    public function getPresetViews(): array
-    {
-        if ($this->useAdvancedTables === true) {
-
-            return [
-                'Dokumente' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('expiry_job', 'Wiki Dokumente'))
-                    ->icon('heroicon-o-document-text')
-                    ->badge(Expiry::query()->where('expiry_job', 'Wiki Dokumente')->count())
-                    ->favorite(),
-                'Artikel' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('expiry_job', 'Wiki Artikel'))
-                    ->icon('heroicon-o-document-check')
-                    ->badge(Expiry::query()->where('expiry_job', 'Wiki Artikel')->count())
-                    ->favorite(),
-                'Aufgaben' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('expiry_job', 'Wiki Aufgaben'))
-                    ->icon('heroicon-o-clipboard-document-list')
-                    ->badge(Expiry::query()->where('expiry_job', 'Wiki Aufgaben')->count())
-                    ->favorite(),
-            ];
-        }
-    }
 }
