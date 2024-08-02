@@ -7,10 +7,10 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Core\Base\BaseWidget;
+use Filament\Widgets\TableWidget;
 use Moox\Expiry\Models\Expiry;
 
-class MyExpiry extends BaseWidget
+class MyExpiry extends TableWidget
 {
     protected int|string|array $columnSpan = [
         'sm' => 3,
