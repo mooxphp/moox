@@ -135,6 +135,6 @@ class JobBatchesResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.job_batches.navigation_sort');
+        return config('jobs.navigation_sort') + 4;
     }
 }

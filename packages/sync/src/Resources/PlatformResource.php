@@ -104,7 +104,7 @@ class PlatformResource extends Resource
                         ->suffixAction(
                             Action::make('generateToken')
                                 ->label('Generate Token')
-                                ->icon('heroicon-o-arrow-path')
+                                ->icon('gmdi-generating-tokens')
                                 ->action('generateToken')
                                 ->hidden(fn ($livewire) => $livewire instanceof ViewRecord)
                         ),
@@ -299,6 +299,6 @@ class PlatformResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('sync.plattforms.navigation_sort');
+        return config('sync.navigation_sort') + 1;
     }
 }

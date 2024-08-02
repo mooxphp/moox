@@ -145,6 +145,6 @@ class JobsWaitingResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.jobs_waiting.navigation_sort');
+        return config('jobs.navigation_sort') + 1;
     }
 }

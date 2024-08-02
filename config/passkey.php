@@ -12,6 +12,7 @@ return [
     | plugins, everything should be in order.
     |
     */
+
     'navigation_sort' => 2001,
 
     /*
@@ -22,6 +23,7 @@ return [
     | Add your user models here. You can add as many as you want.
     |
     */
+
     'user_models' => [
         'App Users' => \App\Models\User::class,
         'Moox Users' => \Moox\User\Models\User::class,
@@ -35,5 +37,7 @@ return [
     | This is the model used to store the user devices.
     |
     */
+
     'device_model' => \Moox\UserDevice\Models\UserDevice::class,
+
 ];

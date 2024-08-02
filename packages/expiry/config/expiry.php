@@ -1,31 +1,71 @@
 <?php
 
 return [
-    // Filament Navigation sort order
-    'navigation_sort' => 7101,
 
-    // Wire with a user model and a default user ID to be notified
-    // when no user is assigned to an expiry
+    /*
+    |--------------------------------------------------------------------------
+    | Expiry - Navigation Sort
+    |--------------------------------------------------------------------------
+    |
+    | This value is the sort order of the navigation item in the
+    | Filament Admin Panel. If you use a bunch of Moox
+    | plugins, everything should be in order.
+    |
+    */
+
+    'navigation_sort' => 7001,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Expiry - User Model and default user to notify
+    |--------------------------------------------------------------------------
+    |
+    | Bring your own user model, or use the default one
+    | and set the default user to notify.
+    |
+    */
+
     'user_model' => \Moox\Press\Models\WpUser::class,
     'default_notified_to' => 1,
 
-    // Disable manual action buttons in UI
+    /*
+    |--------------------------------------------------------------------------
+    | Expiry - Disable actions
+    |--------------------------------------------------------------------------
+    |
+    | You can disable some action buttons in the admin panel.
+    | These actions are still available via the API
+    | or by using the included jobs.
+    |
+    */
+
     'create_expiry_action' => false,
     'collect_expiries_action' => true,
     'send_summary_action' => true,
 
-    // Jobs for expiries, create custom jobs if needed
-    // use and customize CollectExpiries instead of DemoExpiries
-    // DemoExpiries is just a job for creating demo data:
-    // 'collect_expiries_job' => \Moox\Expiry\Jobs\CollectExpiries::class,
+    /*
+    |--------------------------------------------------------------------------
+    | Expiry - Jobs
+    |--------------------------------------------------------------------------
+    |
+    | These jobs are used to collect expiries and send summaries.
+    |
+    */
+
     'collect_expiries_jobs' => [
         \Moox\Expiry\Jobs\CollectExpiries::class,
         // Add more jobs here if needed.
     ],
-
-    // Send summary job
     'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
 
-    // Enable API
+    /*
+    |--------------------------------------------------------------------------
+    | Expiry - API
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the API.
+    |
+    */
+
     'api' => true,
 ];

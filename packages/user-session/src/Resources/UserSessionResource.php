@@ -22,7 +22,7 @@ class UserSessionResource extends Resource
 {
     protected static ?string $model = UserSession::class;
 
-    protected static ?string $navigationIcon = 'gmdi-event-seat-o';
+    protected static ?string $navigationIcon = 'gmdi-safety-check';
 
     protected static ?string $recordTitleAttribute = 'id';
 

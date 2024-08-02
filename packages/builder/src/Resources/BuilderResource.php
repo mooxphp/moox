@@ -19,7 +19,7 @@ class BuilderResource extends Resource
 {
     protected static ?string $model = Item::class;
 
-    protected static ?string $navigationIcon = 'gmdi-build';
+    protected static ?string $navigationIcon = 'gmdi-engineering';
 
     public static function form(Form $form): Form
     {

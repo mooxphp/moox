@@ -131,11 +131,6 @@ class JobsResource extends Resource
         return true;
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
-    }
-
     public static function getNavigationGroup(): ?string
     {
         return __('jobs::translations.navigation_group');
@@ -143,6 +138,6 @@ class JobsResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.jobs.navigation_sort');
+        return config('jobs.navigation_sort');
     }
 }

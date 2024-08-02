@@ -22,7 +22,7 @@ class AuditResource extends Resource
 {
     protected static ?string $model = Activity::class;
 
-    protected static ?string $navigationIcon = 'gmdi-work-history';
+    protected static ?string $navigationIcon = 'gmdi-troubleshoot';
 
     public static function form(Form $form): Form
     {

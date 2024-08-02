@@ -17,7 +17,7 @@ class ResetPasswordResource extends Resource
 
     protected static ?string $model = ResetPassword::class;
 
-    protected static ?string $navigationIcon = 'gmdi-password';
+    protected static ?string $navigationIcon = 'gmdi-token';
 
     public static function form(Form $form): Form
     {
