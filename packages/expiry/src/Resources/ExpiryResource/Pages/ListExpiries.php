@@ -4,7 +4,9 @@ namespace Moox\Expiry\Resources\ExpiryResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Config;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource;
 
@@ -39,37 +41,18 @@ class ListExpiries extends ListRecords
             ->send();
     }
 
-    public function getPresetViews(): array
+    public function getTabs(): array
     {
-        if ($this->useAdvancedTables === true) {
+        $tabsConfig = Config::get('expiry.tabs', []);
+        $tabs = [];
 
-            return [
-                'Dokumente' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('expiry_job', 'Wiki Dokumente'))
-                    ->icon('heroicon-o-document-text')
-                    ->badge(Expiry::query()->where('expiry_job', 'Wiki Dokumente')->count())
-                    ->favorite(),
-                'Artikel' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('expiry_job', 'Wiki Artikel'))
-                    ->icon('heroicon-o-document-check')
-                    ->badge(Expiry::query()->where('expiry_job', 'Wiki Artikel')->count())
-                    ->favorite(),
-                'Aufgaben' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('expiry_job', 'Wiki Aufgaben'))
-                    ->icon('heroicon-o-clipboard-document-list')
-                    ->badge(Expiry::query()->where('expiry_job', 'Wiki Aufgaben')->count())
-                    ->favorite(),
-                'Kein Bearbeiter' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('status', 'Niemand verantwortlich'))
-                    ->icon('heroicon-o-user-circle')
-                    ->badge(Expiry::query()->where('status', 'Niemand verantwortlich')->count())
-                    ->favorite(),
-                'Ohne Datum' => \Archilex\AdvancedTables\Components\PresetView::make()
-                    ->modifyQueryUsing(fn ($query) => $query->where('status', 'Kein Ablaufdatum'))
-                    ->icon('heroicon-o-calendar-days')
-                    ->badge(Expiry::query()->where('status', 'Kein Ablaufdatum')->count())
-                    ->favorite(),
-            ];
+        foreach ($tabsConfig as $key => $tabConfig) {
+            $tabs[$key] = Tab::make($tabConfig['label'])
+                ->modifyQueryUsing(fn ($query) => $query->where($tabConfig['field'], $tabConfig['value']))
+                ->badge(Expiry::query()->where($tabConfig['field'], $tabConfig['value'])->count())
+                ->icon($tabConfig['icon']);
         }
+
+        return $tabs;
     }
 }
