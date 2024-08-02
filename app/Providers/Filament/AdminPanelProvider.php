@@ -58,23 +58,20 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->spa()
             ->plugins([
-                // Builder plugins
-                \Moox\Builder\BuilderPlugin::make(),
+                // CMS plugin
+                \Moox\Page\PagePlugin::make(),
+
+                // Notification plugin
+                \Moox\Notification\NotificationPlugin::make(),
+
+                // Audit plugin
+                \Moox\Audit\AuditPlugin::make(),
 
                 // Jobs plugins
                 \Moox\Jobs\JobsPlugin::make(),
                 \Moox\Jobs\JobsWaitingPlugin::make(),
                 \Moox\Jobs\JobsFailedPlugin::make(),
                 \Moox\Jobs\JobsBatchesPlugin::make(),
-
-                // CMS plugins
-                \Moox\Page\PagePlugin::make(),
-
-                // Audit plugins
-                \Moox\Audit\AuditPlugin::make(),
-
-                // Notification plugins
-                \Moox\Notification\NotificationPlugin::make(),
 
                 // Sync Plugins
                 \Moox\Sync\SyncPlugin::make(),
@@ -88,7 +85,7 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Passkey\PasskeyPlugin::make(),
                 \Moox\Security\ResetPasswordPlugin::make(),
 
-                // Expiry plugins
+                // Expiry plugin
                 \Moox\Expiry\ExpiryPlugin::make(),
 
                 // Training plugins
@@ -96,6 +93,9 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Training\TrainingInvitationPlugin::make(),
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
+
+                // Builder plugin
+                \Moox\Builder\BuilderPlugin::make(),
 
             ]);
     }

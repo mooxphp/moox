@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'navigation_sort' => 2001,
+    'navigation_sort' => 7201,
 
     // Wire with one or more user models
     'user_models' => [

@@ -32,4 +32,9 @@ class SyncPlugin implements Plugin
     {
         return app(static::class);
     }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('sync.navigation_sort');
+    }
 }

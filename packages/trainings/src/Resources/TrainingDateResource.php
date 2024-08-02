@@ -201,4 +201,9 @@ class TrainingDateResource extends Resource
             'edit' => Pages\EditTrainingDate::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('trainings.navigation_sort') + 2;
+    }
 }

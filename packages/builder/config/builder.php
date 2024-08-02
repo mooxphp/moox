@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'navigation_sort' => 2001,
+    // Filament Navigation sort order
+    'navigation_sort' => 9001,
 ];

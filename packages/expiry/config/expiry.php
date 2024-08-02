@@ -1,9 +1,11 @@
 <?php
 
 return [
-    'navigation_sort' => 2001,
-    'navigation_label' => 'Moox Expiry',
+    // Filament Navigation sort order
+    'navigation_sort' => 7101,
 
+    // Wire with a user model and a default user ID to be notified
+    // when no user is assigned to an expiry
     'user_model' => \Moox\Press\Models\WpUser::class,
     'default_notified_to' => 1,
 
@@ -20,6 +22,10 @@ return [
         \Moox\Expiry\Jobs\CollectExpiries::class,
         // Add more jobs here if needed.
     ],
+
+    // Send summary job
     'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
+
+    // Enable API
     'api' => true,
 ];

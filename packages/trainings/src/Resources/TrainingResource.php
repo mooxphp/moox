@@ -265,4 +265,9 @@ class TrainingResource extends Resource
             'edit' => Pages\EditTraining::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('trainings.navigation_sort');
+    }
 }

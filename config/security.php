@@ -3,7 +3,28 @@
 use Illuminate\Validation\Rules\Password;
 
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security - Navigation Sort
+    |--------------------------------------------------------------------------
+    |
+    | This values are the sort order of the navigation items in the
+    | Filament Admin Panel. If you use a bunch of Moox
+    | plugins, everything should be in order.
+    |
+    */
+
     'navigation_sort' => 2001,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security - Other
+    |--------------------------------------------------------------------------
+    |
+    | This plugin is under hard construction. Things will probably change.
+    |
+    */
 
     'wpModel' => Moox\Press\Models\WpUser::class,
 

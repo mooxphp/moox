@@ -35,7 +35,6 @@ class ExpiryResource extends Resource
                     TextInput::make('title')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Title')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -265,5 +264,10 @@ class ExpiryResource extends Resource
             'view' => Pages\ViewExpiry::route('/{record}'),
             'edit' => Pages\EditExpiry::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('expiry.navigation_sort');
     }
 }

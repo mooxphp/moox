@@ -1,5 +1,14 @@
 <?php
 
 return [
-    // No config atm
+
+    /*
+    |--------------------------------------------------------------------------
+    | Core - No Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Moox core does not have any configuration options yet.
+    |
+    */
+
 ];
