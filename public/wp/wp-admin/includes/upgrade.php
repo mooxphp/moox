@@ -2844,7 +2844,8 @@ function get_alloptions_110()
  * @return mixed
  */
 function __get_option($setting) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionDoubleUnderscore,PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.FunctionDoubleUnderscore
-{global $wpdb;
+{
+    global $wpdb;
 
     if ($setting === 'home' && defined('WP_HOME')) {
         return untrailingslashit(WP_HOME);
@@ -2916,7 +2917,8 @@ function deslash($content)
  * @return array Strings containing the results of the various update queries.
  */
 function dbDelta($queries = '', $execute = true) // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-{global $wpdb;
+{
+    global $wpdb;
 
     if (in_array($queries, ['', 'all', 'blog', 'global', 'ms_global'], true)) {
         $queries = wp_get_db_schema($queries);
