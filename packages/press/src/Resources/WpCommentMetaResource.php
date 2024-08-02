@@ -20,7 +20,7 @@ class WpCommentMetaResource extends Resource
 {
     protected static ?string $model = WpCommentMeta::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-comment';
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 

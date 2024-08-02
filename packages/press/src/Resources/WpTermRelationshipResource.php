@@ -19,7 +19,7 @@ class WpTermRelationshipResource extends Resource
 {
     protected static ?string $model = WpTermRelationship::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-category-o';
 
     protected static ?string $recordTitleAttribute = 'object_id';
 

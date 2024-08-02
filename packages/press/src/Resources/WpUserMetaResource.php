@@ -20,7 +20,7 @@ class WpUserMetaResource extends Resource
 {
     protected static ?string $model = WpUserMeta::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 

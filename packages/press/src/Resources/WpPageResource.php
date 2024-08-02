@@ -24,7 +24,7 @@ class WpPageResource extends Resource
 {
     protected static ?string $model = WpPost::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'gmdi-pages';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 

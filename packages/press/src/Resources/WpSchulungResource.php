@@ -23,7 +23,7 @@ class WpSchulungResource extends Resource
 {
     protected static ?string $model = WpPost::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-bottom-center-text';
+    protected static ?string $navigationIcon = 'gmdi-school';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 

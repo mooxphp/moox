@@ -20,7 +20,7 @@ class WpTermTaxonomyResource extends Resource
 {
     protected static ?string $model = WpTermTaxonomy::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-category-o';
 
     protected static ?string $recordTitleAttribute = 'taxonomy';
 

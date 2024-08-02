@@ -20,7 +20,7 @@ class WpTermMetaResource extends Resource
 {
     protected static ?string $model = WpTermMeta::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-category-o';
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 

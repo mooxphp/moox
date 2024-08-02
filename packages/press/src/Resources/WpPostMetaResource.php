@@ -20,7 +20,7 @@ class WpPostMetaResource extends Resource
 {
     protected static ?string $model = WpPostMeta::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-article';
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 

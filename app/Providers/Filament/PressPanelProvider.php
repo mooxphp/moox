@@ -72,7 +72,11 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Press\WpOptionPlugin::make(),
                 \Moox\Press\WpUserMetaPlugin::make(),
                 \Moox\Press\WpPostMetaPlugin::make(),
+                \Moox\Press\WpCommentMetaPlugin::make(),
                 \Moox\Press\WpTermMetaPlugin::make(),
+                \Moox\Press\WpTermPlugin::make(),
+                \Moox\Press\WpTermTaxonomyPlugin::make(),
+                \Moox\Press\WpTermRelationshipPlugin::make(),
 
                 // Press custom plugins - should be moved to separate packages
                 \Moox\Press\WpWikiPlugin::make(),
@@ -98,7 +102,6 @@ class PressPanelProvider extends PanelProvider
 
                 // User plugins
                 \Moox\Press\WpUserPlugin::make(),
-                \Moox\User\UserPlugin::make(),
                 \Moox\UserDevice\UserDevicePlugin::make(),
                 \Moox\LoginLink\LoginLinkPlugin::make(),
                 \Moox\UserSession\UserSessionPlugin::make(),

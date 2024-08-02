@@ -20,7 +20,7 @@ class WpThemaResource extends Resource
 {
     protected static ?string $model = WpTerm::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+    protected static ?string $navigationIcon = 'gmdi-category';
 
     protected static ?string $recordTitleAttribute = 'name';
 

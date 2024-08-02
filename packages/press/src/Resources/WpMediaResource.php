@@ -23,7 +23,7 @@ class WpMediaResource extends Resource
 {
     protected static ?string $model = WpPost::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static ?string $navigationIcon = 'gmdi-image';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 

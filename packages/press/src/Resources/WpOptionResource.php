@@ -20,7 +20,7 @@ class WpOptionResource extends Resource
 {
     protected static ?string $model = WpOption::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-settings';
 
     protected static ?string $recordTitleAttribute = 'option_name';
 

@@ -27,7 +27,7 @@ class WpUserResource extends Resource
 {
     protected static ?string $model = WpUser::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'user_login';
 

@@ -20,7 +20,7 @@ class WpTagResource extends Resource
 {
     protected static ?string $model = WpTerm::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static ?string $navigationIcon = 'gmdi-label';
 
     protected static ?string $recordTitleAttribute = 'name';
 
