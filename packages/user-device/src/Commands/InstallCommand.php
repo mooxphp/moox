@@ -39,16 +39,20 @@ class InstallCommand extends Command
         $this->publishConfiguration();
         $this->publishMigrations();
         $this->runMigrations();
-        $providerPath = app_path('Providers\Filament');
+        $providerPath = app_path('Providers/Filament');
         $panelsToregister = $this->getPanelProviderPath();
-        if (count($panelsToregister) > 0 && $panelsToregister != null) {
-            foreach ($panelsToregister as $panelprovider) {
-                $this->registerPlugins($providerPath.'/'.$panelprovider);
+        if ($panelsToregister != null) {
+            if (is_array($panelsToregister)) {
+                foreach ($panelsToregister as $panelprovider) {
+                    $this->registerPlugins($providerPath.'/'.$panelprovider);
+                }
+            } else {
+                $this->registerPlugins($panelsToregister);
             }
         } else {
             $this->registerPlugins($panelsToregister[0]);
         }
-        $this->finish();
+        $this->sayGoodbye();
     }
 
     public function art(): void
@@ -158,7 +162,7 @@ class InstallCommand extends Command
                 File::put($providerPath, $newContent);
             }
         } else {
-            alert($providerPath.' not found. You need to add the plugins manually.');
+            alert('There are no new plugins detected.');
         }
     }
 
@@ -186,7 +190,7 @@ class InstallCommand extends Command
 
     }
 
-    public function finish(): void
+    public function sayGoodbye(): void
     {
         note('Moox UserDevice installed successfully. Enjoy!');
     }
