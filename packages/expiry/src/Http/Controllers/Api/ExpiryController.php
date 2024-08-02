@@ -42,7 +42,7 @@ class ExpiryController extends Controller
 
     public function count()
     {
-        return Expiry::all()->count();
+        return Expiry::count();
     }
 
     public function countForUser($user)

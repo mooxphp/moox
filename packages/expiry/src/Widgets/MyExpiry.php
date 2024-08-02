@@ -2,15 +2,17 @@
 
 namespace Moox\Expiry\Widgets;
 
+use Filament\Resources\Components\Tab;
 use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Filament\Widgets\TableWidget;
+use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Support\Facades\Config;
 use Moox\Expiry\Models\Expiry;
 
-class MyExpiry extends TableWidget
+class MyExpiry extends BaseWidget
 {
     protected int|string|array $columnSpan = [
         'sm' => 3,
@@ -18,13 +20,24 @@ class MyExpiry extends TableWidget
         'xl' => 12,
     ];
 
+    protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return Expiry::query()->where('notified_to', auth()->id())->where('done_at', null);
+    }
+
     public function table(Table $table): Table
     {
-        return $table
-            ->query(
-                Expiry::query()->where('notified_to', auth()->id())->where('done_at', null),
-            )
+        $activeTab = request('activeTab', 'all');
+        $tabsConfig = Config::get('expiry.tabs', []);
+        $query = $this->getTableQuery();
 
+        if (isset($tabsConfig[$activeTab]) && $tabsConfig[$activeTab]['value'] !== '') {
+            $tabConfig = $tabsConfig[$activeTab];
+            $query = $query->where($tabConfig['field'], $tabConfig['value']);
+        }
+
+        return $table
+            ->query($query)
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->toggleable()
@@ -69,5 +82,20 @@ class MyExpiry extends TableWidget
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
+    }
+
+    public function getTabs(): array
+    {
+        $tabsConfig = Config::get('expiry.tabs', []);
+        $tabs = [];
+
+        foreach ($tabsConfig as $key => $tabConfig) {
+            $tabs[$key] = Tab::make($tabConfig['label'])
+                ->modifyQueryUsing(fn ($query) => $query->where($tabConfig['field'], $tabConfig['value']))
+                ->badge(Expiry::query()->where($tabConfig['field'], $tabConfig['value'])->count())
+                ->icon($tabConfig['icon']);
+        }
+
+        return $tabs;
     }
 }

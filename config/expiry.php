@@ -17,6 +17,43 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Expiry - Tabs
+    |--------------------------------------------------------------------------
+    |
+    | Define the tabs for the Expiry table. They are optional, but
+    | pretty awesome to filter the table by certain values.
+    |
+    */
+
+    'tabs' => [
+        'all' => [
+            'label' => 'All',
+            'field' => 'expiry_job',
+            'value' => '',
+            'icon' => 'gmdi-filter-list',
+        ],
+        'documents' => [
+            'label' => 'Documents',
+            'field' => 'expiry_job',
+            'value' => 'Documents',
+            'icon' => 'gmdi-text-snippet',
+        ],
+        'articles' => [
+            'label' => 'Articles',
+            'field' => 'expiry_job',
+            'value' => 'Articles',
+            'icon' => 'gmdi-account-circle',
+        ],
+        'tasks' => [
+            'label' => 'Tasks',
+            'field' => 'expiry_job',
+            'value' => 'Tasks',
+            'icon' => 'gmdi-no-accounts',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Expiry - User Model and default user to notify
     |--------------------------------------------------------------------------
     |
