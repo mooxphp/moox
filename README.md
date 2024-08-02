@@ -236,17 +236,17 @@ Moox is made by these nice people, and bots ...
 		</tr>
 		<tr>
             <td align="center">
-                <a href="https://github.com/laravel-shift">
-                    <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
-                    <br />
-                    <sub><b>laravel-shift</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/Kim-the-Diamond">
                     <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
                     <br />
                     <sub><b>Kim-the-Diamond</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/laravel-shift">
+                    <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
+                    <br />
+                    <sub><b>laravel-shift</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -257,10 +257,10 @@ Moox is made by these nice people, and bots ...
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/janakeks">
-                    <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
+                <a href="https://github.com/mikagrich">
+                    <img src="https://avatars.githubusercontent.com/u/161597019?v=4" width="100;" alt="mikagrich"/>
                     <br />
-                    <sub><b>janakeks</b></sub>
+                    <sub><b>mikagrich</b></sub>
                 </a>
             </td>
             <td align="center">
@@ -271,14 +271,21 @@ Moox is made by these nice people, and bots ...
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/janakeks">
+                    <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
+                    <br />
+                    <sub><b>janakeks</b></sub>
+                </a>
+            </td>
+		</tr>
+		<tr>
+            <td align="center">
                 <a href="https://github.com/renovate[bot]">
                     <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
                     <br />
                     <sub><b>renovate[bot]</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/dependabot[bot]">
                     <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
@@ -314,6 +321,8 @@ Moox is made by these nice people, and bots ...
                     <sub><b>givx</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/occtherapist">
                     <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
