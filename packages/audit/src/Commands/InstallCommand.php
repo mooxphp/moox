@@ -164,7 +164,6 @@ class InstallCommand extends Command
         } else {
             alert('There are no new plugins detected.');
 
-
         }
     }
 
