@@ -22,9 +22,8 @@ class MyExpiry extends BaseWidget
     protected static string $view = 'expiry::widgets.my-expiry';
 
     protected int|string|array $columnSpan = [
-        'sm' => 3,
-        'md' => 6,
-        'xl' => 12,
+        'default' => 1, // full width for default
+        'lg' => 2,      // full width for large screens
     ];
 
     public function mount()

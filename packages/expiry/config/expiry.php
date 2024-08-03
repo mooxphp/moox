@@ -54,6 +54,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Expiry - Url Patterns
+    |--------------------------------------------------------------------------
+    |
+    | Define the url patterns for the Expiry table. They are optional, but
+    | pretty awesome to point to individual urls. Below are examples.
+    | Don't forget to enable the feature, if you want to use it.
+    |
+    */
+
+    'url_patterns' => [
+        'enabled' => false,
+        'patterns' => [
+            'Documents' => '/#documents',
+            'Articles' => '/#articles',
+            'Tasks' => '/#tasks',
+            'default' => '',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Expiry - User Model and default user to notify
     |--------------------------------------------------------------------------
     |
