@@ -21,10 +21,12 @@
     ],
     "license": "MIT",
     "require": {
+        "laravel-lang/lang": "^15.5",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
         "moox/audit": "*",
         "moox/builder": "*",
+        "moox/expiry": "*",
         "moox/jobs": "*",
         "moox/login-link": "*",
         "moox/notifications": "*",
@@ -33,9 +35,8 @@
         "moox/press": "*",
         "moox/security": "*",
         "moox/sync": "*",
-        "moox/user": "*",
-        "moox/expiry": "*",
         "moox/trainings": "*",
+        "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
