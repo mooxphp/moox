@@ -1,5 +1,4 @@
 <?php
-
 return [
     'single' => 'Sincronización',
     'plural' => 'Sincronizaciones',
@@ -12,7 +11,7 @@ return [
     'totalthree' => 'Tercera sincronización',
     'name' => 'Nombre',
     'started_at' => 'Empezó a las',
-    'failed' => 'failed',
+    'failed' => 'fallida',
     'platform' => 'Plataforma',
     'platforms' => 'Plataformas',
 ];
