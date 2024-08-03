@@ -22,6 +22,7 @@ return [
     |
     | Define the tabs for the Expiry table. They are optional, but
     | pretty awesome to filter the table by certain values.
+    | You may simply do a 'tabs' => [], to disable them.
     |
     */
 
@@ -48,6 +49,18 @@ return [
             'label' => 'Tasks',
             'field' => 'expiry_job',
             'value' => 'Tasks',
+            'icon' => 'gmdi-no-accounts',
+        ],
+        'no-user' => [
+            'label' => 'No Assignee',
+            'field' => 'status',
+            'value' => 'No Assignee',
+            'icon' => 'gmdi-no-accounts',
+        ],
+        'no-date' => [
+            'label' => 'No Expiry Date',
+            'field' => 'status',
+            'value' => 'No Expiry Date',
             'icon' => 'gmdi-no-accounts',
         ],
     ],

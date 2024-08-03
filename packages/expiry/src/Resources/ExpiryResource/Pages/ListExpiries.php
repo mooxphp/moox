@@ -49,7 +49,7 @@ class ListExpiries extends ListRecords
         foreach ($tabsConfig as $key => $tabConfig) {
             if ($key === 'all') {
                 $tabs[$key] = Tab::make($tabConfig['label'])
-                    ->modifyQueryUsing(fn ($query) => $query) // No where clause, include all records
+                    ->modifyQueryUsing(fn ($query) => $query)
                     ->badge(Expiry::query()->count())
                     ->icon($tabConfig['icon']);
             } else {
