@@ -2,37 +2,49 @@
 
 namespace Moox\Expiry\Widgets;
 
-use Filament\Resources\Components\Tab;
 use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
+use Livewire\WithPagination;
 use Moox\Expiry\Models\Expiry;
 
 class MyExpiry extends BaseWidget
 {
+    use WithPagination;
+
+    public $activeTab = 'all';
+
+    protected static string $view = 'expiry::widgets.my-expiry';
+
     protected int|string|array $columnSpan = [
         'sm' => 3,
         'md' => 6,
         'xl' => 12,
     ];
 
-    protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder
+    public function mount()
     {
-        return Expiry::query()->where('notified_to', auth()->id())->where('done_at', null);
+        $this->activeTab = request('activeTab', 'all');
+    }
+
+    public function switchTab($tab)
+    {
+        $this->activeTab = $tab;
+        $this->resetPage();
     }
 
     public function table(Table $table): Table
     {
-        $activeTab = request('activeTab', 'all');
         $tabsConfig = Config::get('expiry.tabs', []);
-        $query = $this->getTableQuery();
+        $query = Expiry::query()->where('notified_to', auth()->id())->where('done_at', null);
 
-        if (isset($tabsConfig[$activeTab]) && $tabsConfig[$activeTab]['value'] !== '') {
-            $tabConfig = $tabsConfig[$activeTab];
+        if (isset($tabsConfig[$this->activeTab]) && $tabsConfig[$this->activeTab]['value'] !== '') {
+            $tabConfig = $tabsConfig[$this->activeTab];
             $query = $query->where($tabConfig['field'], $tabConfig['value']);
         }
 
@@ -90,12 +102,32 @@ class MyExpiry extends BaseWidget
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {
-            $tabs[$key] = Tab::make($tabConfig['label'])
-                ->modifyQueryUsing(fn ($query) => $query->where($tabConfig['field'], $tabConfig['value']))
-                ->badge(Expiry::query()->where($tabConfig['field'], $tabConfig['value'])->count())
-                ->icon($tabConfig['icon']);
+            $query = Expiry::query()->where('notified_to', auth()->id())->where('done_at', null);
+            if ($tabConfig['value'] !== '') {
+                $query = $query->where($tabConfig['field'], $tabConfig['value']);
+            }
+            $badgeCount = $query->count();
+            $tabs[$key] = (object) [
+                'label' => $tabConfig['label'],
+                'icon' => $tabConfig['icon'],
+                'badge' => $badgeCount,
+                'key' => $key,
+            ];
         }
 
         return $tabs;
+    }
+
+    public function render(): View
+    {
+        return view('expiry::widgets.my-expiry', [
+            'tabs' => $this->getTabs(),
+            'activeTab' => $this->activeTab,
+        ]);
+    }
+
+    public function resetPage($pageName = null): void
+    {
+        $this->setPage(1, $pageName);
     }
 }

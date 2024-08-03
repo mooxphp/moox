@@ -22,6 +22,13 @@ class ExpiryServiceProvider extends PackageServiceProvider
             ->hasCommands(InstallCommand::class);
     }
 
+    public function boot()
+    {
+        parent::boot();
+
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'expiry');
+    }
+
     public function packageRegistered()
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');

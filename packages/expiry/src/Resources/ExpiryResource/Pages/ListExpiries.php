@@ -47,10 +47,17 @@ class ListExpiries extends ListRecords
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {
-            $tabs[$key] = Tab::make($tabConfig['label'])
-                ->modifyQueryUsing(fn ($query) => $query->where($tabConfig['field'], $tabConfig['value']))
-                ->badge(Expiry::query()->where($tabConfig['field'], $tabConfig['value'])->count())
-                ->icon($tabConfig['icon']);
+            if ($key === 'all') {
+                $tabs[$key] = Tab::make($tabConfig['label'])
+                    ->modifyQueryUsing(fn ($query) => $query) // No where clause, include all records
+                    ->badge(Expiry::query()->count())
+                    ->icon($tabConfig['icon']);
+            } else {
+                $tabs[$key] = Tab::make($tabConfig['label'])
+                    ->modifyQueryUsing(fn ($query) => $query->where($tabConfig['field'], $tabConfig['value']))
+                    ->badge(Expiry::query()->where($tabConfig['field'], $tabConfig['value'])->count())
+                    ->icon($tabConfig['icon']);
+            }
         }
 
         return $tabs;
