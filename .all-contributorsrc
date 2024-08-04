@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "adrolli",
+      "name": "Alf Drollinger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40421928?v=4",
+      "profile": "https://alf-drollinger.com",
+      "contributions": [
+        "infra",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "moox",
+  "projectOwner": "mooxphp"
+}
