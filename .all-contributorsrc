@@ -28,6 +28,15 @@
         "code",
         "security"
       ]
+    },
+    {
+      "login": "weblate",
+      "name": "Weblate (bot)",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1607653?v=4",
+      "profile": "https://weblate.org/hosting/",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
