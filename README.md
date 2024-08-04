@@ -335,6 +335,17 @@ Moox is made by these nice people, and bots ...
 </table>
 <!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -end -->
 
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
 ## Contribute
 
 We welcome every contribution! It would be awesome, if you:
