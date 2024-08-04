@@ -39,7 +39,7 @@ class MyExpiry extends BaseWidget
 
     public function table(Table $table): Table
     {
-        $tabsConfig = Config::get('expiry.tabs', []);
+        $tabsConfig = Config::get('expiry.expiry.tabs', []);
         $query = Expiry::query()->where('notified_to', auth()->id())->where('done_at', null);
 
         if (isset($tabsConfig[$this->activeTab]) && $tabsConfig[$this->activeTab]['value'] !== '') {
@@ -97,7 +97,7 @@ class MyExpiry extends BaseWidget
 
     public function getTabs(): array
     {
-        $tabsConfig = Config::get('expiry.tabs', []);
+        $tabsConfig = Config::get('expiry.expiry.tabs', []);
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {

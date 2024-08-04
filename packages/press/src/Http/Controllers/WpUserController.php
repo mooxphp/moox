@@ -12,9 +12,6 @@ class WpUserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
@@ -25,8 +22,6 @@ class WpUserController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -52,9 +47,6 @@ class WpUserController extends Controller
 
     /**
      * Display the specified resource.
-     *
-     * @param  \Moox\Press\Models\WpUser  $wpUser
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
@@ -63,9 +55,6 @@ class WpUserController extends Controller
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Moox\Press\Models\WpUser  $wpUser
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
@@ -94,9 +83,6 @@ class WpUserController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \Moox\Press\Models\WpUser  $wpUser
-     * @return \Illuminate\Http\Response
      */
     public function destroy($wpUser)
     {

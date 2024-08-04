@@ -19,6 +19,93 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Resources
+    |--------------------------------------------------------------------------
+    |
+    | The following configuration is done per Filament resource.
+    |
+    */
+
+    'expiry' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Title
+        |--------------------------------------------------------------------------
+        |
+        | The translatable title of the Resource in singular and plural.
+        |
+        */
+
+        'single' => 'trans//core::expiry.expiry',
+        'plural' => 'trans//core::expiry.expiries',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tabs
+        |--------------------------------------------------------------------------
+        |
+        | Define the tabs for the Expiry table. They are optional, but
+        | pretty awesome to filter the table by certain values.
+        | You may simply do a 'tabs' => [], to disable them.
+        |
+        */
+
+        'tabs' => [
+            'all' => [
+                'label' => 'trans//core::common.all',
+                'field' => 'expiry_job',
+                'value' => '',
+                'icon' => 'gmdi-filter-list',
+            ],
+            'documents' => [
+                'label' => 'trans//core::common.documents',
+                'field' => 'expiry_job',
+                'value' => 'Documents',
+                'icon' => 'gmdi-text-snippet',
+            ],
+            'articles' => [
+                'label' => 'trans//core::common.articles',
+                'field' => 'expiry_job',
+                'value' => 'Articles',
+                'icon' => 'gmdi-account-circle',
+            ],
+            'tasks' => [
+                'label' => 'trans//core::common.tasks',
+                'field' => 'expiry_job',
+                'value' => 'Tasks',
+                'icon' => 'gmdi-no-accounts',
+            ],
+            'no-user' => [
+                'label' => 'trans//core::expiry.no_assignee',
+                'field' => 'status',
+                'value' => 'No Assignee',
+                'icon' => 'gmdi-no-accounts',
+            ],
+            'no-date' => [
+                'label' => 'trans//core::expiry.no_expiry_date',
+                'field' => 'status',
+                'value' => 'No Expiry Date',
+                'icon' => 'gmdi-no-accounts',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Navigation Group
+    |--------------------------------------------------------------------------
+    |
+    | The translatable title of the navigation group in the
+    | Filament Admin Panel. Instead of a translatable
+    | string, you may also use a simple string.
+    |
+    */
+
+    'navigation_group' => 'trans//core::common.main',
+
+    /*
+    |--------------------------------------------------------------------------
     | Navigation Sort
     |--------------------------------------------------------------------------
     |
@@ -28,57 +115,7 @@ return [
     |
     */
 
-    'navigation_sort' => 7001,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Tabs
-    |--------------------------------------------------------------------------
-    |
-    | Define the tabs for the Expiry table. They are optional, but
-    | pretty awesome to filter the table by certain values.
-    | You may simply do a 'tabs' => [], to disable them.
-    |
-    */
-
-    'tabs' => [
-        'all' => [
-            'label' => 'trans//core::common.all',
-            'field' => 'expiry_job',
-            'value' => '',
-            'icon' => 'gmdi-filter-list',
-        ],
-        'documents' => [
-            'label' => 'trans//core::common.documents',
-            'field' => 'expiry_job',
-            'value' => 'Documents',
-            'icon' => 'gmdi-text-snippet',
-        ],
-        'articles' => [
-            'label' => 'trans//core::common.articles',
-            'field' => 'expiry_job',
-            'value' => 'Articles',
-            'icon' => 'gmdi-account-circle',
-        ],
-        'tasks' => [
-            'label' => 'trans//core::common.tasks',
-            'field' => 'expiry_job',
-            'value' => 'Tasks',
-            'icon' => 'gmdi-no-accounts',
-        ],
-        'no-user' => [
-            'label' => 'trans//core::expiry.no_assignee',
-            'field' => 'status',
-            'value' => 'No Assignee',
-            'icon' => 'gmdi-no-accounts',
-        ],
-        'no-date' => [
-            'label' => 'trans//core::expiry.no_expiry_date',
-            'field' => 'status',
-            'value' => 'No Expiry Date',
-            'icon' => 'gmdi-no-accounts',
-        ],
-    ],
+    'navigation_sort' => 1100,
 
     /*
     |--------------------------------------------------------------------------

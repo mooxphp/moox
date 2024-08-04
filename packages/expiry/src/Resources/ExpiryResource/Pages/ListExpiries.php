@@ -43,7 +43,7 @@ class ListExpiries extends ListRecords
 
     public function getTabs(): array
     {
-        $tabsConfig = Config::get('expiry.tabs', []);
+        $tabsConfig = Config::get('expiry.expiry.tabs', []);
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {

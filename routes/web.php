@@ -1,19 +1,11 @@
 <?php
-/*
-|
-| PLEASE INCLUDE ONLY ROUTES, EVERY DEVELOPER (AS WELL AS PHP-STAN)
-| CAN USE. DO NOT INCLUDE CUSTOM ROUTES HERE, USE THE CUSTOM FEATURE!
-|
-*/
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 
 Route::get('/', function () {
     return view('welcome');
 });
-
-// Todo: moox
-//Route::tui('admin');
 
 Route::get('/custom', function () {
     return view('custom.overview');
@@ -32,7 +24,7 @@ if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {
         $custom_view = 'custom.'.$custom_part;
         $custom_route = 'custom/'.$custom_part;
-        if (view()->exists($custom_view)) {
+        if (View::exists($custom_view)) {
             Route::view($custom_route, $custom_view);
         }
     }

@@ -15,15 +15,15 @@ class WpUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'user_login' => $this->name,
-            'user_nickname' => $this->nickname,
-            'user_email' => $this->email,
-            'first_name' => $this->first_name,
-            'last_name' => $this->last_name,
-            'description' => $this->description,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'id' => $this->resource->id,
+            'user_login' => $this->resource->name,
+            'user_nickname' => $this->resource->nickname,
+            'user_email' => $this->resource->email,
+            'first_name' => $this->resource->first_name,
+            'last_name' => $this->resource->last_name,
+            'description' => $this->resource->description,
+            'created_at' => $this->resource->created_at,
+            'updated_at' => $this->resource->updated_at,
         ];
     }
 }

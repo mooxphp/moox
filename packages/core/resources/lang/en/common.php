@@ -1,6 +1,21 @@
 <?php
 
 return [
+    'dashboard' => 'Dashboard',
+    'main' => 'Main',
+    'content' => 'Content',
+    'media' => 'Media',
+    'pages' => 'Pages',
+    'posts' => 'Posts',
+    'categories' => 'Categories',
+    'tags' => 'Tags',
+    'comments' => 'Comments',
+    'meta' => 'Meta',
+    'system' => 'System',
+    'tools' => 'Tools',
+    'jobs' => 'Jobs',
+    'settings' => 'Settings',
+    'users' => 'Users',
     'title' => 'Title',
     'slug' => 'Slug',
     'item' => 'Item',

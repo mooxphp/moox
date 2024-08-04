@@ -25,8 +25,6 @@ class ExpiryResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationGroup = 'Moox Expiry';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -264,6 +262,31 @@ class ExpiryResource extends Resource
             'view' => Pages\ViewExpiry::route('/{record}'),
             'edit' => Pages\EditExpiry::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('expiry.expiry.plural');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('expiry.expiry.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('expiry.expiry.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('expiry.expiry.plural');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('expiry.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
