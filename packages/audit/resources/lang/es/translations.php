@@ -1,5 +1,4 @@
 <?php
-
 return [
     'single' => 'Auditoría',
     'plural' => 'Auditorías',
@@ -12,5 +11,5 @@ return [
     'totalthree' => 'Auditoría tres',
     'name' => 'Nombre',
     'started_at' => 'Empezó a las',
-    'failed' => 'failed',
+    'failed' => 'fallida',
 ];
