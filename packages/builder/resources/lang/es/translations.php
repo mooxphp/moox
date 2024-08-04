@@ -1,5 +1,4 @@
 <?php
-
 return [
     'single' => 'Desarrollador',
     'plural' => 'Desarrolladores',
@@ -12,5 +11,5 @@ return [
     'totalthree' => 'Desarrollador tres',
     'name' => 'Nombre',
     'started_at' => 'Empezó a las',
-    'failed' => 'failed',
+    'failed' => 'fallida',
 ];
