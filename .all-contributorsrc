@@ -14,7 +14,9 @@
       "profile": "https://alf-drollinger.com",
       "contributions": [
         "infra",
-        "code"
+        "code",
+        "design",
+        "security"
       ]
     }
   ],
