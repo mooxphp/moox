@@ -1,4 +1,7 @@
 <p align="center">
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
     <br>
   	<img src="https://github.com/mooxphp/moox/raw/main/art/moox-logo.png" width="200" alt="Moox Logo">
     <br>
@@ -186,6 +189,21 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 ## Contributors
 
 Moox is made by these nice people, and bots ...
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://alf-drollinger.com"><img src="https://avatars.githubusercontent.com/u/40421928?v=4?s=100" width="100px;" alt="Alf Drollinger"/><br /><sub><b>Alf Drollinger</b></sub></a><br /><a href="#infra-adrolli" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/mooxphp/moox/commits?author=adrolli" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 <!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -start -->
 <table>
