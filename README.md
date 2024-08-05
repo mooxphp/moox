@@ -322,6 +322,13 @@ Moox is made by these nice people, and bots ...
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/allcontributors[bot]">
+                    <img src="https://avatars.githubusercontent.com/in/23186?v=4" width="100;" alt="allcontributors[bot]"/>
+                    <br />
+                    <sub><b>allcontributors[bot]</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/comradekingu">
                     <img src="https://avatars.githubusercontent.com/u/13802408?v=4" width="100;" alt="comradekingu"/>
                     <br />
@@ -335,6 +342,8 @@ Moox is made by these nice people, and bots ...
                     <sub><b>milotype</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/givx">
                     <img src="https://avatars.githubusercontent.com/u/1196652?v=4" width="100;" alt="givx"/>
@@ -342,8 +351,6 @@ Moox is made by these nice people, and bots ...
                     <sub><b>givx</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/occtherapist">
                     <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
