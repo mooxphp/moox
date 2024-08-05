@@ -50,16 +50,23 @@ class ListExpiries extends ListRecords
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {
-            $query = Expiry::query();
-
-            if (is_callable($tabConfig['query'])) {
-                $query = ($tabConfig['query'])($query);
-            }
-
             $tab = Tab::make($tabConfig['label'])
-                ->modifyQueryUsing(fn ($baseQuery) => ($tabConfig['query'])($baseQuery))
-                ->badge($query->count())
                 ->icon($tabConfig['icon']);
+
+            $queryConditions = $tabConfig['query'];
+
+            if (empty($queryConditions)) {
+                $tab->modifyQueryUsing(fn ($query) => $query)
+                    ->badge(Expiry::query()->count());
+            } else {
+                $tab->modifyQueryUsing(function ($query) use ($queryConditions) {
+                    return $this->applyConditions($query, $queryConditions);
+                });
+
+                $badgeCountQuery = Expiry::query();
+                $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);
+                $tab->badge($badgeCountQuery->count());
+            }
 
             $tabs[$key] = $tab;
         }
