@@ -277,6 +277,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "pforret",
+      "name": "Peter Forret",
+      "avatar_url": "https://avatars.githubusercontent.com/u/474312?v=4",
+      "profile": "https://pforret.github.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
