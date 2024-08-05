@@ -30,22 +30,22 @@
       ]
     },
     {
+      "login": "KimSpeer",
+      "name": "KimSpeer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/98323532?v=4",
+      "profile": "https://github.com/KimSpeer",
+      "contributions": [
+        "code",
+        "security"
+      ]
+    },
+    {
       "login": "weblate",
       "name": "Weblate (bot)",
       "avatar_url": "https://avatars.githubusercontent.com/u/1607653?v=4",
       "profile": "https://weblate.org/hosting/",
       "contributions": [
         "translation"
-      ]
-    },
-    {
-      "login": "AzGasim",
-      "name": "Aziz Gasim",
-      "avatar_url": "https://avatars.githubusercontent.com/u/104441723?v=4",
-      "profile": "https://github.com/AzGasim",
-      "contributions": [
-        "code",
-        "security"
       ]
     },
     {
