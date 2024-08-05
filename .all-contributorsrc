@@ -85,6 +85,17 @@
         "ideas",
         "code"
       ]
+    },
+    {
+      "login": "Kim-the-Diamond",
+      "name": "Kim Speer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/93331309?v=4",
+      "profile": "https://github.com/Kim-the-Diamond",
+      "contributions": [
+        "code",
+        "security",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
