@@ -27,7 +27,7 @@
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license"></a>
     <a href="https://mooxphp.slack.com/"><img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack"></a>
     <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
     <br>
     <br>
@@ -209,6 +209,7 @@ Moox is made by these nice people, and bots ...
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://www.gutenberg.blog"><img src="https://avatars.githubusercontent.com/u/42349383?v=4?s=100" width="100px;" alt="Sam Bola"/><br /><sub><b>Sam Bola</b></sub></a><br /><a href="#ideas-wp1111" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/mooxphp/moox/commits?author=wp1111" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kim-the-Diamond"><img src="https://avatars.githubusercontent.com/u/93331309?v=4?s=100" width="100px;" alt="Kim Speer"/><br /><sub><b>Kim Speer</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=Kim-the-Diamond" title="Code">💻</a> <a href="#security-Kim-the-Diamond" title="Security">🛡️</a> <a href="https://github.com/mooxphp/moox/commits?author=Kim-the-Diamond" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
