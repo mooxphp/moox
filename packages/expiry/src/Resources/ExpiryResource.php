@@ -266,7 +266,7 @@ class ExpiryResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('expiry.expiry.plural');
+        return config('expiry.expiry.single');
     }
 
     public static function getPluralModelLabel(): string
@@ -281,7 +281,7 @@ class ExpiryResource extends Resource
 
     public static function getBreadcrumb(): string
     {
-        return config('expiry.expiry.plural');
+        return config('expiry.expiry.single');
     }
 
     public static function getNavigationGroup(): ?string
@@ -291,6 +291,6 @@ class ExpiryResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('expiry.navigation_sort');
+        return config('expiry.navigation_sort') + 1;
     }
 }

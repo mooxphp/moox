@@ -13,10 +13,12 @@ class ExpiryServiceProvider extends PackageServiceProvider
 {
     use TranslatableConfig;
 
+    public $name = 'expiry';
+
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('expiry')
+            ->name($this->name)
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_expiries_table')
@@ -41,7 +43,7 @@ class ExpiryServiceProvider extends PackageServiceProvider
 
     protected function translateConfigurations()
     {
-        $translatedConfig = $this->translateConfig(config('expiry'));
-        config(['expiry' => $translatedConfig]);
+        $translatedConfig = $this->translateConfig(config($this->name));
+        config([$this->name => $translatedConfig]);
     }
 }
