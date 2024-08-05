@@ -1,270 +1,279 @@
 {
-    "files": [
-        "README.md"
-    ],
-    "imageSize": 100,
-    "commit": false,
-    "commitType": "docs",
-    "commitConvention": "angular",
-    "contributors": [
-        {
-            "login": "adrolli",
-            "name": "Alf Drollinger",
-            "avatar_url": "https://avatars.githubusercontent.com/u/40421928?v=4",
-            "profile": "https://alf-drollinger.com",
-            "contributions": [
-                "infra",
-                "code",
-                "design",
-                "security"
-            ]
-        },
-        {
-            "login": "AzGasim",
-            "name": "Aziz Gasim",
-            "avatar_url": "https://avatars.githubusercontent.com/u/104441723?v=4",
-            "profile": "https://github.com/AzGasim",
-            "contributions": [
-                "code",
-                "security"
-            ]
-        },
-        {
-            "login": "KimSpeer",
-            "name": "KimSpeer",
-            "avatar_url": "https://avatars.githubusercontent.com/u/98323532?v=4",
-            "profile": "https://github.com/KimSpeer",
-            "contributions": [
-                "code",
-                "security"
-            ]
-        },
-        {
-            "login": "weblate",
-            "name": "Weblate (bot)",
-            "avatar_url": "https://avatars.githubusercontent.com/u/1607653?v=4",
-            "profile": "https://weblate.org/hosting/",
-            "contributions": [
-                "translation"
-            ]
-        },
-        {
-            "login": "mooxbot",
-            "name": "Moox Bot",
-            "avatar_url": "https://avatars.githubusercontent.com/u/106848579?v=4",
-            "profile": "https://moox.org/bot",
-            "contributions": [
-                "tool"
-            ]
-        },
-        {
-            "login": "Reinhold-Jesse",
-            "name": "Reinhold Jesse",
-            "avatar_url": "https://avatars.githubusercontent.com/u/88349887?v=4",
-            "profile": "https://design-developer.de/",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "FMorlock",
-            "name": "FMorlock",
-            "avatar_url": "https://avatars.githubusercontent.com/u/99252924?v=4",
-            "profile": "https://github.com/FMorlock",
-            "contributions": [
-                "content",
-                "data"
-            ]
-        },
-        {
-            "login": "wp1111",
-            "name": "Sam Bola",
-            "avatar_url": "https://avatars.githubusercontent.com/u/42349383?v=4",
-            "profile": "https://www.gutenberg.blog",
-            "contributions": [
-                "ideas",
-                "code"
-            ]
-        },
-        {
-            "login": "Kim-the-Diamond",
-            "name": "Kim Speer",
-            "avatar_url": "https://avatars.githubusercontent.com/u/93331309?v=4",
-            "profile": "https://github.com/Kim-the-Diamond",
-            "contributions": [
-                "code",
-                "security",
-                "test"
-            ]
-        },
-        {
-            "login": "laravel-shift",
-            "name": "Laravel Shift",
-            "avatar_url": "https://avatars.githubusercontent.com/u/15991828?v=4",
-            "profile": "https://laravelshift.com",
-            "contributions": [
-                "tool"
-            ]
-        },
-        {
-            "login": "mikagrich",
-            "name": "mikagrich",
-            "avatar_url": "https://avatars.githubusercontent.com/u/161597019?v=4",
-            "profile": "https://github.com/mikagrich",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "somzoli",
-            "name": "somogyi.zoltan",
-            "avatar_url": "https://avatars.githubusercontent.com/u/34423715?v=4",
-            "profile": "https://github.com/somzoli",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "occtherapist",
-            "name": "Igor Clauss",
-            "avatar_url": "https://avatars.githubusercontent.com/u/28587659?v=4",
-            "profile": "https://igorclauss.de",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "givx",
-            "name": "Greg RG",
-            "avatar_url": "https://avatars.githubusercontent.com/u/1196652?v=4",
-            "profile": "https://github.com/Givx",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "comradekingu",
-            "name": "Allan Nordhøy",
-            "avatar_url": "https://avatars.githubusercontent.com/u/13802408?v=4",
-            "profile": "https://liberapay.com/kingu/",
-            "contributions": [
-                "translation"
-            ]
-        },
-        {
-            "login": "janakeks",
-            "name": "Jana Brot",
-            "avatar_url": "https://avatars.githubusercontent.com/u/42347662?v=4",
-            "profile": "https://catch-life.com",
-            "contributions": [
-                "business"
-            ]
-        },
-        {
-            "login": "milotype",
-            "name": "Milo Ivir",
-            "avatar_url": "https://avatars.githubusercontent.com/u/43657314?v=4",
-            "profile": "http://milotype.de/",
-            "contributions": [
-                "translation"
-            ]
-        },
-        {
-            "login": "mikazil",
-            "name": "Mika",
-            "avatar_url": "https://avatars.githubusercontent.com/u/94830731?v=4",
-            "profile": "https://github.com/Mikazil",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "all-contributors",
-            "name": "All Contributors",
-            "avatar_url": "https://avatars.githubusercontent.com/u/46410174?v=4",
-            "profile": "https://allcontributors.org",
-            "contributions": [
-                "tool"
-            ]
-        },
-        {
-            "login": "freekmurze",
-            "name": "Freek Van der Herten",
-            "avatar_url": "https://avatars.githubusercontent.com/u/483853?v=4",
-            "profile": "https://freek.dev",
-            "contributions": [
-                "ideas",
-                "code"
-            ]
-        },
-        {
-            "login": "renovate[bot]",
-            "name": "renovate[bot]",
-            "avatar_url": "https://avatars.githubusercontent.com/in/2740?v=4",
-            "profile": "https://github.com/apps/renovate",
-            "contributions": [
-                "tool"
-            ]
-        },
-        {
-            "login": "github-actions[bot]",
-            "name": "github-actions[bot]",
-            "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
-            "profile": "https://github.com/apps/github-actions",
-            "contributions": [
-                "tool"
-            ]
-        },
-        {
-            "login": "dependabot[bot]",
-            "name": "dependabot[bot]",
-            "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
-            "profile": "https://github.com/apps/dependabot",
-            "contributions": [
-                "tool"
-            ]
-        },
-        {
-            "login": "5mikachu",
-            "name": "Mikachu",
-            "avatar_url": "https://avatars.githubusercontent.com/u/80130106?v=4",
-            "profile": "https://github.com/5mikachu",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "simmon-nplob",
-            "name": "simmon",
-            "avatar_url": "https://avatars.githubusercontent.com/u/81469659?v=4",
-            "profile": "http://www.nplob.com",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "kalpeshmahida",
-            "name": "Kalpesh Mahida",
-            "avatar_url": "https://avatars.githubusercontent.com/u/11972372?v=4",
-            "profile": "https://github.com/kalpeshmahida",
-            "contributions": [
-                "code"
-            ]
-        },
-        {
-            "login": "rowlin",
-            "name": "rowlin",
-            "avatar_url": "https://avatars.githubusercontent.com/u/9290549?v=4",
-            "profile": "https://github.com/rowlin",
-            "contributions": [
-                "code"
-            ]
-        }
-    ],
-    "contributorsPerLine": 5,
-    "skipCi": true,
-    "repoType": "github",
-    "repoHost": "https://github.com",
-    "projectName": "moox",
-    "projectOwner": "mooxphp"
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "adrolli",
+      "name": "Alf Drollinger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40421928?v=4",
+      "profile": "https://alf-drollinger.com",
+      "contributions": [
+        "infra",
+        "code",
+        "design",
+        "security"
+      ]
+    },
+    {
+      "login": "AzGasim",
+      "name": "Aziz Gasim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/104441723?v=4",
+      "profile": "https://github.com/AzGasim",
+      "contributions": [
+        "code",
+        "security"
+      ]
+    },
+    {
+      "login": "KimSpeer",
+      "name": "KimSpeer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/98323532?v=4",
+      "profile": "https://github.com/KimSpeer",
+      "contributions": [
+        "code",
+        "security"
+      ]
+    },
+    {
+      "login": "weblate",
+      "name": "Weblate (bot)",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1607653?v=4",
+      "profile": "https://weblate.org/hosting/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mooxbot",
+      "name": "Moox Bot",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106848579?v=4",
+      "profile": "https://moox.org/bot",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "Reinhold-Jesse",
+      "name": "Reinhold Jesse",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88349887?v=4",
+      "profile": "https://design-developer.de/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "FMorlock",
+      "name": "FMorlock",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99252924?v=4",
+      "profile": "https://github.com/FMorlock",
+      "contributions": [
+        "content",
+        "data"
+      ]
+    },
+    {
+      "login": "wp1111",
+      "name": "Sam Bola",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42349383?v=4",
+      "profile": "https://www.gutenberg.blog",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
+    },
+    {
+      "login": "Kim-the-Diamond",
+      "name": "Kim Speer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/93331309?v=4",
+      "profile": "https://github.com/Kim-the-Diamond",
+      "contributions": [
+        "code",
+        "security",
+        "test"
+      ]
+    },
+    {
+      "login": "laravel-shift",
+      "name": "Laravel Shift",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15991828?v=4",
+      "profile": "https://laravelshift.com",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "mikagrich",
+      "name": "mikagrich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/161597019?v=4",
+      "profile": "https://github.com/mikagrich",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "somzoli",
+      "name": "somogyi.zoltan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/34423715?v=4",
+      "profile": "https://github.com/somzoli",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "occtherapist",
+      "name": "Igor Clauss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28587659?v=4",
+      "profile": "https://igorclauss.de",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "givx",
+      "name": "Greg RG",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1196652?v=4",
+      "profile": "https://github.com/Givx",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "comradekingu",
+      "name": "Allan Nordhøy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13802408?v=4",
+      "profile": "https://liberapay.com/kingu/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "janakeks",
+      "name": "Jana Brot",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42347662?v=4",
+      "profile": "https://catch-life.com",
+      "contributions": [
+        "business"
+      ]
+    },
+    {
+      "login": "milotype",
+      "name": "Milo Ivir",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43657314?v=4",
+      "profile": "http://milotype.de/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mikazil",
+      "name": "Mika",
+      "avatar_url": "https://avatars.githubusercontent.com/u/94830731?v=4",
+      "profile": "https://github.com/Mikazil",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "all-contributors",
+      "name": "All Contributors",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46410174?v=4",
+      "profile": "https://allcontributors.org",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "freekmurze",
+      "name": "Freek Van der Herten",
+      "avatar_url": "https://avatars.githubusercontent.com/u/483853?v=4",
+      "profile": "https://freek.dev",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
+    },
+    {
+      "login": "renovate[bot]",
+      "name": "renovate[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/in/2740?v=4",
+      "profile": "https://github.com/apps/renovate",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "github-actions[bot]",
+      "name": "github-actions[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/in/15368?v=4",
+      "profile": "https://github.com/apps/github-actions",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "dependabot[bot]",
+      "name": "dependabot[bot]",
+      "avatar_url": "https://avatars.githubusercontent.com/in/29110?v=4",
+      "profile": "https://github.com/apps/dependabot",
+      "contributions": [
+        "tool"
+      ]
+    },
+    {
+      "login": "5mikachu",
+      "name": "Mikachu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80130106?v=4",
+      "profile": "https://github.com/5mikachu",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "simmon-nplob",
+      "name": "simmon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/81469659?v=4",
+      "profile": "http://www.nplob.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kalpeshmahida",
+      "name": "Kalpesh Mahida",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11972372?v=4",
+      "profile": "https://github.com/kalpeshmahida",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "rowlin",
+      "name": "rowlin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9290549?v=4",
+      "profile": "https://github.com/rowlin",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mvdnbrk",
+      "name": "Mark van den Broek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/802681?v=4",
+      "profile": "https://github.com/mvdnbrk",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 5,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "moox",
+  "projectOwner": "mooxphp"
 }
