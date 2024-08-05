@@ -56,6 +56,15 @@
       "contributions": [
         "tool"
       ]
+    },
+    {
+      "login": "Reinhold-Jesse",
+      "name": "Reinhold Jesse",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88349887?v=4",
+      "profile": "https://design-developer.de/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
