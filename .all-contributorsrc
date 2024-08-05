@@ -65,6 +65,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "FMorlock",
+      "name": "FMorlock",
+      "avatar_url": "https://avatars.githubusercontent.com/u/99252924?v=4",
+      "profile": "https://github.com/FMorlock",
+      "contributions": [
+        "content",
+        "data"
+      ]
     }
   ],
   "contributorsPerLine": 7,
