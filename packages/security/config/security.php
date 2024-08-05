@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Validation\Rules\Password;
-
 return [
     'navigation_sort' => 2001,
 
@@ -23,14 +21,14 @@ return [
     // Using Laravel Password Validation
     'password' => [
         'validation' => [
-            'rules' => Password::min(20)
+            'rules' => Illuminate\Validation\Rules\Password::min(20)
                 ->max(64)
                 ->mixedCase()
                 ->numbers()
                 ->symbols()
                 ->uncompromised(),
         ],
-        'helper_text' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
+        'helperText' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],
 
     // The column-name in your user-table

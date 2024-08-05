@@ -17,7 +17,7 @@ class SendPasswordResetLinksBulkAction extends BulkAction
 
     public static function getDefaultName(): ?string
     {
-        return 'sendPasswordResetLinks';
+        return ('sendPasswordResetLinks');
     }
 
     protected function setUp(): void
@@ -25,6 +25,7 @@ class SendPasswordResetLinksBulkAction extends BulkAction
         parent::setUp();
 
         $this
+            ->label(__('security::translations.Send Password Reset Links'))
             ->requiresConfirmation()
             ->action(function (Collection $records) {
                 try {
@@ -49,12 +50,11 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                     $user = $record;
 
                     $token = app('auth.password.broker')->createToken($user);
+                        if (!method_exists($user, 'notify')) {
+                            $userClass = $user::class;
 
-                    if (! method_exists($user, 'notify')) {
-                        $userClass = $user::class;
-
-                        throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
-                    }
+                            throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
+                        }
 
                     $notification = new PasswordResetNotification($token);
 

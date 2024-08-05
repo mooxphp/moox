@@ -2,7 +2,7 @@
 
 return [
     'single' => 'Security',
-    'plural' => 'Securitys',
+    'plural' => 'Securities',
     'breadcrumb' => 'Security',
     'title' => 'Security',
     'navigation_label' => 'Security',
@@ -14,7 +14,8 @@ return [
     'started_at' => 'Gestartet am',
     'failed' => 'failed',
 
-    'Password reset links sent' => 'Passwort-Reset-Links gesendet',
+    'Send Password Reset Links' => 'Passwort Zurücksetzen-Links senden',
+    'Password reset links sent' => 'Passwort-Zurücksetzen-Links gesendet',
     'Reset Password Message' => 'Zurücksetzen des Passworts',
     'Hello' => 'Hallo',
     'You are receiving this email because we received a password reset request for your account.' => 'Sie erhalten diese E-Mail, weil wir eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten haben.',
