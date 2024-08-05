@@ -14,7 +14,7 @@ class WpUserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->resource->id,
             'user_login' => $this->resource->name,
             'user_nickname' => $this->resource->nickname,
@@ -25,5 +25,11 @@ class WpUserResource extends JsonResource
             'created_at' => $this->resource->created_at,
             'updated_at' => $this->resource->updated_at,
         ];
+
+        foreach ($this->resource->getAllMetaAttributes() as $key => $value) {
+            $data[$key] = $value;
+        }
+
+        return $data;
     }
 }

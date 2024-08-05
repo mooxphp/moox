@@ -2,8 +2,6 @@
 
 namespace Moox\Press\Traits;
 
-use Moox\Press\Models\WpUserMeta;
-
 trait UserMetaAttributes
 {
     public function getEmailAttribute()
@@ -161,13 +159,5 @@ trait UserMetaAttributes
         $meta = $this->userMeta()->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;
-    }
-
-    public function addOrUpdateMeta($key, $value)
-    {
-        WpUserMeta::updateOrCreate(
-            ['user_id' => $this->ID, 'meta_key' => $key],
-            ['meta_value' => $value]
-        );
     }
 }

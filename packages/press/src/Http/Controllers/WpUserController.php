@@ -15,7 +15,7 @@ class WpUserController extends Controller
      */
     public function index()
     {
-        $users = WpUser::all();
+        $users = WpUser::with('userMeta')->get();
 
         return WpUserResource::collection($users);
     }
@@ -30,6 +30,9 @@ class WpUserController extends Controller
             'user_pass' => 'required|string|max:255',
             'user_nicename' => 'required|string|max:255',
             'user_email' => 'required|string|email|max:255',
+            'nickname' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -50,7 +53,9 @@ class WpUserController extends Controller
      */
     public function show($id)
     {
-        return new WpUserResource(WpUser::findOrFail($id));
+        $user = WpUser::with('userMeta')->findOrFail($id);
+
+        return new WpUserResource($user);
     }
 
     /**
@@ -63,10 +68,13 @@ class WpUserController extends Controller
         $wpUserMeta = $request->except($wpUser->getFillable());
 
         $validator = Validator::make($request->all(), [
-            'user_login' => 'sometimes|string|max:255',
-            'user_pass' => 'sometimes|string|max:255',
-            'user_nicename' => 'sometimes|string|max:255',
-            'user_email' => 'sometimes|string|email|max:255',
+            'user_login' => 'required|string|max:255',
+            'user_pass' => 'required|string|max:255',
+            'user_nicename' => 'required|string|max:255',
+            'user_email' => 'required|string|email|max:255',
+            'nickname' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {

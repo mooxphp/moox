@@ -91,15 +91,17 @@ class Login extends SimplePage
 
             return null;
         }
-
+        /** @var \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard $guard */
         $guard = Filament::auth();
+        /** @var string $guardName */
+        $guardName = $guard->name;
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
         $credentialKey = array_key_first($credentials);
-        $guardProvider = config("auth.guards.$guard->name.provider");
+        $guardProvider = config("auth.guards.$guardName.provider");
         $userModel = config("auth.providers.$guardProvider.model");
-        $userModelUsername = config("security.auth.$guard->name.username");
-        $userModelEmail = config("security.auth.$guard->name.email");
+        $userModelUsername = config("security.auth.$guardName.username");
+        $userModelEmail = config("security.auth.$guardName.email");
         $query = $userModel::query();
 
         if (! empty($userModelUsername) && $credentialKey === 'name') {
@@ -120,18 +122,18 @@ class Login extends SimplePage
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))) {
             $wpAuthService = new \Moox\Security\Services\WordPressAuthService;
 
-            if (! $user || ! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
+            if (! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
 
         } else {
 
-            if (! Auth::guard($guard->name)->attempt($credentials, $data['remember'] ?? false)) {
+            if (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
                 $this->throwFailureValidationException();
             }
         }
 
-        Auth::guard($guard->name)->login($user, $data['remember'] ?? false);
+        Auth::guard($guardName)->login($user, $data['remember'] ?? false);
 
         session()->regenerate();
 

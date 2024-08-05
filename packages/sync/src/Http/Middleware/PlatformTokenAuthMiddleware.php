@@ -10,7 +10,7 @@ class PlatformTokenAuthMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        $token = $request->header('Authorization');
+        $token = $request->bearerToken();
 
         if (! $token || ! Platform::where('api_token', $token)->exists()) {
             return response()->json(['message' => 'Unauthorized'], 401);
