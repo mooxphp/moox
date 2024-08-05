@@ -27,7 +27,7 @@
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license"></a>
     <a href="https://mooxphp.slack.com/"><img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack"></a>
     <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-24-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-25-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
     <br>
     <br>
@@ -229,6 +229,7 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/apps/github-actions"><img src="https://avatars.githubusercontent.com/in/15368?v=4?s=100" width="100px;" alt="github-actions[bot]"/><br /><sub><b>github-actions[bot]</b></sub></a><br /><a href="#tool-github-actions[bot]" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/apps/dependabot"><img src="https://avatars.githubusercontent.com/in/29110?v=4?s=100" width="100px;" alt="dependabot[bot]"/><br /><sub><b>dependabot[bot]</b></sub></a><br /><a href="#tool-dependabot[bot]" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/5mikachu"><img src="https://avatars.githubusercontent.com/u/80130106?v=4?s=100" width="100px;" alt="Mikachu"/><br /><sub><b>Mikachu</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=5mikachu" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.nplob.com"><img src="https://avatars.githubusercontent.com/u/81469659?v=4?s=100" width="100px;" alt="simmon"/><br /><sub><b>simmon</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=simmon-nplob" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
