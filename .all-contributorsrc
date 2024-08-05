@@ -75,6 +75,16 @@
         "content",
         "data"
       ]
+    },
+    {
+      "login": "wp1111",
+      "name": "Sam Bola",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42349383?v=4",
+      "profile": "https://www.gutenberg.blog",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
