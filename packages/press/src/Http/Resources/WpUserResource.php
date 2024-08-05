@@ -14,7 +14,7 @@ class WpUserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->resource->id,
             'user_login' => $this->resource->name,
             'user_nickname' => $this->resource->nickname,
