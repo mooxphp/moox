@@ -186,6 +186,16 @@
       "contributions": [
         "tool"
       ]
+    },
+    {
+      "login": "freekmurze",
+      "name": "Freek Van der Herten",
+      "avatar_url": "https://avatars.githubusercontent.com/u/483853?v=4",
+      "profile": "https://freek.dev",
+      "contributions": [
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
