@@ -31,8 +31,8 @@ class WpUserController extends Controller
             'user_nicename' => 'required|string|max:255',
             'user_email' => 'required|string|email|max:255',
             'nickname' => 'required|string|max:255',
-            'first_name'=> 'required|string|max:255',
-            'last_name'=> 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -73,8 +73,8 @@ class WpUserController extends Controller
             'user_nicename' => 'required|string|max:255',
             'user_email' => 'required|string|email|max:255',
             'nickname' => 'required|string|max:255',
-            'first_name'=> 'required|string|max:255',
-            'last_name'=> 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
