@@ -27,7 +27,7 @@
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license"></a>
     <a href="https://mooxphp.slack.com/"><img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack"></a>
     <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-6-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
     <br>
     <br>
@@ -205,6 +205,7 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="https://weblate.org/hosting/"><img src="https://avatars.githubusercontent.com/u/1607653?v=4?s=100" width="100px;" alt="Weblate (bot)"/><br /><sub><b>Weblate (bot)</b></sub></a><br /><a href="#translation-weblate" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://moox.org/bot"><img src="https://avatars.githubusercontent.com/u/106848579?v=4?s=100" width="100px;" alt="Moox Bot"/><br /><sub><b>Moox Bot</b></sub></a><br /><a href="#tool-mooxbot" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://design-developer.de/"><img src="https://avatars.githubusercontent.com/u/88349887?v=4?s=100" width="100px;" alt="Reinhold Jesse"/><br /><sub><b>Reinhold Jesse</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=Reinhold-Jesse" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/FMorlock"><img src="https://avatars.githubusercontent.com/u/99252924?v=4?s=100" width="100px;" alt="FMorlock"/><br /><sub><b>FMorlock</b></sub></a><br /><a href="#content-FMorlock" title="Content">🖋</a> <a href="#data-FMorlock" title="Data">🔣</a></td>
     </tr>
   </tbody>
 </table>
