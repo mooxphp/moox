@@ -195,7 +195,8 @@ Moox is made by these nice people, and bots ...
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://alf-drollinger.com"><img src="https://avatars.githubusercontent.com/u/40421928?v=4?s=100" width="100px;" alt="Alf Drollinger"/><br /><sub><b>Alf Drollinger</b></sub></a><br /><a href="#infra-adrolli" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/mooxphp/moox/commits?author=adrolli" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://alf-drollinger.com"><img src="https://avatars.githubusercontent.com/u/40421928?v=4?s=100" width="100px;" alt="Alf Drollinger"/><br /><sub><b>Alf Drollinger</b></sub></a><br /><a href="#infra-adrolli" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/mooxphp/moox/commits?author=adrolli" title="Code">💻</a> <a href="#design-adrolli" title="Design">🎨</a> <a href="#security-adrolli" title="Security">🛡️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/KimSpeer"><img src="https://avatars.githubusercontent.com/u/98323532?v=4?s=100" width="100px;" alt="KimSpeer"/><br /><sub><b>KimSpeer</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=KimSpeer" title="Code">💻</a> <a href="#security-KimSpeer" title="Security">🛡️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/AzGasim"><img src="https://avatars.githubusercontent.com/u/104441723?v=4?s=100" width="100px;" alt="Aziz Gasim"/><br /><sub><b>Aziz Gasim</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=AzGasim" title="Code">💻</a> <a href="#security-AzGasim" title="Security">🛡️</a></td>
     </tr>
   </tbody>
