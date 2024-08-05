@@ -105,6 +105,15 @@
       "contributions": [
         "tool"
       ]
+    },
+    {
+      "login": "mikagrich",
+      "name": "mikagrich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/161597019?v=4",
+      "profile": "https://github.com/mikagrich",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
