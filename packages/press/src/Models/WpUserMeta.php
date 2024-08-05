@@ -5,6 +5,13 @@ namespace Moox\Press\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
+/**
+ * @property int $user_id
+ * @property string $meta_key
+ * @property string $meta_value
+ */
+
 class WpUserMeta extends Model
 {
     use HasFactory;
