@@ -132,6 +132,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "givx",
+      "name": "Greg RG",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1196652?v=4",
+      "profile": "https://github.com/Givx",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
