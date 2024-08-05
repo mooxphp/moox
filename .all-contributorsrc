@@ -150,6 +150,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "janakeks",
+      "name": "Jana Brot",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42347662?v=4",
+      "profile": "https://catch-life.com",
+      "contributions": [
+        "business"
+      ]
     }
   ],
   "contributorsPerLine": 7,
