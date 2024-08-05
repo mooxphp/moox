@@ -4,16 +4,14 @@ namespace Moox\Expiry\Resources\ExpiryResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Support\Facades\Config;
-use Moox\Core\Traits\QueriesInConfig;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource;
 
 class ListExpiries extends ListRecords
 {
-    use QueriesInConfig;
+    use HasDynamicTabs;
 
     protected static string $resource = ExpiryResource::class;
 
@@ -46,31 +44,6 @@ class ListExpiries extends ListRecords
 
     public function getTabs(): array
     {
-        $tabsConfig = Config::get('expiry.expiry.tabs', []);
-        $tabs = [];
-
-        foreach ($tabsConfig as $key => $tabConfig) {
-            $tab = Tab::make($tabConfig['label'])
-                ->icon($tabConfig['icon']);
-
-            $queryConditions = $tabConfig['query'];
-
-            if (empty($queryConditions)) {
-                $tab->modifyQueryUsing(fn ($query) => $query)
-                    ->badge(Expiry::query()->count());
-            } else {
-                $tab->modifyQueryUsing(function ($query) use ($queryConditions) {
-                    return $this->applyConditions($query, $queryConditions);
-                });
-
-                $badgeCountQuery = Expiry::query();
-                $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);
-                $tab->badge($badgeCountQuery->count());
-            }
-
-            $tabs[$key] = $tab;
-        }
-
-        return $tabs;
+        return $this->getDynamicTabs('expiry.expiry.tabs', Expiry::class);
     }
 }
