@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Config;
 
 trait HasDynamicTabs
 {
+    use QueriesInConfig;
+
     public function getDynamicTabs(string $configKey, string $modelClass): array
     {
         $tabsConfig = Config::get($configKey, []);
@@ -35,14 +37,5 @@ trait HasDynamicTabs
         }
 
         return $tabs;
-    }
-
-    protected function applyConditions($query, $conditions)
-    {
-        foreach ($conditions as $condition) {
-            $query = $query->where($condition['field'], $condition['operator'], $condition['value']);
-        }
-
-        return $query;
     }
 }
