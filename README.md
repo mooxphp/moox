@@ -26,31 +26,45 @@
     <a href="https://hosted.weblate.org/engage/moox/"><img src="https://hosted.weblate.org/widgets/moox/-/svg-badge.svg" alt="Translation status" /></a>
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license"></a>
     <a href="https://mooxphp.slack.com/"><img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack"></a>
-    <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+    <a href="https://allcontributors.org/"><img alt="All Contributors" src="https://img.shields.io/github/all-contributors/mooxphp/moox"></a>
     <br>
     <br>
 </p>
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+# Moox Project
 
-# Moox Monorepo
-
-Welcome to the Moox project. This is the Moox Monorepo. It is an installable Laravel App meant for development of our Filament Plugins aka Laravel Packages. We are in an early stage of development but there are already some plugins you might consider useful:
+Welcome to the Moox Project. This is a Monorepo and installable Laravel App to develop our Filament Plugins aka Laravel Packages. We are in an early stage of development but there are already some plugins you might consider useful:
 
 ## Packages
 
 -   [Moox Jobs](packages/jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
--   [Moox Builder](packages/builder/README.md), is our Skeleton Package to create new Filament Plugins
+-   [Moox Builder](packages/builder/README.md), our Skeleton Package to create new Filament Plugins
+-   [Moox Core](packages/core/README.md),
 
-All others are in the making. Stay tuned.
+Some others are under hard development:
+
+-   [Moox Audit](packages/audit/README.md), logging and auditing, security-related and model-related
+-   [Moox Expiry](packages/expiry/README.md), define and automate the expiry of your records
+-   [Moox Trainings](packages/trainings/README.md), automate trainings, invitations and self-validation
+-   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Laravel
+-   [Moox Login Link](packages/login-link/README.md), send Login-Links (aka magic links) to your users
+-   [Moox Page](packages/page/README.md), content management, currently abandoned as we use Press
+-   [Moox Passkey](packages/passkey/README.md), give users the ability to use Passkeys (Webauthn)
+-   [Moox Sync](packages/sync/README.md), sync records from server to server, add logic and transformers
+-   [Moox User](packages/user/README.md), manage your users in Filament and give users access to their profile
+-   [Moox User Device](packages/user-device/README.md), manage your users' devices and decide how to handly unknown
+-   [Moox User Session](packages/session/README.md), manage your users' session (also in context of devices)
+-   [Moox Security](packages/security/README.md), manage your password security audit your security features
+
+And there is some other stuff NOT in this repo:
+
+-   [Moox DevOps](https://github.com/mooxphp/moox-server/tree/main/packages/devops), Manage your Forge-Servers, Sites and Deployments
+-   [Moox Backup Server UI](https://github.com/mooxphp/moox-server/tree/main/packages/backup-server-ui), Filament UI for Spatie Laravel Backup Server
+-   [Moox VS Code Extensions](https://github.com/mooxphp/vscode), our VS code extension pack for Filament devs
 
 ## Installation
 
-The Laravel dev app in the root-folder of the Moox Monorepo is made for instant development with Laravel Valet, Laravel Sail or Laragon.
+The Laravel dev app in the root-folder of the Moox Monorepo is made for instant development with Laravel Herd, Laravel Valet, Laravel Sail or Laragon.
 
 ```bash
 # Create a .env file and adjust to your needs
@@ -193,6 +207,7 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 ## Contributors
 
 Moox is made by these nice people, and bots ...
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -241,164 +256,11 @@ Moox is made by these nice people, and bots ...
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -start -->
-<table>
-	<tbody>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/adrolli">
-                    <img src="https://avatars.githubusercontent.com/u/40421928?v=4" width="100;" alt="adrolli"/>
-                    <br />
-                    <sub><b>adrolli</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/weblate">
-                    <img src="https://avatars.githubusercontent.com/u/1607653?v=4" width="100;" alt="weblate"/>
-                    <br />
-                    <sub><b>weblate</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/wp1111">
-                    <img src="https://avatars.githubusercontent.com/u/42349383?v=4" width="100;" alt="wp1111"/>
-                    <br />
-                    <sub><b>wp1111</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/AzGasim">
-                    <img src="https://avatars.githubusercontent.com/u/104441723?v=4" width="100;" alt="AzGasim"/>
-                    <br />
-                    <sub><b>AzGasim</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/KimSpeer">
-                    <img src="https://avatars.githubusercontent.com/u/98323532?v=4" width="100;" alt="KimSpeer"/>
-                    <br />
-                    <sub><b>KimSpeer</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/mooxbot">
-                    <img src="https://avatars.githubusercontent.com/u/106848579?v=4" width="100;" alt="mooxbot"/>
-                    <br />
-                    <sub><b>mooxbot</b></sub>
-                </a>
-            </td>
-		</tr>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/Kim-the-Diamond">
-                    <img src="https://avatars.githubusercontent.com/u/93331309?v=4" width="100;" alt="Kim-the-Diamond"/>
-                    <br />
-                    <sub><b>Kim-the-Diamond</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/laravel-shift">
-                    <img src="https://avatars.githubusercontent.com/u/15991828?v=4" width="100;" alt="laravel-shift"/>
-                    <br />
-                    <sub><b>laravel-shift</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/FMorlock">
-                    <img src="https://avatars.githubusercontent.com/u/99252924?v=4" width="100;" alt="FMorlock"/>
-                    <br />
-                    <sub><b>FMorlock</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/mikagrich">
-                    <img src="https://avatars.githubusercontent.com/u/161597019?v=4" width="100;" alt="mikagrich"/>
-                    <br />
-                    <sub><b>mikagrich</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/somzoli">
-                    <img src="https://avatars.githubusercontent.com/u/34423715?v=4" width="100;" alt="somzoli"/>
-                    <br />
-                    <sub><b>somzoli</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/janakeks">
-                    <img src="https://avatars.githubusercontent.com/u/42347662?v=4" width="100;" alt="janakeks"/>
-                    <br />
-                    <sub><b>janakeks</b></sub>
-                </a>
-            </td>
-		</tr>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/renovate[bot]">
-                    <img src="https://avatars.githubusercontent.com/in/2740?v=4" width="100;" alt="renovate[bot]"/>
-                    <br />
-                    <sub><b>renovate[bot]</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/dependabot[bot]">
-                    <img src="https://avatars.githubusercontent.com/in/29110?v=4" width="100;" alt="dependabot[bot]"/>
-                    <br />
-                    <sub><b>dependabot[bot]</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/github-actions[bot]">
-                    <img src="https://avatars.githubusercontent.com/in/15368?v=4" width="100;" alt="github-actions[bot]"/>
-                    <br />
-                    <sub><b>github-actions[bot]</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/comradekingu">
-                    <img src="https://avatars.githubusercontent.com/u/13802408?v=4" width="100;" alt="comradekingu"/>
-                    <br />
-                    <sub><b>comradekingu</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/milotype">
-                    <img src="https://avatars.githubusercontent.com/u/43657314?v=4" width="100;" alt="milotype"/>
-                    <br />
-                    <sub><b>milotype</b></sub>
-                </a>
-            </td>
-            <td align="center">
-                <a href="https://github.com/givx">
-                    <img src="https://avatars.githubusercontent.com/u/1196652?v=4" width="100;" alt="givx"/>
-                    <br />
-                    <sub><b>givx</b></sub>
-                </a>
-            </td>
-		</tr>
-		<tr>
-            <td align="center">
-                <a href="https://github.com/occtherapist">
-                    <img src="https://avatars.githubusercontent.com/u/28587659?v=4" width="100;" alt="occtherapist"/>
-                    <br />
-                    <sub><b>occtherapist</b></sub>
-                </a>
-            </td>
-		</tr>
-	<tbody>
-</table>
-<!-- readme: adrolli,collaborators,contributors,mooxbot,weblate,laravel-shift,bots,comradekingu,milotype,Givx,OccTherapist,somzoli -end -->
+This table is generated by [All Contributors Bot](https://allcontributors.org/). To add contributors use the following command in any comment of an issue or PR:
 
-## Contributors
+`@all-contributors please add @github-user for code`
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+Instead of "code", we typically use "translation", but there are other possible types listed on [AllContributers.org](https://allcontributors.org/docs/en/emoji-key). Please to only one request at a time, as we'll run into merge conflicts if you try to add multiple contributors without merging the PR in between.
 
 ## Contribute
 
