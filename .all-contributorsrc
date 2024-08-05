@@ -159,6 +159,15 @@
       "contributions": [
         "business"
       ]
+    },
+    {
+      "login": "milotype",
+      "name": "Milo Ivir",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43657314?v=4",
+      "profile": "http://milotype.de/",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
