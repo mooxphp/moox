@@ -54,36 +54,40 @@ return [
         'tabs' => [
             'all' => [
                 'label' => 'trans//core::common.all',
-                'field' => 'expiry_job',
-                'value' => '',
+                'query' => fn ($query) => $query,
                 'icon' => 'gmdi-filter-list',
             ],
             'documents' => [
                 'label' => 'trans//core::common.documents',
+                'query' => fn ($query) => $query->where('expiry_job', 'Documents'),
                 'field' => 'expiry_job',
                 'value' => 'Documents',
                 'icon' => 'gmdi-text-snippet',
             ],
             'articles' => [
                 'label' => 'trans//core::common.articles',
+                'query' => fn ($query) => $query->where('expiry_job', 'Documents'),
                 'field' => 'expiry_job',
                 'value' => 'Articles',
                 'icon' => 'gmdi-account-circle',
             ],
             'tasks' => [
                 'label' => 'trans//core::common.tasks',
+                'query' => fn ($query) => $query->where('expiry_job', 'Documents'),
                 'field' => 'expiry_job',
                 'value' => 'Tasks',
                 'icon' => 'gmdi-no-accounts',
             ],
             'no-user' => [
                 'label' => 'trans//core::expiry.no_assignee',
+                'query' => fn ($query) => $query->where('expiry_job', 'Documents'),
                 'field' => 'status',
                 'value' => 'No Assignee',
                 'icon' => 'gmdi-no-accounts',
             ],
             'no-date' => [
                 'label' => 'trans//core::expiry.no_expiry_date',
+                'query' => fn ($query) => $query->where('expiry_job', 'Documents'),
                 'field' => 'status',
                 'value' => 'No Expiry Date',
                 'icon' => 'gmdi-no-accounts',
