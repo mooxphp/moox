@@ -71,7 +71,6 @@ class Login extends SimplePage
             ->autofocus()
             ->extraInputAttributes(['tabindex' => 1]);
     }
-
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
     {
         try {
