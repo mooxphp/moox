@@ -27,7 +27,7 @@
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license"></a>
     <a href="https://mooxphp.slack.com/"><img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack"></a>
     <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
     <br>
     <br>
@@ -219,6 +219,7 @@ Moox is made by these nice people, and bots ...
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://liberapay.com/kingu/"><img src="https://avatars.githubusercontent.com/u/13802408?v=4?s=100" width="100px;" alt="Allan Nordhøy"/><br /><sub><b>Allan Nordhøy</b></sub></a><br /><a href="#translation-comradekingu" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://catch-life.com"><img src="https://avatars.githubusercontent.com/u/42347662?v=4?s=100" width="100px;" alt="Jana Brot"/><br /><sub><b>Jana Brot</b></sub></a><br /><a href="#business-janakeks" title="Business development">💼</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://milotype.de/"><img src="https://avatars.githubusercontent.com/u/43657314?v=4?s=100" width="100px;" alt="Milo Ivir"/><br /><sub><b>Milo Ivir</b></sub></a><br /><a href="#translation-milotype" title="Translation">🌍</a></td>
     </tr>
   </tbody>
 </table>
