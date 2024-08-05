@@ -123,6 +123,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "occtherapist",
+      "name": "Igor Clauss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28587659?v=4",
+      "profile": "https://igorclauss.de",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
