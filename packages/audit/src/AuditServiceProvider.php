@@ -4,20 +4,31 @@ declare(strict_types=1);
 
 namespace Moox\Audit;
 
+use Moox\Core\Traits\TranslatableConfig;
 use Moox\Audit\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class AuditServiceProvider extends PackageServiceProvider
 {
+    use TranslatableConfig;
+
+    public $name = 'audit';
+
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('audit')
+            ->name($this->name)
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
             ->hasMigrations(['create_activity_log_table'])
             ->hasCommand(InstallCommand::class);
+    }
+
+    protected function translateConfigurations()
+    {
+        $translatedConfig = $this->translateConfig(config($this->name));
+        config([$this->name => $translatedConfig]);
     }
 }
