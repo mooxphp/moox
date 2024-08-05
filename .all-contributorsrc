@@ -168,6 +168,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "mikazil",
+      "name": "Mika",
+      "avatar_url": "https://avatars.githubusercontent.com/u/94830731?v=4",
+      "profile": "https://github.com/Mikazil",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
