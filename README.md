@@ -27,7 +27,7 @@
     <a href="https://github.com/mooxphp/moox-app-components/blob/main/LICENSE.md"><img alt="License" src="https://img.shields.io/github/license/mooxphp/moox?color=blue&label=license"></a>
     <a href="https://mooxphp.slack.com/"><img alt="Slack" src="https://img.shields.io/badge/Slack-Moox-blue?logo=slack"></a>
     <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
     <br>
     <br>
@@ -212,6 +212,7 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kim-the-Diamond"><img src="https://avatars.githubusercontent.com/u/93331309?v=4?s=100" width="100px;" alt="Kim Speer"/><br /><sub><b>Kim Speer</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=Kim-the-Diamond" title="Code">💻</a> <a href="#security-Kim-the-Diamond" title="Security">🛡️</a> <a href="https://github.com/mooxphp/moox/commits?author=Kim-the-Diamond" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://laravelshift.com"><img src="https://avatars.githubusercontent.com/u/15991828?v=4?s=100" width="100px;" alt="Laravel Shift"/><br /><sub><b>Laravel Shift</b></sub></a><br /><a href="#tool-laravel-shift" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mikagrich"><img src="https://avatars.githubusercontent.com/u/161597019?v=4?s=100" width="100px;" alt="mikagrich"/><br /><sub><b>mikagrich</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=mikagrich" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/somzoli"><img src="https://avatars.githubusercontent.com/u/34423715?v=4?s=100" width="100px;" alt="somogyi.zoltan"/><br /><sub><b>somogyi.zoltan</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=somzoli" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
