@@ -41,7 +41,7 @@ Welcome to the Moox Project. This is a Monorepo and installable Laravel App to d
 
 -   [Moox Jobs](packages/jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
 -   [Moox Builder](packages/builder/README.md), our Skeleton Package to create new Filament Plugins
--   [Moox Core](packages/core/README.md),
+-   [Moox Core](packages/core/README.md), required by all of our packages, ships common things
 
 Some others are under hard development:
 
@@ -107,6 +107,25 @@ rm -Rf vendor/mooxphp
 ```
 
 The Moox Admin is now available at /moox, e. g. https://moox.test/moox
+
+## Moox Press
+
+To install Moox Press, you need a WordPress running in /public/wp (or another subdirectory, configured in .env).
+
+### Install a fresh WordPress
+
+To install a fresh WordPress, we provide a small script for Linux, MacOS
+
+```shell
+sh initwp.sh
+```
+
+and Windows
+
+```bash
+cd C:\path\to\project\root
+initwp.bat
+```
 
 ## Custom packages
 
