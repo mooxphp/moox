@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Audit;
 
-use Moox\Core\Traits\TranslatableConfig;
 use Moox\Audit\Commands\InstallCommand;
+use Moox\Core\Traits\TranslatableConfig;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

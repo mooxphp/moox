@@ -60,7 +60,7 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('event')
-                    ->label(__('core:common.event'))
+                        ->label(__('core:common.event'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
