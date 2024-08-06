@@ -26,6 +26,14 @@ class AuditServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
+    public function boot()
+    {
+        parent::boot();
+
+        $this->translateConfigurations();
+
+    }
+
     protected function translateConfigurations()
     {
         $translatedConfig = $this->translateConfig(config($this->name));
