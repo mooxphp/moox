@@ -29,22 +29,25 @@ class LoginLinkResource extends Resource
         return $form
             ->schema([
                 TextInput::make('email')
-                    ->label(__('login-link::translations.email'))
+                    ->label(__('core::common.email'))
                     ->maxLength(255),
                 TextInput::make('ip_address')
-                    ->label(__('login-link::translations.ip_address'))
+                    ->label(__('core::common.ip_address'))
                     ->maxLength(255),
                 TextInput::make('user_agent')
-                    ->label(__('login-link::translations.user_agent'))
+                    ->label(__('core::common.user_agent'))
                     ->maxLength(255)
                     ->columnSpan(2),
                 TextInput::make('token')
-                    ->label(__('login-link::translations.token'))
+                    ->label(__('core::login-link.token'))
                     ->maxLength(255)
                     ->columnSpan(2),
-                DateTimePicker::make('expires_at'),
-                DateTimePicker::make('used_at'),
+                DateTimePicker::make('expires_at')
+                    ->label(__('core::common.expires_at')),
+                DateTimePicker::make('used_at')
+                    ->label(__('core::common.used_at')),
                 Select::make('user_type')
+                    ->label(__('core::common.user_type'))
                     ->options(function () {
                         $models = Config::get('login-link.user_models', []);
 
@@ -57,6 +60,7 @@ class LoginLinkResource extends Resource
                     ->required(),
 
                 Select::make('user_id')
+                    ->label(__('core::common.user_id'))
                     ->options(function ($get) {
                         $userType = $get('user_type');
                         if (! $userType) {
@@ -74,7 +78,7 @@ class LoginLinkResource extends Resource
         return $table
             ->columns([
                 IconColumn::make('used')
-                    ->label('Valid')
+                    ->label(__('core::common.valid'))
                     ->icons([
                         'heroicon-o-x-circle' => fn ($record) => empty($record->used_at),
                         'heroicon-o-check-circle' => fn ($record) => ! empty($record->used_at),
@@ -82,25 +86,25 @@ class LoginLinkResource extends Resource
                     ->tooltip(fn ($record) => empty($record->used_at) ? 'Not Used' : 'Used')
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label(__('login-link::translations.email'))
+                    ->label(__('core::common.email'))
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('login-link::translations.expires_at'))
+                    ->label(__('core::common.created_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('expires_at')
-                    ->label(__('login-link::translations.expires_at'))
+                    ->label(__('core::common.expires_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('used_at')
-                    ->label(__('login-link::translations.used_at'))
+                    ->label(__('core::common.used_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('user_type')
-                    ->label(__('login-link::translations.user_type'))
+                    ->label(__('core::common.user_type'))
                     ->sortable(),
                 TextColumn::make('user_id')
-                    ->label(__('login-link::translations.username'))
+                    ->label(__('core::common.user_id'))
                     ->getStateUsing(function ($record) {
                         return optional($record->user)->name ?? 'unknown';
                     })
@@ -137,22 +141,22 @@ class LoginLinkResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('login-link::translations.single');
+        return config('login-link.login-link.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('login-link::translations.plural');
+        return config('login-link.login-link.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('login-link::translations.navigation_label');
+        return config('login-link.login-link.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('login-link::translations.breadcrumb');
+        return config('login-link.login-link.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -162,11 +166,11 @@ class LoginLinkResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('login-link::translations.navigation_group');
+        return config('login-link.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('login-link.navigation_sort');
+        return config('login-link.navigation_sort') + 1;
     }
 }

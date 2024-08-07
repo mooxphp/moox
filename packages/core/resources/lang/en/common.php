@@ -39,6 +39,14 @@ return [
     'subject_id' => 'Subject id',
     'event' => 'Event',
     'properties' => 'Properties',
+    'email' => 'E-Mail',
+    'ip_address' => 'IP-Adresse',
+    'used' => 'Used',
+    'user_agent' => 'User Agent',
+    'user_id' => 'User ID',
+    'user_type' => 'User Model',
+    'username' => 'Username',
+    'valid' => 'Valid',
 
     // Time matters
     'execution_time' => 'Total Execution Time',
@@ -62,5 +70,7 @@ return [
     'failed_at' => 'Failed at',
     'canceled_at' => 'Canceled at',
     'reserved_at' => 'Reserved at',
+    'expires_at' => 'Expires at',
+    'used_at' => 'Used at',
 
 ];
