@@ -80,7 +80,7 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('causer_type')
-                        ->label(__('core:audt.causer_type'))
+                        ->label(__('core:audit.causer_type'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
