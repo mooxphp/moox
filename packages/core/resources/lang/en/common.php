@@ -47,6 +47,8 @@ return [
     'user_type' => 'User Model',
     'username' => 'Username',
     'valid' => 'Valid',
+    'type' => 'Type',
+    'data' => 'Data',
 
     // Time matters
     'execution_time' => 'Total Execution Time',
@@ -72,5 +74,6 @@ return [
     'reserved_at' => 'Reserved at',
     'expires_at' => 'Expires at',
     'used_at' => 'Used at',
+    'read_at' => 'Read_at',
 
 ];
