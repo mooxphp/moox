@@ -30,6 +30,7 @@ trait HasDynamicTabs
 
                 $badgeCountQuery = $modelClass::query();
                 $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);
+
                 $tab->badge($badgeCountQuery->count());
             }
 

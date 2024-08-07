@@ -18,7 +18,7 @@ use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Password;
-use Moox\Security\Notifications\PasswordResetNotification;
+use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 
 /**
  * @property Form $form

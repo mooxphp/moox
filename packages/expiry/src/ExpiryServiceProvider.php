@@ -10,16 +10,13 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class ExpiryServiceProvider extends PackageServiceProvider
 {
-    public $name = 'expiry';
-
     public function configurePackage(Package $package): void
     {
         $package
-            ->name($this->name)
+            ->name('expiry')
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_expiries_table')
-            ->hasTranslations()
             ->hasRoutes('api')
             ->hasCommands(InstallCommand::class);
     }
