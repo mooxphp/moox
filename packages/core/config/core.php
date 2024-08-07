@@ -1,6 +1,32 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Moox Configuration
+|--------------------------------------------------------------------------
+|
+| This configuration file uses translatable strings. If you want to
+| translate the strings, you can do so in the language files
+| published from moox_core. Example:
+|
+| 'trans//core::common.all',
+| loads from common.php
+| outputs 'All'
+|
+*/
+
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Moox Packages
+    |--------------------------------------------------------------------------
+    |
+    | This config array contains all Moox packages and their models.
+    | You may add your own packages and models to this array.
+    | Only edit the array, if you know what you're doing.
+    |
+    */
 
     'packages' => [
         'audit' => [

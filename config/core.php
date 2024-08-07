@@ -1,13 +1,38 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Moox Configuration
+|--------------------------------------------------------------------------
+|
+| This configuration file uses translatable strings. If you want to
+| translate the strings, you can do so in the language files
+| published from moox_core. Example:
+|
+| 'trans//core::common.all',
+| loads from common.php
+| outputs 'All'
+|
+*/
+
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Moox Packages
+    |--------------------------------------------------------------------------
+    |
+    | This config array contains all Moox packages and their models.
+    | You may add your own packages and models to this array.
+    | Only edit the array, if you know what you're doing.
+    |
+    */
 
     'packages' => [
         'audit' => [
             'package' => 'Moox Audit',
             'models' => [
                 'Audit' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -21,7 +46,6 @@ return [
             'package' => 'Moox Builder',
             'models' => [
                 'Builder' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -39,7 +63,6 @@ return [
             'package' => 'Moox Expiry',
             'models' => [
                 'Expiry' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -53,7 +76,6 @@ return [
             'package' => 'Moox Jobs',
             'models' => [
                 'Job' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -62,7 +84,6 @@ return [
                     ],
                 ],
                 'FailedJob' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -71,7 +92,6 @@ return [
                     ],
                 ],
                 'JobBatch' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -80,7 +100,6 @@ return [
                     ],
                 ],
                 'JobManager' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -94,17 +113,11 @@ return [
             'package' => 'Moox Login Link',
             'models' => [
                 'LoginLink' => [
-                    'authenticatable' => false,
                     'api' => [
                         'Index' => '',
                         'Show' => '',
                         'Update' => '',
                         'Delete' => '',
-                    ],
-                    'AuthRoutes' => [
-                        'Login' => '',
-                        'PasswordReset' => '',
-                        'Register' => '',
                     ],
                 ],
             ],
@@ -113,7 +126,32 @@ return [
             'package' => 'Moox Notifications',
             'models' => [
                 'Notification' => [
-                    'authenticatable' => false,
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'page' => [
+            'package' => 'Moox Page',
+            'models' => [
+                'Page' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'passkey' => [
+            'package' => 'Moox Passkey',
+            'models' => [
+                'Passkey' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -126,8 +164,71 @@ return [
         'press' => [
             'package' => 'Moox Press',
             'models' => [
+                'WpComment' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpCommentMeta' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpOption' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
                 'WpPost' => [
-                    'authenticatable' => false,
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpPostMeta' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpTerm' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpTermMeta' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpTermRelationship' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpTermTaxonomy' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -137,6 +238,85 @@ return [
                 ],
                 'WpUser' => [
                     'authenticatable' => true,
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'WpUserMeta' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'security' => [
+            'package' => 'Moox Security',
+            'models' => [
+                'ResetPassword' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'sync' => [
+            'package' => 'Moox Sync',
+            'models' => [
+                'Platform' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'Sync' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'training' => [
+            'package' => 'Moox Training',
+            'models' => [
+                'Training' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'TrainingDate' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'TrainingInvitation' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+                'TrainingType' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
@@ -157,10 +337,31 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
-                    'AuthRoutes' => [
-                        'Login' => '',
-                        'PasswordReset' => '',
-                        'Register' => '',
+                ],
+            ],
+        ],
+        'user-device' => [
+            'package' => 'Moox User Device',
+            'models' => [
+                'UserDevice' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'user-session' => [
+            'package' => 'Moox User Session',
+            'models' => [
+                'UserSession' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
                     ],
                 ],
             ],
