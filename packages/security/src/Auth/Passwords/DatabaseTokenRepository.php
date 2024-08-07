@@ -10,7 +10,6 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     /**
      * Create a new token record.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
      * @return string
      */
     public function create(CanResetPasswordContract $user)
@@ -32,7 +31,6 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     /**
      * Determine if a token record exists and is valid.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
      * @param  string  $token
      * @return bool
      */
@@ -42,12 +40,12 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
         $userType = $this->getUserType($user);
 
         $record = $this->getTable()
-            ->where("email", $email)
-            ->where("user_type", $userType)
+            ->where('email', $email)
+            ->where('user_type', $userType)
             ->first();
 
         if ($record) {
-            $isValid = !$this->tokenExpired($record->created_at) &&
+            $isValid = ! $this->tokenExpired($record->created_at) &&
                 $this->hasher->check($token, $record->token);
 
             return $isValid;
@@ -79,9 +77,9 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
         $limit = 3;
 
         $records = $this->getTable()
-            ->where("email", $email)
-            ->where("user_type", $userType)
-            ->orderBy("created_at")
+            ->where('email', $email)
+            ->where('user_type', $userType)
+            ->orderBy('created_at')
             ->get();
 
         $countToDelete = $records->count() - $limit;
@@ -108,6 +106,7 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
             'created_at' => now(),
         ];
     }
+
     protected function getUserType(CanResetPasswordContract $user)
     {
         return get_class($user);

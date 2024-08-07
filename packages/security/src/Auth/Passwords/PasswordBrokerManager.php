@@ -10,7 +10,6 @@ class PasswordBrokerManager extends PasswordBrokerManagerBase
     /**
      * Create a token repository instance based on the given configuration.
      *
-     * @param  array  $config
      * @return \Illuminate\Auth\Passwords\TokenRepositoryInterface
      */
     protected function createTokenRepository(array $config)
