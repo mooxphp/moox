@@ -26,7 +26,7 @@ class SecurityServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->app->registerDeferredProvider(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class, []);
+        $this->app->registerDeferredProvider(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class);
 
         $this->app->register(\Moox\Security\PasswordResetServiceProvider::class);
     }

@@ -17,7 +17,7 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
         $email = $user->getEmailForPasswordReset();
         $userType = $this->getUserType($user);
 
-        $this->deleteSomeExisting($user, $userType);
+        $this->deleteSomeExisting($email, $userType);
 
         $token = $this->createNewToken();
 
@@ -69,7 +69,8 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     /**
      * Delete SOME existing reset tokens from the database.
      *
-     * @param  \Illuminate\Contracts\Auth\CanResetPassword  $user
+     * @param string $email
+     * @param string $userType
      * @return int
      */
     protected function deleteSomeExisting(string $email, string $userType)

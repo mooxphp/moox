@@ -8,6 +8,7 @@ use Exception;
 use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkAction;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Collection;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 
@@ -47,6 +48,11 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                 }
 
                 foreach ($records as $record) {
+                    if (! $record instanceof CanResetPassword) {
+                        $recordClass = get_class($record);
+                        throw new Exception("Model [{$recordClass}] must implement [Illuminate\Contracts\Auth\CanResetPassword] interface.");
+                    }
+
                     $user = $record;
 
                     $token = app('auth.password.broker')->createToken($user);
