@@ -30,9 +30,9 @@ class AuditResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('log_name')
+                        ->label(__('core:common.log_name'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
-                        ->placeholder('Log Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -40,9 +40,9 @@ class AuditResource extends Resource
                         ]),
 
                     RichEditor::make('description')
+                        ->label(__('core:common.description'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Description')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -50,9 +50,9 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('subject_type')
+                        ->label(__('core:common.subject_type'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
-                        ->placeholder('Subject Type')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -60,9 +60,9 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('event')
+                        ->label(__('core:common.event'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
-                        ->placeholder('Event')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -70,9 +70,9 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('subject_id')
+                        ->label(__('core:common.subject_id'))
                         ->rules(['max:255'])
                         ->nullable()
-                        ->placeholder('Subject Id')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -80,9 +80,9 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('causer_type')
+                        ->label(__('core:audit.causer_type'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
-                        ->placeholder('Causer Type')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -90,9 +90,9 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('causer_id')
+                        ->label(__('core:audit.causer_id'))
                         ->rules(['max:255'])
                         ->nullable()
-                        ->placeholder('Causer Id')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -100,6 +100,7 @@ class AuditResource extends Resource
                         ]),
 
                     KeyValue::make('properties')
+                        ->label(__('core:common.properties'))
                         ->nullable()
                         ->columnSpan([
                             'default' => 12,
@@ -108,9 +109,9 @@ class AuditResource extends Resource
                         ]),
 
                     TextInput::make('batch_uuid')
+                        ->label(__('core:audit.batch_uuid'))
                         ->rules(['max:255'])
                         ->nullable()
-                        ->placeholder('Batch Uuid')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -127,34 +128,42 @@ class AuditResource extends Resource
             ->poll('60s')
             ->columns([
                 TextColumn::make('log_name')
+                    ->label(__('core:common.log_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('description')
+                    ->label(__('core:common.description'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('subject_type')
+                    ->label(__('core:common.subject_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('event')
+                    ->label(__('core:common.event'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('subject_id')
+                    ->label(__('core:common.subject_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('causer_type')
+                    ->label(__('core:audit.causer_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('causer_id')
+                    ->label(__('core:audit.causer_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 TextColumn::make('batch_uuid')
+                    ->label(__('core:audit.batch_uuid'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -180,41 +189,31 @@ class AuditResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('audit::translations.single');
+        return config('audit.audit.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('audit::translations.plural');
+        return config('audit.audit.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('audit::translations.navigation_label');
+        return config('audit.audit.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('audit::translations.breadcrumb');
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return true;
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
+        return config('audit.audit.single');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __('audit::translations.navigation_group');
+        return config('audit.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('audit.navigation_sort');
+        return config('audit.navigation_sort') + 1;
     }
 }
