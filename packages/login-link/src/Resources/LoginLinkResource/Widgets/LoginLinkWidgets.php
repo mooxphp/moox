@@ -22,9 +22,9 @@ class LoginLinkWidgets extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('login-link::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('login-link::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('login-link::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::login-link.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::login-link.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::login-link.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }
