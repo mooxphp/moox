@@ -52,7 +52,11 @@ return [
         */
 
         'tabs' => [
-
+            'all' => [
+                'label' => 'trans//core::common.all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [],
+            ],
         ],
     ],
 

@@ -10,15 +10,12 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class AuditServiceProvider extends PackageServiceProvider
 {
-    public $name = 'audit';
-
     public function configurePackage(Package $package): void
     {
         $package
-            ->name($this->name)
+            ->name('audit')
             ->hasConfigFile()
             ->hasViews()
-            ->hasTranslations()
             ->hasMigrations(['create_activity_log_table'])
             ->hasCommand(InstallCommand::class);
     }

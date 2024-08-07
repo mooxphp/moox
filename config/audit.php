@@ -52,7 +52,24 @@ return [
         */
 
         'tabs' => [
-
+            'all' => [
+                'label' => 'trans//core::common.all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [],
+            ],
+            /*
+            'error' => [
+                'label' => 'trans//core::common.error',
+                'icon' => 'gmdi-text-snippet',
+                'query' => [
+                    [
+                        'field' => 'subject_type',
+                        'operator' => '=',
+                        'value' => 'Error',
+                    ],
+                ],
+            ],
+            */
         ],
     ],
 
