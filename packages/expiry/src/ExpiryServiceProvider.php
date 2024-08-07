@@ -43,7 +43,8 @@ class ExpiryServiceProvider extends PackageServiceProvider
 
     protected function translateConfigurations()
     {
-        $translatedConfig = $this->translateConfig(config($this->name));
+        $config = config($this->name);
+        $translatedConfig = $this->translateConfig($config);
         config([$this->name => $translatedConfig]);
     }
 }
