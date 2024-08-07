@@ -117,6 +117,7 @@ To install Moox Press, you need a WordPress running in /public/wp (or another su
 To install a fresh WordPress, we provide a small script for Linux, MacOS
 
 ```shell
+cd /path/to/project/root
 sh initwp.sh
 ```
 
@@ -126,6 +127,8 @@ and Windows
 cd C:\path\to\project\root
 initwp.bat
 ```
+
+We are working on a better solution, though.
 
 ## Custom packages
 
