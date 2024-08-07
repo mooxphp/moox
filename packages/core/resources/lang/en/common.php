@@ -33,6 +33,12 @@ return [
     'payload' => 'Payload',
     'connection' => 'Connection',
     'retry' => 'Retry',
+    'log_name' => 'Log name',
+    'descprition' => 'Description',
+    'subject_type' => 'Subject type',
+    'subject_id' => 'Subject id',
+    'event' => 'Event',
+    'properties' => 'Properties',
 
     // Time matters
     'execution_time' => 'Total Execution Time',

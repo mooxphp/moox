@@ -13,7 +13,9 @@ trait TranslatableConfig
     {
         array_walk_recursive($config, function (&$value) {
             if (is_string($value) && str_starts_with($value, 'trans//')) {
-                $value = Lang::get(str_replace('trans//', '', $value));
+                $key = str_replace('trans//', '', $value);
+                $translation = Lang::get($key);
+                $value = $translation !== $key ? $translation : $key;
             }
         });
 

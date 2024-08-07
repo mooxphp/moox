@@ -41,7 +41,7 @@ class PressPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Press/Widgets'), for: 'App\\Filament\\Press\\Widgets')
             ->widgets([
-                \Moox\Expiry\Widgets\MyExpiry::class,
+                // \Moox\Expiry\Widgets\MyExpiry::class,
             ])
             ->middleware([
                 EncryptCookies::class,

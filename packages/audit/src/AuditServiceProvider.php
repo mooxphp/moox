@@ -10,10 +10,12 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class AuditServiceProvider extends PackageServiceProvider
 {
+    public $name = 'audit';
+
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('audit')
+            ->name($this->name)
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
