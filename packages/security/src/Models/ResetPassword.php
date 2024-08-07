@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ResetPassword extends Model
 {
-    protected $primaryKey = ['email', 'user_type'];
+    protected $primaryKey = ('email');
 
     public $incrementing = false;
 
