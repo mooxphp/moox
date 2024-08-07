@@ -3,7 +3,7 @@
 namespace Moox\Security\Commands;
 
 use Illuminate\Console\Command;
-use Moox\Security\Jobs\SendPasswordResetLinksJob;
+use Moox\Security\Jobs\Passwords\SendPasswordResetLinksJob;
 
 class GetPasswordResetLinksCommand extends Command
 {

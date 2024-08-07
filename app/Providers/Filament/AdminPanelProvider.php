@@ -79,6 +79,7 @@ class AdminPanelProvider extends PanelProvider
 
                 // User plugins
                 \Moox\User\UserPlugin::make(),
+
                 \Moox\UserDevice\UserDevicePlugin::make(),
                 \Moox\LoginLink\LoginLinkPlugin::make(),
                 \Moox\UserSession\UserSessionPlugin::make(),
