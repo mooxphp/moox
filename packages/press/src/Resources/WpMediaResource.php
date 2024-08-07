@@ -14,14 +14,13 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Moox\Press\Models\WpPost;
+use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource\Pages;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;
 
 class WpMediaResource extends Resource
 {
-    protected static ?string $model = WpPost::class;
+    protected static ?string $model = WpMedia::class;
 
     protected static ?string $navigationIcon = 'gmdi-image';
 
@@ -43,12 +42,6 @@ class WpMediaResource extends Resource
     }
 
     protected static ?string $navigationGroup = 'Moox Press';
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('post_type', 'attachment');
-    }
 
     public static function form(Form $form): Form
     {

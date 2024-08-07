@@ -12,6 +12,7 @@ class WpTerm extends Model
     protected $fillable = ['name', 'slug', 'term_group'];
 
     protected $appends = [
+        'taxonomy',
         'description',
         'parent',
         'count',
@@ -37,6 +38,16 @@ class WpTerm extends Model
     public function termTaxonomy()
     {
         return $this->hasOne(WpTermTaxonomy::class, 'term_id', 'term_id');
+    }
+
+    public function getTaxonomyAttribute()
+    {
+        return $this->termTaxonomy->taxonomy ?? '';
+    }
+
+    public function setTaxonomyAttribute($value)
+    {
+        $this->termTaxonomy()->updateOrCreate([], ['taxonomy' => $value]);
     }
 
     public function getDescriptionAttribute()

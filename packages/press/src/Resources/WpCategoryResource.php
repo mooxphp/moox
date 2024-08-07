@@ -4,6 +4,8 @@ namespace Moox\Press\Resources;
 
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -44,7 +46,7 @@ class WpCategoryResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('termTaxonomies', function ($query) {
+            ->whereHas('termTaxonomy', function ($query) {
                 $query->where('taxonomy', 'category');
             });
     }
@@ -74,16 +76,43 @@ class WpCategoryResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    Textarea::make('description')
+                        ->rules(['string'])
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Select::make('parent')
+                        ->options(fn () => WpTerm::pluck('name', 'term_id'))
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
                     TextInput::make('term_group')
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Term Group')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
+
+                    TextInput::make('count')
+                        ->rules(['max:20'])
+                        ->required()
+                        ->readonly()
+                        ->default('0')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
                 ]),
             ]),
         ]);
@@ -96,15 +125,25 @@ class WpCategoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('slug')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('term_group')
+                Tables\Columns\TextColumn::make('description')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('parent')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('count')
+                    ->toggleable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('term_group')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
                     ->limit(50),
             ])
             ->actions([ViewAction::make(), EditAction::make()])
