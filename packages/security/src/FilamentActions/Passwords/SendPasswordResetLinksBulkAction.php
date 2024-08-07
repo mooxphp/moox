@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Security\FilamentActions;
+namespace Moox\Security\FilamentActions\Passwords;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
@@ -9,7 +9,7 @@ use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
-use Moox\Security\Notifications\PasswordResetNotification;
+use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 
 class SendPasswordResetLinksBulkAction extends BulkAction
 {

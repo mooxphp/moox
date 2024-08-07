@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Security\Notifications;
+namespace Moox\Security\Notifications\Passwords;
 
 use Carbon\Carbon;
 use Filament\Facades\Filament;

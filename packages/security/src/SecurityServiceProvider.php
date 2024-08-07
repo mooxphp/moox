@@ -21,4 +21,13 @@ class SecurityServiceProvider extends PackageServiceProvider
             ->hasMigrations(['extend_password_reset_tokens_table'])
             ->hasCommands(InstallCommand::class, GetPasswordResetLinksCommand::class);
     }
+
+    public function register()
+    {
+        parent::register();
+
+        $this->app->registerDeferredProvider(\Illuminate\Auth\Passwords\PasswordResetServiceProvider::class, []);
+
+        $this->app->register(\Moox\Security\PasswordResetServiceProvider::class);
+    }
 }

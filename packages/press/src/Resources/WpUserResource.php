@@ -20,7 +20,7 @@ use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
 use Moox\Press\Resources\WpUserResource\Pages\ListWpUsers;
 use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
 use Moox\Press\Resources\WpUserResource\RelationManagers\WpUserMetaRelationManager;
-use Moox\Security\FilamentActions\SendPasswordResetLinksBulkAction;
+use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\Security\Helper\PasswordHash;
 
 class WpUserResource extends Resource

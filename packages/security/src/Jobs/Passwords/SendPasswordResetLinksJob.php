@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Security\Jobs;
+namespace Moox\Security\Jobs\Passwords;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -8,7 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Jobs\Traits\JobProgress;
-use Moox\Security\Notifications\PasswordResetNotification;
+use Moox\Security\Notifications\Passwords\PasswordResetNotification;
 
 class SendPasswordResetLinksJob implements ShouldQueue
 {
