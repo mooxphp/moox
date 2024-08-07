@@ -2,6 +2,7 @@
 
 namespace Moox\Press\Resources;
 
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -57,14 +58,6 @@ class WpTermResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Textarea::make('termTaxonomy.description')
-                        ->rules(['string'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
                     TextInput::make('term_group')
                         ->rules(['max:255'])
                         ->required()
@@ -74,6 +67,28 @@ class WpTermResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
+                        ]),
+
+                    Textarea::make('description')
+                        ->label('Description')
+                        ->rules(['string'])
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Fieldset::make('Term Taxonomy')
+                        ->relationship('termTaxonomy')
+                        ->schema([
+                            Textarea::make('description')
+                                ->label('Description')
+                                ->rules(['string'])
+                                ->columnSpan([
+                                    'default' => 12,
+                                    'md' => 12,
+                                    'lg' => 12,
+                                ]),
                         ]),
                 ]),
             ]),

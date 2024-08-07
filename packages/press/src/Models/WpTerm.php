@@ -13,7 +13,7 @@ class WpTerm extends Model
 
     protected $searchableFields = ['*'];
 
-    protected $wpPrefix;
+    protected static $wpPrefix;
 
     protected $table;
 
@@ -24,12 +24,30 @@ class WpTerm extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix.'terms';
+        self::$wpPrefix = config('press.wordpress_prefix');
+        $this->table = self::$wpPrefix.'terms';
     }
 
     public function termTaxonomy()
     {
         return $this->hasOne(WpTermTaxonomy::class, 'term_id', 'term_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+    }
+
+    // Accessor for termTaxonomy description
+    public function getDescriptionAttribute()
+    {
+        return $this->attributes['description'] ?? '';
+    }
+
+    // Mutator for termTaxonomy description
+    public function setDescriptionAttribute($value)
+    {
+        $this->termTaxonomy()->updateOrCreate([], ['description' => $value]);
     }
 }
