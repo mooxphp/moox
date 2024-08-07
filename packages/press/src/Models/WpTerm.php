@@ -11,9 +11,15 @@ class WpTerm extends Model
 
     protected $fillable = ['name', 'slug', 'term_group'];
 
+    protected $appends = [
+        'description',
+        'parent',
+        'count',
+    ];
+
     protected $searchableFields = ['*'];
 
-    protected static $wpPrefix;
+    protected $wpPrefix;
 
     protected $table;
 
@@ -24,8 +30,8 @@ class WpTerm extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        self::$wpPrefix = config('press.wordpress_prefix');
-        $this->table = self::$wpPrefix.'terms';
+        $this->wpPrefix = config('press.wordpress_prefix');
+        $this->table = $this->wpPrefix.'terms';
     }
 
     public function termTaxonomy()
@@ -33,21 +39,33 @@ class WpTerm extends Model
         return $this->hasOne(WpTermTaxonomy::class, 'term_id', 'term_id');
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-    }
-
-    // Accessor for termTaxonomy description
     public function getDescriptionAttribute()
     {
-        return $this->attributes['description'] ?? '';
+        return $this->termTaxonomy->description ?? '';
     }
 
-    // Mutator for termTaxonomy description
     public function setDescriptionAttribute($value)
     {
-        $this->termTaxonomy()->updateOrCreate([], ['description' => $value]);
+        $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
+    }
+
+    public function getParentAttribute()
+    {
+        return $this->termTaxonomy->parent ?? '';
+    }
+
+    public function setParentAttribute($value)
+    {
+        $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
+    }
+
+    public function getCountAttribute()
+    {
+        return $this->termTaxonomy->count ?? '';
+    }
+
+    public function setCountAttribute($value)
+    {
+        $this->termTaxonomy()->updateOrCreate([], ['count' => $value]);
     }
 }
