@@ -69,8 +69,6 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     /**
      * Delete SOME existing reset tokens from the database.
      *
-     * @param string $email
-     * @param string $userType
      * @return int
      */
     protected function deleteSomeExisting(string $email, string $userType)
