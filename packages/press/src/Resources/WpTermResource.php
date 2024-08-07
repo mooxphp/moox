@@ -4,6 +4,7 @@ namespace Moox\Press\Resources;
 
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +13,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpTermResource\Pages;
 
@@ -24,6 +26,11 @@ class WpTermResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $navigationGroup = 'Moox Press Meta';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('termTaxonomy');
+    }
 
     public static function form(Form $form): Form
     {
@@ -44,6 +51,14 @@ class WpTermResource extends Resource
                         ->rules(['max:200', 'string'])
                         ->required()
                         ->placeholder('Slug')
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Textarea::make('termTaxonomy.description')
+                        ->rules(['string'])
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,

@@ -28,8 +28,8 @@ class WpTerm extends Model
         $this->table = $this->wpPrefix.'terms';
     }
 
-    public function termTaxonomies()
+    public function termTaxonomy()
     {
-        return $this->hasMany(WpTermTaxonomy::class, 'term_id', 'term_id');
+        return $this->hasOne(WpTermTaxonomy::class, 'term_id', 'term_id');
     }
 }
