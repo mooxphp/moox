@@ -91,10 +91,8 @@ class Login extends SimplePage
 
             return null;
         }
-        /** @var \Illuminate\Contracts\Auth\Guard|\Illuminate\Contracts\Auth\StatefulGuard $guard */
-        $guard = Filament::auth();
-        /** @var string $guardName */
-        $guardName = method_exists($guard, 'getName') ? $guard->getName() : config('auth.defaults.guard');
+
+        $guardName = Filament::getAuthGuard();
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
         $credentialKey = array_key_first($credentials);
