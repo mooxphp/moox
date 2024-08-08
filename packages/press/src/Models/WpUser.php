@@ -61,6 +61,7 @@ class WpUser extends Authenticatable implements FilamentUser
         'description',
         'created_at',
         'updated_at',
+        'capabilities',
         'session_tokens',
         'remember_token',
         'email_verified_at',
@@ -74,7 +75,6 @@ class WpUser extends Authenticatable implements FilamentUser
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'users';
         $this->metatable = $this->wpPrefix.'usermeta';
-        $this->appends[] = $this->wpPrefix.'capabilities';
     }
 
     protected static function boot()
@@ -104,6 +104,18 @@ class WpUser extends Authenticatable implements FilamentUser
                 'user_pass',
                 'user_pass as password',
                 'display_name',
+            ]);
+        });
+
+        static::created(function ($wpUser) {
+            $wpUser->meta()->create([
+                //
+            ]);
+        });
+
+        static::updated(function ($wpUser) {
+            $wpUser->meta()->update([
+                //
             ]);
         });
     }
@@ -192,5 +204,12 @@ class WpUser extends Authenticatable implements FilamentUser
             ['user_id' => $this->ID, 'meta_key' => $key],
             ['meta_value' => $value]
         );
+    }
+
+    public function getCapabilitiesAttribute()
+    {
+        $key = "{$this->wpPrefix}capabilities";
+
+        return $this->meta($key);
     }
 }
