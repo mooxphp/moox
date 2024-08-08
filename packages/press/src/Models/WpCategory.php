@@ -18,6 +18,11 @@ class WpCategory extends WpTerm
         'count',
     ];
 
+    protected $casts = [
+        'term_id' => 'integer',
+        'term_group' => 'integer',
+    ];
+
     protected $searchableFields = ['*'];
 
     protected $wpPrefix;
@@ -45,6 +50,14 @@ class WpCategory extends WpTerm
                 $query->where('taxonomy', 'category');
             });
 
+        });
+
+        static::created(function ($wpCategory) {
+            $wpCategory->termTaxonomy()->create([
+                'taxonomy' => 'category',
+                'description' => $wpCategory->description ?? '',
+                'parent' => $wpCategory->parent ?? 0,
+            ]);
         });
     }
 
@@ -75,7 +88,7 @@ class WpCategory extends WpTerm
 
     public function getParentAttribute()
     {
-        return $this->termTaxonomy->parent ?? '';
+        return $this->termTaxonomy->parent ?? 0;
     }
 
     public function setParentAttribute($value)

@@ -85,7 +85,7 @@ class WpCategoryResource extends Resource
                         ]),
 
                     TextInput::make('term_group')
-                        ->rules(['max:255'])
+                        ->rules(['integer'])
                         ->required()
                         ->default('0')
                         ->columnSpan([
@@ -95,7 +95,7 @@ class WpCategoryResource extends Resource
                         ]),
 
                     TextInput::make('count')
-                        ->rules(['max:20'])
+                        ->rules(['integer'])
                         ->required()
                         ->readonly()
                         ->default('0')
