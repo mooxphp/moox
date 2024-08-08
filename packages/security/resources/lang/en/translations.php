@@ -15,6 +15,7 @@ return [
     'failed' => 'failed',
 
     'Send Password Reset Links' => 'Send Password Reset Links',
+    'Password reset links sent' => 'Password reset links sent',
     'Reset Password Message' => 'Reset Password Message',
     'Hello' => 'Hello',
     'You are receiving this email because we received a password reset request for your account.' => 'You are receiving this email because we received a password reset request for your account.',

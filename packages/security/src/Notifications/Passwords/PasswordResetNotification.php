@@ -36,7 +36,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $mailRecipientName = config('security.mail_recipient_name');
+        $mailRecipientName = config('security.mail_recipient_name') ?? 'name';
 
         return (new MailMessage)
             ->subject(__('security::translations.Reset Password Message'))
