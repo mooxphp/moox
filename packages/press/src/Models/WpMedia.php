@@ -10,6 +10,7 @@ class WpMedia extends WpPost
     use HasFactory;
 
     protected $appends = [
+        'asset',
         'image_url',
         'image_sizes',
     ];
@@ -38,6 +39,20 @@ class WpMedia extends WpPost
     public function getImageUrlAttribute()
     {
         return $this->postMeta()->where('meta_key', '_wp_attached_file')->first()->meta_value ?? '';
+    }
+
+    public function getAssetAttribute()
+    {
+        $file = $this->image_url;
+
+        $wpslug = config('press.wordpress_slug');
+        $wpslug = ltrim($wpslug, $wpslug[0]);
+
+        // Todo: Check if the file exists
+        // Todo: Check if the file is an image
+        // Todo: Read wp-config.php to get the upload path
+
+        return $file ? asset($wpslug.'/wp-content/uploads/'.$file) : '';
     }
 
     public function getImageSizesAttribute()
