@@ -37,8 +37,8 @@ return [
         |
         */
 
-        'single' => 'trans//core::notification.notification',
-        'plural' => 'trans//core::notification.notifications',
+        'single' => 'trans//core::notifications.notification',
+        'plural' => 'trans//core::notifications.notifications',
 
         /*
         |--------------------------------------------------------------------------
