@@ -126,9 +126,8 @@ class SyncResource extends Resource
                                 $set('source_platform_id', null);
 
                                 Notification::make()
-                                    ->title('Sync Error')
-                                    ->label(__('core::sync.sync_error'))
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->title(__('core::sync.sync_error'))
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -155,8 +154,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->label(__('core::sync.sync_error'))
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -184,8 +182,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->label(__('core::sync.sync_error'))
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -212,8 +209,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->label(__('core::sync.sync_error'))
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {

@@ -16,5 +16,6 @@ return [
     'new_password_confirmation' => 'New Password Confirmation',
     'language_id' => 'Language ID',
     'user_updated' => 'User updated',
+    'user_updated_message' => 'User has been updated successfully.',
 
 ];

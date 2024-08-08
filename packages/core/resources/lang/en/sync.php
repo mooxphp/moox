@@ -16,6 +16,8 @@ return [
     'source_platform_id' => 'Source Platform ID',
     'target_platform_id' => 'Target Platform ID',
     'sync_error' => 'Sync Error',
+    'sync_error_master' => 'There can only be one master platform.',
+    'sync_error_platforms' => 'Source and Target Platform cannot be the same with the same model.',
     'source_model' => 'Source Model',
     'target_model' => 'Target Model',
     'use_platform_relations' => 'Use Platform Relations',

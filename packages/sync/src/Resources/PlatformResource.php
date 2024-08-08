@@ -128,9 +128,8 @@ class PlatformResource extends Resource
                                 if ($existingMaster) {
                                     $set('master', false);
                                     Notification::make()
-                                        ->title('Sync Error')
-                                        ->label(__('core::sync.sync_error'))
-                                        ->body('There can only be one master platform.')
+                                        ->title(__('core::sync.sync_error'))
+                                        ->body(__('core::sync.sync_error_master'))
                                         ->danger()
                                         ->send();
                                 }
