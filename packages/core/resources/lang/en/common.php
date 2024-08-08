@@ -39,8 +39,6 @@ return [
     'subject_id' => 'Subject id',
     'event' => 'Event',
     'properties' => 'Properties',
-    'email' => 'E-Mail',
-    'ip_address' => 'IP-Adresse',
     'used' => 'Used',
     'user_agent' => 'User Agent',
     'user_id' => 'User ID',
