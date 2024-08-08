@@ -62,6 +62,8 @@ return [
     'last_name' => 'Last Name',
     'email' => 'Email',
     'website' => 'Website',
+    'term_group' => 'Term Group',
+    'count' => 'Count',
 
     // Time matters
     'execution_time' => 'Total Execution Time',

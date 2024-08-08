@@ -49,9 +49,9 @@ class WpCategoryResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('name')
+                        ->label(__('core::common.name'))
                         ->rules(['max:200', 'string'])
                         ->required()
-                        ->placeholder('Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -59,9 +59,9 @@ class WpCategoryResource extends Resource
                         ]),
 
                     TextInput::make('slug')
+                        ->label(__('core::common.slug'))
                         ->rules(['max:200', 'string'])
                         ->required()
-                        ->placeholder('Slug')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -69,6 +69,7 @@ class WpCategoryResource extends Resource
                         ]),
 
                     Textarea::make('description')
+                        ->label(__('core::common.description'))
                         ->rules(['string'])
                         ->columnSpan([
                             'default' => 12,
@@ -77,6 +78,7 @@ class WpCategoryResource extends Resource
                         ]),
 
                     Select::make('parent')
+                        ->label(__('core::common.parent'))
                         ->options(fn () => WpTerm::pluck('name', 'term_id'))
                         ->columnSpan([
                             'default' => 12,
@@ -86,6 +88,7 @@ class WpCategoryResource extends Resource
 
                     TextInput::make('term_group')
                         ->rules(['integer'])
+                        ->label(__('core::common.term_group'))
                         ->required()
                         ->default('0')
                         ->columnSpan([
@@ -96,6 +99,7 @@ class WpCategoryResource extends Resource
 
                     TextInput::make('count')
                         ->rules(['integer'])
+                        ->label(__('core::common.count'))
                         ->required()
                         ->readonly()
                         ->default('0')
@@ -116,24 +120,30 @@ class WpCategoryResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('core::common.name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('slug')
+                    ->label(__('core::common.slug'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('description')
+                    ->label(__('core::common.description'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('parent')
+                    ->label(__('core::common.parent'))
                     ->toggleable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('count')
+                    ->label(__('core::common.count'))
                     ->toggleable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('term_group')
+                    ->label(__('core::common.term_group'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->limit(50),
