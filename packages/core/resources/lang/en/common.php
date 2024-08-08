@@ -34,7 +34,7 @@ return [
     'connection' => 'Connection',
     'retry' => 'Retry',
     'log_name' => 'Log name',
-    'descprition' => 'Description',
+    'description' => 'Description',
     'subject_type' => 'Subject type',
     'subject_id' => 'Subject id',
     'event' => 'Event',

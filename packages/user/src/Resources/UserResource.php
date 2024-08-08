@@ -280,7 +280,7 @@ class UserResource extends Resource
                         'danger' => fn ($record) => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
-                    ->label(__('core::common.roles.name'))
+                    ->label(__('core::common.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([

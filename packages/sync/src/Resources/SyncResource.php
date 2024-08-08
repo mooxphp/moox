@@ -401,21 +401,21 @@ class SyncResource extends Resource
             ->poll('60s')
             ->columns([
                 TextColumn::make('sourcePlatformAndModel')
-                    ->label(__('core::sync.source_plaform_and_model'))
+                    ->label(__('core::sync.source_platform_and_model'))
                     ->toggleable()
                     ->getStateUsing(function ($record) {
                         return "{$record->sourcePlatform->name} ({$record->source_model})";
                     })
                     ->limit(50),
                 TextColumn::make('targetPlatformAndModel')
-                    ->label(__('core::sync.target_plaform_and_model'))
+                    ->label(__('core::sync.target_platform_and_model'))
                     ->toggleable()
                     ->getStateUsing(function ($record) {
                         return "{$record->targetPlatform->name} ({$record->target_model})";
                     })
                     ->limit(50),
                 IconColumn::make('use_platform_relations')
-                    ->label(__('core::sync.use_platforms_relations'))
+                    ->label(__('core::sync.use_platform_relations'))
                     ->toggleable()
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
@@ -448,15 +448,13 @@ class SyncResource extends Resource
                     ->label(__('core::sync.source_platform_id'))
                     ->relationship('sourcePlatform', 'name')
                     ->indicator('Platform')
-                    ->multiple()
-                    ->label('Platform'),
+                    ->multiple(),
 
                 SelectFilter::make('target_platform_id')
                     ->label(__('core::sync.target_platform_id'))
                     ->relationship('targetPlatform', 'name')
                     ->indicator('Platform')
-                    ->multiple()
-                    ->label('Platform'),
+                    ->multiple(),
             ])
             ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([DeleteBulkAction::make()]);
