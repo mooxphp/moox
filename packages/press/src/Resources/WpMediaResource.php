@@ -293,8 +293,7 @@ class WpMediaResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\Layout\Stack::make([
-
+                Stack::make([
                     ImageColumn::make('asset')
                         ->label('Thumbnail')
                         ->square()
@@ -347,7 +346,7 @@ class WpMediaResource extends Resource
                                 ->searchable()
                                 ->limit(50),
                         ]),
-                    ])->collapsible(),
+                    ])->collapsible()->collapsed(false),
                 ])->space(3),
             ])
             ->contentGrid([
