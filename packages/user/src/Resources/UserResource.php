@@ -52,7 +52,7 @@ class UserResource extends Resource
                         ]),
 
                     FileUpload::make('avatar_url')
-                        	->label(__('core::user.avatar_url')),
+                        ->label(__('core::user.avatar_url')),
 
                     TextInput::make('name')
                         ->label(__('core::common.name'))

@@ -3,10 +3,10 @@
 namespace Moox\User\Resources\UserResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
-use Moox\User\Resources\UserResource;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\User\Models\User;
+use Moox\User\Resources\UserResource;
 
 class ListUsers extends ListRecords
 {

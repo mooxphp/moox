@@ -371,7 +371,7 @@ class SyncResource extends Resource
                         ->visible(fn ($get) => $get('has_errors')),
 
                     TextInput::make('title')
-                        	->label(__('core::sync.title'))
+                        ->label(__('core::sync.title'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -506,7 +506,7 @@ class SyncResource extends Resource
         return number_format(static::getModel()::count());
     }
 
-   public static function getNavigationGroup(): ?string
+    public static function getNavigationGroup(): ?string
     {
         return config('sync.navigation_group');
     }
@@ -516,4 +516,3 @@ class SyncResource extends Resource
         return config('sync.navigation_sort') + 1;
     }
 }
-

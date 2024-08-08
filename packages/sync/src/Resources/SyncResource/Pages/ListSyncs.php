@@ -2,11 +2,11 @@
 
 namespace Moox\Sync\Resources\SyncResource\Pages;
 
-use Moox\Sync\Models\Sync;
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
-use Moox\Sync\Resources\SyncResource;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Sync\Models\Sync;
+use Moox\Sync\Resources\SyncResource;
 
 class ListSyncs extends ListRecords
 {

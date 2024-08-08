@@ -65,7 +65,6 @@ return [
     'email' => 'Email',
     'website' => 'Website',
 
-
     // Time matters
     'execution_time' => 'Total Execution Time',
     'average_time' => 'Average Execution Time',
