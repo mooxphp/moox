@@ -2,13 +2,16 @@
 
 namespace Moox\Sync\Resources\SyncResource\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Moox\Sync\Models\Sync;
+use Filament\Actions\CreateAction;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Sync\Resources\SyncResource;
+use Filament\Resources\Pages\ListRecords;
 
 class ListSyncs extends ListRecords
 {
+    use HasDynamicTabs;
+
     public static string $resource = SyncResource::class;
 
     public function getActions(): array
@@ -29,5 +32,10 @@ class ListSyncs extends ListRecords
                     return $model::create($data);
                 }),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('sync.sync.tabs', Sync::class);
     }
 }

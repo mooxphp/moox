@@ -40,10 +40,10 @@ class PlatformResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('name')
+                        ->label(__('core::sync.name'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->unique(ignoreRecord: true)
-                        ->placeholder('Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -51,10 +51,10 @@ class PlatformResource extends Resource
                         ]),
 
                     TextInput::make('domain')
+                        ->label(__('core::common.domain'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->unique(ignoreRecord: true)
-                        ->placeholder('Domain')
                         ->live(debounce: 500)
                         ->afterStateUpdated(function ($state, callable $set) {
                             if (empty($state)) {
@@ -71,9 +71,9 @@ class PlatformResource extends Resource
                         ]),
 
                     TextInput::make('ip_address')
+                        ->label(__('core::common.ip_address'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('IP Address')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -81,10 +81,10 @@ class PlatformResource extends Resource
                         ]),
 
                     FileUpload::make('thumbnail')
+                        ->label(__('core::common.thumbnail'))
                         ->rules(['file'])
                         ->nullable()
                         ->image()
-                        ->placeholder('Thumbnail')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -92,10 +92,10 @@ class PlatformResource extends Resource
                         ]),
 
                     TextInput::make('api_token')
+                        ->label(__('core::sync.api_token'))
                         ->rules(['max:80'])
                         ->unique(ignoreRecord: true)
                         ->nullable()
-                        ->placeholder('Api Token')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -103,13 +103,14 @@ class PlatformResource extends Resource
                         ])
                         ->suffixAction(
                             Action::make('generateToken')
-                                ->label('Generate Token')
+                                ->label(__('core::sync.generate_token'))
                                 ->icon('gmdi-generating-tokens')
                                 ->action('generateToken')
                                 ->hidden(fn ($livewire) => $livewire instanceof ViewRecord)
                         ),
 
                     Toggle::make('master')
+                        ->label(__('core::common.master'))
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -128,6 +129,7 @@ class PlatformResource extends Resource
                                     $set('master', false);
                                     Notification::make()
                                         ->title('Sync Error')
+                                        ->label(__('core::sync.sync_error'))
                                         ->body('There can only be one master platform.')
                                         ->danger()
                                         ->send();
@@ -136,6 +138,7 @@ class PlatformResource extends Resource
                         }),
 
                     Toggle::make('locked')
+                        ->label(__('core::sync.locked'))
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -151,6 +154,7 @@ class PlatformResource extends Resource
                         }),
 
                     TextInput::make('lock_reason')
+                        ->label(__('core::sync.lock_reason'))
                         ->rules(['max:255'])
                         ->nullable()
                         ->label('Reason')
@@ -162,6 +166,7 @@ class PlatformResource extends Resource
                         ->visible(fn ($get) => $get('locked')),
 
                     Toggle::make('show_in_menu')
+                        ->label(__('core::common.show_in_menu'))
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -177,10 +182,10 @@ class PlatformResource extends Resource
                         }),
 
                     TextInput::make('order')
+                        ->label(__('core::common.order'))
                         ->rules(['max:255'])
                         ->nullable()
                         ->unique(ignoreRecord: true)
-                        ->placeholder('Order')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -198,43 +203,50 @@ class PlatformResource extends Resource
             ->poll('60s')
             ->columns([
                 ImageColumn::make('thumbnail')
+                    ->label(__('core::common.thumbnail'))
                     ->toggleable()
                     ->label('')
                     ->square(),
                 TextColumn::make('name')
+                    ->label(__('core::sync.name'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('domain')
+                    ->label(__('core::common.domain'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
                 IconColumn::make('master')
+                    ->label(__('core::common.master'))
                     ->toggleable()
                     ->sortable()
                     ->boolean(),
                 IconColumn::make('locked')
+                    ->label(__('core::sync.locked'))
                     ->toggleable()
                     ->sortable()
                     ->boolean(),
                 IconColumn::make('api_token')
+                    ->label(__('core::sync.api_token'))
                     ->boolean()
                     ->sortable()
-                    ->label('Token')
                     ->toggleable(),
                 IconColumn::make('show_in_menu')
+                    ->label(__('core::common.show_in_menu'))
                     ->toggleable()
                     ->sortable()
-                    ->label('Menu')
                     ->boolean(),
                 TextColumn::make('order')
+                    ->label(__('core::common.order'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('created_at')
+                    ->label(__('core::common.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)

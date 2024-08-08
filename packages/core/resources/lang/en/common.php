@@ -49,6 +49,22 @@ return [
     'valid' => 'Valid',
     'type' => 'Type',
     'data' => 'Data',
+    'interval' => 'Interval',
+    'has_errors' => 'Has Errors',
+    'error_message' => 'Error Message',
+    'domain' => 'Domain',
+    'ip_address' => 'IP Address',
+    'thumbnail' => 'Thumbnail',
+    'master' => 'Master',
+    'show_in_menu' => 'Show in Menu',
+    'order' => 'Order',
+    'roles' => 'Roles',
+    'gender' => 'Gender',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'email' => 'Email',
+    'website' => 'Website',
+
 
     // Time matters
     'execution_time' => 'Total Execution Time',
@@ -75,5 +91,6 @@ return [
     'expires_at' => 'Expires at',
     'used_at' => 'Used at',
     'read_at' => 'Read_at',
+    'email_verified_at' => 'Email verified at',
 
 ];
