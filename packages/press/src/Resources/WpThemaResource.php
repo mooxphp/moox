@@ -44,7 +44,7 @@ class WpThemaResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('termTaxonomies', function ($query) {
+            ->whereHas('termTaxonomy', function ($query) {
                 $query->where('taxonomy', 'thema');
             });
     }

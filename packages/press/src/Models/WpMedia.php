@@ -48,7 +48,6 @@ class WpMedia extends WpPost
         $wpslug = config('press.wordpress_slug');
         $wpslug = ltrim($wpslug, $wpslug[0]);
 
-        // Todo: Check if the file exists
         // Todo: Check if the file is an image
         // Todo: Read wp-config.php to get the upload path
 

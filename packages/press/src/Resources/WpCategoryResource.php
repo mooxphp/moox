@@ -14,7 +14,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpCategoryResource\Pages;
 
@@ -42,14 +41,6 @@ class WpCategoryResource extends Resource
     }
 
     protected static ?string $navigationGroup = 'Moox Press';
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->whereHas('termTaxonomy', function ($query) {
-                $query->where('taxonomy', 'category');
-            });
-    }
 
     public static function form(Form $form): Form
     {
