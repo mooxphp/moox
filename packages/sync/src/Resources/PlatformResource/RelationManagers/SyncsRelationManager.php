@@ -29,8 +29,8 @@ class SyncsRelationManager extends RelationManager
         return $form->schema([
             Section::make()->schema([
                 TextInput::make('syncable_id')
+                    ->label(__('core::sync.syncable_id'))
                     ->rules(['max:255'])
-                    ->placeholder('Syncable Id')
                     ->columnSpan([
                         'default' => 12,
                         'md' => 12,
@@ -38,8 +38,8 @@ class SyncsRelationManager extends RelationManager
                     ]),
 
                 TextInput::make('syncable_type')
+                    ->label(__('core::sync.syncable_type'))
                     ->rules(['max:255', 'string'])
-                    ->placeholder('Syncable Type')
                     ->columnSpan([
                         'default' => 12,
                         'md' => 12,
@@ -47,10 +47,10 @@ class SyncsRelationManager extends RelationManager
                     ]),
 
                 Select::make('source_platform_id')
+                    ->label(__('core::sync.source_platform_id'))
                     ->rules(['exists:platforms,id'])
                     ->relationship('sourcePlatform', 'title')
                     ->searchable()
-                    ->placeholder('Source Platform')
                     ->columnSpan([
                         'default' => 12,
                         'md' => 12,
@@ -58,8 +58,8 @@ class SyncsRelationManager extends RelationManager
                     ]),
 
                 DatePicker::make('last_sync')
+                    ->label(__('core::sync.last_sync'))
                     ->rules(['date'])
-                    ->placeholder('Last Sync')
                     ->columnSpan([
                         'default' => 12,
                         'md' => 12,
@@ -73,18 +73,21 @@ class SyncsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('syncable_id')->limit(50),
-                TextColumn::make('syncable_type')->limit(50),
-                TextColumn::make('sourcePlatform.name')->limit(
-                    50
-                ),
-                TextColumn::make('targetPlatform.name')->limit(
-                    50
-                ),
-                TextColumn::make('last_sync')->date(),
+                TextColumn::make('syncable_id')->limit(50)
+                    ->label(__('core::sync.syncable_id')),
+                TextColumn::make('syncable_type')->limit(50)
+                    ->label(__('core::sync.syncable_type')),
+                TextColumn::make('sourcePlatform.name')->limit(50)
+                    ->label(__('core::sync.source_platform.sync.name')),
+                TextColumn::make('targetPlatform.name')->limit(50)
+                    ->label(__('core::sync.target_platform.sync.name')),
+                TextColumn::make('last_sync')->date()
+                    ->label(__('core::sync.last_sync')),
+
             ])
             ->filters([
                 Filter::make('created_at')
+                    ->label(__('core::common.created_at'))
                     ->form([
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
@@ -116,10 +119,12 @@ class SyncsRelationManager extends RelationManager
                     }),
 
                 SelectFilter::make('source_platform_id')
+                    ->label(__('core::sync.source_platform_id'))
                     ->multiple()
                     ->relationship('sourcePlatform', 'title'),
 
                 SelectFilter::make('target_platform_id')
+                    ->label(__('core::sync.target_platform_id'))
                     ->multiple()
                     ->relationship('targetPlatform', 'title'),
             ])

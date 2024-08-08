@@ -95,6 +95,7 @@ class SyncResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     Toggle::make('status')
+                        ->label(__('core::common.status'))
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -107,10 +108,10 @@ class SyncResource extends Resource
                         }),
 
                     Select::make('source_platform_id')
+                        ->label(__('core::sync.source_platform_id'))
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('sourcePlatform', 'name')
-                        ->placeholder('Source Platform')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -125,8 +126,8 @@ class SyncResource extends Resource
                                 $set('source_platform_id', null);
 
                                 Notification::make()
-                                    ->title('Sync Error')
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->title(__('core::sync.sync_error'))
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -135,6 +136,7 @@ class SyncResource extends Resource
                         }),
 
                     TextInput::make('source_model')
+                        ->label(__('core::sync.source_model'))
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
@@ -152,7 +154,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -161,10 +163,10 @@ class SyncResource extends Resource
                         }),
 
                     Select::make('target_platform_id')
+                        ->label(__('core::sync.target_platform_id'))
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('targetPlatform', 'name')
-                        ->placeholder('Target Platform')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -180,7 +182,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -189,6 +191,7 @@ class SyncResource extends Resource
                         }),
 
                     TextInput::make('target_model')
+                        ->label(__('core::sync.target_model'))
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
@@ -206,7 +209,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body('Source and Target Platform cannot be the same with the same model.')
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -215,8 +218,8 @@ class SyncResource extends Resource
                         }),
 
                     TextInput::make('interval')
+                        ->label(__('core::common.interval'))
                         ->rules(['integer'])
-                        ->placeholder('Interval')
                         ->default(60)
                         ->suffix(fn ($get) => $get('interval') == 1 ? 'minute' : 'minutes')
                         ->columnSpan([
@@ -230,6 +233,7 @@ class SyncResource extends Resource
                         }),
 
                     Toggle::make('use_platform_relations')
+                        ->label(__('core::sync.use_platform_relations'))
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -241,6 +245,7 @@ class SyncResource extends Resource
                         }),
 
                     Select::make('if_exists')
+                        ->label(__('core::sync.if_exists'))
                         ->options([
                             'update' => 'Update',
                             'skip' => 'Skip',
@@ -255,6 +260,7 @@ class SyncResource extends Resource
                         ]),
 
                     Select::make('filter_ids')
+                        ->label(__('core::sync.filter_ids'))
                         ->options([
                             'sync_all_records' => 'Sync all records',
                             'sync_only_ids' => 'Sync these IDs only',
@@ -266,12 +272,14 @@ class SyncResource extends Resource
                             'lg' => 12,
                         ])
                         ->default('sync_all_records')
+                        ->label(__('core::sync.sync_all_records'))
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             self::updateTitle($set, $get);
                         }),
 
                     TextInput::make('sync_only_ids')
+                        ->label(__('core::sync.sync_only_ids'))
                         ->rules(['array'])
                         ->columnSpan([
                             'default' => 12,
@@ -285,6 +293,7 @@ class SyncResource extends Resource
                         }),
 
                     TextInput::make('ignore_ids')
+                        ->label(__('core::sync.ingnore_ids'))
                         ->rules(['array'])
                         ->columnSpan([
                             'default' => 12,
@@ -298,6 +307,7 @@ class SyncResource extends Resource
                         }),
 
                     Toggle::make('sync_all_fields')
+                        ->label(__('core::sync.sync_all_fields'))
                         ->default(true)
                         ->columnSpan([
                             'default' => 12,
@@ -310,6 +320,7 @@ class SyncResource extends Resource
                         }),
 
                     KeyValue::make('field_mappings')
+                        ->label(__('core::sync.field_mappings'))
                         ->rules(['array'])
                         ->columnSpan([
                             'default' => 12,
@@ -323,6 +334,7 @@ class SyncResource extends Resource
                         }),
 
                     TextInput::make('use_transformer_class')
+                        ->label(__('core::sync.use_transformer_class'))
                         ->rules(['max:255'])
                         ->columnSpan([
                             'default' => 12,
@@ -335,6 +347,7 @@ class SyncResource extends Resource
                         }),
 
                     Toggle::make('has_errors')
+                        ->label(__('core::common.has_errors'))
                         ->rules(['boolean'])
                         ->columnSpan([
                             'default' => 12,
@@ -344,6 +357,7 @@ class SyncResource extends Resource
                         ->reactive(),
 
                     TextInput::make('error_message')
+                        ->label(__('core::common.error_message'))
                         ->rules(['max:255'])
                         ->columnSpan([
                             'default' => 12,
@@ -353,9 +367,9 @@ class SyncResource extends Resource
                         ->visible(fn ($get) => $get('has_errors')),
 
                     TextInput::make('title')
+                        ->label(__('core::sync.title'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Title')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -367,8 +381,8 @@ class SyncResource extends Resource
                         ->reactive(),
 
                     DatePicker::make('last_sync')
+                        ->label(__('core::sync.last_sync'))
                         ->rules(['date'])
-                        ->placeholder('Last Sync')
                         ->disabled()
                         ->columnSpan([
                             'default' => 12,
@@ -387,55 +401,58 @@ class SyncResource extends Resource
             ->poll('60s')
             ->columns([
                 TextColumn::make('sourcePlatformAndModel')
-                    ->label('Source')
+                    ->label(__('core::sync.source_plaform_and_model'))
                     ->toggleable()
                     ->getStateUsing(function ($record) {
                         return "{$record->sourcePlatform->name} ({$record->source_model})";
                     })
                     ->limit(50),
                 TextColumn::make('targetPlatformAndModel')
-                    ->label('Target')
+                    ->label(__('core::sync.target_plaform_and_model'))
                     ->toggleable()
                     ->getStateUsing(function ($record) {
                         return "{$record->targetPlatform->name} ({$record->target_model})";
                     })
                     ->limit(50),
                 IconColumn::make('use_platform_relations')
-                    ->label('Related')
+                    ->label(__('core::sync.use_platforms_relations'))
                     ->toggleable()
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->getStateUsing(fn ($record) => $record->use_platform_relations),
                 IconColumn::make('filter_ids')
-                    ->label('Filtered')
+                    ->label(__('core::sync.filter_ids'))
                     ->toggleable()
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->getStateUsing(fn ($record) => empty($record->field_mappings)),
                 IconColumn::make('sync_all_fields')
-                    ->label('Mapped')
+                    ->label(__('core::sync.sync_all_fields'))
                     ->toggleable()
                     ->boolean()
                     ->getStateUsing(fn ($record) => ! $record->sync_all_fields),
                 IconColumn::make('has_errors')
-                    ->label('Error')
+                    ->label(__('core::common.has_errors'))
                     ->toggleable()
                     ->boolean(),
                 TextColumn::make('last_sync')
+                    ->label(__('core::sync.last_sync'))
                     ->toggleable()
                     ->date()
                     ->since(),
             ])
             ->filters([
                 SelectFilter::make('source_platform_id')
+                    ->label(__('core::sync.source_platform_id'))
                     ->relationship('sourcePlatform', 'name')
                     ->indicator('Platform')
                     ->multiple()
                     ->label('Platform'),
 
                 SelectFilter::make('target_platform_id')
+                    ->label(__('core::sync.target_platform_id'))
                     ->relationship('targetPlatform', 'name')
                     ->indicator('Platform')
                     ->multiple()
@@ -457,22 +474,22 @@ class SyncResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('sync::translations.single');
+        return config('sync.sync.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('sync::translations.plural');
+        return config('sync.sync.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('sync::translations.navigation_label');
+        return config('sync.sync.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('sync::translations.breadcrumb');
+        return config('sync.sync.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -487,11 +504,11 @@ class SyncResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('sync::translations.navigation_group');
+        return config('sync.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('sync.navigation_sort');
+        return config('sync.navigation_sort') + 1;
     }
 }

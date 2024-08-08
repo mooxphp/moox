@@ -22,9 +22,9 @@ class NotificationWidgets extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('notifications::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('notifications::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('notifications::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::sync.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::sync.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::sync.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }
