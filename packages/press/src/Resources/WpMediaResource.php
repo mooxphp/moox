@@ -9,12 +9,10 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Table;
 use Moox\Press\Models\WpMedia;
@@ -297,70 +295,22 @@ class WpMediaResource extends Resource
                     ImageColumn::make('asset')
                         ->label('Thumbnail')
                         ->square()
-                        ->size('100%')
-                        ->url(fn ($record) => $record->getAssetAttribute()),
-                    Panel::make([
-                        Stack::make([
-                            Tables\Columns\TextColumn::make('post_author')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('post_date')
-                                ->toggleable()
-                                ->dateTime(),
-                            Tables\Columns\TextColumn::make('post_date_gmt')
-                                ->toggleable()
-                                ->dateTime(),
-                            Tables\Columns\TextColumn::make('post_content')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('post_title')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('post_excerpt')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('post_status')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('post_name')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('post_modified')
-                                ->toggleable()
-                                ->dateTime(),
-                            Tables\Columns\TextColumn::make('post_modified_gmt')
-                                ->toggleable()
-                                ->dateTime(),
-                            Tables\Columns\TextColumn::make('post_content_filtered')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                            Tables\Columns\TextColumn::make('guid')
-                                ->toggleable()
-                                ->searchable()
-                                ->limit(50),
-                        ]),
-                    ])->collapsible()->collapsed(false),
-                ])->space(3),
+                        ->size('100%'),
+                    //->url(fn ($record) => $record->getAssetAttribute()),
+                ]),
             ])
             ->contentGrid([
-                'md' => 2,
-                'xl' => 3,
+                'md' => 3,
+                'xl' => 4,
             ])
             ->paginated([
                 18,
                 36,
                 72,
                 'all',
-            ])
-            ->actions([ViewAction::make(), EditAction::make()])
-            ->bulkActions([DeleteBulkAction::make()]);
+            ]);
+        //->actions([ViewAction::make(), EditAction::make()]);
+        //->bulkActions([DeleteBulkAction::make()]);
     }
 
     public static function getRelations(): array
