@@ -300,13 +300,14 @@ class WpMediaResource extends Resource
                 ]),
             ])
             ->contentGrid([
-                'md' => 3,
-                'xl' => 4,
+                'md' => 4,
+                'xl' => 6,
             ])
             ->paginated([
-                18,
-                36,
-                72,
+                12,
+                24,
+                48,
+                96,
                 'all',
             ]);
         //->actions([ViewAction::make(), EditAction::make()]);

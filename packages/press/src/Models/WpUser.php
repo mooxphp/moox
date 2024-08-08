@@ -74,6 +74,7 @@ class WpUser extends Authenticatable implements FilamentUser
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'users';
         $this->metatable = $this->wpPrefix.'usermeta';
+        $this->appends[] = $this->wpPrefix.'capabilities';
     }
 
     protected static function boot()
