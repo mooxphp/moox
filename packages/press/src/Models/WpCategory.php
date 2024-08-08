@@ -9,18 +9,13 @@ class WpCategory extends WpTerm
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'term_group'];
+    protected $fillable = ['name', 'slug', 'term_group', 'description', 'parent'];
 
     protected $appends = [
         'taxonomy',
         'description',
         'parent',
         'count',
-    ];
-
-    protected $casts = [
-        'term_id' => 'integer',
-        'term_group' => 'integer',
     ];
 
     protected $searchableFields = ['*'];
@@ -45,18 +40,23 @@ class WpCategory extends WpTerm
         parent::boot();
 
         static::addGlobalScope('category', function (Builder $builder) {
-
             $builder->whereHas('termTaxonomy', function ($query) {
                 $query->where('taxonomy', 'category');
             });
-
         });
 
         static::created(function ($wpCategory) {
             $wpCategory->termTaxonomy()->create([
                 'taxonomy' => 'category',
-                'description' => $wpCategory->description ?? '',
-                'parent' => $wpCategory->parent ?? 0,
+                'description' => $wpCategory->attributes['description'] ?? '',
+                'parent' => $wpCategory->attributes['parent'] ?? 0,
+            ]);
+        });
+
+        static::updated(function ($wpCategory) {
+            $wpCategory->termTaxonomy()->update([
+                'description' => $wpCategory->attributes['description'] ?? '',
+                'parent' => $wpCategory->attributes['parent'] ?? 0,
             ]);
         });
     }
@@ -68,7 +68,7 @@ class WpCategory extends WpTerm
 
     public function getTaxonomyAttribute()
     {
-        return $this->termTaxonomy->taxonomy ?? '';
+        return $this->termTaxonomy->taxonomy ?? 'category';
     }
 
     public function setTaxonomyAttribute($value)
@@ -83,7 +83,7 @@ class WpCategory extends WpTerm
 
     public function setDescriptionAttribute($value)
     {
-        $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
+        $this->termTaxonomy()->updateOrCreate([], ['description' => $value]);
     }
 
     public function getParentAttribute()
@@ -98,7 +98,7 @@ class WpCategory extends WpTerm
 
     public function getCountAttribute()
     {
-        return $this->termTaxonomy->count ?? '';
+        return $this->termTaxonomy->count ?? 0;
     }
 
     public function setCountAttribute($value)
