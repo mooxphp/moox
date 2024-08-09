@@ -367,7 +367,7 @@ class SyncResource extends Resource
                         ->visible(fn ($get) => $get('has_errors')),
 
                     TextInput::make('title')
-                        ->label(__('core::sync.title'))
+                        ->label(__('core::common.title'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([

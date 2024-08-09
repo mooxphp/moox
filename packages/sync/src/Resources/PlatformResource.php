@@ -305,11 +305,11 @@ class PlatformResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('sync::translations.navigation_group');
+        return config('sync.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('sync.navigation_sort') + 1;
+        return config('sync.navigation_sort') + 2;
     }
 }
