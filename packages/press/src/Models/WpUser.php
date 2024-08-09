@@ -5,16 +5,28 @@ namespace Moox\Press\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Moox\Press\Database\Factories\WpUserFactory;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
 use Moox\Press\Traits\UserMetaAttributes;
 
+/**
+ * @property int $ID
+ * @property string $user_login
+ * @property string $user_nicename
+ * @property string $user_email
+ * @property \Illuminate\Database\Eloquent\Collection $userMeta
+ */
 class WpUser extends Authenticatable implements FilamentUser
 {
-    use Notifiable, UserMetaAttributes;
+    use HasFactory;
+    use Notifiable;
+    use UserMetaAttributes;
 
     protected $fillable = [
         'user_login',
@@ -28,6 +40,8 @@ class WpUser extends Authenticatable implements FilamentUser
         'display_name',
     ];
 
+    protected $searchableFields = ['*'];
+
     protected $wpPrefix;
 
     protected $table;
@@ -40,14 +54,18 @@ class WpUser extends Authenticatable implements FilamentUser
 
     protected $tempMetaAttributes = [];
 
-    protected $metaDataToSave = [];
-
     protected $appends = [
         'nickname',
         'first_name',
         'last_name',
         'description',
-        'capabilities',
+        'created_at',
+        'updated_at',
+        'session_tokens',
+        'remember_token',
+        'email_verified_at',
+        'mm_sua_attachment_id',
+        'moox_user_attachment_id',
     ];
 
     public function __construct(array $attributes = [])
@@ -63,7 +81,7 @@ class WpUser extends Authenticatable implements FilamentUser
         parent::boot();
 
         static::created(function ($model) {
-            $model->addDefaultMetaFields();
+            $model->addOrUpdateMeta('created_at', now()->toDateTimeString());
         });
 
         static::updated(function ($model) {
@@ -71,21 +89,19 @@ class WpUser extends Authenticatable implements FilamentUser
         });
 
         static::deleted(function ($model) {
-            if ($model->ID) {
-                $model->userMeta()->delete();
-            }
+            $model->userMeta()->delete();
         });
 
         static::addGlobalScope('addAttributes', function (Builder $builder) {
             $builder->addSelect([
                 'ID',
+                'ID as id',
                 'user_login',
-                'user_nicename',
+                'user_login as name',
                 'user_email',
-                'user_url',
-                'user_registered',
-                'user_activation_key',
-                'user_status',
+                'user_email as email',
+                'user_pass',
+                'user_pass as password',
                 'display_name',
             ]);
         });
@@ -102,7 +118,14 @@ class WpUser extends Authenticatable implements FilamentUser
 
     protected $casts = [
         'user_registered' => 'datetime',
+        'spam' => 'boolean',
+        'deleted' => 'boolean',
     ];
+
+    protected static function newFactory(): Factory
+    {
+        return WpUserFactory::new();
+    }
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -114,82 +137,59 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
+    public function getAllMetaAttributes()
+    {
+        $metas = $this->userMeta->pluck('meta_value', 'meta_key')->toArray();
+        foreach ($metas as $key => $value) {
+            $metas[$key] = $this->getMeta($key);
+        }
+
+        return $metas;
+    }
+
     public function meta($key)
     {
-        if (Str::startsWith($key, 'wp_')) {
+        if (! Str::startsWith($key, $this->wpPrefix)) {
             $key = "{$this->wpPrefix}{$key}";
         }
 
-        $meta = $this->userMeta()->where('meta_key', $key)->first();
-
-        return $meta ? $meta->meta_value : null;
+        return $this->getMeta($key);
     }
 
-    public function addOrUpdateMeta($key, $value)
+    public function fill(array $attributes)
     {
-        if (Str::startsWith($key, 'wp_')) {
-            $key = str_replace('wp_', $this->wpPrefix, $key);
-        }
+        $userAttributes = [];
+        $this->tempMetaAttributes = [];
 
-        if (! $this->ID) {
-            $this->metaDataToSave[] = ['key' => $key, 'value' => $value];
-        } else {
-            WpUserMeta::updateOrCreate(
-                ['user_id' => $this->ID, 'meta_key' => $key],
-                ['meta_value' => $value]
-            );
-        }
-    }
-
-    public function getFirstNameAttribute()
-    {
-        return $this->meta('first_name');
-    }
-
-    public function getLastNameAttribute()
-    {
-        return $this->meta('last_name');
-    }
-
-    public function getCapabilitiesAttribute()
-    {
-        $key = "{$this->wpPrefix}_capabilities";
-
-        return $this->meta($key);
-    }
-
-    public function setCapabilitiesAttribute($value)
-    {
-        $key = "{$this->wpPrefix}_capabilities";
-        $this->addOrUpdateMeta($key, $value);
-    }
-
-    public function addDefaultMetaFields()
-    {
-        $defaultMeta = config('press.default_user_meta');
-
-        foreach ($defaultMeta as $key => $value) {
-            /*
-            if ($key === 'wp_capabilities') {
-                $key = "{$this->wpPrefix}_capabilities";
+        foreach ($attributes as $key => $value) {
+            if (in_array($key, $this->fillable)) {
+                $userAttributes[$key] = $value;
+            } else {
+                $this->tempMetaAttributes[$key] = $value;
             }
-            */
-
-            $this->addOrUpdateMeta($key, $value);
         }
+
+        parent::fill($userAttributes);
+
+        return $this;
     }
 
     public function save(array $options = [])
     {
         $saved = parent::save($options);
 
-        if ($saved && $this->ID) {
-            foreach ($this->metaDataToSave as $meta) {
-                $this->addOrUpdateMeta($meta['key'], $meta['value']);
-            }
-            $this->metaDataToSave = [];
+        foreach ($this->tempMetaAttributes as $key => $value) {
+            $this->addOrUpdateMeta($key, $value);
         }
 
         return $saved;
+    }
+
+    public function addOrUpdateMeta($key, $value)
+    {
+        WpUserMeta::updateOrCreate(
+            ['user_id' => $this->ID, 'meta_key' => $key],
+            ['meta_value' => $value]
+        );
     }
 }
