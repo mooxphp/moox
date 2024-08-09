@@ -84,7 +84,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::common.users',
+    'navigation_group' => 'trans//core::user.users',
 
     /*
     |--------------------------------------------------------------------------

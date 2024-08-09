@@ -2,18 +2,15 @@
 
 return [
 
-    // Config array - ask me
-    'breadcrumb' => 'Press',
-    'navigation_label' => 'Press',
-    'navigation_group' => 'Press Group',
-
-    // Temp - ask me
-    'totalone' => 'Press One',
-    'totaltwo' => 'Press Two',
-    'totalthree' => 'Press Three',
-
-    // post.php
+    // Press refers to the package name Moox Press, don't translate this
     'press' => 'Press',
+
+    // Posts refers to the posts in the package Moox Press (WordPress)
+    'post' => 'Post',
+
+    // Posts refers to the posts in the package Moox Press (WordPress)
+    'posts' => 'Posts',
+
     'post_author' => 'Post Author',
     'post_date' => 'Post Date',
     'post_date_gmt' => 'Post Date GMT',
@@ -33,13 +30,5 @@ return [
     'post_parent' => 'Post Parent',
     'post_type' => 'Post Type',
     'post_mime_type' => 'Post mime Type',
-
-    // core.php
-    'asset' => 'Asset',
-    'meta_key' => 'Meta Key',
-    'meta_value' => 'Meta Value',
-    'term_taxonomy_id' => 'Term Taxonomy ID',
-    'taxonomy' => 'Taxonomy',
-    'menu_order' => 'Menu Order',
 
 ];

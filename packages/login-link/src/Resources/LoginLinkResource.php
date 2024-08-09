@@ -35,7 +35,7 @@ class LoginLinkResource extends Resource
                     ->label(__('core::common.ip_address'))
                     ->maxLength(255),
                 TextInput::make('user_agent')
-                    ->label(__('core::common.user_agent'))
+                    ->label(__('core::user.user_agent'))
                     ->maxLength(255)
                     ->columnSpan(2),
                 TextInput::make('token')
@@ -47,7 +47,7 @@ class LoginLinkResource extends Resource
                 DateTimePicker::make('used_at')
                     ->label(__('core::common.used_at')),
                 Select::make('user_type')
-                    ->label(__('core::common.user_type'))
+                    ->label(__('core::user.user_type'))
                     ->options(function () {
                         $models = Config::get('login-link.user_models', []);
 
@@ -60,7 +60,7 @@ class LoginLinkResource extends Resource
                     ->required(),
 
                 Select::make('user_id')
-                    ->label(__('core::common.user_id'))
+                    ->label(__('core::user.user_id'))
                     ->options(function ($get) {
                         $userType = $get('user_type');
                         if (! $userType) {
@@ -101,10 +101,10 @@ class LoginLinkResource extends Resource
                     ->since()
                     ->sortable(),
                 TextColumn::make('user_type')
-                    ->label(__('core::common.user_type'))
+                    ->label(__('core::user.user_type'))
                     ->sortable(),
                 TextColumn::make('user_id')
-                    ->label(__('core::common.user_id'))
+                    ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
                         return optional($record->user)->name ?? 'unknown';
                     })

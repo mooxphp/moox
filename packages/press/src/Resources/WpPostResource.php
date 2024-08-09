@@ -131,7 +131,7 @@ class WpPostResource extends Resource
                         ]),
 
                     TextInput::make('comment_status')
-                        ->label(__('core::content.comment_status'))
+                        ->label(__('core::comment.comment_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('open')
@@ -279,7 +279,7 @@ class WpPostResource extends Resource
                         ]),
 
                     TextInput::make('comment_count')
-                        ->label(__('core::content.comment_count'))
+                        ->label(__('core::comment.comment_count'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -328,7 +328,7 @@ class WpPostResource extends Resource
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_count')
-                    ->label(__('core::content.comment_count'))
+                    ->label(__('core::comment.comment_count'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),

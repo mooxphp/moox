@@ -86,7 +86,7 @@ return [
 
     'press_navigation_group' => 'trans//core::content.press',
     'system_navigation_group' => 'trans//core::common.system',
-    'user_navigation_group' => 'trans//core::common.users',
+    'user_navigation_group' => 'trans//core::user.users',
 
     /*
     |--------------------------------------------------------------------------

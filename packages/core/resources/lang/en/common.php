@@ -2,9 +2,6 @@
 
 return [
 
-    // media.php
-    'media' => 'Media',
-
     // page.php
     'page' => 'Page',
     'pages' => 'Pages',
@@ -12,30 +9,13 @@ return [
     // post.php
     'posts' => 'Posts',
 
-    // term.php
-    'category' => 'Category',
-    'categories' => 'Categories',
-    'tags' => 'Tags',
-
-    // comment.php
-    'comment' => 'Comment',
-    'comments' => 'Comments',
-
-    // meta.php
-    'meta' => 'Meta',
-
-    // system.php
-    'system' => 'System',
-
-    // tools.php
-    'tools' => 'Tools',
-
-    // settings.php
-    'setting' => 'Setting',
-    'settings' => 'Settings',
-
-    // users.php
-    'users' => 'Users',
+    // user.php
+    'roles' => 'Roles',
+    'gender' => 'Gender',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'email' => 'Email',
+    'website' => 'Website',
 
     // core.php
     'title' => 'Title',
@@ -73,35 +53,9 @@ return [
     'master' => 'Master',
     'show_in_menu' => 'Show in Menu',
     'order' => 'Order',
-    'roles' => 'Roles',
-    'gender' => 'Gender',
-    'first_name' => 'First Name',
-    'last_name' => 'Last Name',
-    'email' => 'Email',
-    'website' => 'Website',
+    'media' => 'Media',
     'deleted' => 'Deleted',
-    'count' => 'Count',
-    'parent' => 'Parent',
-
-    // user.php
-    'user_agent' => 'User Agent',
-    'user_id' => 'User ID',
-    'user_type' => 'User Model',
-    'username' => 'Username',
-
-    // term.php
-    'term_group' => 'Term Group',
-    'term_id' => 'Term ID',
-    'term_order' => 'Term Order',
-    'spam' => 'Spam',
-
-    // user.php
-    'password_confirmation' => 'Password Confirmation',
-    'current_password' => 'Current Password',
-    'new_password' => 'New Password',
-    'new_password_confirmation' => 'New Password Confirmation',
-
-    // status.php
+    'active' => 'Active',
     'status' => 'Status',
     'failed' => 'Failed',
     'waiting' => 'Waiting',
@@ -109,8 +63,9 @@ return [
     'running' => 'Running',
     'succeeded' => 'Succeeded',
     'progress' => 'Progress',
-
-    // datetime.php
+    'count' => 'Count',
+    'parent' => 'Parent',
+    'spam' => 'Spam',
     'created_at' => 'Created at',
     'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
@@ -125,8 +80,16 @@ return [
     'email_verified_at' => 'Email verified at',
     'execution_time' => 'Total Execution Time',
     'average_time' => 'Average Execution Time',
+    'meta' => 'Meta',
+    'system' => 'System',
+    'tools' => 'Tools',
+    'setting' => 'Setting',
+    'settings' => 'Settings',
+    'category' => 'Category',
+    'categories' => 'Categories',
+    'tags' => 'Tags',
+    'term_group' => 'Term Group',
+    'term_id' => 'Term ID',
+    'term_order' => 'Term Order',
 
-    // comment.php
-    'wp_comment_meta' => 'WP Comment Meta',
-    'wp_comment_metas' => 'WP Comment Metas',
 ];

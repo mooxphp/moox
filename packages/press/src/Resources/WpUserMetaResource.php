@@ -32,7 +32,7 @@ class WpUserMetaResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('user_id')
-                        ->label(__('core::common.user_id'))
+                        ->label(__('core::user.user_id'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -72,7 +72,7 @@ class WpUserMetaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('user_id')
-                    ->label(__('core::common.user_id'))
+                    ->label(__('core::user.user_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

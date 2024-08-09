@@ -132,7 +132,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('comment_status')
-                        ->label(__('core::content.comment_status'))
+                        ->label(__('core::comment.comment_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('open')
@@ -280,7 +280,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('comment_count')
-                        ->label(__('core::content.comment_count'))
+                        ->label(__('core::comment.comment_count'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -333,7 +333,7 @@ class WpPageResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_status')
-                    ->label(__('core::content.comment_status'))
+                    ->label(__('core::comment.comment_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -400,7 +400,7 @@ class WpPageResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_count')
-                    ->label(__('core::content.comment_count'))
+                    ->label(__('core::comment.comment_count'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

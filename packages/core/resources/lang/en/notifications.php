@@ -3,7 +3,9 @@
 return [
 
     'notification' => 'Notification',
+
     'notifications' => 'Notifications',
+
     'breadcrumb' => 'Notification', // nope!
     'title' => 'Notification', // nope!
     'navigation_label' => 'Notification', // nope!

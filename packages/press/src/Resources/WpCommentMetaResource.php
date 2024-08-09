@@ -30,7 +30,7 @@ class WpCommentMetaResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('comment_id')
-                        ->label(__('core::content.comment_id'))
+                        ->label(__('core::comment.comment_id'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -70,7 +70,7 @@ class WpCommentMetaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('comment_id')
-                    ->label(__('core::content.comment_id'))
+                    ->label(__('core::comment.comment_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -106,22 +106,22 @@ class WpCommentMetaResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('core::common.wp_comment_meta');
+        return __('core::comment.wp_comment_meta');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('core::common.wp_comment_metas');
+        return __('core::comment.wp_comment_metas');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('core::common.wp_comment_metas');
+        return __('core::comment.wp_comment_metas');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('core::common.wp_comment_meta');
+        return __('core::comment.wp_comment_meta');
     }
 
     public static function getNavigationGroup(): ?string
