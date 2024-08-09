@@ -4,10 +4,13 @@ namespace Moox\Press\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Traits\RequestInModel;
 
 class WpTerm extends Model
 {
-    use HasFactory;
+    use HasFactory, RequestInModel;
+
+    protected $taxonomy = 'term';
 
     protected $fillable = [
         'name',
@@ -41,6 +44,45 @@ class WpTerm extends Model
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'terms';
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($wpTerm) {
+
+            $taxonomy = $wpTerm->taxonomy;
+            $description = $wpTerm->getRequestData('description') ?? '';
+            $parent = $wpTerm->getRequestData('parent') ?? 0;
+            $count = $wpTerm->getRequestData('count') ?? 0;
+
+            $wpTerm->termTaxonomy()->create([
+                'taxonomy' => $taxonomy,
+                'description' => $description,
+                'parent' => $parent,
+                'count' => $count,
+            ]);
+        });
+
+        static::updated(function ($wpTerm) {
+
+            $taxonomy = $wpTerm->taxonomy;
+            $description = $wpTerm->getRequestData('description') ?? $wpTerm->getOriginal('description') ?? '';
+            $parent = $wpTerm->getRequestData('parent') ?? $wpTerm->getOriginal('parent') ?? 0;
+            $count = $wpTerm->getRequestData('count') ?? $wpTerm->getOriginal('count') ?? 0;
+
+            $wpTerm->termTaxonomy()->update([
+                'taxonomy' => $taxonomy,
+                'description' => $description,
+                'parent' => $parent,
+                'count' => $count,
+            ]);
+        });
+
+        static::deleting(function ($wpTerm) {
+            $wpTerm->termTaxonomy()->delete();
+        });
     }
 
     public function termTaxonomy()

@@ -12,16 +12,12 @@ trait RequestInModel
         $components = Request::input('components', []);
 
         if (empty($components)) {
-            Log::warning('Request components are missing or empty.');
+            Log::error('RequestInModel failed: Request components are missing or empty.');
 
             return null;
         }
 
         $firstComponent = $components[0] ?? [];
-
-        if (! isset($firstComponent['updates']["data.$key"])) {
-            Log::warning("Request key '$key' not found in updates.");
-        }
 
         return $firstComponent['updates']["data.$key"] ?? null;
     }
