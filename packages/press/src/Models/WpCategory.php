@@ -3,9 +3,13 @@
 namespace Moox\Press\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Request;
+use Moox\Core\Traits\RequestInModel;
 
 class WpCategory extends WpTerm
 {
+    use RequestInModel;
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
@@ -23,52 +27,32 @@ class WpCategory extends WpTerm
             });
         });
 
-        /*
-
-        static::updating(function ($wpCategory) {
-            $relatedFieldsChanged = $wpCategory->isRelatedFieldDirty();
-
-            dd('Rel '.$relatedFieldsChanged);
-
-            if ($relatedFieldsChanged) {
-                // If a related field has changed, we can update the related table
-                $wpCategory->updateRelatedFields();
-            }
-        });
-
-        */
-
         static::created(function ($wpCategory) {
+
+            $description = $wpCategory->getRequestData('description') ?? '';
+            $parent = $wpCategory->getRequestData('parent') ?? 0;
+            $count = $wpCategory->getRequestData('count') ?? 0;
+
+            // Todo: fallback to the original values if the request data is empty
+            // Todo: fallback to the config values if both are empty
+
             $wpCategory->termTaxonomy()->create([
                 'taxonomy' => 'category',
-                'description' => $wpCategory->description ?? '',
-                'parent' => $wpCategory->getOriginal('parent') ?? 0,
-                'count' => $wpCategory->getOriginal('count') ?? 0,
+                'description' => $description,
+                'parent' => $parent,
+                'count' => $count,
             ]);
         });
 
         static::updated(function ($wpCategory) {
+
+            // Todo: implement the same logic as in the created event?
+
             $wpCategory->termTaxonomy()->update([
-                'description' => $wpCategory->description ?? '',
-                'parent' => $wpCategory->getOriginal('parent') ?? 0,
-                'count' => $wpCategory->getOriginal('count') ?? 0,
+                'description' => Request::input('description') ?? '',
+                'parent' => Request::input('parent') ?? 0,
+                'count' => Request::input('count') ?? 0,
             ]);
         });
-    }
-
-    public function isRelatedFieldDirty()
-    {
-        return $this->description !== $this->getOriginal('description') ||
-               $this->parent !== $this->getOriginal('parent') ||
-               $this->count !== $this->getOriginal('count');
-    }
-
-    public function updateRelatedFields()
-    {
-        $this->termTaxonomy()->update([
-            'description' => $this->description,
-            'parent' => $this->parent,
-            'count' => $this->count,
-        ]);
     }
 }

@@ -70,21 +70,29 @@ class WpTerm extends Model
 
     public function setTaxonomyAttribute($value)
     {
-        $this->termTaxonomy->taxonomy = $value;
+        if ($this->term_id) {
+            $this->termTaxonomy()->updateOrCreate([], ['taxonomy' => $value]);
+        }
     }
 
     public function setDescriptionAttribute($value)
     {
-        $this->termTaxonomy->description = $value;
+        if ($this->term_id) {
+            $this->termTaxonomy()->updateOrCreate([], ['description' => $value]);
+        }
     }
 
     public function setParentAttribute($value)
     {
-        $this->termTaxonomy->parent = $value;
+        if ($this->term_id) {
+            $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
+        }
     }
 
     public function setCountAttribute($value)
     {
-        $this->termTaxonomy->count = $value;
+        if ($this->term_id) {
+            $this->termTaxonomy()->updateOrCreate([], ['count' => $value]);
+        }
     }
 }
