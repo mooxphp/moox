@@ -50,14 +50,7 @@ class WpUser extends Authenticatable implements FilamentUser
         'first_name',
         'last_name',
         'description',
-        'created_at',
-        'updated_at',
         'capabilities',
-        'session_tokens',
-        'remember_token',
-        'email_verified_at',
-        'mm_sua_attachment_id',
-        'moox_user_attachment_id',
     ];
 
     public function __construct(array $attributes = [])
@@ -85,13 +78,13 @@ class WpUser extends Authenticatable implements FilamentUser
         static::addGlobalScope('addAttributes', function (Builder $builder) {
             $builder->addSelect([
                 'ID',
-                'ID as id',
                 'user_login',
-                'user_login as name',
+                'user_nicename',
                 'user_email',
-                'user_email as email',
-                'user_pass',
-                'user_pass as password',
+                'user_url',
+                'user_registered',
+                'user_activation_key',
+                'user_status',
                 'display_name',
             ]);
         });
@@ -108,8 +101,6 @@ class WpUser extends Authenticatable implements FilamentUser
 
     protected $casts = [
         'user_registered' => 'datetime',
-        'spam' => 'boolean',
-        'deleted' => 'boolean',
     ];
 
     protected static function newFactory(): Factory
@@ -127,68 +118,37 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
-    public function getAllMetaAttributes()
-    {
-        $metas = $this->userMeta->pluck('meta_value', 'meta_key')->toArray();
-
-        foreach ($metas as $key => $value) {
-            $metas[$key] = $this->getMeta($key);
-        }
-
-        return $metas;
-    }
-
     public function meta($key)
     {
         if (! Str::startsWith($key, $this->wpPrefix)) {
             $key = "{$this->wpPrefix}{$key}";
         }
 
-        return $this->getMeta($key);
+        $meta = $this->userMeta()->where('meta_key', $key)->first();
+
+        return $meta ? $meta->meta_value : null;
     }
 
-    public function fill(array $attributes)
+    public function getFirstNameAttribute()
     {
-        $userAttributes = [];
-        $this->tempMetaAttributes = [];
-
-        foreach ($attributes as $key => $value) {
-            if (in_array($key, $this->fillable)) {
-                $userAttributes[$key] = $value;
-            } else {
-                $this->tempMetaAttributes[$key] = $value;
-            }
-        }
-
-        parent::fill($userAttributes);
-
-        return $this;
+        return $this->meta('first_name');
     }
 
-    public function save(array $options = [])
+    public function getLastNameAttribute()
     {
-        $saved = parent::save($options);
-
-        if ($saved && $this->ID) {
-            foreach ($this->metaDataToSave as $meta) {
-                $this->addOrUpdateMeta($meta['key'], $meta['value']);
-            }
-            $this->metaDataToSave = [];
-        }
-
-        return $saved;
+        return $this->meta('last_name');
     }
 
     public function addOrUpdateMeta($key, $value)
     {
-        if (! $this->ID) {
-            $this->metaDataToSave[] = ['key' => $key, 'value' => $value];
-        } else {
-            WpUserMeta::updateOrCreate(
-                ['user_id' => $this->ID, 'meta_key' => $key],
-                ['meta_value' => $value]
-            );
+        if (! Str::startsWith($key, $this->wpPrefix)) {
+            $key = "{$this->wpPrefix}{$key}";
         }
+
+        WpUserMeta::updateOrCreate(
+            ['user_id' => $this->ID, 'meta_key' => $key],
+            ['meta_value' => $value]
+        );
     }
 
     public function getCapabilitiesAttribute()
@@ -201,7 +161,6 @@ class WpUser extends Authenticatable implements FilamentUser
     public function setCapabilitiesAttribute($value)
     {
         $key = "{$this->wpPrefix}_capabilities";
-
         $this->addOrUpdateMeta($key, $value);
     }
 
