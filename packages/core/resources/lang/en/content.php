@@ -2,16 +2,24 @@
 
 return [
 
+    // press.php
     'press' => 'Press',
+
+    // Config array - ask me
     'breadcrumb' => 'Press',
     'navigation_label' => 'Press',
     'navigation_group' => 'Press Group',
+
+    // Temp - ask me
     'totalone' => 'Press One',
     'totaltwo' => 'Press Two',
     'totalthree' => 'Press Three',
 
+    // meta.php
     'meta_key' => 'Meta Key',
     'meta_value' => 'Meta Value',
+
+    // comment.php
     'comment_id' => 'Comment ID',
     'comment_post_ID' => 'Comment Post ID',
     'comment_author' => 'Comment Author',
@@ -27,7 +35,9 @@ return [
     'comment_parent' => 'Comment Parent',
     'comment_type' => 'Comment Type',
     'comment_status' => 'Comment Status',
+    'comment_count' => 'Comment count',
 
+    // post.php
     'post_author' => 'Post Author',
     'post_date' => 'Post Date',
     'post_date_gmt' => 'Post Date GMT',
@@ -45,20 +55,22 @@ return [
     'post_modified_gmt' => 'Post modified GMT',
     'post_content_filtered' => 'Post Content filtered',
     'post_parent' => 'Post Parent',
-    'guid' => 'Guid',
     'menu_order' => 'Menu Order',
     'post_type' => 'Post Type',
     'post_mime_type' => 'Post mime Type',
-    'comment_count' => 'Comment count',
     'asset' => 'Asset',
 
+    // common.php
+    'guid' => 'Guid',
     'option_name' => 'Option Name',
     'option_value' => 'Option Value',
     'autoload' => 'Autoload',
 
+    // term.php
     'term_taxonomy_id' => 'Term Taxonomy ID',
     'taxonomy' => 'Taxonomy',
 
+    // user.php
     'user_login' => 'User Login',
     'user_nicename' => 'User Nicename',
     'user_email' => 'User Email',

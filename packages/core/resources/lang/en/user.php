@@ -1,12 +1,13 @@
 <?php
 
 return [
+
     'user' => 'User',
     'users' => 'Users',
-    'breadcrumb' => 'User',
-    'title' => 'User',
-    'navigation_label' => 'Users',
-    'navigation_group' => 'Moox User',
+    'breadcrumb' => 'User', // nope!
+    'title' => 'User', // nope!
+    'navigation_label' => 'Users', // nope!
+    'navigation_group' => 'Moox User', // nope!
     'profile_photo_path' => 'Profile Photo Path',
     'avatar_url' => 'Avatar Url',
     'password' => 'Password',

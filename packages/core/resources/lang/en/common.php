@@ -2,24 +2,53 @@
 
 return [
 
-    // Common
+    // dashboard.php
     'dashboard' => 'Dashboard',
     'main' => 'Main',
+
+    // content.php
     'content' => 'Content',
+
+    // media.php
     'media' => 'Media',
+
+    // page.php
+    'page' => 'Page',
     'pages' => 'Pages',
+
+    // post.php
     'posts' => 'Posts',
+
+    // term.php
     'category' => 'Category',
     'categories' => 'Categories',
     'tags' => 'Tags',
+
+    // comment.php
     'comment' => 'Comment',
     'comments' => 'Comments',
+
+    // meta.php
     'meta' => 'Meta',
+
+    // system.php
     'system' => 'System',
+
+    // tools.php
     'tools' => 'Tools',
+
+    // jobs.php
     'jobs' => 'Jobs',
+    'queue' => 'Queue',
+
+    // settings.php
+    'setting' => 'Setting',
     'settings' => 'Settings',
+
+    // users.php
     'users' => 'Users',
+
+    // content.php
     'title' => 'Title',
     'slug' => 'Slug',
     'item' => 'Item',
@@ -28,9 +57,10 @@ return [
     'articles' => 'Articles',
     'tasks' => 'Tasks',
     'id' => 'ID',
-    'delete' => 'Delete',
     'name' => 'Name',
-    'queue' => 'Queue',
+
+    // common.php
+    'delete' => 'Delete',
     'uuid' => 'Uuid',
     'payload' => 'Payload',
     'connection' => 'Connection',
@@ -42,10 +72,14 @@ return [
     'event' => 'Event',
     'properties' => 'Properties',
     'used' => 'Used',
+
+    // user.php
     'user_agent' => 'User Agent',
     'user_id' => 'User ID',
     'user_type' => 'User Model',
     'username' => 'Username',
+
+    // common.php
     'valid' => 'Valid',
     'type' => 'Type',
     'data' => 'Data',
@@ -64,25 +98,23 @@ return [
     'last_name' => 'Last Name',
     'email' => 'Email',
     'website' => 'Website',
-    'term_group' => 'Term Group',
-    'term_id' => 'Term ID',
-    'term_order' => 'Term Order',
     'deleted' => 'Deleted',
-    'spam' => 'Spam',
-
     'count' => 'Count',
     'parent' => 'Parent',
 
+    // term.php
+    'term_group' => 'Term Group',
+    'term_id' => 'Term ID',
+    'term_order' => 'Term Order',
+    'spam' => 'Spam',
+
+    // user.php
     'password_confirmation' => 'Password Confirmation',
     'current_password' => 'Current Password',
     'new_password' => 'New Password',
     'new_password_confirmation' => 'New Password Confirmation',
 
-    // Time matters
-    'execution_time' => 'Total Execution Time',
-    'average_time' => 'Average Execution Time',
-
-    // Status
+    // status.php
     'status' => 'Status',
     'failed' => 'Failed',
     'waiting' => 'Waiting',
@@ -91,7 +123,7 @@ return [
     'succeeded' => 'Succeeded',
     'progress' => 'Progress',
 
-    // at a date
+    // datetime.php
     'created_at' => 'Created at',
     'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
@@ -104,7 +136,10 @@ return [
     'used_at' => 'Used at',
     'read_at' => 'Read_at',
     'email_verified_at' => 'Email verified at',
+    'execution_time' => 'Total Execution Time',
+    'average_time' => 'Average Execution Time',
 
+    // comment.php
     'wp_comment_meta' => 'WP Comment Meta',
     'wp_comment_metas' => 'WP Comment Metas',
 ];
