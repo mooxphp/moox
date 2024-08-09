@@ -37,10 +37,6 @@ return [
     // tools.php
     'tools' => 'Tools',
 
-    // jobs.php
-    'jobs' => 'Jobs',
-    'queue' => 'Queue',
-
     // settings.php
     'setting' => 'Setting',
     'settings' => 'Settings',
