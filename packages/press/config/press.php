@@ -105,21 +105,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Navigation Group
-    |--------------------------------------------------------------------------
-    |
-    | This values are for grouping the navigation items into the
-    | right group in the Filament Admin Panel. By default,
-    | everything we use three Moox-compatible groups.
-    |
-    */
-
-    'press_navigation_group' => 'Press',
-    'system_navigation_group' => 'Press System',
-    'user_navigation_group' => 'User',
-
-    /*
-    |--------------------------------------------------------------------------
     | Press - WordPress Path
     |--------------------------------------------------------------------------
     |
