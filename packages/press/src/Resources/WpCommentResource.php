@@ -26,23 +26,6 @@ class WpCommentResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'comment_author';
 
-    public static function getModelLabel(): string
-    {
-        return 'Comment';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Comments';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Comments';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -294,5 +277,35 @@ class WpCommentResource extends Resource
             'view' => Pages\ViewWpComment::route('/{record}'),
             'edit' => Pages\EditWpComment::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('core::common.comment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('core::common.comments');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('core::common.comments');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('core::common.comment');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 2;
     }
 }

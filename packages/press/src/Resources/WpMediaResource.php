@@ -28,23 +28,6 @@ class WpMediaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
-    public static function getModelLabel(): string
-    {
-        return 'Media';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Media';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Media';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -389,5 +372,35 @@ class WpMediaResource extends Resource
             'view' => Pages\ViewWpPost::route('/{record}'),
             'edit' => Pages\EditWpPost::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('core::common.media');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('core::common.media');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('core::common.media');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('core::common.media');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 3;
     }
 }

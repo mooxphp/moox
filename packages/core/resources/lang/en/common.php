@@ -9,8 +9,10 @@ return [
     'media' => 'Media',
     'pages' => 'Pages',
     'posts' => 'Posts',
+    'category' => 'Category',
     'categories' => 'Categories',
     'tags' => 'Tags',
+    'comment' => 'Comment',
     'comments' => 'Comments',
     'meta' => 'Meta',
     'system' => 'System',
@@ -103,4 +105,6 @@ return [
     'read_at' => 'Read_at',
     'email_verified_at' => 'Email verified at',
 
+    'wp_comment_meta' => 'WP Comment Meta',
+    'wp_comment_metas' => 'WP Comment Metas',
 ];

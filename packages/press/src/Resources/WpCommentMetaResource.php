@@ -24,8 +24,6 @@ class WpCommentMetaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -104,5 +102,35 @@ class WpCommentMetaResource extends Resource
             'view' => Pages\ViewWpCommentMeta::route('/{record}'),
             'edit' => Pages\EditWpCommentMeta::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('core::common.wp_comment_meta');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('core::common.wp_comment_metas');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('core::common.wp_comment_metas');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('core::common.wp_comment_meta');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.system_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.system_navigation_sort') + 1;
     }
 }

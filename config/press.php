@@ -75,6 +75,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Press - Navigation Group
+    |--------------------------------------------------------------------------
+    |
+    | This values are for grouping the navigation items into the
+    | right group in the Filament Admin Panel. By default,
+    | everything we use three Moox-compatible groups.
+    |
+    */
+
+    'press_navigation_group' => 'trans//core::content.press',
+    'system_navigation_group' => 'trans//core::common.system',
+    'user_navigation_group' => 'trans//core::common.users',
+
+    /*
+    |--------------------------------------------------------------------------
     | Press - Navigation Sort
     |--------------------------------------------------------------------------
     |
@@ -85,8 +100,8 @@ return [
     */
 
     'press_navigation_sort' => 7900,
-    'system_navigation_sort' => 7900,
-    'user_navigation_sort' => 7900,
+    'system_navigation_sort' => 7000,
+    'user_navigation_sort' => 6015,
 
     /*
     |--------------------------------------------------------------------------

@@ -26,23 +26,6 @@ class WpCategoryResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function getModelLabel(): string
-    {
-        return 'Category';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Categories';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Categories';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -165,5 +148,35 @@ class WpCategoryResource extends Resource
             'view' => Pages\ViewWpCategory::route('/{record}'),
             'edit' => Pages\EditWpCategory::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('core::common.category');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('core::common.categories');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('core::common.categories');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('core::common.category');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 1;
     }
 }
