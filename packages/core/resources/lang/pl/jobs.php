@@ -26,11 +26,8 @@ return [
     // Jobs refers to Laravel's job queue, should not be translated
     'jobs_failed' => 'Jobs Failed',
 
-    // Jobs Batch refers to Laravel's job queue, should not be translated
-    'jobs_batch' => 'Job Batch',
-
-    // Jobs Batches refers to Laravel's job queue, should not be translated
-    'jobs_batches' => 'Jobs Batches',
+    // Jobs refers to Laravel's job queue, should not be translated
+    'failed_jobs' => 'Failed Jobs',
 
     // Jobs refers to Laravel's job queue, should not be translated
     'waiting_jobs' => 'Total Jobs Waiting',
@@ -54,9 +51,6 @@ return [
     'job_pushed_back_notification' => 'has been pushed back onto the queue.',
 
     // Jobs refers to Laravel's job queue, should not be translated
-    'failed_jobs' => 'Failed Jobs',
-
-    // Jobs refers to Laravel's job queue, should not be translated
     'failed_job_id' => 'Failed Job id',
 
     // Jobs refers to Laravel's job queue, should not be translated
@@ -64,6 +58,12 @@ return [
 
     // Jobs refers to Laravel's job queue, should not be translated
     'total_jobs' => 'Total Jobs Executed',
+
+    // Jobs Batch refers to Laravel's job queue, should not be translated
+    'jobs_batch' => 'Job Batch',
+
+    // Jobs Batches refers to Laravel's job queue, should not be translated
+    'jobs_batches' => 'Jobs Batches',
 
     // Batches refers to Laravel's job queue, should not be translated
     'prune_batches' => 'Prune all batches',
