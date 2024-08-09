@@ -3,7 +3,6 @@
 return [
 
     'press' => 'Press',
-    'press' => 'Press',
     'breadcrumb' => 'Press',
     'navigation_label' => 'Press',
     'navigation_group' => 'Press Group',
