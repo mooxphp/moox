@@ -30,7 +30,7 @@ return [
 
     'press_navigation_group' => 'Press',
     'system_navigation_group' => 'Press System',
-    'user_navigation_group' => 'User management',
+    'user_navigation_group' => 'User',
 
     /*
     |--------------------------------------------------------------------------
@@ -132,22 +132,36 @@ return [
     | Press - WordPress User Capabilities and Meta
     |--------------------------------------------------------------------------
     |
-    | This is currently under hard construction ;-)
+    | These are the default capabilities and meta for the WordPress users.
+    | You can add more capabilities or change the default ones.
+    | But be careful, as this can break the installation.
     |
     */
 
     'user_capabilities' => [
-        'Subscriber' => 'a:1:{s:10:"subscriber";b:1;}',
-        'Administrator' => 'a:1:{s:13:"administrator";b:1;}',
-        'Editor' => 'a:1:{s:6:"editor";b:1;}',
-        'Author' => 'a:1:{s:6:"author";b:1;}',
+        'Administrator' => serialize(['administrator' => true]),
+        'Editor' => serialize(['editor' => true]),
+        'Author' => serialize(['author' => true]),
+        'Contributor' => serialize(['contributor' => true]),
+        'Subscriber' => serialize(['subscriber' => true]),
     ],
 
     'default_user_meta' => [
         'nickname' => 'user_login',
         'first_name' => '',
-        'rich_edit' => 'true',
-        'capabilities' => 'Subscriber',
+        'last_name' => '',
+        'description' => '',
+        'rich_editing' => 'true',
+        'comment_shortcuts' => 'false',
+        'admin_color' => 'fresh',
+        'use_ssl' => '0',
+        'show_admin_bar_front' => 'true',
+        'wp_capabilities' => serialize([
+            'subscriber' => true,
+        ]),
+        'wp_user_level' => '0',
+        'dismissed_wp_pointers' => '',
+        'wp_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
     ],
 

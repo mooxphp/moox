@@ -5,6 +5,7 @@ namespace Moox\Press\Resources;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -50,6 +51,12 @@ class WpUserResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $userCapabilities = config('press.user_capabilities');
+
+        $capabilitiesOptions = collect($userCapabilities)->mapWithKeys(function ($key, $value) {
+            return [$key => $value];
+        })->toArray();
+
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
@@ -146,6 +153,12 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    Select::make('capabilities')
+                        ->label('Role')
+                        ->options($capabilitiesOptions)
+                        ->required()
+                        ->columnSpan(12),
+
                     TextInput::make('user_pass')
                         ->revealable()
                         ->label('Password')
@@ -224,37 +237,37 @@ class WpUserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('user_login')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_pass')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_nicename')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_email')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_url')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_registered')
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('user_activation_key')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_status')
                     ->toggleable()
-                    ->searchable(true, null, true),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('display_name')
                     ->toggleable()
-                    ->searchable(true, null, true)
+                    ->searchable()
                     ->limit(50),
                 Tables\Columns\IconColumn::make('spam')
                     ->toggleable()

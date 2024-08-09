@@ -11,6 +11,7 @@ class CreateWpUser extends CreateRecord
 {
     protected static string $resource = WpUserResource::class;
 
+    /*
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (filled($data['first_name']) && filled($data['last_name'])) {
@@ -43,4 +44,5 @@ class CreateWpUser extends CreateRecord
         }
 
     }
+        */
 }

@@ -14,13 +14,13 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Moox\Press\Models\WpCategory;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpCategoryResource\Pages;
 
 class WpCategoryResource extends Resource
 {
-    protected static ?string $model = WpTerm::class;
+    protected static ?string $model = WpCategory::class;
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
@@ -42,14 +42,6 @@ class WpCategoryResource extends Resource
     }
 
     protected static ?string $navigationGroup = 'Moox Press';
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->whereHas('termTaxonomy', function ($query) {
-                $query->where('taxonomy', 'category');
-            });
-    }
 
     public static function form(Form $form): Form
     {
@@ -93,7 +85,7 @@ class WpCategoryResource extends Resource
                         ]),
 
                     TextInput::make('term_group')
-                        ->rules(['max:255'])
+                        ->rules(['integer'])
                         ->required()
                         ->default('0')
                         ->columnSpan([
@@ -103,7 +95,7 @@ class WpCategoryResource extends Resource
                         ]),
 
                     TextInput::make('count')
-                        ->rules(['max:20'])
+                        ->rules(['integer'])
                         ->required()
                         ->readonly()
                         ->default('0')
