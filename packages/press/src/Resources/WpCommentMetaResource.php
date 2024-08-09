@@ -24,17 +24,15 @@ class WpCommentMetaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('comment_id')
+                        ->label(__('core::content.comment_id'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Comment Id')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -43,9 +41,9 @@ class WpCommentMetaResource extends Resource
                         ]),
 
                     TextInput::make('meta_key')
+                        ->label(__('core::content.meta_key'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Meta Key')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -53,9 +51,9 @@ class WpCommentMetaResource extends Resource
                         ]),
 
                     RichEditor::make('meta_value')
+                        ->label(__('core::content.meta_value'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Meta Value')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -72,14 +70,17 @@ class WpCommentMetaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('comment_id')
+                    ->label(__('core::content.comment_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_key')
+                    ->label(__('core::content.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_value')
+                    ->label(__('core::content.meta_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
@@ -101,5 +102,35 @@ class WpCommentMetaResource extends Resource
             'view' => Pages\ViewWpCommentMeta::route('/{record}'),
             'edit' => Pages\EditWpCommentMeta::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('core::common.wp_comment_meta');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('core::common.wp_comment_metas');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('core::common.wp_comment_metas');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('core::common.wp_comment_meta');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.system_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.system_navigation_sort') + 1;
     }
 }

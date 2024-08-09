@@ -1,21 +1,77 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Moox Configuration
+|--------------------------------------------------------------------------
+|
+| This configuration file uses translatable strings. If you want to
+| translate the strings, you can do so in the language files
+| published from moox_core. Example:
+|
+| 'trans//core::common.all',
+| loads from common.php
+| outputs 'All'
+|
+*/
+
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Navigation Sort
+    | Resources
     |--------------------------------------------------------------------------
     |
-    | This values are the sort order of the navigation items in the
-    | Filament Admin Panel. If you use a bunch of Moox
-    | plugins, everything should be in order.
+    | The following configuration is done per Filament resource.
     |
     */
 
-    'press_navigation_sort' => 1201,
-    'system_navigation_sort' => 1201,
-    'user_navigation_sort' => 1201,
+    'press' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Title
+        |--------------------------------------------------------------------------
+        |
+        | The translatable title of the Resource in singular and plural.
+        |
+        */
+
+        'single' => 'trans//core::press.press',
+        'plural' => 'trans//core::press.press',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tabs
+        |--------------------------------------------------------------------------
+        |
+        | Define the tabs for the Expiry table. They are optional, but
+        | pretty awesome to filter the table by certain values.
+        | You may simply do a 'tabs' => [], to disable them.
+        |
+        */
+
+        'tabs' => [
+            'all' => [
+                'label' => 'trans//core::common.all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [],
+            ],
+            /*
+            'error' => [
+                'label' => 'trans//core::common.error',
+                'icon' => 'gmdi-text-snippet',
+                'query' => [
+                    [
+                        'field' => 'subject_type',
+                        'operator' => '=',
+                        'value' => 'Error',
+                    ],
+                ],
+            ],
+            */
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -28,9 +84,24 @@ return [
     |
     */
 
-    'press_navigation_group' => 'Press',
-    'system_navigation_group' => 'Press System',
-    'user_navigation_group' => 'User',
+    'press_navigation_group' => 'trans//core::content.press',
+    'system_navigation_group' => 'trans//core::common.system',
+    'user_navigation_group' => 'trans//core::common.users',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Press - Navigation Sort
+    |--------------------------------------------------------------------------
+    |
+    | This values are the sort order of the navigation items in the
+    | Filament Admin Panel. If you use a bunch of Moox
+    | plugins, everything should be in order.
+    |
+    */
+
+    'press_navigation_sort' => 7900,
+    'system_navigation_sort' => 7000,
+    'user_navigation_sort' => 6015,
 
     /*
     |--------------------------------------------------------------------------

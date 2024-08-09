@@ -55,9 +55,9 @@ class WpThemaResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('name')
+                        ->label(__('core::common.name'))
                         ->rules(['max:200', 'string'])
                         ->required()
-                        ->placeholder('Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -65,9 +65,9 @@ class WpThemaResource extends Resource
                         ]),
 
                     TextInput::make('slug')
+                        ->label(__('core::common.slug'))
                         ->rules(['max:200', 'string'])
                         ->required()
-                        ->placeholder('Slug')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -75,9 +75,9 @@ class WpThemaResource extends Resource
                         ]),
 
                     TextInput::make('term_group')
+                        ->label(__('core::common.term_group'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Term Group')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -95,14 +95,17 @@ class WpThemaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('core::common.name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('slug')
+                    ->label(__('core::common.slug'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('term_group')
+                    ->label(__('core::common.term_group'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

@@ -26,32 +26,15 @@ class WpCommentResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'comment_author';
 
-    public static function getModelLabel(): string
-    {
-        return 'Comment';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Comments';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Comments';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('comment_post_ID')
+                        ->label(__('core::content.comment_post_ID'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Comment Post Id')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -60,9 +43,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     RichEditor::make('comment_author')
+                        ->label(__('core::content.comment_author'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Author')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -70,9 +53,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_author_email')
+                        ->label(__('core::content.comment_author_email'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Author Email')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -80,9 +63,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_author_url')
+                        ->label(__('core::content.comment_author_url'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Author Url')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -90,9 +73,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_author_IP')
+                        ->label(__('core::content.comment_author_IP'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Author Ip')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -100,9 +83,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     DateTimePicker::make('comment_date')
+                        ->label(__('core::content.comment_date'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('Comment Date')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -111,9 +94,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     DateTimePicker::make('comment_date_gmt')
+                        ->label(__('core::content.comment_date_gmt'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('Comment Date Gmt')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -122,9 +105,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     RichEditor::make('comment_content')
+                        ->label(__('core::content.comment_content'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Content')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -132,10 +115,10 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_karma')
+                        ->label(__('core::content.comment_karma'))
                         ->rules(['numeric'])
                         ->required()
                         ->numeric()
-                        ->placeholder('Comment Karma')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -144,9 +127,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_approved')
+                        ->label(__('core::content.comment_approved'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Approved')
                         ->default('1')
                         ->columnSpan([
                             'default' => 12,
@@ -155,9 +138,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_agent')
+                        ->label(__('core::content.comment_agent'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Comment Agent')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -165,6 +148,7 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_type')
+                        ->label(__('core::content.comment_type'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->placeholder('Comment Type')
@@ -176,9 +160,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('comment_parent')
+                        ->label(__('core::content.comment_parent'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Comment Parent')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -187,9 +171,9 @@ class WpCommentResource extends Resource
                         ]),
 
                     TextInput::make('user_id')
+                        ->label(__('core::common.user_id'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('User Id')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -207,55 +191,69 @@ class WpCommentResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('comment_post_ID')
+                    ->label(__('core::content.comment_post_ID'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_author')
+                    ->label(__('core::content.comment_author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_author_email')
+                    ->label(__('core::content.comment_author_email'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_author_url')
+                    ->label(__('core::content.comment_author_url'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_author_IP')
+                    ->label(__('core::content.comment_author_IP'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_date')
+                    ->label(__('core::content.comment_date'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('comment_date_gmt')
+                    ->label(__('core::content.comment_date_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('comment_content')
+                    ->label(__('core::content.comment_content'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_karma')
+                    ->label(__('core::content.comment_karma'))
                     ->toggleable()
                     ->searchable(true, null, true),
                 Tables\Columns\TextColumn::make('comment_approved')
+                    ->label(__('core::content.comment_approved'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_agent')
+                    ->label(__('core::content.comment_agent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_type')
+                    ->label(__('core::content.comment_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_parent')
+                    ->label(__('core::content.comment_parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_id')
+                    ->label(__('core::common.user_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -279,5 +277,35 @@ class WpCommentResource extends Resource
             'view' => Pages\ViewWpComment::route('/{record}'),
             'edit' => Pages\EditWpComment::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('core::common.comment');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('core::common.comments');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('core::common.comments');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('core::common.comment');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 2;
     }
 }

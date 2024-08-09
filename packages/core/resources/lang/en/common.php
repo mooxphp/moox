@@ -9,8 +9,10 @@ return [
     'media' => 'Media',
     'pages' => 'Pages',
     'posts' => 'Posts',
+    'category' => 'Category',
     'categories' => 'Categories',
     'tags' => 'Tags',
+    'comment' => 'Comment',
     'comments' => 'Comments',
     'meta' => 'Meta',
     'system' => 'System',
@@ -62,6 +64,19 @@ return [
     'last_name' => 'Last Name',
     'email' => 'Email',
     'website' => 'Website',
+    'term_group' => 'Term Group',
+    'term_id' => 'Term ID',
+    'term_order' => 'Term Order',
+    'deleted' => 'Deleted',
+    'spam' => 'Spam',
+
+    'count' => 'Count',
+    'parent' => 'Parent',
+
+    'password_confirmation' => 'Password Confirmation',
+    'current_password' => 'Current Password',
+    'new_password' => 'New Password',
+    'new_password_confirmation' => 'New Password Confirmation',
 
     // Time matters
     'execution_time' => 'Total Execution Time',
@@ -90,4 +105,6 @@ return [
     'read_at' => 'Read_at',
     'email_verified_at' => 'Email verified at',
 
+    'wp_comment_meta' => 'WP Comment Meta',
+    'wp_comment_metas' => 'WP Comment Metas',
 ];
