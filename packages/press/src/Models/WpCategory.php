@@ -3,31 +3,9 @@
 namespace Moox\Press\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class WpCategory extends WpTerm
 {
-    use HasFactory;
-
-    protected $fillable = ['name', 'slug', 'term_group'];
-
-    protected $appends = [
-        'taxonomy',
-        'description',
-        'parent',
-        'count',
-    ];
-
-    protected $searchableFields = ['*'];
-
-    protected $wpPrefix;
-
-    protected $table;
-
-    protected $primaryKey = 'term_id';
-
-    public $timestamps = false;
-
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
@@ -45,19 +23,52 @@ class WpCategory extends WpTerm
             });
         });
 
+        /*
+
+        static::updating(function ($wpCategory) {
+            $relatedFieldsChanged = $wpCategory->isRelatedFieldDirty();
+
+            dd('Rel '.$relatedFieldsChanged);
+
+            if ($relatedFieldsChanged) {
+                // If a related field has changed, we can update the related table
+                $wpCategory->updateRelatedFields();
+            }
+        });
+
+        */
+
         static::created(function ($wpCategory) {
             $wpCategory->termTaxonomy()->create([
                 'taxonomy' => 'category',
-                'description' => $wpCategory->attributes['description'] ?? '',
-                'parent' => $wpCategory->attributes['parent'] ?? 0,
+                'description' => $wpCategory->description ?? '',
+                'parent' => $wpCategory->getOriginal('parent') ?? 0,
+                'count' => $wpCategory->getOriginal('count') ?? 0,
             ]);
         });
 
         static::updated(function ($wpCategory) {
             $wpCategory->termTaxonomy()->update([
-                'description' => $wpCategory->attributes['description'] ?? '',
-                'parent' => $wpCategory->attributes['parent'] ?? 0,
+                'description' => $wpCategory->description ?? '',
+                'parent' => $wpCategory->getOriginal('parent') ?? 0,
+                'count' => $wpCategory->getOriginal('count') ?? 0,
             ]);
         });
+    }
+
+    public function isRelatedFieldDirty()
+    {
+        return $this->description !== $this->getOriginal('description') ||
+               $this->parent !== $this->getOriginal('parent') ||
+               $this->count !== $this->getOriginal('count');
+    }
+
+    public function updateRelatedFields()
+    {
+        $this->termTaxonomy()->update([
+            'description' => $this->description,
+            'parent' => $this->parent,
+            'count' => $this->count,
+        ]);
     }
 }

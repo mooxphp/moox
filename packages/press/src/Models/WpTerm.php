@@ -9,7 +9,15 @@ class WpTerm extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'term_group'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'term_group',
+        'taxonomy',
+        'description',
+        'parent',
+        'count',
+    ];
 
     protected $appends = [
         'taxonomy',
@@ -45,44 +53,38 @@ class WpTerm extends Model
         return $this->termTaxonomy->taxonomy ?? '';
     }
 
-    public function setTaxonomyAttribute($value)
-    {
-        $this->termTaxonomy()->updateOrCreate([], ['taxonomy' => $value]);
-    }
-
     public function getDescriptionAttribute()
     {
         return $this->termTaxonomy->description ?? '';
     }
 
-    /*
-    public function setDescriptionAttribute($value)
-    {
-        $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
-    }
-    */
-
     public function getParentAttribute()
     {
-        return $this->termTaxonomy->parent ?? '';
+        return $this->termTaxonomy->parent ?? 0;
     }
-
-    /*
-    public function setParentAttribute($value)
-    {
-        $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
-    }
-    */
 
     public function getCountAttribute()
     {
-        return $this->termTaxonomy->count ?? '';
+        return $this->termTaxonomy->count ?? 0;
     }
 
-    /*
+    public function setTaxonomyAttribute($value)
+    {
+        $this->termTaxonomy->taxonomy = $value;
+    }
+
+    public function setDescriptionAttribute($value)
+    {
+        $this->termTaxonomy->description = $value;
+    }
+
+    public function setParentAttribute($value)
+    {
+        $this->termTaxonomy->parent = $value;
+    }
+
     public function setCountAttribute($value)
     {
-        $this->termTaxonomy()->updateOrCreate([], ['count' => $value]);
+        $this->termTaxonomy->count = $value;
     }
-    */
 }
