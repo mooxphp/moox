@@ -30,7 +30,7 @@ class AuditResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('log_name')
-                        ->label(__('core:common.log_name'))
+                        ->label(__('core:audit.log_name'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -128,7 +128,7 @@ class AuditResource extends Resource
             ->poll('60s')
             ->columns([
                 TextColumn::make('log_name')
-                    ->label(__('core:common.log_name'))
+                    ->label(__('core:audit.log_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

@@ -55,7 +55,6 @@ return [
     'payload' => 'Payload',
     'connection' => 'Connection',
     'retry' => 'Retry',
-    'log_name' => 'Log name',
     'description' => 'Description',
     'subject_type' => 'Subject type',
     'subject_id' => 'Subject id',

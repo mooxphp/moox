@@ -17,4 +17,7 @@ return [
     // Batch uuid is the unique identifier of the batch of logs
     'batch_uuid' => 'Batch uuid',
 
+    // Log name refers to the name of the logfile
+    'log_name' => 'Log name',
+
 ];
