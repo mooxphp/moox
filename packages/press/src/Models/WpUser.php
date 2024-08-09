@@ -5,19 +5,16 @@ namespace Moox\Press\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-use Moox\Press\Database\Factories\WpUserFactory;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
 use Moox\Press\Traits\UserMetaAttributes;
 
 class WpUser extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, UserMetaAttributes;
+    use Notifiable, UserMetaAttributes;
 
     protected $fillable = [
         'user_login',
@@ -65,6 +62,10 @@ class WpUser extends Authenticatable implements FilamentUser
     {
         parent::boot();
 
+        static::created(function ($model) {
+            $model->addDefaultMetaFields();
+        });
+
         static::updated(function ($model) {
             $model->addOrUpdateMeta('updated_at', now()->toDateTimeString());
         });
@@ -103,11 +104,6 @@ class WpUser extends Authenticatable implements FilamentUser
         'user_registered' => 'datetime',
     ];
 
-    protected static function newFactory(): Factory
-    {
-        return WpUserFactory::new();
-    }
-
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
@@ -118,6 +114,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
+    // The meta method to retrieve user meta data
     public function meta($key)
     {
         if (! Str::startsWith($key, $this->wpPrefix)) {
@@ -129,6 +126,25 @@ class WpUser extends Authenticatable implements FilamentUser
         return $meta ? $meta->meta_value : null;
     }
 
+    // The addOrUpdateMeta method to add or update meta data
+    public function addOrUpdateMeta($key, $value)
+    {
+        if (! Str::startsWith($key, $this->wpPrefix)) {
+            $key = "{$this->wpPrefix}{$key}";
+        }
+
+        if (! $this->ID) {
+            // Queue the meta data to be saved later when the user ID is available
+            $this->metaDataToSave[] = ['key' => $key, 'value' => $value];
+        } else {
+            // Save or update the meta data immediately if the user ID is available
+            WpUserMeta::updateOrCreate(
+                ['user_id' => $this->ID, 'meta_key' => $key],
+                ['meta_value' => $value]
+            );
+        }
+    }
+
     public function getFirstNameAttribute()
     {
         return $this->meta('first_name');
@@ -137,18 +153,6 @@ class WpUser extends Authenticatable implements FilamentUser
     public function getLastNameAttribute()
     {
         return $this->meta('last_name');
-    }
-
-    public function addOrUpdateMeta($key, $value)
-    {
-        if (! Str::startsWith($key, $this->wpPrefix)) {
-            $key = "{$this->wpPrefix}{$key}";
-        }
-
-        WpUserMeta::updateOrCreate(
-            ['user_id' => $this->ID, 'meta_key' => $key],
-            ['meta_value' => $value]
-        );
     }
 
     public function getCapabilitiesAttribute()
@@ -169,11 +173,27 @@ class WpUser extends Authenticatable implements FilamentUser
         $defaultMeta = config('press.default_user_meta');
 
         foreach ($defaultMeta as $key => $value) {
-            if (is_array(unserialize($value))) {
-                $this->addOrUpdateMeta($key, serialize(unserialize($value)));
-            } else {
-                $this->addOrUpdateMeta($key, $value);
+            if ($key === 'wp_capabilities') {
+                $key = "{$this->wpPrefix}_capabilities";
             }
+
+            $this->addOrUpdateMeta($key, $value);
         }
+    }
+
+    public function save(array $options = [])
+    {
+        $saved = parent::save($options);
+
+        if ($saved && $this->ID) {
+            // Now that the user ID exists, save any queued meta data
+            foreach ($this->metaDataToSave as $meta) {
+                $this->addOrUpdateMeta($meta['key'], $meta['value']);
+            }
+            // Clear the queue
+            $this->metaDataToSave = [];
+        }
+
+        return $saved;
     }
 }
