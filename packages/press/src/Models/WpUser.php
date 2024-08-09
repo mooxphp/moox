@@ -15,18 +15,9 @@ use Moox\Press\Database\Factories\WpUserFactory;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
 use Moox\Press\Traits\UserMetaAttributes;
 
-/**
- * @property int $ID
- * @property string $user_login
- * @property string $user_nicename
- * @property string $user_email
- * @property \Illuminate\Database\Eloquent\Collection $userMeta
- */
 class WpUser extends Authenticatable implements FilamentUser
 {
-    use HasFactory;
-    use Notifiable;
-    use UserMetaAttributes;
+    use HasFactory, Notifiable, UserMetaAttributes;
 
     protected $fillable = [
         'user_login',
@@ -40,8 +31,6 @@ class WpUser extends Authenticatable implements FilamentUser
         'display_name',
     ];
 
-    protected $searchableFields = ['*'];
-
     protected $wpPrefix;
 
     protected $table;
@@ -53,6 +42,8 @@ class WpUser extends Authenticatable implements FilamentUser
     public $timestamps = false;
 
     protected $tempMetaAttributes = [];
+
+    protected $metaDataToSave = []; // Queue for meta data to save after the user is saved
 
     protected $appends = [
         'nickname',
@@ -81,16 +72,14 @@ class WpUser extends Authenticatable implements FilamentUser
     {
         parent::boot();
 
-        static::created(function ($model) {
-            $model->addOrUpdateMeta('created_at', now()->toDateTimeString());
-        });
-
         static::updated(function ($model) {
             $model->addOrUpdateMeta('updated_at', now()->toDateTimeString());
         });
 
         static::deleted(function ($model) {
-            $model->userMeta()->delete();
+            if ($model->ID) {
+                $model->userMeta()->delete();
+            }
         });
 
         static::addGlobalScope('addAttributes', function (Builder $builder) {
@@ -104,18 +93,6 @@ class WpUser extends Authenticatable implements FilamentUser
                 'user_pass',
                 'user_pass as password',
                 'display_name',
-            ]);
-        });
-
-        static::created(function ($wpUser) {
-            $wpUser->meta()->create([
-                //
-            ]);
-        });
-
-        static::updated(function ($wpUser) {
-            $wpUser->meta()->update([
-                //
             ]);
         });
     }
@@ -153,6 +130,7 @@ class WpUser extends Authenticatable implements FilamentUser
     public function getAllMetaAttributes()
     {
         $metas = $this->userMeta->pluck('meta_value', 'meta_key')->toArray();
+
         foreach ($metas as $key => $value) {
             $metas[$key] = $this->getMeta($key);
         }
@@ -191,8 +169,11 @@ class WpUser extends Authenticatable implements FilamentUser
     {
         $saved = parent::save($options);
 
-        foreach ($this->tempMetaAttributes as $key => $value) {
-            $this->addOrUpdateMeta($key, $value);
+        if ($saved && $this->ID) {
+            foreach ($this->metaDataToSave as $meta) {
+                $this->addOrUpdateMeta($meta['key'], $meta['value']);
+            }
+            $this->metaDataToSave = [];
         }
 
         return $saved;
@@ -200,16 +181,40 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function addOrUpdateMeta($key, $value)
     {
-        WpUserMeta::updateOrCreate(
-            ['user_id' => $this->ID, 'meta_key' => $key],
-            ['meta_value' => $value]
-        );
+        if (! $this->ID) {
+            $this->metaDataToSave[] = ['key' => $key, 'value' => $value];
+        } else {
+            WpUserMeta::updateOrCreate(
+                ['user_id' => $this->ID, 'meta_key' => $key],
+                ['meta_value' => $value]
+            );
+        }
     }
 
     public function getCapabilitiesAttribute()
     {
-        $key = "{$this->wpPrefix}capabilities";
+        $key = "{$this->wpPrefix}_capabilities";
 
         return $this->meta($key);
+    }
+
+    public function setCapabilitiesAttribute($value)
+    {
+        $key = "{$this->wpPrefix}_capabilities";
+
+        $this->addOrUpdateMeta($key, $value);
+    }
+
+    public function addDefaultMetaFields()
+    {
+        $defaultMeta = config('press.default_user_meta');
+
+        foreach ($defaultMeta as $key => $value) {
+            if (is_array(unserialize($value))) {
+                $this->addOrUpdateMeta($key, serialize(unserialize($value)));
+            } else {
+                $this->addOrUpdateMeta($key, $value);
+            }
+        }
     }
 }
