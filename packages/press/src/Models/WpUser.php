@@ -40,7 +40,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     protected $tempMetaAttributes = [];
 
-    protected $metaDataToSave = []; // Queue for meta data to save after the user is saved
+    protected $metaDataToSave = [];
 
     protected $appends = [
         'nickname',
@@ -114,10 +114,9 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
-    // The meta method to retrieve user meta data
     public function meta($key)
     {
-        if (! Str::startsWith($key, $this->wpPrefix)) {
+        if (Str::startsWith($key, 'wp_')) {
             $key = "{$this->wpPrefix}{$key}";
         }
 
@@ -126,18 +125,15 @@ class WpUser extends Authenticatable implements FilamentUser
         return $meta ? $meta->meta_value : null;
     }
 
-    // The addOrUpdateMeta method to add or update meta data
     public function addOrUpdateMeta($key, $value)
     {
-        if (! Str::startsWith($key, $this->wpPrefix)) {
-            $key = "{$this->wpPrefix}{$key}";
+        if (Str::startsWith($key, 'wp_')) {
+            $key = str_replace('wp_', $this->wpPrefix, $key);
         }
 
         if (! $this->ID) {
-            // Queue the meta data to be saved later when the user ID is available
             $this->metaDataToSave[] = ['key' => $key, 'value' => $value];
         } else {
-            // Save or update the meta data immediately if the user ID is available
             WpUserMeta::updateOrCreate(
                 ['user_id' => $this->ID, 'meta_key' => $key],
                 ['meta_value' => $value]
@@ -173,9 +169,11 @@ class WpUser extends Authenticatable implements FilamentUser
         $defaultMeta = config('press.default_user_meta');
 
         foreach ($defaultMeta as $key => $value) {
+            /*
             if ($key === 'wp_capabilities') {
                 $key = "{$this->wpPrefix}_capabilities";
             }
+            */
 
             $this->addOrUpdateMeta($key, $value);
         }
@@ -186,11 +184,9 @@ class WpUser extends Authenticatable implements FilamentUser
         $saved = parent::save($options);
 
         if ($saved && $this->ID) {
-            // Now that the user ID exists, save any queued meta data
             foreach ($this->metaDataToSave as $meta) {
                 $this->addOrUpdateMeta($meta['key'], $meta['value']);
             }
-            // Clear the queue
             $this->metaDataToSave = [];
         }
 
