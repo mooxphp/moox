@@ -2,13 +2,6 @@
 
 return [
 
-    // dashboard.php
-    'dashboard' => 'Dashboard',
-    'main' => 'Main',
-
-    // content.php
-    'content' => 'Content',
-
     // media.php
     'media' => 'Media',
 
@@ -44,18 +37,19 @@ return [
     // users.php
     'users' => 'Users',
 
-    // content.php
+    // core.php
     'title' => 'Title',
     'slug' => 'Slug',
     'item' => 'Item',
     'all' => 'All',
+    'content' => 'Content',
     'documents' => 'Documents',
     'articles' => 'Articles',
     'tasks' => 'Tasks',
     'id' => 'ID',
     'name' => 'Name',
-
-    // common.php
+    'dashboard' => 'Dashboard',
+    'main' => 'Main',
     'delete' => 'Delete',
     'uuid' => 'Uuid',
     'payload' => 'Payload',
@@ -68,14 +62,6 @@ return [
     'event' => 'Event',
     'properties' => 'Properties',
     'used' => 'Used',
-
-    // user.php
-    'user_agent' => 'User Agent',
-    'user_id' => 'User ID',
-    'user_type' => 'User Model',
-    'username' => 'Username',
-
-    // common.php
     'valid' => 'Valid',
     'type' => 'Type',
     'data' => 'Data',
@@ -97,6 +83,12 @@ return [
     'deleted' => 'Deleted',
     'count' => 'Count',
     'parent' => 'Parent',
+
+    // user.php
+    'user_agent' => 'User Agent',
+    'user_id' => 'User ID',
+    'user_type' => 'User Model',
+    'username' => 'Username',
 
     // term.php
     'term_group' => 'Term Group',
