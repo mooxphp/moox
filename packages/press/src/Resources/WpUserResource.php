@@ -237,54 +237,54 @@ class WpUserResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('user_login')
-                ->label(__('core::content.user_login'))
+                    ->label(__('core::content.user_login'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_pass')
-                ->label(__('core::content.user_pass'))
+                    ->label(__('core::content.user_pass'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_nicename')
-                ->label(__('core::content.user_nicename'))
+                    ->label(__('core::content.user_nicename'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_email')
-                ->label(__('core::content.user_email'))
+                    ->label(__('core::content.user_email'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_url')
-                ->label(__('core::content.user_url'))
+                    ->label(__('core::content.user_url'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_registered')
-                ->label(__('core::content.user_registered'))
+                    ->label(__('core::content.user_registered'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('user_activation_key')
-                ->label(__('core::content.user_activation_key'))
+                    ->label(__('core::content.user_activation_key'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_status')
-                ->label(__('core::content.user_status'))
+                    ->label(__('core::content.user_status'))
                     ->toggleable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('display_name')
-                ->label(__('core::content.display_name'))
+                    ->label(__('core::content.display_name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\IconColumn::make('spam')
-                ->label(__('core::common.spam'))
+                    ->label(__('core::common.spam'))
                     ->toggleable()
                     ->boolean(),
                 Tables\Columns\IconColumn::make('deleted')
-                ->label(__('core::common.deleted'))
+                    ->label(__('core::common.deleted'))
                     ->toggleable()
                     ->boolean(),
             ])

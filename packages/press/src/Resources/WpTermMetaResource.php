@@ -72,17 +72,17 @@ class WpTermMetaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('term_id')
-                ->label(__('core::common.term_id'))
+                    ->label(__('core::common.term_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_key')
-                ->label(__('core::content.met_key'))
+                    ->label(__('core::content.met_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_value')
-                ->label(__('core::content.meta_value'))
+                    ->label(__('core::content.meta_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),

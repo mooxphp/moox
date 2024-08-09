@@ -83,7 +83,7 @@ class WpCommentResource extends Resource
                         ]),
 
                     DateTimePicker::make('comment_date')
-                    ->label(__('core::content.comment_date'))
+                        ->label(__('core::content.comment_date'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
