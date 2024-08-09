@@ -2,9 +2,12 @@
 
 return [
 
-    'job' => 'Job', // this refers to Laravel's job queue, should not be translated
-    'jobs' => 'Jobs', // this refers to Laravel's job queue, should not be translated
-    'queue' => 'Queue', // this refers to Laravel's job queue, should not be translated
+    // this refers to Laravel's job queue, should not be translated
+    'job' => 'Job',
+    // this refers to Laravel's job queue, should not be translated
+    'jobs' => 'Jobs',
+    // this refers to Laravel's job queue, should not be translated
+    'queue' => 'Queue',
     'job_waiting' => 'Job Waiting',
     'jobs_waiting' => 'Jobs Waiting',
     'job_failed' => 'Job Failed',
