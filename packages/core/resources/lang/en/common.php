@@ -63,7 +63,18 @@ return [
     'email' => 'Email',
     'website' => 'Website',
     'term_group' => 'Term Group',
+    'term_id' => 'Term ID',
+    'term_order' => 'Term Order',
+    'deleted' => 'Deleted',
+    'spam' => 'Spam',
+
     'count' => 'Count',
+    'parent' => 'Parent',
+
+    'password_confirmation' => 'Password Confirmation',
+    'current_password' => 'Current Password',
+    'new_password' => 'New Password',
+    'new_password_confirmation' => 'New Password Confirmation',
 
     // Time matters
     'execution_time' => 'Total Execution Time',

@@ -58,9 +58,9 @@ class WpPageResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('post_author')
+                        ->label(__('core::content.post_author'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Post Author')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -69,9 +69,9 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_date')
+                        ->label(__('core::content.post_date'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('Post Date')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -80,9 +80,9 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_date_gmt')
+                        ->label(__('core::content.post_date_gmt'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('Post Date Gmt')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -91,9 +91,9 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_content')
+                        ->label(__('core::content.post_content'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Post Content')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -101,9 +101,9 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_title')
+                        ->label(__('core::content.post_title'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Post Title')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -111,9 +111,9 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_excerpt')
+                        ->label(__('core::content.post_excerpt'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Post Excerpt')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -121,9 +121,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_status')
+                        ->label(__('core::content.post_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
-                        ->placeholder('Post Status')
                         ->default('publish')
                         ->columnSpan([
                             'default' => 12,
@@ -132,9 +132,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('comment_status')
+                        ->label(__('core::content.comment_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
-                        ->placeholder('Comment Status')
                         ->default('open')
                         ->columnSpan([
                             'default' => 12,
@@ -143,9 +143,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('ping_status')
+                        ->label(__('core::content.ping_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
-                        ->placeholder('Ping Status')
                         ->default('open')
                         ->columnSpan([
                             'default' => 12,
@@ -154,9 +154,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_password')
+                        ->label(__('core::content.post_password'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Post Password')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -164,9 +164,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_name')
+                        ->label(__('core::content.post_name'))
                         ->rules(['max:200', 'string'])
                         ->required()
-                        ->placeholder('Post Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -174,9 +174,9 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('to_ping')
+                        ->label(__('core::content.to_ping'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('To Ping')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -184,9 +184,9 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('pinged')
+                        ->label(__('core::content.pinged'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Pinged')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -194,9 +194,9 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_modified')
+                        ->label(__('core::content.post_modified'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('Post Modified')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -205,9 +205,9 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_modified_gmt')
+                        ->label(__('core::content.post_modified_gmt'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('Post Modified Gmt')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -216,9 +216,9 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_content_filtered')
+                        ->label(__('core::content.post_content_filtered'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Post Content Filtered')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -226,9 +226,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_parent')
+                        ->label(__('core::content.post_parent'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Post Parent')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -237,9 +237,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('guid')
+                        ->label(__('core::content.guid'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Guid')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -247,10 +247,10 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('menu_order')
+                        ->label(__('core::content.menu_order'))
                         ->rules(['numeric'])
                         ->required()
                         ->numeric()
-                        ->placeholder('Menu Order')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -259,9 +259,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_type')
+                        ->label(__('core::content.post_type'))
                         ->rules(['max:20', 'string'])
                         ->required()
-                        ->placeholder('Post Type')
                         ->default('post')
                         ->columnSpan([
                             'default' => 12,
@@ -270,9 +270,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_mime_type')
+                        ->label(__('core::content.post_mime_type'))
                         ->rules(['max:100', 'string'])
                         ->required()
-                        ->placeholder('Post Mime Type')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -280,9 +280,9 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('comment_count')
+                        ->label(__('core::content.comment_count'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Comment Count')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -300,85 +300,107 @@ class WpPageResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('post_author')
+                    ->label(__('core::content.post_author'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_date')
+                    ->label(__('core::content.post_date'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_date_gmt')
+                    ->label(__('core::content.post_date_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_content')
+                    ->label(__('core::content.post_content'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_title')
+                    ->label(__('core::content.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_excerpt')
+                    ->label(__('core::content.post_excerpt'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_status')
+                    ->label(__('core::content.post_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_status')
+                    ->label(__('core::content.comment_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('ping_status')
+                    ->label(__('core::content.ping_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_password')
+                    ->label(__('core::content.post_password'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_name')
+                    ->label(__('core::content.post_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('to_ping')
+                    ->label(__('core::content.to_ping'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('pinged')
+                    ->label(__('core::content.pinged'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_modified')
+                    ->label(__('core::content.post_modified'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_modified_gmt')
+                    ->label(__('core::content.post_modified_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_content_filtered')
+                    ->label(__('core::content.post_content_filtered'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_parent')
+                    ->label(__('core::content.post_parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('guid')
+                    ->label(__('core::content.guid'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('menu_order')
+                    ->label(__('core::content.menu_order'))
                     ->toggleable()
                     ->searchable(true, null, true),
                 Tables\Columns\TextColumn::make('post_type')
+                    ->label(__('core::content.post_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_mime_type')
+                    ->label(__('core::content.post_mime_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('comment_count')
+                    ->label(__('core::content.comment_count'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

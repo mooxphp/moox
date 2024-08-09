@@ -32,9 +32,9 @@ class WpTermTaxonomyResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('term_id')
+                        ->label(__('core::common.term_id'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Term Id')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -44,8 +44,8 @@ class WpTermTaxonomyResource extends Resource
 
                     TextInput::make('taxonomy')
                         ->rules(['max:32', 'string'])
+                        ->label(__('core::content.taxonomy'))
                         ->required()
-                        ->placeholder('Taxonomy')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -53,9 +53,9 @@ class WpTermTaxonomyResource extends Resource
                         ]),
 
                     RichEditor::make('description')
+                        ->label(__('core::common.description'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Description')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -63,9 +63,9 @@ class WpTermTaxonomyResource extends Resource
                         ]),
 
                     TextInput::make('parent')
+                        ->label(__('core::common.parent'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Parent')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -74,9 +74,9 @@ class WpTermTaxonomyResource extends Resource
                         ]),
 
                     TextInput::make('count')
+                        ->label(__('core::common.count'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Count')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -94,22 +94,27 @@ class WpTermTaxonomyResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('term_id')
+                    ->label(__('core::common.term_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('taxonomy')
+                    ->label(__('core::content.taxonomy'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('description')
+                    ->label(__('core::common.description'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('parent')
+                    ->label(__('core::common.parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('count')
+                    ->label(__('core::common.count'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

@@ -31,9 +31,9 @@ class WpTermRelationshipResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('term_taxonomy_id')
+                        ->label(__('core::content.term_taxonomy_id'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Term Taxonomy Id')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -41,10 +41,10 @@ class WpTermRelationshipResource extends Resource
                         ]),
 
                     TextInput::make('term_order')
+                        ->label(__('core::common.term_order'))
                         ->rules(['numeric'])
                         ->required()
                         ->numeric()
-                        ->placeholder('Term Order')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -61,10 +61,12 @@ class WpTermRelationshipResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('term_taxonomy_id')
+                    ->label(__('core::content.term_taxonomy_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('term_order')
+                    ->label(__('core::common.term_order'))
                     ->toggleable()
                     ->searchable(true, null, true),
             ])

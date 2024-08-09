@@ -181,7 +181,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('password_confirmation')
-                        ->label(__('core::user.password_confirmation'))
+                        ->label(__('core::common.password_confirmation'))
                         ->requiredWith('password')
                         ->password()
                         ->same('password')
@@ -197,7 +197,7 @@ class UserResource extends Resource
             Section::make('Update Password')->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('current_password')
-                        ->label(__('core::user.current_password'))
+                        ->label(__('core::common.current_password'))
                         ->revealable()
                         ->password()
                         ->rule('current_password')
@@ -207,7 +207,7 @@ class UserResource extends Resource
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password')
-                        ->label(__('core::user.new_password'))
+                        ->label(__('core::common.new_password'))
                         ->revealable()
                         ->password()
                         ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
@@ -218,7 +218,7 @@ class UserResource extends Resource
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password_confirmation')
-                        ->label(__('core::user.new_password_confirmation'))
+                        ->label(__('core::common.new_password_confirmation'))
                         ->password()
                         ->label('Confirm new password')
                         ->same('new_password')

@@ -61,9 +61,9 @@ class WpUserResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('user_login')
+                        ->label(__('core::content.user_login'))
                         ->rules(['max:60', 'string'])
                         ->required()
-                        ->placeholder('User Login')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -71,9 +71,9 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('user_nicename')
+                        ->label(__('core::content.user_nicename'))
                         ->rules(['max:50', 'string'])
                         ->required()
-                        ->placeholder('User Nicename')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -81,9 +81,9 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('user_email')
+                        ->label(__('core::content.user_email'))
                         ->rules(['max:100', 'string'])
                         ->required()
-                        ->placeholder('User Email')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -91,9 +91,9 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('user_url')
+                        ->label(__('core::content.user_url'))
                         ->rules(['max:100', 'string'])
                         ->required()
-                        ->placeholder('User Url')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -101,9 +101,9 @@ class WpUserResource extends Resource
                         ]),
 
                     DateTimePicker::make('user_registered')
+                        ->label(__('core::content.user_registered'))
                         ->rules(['date'])
                         ->required()
-                        ->placeholder('User Registered')
                         ->default('0000-00-00 00:00:00')
                         ->columnSpan([
                             'default' => 12,
@@ -112,9 +112,9 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('user_activation_key')
+                        ->label(__('core::content.user_activation_key'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('User Activation Key')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -122,10 +122,10 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('user_status')
+                        ->label(__('core::content.user_status'))
                         ->rules(['numeric'])
                         ->required()
                         ->numeric()
-                        ->placeholder('User Status')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -134,9 +134,9 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('first_name')
+                        ->label(__('core::common.first_name'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('First Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -144,9 +144,9 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('last_name')
+                        ->label(__('core::common.last_name'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Last Name')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -161,7 +161,7 @@ class WpUserResource extends Resource
 
                     TextInput::make('user_pass')
                         ->revealable()
-                        ->label('Password')
+                        ->label(__('core::content.user_pass'))
                         ->password()
                         ->visibleOn('create')
                         ->dehydrateStateUsing(function ($state) {
@@ -171,7 +171,6 @@ class WpUserResource extends Resource
                         })
                         ->rule(Password::min(8))
                         ->required()
-                        ->placeholder('Password')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -179,11 +178,11 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('password_confirmation')
+                        ->label(__('core::common.first_name'))
                         ->requiredWith('user_pass')
                         ->password()
                         ->same('user_pass')
                         ->visibleOn('create')
-                        ->placeholder('Password Confirmation')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -196,6 +195,7 @@ class WpUserResource extends Resource
             Section::make('Update Password')->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('current_password')
+                        ->label(__('core::common.current_password'))
                         ->revealable()
                         ->password()
                         ->rule('current_password')
@@ -205,6 +205,7 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
                     TextInput::make('new_password')
+                        ->label(__('core::common.new_password'))
                         ->revealable()
                         ->password()
                         ->rule(Password::min(8))
@@ -216,7 +217,7 @@ class WpUserResource extends Resource
                         ]),
                     TextInput::make('new_password_confirmation')
                         ->password()
-                        ->label('Confirm new password')
+                        ->label(__('core::common.new_password_confirmation'))
                         ->same('new_password')
                         ->requiredWith('new_password')
                         ->columnSpan([
@@ -236,43 +237,54 @@ class WpUserResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('user_login')
+                ->label(__('core::content.user_login'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_pass')
+                ->label(__('core::content.user_pass'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_nicename')
+                ->label(__('core::content.user_nicename'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_email')
+                ->label(__('core::content.user_email'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_url')
+                ->label(__('core::content.user_url'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_registered')
+                ->label(__('core::content.user_registered'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('user_activation_key')
+                ->label(__('core::content.user_activation_key'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user_status')
+                ->label(__('core::content.user_status'))
                     ->toggleable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('display_name')
+                ->label(__('core::content.display_name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\IconColumn::make('spam')
+                ->label(__('core::common.spam'))
                     ->toggleable()
                     ->boolean(),
                 Tables\Columns\IconColumn::make('deleted')
+                ->label(__('core::common.deleted'))
                     ->toggleable()
                     ->boolean(),
             ])
