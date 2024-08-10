@@ -1,4 +1,5 @@
 <?php
+
 return [
     'user' => 'Utilisateur',
     'users' => 'Utilisateurs',

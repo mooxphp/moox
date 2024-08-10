@@ -1,4 +1,5 @@
 <?php
+
 return [
     // Audit refers to Logging of changes in the system and the package name Moox Audit
     'audit' => '',

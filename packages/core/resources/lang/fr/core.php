@@ -1,4 +1,5 @@
 <?php
+
 return [
     'title' => 'Titre',
     'slug' => 'Slug',
