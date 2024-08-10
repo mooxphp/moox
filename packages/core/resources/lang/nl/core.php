@@ -1,6 +1,6 @@
 <?php
 return [
-    'title' => '',
+    'title' => 'Titel',
     'slug' => '',
     'item' => '',
     'all' => '',
