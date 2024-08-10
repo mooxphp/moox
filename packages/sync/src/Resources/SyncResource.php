@@ -42,8 +42,10 @@ class SyncResource extends Resource
 
         $status = $get('status');
         $sourceModel = $get('source_model');
+        /** @disregard P1036 Non static method 'pluck' should not be called statically. */
         $sourcePlatform = Platform::find($get('source_platform_id'));
         $targetModel = $get('target_model');
+        /** @disregard P1036 Non static method 'pluck' should not be called statically. */
         $targetPlatform = Platform::find($get('target_platform_id'));
         $usePlatformRelations = $get('use_platform_relations');
         $useTransformerClass = $get('use_transformer_class');

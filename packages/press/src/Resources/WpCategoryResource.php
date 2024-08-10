@@ -62,7 +62,7 @@ class WpCategoryResource extends Resource
 
                     Select::make('parent')
                         ->label(__('core::common.parent'))
-                        ->options(fn () => WpTerm::pluck('name', 'term_id'))
+                        ->options(fn () => (new WpTerm)->pluck('name', 'term_id'))
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
