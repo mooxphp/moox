@@ -24,23 +24,6 @@ class WpOptionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'option_name';
 
-    public static function getModelLabel(): string
-    {
-        return 'Option';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Options';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Options';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press Admin';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -120,4 +103,27 @@ class WpOptionResource extends Resource
             'edit' => Pages\EditWpOption::route('/{record}/edit'),
         ];
     }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.option.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.option.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.option.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.option.single');
+    }
+
+    protected static ?string $navigationGroup = 'Moox Press Admin';
+
 }

@@ -40,7 +40,7 @@ class PlatformResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('name')
-                        ->label(__('core::sync.name'))
+                        ->label(__('core::core.name'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->unique(ignoreRecord: true)
@@ -276,22 +276,22 @@ class PlatformResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('sync::translations.platform');
+        return config('sync.resources.platform.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('sync::translations.platforms');
+        return config('sync.resources.platform.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('sync::translations.platforms');
+        return config('sync.resources.platform.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('sync::translations.platforms');
+        return config('sync.resources.platform.single');
     }
 
     public static function shouldRegisterNavigation(): bool

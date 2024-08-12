@@ -21,6 +21,6 @@ class ListNotifications extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('notifications.notifications.tabs', Notification::class);
+        return $this->getDynamicTabs('notifications.resources.notifications.tabs', Notification::class);
     }
 }

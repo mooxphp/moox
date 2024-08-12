@@ -328,22 +328,22 @@ class UserResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('user.user.single');
+        return config('user.resources.user.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('user.user.plural');
+        return config('user.resources.user.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('user.user.plural');
+        return config('user.resources.user.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('user.user.single');
+        return config('user.resources.user.single');
     }
 
     public static function getNavigationGroup(): ?string

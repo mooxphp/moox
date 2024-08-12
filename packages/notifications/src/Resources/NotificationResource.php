@@ -93,22 +93,22 @@ class NotificationResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('notifications.notifications.single');
+        return config('notifications.resources.notifications.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('notifications.notifications.plural');
+        return config('notifications.resources.notifications.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('notifications.notifications.plural');
+        return config('notifications.resources.notifications.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('notifications.notifications.single');
+        return config('notifications.resources.notifications.single');
     }
 
     public static function shouldRegisterNavigation(): bool

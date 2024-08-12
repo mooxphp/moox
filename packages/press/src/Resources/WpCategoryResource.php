@@ -152,22 +152,22 @@ class WpCategoryResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('core::core.category');
+        return config('press.resources.category.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('core::core.categories');
+        return config('press.resources.category.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('core::core.categories');
+        return config('press.resources.category.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('core::core.category');
+        return config('press.resources.category.single');
     }
 
     public static function getNavigationGroup(): ?string

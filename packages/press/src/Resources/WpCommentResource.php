@@ -281,22 +281,22 @@ class WpCommentResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('core::comment.comment');
+        return config('press.resources.comment.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('core::comment.comments');
+        return config('press.resources.comment.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('core::comment.comments');
+        return config('press.resources.comment.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('core::comment.comment');
+        return config('press.resources.comment.single');
     }
 
     public static function getNavigationGroup(): ?string

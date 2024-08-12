@@ -376,22 +376,22 @@ class WpMediaResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('core::core.media');
+        return config('press.resources.media.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('core::core.media');
+        return config('press.resources.media.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('core::core.media');
+        return config('press.resources.media.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('core::core.media');
+        return config('press.resources.media.single');
     }
 
     public static function getNavigationGroup(): ?string

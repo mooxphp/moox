@@ -28,30 +28,6 @@ class WpPageResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
-    protected static ?string $navigationGroup = 'Moox Press';
-
-    public static function getModelLabel(): string
-    {
-        return 'Page';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Pages';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Pages';
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('post_type', 'page')
-            ->whereIn('post_status', ['publish', 'draft']);
-    }
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -429,4 +405,34 @@ class WpPageResource extends Resource
             'edit' => Pages\EditWpPost::route('/{record}/edit'),
         ];
     }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.page.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.page.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.page.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.page.single');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('post_type', 'page')
+            ->whereIn('post_status', ['publish', 'draft']);
+    }
+
+    protected static ?string $navigationGroup = 'Moox Press';
+
 }
