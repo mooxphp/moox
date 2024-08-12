@@ -51,16 +51,16 @@ return [
     'if_exists' => 'If exists',
 
     // Filter ids refers to the ids to filter when syncing
-    'filter_ids' => 'Filter ids',
+    'filter_ids' => 'Filter IDs',
 
     // Ignore ids refers to the ids to ignore when syncing
-    'ignore_ids' => 'Ignore ids',
+    'ignore_ids' => 'Ignore IDs',
 
     // Sync all records refers to syncing all records
     'sync_all_records' => 'Sync all Records',
 
     // Sync only ids refers to syncing only the ids
-    'sync_only_ids' => 'Sync only ids',
+    'sync_only_ids' => 'Sync only IDs',
 
     // Sync all fields refers to syncing all fields
     'sync_all_fields' => 'Sync all Fields',

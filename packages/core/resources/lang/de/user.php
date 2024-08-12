@@ -26,7 +26,6 @@ return [
     'user_status' => 'User Status',
     'user_pass' => 'User Pass',
     'display_name' => 'Anzeigename',
-    'display_name' => 'Display Name',
     'roles' => 'Roles',
     'gender' => 'Gender',
     'first_name' => 'First Name',
