@@ -26,4 +26,12 @@ return [
     'user_status' => 'Statut de l\'utilisateur',
     'user_pass' => 'Mot de passe de l\'utilisateur',
     'display_name' => 'Nom d\'affichage',
+    'roles' => 'Roles',
+    'gender' => 'Gender',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'email' => 'Email',
+    'email_verified_at' => 'Email verified at',
+    'website' => 'Website',
+
 ];

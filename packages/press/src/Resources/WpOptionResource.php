@@ -47,7 +47,7 @@ class WpOptionResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('option_name')
-                        ->label(__('core::content.option_name'))
+                        ->label(__('core::core.option_name'))
                         ->rules(['max:191', 'string'])
                         ->required()
                         ->columnSpan([
@@ -57,7 +57,7 @@ class WpOptionResource extends Resource
                         ]),
 
                     RichEditor::make('option_value')
-                        ->label(__('core::content.option_value'))
+                        ->label(__('core::core.option_value'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -67,7 +67,7 @@ class WpOptionResource extends Resource
                         ]),
 
                     TextInput::make('autoload')
-                        ->label(__('core::content.autoload'))
+                        ->label(__('core::core.autoload'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->default('20')
@@ -87,17 +87,17 @@ class WpOptionResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('option_name')
-                    ->label(__('core::content.option_name'))
+                    ->label(__('core::core.option_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('option_value')
-                    ->label(__('core::content.option_value'))
+                    ->label(__('core::core.option_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('autoload')
-                    ->label(__('core::content.autoload'))
+                    ->label(__('core::core.autoload'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

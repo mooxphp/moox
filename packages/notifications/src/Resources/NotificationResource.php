@@ -28,15 +28,15 @@ class NotificationResource extends Resource
         return $form
             ->schema([
                 TextInput::make('type')
-                    ->label(__('core::common.type')),
+                    ->label(__('core::core.type')),
                 TextInput::make('notifiable_type')
                     ->label(__('core::notifications.notifiable_type')),
                 TextInput::make('notifiable_id')
                     ->label(__('core::notifications.notifiable_id')),
                 TextInput::make('data')
-                    ->label(__('core::common.data')),
+                    ->label(__('core::core.data')),
                 DatePicker::make('read_at')
-                    ->label(__('core::common.read_at')),
+                    ->label(__('core::core.read_at')),
 
             ]);
     }
@@ -46,16 +46,16 @@ class NotificationResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('type')
-                    ->label(__('core::common.type')),
+                    ->label(__('core::core.type')),
                 TextColumn::make('notifiable_type')
                     ->label(__('core::notifications.notifiable_type')),
                 TextColumn::make('notifiable_id')
                     ->label(__('core::notifications.notifiable_id'))
                     ->sortable(),
                 TextColumn::make('data')
-                    ->label(__('core::common.data')),
+                    ->label(__('core::core.data')),
                 TextColumn::make('read_at')
-                    ->label(__('core::common.read_at')),
+                    ->label(__('core::core.read_at')),
 
             ])->searchable()
             ->defaultSort('type', 'desc')

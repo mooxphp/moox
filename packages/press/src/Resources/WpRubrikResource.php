@@ -55,7 +55,7 @@ class WpRubrikResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('name')
-                        ->label(__('core::common.name'))
+                        ->label(__('core::core.name'))
                         ->rules(['max:200', 'string'])
                         ->required()
                         ->columnSpan([
@@ -65,7 +65,7 @@ class WpRubrikResource extends Resource
                         ]),
 
                     TextInput::make('slug')
-                        ->label(__('core::common.slug'))
+                        ->label(__('core::core.slug'))
                         ->rules(['max:200', 'string'])
                         ->required()
                         ->columnSpan([
@@ -75,7 +75,7 @@ class WpRubrikResource extends Resource
                         ]),
 
                     TextInput::make('term_group')
-                        ->label(__('core::common.term_group'))
+                        ->label(__('core::core.term_group'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -95,17 +95,17 @@ class WpRubrikResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label(__('core::common.name'))
+                    ->label(__('core::core.name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('slug')
-                    ->label(__('core::common.slug'))
+                    ->label(__('core::core.slug'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('term_group')
-                    ->label(__('core::common.term_group'))
+                    ->label(__('core::core.term_group'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

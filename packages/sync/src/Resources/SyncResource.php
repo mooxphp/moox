@@ -97,7 +97,7 @@ class SyncResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     Toggle::make('status')
-                        ->label(__('core::common.status'))
+                        ->label(__('core::core.status'))
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -220,7 +220,7 @@ class SyncResource extends Resource
                         }),
 
                     TextInput::make('interval')
-                        ->label(__('core::common.interval'))
+                        ->label(__('core::core.interval'))
                         ->rules(['integer'])
                         ->default(60)
                         ->suffix(fn ($get) => $get('interval') == 1 ? 'minute' : 'minutes')
@@ -349,7 +349,7 @@ class SyncResource extends Resource
                         }),
 
                     Toggle::make('has_errors')
-                        ->label(__('core::common.has_errors'))
+                        ->label(__('core::core.has_errors'))
                         ->rules(['boolean'])
                         ->columnSpan([
                             'default' => 12,
@@ -359,7 +359,7 @@ class SyncResource extends Resource
                         ->reactive(),
 
                     TextInput::make('error_message')
-                        ->label(__('core::common.error_message'))
+                        ->label(__('core::core.error_message'))
                         ->rules(['max:255'])
                         ->columnSpan([
                             'default' => 12,
@@ -369,7 +369,7 @@ class SyncResource extends Resource
                         ->visible(fn ($get) => $get('has_errors')),
 
                     TextInput::make('title')
-                        ->label(__('core::common.title'))
+                        ->label(__('core::core.title'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -436,7 +436,7 @@ class SyncResource extends Resource
                     ->boolean()
                     ->getStateUsing(fn ($record) => ! $record->sync_all_fields),
                 IconColumn::make('has_errors')
-                    ->label(__('core::common.has_errors'))
+                    ->label(__('core::core.has_errors'))
                     ->toggleable()
                     ->boolean(),
                 TextColumn::make('last_sync')

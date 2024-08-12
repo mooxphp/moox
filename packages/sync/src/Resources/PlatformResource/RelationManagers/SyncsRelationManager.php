@@ -87,7 +87,7 @@ class SyncsRelationManager extends RelationManager
             ])
             ->filters([
                 Filter::make('created_at')
-                    ->label(__('core::common.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->form([
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),

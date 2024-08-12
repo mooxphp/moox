@@ -134,7 +134,7 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('first_name')
-                        ->label(__('core::common.first_name'))
+                        ->label(__('core::user.first_name'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -144,7 +144,7 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('last_name')
-                        ->label(__('core::common.last_name'))
+                        ->label(__('core::user.last_name'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -178,7 +178,7 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('password_confirmation')
-                        ->label(__('core::common.first_name'))
+                        ->label(__('core::user.first_name'))
                         ->requiredWith('user_pass')
                         ->password()
                         ->same('user_pass')
@@ -280,11 +280,11 @@ class WpUserResource extends Resource
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\IconColumn::make('spam')
-                    ->label(__('core::common.spam'))
+                    ->label(__('core::core.spam'))
                     ->toggleable()
                     ->boolean(),
                 Tables\Columns\IconColumn::make('deleted')
-                    ->label(__('core::common.deleted'))
+                    ->label(__('core::core.deleted'))
                     ->toggleable()
                     ->boolean(),
             ])
