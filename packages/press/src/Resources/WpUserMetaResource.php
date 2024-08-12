@@ -43,7 +43,7 @@ class WpUserMetaResource extends Resource
                         ]),
 
                     TextInput::make('meta_key')
-                        ->label(__('core::content.meta_key'))
+                        ->label(__('core::core.meta_key'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -53,7 +53,7 @@ class WpUserMetaResource extends Resource
                         ]),
 
                     RichEditor::make('meta_value')
-                        ->label(__('core::content.meta_value'))
+                        ->label(__('core::core.meta_value'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -77,12 +77,12 @@ class WpUserMetaResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_key')
-                    ->label(__('core::content.meta_key'))
+                    ->label(__('core::core.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_value')
-                    ->label(__('core::content.meta_value'))
+                    ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),

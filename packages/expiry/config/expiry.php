@@ -9,7 +9,7 @@
 | translate the strings, you can do so in the language files
 | published from moox_core. Example:
 |
-| 'trans//core::common.all',
+| 'trans//core::core.all',
 | loads from common.php
 | outputs 'All'
 |
@@ -53,12 +53,12 @@ return [
 
         'tabs' => [
             'all' => [
-                'label' => 'trans//core::common.all',
+                'label' => 'trans//core::core.all',
                 'icon' => 'gmdi-filter-list',
                 'query' => [],
             ],
             'documents' => [
-                'label' => 'trans//core::common.documents',
+                'label' => 'trans//core::core.documents',
                 'icon' => 'gmdi-text-snippet',
                 'query' => [
                     [
@@ -69,7 +69,7 @@ return [
                 ],
             ],
             'articles' => [
-                'label' => 'trans//core::common.articles',
+                'label' => 'trans//core::core.articles',
                 'icon' => 'gmdi-account-circle',
                 'query' => [
                     [
@@ -80,7 +80,7 @@ return [
                 ],
             ],
             'tasks' => [
-                'label' => 'trans//core::common.tasks',
+                'label' => 'trans//core::core.tasks',
                 'icon' => 'gmdi-no-accounts',
                 'query' => [
                     [
@@ -126,7 +126,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::common.main',
+    'navigation_group' => 'trans//core::core.main',
 
     /*
     |--------------------------------------------------------------------------

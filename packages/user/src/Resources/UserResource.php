@@ -55,7 +55,7 @@ class UserResource extends Resource
                         ->label(__('core::user.avatar_url')),
 
                     TextInput::make('name')
-                        ->label(__('core::common.name'))
+                        ->label(__('core::core.name'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -65,7 +65,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('slug')
-                        ->label(__('core::common.slug'))
+                        ->label(__('core::core.slug'))
                         ->rules(['max:255', 'string'])
                         ->columnSpan([
                             'default' => 12,
@@ -74,7 +74,7 @@ class UserResource extends Resource
                         ]),
 
                     Select::make('roles')
-                        ->label(__('core::common.roles'))
+                        ->label(__('core::user.roles'))
                         ->relationship('roles', 'name')
                         ->multiple()
                         ->preload()
@@ -86,7 +86,7 @@ class UserResource extends Resource
                         ]),
 
                     Select::make('gender')
-                        ->label(__('core::common.gender'))
+                        ->label(__('core::user.gender'))
                         ->rules(['in:unknown,male,female,other'])
                         ->required()
                         ->searchable()
@@ -113,7 +113,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('first_name')
-                        ->label(__('core::common.first_name'))
+                        ->label(__('core::user.first_name'))
                         ->rules(['max:255', 'string'])
                         ->columnSpan([
                             'default' => 12,
@@ -122,7 +122,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('last_name')
-                        ->label(__('core::common.last_name'))
+                        ->label(__('core::user.last_name'))
                         ->rules(['max:255', 'string'])
                         ->columnSpan([
                             'default' => 12,
@@ -131,7 +131,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('email')
-                        ->label(__('core::common.email'))
+                        ->label(__('core::user.email'))
                         ->rules(['email'])
                         ->required()
                         ->unique(
@@ -147,7 +147,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('website')
-                        ->label(__('core::common.website'))
+                        ->label(__('core::user.website'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -157,7 +157,7 @@ class UserResource extends Resource
                         ]),
 
                     RichEditor::make('description')
-                        ->label(__('core::common.description'))
+                        ->label(__('core::core.description'))
                         ->rules(['max:255', 'string'])
                         ->columnSpan([
                             'default' => 12,
@@ -246,13 +246,13 @@ class UserResource extends Resource
                     ->label(__('core::user.profile_photo_path'))
                     ->toggleable(),
                 TextColumn::make('name')
-                    ->label(__('core::common.name'))
+                    ->label(__('core::core.name'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('last_name')
-                    ->label(__('core::common.last_name'))
+                    ->label(__('core::user.last_name'))
                     ->formatStateUsing(function ($state, User $user) {
                         return $user->first_name.' '.$user->last_name;
                     })
@@ -261,14 +261,14 @@ class UserResource extends Resource
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('email')
-                    ->label(__('core::common.email'))
+                    ->label(__('core::user.email'))
                     ->alignEnd()
                     ->sortable()
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 IconColumn::make('email_verified_at')
-                    ->label(__('core::common.email_verified_at'))
+                    ->label(__('core::user.email_verified_at'))
                     ->sortable()
                     ->alignStart()
                     ->icon(
@@ -280,7 +280,7 @@ class UserResource extends Resource
                         'danger' => fn ($record) => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
-                    ->label(__('core::common.roles'))
+                    ->label(__('core::user.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([

@@ -51,7 +51,7 @@ class PlatformResource extends Resource
                         ]),
 
                     TextInput::make('domain')
-                        ->label(__('core::common.domain'))
+                        ->label(__('core::core.domain'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->unique(ignoreRecord: true)
@@ -71,7 +71,7 @@ class PlatformResource extends Resource
                         ]),
 
                     TextInput::make('ip_address')
-                        ->label(__('core::common.ip_address'))
+                        ->label(__('core::core.ip_address'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -81,7 +81,7 @@ class PlatformResource extends Resource
                         ]),
 
                     FileUpload::make('thumbnail')
-                        ->label(__('core::common.thumbnail'))
+                        ->label(__('core::core.thumbnail'))
                         ->rules(['file'])
                         ->nullable()
                         ->image()
@@ -110,7 +110,7 @@ class PlatformResource extends Resource
                         ),
 
                     Toggle::make('master')
-                        ->label(__('core::common.master'))
+                        ->label(__('core::core.master'))
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -166,7 +166,7 @@ class PlatformResource extends Resource
                         ->visible(fn ($get) => $get('locked')),
 
                     Toggle::make('show_in_menu')
-                        ->label(__('core::common.show_in_menu'))
+                        ->label(__('core::core.show_in_menu'))
                         ->rules(['boolean'])
                         ->nullable()
                         ->columnSpan([
@@ -182,7 +182,7 @@ class PlatformResource extends Resource
                         }),
 
                     TextInput::make('order')
-                        ->label(__('core::common.order'))
+                        ->label(__('core::core.order'))
                         ->rules(['max:255'])
                         ->nullable()
                         ->unique(ignoreRecord: true)
@@ -203,7 +203,7 @@ class PlatformResource extends Resource
             ->poll('60s')
             ->columns([
                 ImageColumn::make('thumbnail')
-                    ->label(__('core::common.thumbnail'))
+                    ->label(__('core::core.thumbnail'))
                     ->toggleable()
                     ->label('')
                     ->square(),
@@ -214,13 +214,13 @@ class PlatformResource extends Resource
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('domain')
-                    ->label(__('core::common.domain'))
+                    ->label(__('core::core.domain'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
                 IconColumn::make('master')
-                    ->label(__('core::common.master'))
+                    ->label(__('core::core.master'))
                     ->toggleable()
                     ->sortable()
                     ->boolean(),
@@ -235,18 +235,18 @@ class PlatformResource extends Resource
                     ->sortable()
                     ->toggleable(),
                 IconColumn::make('show_in_menu')
-                    ->label(__('core::common.show_in_menu'))
+                    ->label(__('core::core.show_in_menu'))
                     ->toggleable()
                     ->sortable()
                     ->boolean(),
                 TextColumn::make('order')
-                    ->label(__('core::common.order'))
+                    ->label(__('core::core.order'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('created_at')
-                    ->label(__('core::common.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)

@@ -29,10 +29,10 @@ class LoginLinkResource extends Resource
         return $form
             ->schema([
                 TextInput::make('email')
-                    ->label(__('core::common.email'))
+                    ->label(__('core::user.email'))
                     ->maxLength(255),
                 TextInput::make('ip_address')
-                    ->label(__('core::common.ip_address'))
+                    ->label(__('core::core.ip_address'))
                     ->maxLength(255),
                 TextInput::make('user_agent')
                     ->label(__('core::user.user_agent'))
@@ -43,9 +43,9 @@ class LoginLinkResource extends Resource
                     ->maxLength(255)
                     ->columnSpan(2),
                 DateTimePicker::make('expires_at')
-                    ->label(__('core::common.expires_at')),
+                    ->label(__('core::core.expires_at')),
                 DateTimePicker::make('used_at')
-                    ->label(__('core::common.used_at')),
+                    ->label(__('core::core.used_at')),
                 Select::make('user_type')
                     ->label(__('core::user.user_type'))
                     ->options(function () {
@@ -78,7 +78,7 @@ class LoginLinkResource extends Resource
         return $table
             ->columns([
                 IconColumn::make('used')
-                    ->label(__('core::common.valid'))
+                    ->label(__('core::core.valid'))
                     ->icons([
                         'heroicon-o-x-circle' => fn ($record) => empty($record->used_at),
                         'heroicon-o-check-circle' => fn ($record) => ! empty($record->used_at),
@@ -86,18 +86,18 @@ class LoginLinkResource extends Resource
                     ->tooltip(fn ($record) => empty($record->used_at) ? 'Not Used' : 'Used')
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label(__('core::common.email'))
+                    ->label(__('core::user.email'))
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('core::common.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('expires_at')
-                    ->label(__('core::common.expires_at'))
+                    ->label(__('core::core.expires_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('used_at')
-                    ->label(__('core::common.used_at'))
+                    ->label(__('core::core.used_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('user_type')

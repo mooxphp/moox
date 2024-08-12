@@ -32,7 +32,7 @@ class WpTermMetaResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('term_id')
-                        ->label(__('core::common.term_id'))
+                        ->label(__('core::core.term_id'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -43,7 +43,7 @@ class WpTermMetaResource extends Resource
                         ]),
 
                     TextInput::make('meta_key')
-                        ->label(__('core::content.meta_key'))
+                        ->label(__('core::core.meta_key'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -53,7 +53,7 @@ class WpTermMetaResource extends Resource
                         ]),
 
                     RichEditor::make('meta_value')
-                        ->label(__('core::content.meta_value'))
+                        ->label(__('core::core.meta_value'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -72,17 +72,17 @@ class WpTermMetaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('term_id')
-                    ->label(__('core::common.term_id'))
+                    ->label(__('core::core.term_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_key')
-                    ->label(__('core::content.met_key'))
+                    ->label(__('core::core.met_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_value')
-                    ->label(__('core::content.meta_value'))
+                    ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),

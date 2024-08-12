@@ -9,7 +9,7 @@
 | translate the strings, you can do so in the language files
 | published from moox_core. Example:
 |
-| 'trans//core::common.all',
+| 'trans//core::core.all',
 | loads from common.php
 | outputs 'All'
 |

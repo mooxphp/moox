@@ -32,7 +32,7 @@ class ExpiryResource extends Resource
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('title')
                         ->rules(['max:255', 'string'])
-                        ->label(__('core::common.title'))
+                        ->label(__('core::core.title'))
                         ->required()
                         ->columnSpan([
                             'default' => 12,

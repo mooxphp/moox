@@ -25,4 +25,13 @@ return [
     'user_status' => 'User Status',
     'user_pass' => 'User Pass',
     'display_name' => 'Anzeigename',
+    'display_name' => 'Display Name',
+    'roles' => 'Roles',
+    'gender' => 'Gender',
+    'first_name' => 'First Name',
+    'last_name' => 'Last Name',
+    'email' => 'Email',
+    'email_verified_at' => 'Email verified at',
+    'website' => 'Website',
+
 ];

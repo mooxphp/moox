@@ -34,7 +34,7 @@ class WpMediaResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('post_author')
-                        ->label(__('core::content.post_author'))
+                        ->label(__('core::core::post._author'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -45,7 +45,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_date')
-                        ->label(__('core::content.post_date'))
+                        ->label(__('core::core::post._date'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -56,7 +56,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_date_gmt')
-                        ->label(__('core::content.post_date_gmt'))
+                        ->label(__('core::core::post._date_gmt'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -67,7 +67,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     RichEditor::make('post_content')
-                        ->label(__('core::content.post_content'))
+                        ->label(__('core::core::post._content'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -77,7 +77,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     RichEditor::make('post_title')
-                        ->label(__('core::content.post_title'))
+                        ->label(__('core::core::post._title'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -87,7 +87,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     RichEditor::make('post_excerpt')
-                        ->label(__('core::content.post_excerpt'))
+                        ->label(__('core::core::post._excerpt'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -97,7 +97,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('post_status')
-                        ->label(__('core::content.post_status'))
+                        ->label(__('core::core::post._status'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('publish')
@@ -119,7 +119,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('ping_status')
-                        ->label(__('core::content.ping_status'))
+                        ->label(__('core::core::post.ping_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('open')
@@ -130,7 +130,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('post_password')
-                        ->label(__('core::content.post_password'))
+                        ->label(__('core::core::post._password'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -140,7 +140,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('post_name')
-                        ->label(__('core::content.post_name'))
+                        ->label(__('core::core::post._name'))
                         ->rules(['max:200', 'string'])
                         ->required()
                         ->columnSpan([
@@ -150,7 +150,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     RichEditor::make('to_ping')
-                        ->label(__('core::content.to_ping'))
+                        ->label(__('core::core::to_ping'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -160,7 +160,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     RichEditor::make('pinged')
-                        ->label(__('core::content.pinged'))
+                        ->label(__('core::core::post.pinged'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -170,7 +170,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_modified')
-                        ->label(__('core::content.post_modified'))
+                        ->label(__('core::core::post._modified'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -181,7 +181,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_modified_gmt')
-                        ->label(__('core::content.post_modified_gmt'))
+                        ->label(__('core::core::post._modified_gmt'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -192,7 +192,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     RichEditor::make('post_content_filtered')
-                        ->label(__('core::content.post_content_filtered'))
+                        ->label(__('core::core::post._content_filtered'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -202,7 +202,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('post_parent')
-                        ->label(__('core::content.post_parent'))
+                        ->label(__('core::core::post._parent'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -213,7 +213,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('guid')
-                        ->label(__('core::content.guid'))
+                        ->label(__('core::core.guid'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -223,7 +223,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('menu_order')
-                        ->label(__('core::content.menu_order'))
+                        ->label(__('core::core.menu_order'))
                         ->rules(['numeric'])
                         ->required()
                         ->numeric()
@@ -235,7 +235,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('post_type')
-                        ->label(__('core::content.post_type'))
+                        ->label(__('core::core::post._type'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('post')
@@ -246,7 +246,7 @@ class WpMediaResource extends Resource
                         ]),
 
                     TextInput::make('post_mime_type')
-                        ->label(__('core::content.post_mime_type'))
+                        ->label(__('core::core::post._mime_type'))
                         ->rules(['max:100', 'string'])
                         ->required()
                         ->columnSpan([
@@ -277,7 +277,7 @@ class WpMediaResource extends Resource
             ->columns([
                 Stack::make([
                     ImageColumn::make('asset')
-                        ->label(__('core::content.asset'))
+                        ->label(__('core::core.asset'))
                         ->square()
                         ->size('100%'),
                     //->url(fn ($record) => $record->getAssetAttribute()),
@@ -285,58 +285,58 @@ class WpMediaResource extends Resource
                 /* Currently not looking nice
 
                 TextColumn::make('post_author')
-                    ->label(__('core::content.post_author'))
+                    ->label(__('core::core::post._author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('post_date')
-                    ->label(__('core::content.post_date'))
+                    ->label(__('core::core::post._date'))
                     ->toggleable()
                     ->dateTime(),
                 TextColumn::make('post_date_gmt')
-                    ->label(__('core::content.post_date_gmt'))
+                    ->label(__('core::core::post._date_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 TextColumn::make('post_content')
-                    ->label(__('core::content.post_content'))
+                    ->label(__('core::core::post._content'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('post_title')
-                    ->label(__('core::content.post_title'))
+                    ->label(__('core::core::post._title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('post_excerpt')
-                    ->label(__('core::content.post_excerpt'))
+                    ->label(__('core::core::post._excerpt'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('post_status')
-                    ->label(__('core::content.post_status'))
+                    ->label(__('core::core::post._status'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('post_name')
-                    ->label(__('core::content.post_name'))
+                    ->label(__('core::core::post._name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('post_modified')
-                    ->label(__('core::content.post_modified'))
+                    ->label(__('core::core::post._modified'))
                     ->toggleable()
                     ->dateTime(),
                 TextColumn::make('post_modified_gmt')
-                    ->label(__('core::content.post_modified_gmt'))
+                    ->label(__('core::core::post._modified_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 TextColumn::make('post_content_filtered')
-                    ->label(__('core::content.post_content_filtered'))
+                    ->label(__('core::core::post._content_filtered'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('guid')
-                    ->label(__('core::content.guid'))
+                    ->label(__('core::core.guid'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
@@ -376,22 +376,22 @@ class WpMediaResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('core::common.media');
+        return __('core::core.media');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('core::common.media');
+        return __('core::core.media');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('core::common.media');
+        return __('core::core.media');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('core::common.media');
+        return __('core::core.media');
     }
 
     public static function getNavigationGroup(): ?string
