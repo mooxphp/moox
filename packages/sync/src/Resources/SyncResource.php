@@ -128,8 +128,8 @@ class SyncResource extends Resource
                                 $set('source_platform_id', null);
 
                                 Notification::make()
-                                    ->title(__('core::sync.sync_error'))
-                                    ->body(__('core::sync.sync_error_platforms'))
+                                    ->title(__('core::sync.resources.sync_error'))
+                                    ->body(__('core::sync.resources.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -156,7 +156,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body(__('core::sync.sync_error_platforms'))
+                                    ->body(__('core::sync.resources.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -184,7 +184,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body(__('core::sync.sync_error_platforms'))
+                                    ->body(__('core::sync.resources.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -211,7 +211,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body(__('core::sync.sync_error_platforms'))
+                                    ->body(__('core::sync.resources.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -274,14 +274,14 @@ class SyncResource extends Resource
                             'lg' => 12,
                         ])
                         ->default('sync_all_records')
-                        ->label(__('core::sync.sync_all_records'))
+                        ->label(__('core::sync.resources.sync_all_records'))
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             self::updateTitle($set, $get);
                         }),
 
                     TextInput::make('sync_only_ids')
-                        ->label(__('core::sync.sync_only_ids'))
+                        ->label(__('core::sync.resources.sync_only_ids'))
                         ->rules(['array'])
                         ->columnSpan([
                             'default' => 12,
@@ -309,7 +309,7 @@ class SyncResource extends Resource
                         }),
 
                     Toggle::make('sync_all_fields')
-                        ->label(__('core::sync.sync_all_fields'))
+                        ->label(__('core::sync.resources.sync_all_fields'))
                         ->default(true)
                         ->columnSpan([
                             'default' => 12,
@@ -431,7 +431,7 @@ class SyncResource extends Resource
                     ->falseIcon('heroicon-o-x-circle')
                     ->getStateUsing(fn ($record) => empty($record->field_mappings)),
                 IconColumn::make('sync_all_fields')
-                    ->label(__('core::sync.sync_all_fields'))
+                    ->label(__('core::sync.resources.sync_all_fields'))
                     ->toggleable()
                     ->boolean()
                     ->getStateUsing(fn ($record) => ! $record->sync_all_fields),
@@ -474,22 +474,22 @@ class SyncResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('sync.sync.single');
+        return config('sync.resources.sync.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('sync.sync.plural');
+        return config('sync.resources.sync.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('sync.sync.plural');
+        return config('sync.resources.sync.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('sync.sync.single');
+        return config('sync.resources.sync.single');
     }
 
     public static function shouldRegisterNavigation(): bool

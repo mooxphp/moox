@@ -36,6 +36,6 @@ class ListSyncs extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('sync.sync.tabs', Sync::class);
+        return $this->getDynamicTabs('sync.resources.sync.tabs', Sync::class);
     }
 }

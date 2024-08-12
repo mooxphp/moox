@@ -26,89 +26,91 @@ return [
     |
     */
 
-    'expiry' => [
+    'resources' => [
+        'expiry' => [
 
-        /*
-        |--------------------------------------------------------------------------
-        | Title
-        |--------------------------------------------------------------------------
-        |
-        | The translatable title of the Resource in singular and plural.
-        |
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
 
-        'single' => 'trans//core::expiry.expiry',
-        'plural' => 'trans//core::expiry.expiries',
+            'single' => 'trans//core::expiry.expiry',
+            'plural' => 'trans//core::expiry.expiries',
 
-        /*
-        |--------------------------------------------------------------------------
-        | Tabs
-        |--------------------------------------------------------------------------
-        |
-        | Define the tabs for the Expiry table. They are optional, but
-        | pretty awesome to filter the table by certain values.
-        | You may simply do a 'tabs' => [], to disable them.
-        |
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
 
-        'tabs' => [
-            'all' => [
-                'label' => 'trans//core::core.all',
-                'icon' => 'gmdi-filter-list',
-                'query' => [],
-            ],
-            'documents' => [
-                'label' => 'trans//core::core.documents',
-                'icon' => 'gmdi-text-snippet',
-                'query' => [
-                    [
-                        'field' => 'expiry_job',
-                        'operator' => '=',
-                        'value' => 'Documents',
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                'documents' => [
+                    'label' => 'trans//core::core.documents',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'expiry_job',
+                            'operator' => '=',
+                            'value' => 'Documents',
+                        ],
                     ],
                 ],
-            ],
-            'articles' => [
-                'label' => 'trans//core::core.articles',
-                'icon' => 'gmdi-account-circle',
-                'query' => [
-                    [
-                        'field' => 'expiry_job',
-                        'operator' => '=',
-                        'value' => 'Articles',
+                'articles' => [
+                    'label' => 'trans//core::core.articles',
+                    'icon' => 'gmdi-account-circle',
+                    'query' => [
+                        [
+                            'field' => 'expiry_job',
+                            'operator' => '=',
+                            'value' => 'Articles',
+                        ],
                     ],
                 ],
-            ],
-            'tasks' => [
-                'label' => 'trans//core::core.tasks',
-                'icon' => 'gmdi-no-accounts',
-                'query' => [
-                    [
-                        'field' => 'expiry_job',
-                        'operator' => '=',
-                        'value' => 'Tasks',
+                'tasks' => [
+                    'label' => 'trans//core::core.tasks',
+                    'icon' => 'gmdi-no-accounts',
+                    'query' => [
+                        [
+                            'field' => 'expiry_job',
+                            'operator' => '=',
+                            'value' => 'Tasks',
+                        ],
                     ],
                 ],
-            ],
-            'no-user' => [
-                'label' => 'trans//core::expiry.no_assignee',
-                'icon' => 'gmdi-no-accounts',
-                'query' => [
-                    [
-                        'field' => 'status',
-                        'operator' => '=',
-                        'value' => 'No assignee',
+                'no-user' => [
+                    'label' => 'trans//core::expiry.no_assignee',
+                    'icon' => 'gmdi-no-accounts',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'No assignee',
+                        ],
                     ],
                 ],
-            ],
-            'no-date' => [
-                'label' => 'trans//core::expiry.no_expiry_date',
-                'icon' => 'gmdi-no-accounts',
-                'query' => [
-                    [
-                        'field' => 'status',
-                        'operator' => '=',
-                        'value' => 'No expiry date',
+                'no-date' => [
+                    'label' => 'trans//core::expiry.no_expiry_date',
+                    'icon' => 'gmdi-no-accounts',
+                    'query' => [
+                        [
+                            'field' => 'status',
+                            'operator' => '=',
+                            'value' => 'No expiry date',
+                        ],
                     ],
                 ],
             ],

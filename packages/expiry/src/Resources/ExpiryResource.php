@@ -266,22 +266,22 @@ class ExpiryResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('expiry.expiry.single');
+        return config('expiry.resources.expiry.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('expiry.expiry.plural');
+        return config('expiry.resources.expiry.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('expiry.expiry.plural');
+        return config('expiry.resources.expiry.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('expiry.expiry.single');
+        return config('expiry.resources.expiry.single');
     }
 
     public static function getNavigationGroup(): ?string

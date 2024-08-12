@@ -26,50 +26,98 @@ return [
     |
     */
 
-    'sync' => [
+    'resources' => [
+        'sync' => [
 
-        /*
-        |--------------------------------------------------------------------------
-        | Title
-        |--------------------------------------------------------------------------
-        |
-        | The translatable title of the Resource in singular and plural.
-        |
-        */
-
-        'single' => 'trans//core::sync.sync',
-        'plural' => 'trans//core::sync.syncs',
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tabs
-        |--------------------------------------------------------------------------
-        |
-        | Define the tabs for the Expiry table. They are optional, but
-        | pretty awesome to filter the table by certain values.
-        | You may simply do a 'tabs' => [], to disable them.
-        |
-        */
-
-        'tabs' => [
-            'all' => [
-                'label' => 'trans//core::core.all',
-                'icon' => 'gmdi-filter-list',
-                'query' => [],
-            ],
             /*
-            'error' => [
-                'label' => 'trans//core::core.error',
-                'icon' => 'gmdi-text-snippet',
-                'query' => [
-                    [
-                        'field' => 'subject_type',
-                        'operator' => '=',
-                        'value' => 'Error',
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::sync.sync',
+            'plural' => 'trans//core::sync.syncs',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
                     ],
                 ],
+                */
             ],
+        ],
+        'platform' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
             */
+
+            'single' => 'trans//core::sync.platform',
+            'plural' => 'trans//core::sync.platforms',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
+            ],
         ],
     ],
 

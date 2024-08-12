@@ -44,6 +44,6 @@ class ListExpiries extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('expiry.expiry.tabs', Expiry::class);
+        return $this->getDynamicTabs('expiry.resources.expiry.tabs', Expiry::class);
     }
 }
