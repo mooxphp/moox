@@ -52,6 +52,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     protected $tempMetaAttributes = [];
 
+    /* Append aditional attributes to the model, especially meta keys */
     protected $appends = [
         'nickname',
         'first_name',
@@ -78,10 +79,12 @@ class WpUser extends Authenticatable implements FilamentUser
     {
         parent::boot();
 
+        /* Provide ALL meta attributes that should be created, from config */
         static::created(function ($model) {
             $model->addOrUpdateMeta('created_at', now()->toDateTimeString());
         });
 
+        /* Provide ALL meta attributes that should be updated, from config */
         static::updated(function ($model) {
             $model->addOrUpdateMeta('updated_at', now()->toDateTimeString());
         });
@@ -90,6 +93,7 @@ class WpUser extends Authenticatable implements FilamentUser
             $model->userMeta()->delete();
         });
 
+        /* Provide ALL fields that should be queryable by the model */
         static::addGlobalScope('addAttributes', function (Builder $builder) {
             $builder->addSelect([
                 'ID',
@@ -105,6 +109,7 @@ class WpUser extends Authenticatable implements FilamentUser
         });
     }
 
+    /* Provide a custom query builder for the model */
     protected function newBaseQueryBuilder()
     {
         $connection = $this->getConnection();
@@ -125,16 +130,19 @@ class WpUser extends Authenticatable implements FilamentUser
         return WpUserFactory::new();
     }
 
+    /* FilamentUser implementation */
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
 
+    /* Default userMeta relationship */
     public function userMeta(): HasMany
     {
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
+    /* Convenient access to all meta attributes */
     public function getAllMetaAttributes()
     {
         $metas = $this->userMeta->pluck('meta_value', 'meta_key')->toArray();
@@ -145,6 +153,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $metas;
     }
 
+    /* Default meta attribute access */
     public function meta($key)
     {
         if (! Str::startsWith($key, $this->wpPrefix)) {
@@ -154,6 +163,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->getMeta($key);
     }
 
+    /* This is probably a duplicate to the static created event */
     public function fill(array $attributes)
     {
         $userAttributes = [];
@@ -172,6 +182,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this;
     }
 
+    /* This is probably a duplicate to the static created event */
     public function save(array $options = [])
     {
         $saved = parent::save($options);
@@ -183,6 +194,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $saved;
     }
 
+    /* This is probably a duplicate to the static updated event */
     public function addOrUpdateMeta($key, $value)
     {
         /** @disregard Intelephense P1036 Non static method 'pluck' should not be called statically. */
@@ -192,6 +204,14 @@ class WpUser extends Authenticatable implements FilamentUser
         );
     }
 
+    protected function getMeta($key)
+    {
+        $meta = $this->userMeta()->where('meta_key', $key)->first();
+
+        return $meta ? $meta->meta_value : null;
+    }
+
+    /* All getters and setters for meta attributes */
     public function getEmailAttribute()
     {
         return $this->attributes['user_email'] ?? null;
@@ -340,12 +360,5 @@ class WpUser extends Authenticatable implements FilamentUser
     public function setMooxUserAttachmentIdAttribute($value)
     {
         $this->addOrUpdateMeta('moox_user_attachment_id', $value);
-    }
-
-    protected function getMeta($key)
-    {
-        $meta = $this->userMeta()->where('meta_key', $key)->first();
-
-        return $meta ? $meta->meta_value : null;
     }
 }

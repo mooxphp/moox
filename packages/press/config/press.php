@@ -187,19 +187,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Security
-    |--------------------------------------------------------------------------
-    |
-    | This will probably move to Moox Security soon.
-    |
-    */
-
-    'enable_forgot_password' => env('FORGOT_PASSWORD', true),
-    'enable_registration' => env('REGISTRATION', false),
-    'enable_mfa' => env('ENABLE_MFA', false),
-
-    /*
-    |--------------------------------------------------------------------------
     | Press - WordPress User Capabilities and Meta
     |--------------------------------------------------------------------------
     |
