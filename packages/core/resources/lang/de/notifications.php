@@ -1,10 +1,7 @@
 <?php
-
 return [
-
-    'notification' => 'Notification',
-    'notifications' => 'Notifications',
-    'notifiable_type' => 'Notifiable_type',
-    'notifiable_id' => 'Notifiable_id',
-
+    'notification' => 'Benachrichtigung',
+    'notifications' => 'Benachrichtigungen',
+    'notifiable_type' => 'Notifiable_Typ',
+    'notifiable_id' => 'Notifiable ID',
 ];
