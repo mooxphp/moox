@@ -1,4 +1,5 @@
 <?php
+
 return [
     // Expiry refers to the expiration date of a record and the package name Moox Expiry
     'expiry' => 'Expiry',

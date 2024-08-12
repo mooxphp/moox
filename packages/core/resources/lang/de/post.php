@@ -1,4 +1,5 @@
 <?php
+
 return [
     // Press refers to the package name Moox Press, don't translate this
     'press' => 'Presse',
