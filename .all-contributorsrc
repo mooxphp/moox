@@ -286,6 +286,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Atalanttore",
+      "name": "Ettore Atalan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/628474?v=4",
+      "profile": "https://github.com/Atalanttore",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
