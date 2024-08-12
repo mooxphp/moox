@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpCommentMetaResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpCommentMeta;
 use Moox\Press\Resources\WpCommentMetaResource;
 

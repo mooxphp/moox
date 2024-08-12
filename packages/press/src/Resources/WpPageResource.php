@@ -434,5 +434,4 @@ class WpPageResource extends Resource
     }
 
     protected static ?string $navigationGroup = 'Moox Press';
-
 }

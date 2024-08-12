@@ -125,5 +125,4 @@ class WpCommentMetaResource extends Resource
     }
 
     protected static ?string $navigationGroup = 'Moox Press Meta';
-
 }

@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpMediaResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource;
 

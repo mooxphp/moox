@@ -3,10 +3,10 @@
 namespace Moox\Press\Resources\WpPostResource\Pages;
 
 use Filament\Actions\Action;
-use Moox\Core\Traits\HasDynamicTabs;
-use Moox\Press\Resources\WpPostResource;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpPost;
+use Moox\Press\Resources\WpPostResource;
 
 class ListWpPosts extends ListRecords
 {

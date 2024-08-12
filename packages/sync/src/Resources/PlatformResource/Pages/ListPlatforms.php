@@ -2,11 +2,10 @@
 
 namespace Moox\Sync\Resources\PlatformResource\Pages;
 
-use Moox\Sync\Models\Platform;
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Sync\Models\Sync;
+use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Sync\Models\Platform;
 use Moox\Sync\Resources\PlatformResource;
 
 class ListPlatforms extends ListRecords

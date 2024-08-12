@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpPostMetaResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Resources\WpPostMetaResource;
 

@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpCategoryResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpCategory;
 use Moox\Press\Resources\WpCategoryResource;
 

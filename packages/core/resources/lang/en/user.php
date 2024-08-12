@@ -35,6 +35,6 @@ return [
     'email_verified_at' => 'Email verified at',
     'website' => 'Website',
     'wp_user_meta' => 'WP User Meta',
-    'wp_user_metas' => 'WP User Metas'
+    'wp_user_metas' => 'WP User Metas',
 
 ];

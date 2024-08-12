@@ -125,5 +125,4 @@ class WpOptionResource extends Resource
     }
 
     protected static ?string $navigationGroup = 'Moox Press Admin';
-
 }
