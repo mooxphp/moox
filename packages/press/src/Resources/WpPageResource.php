@@ -58,7 +58,7 @@ class WpPageResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('post_author')
-                        ->label(__('core::core::post._author'))
+                        ->label(__('core::post.post_author'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -69,7 +69,7 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_date')
-                        ->label(__('core::core::post._date'))
+                        ->label(__('core::post.post_date'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -80,7 +80,7 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_date_gmt')
-                        ->label(__('core::core::post._date_gmt'))
+                        ->label(__('core::post.post_date_gmt'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -91,7 +91,7 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_content')
-                        ->label(__('core::core::post._content'))
+                        ->label(__('core::post.post_content'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -101,7 +101,7 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_title')
-                        ->label(__('core::core::post._title'))
+                        ->label(__('core::post.post_title'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -111,7 +111,7 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_excerpt')
-                        ->label(__('core::core::post._excerpt'))
+                        ->label(__('core::post.post_excerpt'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -121,7 +121,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_status')
-                        ->label(__('core::core::post._status'))
+                        ->label(__('core::post.post_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('publish')
@@ -143,7 +143,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('ping_status')
-                        ->label(__('core::core::post.ping_status'))
+                        ->label(__('core::post.ping_status'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('open')
@@ -154,7 +154,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_password')
-                        ->label(__('core::core::post._password'))
+                        ->label(__('core::post.post_password'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -164,7 +164,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_name')
-                        ->label(__('core::core::post._name'))
+                        ->label(__('core::post.post_name'))
                         ->rules(['max:200', 'string'])
                         ->required()
                         ->columnSpan([
@@ -174,7 +174,7 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('to_ping')
-                        ->label(__('core::core::to_ping'))
+                        ->label(__('core::to_ping'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -184,7 +184,7 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('pinged')
-                        ->label(__('core::core::post.pinged'))
+                        ->label(__('core::post.pinged'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -194,7 +194,7 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_modified')
-                        ->label(__('core::core::post._modified'))
+                        ->label(__('core::post.post_modified'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -205,7 +205,7 @@ class WpPageResource extends Resource
                         ]),
 
                     DateTimePicker::make('post_modified_gmt')
-                        ->label(__('core::core::post._modified_gmt'))
+                        ->label(__('core::post.post_modified_gmt'))
                         ->rules(['date'])
                         ->required()
                         ->default('0000-00-00 00:00:00')
@@ -216,7 +216,7 @@ class WpPageResource extends Resource
                         ]),
 
                     RichEditor::make('post_content_filtered')
-                        ->label(__('core::core::post._content_filtered'))
+                        ->label(__('core::post.post_content_filtered'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -226,7 +226,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_parent')
-                        ->label(__('core::core::post._parent'))
+                        ->label(__('core::post.post_parent'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -259,7 +259,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_type')
-                        ->label(__('core::core::post._type'))
+                        ->label(__('core::post.post_type'))
                         ->rules(['max:20', 'string'])
                         ->required()
                         ->default('post')
@@ -270,7 +270,7 @@ class WpPageResource extends Resource
                         ]),
 
                     TextInput::make('post_mime_type')
-                        ->label(__('core::core::post._mime_type'))
+                        ->label(__('core::post.post_mime_type'))
                         ->rules(['max:100', 'string'])
                         ->required()
                         ->columnSpan([
@@ -300,35 +300,35 @@ class WpPageResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('post_author')
-                    ->label(__('core::core::post._author'))
+                    ->label(__('core::post.post_author'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_date')
-                    ->label(__('core::core::post._date'))
+                    ->label(__('core::post.post_date'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_date_gmt')
-                    ->label(__('core::core::post._date_gmt'))
+                    ->label(__('core::post.post_date_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_content')
-                    ->label(__('core::core::post._content'))
+                    ->label(__('core::post.post_content'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_title')
-                    ->label(__('core::core::post._title'))
+                    ->label(__('core::post.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_excerpt')
-                    ->label(__('core::core::post._excerpt'))
+                    ->label(__('core::post.post_excerpt'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_status')
-                    ->label(__('core::core::post._status'))
+                    ->label(__('core::post.post_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -338,45 +338,45 @@ class WpPageResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('ping_status')
-                    ->label(__('core::core::post.ping_status'))
+                    ->label(__('core::post.ping_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_password')
-                    ->label(__('core::core::post._password'))
+                    ->label(__('core::post.post_password'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_name')
-                    ->label(__('core::core::post._name'))
+                    ->label(__('core::post.post_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('to_ping')
-                    ->label(__('core::core::to_ping'))
+                    ->label(__('core::to_ping'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('pinged')
-                    ->label(__('core::core::post.pinged'))
+                    ->label(__('core::post.pinged'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_modified')
-                    ->label(__('core::core::post._modified'))
+                    ->label(__('core::post.post_modified'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_modified_gmt')
-                    ->label(__('core::core::post._modified_gmt'))
+                    ->label(__('core::post.post_modified_gmt'))
                     ->toggleable()
                     ->dateTime(),
                 Tables\Columns\TextColumn::make('post_content_filtered')
-                    ->label(__('core::core::post._content_filtered'))
+                    ->label(__('core::post.post_content_filtered'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_parent')
-                    ->label(__('core::core::post._parent'))
+                    ->label(__('core::post.post_parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -390,12 +390,12 @@ class WpPageResource extends Resource
                     ->toggleable()
                     ->searchable(true, null, true),
                 Tables\Columns\TextColumn::make('post_type')
-                    ->label(__('core::core::post._type'))
+                    ->label(__('core::post.post_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('post_mime_type')
-                    ->label(__('core::core::post._mime_type'))
+                    ->label(__('core::post.post_mime_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

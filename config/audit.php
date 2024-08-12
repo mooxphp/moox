@@ -9,7 +9,7 @@
 | translate the strings, you can do so in the language files
 | published from moox_core. Example:
 |
-| 'trans//core::common.all',
+| 'trans//core::core.all',
 | loads from common.php
 | outputs 'All'
 |
@@ -53,13 +53,13 @@ return [
 
         'tabs' => [
             'all' => [
-                'label' => 'trans//core::common.all',
+                'label' => 'trans//core::core.all',
                 'icon' => 'gmdi-filter-list',
                 'query' => [],
             ],
             /*
             'error' => [
-                'label' => 'trans//core::common.error',
+                'label' => 'trans//core::core.error',
                 'icon' => 'gmdi-text-snippet',
                 'query' => [
                     [
@@ -84,7 +84,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::common.system',
+    'navigation_group' => 'trans//core::core.system',
 
     /*
     |--------------------------------------------------------------------------

@@ -32,7 +32,7 @@ class WpPostMetaResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('post_id')
-                        ->label(__('core::core::post._id'))
+                        ->label(__('core::post.post_id'))
                         ->rules(['max:255'])
                         ->required()
                         ->default('0')
@@ -72,7 +72,7 @@ class WpPostMetaResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('post_id')
-                    ->label(__('core::core::post._id'))
+                    ->label(__('core::post.post_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

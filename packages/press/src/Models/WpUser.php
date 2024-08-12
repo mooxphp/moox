@@ -187,6 +187,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function addOrUpdateMeta($key, $value)
     {
+        /** @disregard Intelephense P1036 Non static method 'pluck' should not be called statically. */
         WpUserMeta::updateOrCreate(
             ['user_id' => $this->ID, 'meta_key' => $key],
             ['meta_value' => $value]

@@ -121,7 +121,7 @@ class PlatformResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             if ($state) {
-                                /** @disregard P1036 Non static method 'pluck' should not be called statically. */
+                                /** @disregard Intelephense P1036 Non static method 'pluck' should not be called statically. */
                                 $existingMaster = Platform::where('master', true)
                                     ->where('id', '!=', $get('id'))
                                     ->first();
