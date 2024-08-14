@@ -23,6 +23,7 @@ class StoreRelationsInSession
             $sessionId = session()->getId();
             $userType = get_class($user);
 
+            /** @disregard Intelephense P1036 Non static method 'pluck' should not be called statically. */
             UserSession::updateOrCreate(
                 [
                     'id' => $sessionId,

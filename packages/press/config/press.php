@@ -654,6 +654,22 @@ return [
 
             /*
             |--------------------------------------------------------------------------
+        'post' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::press.post',
+            'plural' => 'trans//core::press.posts',
+
+            /*
+            |--------------------------------------------------------------------------
             | Tabs
             |--------------------------------------------------------------------------
             |
@@ -686,6 +702,7 @@ return [
         ],
 
         'termTaxonomy' => [
+        'category' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -886,6 +903,8 @@ return [
 
             'single' => 'trans//core::user.wiki',
             'plural' => 'trans//core::user.wikis',
+            'single' => 'trans//core::press.category',
+            'plural' => 'trans//core::press.categories',
 
             /*
             |--------------------------------------------------------------------------
@@ -950,21 +969,6 @@ return [
     'press_navigation_sort' => 7900,
     'system_navigation_sort' => 7000,
     'user_navigation_sort' => 6015,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Press - Navigation Group
-    |--------------------------------------------------------------------------
-    |
-    | This values are for grouping the navigation items into the
-    | right group in the Filament Admin Panel. By default,
-    | everything we use three Moox-compatible groups.
-    |
-    */
-
-    'press_navigation_group' => 'Press',
-    'system_navigation_group' => 'Press System',
-    'user_navigation_group' => 'User',
 
     /*
     |--------------------------------------------------------------------------
@@ -1050,29 +1054,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Security
+    | Press - Moox Roles to WordPress Roles
     |--------------------------------------------------------------------------
     |
-    | This will probably move to Moox Security soon.
+    | This array maps the Moox roles to the WordPress roles.
     |
     */
 
-    'enable_forgot_password' => env('FORGOT_PASSWORD', true),
-    'enable_registration' => env('REGISTRATION', false),
-    'enable_mfa' => env('ENABLE_MFA', false),
+    'moox_roles' => [
+        'System Administrator' => 'Administrator',
+        'Administrator' => 'Editor',
+        'Editor' => 'Editor',
+        'Author' => 'Author',
+        'Contributor' => 'Contributor',
+        'Subscriber' => 'Subscriber',
+    ],
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress User Capabilities and Meta
+    | Press - WordPress Roles and Capabilities
     |--------------------------------------------------------------------------
     |
-    | These are the default capabilities and meta for the WordPress users.
-    | You can add more capabilities or change the default ones.
-    | But be careful, as this can break the installation.
+    | This array maps the WordPress roles to the serialized capabilitiy
+    | array, that is stored in the usermeta table.
     |
     */
 
-    'user_capabilities' => [
+    'wp_roles' => [
         'Administrator' => serialize(['administrator' => true]),
         'Editor' => serialize(['editor' => true]),
         'Author' => serialize(['author' => true]),
@@ -1080,8 +1088,34 @@ return [
         'Subscriber' => serialize(['subscriber' => true]),
     ],
 
+    'wp_user_levels' => [
+        'administrator' => 10,
+        'editor' => 7,
+        'author' => 2,
+        'contributor' => 1,
+        'subscriber' => 0,
+    ],
+
+    'default_user_attributes' => [
+        'user_registered' => now()->toDateTimeString(),
+        'user_status' => '0',
+        // Todo: suppress errors for first and last name
+        //'display_name' => $first_name.' '.$last_name ?? $user_login ?? '',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Press - User Meta
+    |--------------------------------------------------------------------------
+    |
+    | These are the user meta keys for the WordPress users. Defined meta
+    | keys will be appended to the user model and can be used
+    | in the application. Be careful with this.
+    |
+    */
+
     'default_user_meta' => [
-        'nickname' => 'user_login',
+        'nickname' => $user_login ?? '',
         'first_name' => '',
         'last_name' => '',
         'description' => '',
@@ -1097,6 +1131,11 @@ return [
         'dismissed_wp_pointers' => '',
         'wp_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
+
+        // locale
+        // comment_shortcuts
+        // syntax_highlighting
+
     ],
 
     /*
