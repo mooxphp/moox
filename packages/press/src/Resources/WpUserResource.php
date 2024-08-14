@@ -253,6 +253,12 @@ class WpUserResource extends Resource
                     ->searchable()
                     ->limit(50),
 
+                Tables\Columns\TextColumn::make('user_email')
+                    ->label(__('Native: User Email'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('Virtual: Name'))
                     ->toggleable()
