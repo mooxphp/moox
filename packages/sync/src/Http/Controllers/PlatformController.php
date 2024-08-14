@@ -13,6 +13,7 @@ class PlatformController extends Controller
     {
         // Eager load the sources and targets relationships
         $platforms = Platform::with(['sources', 'targets'])->get();
+
         return PlatformResource::collection($platforms);
     }
 
@@ -20,6 +21,7 @@ class PlatformController extends Controller
     {
         // Eager load the sources and targets relationships for a single platform
         $platform->load(['sources', 'targets']);
+
         return new PlatformResource($platform);
     }
 
@@ -41,6 +43,7 @@ class PlatformController extends Controller
         ]);
 
         $platform = Platform::create($validatedData);
+
         return new PlatformResource($platform);
     }
 
@@ -62,12 +65,14 @@ class PlatformController extends Controller
         ]);
 
         $platform->update($validatedData);
+
         return new PlatformResource($platform);
     }
 
     public function destroy(Platform $platform)
     {
         $platform->delete();
+
         return response()->json(null, 204);
     }
 }

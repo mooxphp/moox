@@ -9,7 +9,7 @@ if (config('sync.use_api') && config('sync.api_entities')) {
         if ($config['enabled']) {
             $middleware = [];
 
-            if (!$config['public']) {
+            if (! $config['public']) {
                 $middleware[] = $config['auth_type'] === 'platform' ? 'auth.platformtoken' : 'auth:sanctum';
             }
 
@@ -18,21 +18,21 @@ if (config('sync.use_api') && config('sync.api_entities')) {
 
                 if (isset($config['nested'])) {
                     foreach ($config['nested'] as $nestedEntity => $nestedConfig) {
-                        Route::resource("api/", $nestedConfig['controller_class'])
+                        Route::resource('api/', $nestedConfig['controller_class'])
                             ->only($nestedConfig['route_only']);
                     }
                 }
 
-                    Route::get('/', [PlatformController::class, 'index']);
-                    Route::get('/{platform}', [PlatformController::class, 'show']);
+                Route::get('/', [PlatformController::class, 'index']);
+                Route::get('/{platform}', [PlatformController::class, 'show']);
 
-                    Route::prefix('/{platform}/syncs')->group(function () {
-                        Route::get('/', [SyncController::class, 'index']);
-                        Route::get('/{sync}', [SyncController::class, 'show']);
-                        Route::post('/', [SyncController::class, 'store']);
-                        Route::put('/{sync}', [SyncController::class, 'update']);
-                        Route::delete('/{sync}', [SyncController::class, 'destroy']);
-                    });
+                Route::prefix('/{platform}/syncs')->group(function () {
+                    Route::get('/', [SyncController::class, 'index']);
+                    Route::get('/{sync}', [SyncController::class, 'show']);
+                    Route::post('/', [SyncController::class, 'store']);
+                    Route::put('/{sync}', [SyncController::class, 'update']);
+                    Route::delete('/{sync}', [SyncController::class, 'destroy']);
+                });
             });
         }
     }

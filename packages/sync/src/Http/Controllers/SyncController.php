@@ -4,8 +4,8 @@ namespace Moox\Sync\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Moox\Sync\Models\Sync;
 use Moox\Press\Models\Platform;
+use Moox\Sync\Models\Sync;
 
 class SyncController extends Controller
 {
@@ -13,6 +13,7 @@ class SyncController extends Controller
     {
         // Get all syncs related to the platform
         $syncs = $platform->syncs()->get();
+
         return SyncResource::collection($syncs);
     }
 
@@ -42,6 +43,7 @@ class SyncController extends Controller
         }
 
         $sync->update($request->all());
+
         return new SyncResource($sync);
     }
 
@@ -52,6 +54,7 @@ class SyncController extends Controller
         }
 
         $sync->delete();
+
         return response()->json(null, 204);
     }
 }
