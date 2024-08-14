@@ -654,22 +654,6 @@ return [
 
             /*
             |--------------------------------------------------------------------------
-        'post' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//core::press.post',
-            'plural' => 'trans//core::press.posts',
-
-            /*
-            |--------------------------------------------------------------------------
             | Tabs
             |--------------------------------------------------------------------------
             |
@@ -702,7 +686,6 @@ return [
         ],
 
         'termTaxonomy' => [
-        'category' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -903,8 +886,6 @@ return [
 
             'single' => 'trans//core::user.wiki',
             'plural' => 'trans//core::user.wikis',
-            'single' => 'trans//core::press.category',
-            'plural' => 'trans//core::press.categories',
 
             /*
             |--------------------------------------------------------------------------
@@ -1124,12 +1105,12 @@ return [
         'admin_color' => 'fresh',
         'use_ssl' => '0',
         'show_admin_bar_front' => 'true',
-        'wp_capabilities' => serialize([
+        env('WP_PREFIX', 'wp_').'_capabilities' => serialize([
             'subscriber' => true,
         ]),
-        'wp_user_level' => '0',
+        env('WP_PREFIX', 'wp_').'_user_level' => '0',
         'dismissed_wp_pointers' => '',
-        'wp_dashboard_quick_press_last_post_id' => '0',
+        env('WP_PREFIX', 'wp_').'_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
 
         // locale
