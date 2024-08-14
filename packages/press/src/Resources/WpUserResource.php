@@ -137,6 +137,7 @@ class WpUserResource extends Resource
                     TextInput::make('first_name')
                         ->label(__('core::user.first_name'))
                         ->rules(['max:255', 'string'])
+                        ->default(fn ($record) => $record->first_name ?? '')
                         ->required()
                         ->columnSpan([
                             'default' => 12,
@@ -154,11 +155,21 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Select::make('capabilities')
+                    Select::make('jku8u_capabilities')
                         ->label('Role')
                         ->options($capabilitiesOptions)
                         ->required()
                         ->columnSpan(12),
+
+                    TextInput::make('jku8u_capabilities')
+                        ->label(__('core::user.jku8u_capabilities'))
+                        ->rules(['max:255', 'string'])
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
 
                     TextInput::make('user_pass')
                         ->revealable()
@@ -302,7 +313,7 @@ class WpUserResource extends Resource
                     ->searchable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('capabilities')
+                Tables\Columns\TextColumn::make('jku8u_capabilities')
                     ->label(__('Meta: WP Capabilities'))
                     ->toggleable()
                     ->searchable()

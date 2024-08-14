@@ -28,16 +28,6 @@ class WpUser extends Authenticatable implements FilamentUser
         'display_name',
     ];
 
-    /*
-    protected $appends = [
-        'nickname',
-        'first_name',
-        'last_name',
-        //'jku8u_capabilities',
-        //'jku8u_user_level'
-    ];
-    */
-
     protected $wpPrefix;
 
     protected $table;
@@ -49,10 +39,6 @@ class WpUser extends Authenticatable implements FilamentUser
     public $timestamps = false;
 
     protected $metaFieldsInitialized = false;
-
-    protected $accessors = [];
-
-    protected $mutators = [];
 
     public function __construct(array $attributes = [])
     {
@@ -97,8 +83,7 @@ class WpUser extends Authenticatable implements FilamentUser
                 'user_registered',
                 'user_activation_key',
                 'user_status',
-                //'jku8u_capabilities',
-                //'jku8u_capabilities as capabilities',
+                // 'your_custom_meta_field', // Uncomment if needed
             ]);
         });
     }
@@ -109,23 +94,50 @@ class WpUser extends Authenticatable implements FilamentUser
             return;
         }
 
-        $metaConfig = config('press.default_user_meta', []);
+        $this->metaFieldsInitialized = true;
+    }
 
-        foreach ($metaConfig as $key => $defaultValue) {
-            $this->fillable[] = $key;
+    public function getAttribute($key)
+    {
+        // First, check if the key exists as a native attribute or relationship
+        $value = parent::getAttribute($key);
 
-            $this->accessors[$key] = function () use ($key, $defaultValue) {
-                return $this->getMeta($key) ?? $defaultValue;
-            };
-
-            $this->mutators[$key] = function ($value) use ($key) {
-                $this->addOrUpdateMeta($key, $value);
-
-                return $value;
-            };
+        // If the native attribute is not found, look for the meta field
+        if (is_null($value) && $this->metaFieldsInitialized && $this->isMetaField($key)) {
+            return $this->getMeta($key);
         }
 
-        $this->metaFieldsInitialized = true;
+        return $value;
+    }
+
+    public function setAttribute($key, $value)
+    {
+        // Check if the key is a meta field first
+        if ($this->metaFieldsInitialized && $this->isMetaField($key)) {
+            $this->addOrUpdateMeta($key, $value);
+        } else {
+            parent::setAttribute($key, $value);
+        }
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        $attributes = parent::toArray();
+
+        // Include meta fields in the array representation
+        $metaFields = config('press.default_user_meta', []);
+        foreach ($metaFields as $key => $defaultValue) {
+            $attributes[$key] = $this->getMeta($key) ?? $defaultValue;
+        }
+
+        return $attributes;
+    }
+
+    public function toJson($options = 0)
+    {
+        return json_encode($this->toArray(), $options);
     }
 
     public function getMeta($key)
@@ -139,40 +151,17 @@ class WpUser extends Authenticatable implements FilamentUser
         return $meta ? $meta->meta_value : null;
     }
 
-    public function userMeta(): HasMany
-    {
-        return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
-    }
-
     public function addOrUpdateMeta($key, $value)
     {
-        /** @disregard Intelephense P1036 Non static method 'pluck' should not be called statically. */
         WpUserMeta::updateOrCreate(
             ['user_id' => $this->ID, 'meta_key' => $key],
             ['meta_value' => $value]
         );
     }
 
-    public function getAttribute($key)
+    public function userMeta(): HasMany
     {
-        $value = parent::getAttribute($key);
-
-        if (is_null($value) && $this->metaFieldsInitialized) {
-            return $this->getMeta($key);
-        }
-
-        return $value;
-    }
-
-    public function setAttribute($key, $value)
-    {
-        if ($this->metaFieldsInitialized && array_key_exists($key, config('press.default_user_meta', []))) {
-            $this->addOrUpdateMeta($key, $value);
-        } else {
-            parent::setAttribute($key, $value);
-        }
-
-        return $this;
+        return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
     protected function newBaseQueryBuilder()
@@ -187,5 +176,10 @@ class WpUser extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    protected function isMetaField($key)
+    {
+        return array_key_exists($key, config('press.default_user_meta', []));
     }
 }
