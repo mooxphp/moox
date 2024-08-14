@@ -1,20 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
-
 return [
 
     /*
@@ -146,4 +131,33 @@ return [
     */
 
     'navigation_sort' => 9500,
+
+    /*
+     |--------------------------------------------------------------------------
+     | API
+     |--------------------------------------------------------------------------
+     |
+     | Enable or disable the API and configure all entities.
+     | Public or secured by platform or sanctum.
+     | Available at /api/{entity}
+     |
+     */
+
+    'use_api' => true,
+    'api_entities' => [
+        'sync' => [
+            'enabled' => true,
+            'public' => false, // false for private, true for public
+            'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
+            'route_only' => ['index', 'store', 'edit', 'destroy'],
+            'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
+        ],
+        'platform' => [
+            'enabled' => true,
+            'public' => false, // false for private, true for public
+            'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
+            'route_only' => ['index'],
+            'controller_class' => \Moox\Sync\Http\Controllers\PlatformController::class,
+        ],
+    ],
 ];

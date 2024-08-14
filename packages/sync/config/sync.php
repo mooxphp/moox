@@ -146,4 +146,38 @@ return [
     */
 
     'navigation_sort' => 9500,
+
+    /*
+     |--------------------------------------------------------------------------
+     | Sync - API
+     |--------------------------------------------------------------------------
+     |
+     | Enable or disable the API and configure all entities.
+     | Public or secured by platform or sanctum.
+     | Available at /api/{entity}
+     |
+     */
+
+    'use_api' => true,
+    'entities' => [
+        'platform' => [
+            'api' => [
+                'enabled' => true,
+                'public' => false, // false for private, true for public
+                'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
+                'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
+                'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
+            ],
+        ],
+        'test' => [
+            'api' => [
+                'enabled' => true,
+                'public' => false, // false for private, true for public
+                'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
+                'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
+                'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
+
+            ],
+        ],
+    ],
 ];
