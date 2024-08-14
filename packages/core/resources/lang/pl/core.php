@@ -1,7 +1,5 @@
 <?php
-
 return [
-
     'title' => 'Title',
     'slug' => 'Slug',
     'item' => 'Item',
@@ -15,7 +13,7 @@ return [
     'dashboard' => 'Dashboard',
     'main' => 'Main',
     'delete' => 'Delete',
-    'uuid' => 'Uuid',
+    'uuid' => 'UUID',
     'payload' => 'Payload',
     'connection' => 'Connection',
     'retry' => 'Retry',
@@ -81,5 +79,4 @@ return [
     'meta_value' => 'Meta Value',
     'term_taxonomy_id' => 'Term Taxonomy ID',
     'taxonomy' => 'Taxonomy',
-
 ];

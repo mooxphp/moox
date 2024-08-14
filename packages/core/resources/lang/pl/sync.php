@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Sync refers to the package name Moox Sync, and data transfer between platforms
     'sync' => 'Sync',
@@ -34,13 +33,13 @@ return [
     // If exists refers to the action to take if the record already exists
     'if_exists' => 'If exists',
     // Filter ids refers to the ids to filter when syncing
-    'filter_ids' => 'Filter ids',
+    'filter_ids' => 'ID filtra',
     // Ignore ids refers to the ids to ignore when syncing
-    'ignore_ids' => 'Ignore ids',
+    'ignore_ids' => 'Ignoruj ID',
     // Sync all records refers to syncing all records
     'sync_all_records' => 'Sync all Records',
     // Sync only ids refers to syncing only the ids
-    'sync_only_ids' => 'Sync only ids',
+    'sync_only_ids' => 'Synchronizuj tylko ID',
     // Sync all fields refers to syncing all fields
     'sync_all_fields' => 'Sync all Fields',
     // Sync only fields defined in the field mappings
