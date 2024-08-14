@@ -32,7 +32,25 @@ jobs:
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: secret
+          MYSQL_DATABASE: laravel_test
+        ports:
+          - 3306
+        options: --healt-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retrie=3
+
     steps:
+
+      - name: Verfify MySQL connection
+        run: |
+          mysql --version
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} --uuser -psecret -e "SHOW DATABASES"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -47,6 +65,7 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
 
       - name: Remove PHP-PSR Extension
         run: |
