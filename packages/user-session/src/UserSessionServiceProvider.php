@@ -6,6 +6,7 @@ namespace Moox\UserSession;
 
 use Illuminate\Routing\Router;
 use Moox\UserSession\Commands\InstallCommand;
+use Moox\UserSession\Http\Middleware\StoreRelationsInSession;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -36,6 +37,6 @@ class UserSessionServiceProvider extends PackageServiceProvider
         }
 
         $router = $this->app->make(Router::class);
-        $router->pushMiddlewareToGroup('web', \Moox\UserSession\Http\Middleware\StoreRelationsInSession::class);
+        $router->pushMiddlewareToGroup('web', StoreRelationsInSession::class);
     }
 }

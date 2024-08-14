@@ -26,50 +26,98 @@ return [
     |
     */
 
-    'press' => [
+    'resources' => [
+        'post' => [
 
-        /*
-        |--------------------------------------------------------------------------
-        | Title
-        |--------------------------------------------------------------------------
-        |
-        | The translatable title of the Resource in singular and plural.
-        |
-        */
-
-        'single' => 'trans//core::press.press',
-        'plural' => 'trans//core::press.press',
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tabs
-        |--------------------------------------------------------------------------
-        |
-        | Define the tabs for the Expiry table. They are optional, but
-        | pretty awesome to filter the table by certain values.
-        | You may simply do a 'tabs' => [], to disable them.
-        |
-        */
-
-        'tabs' => [
-            'all' => [
-                'label' => 'trans//core::core.all',
-                'icon' => 'gmdi-filter-list',
-                'query' => [],
-            ],
             /*
-            'error' => [
-                'label' => 'trans//core::core.error',
-                'icon' => 'gmdi-text-snippet',
-                'query' => [
-                    [
-                        'field' => 'subject_type',
-                        'operator' => '=',
-                        'value' => 'Error',
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::press.post',
+            'plural' => 'trans//core::press.posts',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
                     ],
                 ],
+                */
             ],
+        ],
+        'category' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
             */
+
+            'single' => 'trans//core::press.category',
+            'plural' => 'trans//core::press.categories',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
+            ],
         ],
     ],
 
@@ -84,9 +132,9 @@ return [
     |
     */
 
-    'press_navigation_group' => 'trans//core::core.press',
+    'press_navigation_group' => 'trans//core::content.press',
     'system_navigation_group' => 'trans//core::core.system',
-    'user_navigation_group' => 'trans//core::user.users',
+    'user_navigation_group' => 'trans//core::core.users',
 
     /*
     |--------------------------------------------------------------------------
@@ -187,16 +235,33 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress User Capabilities and Meta
+    | Press - Moox Roles to WordPress Roles
     |--------------------------------------------------------------------------
     |
-    | These are the default capabilities and meta for the WordPress users.
-    | You can add more capabilities or change the default ones.
-    | But be careful, as this can break the installation.
+    | This array maps the Moox roles to the WordPress roles.
     |
     */
 
-    'user_capabilities' => [
+    'moox_roles' => [
+        'System Administrator' => 'Administrator',
+        'Administrator' => 'Editor',
+        'Editor' => 'Editor',
+        'Author' => 'Author',
+        'Contributor' => 'Contributor',
+        'Subscriber' => 'Subscriber',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Press - WordPress Roles and Capabilities
+    |--------------------------------------------------------------------------
+    |
+    | This array maps the WordPress roles to the serialized capabilitiy
+    | array, that is stored in the usermeta table.
+    |
+    */
+
+    'wp_roles' => [
         'Administrator' => serialize(['administrator' => true]),
         'Editor' => serialize(['editor' => true]),
         'Author' => serialize(['author' => true]),
@@ -204,8 +269,34 @@ return [
         'Subscriber' => serialize(['subscriber' => true]),
     ],
 
+    'wp_user_levels' => [
+        'administrator' => 10,
+        'editor' => 7,
+        'author' => 2,
+        'contributor' => 1,
+        'subscriber' => 0,
+    ],
+
+    'default_user_attributes' => [
+        'user_registered' => now()->toDateTimeString(),
+        'user_status' => '0',
+        // Todo: suppress errors for first and last name
+        //'display_name' => $first_name.' '.$last_name ?? $user_login ?? '',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Press - User Meta
+    |--------------------------------------------------------------------------
+    |
+    | These are the user meta keys for the WordPress users. Defined meta
+    | keys will be appended to the user model and can be used
+    | in the application. Be careful with this.
+    |
+    */
+
     'default_user_meta' => [
-        'nickname' => 'user_login',
+        'nickname' => $user_login ?? '',
         'first_name' => '',
         'last_name' => '',
         'description' => '',
@@ -221,6 +312,11 @@ return [
         'dismissed_wp_pointers' => '',
         'wp_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
+
+        // locale
+        // comment_shortcuts
+        // syntax_highlighting
+
     ],
 
     /*

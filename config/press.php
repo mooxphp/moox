@@ -305,12 +305,12 @@ return [
         'admin_color' => 'fresh',
         'use_ssl' => '0',
         'show_admin_bar_front' => 'true',
-        'wp_capabilities' => serialize([
+        'jku8u_capabilities' => serialize([
             'subscriber' => true,
         ]),
-        'wp_user_level' => '0',
+        //'jku8u_user_level' => '0',
         'dismissed_wp_pointers' => '',
-        'wp_dashboard_quick_press_last_post_id' => '0',
+        //'jku8u_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
 
         // locale

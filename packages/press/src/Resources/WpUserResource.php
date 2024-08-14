@@ -30,7 +30,7 @@ class WpUserResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
 
-    protected static ?string $recordTitleAttribute = 'user_login';
+    //protected static ?string $recordTitleAttribute = 'user_login';
 
     public static function getModelLabel(): string
     {
@@ -51,7 +51,8 @@ class WpUserResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $userCapabilities = config('press.user_capabilities');
+
+        $userCapabilities = config('press.wp_roles');
 
         $capabilitiesOptions = collect($userCapabilities)->mapWithKeys(function ($key, $value) {
             return [$key => $value];
@@ -188,7 +189,6 @@ class WpUserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
-
                 ]),
             ]),
 
@@ -236,6 +236,125 @@ class WpUserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
+                Tables\Columns\TextColumn::make('user_login')
+                    ->label(__('Native: User Login'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('name')
+                    ->label(__('Virtual: Name'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('nickname')
+                    ->label(__('Meta: Nickname'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('first_name')
+                    ->label(__('Meta: First Name'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('last_name')
+                    ->label(__('Meta: Last Name'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('description')
+                    ->label(__('Meta: Description'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('rich_editing')
+                    ->label(__('Meta: Rich Editing'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('comment_shortcuts')
+                    ->label(__('Meta: Comment Shortcuts'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('admin_color')
+                    ->label(__('Meta: Admin Color'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('use_ssl')
+                    ->label(__('Meta: Use SSL'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('show_admin_bar_front')
+                    ->label(__('Meta: Show Admin Bar Front'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                Tables\Columns\TextColumn::make('capabilities')
+                    ->label(__('Meta: WP Capabilities'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                /*
+                Tables\Columns\TextColumn::make('wp_user_level')
+                    ->label(__('Meta: WP User Level'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+*/
+
+                Tables\Columns\TextColumn::make('dismissed_wp_pointers')
+                    ->label(__('Meta: Dismissed WP Pointers'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                /*
+                Tables\Columns\TextColumn::make('wp_dashboard_quick_press_last_post_id')
+                    ->label(__('Meta: WP Dashboard Quick Press Last Post ID'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+                */
+
+                Tables\Columns\TextColumn::make('mm_sua_attachment_id')
+                    ->label(__('Meta: MM SUA Attachment ID'))
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+
+                /*
+
+                    'description' => '',
+                    'rich_editing' => 'true',
+                    'comment_shortcuts' => 'false',
+                    'admin_color' => 'fresh',
+                    'use_ssl' => '0',
+                    'show_admin_bar_front' => 'true',
+                    'wp_capabilities' => serialize([
+                        'subscriber' => true,
+                    ]),
+                    'wp_user_level' => '0',
+                    'dismissed_wp_pointers' => '',
+                    'wp_dashboard_quick_press_last_post_id' => '0',
+                    'mm_sua_attachment_id' => '',
+
+*/
+
+                /*
                 Tables\Columns\TextColumn::make('user_login')
                     ->label(__('core::user.user_login'))
                     ->toggleable()
@@ -287,6 +406,7 @@ class WpUserResource extends Resource
                     ->label(__('core::core.deleted'))
                     ->toggleable()
                     ->boolean(),
+                */
             ])
             ->filters([])
             ->actions([ViewAction::make(), EditAction::make()])
