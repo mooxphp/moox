@@ -27,9 +27,9 @@ class WpCommentMetaRelationManager extends RelationManager
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
                     TextInput::make('comment_id')
+                        ->label(__('core::comment.comment_id'))
                         ->rules(['max:255'])
                         ->required()
-                        ->placeholder('Comment Id')
                         ->default('0')
                         ->columnSpan([
                             'default' => 12,
@@ -38,9 +38,9 @@ class WpCommentMetaRelationManager extends RelationManager
                         ]),
 
                     TextInput::make('meta_key')
+                        ->label(__('core::core.meta_key'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Meta Key')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -48,9 +48,9 @@ class WpCommentMetaRelationManager extends RelationManager
                         ]),
 
                     RichEditor::make('meta_value')
+                        ->label(__('core::core.meta_value'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Meta Value')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -67,14 +67,17 @@ class WpCommentMetaRelationManager extends RelationManager
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('comment_id')
+                    ->label(__('core::content.comment_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_key')
+                    ->label(__('core::core.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('meta_value')
+                    ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),

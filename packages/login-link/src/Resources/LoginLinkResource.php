@@ -141,22 +141,22 @@ class LoginLinkResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('login-link.login-link.single');
+        return config('login-link.resources.login-link.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('login-link.login-link.plural');
+        return config('login-link.resources.login-link.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('login-link.login-link.plural');
+        return config('login-link.resources.login-link.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('login-link.login-link.single');
+        return config('login-link.resources.login-link.single');
     }
 
     public static function shouldRegisterNavigation(): bool

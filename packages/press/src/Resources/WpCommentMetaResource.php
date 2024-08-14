@@ -106,31 +106,23 @@ class WpCommentMetaResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('core::comment.wp_comment_meta');
+        return config('press.resources.commentMeta.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('core::comment.wp_comment_metas');
+        return config('press.resources.commentMeta.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('core::comment.wp_comment_metas');
+        return config('press.resources.commentMeta.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('core::comment.wp_comment_meta');
+        return config('press.resources.commentMeta.single');
     }
 
-    public static function getNavigationGroup(): ?string
-    {
-        return config('press.system_navigation_group');
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return config('press.system_navigation_sort') + 1;
-    }
+    protected static ?string $navigationGroup = 'Moox Press Meta';
 }

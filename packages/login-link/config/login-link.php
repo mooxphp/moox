@@ -26,50 +26,52 @@ return [
     |
     */
 
-    'login-link' => [
+    'resources' => [
+        'login-link' => [
 
-        /*
-        |--------------------------------------------------------------------------
-        | Title
-        |--------------------------------------------------------------------------
-        |
-        | The translatable title of the Resource in singular and plural.
-        |
-        */
-
-        'single' => 'trans//core::login-link.login-link',
-        'plural' => 'trans//core::login-link.login-links',
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tabs
-        |--------------------------------------------------------------------------
-        |
-        | Define the tabs for the Expiry table. They are optional, but
-        | pretty awesome to filter the table by certain values.
-        | You may simply do a 'tabs' => [], to disable them.
-        |
-        */
-
-        'tabs' => [
-            'all' => [
-                'label' => 'trans//core::core.all',
-                'icon' => 'gmdi-filter-list',
-                'query' => [],
-            ],
             /*
-            'documents' => [
-                'label' => 'trans//core::core.documents',
-                'icon' => 'gmdi-text-snippet',
-                'query' => [
-                    [
-                        'field' => 'expiry_job',
-                        'operator' => '=',
-                        'value' => 'Documents',
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::login-link.login-link',
+            'plural' => 'trans//core::login-link.login-links',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'documents' => [
+                    'label' => 'trans//core::core.documents',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'expiry_job',
+                            'operator' => '=',
+                            'value' => 'Documents',
+                        ],
                     ],
                 ],
+                */
             ],
-            */
         ],
     ],
 

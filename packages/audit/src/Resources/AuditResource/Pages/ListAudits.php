@@ -15,6 +15,6 @@ class ListAudits extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('audit.audit.tabs', Activity::class);
+        return $this->getDynamicTabs('audit.resources.audit.tabs', Activity::class);
     }
 }

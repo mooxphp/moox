@@ -27,23 +27,6 @@ class WpPostResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
-    public static function getModelLabel(): string
-    {
-        return 'Post';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Posts';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Posts';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -356,4 +339,26 @@ class WpPostResource extends Resource
             'edit' => Pages\EditWpPost::route('/{record}/edit'),
         ];
     }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.post.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.post.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.post.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.post.single');
+    }
+
+    protected static ?string $navigationGroup = 'Moox Press';
 }

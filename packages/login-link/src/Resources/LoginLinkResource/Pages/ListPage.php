@@ -44,6 +44,6 @@ class ListPage extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('login-link.login-link.tabs', LoginLink::class);
+        return $this->getDynamicTabs('login-link.resources.login-link.tabs', LoginLink::class);
     }
 }

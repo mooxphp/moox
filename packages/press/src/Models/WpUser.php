@@ -83,7 +83,6 @@ class WpUser extends Authenticatable implements FilamentUser
                 'user_registered',
                 'user_activation_key',
                 'user_status',
-                // 'your_custom_meta_field', // Uncomment if needed
             ]);
         });
     }
@@ -153,6 +152,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function addOrUpdateMeta($key, $value)
     {
+        /** @disregard  */
         WpUserMeta::updateOrCreate(
             ['user_id' => $this->ID, 'meta_key' => $key],
             ['meta_value' => $value]

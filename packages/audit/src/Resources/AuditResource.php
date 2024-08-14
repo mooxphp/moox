@@ -189,22 +189,22 @@ class AuditResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('audit.audit.single');
+        return config('audit.resources.audit.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('audit.audit.plural');
+        return config('audit.resources.audit.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('audit.audit.plural');
+        return config('audit.resources.audit.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('audit.audit.single');
+        return config('audit.resources.audit.single');
     }
 
     public static function getNavigationGroup(): ?string
