@@ -39,9 +39,11 @@ class SendInvitationRequests implements ShouldQueue
     {
         $this->setProgress(1);
 
+        /** @disregard Non static method 'create' should not be called statically.intelephense(P1036) */
         $invitationRequests = Training::where('due_at', '<', now())
             ->get()
             ->map(function ($training) {
+                /** @disregard Non static method 'create' should not be called statically.intelephense(P1036) */
                 return TrainingInvitation::create([
                     'training_id' => $training->id,
                     'title' => $training->title,
@@ -56,6 +58,7 @@ class SendInvitationRequests implements ShouldQueue
 
         foreach ($invitationRequests as $invitationRequest) {
 
+            /** @disregard Non static method 'create' should not be called statically.intelephense(P1036) */
             $training = Training::find($invitationRequest->training_id);
 
             $cycle = $training->cycle;
@@ -106,6 +109,7 @@ class SendInvitationRequests implements ShouldQueue
 
     protected function getUserEmailById($userId)
     {
+        /** @disregard Non static method 'create' should not be called statically.intelephense(P1036) */
         $user = WpUser::find($userId);
         if ($user) {
             return $user->user_email;
