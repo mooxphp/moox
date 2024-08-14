@@ -11,12 +11,12 @@ on:
 
 jobs:
   test:
-    env:
-      SESSION_DRIVER: array
-      DB_CONNECTION: sqlite
-      DB_DATABASE: ":memory:"
-      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ${{ matrix.os }}
+    env:
+      DB_DATABASE: moox-test
+      DB_USER: user
+      DB_PASSWORD: secret
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     strategy:
       fail-fast: true
       matrix:
@@ -32,7 +32,26 @@ jobs:
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: secret
+          MYSQL_DATABASE: laravel_test
+          MYSQL_ROOT_PASSWORD: secretroot
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
+
+      - name: Verfify MySQL connection
+        run: |
+          mysql --version
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -47,6 +66,7 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
 
       - name: Remove PHP-PSR Extension
         run: |
