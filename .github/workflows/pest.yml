@@ -16,6 +16,7 @@ jobs:
       DB_DATABASE: moox-test
       DB_USER: user
       DB_PASSWORD: secret
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     strategy:
       fail-fast: true
       matrix:
@@ -77,9 +78,6 @@ jobs:
 
       - name: List Installed Dependencies
         run: composer show -D
-
-      - name: Generate App Key
-        run: php artisan key:generate
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
