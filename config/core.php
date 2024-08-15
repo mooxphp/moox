@@ -39,6 +39,8 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    // Todo: Not implemented yet, uses default policy
+                    //'policy' => \Moox\Audit\Policies\AuditPolicy::class,
                 ],
             ],
         ],
@@ -278,6 +280,8 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    // Todo: Not implemented yet, uses default policy
+                    //'policy' => \Moox\Sync\Policies\PlatformPolicy::class,
                 ],
                 'Sync' => [
                     'api' => [
@@ -286,6 +290,8 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    // Todo: Not implemented yet, uses default policy
+                    //'policy' => \Moox\Sync\Policies\SyncPolicy::class,
                 ],
             ],
         ],
