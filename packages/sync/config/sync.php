@@ -1,20 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
-
 return [
 
     /*
@@ -149,7 +134,7 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | Sync - API
+     | API
      |--------------------------------------------------------------------------
      |
      | Enable or disable the API and configure all entities.
@@ -158,26 +143,40 @@ return [
      |
      */
 
-    'use_api' => true,
     'entities' => [
-        'platform' => [
+        'Sync' => [
             'api' => [
                 'enabled' => true,
-                'public' => false, // false for private, true for public
-                'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-                'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
-                'controller_class' => \Moox\Sync\Http\Controllers\Api\SyncController::class,
+                'public' => false,
+                'auth_type' => 'platform',
+                'active_routes' => [
+                    'index',
+                    'show',
+                    'store',
+                    'update',
+                    'destroy',
+                ],
             ],
+            'model' => '\Moox\Sync\Models\Sync',
+            'resource' => '\Moox\Sync\Resources\SyncResource',
+            'api_controller' => '\Moox\Sync\Http\Controllers\Api\SyncController',
         ],
-        'test' => [
+        'Platform' => [
             'api' => [
                 'enabled' => true,
-                'public' => false, // false for private, true for public
-                'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-                'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
-                'controller_class' => \Moox\Sync\Http\Controllers\Api\SyncController::class,
-
+                'public' => false,
+                'auth_type' => 'platform',
+                'active_routes' => [
+                    'index',
+                    'show',
+                    'store',
+                    'update',
+                    'destroy',
+                ],
             ],
+            'model' => '\Moox\Sync\Models\Platform',
+            'resource' => '\Moox\Sync\Resources\PlatformResource',
+            'api_controller' => '\Moox\Sync\Http\Controllers\Api\PlatformController',
         ],
     ],
 ];
