@@ -40,6 +40,7 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
+        "moox/permission": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
