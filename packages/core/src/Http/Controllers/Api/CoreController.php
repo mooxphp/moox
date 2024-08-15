@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Http\Controllers;
+namespace Moox\Core\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 
