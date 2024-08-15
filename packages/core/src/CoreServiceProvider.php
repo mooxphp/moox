@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Gate;
 use Moox\Core\Commands\InstallCommand;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
-use Moox\Permission\Policies\DefaultPolicy;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -64,7 +63,6 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        // Set DefaultPolicy as fallback for any model not explicitly registered
         Gate::guessPolicyNamesUsing(function ($modelClass) {
             return \Moox\Permission\Policies\DefaultPolicy::class;
         });
