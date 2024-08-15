@@ -33,6 +33,7 @@
         "moox/notifications": "*",
         "moox/page": "*",
         "moox/passkey": "*",
+        "moox/permission": "*",
         "moox/press": "*",
         "moox/security": "*",
         "moox/sync": "*",
@@ -40,7 +41,6 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
-        "moox/permission": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
