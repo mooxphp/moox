@@ -4,6 +4,20 @@ namespace Moox\Sync\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $domain
+ * @property string $ip_address
+ * @property bool $show_in_menu
+ * @property int $order
+ * @property bool $read_only
+ * @property bool $locked
+ * @property string $lock_reason
+ * @property bool $master
+ * @property string $thumbnail
+ * @property string $api_token
+ */
 class PlatformResource extends JsonResource
 {
     public function toArray(Request|\Illuminate\Http\Request $request): array
