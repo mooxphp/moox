@@ -27,23 +27,6 @@ class WpWikiResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
-    public static function getModelLabel(): string
-    {
-        return 'Wiki';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Wikis';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Wikis';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press Custom';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -355,5 +338,35 @@ class WpWikiResource extends Resource
             'view' => Pages\ViewWpWiki::route('/{record}'),
             'edit' => Pages\EditWpWiki::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.wiki.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.wiki.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.wiki.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.wiki.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 9;
     }
 }

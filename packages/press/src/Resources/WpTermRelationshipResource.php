@@ -23,8 +23,6 @@ class WpTermRelationshipResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'object_id';
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -87,5 +85,35 @@ class WpTermRelationshipResource extends Resource
             'view' => Pages\ViewWpTermRelationship::route('/{record}'),
             'edit' => Pages\EditWpTermRelationship::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.termRelationships.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.termRelationships.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.termRelationships.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.termRelationships.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 4;
     }
 }

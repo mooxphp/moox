@@ -74,7 +74,7 @@ return [
     'tag' => 'Tag',
     'tags' => 'Tags',
     'term' => 'Term',
-    'terms' => 'Termms',
+    'terms' => 'Terms',
     'term_group' => 'Term Group',
     'term_id' => 'Term ID',
     'term_order' => 'Term Order',

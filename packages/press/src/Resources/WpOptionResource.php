@@ -124,5 +124,12 @@ class WpOptionResource extends Resource
         return config('press.resources.option.single');
     }
 
-    protected static ?string $navigationGroup = 'Moox Press Admin';
-}
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 4;
+    }}

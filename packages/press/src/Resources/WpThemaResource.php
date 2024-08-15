@@ -24,23 +24,6 @@ class WpThemaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function getModelLabel(): string
-    {
-        return 'Thema';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Themen';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Themen';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press Custom';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -127,5 +110,35 @@ class WpThemaResource extends Resource
             'view' => Pages\ViewWpThema::route('/{record}'),
             'edit' => Pages\EditWpThema::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.theme.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.theme.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.theme.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.theme.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 7;
     }
 }

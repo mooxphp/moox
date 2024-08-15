@@ -27,23 +27,6 @@ class WpSchulungResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
-    public static function getModelLabel(): string
-    {
-        return 'Schulung';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Schulungen';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Schulungen';
-    }
-
-    protected static ?string $navigationGroup = 'heco Schulungen';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -356,4 +339,26 @@ class WpSchulungResource extends Resource
             //'edit' => Pages\EditPage::route('/{record}/edit'),
         ];
     }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.training.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.training.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.training.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.training.single');
+    }
+
+    protected static ?string $navigationGroup = 'heco Schulungen';
 }
