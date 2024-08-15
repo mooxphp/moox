@@ -40,6 +40,7 @@ return [
                         'Delete' => '',
                     ],
                     // Todo: Not implemented yet, uses default policy
+                    // 'model' => \Moox\Audit\Models\Audit::class,
                     //'policy' => \Moox\Audit\Policies\AuditPolicy::class,
                 ],
             ],
@@ -54,6 +55,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Builder\Models\Item::class,
                 ],
             ],
         ],
@@ -71,6 +73,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Expiry\Models\Expiry::class,
                 ],
             ],
         ],
@@ -84,6 +87,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Jobs\Models\Job::class,
                 ],
                 'FailedJob' => [
                     'api' => [
@@ -92,6 +96,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Jobs\Models\FailedJob::class,
                 ],
                 'JobBatch' => [
                     'api' => [
@@ -100,6 +105,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Jobs\Models\JobBatch::class,
                 ],
                 'JobManager' => [
                     'api' => [
@@ -108,6 +114,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Jobs\Models\JobManager::class,
                 ],
             ],
         ],
@@ -121,6 +128,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\LoginLink\Models\LoginLink::class,
                 ],
             ],
         ],
@@ -134,6 +142,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Notification\Models\Notification::class,
                 ],
             ],
         ],
@@ -147,6 +156,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Page\Models\Page::class,
                 ],
             ],
         ],
@@ -160,6 +170,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Passkey\Models\Passkey::class,
                 ],
             ],
         ],
@@ -173,6 +184,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpComment::class,
                 ],
                 'WpCommentMeta' => [
                     'api' => [
@@ -181,6 +193,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpCommentMeta::class,
                 ],
                 'WpOption' => [
                     'api' => [
@@ -189,6 +202,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpOption::class,
                 ],
                 'WpPost' => [
                     'api' => [
@@ -197,6 +211,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpPost::class,
                 ],
                 'WpPostMeta' => [
                     'api' => [
@@ -205,6 +220,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpPostMeta::class,
                 ],
                 'WpTerm' => [
                     'api' => [
@@ -213,6 +229,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpTerm::class,
                 ],
                 'WpTermMeta' => [
                     'api' => [
@@ -221,6 +238,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpTermMeta::class,
                 ],
                 'WpTermRelationship' => [
                     'api' => [
@@ -229,6 +247,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpTermRelationship::class,
                 ],
                 'WpTermTaxonomy' => [
                     'api' => [
@@ -237,6 +256,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpTermTaxonomy::class,
                 ],
                 'WpUser' => [
                     'authenticatable' => true,
@@ -246,6 +266,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpUser::class,
                 ],
                 'WpUserMeta' => [
                     'api' => [
@@ -254,6 +275,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Press\Models\WpUserMeta::class,
                 ],
             ],
         ],
@@ -267,6 +289,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Security\Models\ResetPassword::class,
                 ],
             ],
         ],
@@ -280,6 +303,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Sync\Models\Platform::class,
                     // Todo: Not implemented yet, uses default policy
                     //'policy' => \Moox\Sync\Policies\PlatformPolicy::class,
                 ],
@@ -290,6 +314,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Sync\Models\Sync::class,
                     // Todo: Not implemented yet, uses default policy
                     //'policy' => \Moox\Sync\Policies\SyncPolicy::class,
                 ],
@@ -305,6 +330,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Training\Models\Training::class,
                 ],
                 'TrainingDate' => [
                     'api' => [
@@ -313,6 +339,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Training\Models\TrainingDate::class,
                 ],
                 'TrainingInvitation' => [
                     'api' => [
@@ -321,6 +348,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Training\Models\TrainingInvitation::class,
                 ],
                 'TrainingType' => [
                     'api' => [
@@ -329,6 +357,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\Training\Models\TrainingType::class,
                 ],
             ],
         ],
@@ -343,6 +372,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\User\Models\User::class,
                 ],
             ],
         ],
@@ -356,6 +386,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\UserDevice\Models\UserDevice::class,
                 ],
             ],
         ],
@@ -369,6 +400,7 @@ return [
                         'Update' => '',
                         'Delete' => '',
                     ],
+                    'model' => \Moox\UserSession\Models\UserSession::class,
                 ],
             ],
         ],
