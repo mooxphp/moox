@@ -923,7 +923,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Navigation Group
+    | Navigation Group
     |--------------------------------------------------------------------------
     |
     | This values are for grouping the navigation items into the
@@ -938,7 +938,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This values are the sort order of the navigation items in the
@@ -953,7 +953,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Path
+    | WordPress Path
     |--------------------------------------------------------------------------
     |
     | Set up the path, prefix, and slug for your WordPress installation.
@@ -966,7 +966,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Prefix
+    | WordPress Prefix
     |--------------------------------------------------------------------------
     |
     | Set up the table prefix for your WordPress installation.
@@ -979,7 +979,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Slug
+    | WordPress Slug
     |--------------------------------------------------------------------------
     |
     | Set up the URL slug for your WordPress installation.
@@ -992,7 +992,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Auth
+    | WordPress Auth
     |--------------------------------------------------------------------------
     |
     | Set auth_wordpress to true to use Laravel for authentication of
@@ -1005,7 +1005,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Lock
+    | WordPress Lock
     |--------------------------------------------------------------------------
     |
     | Set lock_wordpress to true to bring your complete WordPress
@@ -1018,7 +1018,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Redirects
+    | WordPress Redirects
     |--------------------------------------------------------------------------
     |
     | Set up the redirects for your WordPress installation.
@@ -1035,7 +1035,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - Moox Roles to WordPress Roles
+    | Moox Roles to WordPress Roles
     |--------------------------------------------------------------------------
     |
     | This array maps the Moox roles to the WordPress roles.
@@ -1053,7 +1053,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - WordPress Roles and Capabilities
+    | WordPress Roles and Capabilities
     |--------------------------------------------------------------------------
     |
     | This array maps the WordPress roles to the serialized capabilitiy
@@ -1080,13 +1080,13 @@ return [
     'default_user_attributes' => [
         'user_registered' => now()->toDateTimeString(),
         'user_status' => '0',
-        // Todo: suppress errors for first and last name
+        // TODO: suppress errors for first and last name
         //'display_name' => $first_name.' '.$last_name ?? $user_login ?? '',
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Press - User Meta
+    | User Meta
     |--------------------------------------------------------------------------
     |
     | These are the user meta keys for the WordPress users. Defined meta
@@ -1121,7 +1121,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Press - API
+    | API
     |--------------------------------------------------------------------------
     |
     | Enable or disable the API and configure all entities.

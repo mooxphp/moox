@@ -17,7 +17,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Passkey - User Models
+    | User Models
     |--------------------------------------------------------------------------
     |
     | Add your user models here. You can add as many as you want.

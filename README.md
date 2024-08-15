@@ -43,19 +43,22 @@ Welcome to the Moox Project. This is a Monorepo and installable Laravel App to d
 -   [Moox Builder](packages/builder/README.md), our Skeleton Package to create new Filament Plugins
 -   [Moox Core](packages/core/README.md), required by all of our packages, ships common things
 
-Some others are under hard development:
+Some are in productive use but not yet documented:
+
+-   [Moox Expiry](packages/expiry/README.md), define and automate the expiry of your records
+-   [Moox User Device](packages/user-device/README.md), manage your users' devices and decide how to handle unknown
+-   [Moox User Session](packages/session/README.md), manage your users' session (also in context of devices)
+
+All other packages are under hard development:
 
 -   [Moox Audit](packages/audit/README.md), logging and auditing, security-related and model-related
--   [Moox Expiry](packages/expiry/README.md), define and automate the expiry of your records
 -   [Moox Trainings](packages/trainings/README.md), automate trainings, invitations and self-validation
--   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Laravel
+-   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Filament
 -   [Moox Login Link](packages/login-link/README.md), send Login-Links (aka magic links) to your users
 -   [Moox Page](packages/page/README.md), content management, currently abandoned as we use Press
 -   [Moox Passkey](packages/passkey/README.md), give users the ability to use Passkeys (Webauthn)
 -   [Moox Sync](packages/sync/README.md), sync records from server to server, add logic and transformers
 -   [Moox User](packages/user/README.md), manage your users in Filament and give users access to their profile
--   [Moox User Device](packages/user-device/README.md), manage your users' devices and decide how to handly unknown
--   [Moox User Session](packages/session/README.md), manage your users' session (also in context of devices)
 -   [Moox Security](packages/security/README.md), manage your password security and other security features
 -   [Moox Permission](packages/permission/README.md), manage roles and permissions using Spatie Permission
 

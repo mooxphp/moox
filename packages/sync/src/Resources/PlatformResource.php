@@ -259,7 +259,7 @@ class PlatformResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // Todo: debug - SQLSTATE[42000]: Syntax error or access violation: 1250 Table 'syncs' from one of the SELECTs cannot be used in global ORDER clause
+            // TODO: debug - SQLSTATE[42000]: Syntax error or access violation: 1250 Table 'syncs' from one of the SELECTs cannot be used in global ORDER clause
             // PlatformResource\RelationManagers\SyncsRelationManager::class,
         ];
     }

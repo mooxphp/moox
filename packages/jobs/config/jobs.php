@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Jobs - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This value is the sort order of the navigation item in the
@@ -17,7 +17,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Jobs - Pruning
+    | Pruning
     |--------------------------------------------------------------------------
     |
     | This configuration is used to enable or disable pruning of old jobs.

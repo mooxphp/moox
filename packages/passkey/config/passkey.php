@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Passkey - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This value is the sort order of the navigation item in the
@@ -17,7 +17,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Passkey - User Models
+    | User Models
     |--------------------------------------------------------------------------
     |
     | Add your user models here. You can add as many as you want.
@@ -31,7 +31,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Passkey - Device Model
+    | Device Model
     |--------------------------------------------------------------------------
     |
     | This is the model used to store the user devices.

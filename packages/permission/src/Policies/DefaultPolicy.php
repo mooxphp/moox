@@ -2,52 +2,91 @@
 
 namespace Moox\Permission\Policies;
 
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class DefaultPolicy
 {
-    public function viewAll(User $user)
+    protected $user;
+
+    public function __construct($guard = null)
     {
-        return $user->hasPermissionTo('view all');
+        $guard = $guard ?? Auth::getDefaultDriver();
+
+        $this->user = Auth::guard($guard)->user();
+
+        if (! method_exists($this->user, 'hasPermissionTo')) {
+            throw new \Exception("The user object does not have the method 'hasPermissionTo'.");
+        }
     }
 
-    public function editAll(User $user)
+    protected function hasPermission($permission)
     {
-        return $user->hasPermissionTo('edit all');
+        /** @disregard Undefined method 'hasPermissionTo'.intelephense(P1013) */
+        return $this->user->hasPermissionTo($permission);
     }
 
-    public function deleteAll(User $user)
+    public function view()
     {
-        return $user->hasPermissionTo('delete all');
+        return $this->hasPermission('view');
     }
 
-    public function create(User $user)
+    public function edit()
     {
-        return $user->hasPermissionTo('create');
+        return $this->hasPermission('edit');
     }
 
-    public function viewOwn(User $user, $model)
+    public function create()
     {
-        return $user->hasPermissionTo('view own') && $model->user_id === $user->id;
+        return $this->hasPermission('create');
     }
 
-    public function editOwn(User $user, $model)
+    public function delete()
     {
-        return $user->hasPermissionTo('edit own') && $model->user_id === $user->id;
+        return $this->hasPermission('delete');
     }
 
-    public function deleteOwn(User $user, $model)
+    public function restore()
     {
-        return $user->hasPermissionTo('delete own') && $model->user_id === $user->id;
+        return $this->hasPermission('restore');
     }
 
-    public function emptyTrash(User $user)
+    public function publish()
     {
-        return $user->hasPermissionTo('empty trash');
+        return $this->hasPermission('publish');
     }
 
-    public function changeSettings(User $user)
+    public function viewOwn($model)
     {
-        return $user->hasPermissionTo('change settings');
+        return $this->hasPermission('view own') && $model->user_id === $this->user->id;
+    }
+
+    public function editOwn($model)
+    {
+        return $this->hasPermission('edit own') && $model->user_id === $this->user->id;
+    }
+
+    public function deleteOwn($model)
+    {
+        return $this->hasPermission('delete own') && $model->user_id === $this->user->id;
+    }
+
+    public function publishOwn($model)
+    {
+        return $this->hasPermission('publish own') && $model->user_id === $this->user->id;
+    }
+
+    public function bulkModify()
+    {
+        return $this->hasPermission('bulk modify');
+    }
+
+    public function timeTravel()
+    {
+        return $this->hasPermission('time travel');
+    }
+
+    public function forceDelete()
+    {
+        return $this->hasPermission('force delete');
     }
 }
