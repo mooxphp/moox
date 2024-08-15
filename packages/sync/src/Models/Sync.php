@@ -3,13 +3,11 @@
 namespace Moox\Sync\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use \Moox\Sync\Models\Platform;
 
 /**
  * @property \Moox\Sync\Models\Platform $sourcePlatform
  * @property \Moox\Sync\Models\Platform $targetPlatform
  */
-
 class Sync extends Model
 {
     /**
@@ -39,7 +37,6 @@ class Sync extends Model
     ];
 
     protected $searchableFields = ['*'];
-
 
     /**
      * Get the attributes that should be cast.

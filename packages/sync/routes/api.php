@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Route;
 
 $models = config('sync.entities');
-if(is_array($models)){
+if (is_array($models)) {
     foreach ($models as $entity => $config) {
-        if($config['api']['enabled']){
+        if ($config['api']['enabled']) {
             $middleware = [];
 
             if (! $config['api']['public']) {
@@ -19,7 +19,6 @@ if(is_array($models)){
     }
 }
 
-Route::middleware('auth.platformtoken')->prefix('api')->group(function (){
-    Route::get("platform/{id}/sync",[ \Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
+Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
+    Route::get('platform/{id}/sync', [\Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
 });
-
