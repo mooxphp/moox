@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Commands;
+namespace Moox\Permission\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -20,14 +20,14 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxbuilder:install';
+    protected $signature = 'mooxpermission:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Installs Moox Builder, publishes configuration, migrations and registers plugins.';
+    protected $description = 'Installs Moox Permission, publishes configuration, migrations and registers plugins.';
 
     /**
      * Execute the console command.
@@ -78,39 +78,39 @@ class InstallCommand extends Command
 
     public function welcome(): void
     {
-        info('Welcome to Moox Builder Installer');
+        info('Welcome to Moox Permission Installer');
     }
 
     public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! File::exists('config/builder.php')) {
-                info('Publishing Builder Configuration...');
-                $this->callSilent('vendor:publish', ['--tag' => 'builder-config']);
+            if (! File::exists('config/permission.php')) {
+                info('Publishing Permission Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'permission-config']);
 
                 return;
             }
-            warning('The Builder config already exist. The config will not be published.');
+            warning('The Permission config already exist. The config will not be published.');
         }
     }
 
     public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
-            if (Schema::hasTable('items')) {
-                warning('The items table already exists. The migrations will not be published.');
+            if (Schema::hasTable('permissions')) {
+                warning('The permissions table already exists. The migrations will not be published.');
 
                 return;
             }
-            info('Publishing Items Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            info('Publishing Permissions Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'permission-migrations']);
         }
     }
 
     public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
-            info('Running Builder Migrations...');
+            info('Running Permission Migrations...');
             $this->callSilent('migrate');
         }
     }
@@ -122,12 +122,12 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\Builder";
+            $namespace = "\Moox\Permission";
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['BuilderPlugin'],
-                default: ['BuilderPlugin'],
+                options: ['PermissionPlugin'],
+                default: ['PermissionPlugin'],
             );
 
             $function = '::make(),';
@@ -193,6 +193,6 @@ class InstallCommand extends Command
 
     public function sayGoodbye(): void
     {
-        note('Moox Builder installed successfully. Enjoy!');
+        note('Moox Permission installed successfully. Enjoy!');
     }
 }

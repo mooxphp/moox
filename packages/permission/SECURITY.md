@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We maintain the current version of `Moox Builder` actively.
+We maintain the current version of `Moox Permission` actively.
 
 Do not expect security fixes for older versions.
 

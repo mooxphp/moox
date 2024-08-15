@@ -6,7 +6,7 @@ return [
     'breadcrumb' => 'Bygger',
     'title' => 'Bygger',
     'navigation_label' => 'Bygger',
-    'navigation_group' => 'Moox Builder',
+    'navigation_group' => 'Moox Permission',
     'totalone' => 'Bygger én',
     'totaltwo' => 'Bygger to',
     'totalthree' => 'Bygger tre',

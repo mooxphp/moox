@@ -1,6 +1,6 @@
 {
-    "name": "moox/builder",
-    "description": "This template is used for generating all Moox packages.",
+    "name": "moox/permission",
+    "description": "This is my package permission",
     "keywords": [
         "Laravel",
         "Filament",
@@ -21,13 +21,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Builder\\": "src"
+            "Moox\\Permission\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Moox\\Builder\\BuilderServiceProvider"
+                "Moox\\Permission\\PermissionServiceProvider"
             ]
         }
     },
