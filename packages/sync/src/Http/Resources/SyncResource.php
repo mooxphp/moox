@@ -23,7 +23,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property int $interval
  * @property \Illuminate\Support\Carbon $last_sync
  */
-
 class SyncResource extends JsonResource
 {
     public function toArray($request)
