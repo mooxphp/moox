@@ -49,19 +49,24 @@ class CoreServiceProvider extends PackageServiceProvider
 
     public function setPolicies()
     {
+        $packages = config('core.packages', []);
 
-        $policies = config('core.policies', []);
-
-        if (is_array($policies)) {
-            foreach ($policies as $model => $policy) {
-                if (class_exists($model) && class_exists($policy)) {
-                    Gate::policy($model, $policy);
+        foreach ($packages as $package) {
+            if (isset($package['models']) && is_array($package['models'])) {
+                foreach ($package['models'] as $model => $settings) {
+                    if (isset($settings['policy']) && class_exists($settings['policy'])) {
+                        $modelClass = "App\\Models\\$model";
+                        if (class_exists($modelClass)) {
+                            Gate::policy($modelClass, $settings['policy']);
+                        }
+                    }
                 }
             }
         }
 
+        // Set DefaultPolicy as fallback for any model not explicitly registered
         Gate::guessPolicyNamesUsing(function ($modelClass) {
-            return DefaultPolicy::class;
+            return \Moox\Permission\Policies\DefaultPolicy::class;
         });
     }
 }
