@@ -56,7 +56,8 @@ Some others are under hard development:
 -   [Moox User](packages/user/README.md), manage your users in Filament and give users access to their profile
 -   [Moox User Device](packages/user-device/README.md), manage your users' devices and decide how to handly unknown
 -   [Moox User Session](packages/session/README.md), manage your users' session (also in context of devices)
--   [Moox Security](packages/security/README.md), manage your password security audit your security features
+-   [Moox Security](packages/security/README.md), manage your password security and other security features
+-   [Moox Permission](packages/permission/README.md), manage roles and permissions using Spatie Permission
 
 And there is some other stuff NOT in this repo:
 
