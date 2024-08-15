@@ -149,15 +149,22 @@ return [
             'enabled' => true,
             'public' => false, // false for private, true for public
             'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-            'route_only' => ['index', 'store', 'edit', 'destroy'],
+            'route_only' => ['index', 'show','store', 'update', 'destroy'],
             'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
         ],
         'platform' => [
             'enabled' => true,
             'public' => false, // false for private, true for public
             'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-            'route_only' => ['index'],
+            'route_only' => ['index', 'show','store', 'update', 'destroy'],
             'controller_class' => \Moox\Sync\Http\Controllers\PlatformController::class,
+        ],
+        'platform.sync' => [
+            'enabled' => true,
+            'public' => false, // false for private, true for public
+            'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
+            'route_only' => ['index', 'show','store', 'update', 'destroy'],
+            'controller_class' => \Moox\Sync\Http\Controllers\PlatformSyncController::class,
         ],
     ],
 ];

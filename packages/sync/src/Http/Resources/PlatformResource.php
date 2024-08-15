@@ -21,10 +21,6 @@ class PlatformResource extends JsonResource
             'master' => $this->master,
             'thumbnail' => $this->thumbnail,
             'api_token' => $this->api_token,
-            'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
-            'updated_at' => $this->updated_at ? $this->updated_at->toDateTimeString() : null,
-            'sources' => SyncResource::collection($this->whenLoaded('sources')),
-            'targets' => SyncResource::collection($this->whenLoaded('targets')),
         ];
     }
 }

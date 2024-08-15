@@ -5,56 +5,40 @@ namespace Moox\Sync\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Moox\Press\Models\Platform;
+use Moox\Sync\Http\Resources\SyncResource;
 use Moox\Sync\Models\Sync;
 
 class SyncController extends Controller
 {
-    public function index(Platform $platform)
+    public function index()
     {
-        // Get all syncs related to the platform
-        $syncs = $platform->syncs()->get();
-
+        $syncs = Sync::all();
         return SyncResource::collection($syncs);
     }
 
-    public function show(Platform $platform, Sync $sync)
+    public function show($id)
     {
-        // Ensure the sync belongs to the platform
-        if ($sync->source_platform_id !== $platform->id) {
-            return response()->json(['error' => 'Sync not found for this platform'], 404);
-        }
-
+        $sync = Sync::findOrFail($id);
         return new SyncResource($sync);
     }
 
-    public function store(Request $request, Platform $platform)
+    public function store(Request $request)
     {
-        $sync = new Sync($request->all());
-        $sync->source_platform_id = $platform->id;
-        $sync->save();
-
+        $sync = Sync::create($request->all());
         return new SyncResource($sync);
     }
 
-    public function update(Request $request, Platform $platform, Sync $sync)
+    public function update(Request $request, $id)
     {
-        if ($sync->source_platform_id !== $platform->id) {
-            return response()->json(['error' => 'Sync not found for this platform'], 404);
-        }
-
+        $sync = Sync::findOrFail($id);
         $sync->update($request->all());
-
         return new SyncResource($sync);
     }
 
-    public function destroy(Platform $platform, Sync $sync)
+    public function destroy($id)
     {
-        if ($sync->source_platform_id !== $platform->id) {
-            return response()->json(['error' => 'Sync not found for this platform'], 404);
-        }
-
+        $sync = Sync::findOrFail($id);
         $sync->delete();
-
         return response()->json(null, 204);
     }
 }

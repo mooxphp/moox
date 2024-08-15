@@ -11,68 +11,39 @@ class PlatformController extends Controller
 {
     public function index()
     {
-        // Eager load the sources and targets relationships
-        $platforms = Platform::with(['sources', 'targets'])->get();
-
+        $platforms = Platform::all();
         return PlatformResource::collection($platforms);
     }
 
-    public function show(Platform $platform)
+    public function show($id)
     {
-        // Eager load the sources and targets relationships for a single platform
-        $platform->load(['sources', 'targets']);
-
+        $platform = Platform::findOrFail($id);
         return new PlatformResource($platform);
     }
 
     public function store(Request $request)
     {
-        // Validation and storing logic
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'domain' => 'required|string|max:255',
-            'ip_address' => 'required|ip',
-            'order' => 'integer',
-            'show_in_menu' => 'boolean',
-            'read_only' => 'boolean',
-            'locked' => 'boolean',
-            'lock_reason' => 'string|nullable',
-            'master' => 'boolean',
-            'thumbnail' => 'string|nullable',
-            'api_token' => 'string|nullable',
-        ]);
-
-        $platform = Platform::create($validatedData);
-
+        $platform = Platform::create($request->all());
         return new PlatformResource($platform);
     }
 
-    public function update(Request $request, Platform $platform)
+    public function update(Request $request, $id)
     {
-        // Validation and update logic
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'domain' => 'sometimes|required|string|max:255',
-            'ip_address' => 'sometimes|required|ip',
-            'order' => 'integer',
-            'show_in_menu' => 'boolean',
-            'read_only' => 'boolean',
-            'locked' => 'boolean',
-            'lock_reason' => 'string|nullable',
-            'master' => 'boolean',
-            'thumbnail' => 'string|nullable',
-            'api_token' => 'string|nullable',
-        ]);
-
-        $platform->update($validatedData);
-
+        $platform = Platform::findOrFail($id);
+        $platform->update($request->all());
         return new PlatformResource($platform);
     }
 
-    public function destroy(Platform $platform)
+    public function destroy($id)
     {
+        $platform = Platform::findOrFail($id);
         $platform->delete();
-
         return response()->json(null, 204);
+    }
+
+    public function syncs(Platform $platform)
+    {
+        $syncs = $platform->syncs()->get();
+        return SyncResource::collection($syncs);
     }
 }
