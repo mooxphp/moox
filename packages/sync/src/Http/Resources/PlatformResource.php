@@ -20,7 +20,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PlatformResource extends JsonResource
 {
-    public function toArray(Request|\Illuminate\Http\Request $request): array
+    public function toArray( $request): array
     {
         return [
             'id' => $this->id,

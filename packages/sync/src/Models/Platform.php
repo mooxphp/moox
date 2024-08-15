@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Platform extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'domain',
@@ -22,6 +27,11 @@ class Platform extends Model
 
     protected $searchableFields = ['*'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected $casts = [
         'selection' => 'boolean',
         'read_only' => 'boolean',

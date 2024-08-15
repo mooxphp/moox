@@ -159,7 +159,7 @@ return [
             ],
             'model' => '\Moox\Sync\Models\Sync',
             'resource' => '\Moox\Sync\Resources\SyncResource',
-            'api_controller' => \Moox\Sync\Http\Controllers\Api\SyncController::class,
+            'api_controller' => '\Moox\Sync\Http\Controllers\Api\SyncController',
         ],
         'Platform' => [
             'api' => [
@@ -176,7 +176,7 @@ return [
             ],
             'model' => '\Moox\Sync\Models\Platform',
             'resource' => '\Moox\Sync\Resources\PlatformResource',
-            'api_controller' => \Moox\Sync\Http\Controllers\Api\PlatformController::class,
+            'api_controller' => '\Moox\Sync\Http\Controllers\Api\PlatformController',
         ],
     ],
 ];
