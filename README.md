@@ -229,6 +229,52 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 -   Coverage: `composer test-coverage ` or `./vendor/bin/pest --coverage`, for packages `../../vendor/bin/pest --coverage`
 -   Pint: `composer format ` or `./vendor/bin/pint`, for packages `../../vendor/bin/pint`
 
+## Admin Navigation
+
+Titles and sorting in the AdminPanel can be adjusted in the packages configs, but this is the default sorting that keeps everything in place:
+
+```
+- Dashboard
+- Main - 1000
+    - Expiry - 1100
+    - Notifications - 1800
+- Content - 2000
+    - Posts - 2100
+    - Pages - 2200
+    - Media - 2300
+    - Categories - 2400
+    - Tags - 2500
+    - Comments - 2600
+- Custom - 3000
+    - ...
+- Meta - 4000
+    - Wp Meta...
+- Custom - 5000
+    - ...
+- Users - 6000
+    - App users - 6010 (Moox Users, Moox Press Users 6015)
+    - Site users - 6020
+    - Customers - 6030
+    - Registrations - 6100
+    - Roles - 6200
+    - Permissions - 6201
+    - Devices - 6300
+    - Sessions - 6400
+    - Login-Links - 6500
+    - Password-Tokens - 6600
+    - Passkeys - 6700
+- System - 7000
+    - Audit - 7500
+    - Options (Press) - 7900
+- Jobs - 8000
+    - Job manager - 8001
+    - ...
+- Tools - 9000
+    - Sync - 9500
+    - Backup - 9800
+    - Builder - 9990
+```
+
 ## Contributors
 
 Moox is made by these nice people, and bots ...
