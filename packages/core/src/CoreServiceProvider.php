@@ -19,7 +19,8 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        $this->setPolicies();
+        // TODO: Uncomment this line to enable policies
+        //$this->setPolicies();
         $this->useGoogleIcons();
         $this->translateConfigurations();
     }
@@ -37,7 +38,7 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         $packages = config('core.packages', []);
 
-        foreach ($packages as $slug => $package) {
+        foreach ($packages as $slug => $name) {
             $configData = config($slug);
             if (is_array($configData)) {
                 $translatedConfig = $this->translateConfig($configData);
