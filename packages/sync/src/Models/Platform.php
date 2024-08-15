@@ -29,12 +29,12 @@ class Platform extends Model
         'master' => 'boolean',
     ];
 
-    public function sources()
+    public function sourcePlatform()
     {
         return $this->hasMany(Sync::class, 'source_platform_id');
     }
 
-    public function targets()
+    public function targetPlatform()
     {
         return $this->hasMany(Sync::class, 'target_platform_id');
     }

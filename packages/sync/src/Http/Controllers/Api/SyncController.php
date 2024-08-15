@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Sync\Http\Controllers;
+namespace Moox\Sync\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

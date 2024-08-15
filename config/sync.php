@@ -143,28 +143,40 @@ return [
      |
      */
 
-    'use_api' => true,
-    'api_entities' => [
-        'sync' => [
-            'enabled' => true,
-            'public' => false, // false for private, true for public
-            'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-            'route_only' => ['index', 'show', 'store', 'update', 'destroy'],
-            'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
+    'entities' => [
+        'Sync' => [
+            'api' => [
+                'enabled' => true,
+                'public' => false,
+                'auth_type' => 'platform',
+                'active_routes' => [
+                    'index',
+                    'show',
+                    'store',
+                    'update',
+                    'destroy',
+                ],
+            ],
+            'model' => '\Moox\Sync\Models\Sync',
+            'resource' => '\Moox\Sync\Resources\SyncResource',
+            'api_controller' => \Moox\Sync\Http\Controllers\Api\SyncController::class,
         ],
-        'platform' => [
-            'enabled' => true,
-            'public' => false, // false for private, true for public
-            'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-            'route_only' => ['index', 'show', 'store', 'update', 'destroy'],
-            'controller_class' => \Moox\Sync\Http\Controllers\PlatformController::class,
-        ],
-        'platform.sync' => [
-            'enabled' => true,
-            'public' => false, // false for private, true for public
-            'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
-            'route_only' => ['index', 'show', 'store', 'update', 'destroy'],
-            'controller_class' => \Moox\Sync\Http\Controllers\PlatformSyncController::class,
+        'Platform' => [
+            'api' => [
+                'enabled' => true,
+                'public' => false,
+                'auth_type' => 'platform',
+                'active_routes' => [
+                    'index',
+                    'show',
+                    'store',
+                    'update',
+                    'destroy',
+                ],
+            ],
+            'model' => '\Moox\Sync\Models\Platform',
+            'resource' => '\Moox\Sync\Resources\PlatformResource',
+            'api_controller' => \Moox\Sync\Http\Controllers\Api\PlatformController::class,
         ],
     ],
 ];

@@ -2,18 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 
-if (config('sync.use_api') && config('sync.api_entities')) {
-    foreach (config('sync.api_entities') as $entity => $config) {
-        if ($config['enabled']) {
+$models = config('sync.entities');
+if(is_array($models)){
+    foreach ($models as $entity => $config) {
+        if($config['api']['enabled']){
             $middleware = [];
 
-            if (! $config['public']) {
-                $middleware[] = $config['auth_type'] === 'platform' ? 'auth.platformtoken' : 'auth:sanctum';
+            if (! $config['api']['public']) {
+                $middleware[] = $config['api']['auth_type'] === 'platform' ? 'auth.platformtoken' : 'auth:sanctum';
             }
 
             Route::middleware($middleware)->prefix('api')->group(function () use ($entity, $config) {
-                Route::apiResource("$entity", $config['controller_class'])->only($config['route_only']);
+                Route::apiResource(Str::lower($entity), $config['api_controller'])->only($config['api']['active_routes']);
             });
         }
     }
 }
+
+Route::middleware('auth.platformtoken')->prefix('api')->group(function (){
+    Route::get("platform/{id}/sync",[ \Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
+});
+

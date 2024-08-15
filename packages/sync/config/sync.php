@@ -166,7 +166,7 @@ return [
                 'public' => false, // false for private, true for public
                 'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
                 'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
-                'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
+                'controller_class' => \Moox\Sync\Http\Controllers\Api\SyncController::class,
             ],
         ],
         'test' => [
@@ -175,7 +175,7 @@ return [
                 'public' => false, // false for private, true for public
                 'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
                 'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
-                'controller_class' => \Moox\Sync\Http\Controllers\SyncController::class,
+                'controller_class' => \Moox\Sync\Http\Controllers\Api\SyncController::class,
 
             ],
         ],
