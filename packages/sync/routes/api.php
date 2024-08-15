@@ -13,7 +13,7 @@ if (is_array($models)) {
             }
 
             Route::middleware($middleware)->prefix('api')->group(function () use ($entity, $config) {
-                Route::apiResource(Str::lower($entity),$config['api_controller'])->only($config['api']['active_routes']);
+                Route::apiResource(Str::lower($entity), $config['api_controller'])->only($config['api']['active_routes']);
             });
         }
     }
