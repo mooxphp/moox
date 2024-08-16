@@ -24,23 +24,6 @@ class WpTagResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function getModelLabel(): string
-    {
-        return 'Tag';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Tags';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Tags';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -127,5 +110,35 @@ class WpTagResource extends Resource
             'view' => Pages\ViewWpTag::route('/{record}'),
             'edit' => Pages\EditWpTag::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.tag.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.tag.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.tag.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.tag.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 7;
     }
 }

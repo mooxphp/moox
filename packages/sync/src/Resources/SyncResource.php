@@ -274,7 +274,7 @@ class SyncResource extends Resource
                             'lg' => 12,
                         ])
                         ->default('sync_all_records')
-                        ->label(__('core::sync.resources.sync_all_records'))
+                        ->label(__('core::sync.sync_all_records'))
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             self::updateTitle($set, $get);
@@ -309,7 +309,7 @@ class SyncResource extends Resource
                         }),
 
                     Toggle::make('sync_all_fields')
-                        ->label(__('core::sync.resources.sync_all_fields'))
+                        ->label(__('core::sync.sync_all_fields'))
                         ->default(true)
                         ->columnSpan([
                             'default' => 12,

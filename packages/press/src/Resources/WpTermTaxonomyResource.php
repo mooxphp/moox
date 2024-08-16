@@ -24,8 +24,6 @@ class WpTermTaxonomyResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'taxonomy';
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -136,5 +134,35 @@ class WpTermTaxonomyResource extends Resource
             'view' => Pages\ViewWpTermTaxonomy::route('/{record}'),
             'edit' => Pages\EditWpTermTaxonomy::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.termTaxonomy.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.termTaxonomy.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.termTaxonomy.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.termTaxonomy.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 6;
     }
 }

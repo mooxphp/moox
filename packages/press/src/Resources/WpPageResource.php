@@ -329,7 +329,7 @@ class WpPageResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('to_ping')
-                    ->label(__('core::to_ping'))
+                    ->label(__('core::post.to_ping'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
@@ -433,5 +433,13 @@ class WpPageResource extends Resource
             ->whereIn('post_status', ['publish', 'draft']);
     }
 
-    protected static ?string $navigationGroup = 'Moox Press';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 5;
+    }
 }

@@ -360,5 +360,13 @@ class WpPostResource extends Resource
         return config('press.resources.post.single');
     }
 
-    protected static ?string $navigationGroup = 'Moox Press';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.press_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.press_navigation_sort') + 6;
+    }
 }

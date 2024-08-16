@@ -24,8 +24,6 @@ class WpUserMetaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
-
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -99,5 +97,35 @@ class WpUserMetaResource extends Resource
             'view' => Pages\ViewWpUserMeta::route('/{record}'),
             'edit' => Pages\EditWpUserMeta::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.userMeta.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.userMeta.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.userMeta.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.userMeta.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 8;
     }
 }

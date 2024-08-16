@@ -124,5 +124,13 @@ class WpCommentMetaResource extends Resource
         return config('press.resources.commentMeta.single');
     }
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 1;
+    }
 }

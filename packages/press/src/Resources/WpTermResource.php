@@ -26,8 +26,6 @@ class WpTermResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationGroup = 'Moox Press Meta';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('termTaxonomy');
@@ -149,5 +147,35 @@ class WpTermResource extends Resource
             'view' => Pages\ViewWpTerm::route('/{record}'),
             'edit' => Pages\EditWpTerm::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.term.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.term.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.term.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.term.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.meta_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.meta_navigation_sort') + 5;
     }
 }

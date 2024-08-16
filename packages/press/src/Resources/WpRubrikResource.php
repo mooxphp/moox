@@ -24,23 +24,6 @@ class WpRubrikResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function getModelLabel(): string
-    {
-        return 'Rubrik';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Rubriken';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Rubriken';
-    }
-
-    protected static ?string $navigationGroup = 'heco Schulungen';
-
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -128,4 +111,26 @@ class WpRubrikResource extends Resource
             //'edit' => Pages\EditPage::route('/{record}/edit'),
         ];
     }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.rubrik.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.rubrik.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.rubrik.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.rubrik.single');
+    }
+
+    protected static ?string $navigationGroup = 'heco Schulungen';
 }

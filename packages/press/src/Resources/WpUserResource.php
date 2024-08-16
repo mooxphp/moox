@@ -32,23 +32,6 @@ class WpUserResource extends Resource
 
     //protected static ?string $recordTitleAttribute = 'user_login';
 
-    public static function getModelLabel(): string
-    {
-        return 'User';
-    }
-
-    public static function getPluralModelLabel(): string
-    {
-        return 'Users';
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Users';
-    }
-
-    protected static ?string $navigationGroup = 'Moox Press Admin';
-
     public static function form(Form $form): Form
     {
 
@@ -449,5 +432,35 @@ class WpUserResource extends Resource
             'view' => ViewWpUser::route('/{record}'),
             'edit' => EditWpUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getModelLabel(): string
+    {
+        return config('press.resources.user.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('press.resources.user.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('press.resources.user.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('press.resources.user.single');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.user_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.user_navigation_sort') + 1;
     }
 }

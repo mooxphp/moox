@@ -732,7 +732,7 @@ return [
             ],
         ],
 
-        'thema' => [
+        'theme' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -884,8 +884,8 @@ return [
             |
             */
 
-            'single' => 'trans//core::user.wiki',
-            'plural' => 'trans//core::user.wikis',
+            'single' => 'trans//core::core.wiki',
+            'plural' => 'trans//core::core.wikis',
 
             /*
             |--------------------------------------------------------------------------
@@ -932,8 +932,9 @@ return [
     |
     */
 
-    'press_navigation_group' => 'trans//core::content.press',
+    'press_navigation_group' => 'trans//core::post.press',
     'system_navigation_group' => 'trans//core::core.system',
+    'meta_navigation_group' => 'trans//core::core.meta',
     'user_navigation_group' => 'trans//core::core.users',
 
     /*
@@ -947,8 +948,9 @@ return [
     |
     */
 
-    'press_navigation_sort' => 7900,
+    'press_navigation_sort' => 2000,
     'system_navigation_sort' => 7000,
+    'meta_navigation_sort' => 8000,
     'user_navigation_sort' => 6015,
 
     /*
