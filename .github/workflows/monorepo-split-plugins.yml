@@ -1,4 +1,4 @@
-name: "Split Packages"
+name: "Split Plugins"
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
         with:
           tag: ${GITHUB_REF#refs/tags/}
 
-          package_directory: "public/wp/wp-content/plugins/moox-press"
+          package_directory: "packages/press/wordpress/plugins/moox-press"
 
           repository_organization: "mooxphp"
           repository_name: "press-wp"

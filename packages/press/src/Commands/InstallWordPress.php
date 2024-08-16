@@ -131,7 +131,8 @@ class InstallWordPress extends Command
     {
         info('Preparing composer.json file...');
 
-        $composerSource = base_path('packages/press/wp-install/composer.json');
+        // TODO: This path will not work if the package is installed via Composer
+        $composerSource = base_path('packages/press/wordpress/composer.json');
         $composerDestination = public_path('composer.json');
 
         if (File::exists($composerDestination)) {
@@ -182,7 +183,8 @@ class InstallWordPress extends Command
             info("WordPress directory already exists at {$fullWpPath}.");
         }
 
-        $wpConfigSource = base_path('packages/press/wp-install/wp-config.php');
+        // TODO: This path will not work if the package is installed via Composer
+        $wpConfigSource = base_path('packages/press/wordpress/wp-config.php');
         $wpConfigDestination = $fullWpPath.'/wp-config.php';
 
         if (File::exists($wpConfigDestination)) {
@@ -277,6 +279,8 @@ class InstallWordPress extends Command
 
         $adminEmail = $this->ask('Please enter the admin email');
 
+        $this->installAndActivateDefaultTheme($fullWpPath);
+
         $command = [
             'wp', 'core', 'install',
             '--url='.$siteUrl,
@@ -297,6 +301,36 @@ class InstallWordPress extends Command
             alert('WordPress installation failed.');
             $this->line($process->getErrorOutput());
             exit(1);
+        }
+    }
+
+    protected function installAndActivateDefaultTheme(string $fullWpPath): void
+    {
+        $this->info('Ensuring a default theme is installed and activated...');
+
+        $checkThemeProcess = new \Symfony\Component\Process\Process([
+            'wp', 'theme', 'is-installed', 'twentytwentyfour',
+        ], $fullWpPath);
+        $checkThemeProcess->run();
+
+        if (! $checkThemeProcess->isSuccessful()) {
+            $this->info('Default theme twentytwentyfour is not installed. Installing it now...');
+
+            $installThemeProcess = new \Symfony\Component\Process\Process([
+                'wp', 'theme', 'install', 'twentytwentyfour', '--activate',
+            ], $fullWpPath);
+            $installThemeProcess->setTimeout(null);
+            $installThemeProcess->run();
+
+            if ($installThemeProcess->isSuccessful()) {
+                $this->info('Default theme twentytwentyfour installed and activated successfully.');
+            } else {
+                $this->error('Failed to install or activate the default theme.');
+                $this->line($installThemeProcess->getErrorOutput());
+                exit(1);
+            }
+        } else {
+            $this->info('Default theme twentytwentyfour is already installed.');
         }
     }
 

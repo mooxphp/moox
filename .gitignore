@@ -64,19 +64,3 @@ Thumbs.db
 # Moox Press
 /public/vendor/*
 /public/wp/*
-!/public/wp/composer.json
-!/public/wp/wp-config.php
-!/public/wp/wp-admin/
-/public/wp/wp-admin/*
-!/public/wp/wp-content/
-/public/wp/wp-content/*
-!/public/wp/wp-content/plugins/
-/public/wp/wp-content/plugins/*
-!/public/wp/wp-content/plugins/index.php
-!/public/wp/wp-content/plugins/moox-press
-!/public/wp/wp-content/themes/
-/public/wp/wp-content/themes/*
-!/public/wp/wp-content/themes/index.php
-#! Exclude themes here
-/public/wp/wp-content/uploads
-/public/wp/wp-content/languages
