@@ -1,0 +1,37 @@
+{
+    "name": "moox/permission",
+    "description": "This is my package permission",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*",
+        "spatie/laravel-permission": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Permission\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Permission\\PermissionServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

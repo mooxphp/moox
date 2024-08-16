@@ -33,6 +33,7 @@
         "moox/notifications": "*",
         "moox/page": "*",
         "moox/passkey": "*",
+        "moox/permission": "*",
         "moox/press": "*",
         "moox/security": "*",
         "moox/sync": "*",

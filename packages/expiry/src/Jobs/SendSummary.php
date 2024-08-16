@@ -59,7 +59,7 @@ class SendSummary implements ShouldQueue
         /** @disregard Non static method 'find' should not be called statically.intelephense(P1036) */
         $user = WpUser::find($userId);
         if ($user) {
-            // Todo: fix this! This is not working since the user_email is not in the fillable array???
+            // TODO: fix this! This is not working since the user_email is not in the fillable array???
             // or provided by the model like it should
             /** @phpstan-ignore-next-line */
             return $user->user_email;

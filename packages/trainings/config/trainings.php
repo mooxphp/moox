@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Trainings - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This values are the sort order of the navigation items in the
@@ -17,7 +17,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Trainings - User Models
+    | User Models
     |--------------------------------------------------------------------------
     |
     | Add your user models here. You can add as many as you want.
@@ -30,7 +30,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Trainings - Disable actions
+    | Disable actions
     |--------------------------------------------------------------------------
     |
     | You can disable some action buttons in the admin panel.

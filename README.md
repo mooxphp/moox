@@ -43,20 +43,24 @@ Welcome to the Moox Project. This is a Monorepo and installable Laravel App to d
 -   [Moox Builder](packages/builder/README.md), our Skeleton Package to create new Filament Plugins
 -   [Moox Core](packages/core/README.md), required by all of our packages, ships common things
 
-Some others are under hard development:
+Some are in productive use but not yet documented:
+
+-   [Moox Expiry](packages/expiry/README.md), define and automate the expiry of your records
+-   [Moox User Device](packages/user-device/README.md), manage your users' devices and decide how to handle unknown
+-   [Moox User Session](packages/session/README.md), manage your users' session (also in context of devices)
+
+All other packages are under hard development:
 
 -   [Moox Audit](packages/audit/README.md), logging and auditing, security-related and model-related
--   [Moox Expiry](packages/expiry/README.md), define and automate the expiry of your records
 -   [Moox Trainings](packages/trainings/README.md), automate trainings, invitations and self-validation
--   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Laravel
+-   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Filament
 -   [Moox Login Link](packages/login-link/README.md), send Login-Links (aka magic links) to your users
 -   [Moox Page](packages/page/README.md), content management, currently abandoned as we use Press
 -   [Moox Passkey](packages/passkey/README.md), give users the ability to use Passkeys (Webauthn)
 -   [Moox Sync](packages/sync/README.md), sync records from server to server, add logic and transformers
 -   [Moox User](packages/user/README.md), manage your users in Filament and give users access to their profile
--   [Moox User Device](packages/user-device/README.md), manage your users' devices and decide how to handly unknown
--   [Moox User Session](packages/session/README.md), manage your users' session (also in context of devices)
--   [Moox Security](packages/security/README.md), manage your password security audit your security features
+-   [Moox Security](packages/security/README.md), manage your password security and other security features
+-   [Moox Permission](packages/permission/README.md), manage roles and permissions using Spatie Permission
 
 And there is some other stuff NOT in this repo:
 
@@ -227,6 +231,52 @@ Please make sure you use the same tools in VS Code (our [VS Code Extension Pack]
 -   Pest: `composer test ` or `./vendor/bin/pest`, for packages `../../vendor/bin/pest`
 -   Coverage: `composer test-coverage ` or `./vendor/bin/pest --coverage`, for packages `../../vendor/bin/pest --coverage`
 -   Pint: `composer format ` or `./vendor/bin/pint`, for packages `../../vendor/bin/pint`
+
+## Admin Navigation
+
+Titles and sorting in the AdminPanel can be adjusted in the packages configs, but this is the default sorting that keeps everything in place:
+
+```
+- Dashboard
+- Main - 1000
+    - Expiry - 1100
+    - Notifications - 1800
+- Content - 2000
+    - Posts - 2100
+    - Pages - 2200
+    - Media - 2300
+    - Categories - 2400
+    - Tags - 2500
+    - Comments - 2600
+- Custom - 3000
+    - ...
+- Meta - 4000
+    - Wp Meta...
+- Custom - 5000
+    - ...
+- Users - 6000
+    - App users - 6010 (Moox Users, Moox Press Users 6015)
+    - Site users - 6020
+    - Customers - 6030
+    - Registrations - 6100
+    - Roles - 6200
+    - Permissions - 6201
+    - Devices - 6300
+    - Sessions - 6400
+    - Login-Links - 6500
+    - Password-Tokens - 6600
+    - Passkeys - 6700
+- System - 7000
+    - Audit - 7500
+    - Options (Press) - 7900
+- Jobs - 8000
+    - Job manager - 8001
+    - ...
+- Tools - 9000
+    - Sync - 9500
+    - Backup - 9800
+    - Builder - 9990
+```
 
 ## Contributors
 

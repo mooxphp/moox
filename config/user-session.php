@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Session - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This values are the sort order of the navigation items in the
@@ -21,7 +21,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Session - Device Model
+    | Device Model
     |--------------------------------------------------------------------------
     |
     | This is the model used to store the user devices.
@@ -32,7 +32,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Session - Expiry
+    | User Session Expiry
     |--------------------------------------------------------------------------
     |
     | This is under development.

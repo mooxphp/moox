@@ -136,7 +136,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Sync - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This values are the sort order of the navigation items in the

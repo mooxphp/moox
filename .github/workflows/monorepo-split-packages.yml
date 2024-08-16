@@ -16,21 +16,22 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - core
+          - audit
           - builder
+          - core
+          - expiry
           - jobs
+          - login-link
+          - notifications
+          - passkey
+          - permission
+          - press
+          - security
+          - sync
+          - trainings
           - user
           - user-device
           - user-session
-          - login-link
-          - sync
-          - audit
-          - passkey
-          - notifications
-          - security
-          - press
-          - expiry
-          - trainings
 
     steps:
       - uses: actions/checkout@v4

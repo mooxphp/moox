@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
+use Illuminate\Support\Facades\Gate;
 use Moox\Core\Commands\InstallCommand;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
@@ -18,6 +19,8 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
+        // TODO: Uncomment this line to enable policies
+        //$this->setPolicies();
         $this->useGoogleIcons();
         $this->translateConfigurations();
     }
@@ -35,12 +38,34 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         $packages = config('core.packages', []);
 
-        foreach ($packages as $slug => $package) {
+        foreach ($packages as $slug => $name) {
             $configData = config($slug);
             if (is_array($configData)) {
                 $translatedConfig = $this->translateConfig($configData);
                 config([$slug => $translatedConfig]);
             }
         }
+    }
+
+    public function setPolicies()
+    {
+        $packages = config('core.packages', []);
+
+        foreach ($packages as $package) {
+            if (isset($package['models']) && is_array($package['models'])) {
+                foreach ($package['models'] as $model => $settings) {
+                    if (isset($settings['policy']) && class_exists($settings['policy'])) {
+                        $modelClass = "App\\Models\\$model";
+                        if (class_exists($modelClass)) {
+                            Gate::policy($modelClass, $settings['policy']);
+                        }
+                    }
+                }
+            }
+        }
+
+        Gate::guessPolicyNamesUsing(function ($modelClass) {
+            return \Moox\Permission\Policies\DefaultPolicy::class;
+        });
     }
 }
