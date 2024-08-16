@@ -22,9 +22,9 @@ class UserDeviceWidgets extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('user-device::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('user-device::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('user-device::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::device.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::device.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::device.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

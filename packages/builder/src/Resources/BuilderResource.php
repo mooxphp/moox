@@ -26,10 +26,14 @@ class BuilderResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->label(__('core::core.name'))
                     ->maxLength(255),
-                DateTimePicker::make('started_at'),
-                DateTimePicker::make('finished_at'),
+                DateTimePicker::make('started_at')
+                    ->label(__('core::core.started_at')),
+                DateTimePicker::make('finished_at')
+                    ->label(__('core::core.finished_at')),
                 Toggle::make('failed')
+                    ->label(__('core::core.failed'))
                     ->required(),
             ]);
     }
@@ -39,14 +43,14 @@ class BuilderResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('builder::translations.name'))
+                    ->label(__('core::core.name'))
                     ->sortable(),
                 TextColumn::make('started_at')
-                    ->label(__('builder::translations.started_at'))
+                    ->label(__('core::core.started_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('failed')
-                    ->label(__('builder::translations.failed'))
+                    ->label(__('core::core.failed'))
                     ->sortable(),
             ])
             ->defaultSort('name', 'desc')
@@ -81,22 +85,22 @@ class BuilderResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('builder::translations.single');
+        return config('builder.resources.builder.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('builder::translations.plural');
+        return config('builder.resources.builder.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('builder::translations.navigation_label');
+        return config('builder.resources.builder.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('builder::translations.breadcrumb');
+        return config('builder.resources.builder.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -111,11 +115,11 @@ class BuilderResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('builder::translations.navigation_group');
+        return config('builder.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('builder.navigation_sort');
+        return config('builder.navigation_sort') + 3;
     }
 }

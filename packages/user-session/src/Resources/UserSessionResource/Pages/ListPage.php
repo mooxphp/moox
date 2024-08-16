@@ -27,7 +27,7 @@ class ListPage extends ListRecords
 
     public function getTitle(): string
     {
-        return __('user-session::translations.title');
+        return __('core::session.title');
     }
 
     protected function getHeaderActions(): array

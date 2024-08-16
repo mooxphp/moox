@@ -22,9 +22,9 @@ class PasskeyWidgets extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('passkey::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('passkey::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('passkey::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::passkey.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::passkey.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::passkey.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

@@ -4,12 +4,15 @@ namespace Moox\Passkey\Resources\PasskeyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 
 class ListPage extends ListRecords
 {
+    use HasDynamicTabs;
+
     public static string $resource = PasskeyResource::class;
 
     public function getActions(): array
@@ -37,5 +40,10 @@ class ListPage extends ListRecords
                     return $model::create($data);
                 }),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('passkey.resources.passkey.tabs', Passkey::class);
     }
 }

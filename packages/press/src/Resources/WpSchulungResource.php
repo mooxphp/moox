@@ -360,5 +360,13 @@ class WpSchulungResource extends Resource
         return config('press.resources.training.single');
     }
 
-    protected static ?string $navigationGroup = 'heco Schulungen';
+    public static function getNavigationGroup(): ?string
+    {
+        return config('press.temp_navigation_group');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('press.temp_navigation_sort') + 1;
+    }
 }

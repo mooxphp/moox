@@ -104,5 +104,6 @@ return [
     'rubrik' => 'Rubrik',
     'rubriks' => 'Rubriks',
     'autoload' => 'Autoload',
+    'drop' => 'Drop',
 
 ];

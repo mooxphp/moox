@@ -31,15 +31,18 @@ class UserDeviceResource extends Resource
         return $form
             ->schema([
                 TextInput::make('title')
-                    ->label(__('user-device::translations.title'))
+                    ->label(__('core::core.title'))
                     ->maxLength(255),
                 TextInput::make('slug')
-                    ->label(__('user-device::translations.slug'))
+                    ->label(__('core::core.slug'))
                     ->maxLength(255),
-                DateTimePicker::make('updated_at'),
-                DateTimePicker::make('created_at'),
+                DateTimePicker::make('updated_at')
+                    ->label(__('core::core.updated_at')),
+                DateTimePicker::make('created_at')
+                    ->label(__('core::core.created_at')),
 
                 Select::make('user_type')
+                    ->label(__('core::user.user_type'))
                     ->options(function () {
                         $models = Config::get('user-device.user_models', []);
 
@@ -52,6 +55,7 @@ class UserDeviceResource extends Resource
                     ->required(),
 
                 Select::make('user_id')
+                    ->label(__('core::user.user_id'))
                     ->options(function ($get) {
                         $userType = $get('user_type');
                         if (! $userType) {
@@ -63,6 +67,7 @@ class UserDeviceResource extends Resource
                     ->required(),
 
                 Toggle::make('active')
+                    ->label(__('core::core.active'))
                     ->required(),
             ]);
     }
@@ -72,7 +77,7 @@ class UserDeviceResource extends Resource
         return $table
             ->columns([
                 IconColumn::make('platform')
-                    ->label('')
+                    ->label(__('core::sync.platform'))
                     ->icon(function ($record) {
                         switch ($record->platform) {
                             case 'Mobile':
@@ -84,24 +89,24 @@ class UserDeviceResource extends Resource
                         }
                     }),
                 TextColumn::make('title')
-                    ->label(__('user-device::translations.title'))
+                    ->label(__('core::core.title'))
                     ->sortable(),
                 TextColumn::make('user_id')
-                    ->label(__('user-device::translations.username'))
+                    ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
                         return optional($record->user)->name ?? 'unknown';
                     })
                     ->sortable(),
                 IconColumn::make('active')
-                    ->label(__('user-device::translations.active'))
+                    ->label(__('core::core.active'))
                     ->toggleable()
                     ->boolean(),
                 TextColumn::make('updated_at')
-                    ->label(__('user-device::translations.updated_at'))
+                    ->label(__('core::core.updated_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('user-device::translations.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->since()
                     ->sortable(),
             ])
@@ -138,22 +143,22 @@ class UserDeviceResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('user-device::translations.single');
+        return config('user-device.resources.devices.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('user-device::translations.plural');
+        return config('user-device.resources.devices.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('user-device::translations.navigation_label');
+        return config('user-device.resources.devices.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('user-device::translations.breadcrumb');
+        return config('user-device.resources.devices.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -163,11 +168,11 @@ class UserDeviceResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('user-device::translations.navigation_group');
+        return config('user-device.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('user-device.navigation_sort');
+        return config('user-device.navigation_sort') + 2;
     }
 }
