@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpSchulungResource\Pages;
 
 use Filament\Actions\Action;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpSchulungResource;
 

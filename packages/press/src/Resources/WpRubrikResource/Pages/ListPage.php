@@ -3,9 +3,8 @@
 namespace Moox\Press\Resources\WpRubrikResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Press\Models\WpPost;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpRubrikResource;
 

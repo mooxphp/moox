@@ -131,5 +131,6 @@ class WpRubrikResource extends Resource
     {
         return config('press.resources.rubrik.single');
     }
+
     protected static ?string $navigationGroup = 'heco Schulungen';
 }

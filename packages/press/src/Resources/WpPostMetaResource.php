@@ -132,4 +132,5 @@ class WpPostMetaResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return config('press.meta_navigation_sort') + 2;
-    }}
+    }
+}

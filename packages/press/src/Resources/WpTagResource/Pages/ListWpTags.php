@@ -3,10 +3,10 @@
 namespace Moox\Press\Resources\WpTagResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
-use Moox\Press\Resources\WpTagResource;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpTag;
+use Moox\Press\Resources\WpTagResource;
 
 class ListWpTags extends ListRecords
 {

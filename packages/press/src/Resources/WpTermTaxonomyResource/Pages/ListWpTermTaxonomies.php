@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpTermTaxonomyResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpTermTaxonomy;
 use Moox\Press\Resources\WpTermTaxonomyResource;
 

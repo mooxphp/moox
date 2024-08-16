@@ -3,10 +3,10 @@
 namespace Moox\Press\Resources\WpTermResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
-use Moox\Press\Resources\WpTermResource;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpTerm;
+use Moox\Press\Resources\WpTermResource;
 
 class ListWpTerms extends ListRecords
 {

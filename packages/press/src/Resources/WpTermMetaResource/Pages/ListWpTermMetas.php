@@ -3,8 +3,8 @@
 namespace Moox\Press\Resources\WpTermMetaResource\Pages;
 
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpTermMeta;
 use Moox\Press\Resources\WpTermMetaResource;
 
