@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'comment' => 'Commentaire',
+    'comments' => 'Commentaires',
+    'no_comments' => 'Aucun commentaire',
+    'no_comment' => 'Aucun commentaire',
+    'comment_id' => 'Identifiant du commentaire',
+    'comment_post_ID' => 'Comment Post ID',
+    'comment_author' => 'Comment Author',
+    'comment_author_email' => 'Courriel de l\'auteur du commentaire',
+    'comment_author_url' => 'URL de l\'auteur du commentaire',
+    'comment_author_IP' => 'IP de l\'auteur du commentaire',
+    'comment_date' => 'Date du commentaire',
+    'comment_date_gmt' => 'Date GMT du commentaire',
+    'comment_content' => 'Comment Content',
+    'comment_karma' => 'Comment Karma',
+    'comment_approved' => 'Comment approved',
+    'comment_agent' => 'Comment Agent',
+    'comment_parent' => 'Comment Parent',
+    'comment_type' => 'Type du commentaire',
+    'comment_status' => 'Comment Status',
+    'comment_count' => 'Comment count',
+    'wp_comment_meta' => 'WP Comment Meta',
+    'wp_comment_metas' => 'WP Comment Metas',
+];

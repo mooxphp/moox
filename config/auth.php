@@ -35,10 +35,17 @@ return [
     |
     */
 
+    // TODO: Moox Guard, Web Guard, Press Guard
+    // TODO: Moox Provider, Web Provider, Press Provider
+    // TODO: Automate installation, create custom auth configs and load them
     'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'press' => [
+            'driver' => 'session',
+            'provider' => 'wpusers',
         ],
     ],
 
@@ -64,11 +71,10 @@ return [
             'driver' => 'eloquent',
             'model' => \Moox\User\Models\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'wpusers' => [
+            'driver' => 'eloquent',
+            'model' => \Moox\Press\Models\WpUser::class,
+        ],
     ],
 
     /*
@@ -89,8 +95,14 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => 'password_resets',
-            'expire' => 60,
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 120,
+            'throttle' => 60,
+        ],
+        'wpusers' => [
+            'provider' => 'wpusers',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
+            'expire' => 120,
             'throttle' => 60,
         ],
     ],

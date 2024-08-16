@@ -14,11 +14,13 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
-
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 1,
-            'name' => 'admin',
-            'email' => 'alf@drollinger.info',
+            'name' => 'QSecOfr',
+            'email' => 'security@moox.org',
             'email_verified_at' => null,
             'password' => '$2y$10$xkh.Ak433tGhMPt7FRqhXOeoFdQD2DvLnjJAWEqZR32i293.tfKKC',
             'remember_token' => 'qLkHQBqXiHQp1D0ahyHAKN1biSto8E5iVwo9fAfuOVISwQyXalx8xOtM6Iwg',
@@ -28,6 +30,25 @@ class UsersSeeder extends Seeder
             'updated_at' => '2023-11-30 18:22:40',
         ]);
 
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
+        User::create([
+            'id' => 2,
+            'name' => 'Alf',
+            'email' => 'alf@drollinger.info',
+            'email_verified_at' => null,
+            'password' => '$2y$10$2tmqvVbAFqK5z6knCEKo5.0.nCkvDyiM/jzhtYiWEZz6YB23nrKoW',
+            'remember_token' => null,
+            'current_team_id' => null,
+            'profile_photo_path' => null,
+            'created_at' => '2023-12-14 08:37:56',
+            'updated_at' => '2023-12-14 08:37:56',
+        ]);
+
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 2,
             'name' => 'Alf',
@@ -41,6 +62,9 @@ class UsersSeeder extends Seeder
             'updated_at' => '2023-12-14 08:37:56',
         ]);
 
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 3,
             'name' => 'Aziz',
@@ -54,6 +78,9 @@ class UsersSeeder extends Seeder
             'updated_at' => '2023-12-14 08:41:04',
         ]);
 
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 4,
             'name' => 'Kim',
@@ -67,6 +94,9 @@ class UsersSeeder extends Seeder
             'updated_at' => '2023-12-14 08:42:11',
         ]);
 
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 5,
             'name' => 'Reinhold',
@@ -80,6 +110,9 @@ class UsersSeeder extends Seeder
             'updated_at' => '2023-12-14 08:42:45',
         ]);
 
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 6,
             'name' => 'Moox Testuser',
@@ -93,6 +126,9 @@ class UsersSeeder extends Seeder
             'updated_at' => '2023-12-14 08:43:34',
         ]);
 
+        /**
+         * @disregard Non static method 'create' should not be called statically.intelephense(P1036)
+         */
         User::create([
             'id' => 7,
             'name' => 'Moox Customer',

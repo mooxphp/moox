@@ -19,7 +19,7 @@ class JobsWaitingResource extends Resource
 {
     protected static ?string $model = Job::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-pause';
+    protected static ?string $navigationIcon = 'gmdi-pause';
 
     public static function form(Form $form): Form
     {
@@ -145,6 +145,6 @@ class JobsWaitingResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.jobs_waiting.navigation_sort');
+        return config('jobs.navigation_sort') + 1;
     }
 }

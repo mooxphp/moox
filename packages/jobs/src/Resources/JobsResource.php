@@ -19,7 +19,7 @@ class JobsResource extends Resource
 {
     protected static ?string $model = JobManager::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-play';
+    protected static ?string $navigationIcon = 'gmdi-play-arrow';
 
     public static function form(Form $form): Form
     {
@@ -131,11 +131,6 @@ class JobsResource extends Resource
         return true;
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
-    }
-
     public static function getNavigationGroup(): ?string
     {
         return __('jobs::translations.navigation_group');
@@ -143,6 +138,6 @@ class JobsResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.jobs.navigation_sort');
+        return config('jobs.navigation_sort');
     }
 }

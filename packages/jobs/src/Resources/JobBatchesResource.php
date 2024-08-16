@@ -13,7 +13,7 @@ class JobBatchesResource extends Resource
 {
     protected static ?string $model = JobBatch::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static ?string $navigationIcon = 'gmdi-all-inbox';
 
     public static function table(Table $table): Table
     {
@@ -135,6 +135,6 @@ class JobBatchesResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.job_batches.navigation_sort');
+        return config('jobs.navigation_sort') + 4;
     }
 }

@@ -44,7 +44,7 @@ class EditUser extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title('User updated')
-            ->body('The changes have been saved successfully.');
+            ->title(__('core::user.user_updated'))
+            ->body(__('core::user.user_updated_message'));
     }
 }

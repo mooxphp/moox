@@ -22,7 +22,7 @@ class JobsFailedResource extends Resource
 {
     protected static ?string $model = FailedJob::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'gmdi-error';
 
     public static function form(Form $form): Form
     {
@@ -148,6 +148,6 @@ class JobsFailedResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('jobs.resources.failed_jobs.navigation_sort');
+        return config('jobs.navigation_sort') + 2;
     }
 }

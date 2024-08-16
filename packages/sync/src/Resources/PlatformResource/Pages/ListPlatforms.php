@@ -4,11 +4,14 @@ namespace Moox\Sync\Resources\PlatformResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Resources\PlatformResource;
 
 class ListPlatforms extends ListRecords
 {
+    use HasDynamicTabs;
+
     public static string $resource = PlatformResource::class;
 
     public function getActions(): array
@@ -18,7 +21,7 @@ class ListPlatforms extends ListRecords
 
     public function getTitle(): string
     {
-        return __('sync::translations.title');
+        return __('sync::translations.platforms');
     }
 
     protected function getHeaderActions(): array
@@ -29,5 +32,10 @@ class ListPlatforms extends ListRecords
                     return $model::create($data);
                 }),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('sync.resources.platform.tabs', Platform::class);
     }
 }

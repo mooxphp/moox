@@ -45,6 +45,7 @@ class StoreUserDevice
 
         $title = $platform.' '.$browser.' on '.$os.' in '.($location['city'] ?? '- Unknown').' - '.($location['country'] ?? null);
 
+        /** @disregard Non static method 'updateOrCreate' should not be called statically.intelephense(P1036) */
         $device = UserDevice::updateOrCreate([
             'user_id' => $user_id,
             'user_type' => get_class($user),
@@ -73,8 +74,7 @@ class StoreUserDevice
         }
 
         if ($device->wasRecentlyCreated) {
-            // TODO:
-            // Send a notification to the user about the new device.
+            // TODO: Send a notification to the user about the new device.
         }
     }
 }

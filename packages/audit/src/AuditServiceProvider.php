@@ -16,7 +16,6 @@ class AuditServiceProvider extends PackageServiceProvider
             ->name('audit')
             ->hasConfigFile()
             ->hasViews()
-            ->hasTranslations()
             ->hasMigrations(['create_activity_log_table'])
             ->hasCommand(InstallCommand::class);
     }

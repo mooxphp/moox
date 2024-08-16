@@ -6,8 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
+use function Laravel\Prompts\alert;
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\note;
@@ -24,19 +24,29 @@ class InstallCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
     }
 
     public function handle(): void
     {
         $this->art();
         $this->welcome();
-        $this->checkForFilament();
         $this->publishConfiguration();
         $this->publishMigrations();
         $this->createQueueTables();
         $this->runMigrations();
-        $this->registerPlugins();
+        $providerPath = app_path('Providers/Filament');
+        $panelsToregister = $this->getPanelProviderPath();
+        if ($panelsToregister != null) {
+            if (is_array($panelsToregister)) {
+                foreach ($panelsToregister as $panelprovider) {
+                    $this->registerPlugins($providerPath.'/'.$panelprovider);
+                }
+            } else {
+                $this->registerPlugins($panelsToregister);
+            }
+        } else {
+            $this->registerPlugins($panelsToregister[0]);
+        }
         $this->sayGoodbye();
     }
 
@@ -64,28 +74,6 @@ class InstallCommand extends Command
     public function welcome(): void
     {
         note('Welcome to the Moox Jobs installer');
-    }
-
-    public function checkForFilament(): void
-    {
-        if (! File::exists($this->providerPath)) {
-            error('The Filament AdminPanelProvider.php or FilamentServiceProvider.php file does not exist.');
-            info(' ');
-            warning('You should install FilamentPHP first, see https://filamentphp.com/docs/panels/installation');
-            info(' ');
-            if (confirm('Do you want to install Filament now?', true)) {
-                info('Starting Filament installer...');
-                $this->callSilent('filament:install', ['--panels' => true]);
-            }
-        }
-
-        if (! File::exists($this->providerPath)) {
-            if (! confirm('Filament is not installed properly. Do you want to proceed anyway?', false)) {
-                info('Installation cancelled.');
-
-                return; // cancel installation
-            }
-        }
     }
 
     public function publishConfiguration(): void
@@ -167,7 +155,7 @@ class InstallCommand extends Command
         }
     }
 
-    public function registerPlugins(): void
+    public function registerPlugins(string $providerPath): void
     {
         $queueDriver = '';
 
@@ -175,8 +163,8 @@ class InstallCommand extends Command
             $queueDriver = 'database';
         }
 
-        if (File::exists($this->providerPath)) {
-            $content = File::get($this->providerPath);
+        if (File::exists($providerPath)) {
+            $content = File::get($providerPath);
             $intend = '                ';
             $namespace = "\Moox\Jobs";
 
@@ -224,9 +212,33 @@ class InstallCommand extends Command
                     $replacement = "$1\n".$pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
-                File::put($this->providerPath, $newContent);
+                File::put($providerPath, $newContent);
+            } else {
+                alert('There are no new plugins detected.');
             }
         }
+    }
+
+    public function getPanelProviderPath(): string|array
+    {
+        $providerPath = app_path('Providers/Filament');
+        $providers = File::allFiles($providerPath);
+        if (count($providers) > 1) {
+            $providerNames = [];
+            foreach ($providers as $provider) {
+                $providerNames[] = $provider->getBasename();
+            }
+            $providerPath = multiselect(
+                label: 'Which Panel should it be registered',
+                options: [...$providerNames],
+                default: [$providerNames[0]],
+            );
+        }
+        if (count($providers) == 1) {
+            $providerPath .= '/'.$providers[0]->getBasename();
+        }
+
+        return $providerPath;
     }
 
     public function sayGoodbye(): void

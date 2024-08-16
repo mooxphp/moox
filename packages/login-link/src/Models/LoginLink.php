@@ -30,7 +30,7 @@ class LoginLink extends Model
     {
         parent::__construct($attributes);
 
-        // Todo: Add the appends here.
+        // TODO: Add the appends here.
         //$this->appends = [
         //];
     }

@@ -1,0 +1,37 @@
+{
+    "name": "moox/press",
+    "description": "This is my package press",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Press\\": "src",
+            "Moox\\Press\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Press\\PressServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

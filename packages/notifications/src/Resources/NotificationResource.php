@@ -21,17 +21,22 @@ class NotificationResource extends Resource
 {
     protected static ?string $model = Notification::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-notifications';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('type'),
-                TextInput::make('notifiable_type'),
-                TextInput::make('notifiable_id'),
-                TextInput::make('data'),
-                DatePicker::make('read_at'),
+                TextInput::make('type')
+                    ->label(__('core::core.type')),
+                TextInput::make('notifiable_type')
+                    ->label(__('core::notifications.notifiable_type')),
+                TextInput::make('notifiable_id')
+                    ->label(__('core::notifications.notifiable_id')),
+                TextInput::make('data')
+                    ->label(__('core::core.data')),
+                DatePicker::make('read_at')
+                    ->label(__('core::core.read_at')),
 
             ]);
     }
@@ -40,12 +45,17 @@ class NotificationResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('type'),
-                TextColumn::make('notifiable_type'),
+                TextColumn::make('type')
+                    ->label(__('core::core.type')),
+                TextColumn::make('notifiable_type')
+                    ->label(__('core::notifications.notifiable_type')),
                 TextColumn::make('notifiable_id')
+                    ->label(__('core::notifications.notifiable_id'))
                     ->sortable(),
-                TextColumn::make('data'),
-                TextColumn::make('read_at'),
+                TextColumn::make('data')
+                    ->label(__('core::core.data')),
+                TextColumn::make('read_at')
+                    ->label(__('core::core.read_at')),
 
             ])->searchable()
             ->defaultSort('type', 'desc')
@@ -83,22 +93,22 @@ class NotificationResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('notifications::translations.single');
+        return config('notifications.resources.notifications.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('notifications::translations.plural');
+        return config('notifications.resources.notifications.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('notifications::translations.navigation_label');
+        return config('notifications.resources.notifications.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('notifications::translations.breadcrumb');
+        return config('notifications.resources.notifications.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -113,11 +123,11 @@ class NotificationResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('notifications::translations.navigation_group');
+        return config('notifications.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('notifications.navigation_sort');
+        return config('notifications.navigation_sort') + 2;
     }
 }

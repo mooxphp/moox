@@ -2,8 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use Awcodes\FilamentGravatar\GravatarPlugin;
-use Awcodes\FilamentGravatar\GravatarProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -28,16 +26,17 @@ use Moox\Locate\LocatePlugin;
 use Moox\Page\PagePlugin;
 use Moox\Sync\SyncPlugin;
 use Moox\User\UserPlugin;
+use Moox\Security\Services\RequestPasswordReset;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            // ->defaultAvatarProvider(GravatarProvider::class)
             ->default()
             ->id('moox')
             ->path('moox')
+            ->passwordReset(RequestPasswordReset::class)
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -88,14 +87,45 @@ class AdminPanelProvider extends PanelProvider
                 //\Moox\Locate\TimezonePlugin::make(),
 
                 \Moox\UserDevice\UserDevicePlugin::make(),
+                // CMS plugin
+                \Moox\Page\PagePlugin::make(),
 
-                \Moox\LoginLink\LoginLinkPlugin::make(),
-
-                \Moox\UserSession\UserSessionPlugin::make(),
-
-                \Moox\Passkey\PasskeyPlugin::make(),
-
+                // Notification plugin
                 \Moox\Notification\NotificationPlugin::make(),
+
+                // Audit plugin
+                \Moox\Audit\AuditPlugin::make(),
+
+                // Jobs plugins
+                \Moox\Jobs\JobsPlugin::make(),
+                \Moox\Jobs\JobsWaitingPlugin::make(),
+                \Moox\Jobs\JobsFailedPlugin::make(),
+                \Moox\Jobs\JobsBatchesPlugin::make(),
+
+                // Sync Plugins
+                \Moox\Sync\SyncPlugin::make(),
+                \Moox\Sync\PlatformPlugin::make(),
+
+                // User plugins
+                \Moox\User\UserPlugin::make(),
+
+                \Moox\UserDevice\UserDevicePlugin::make(),
+                \Moox\LoginLink\LoginLinkPlugin::make(),
+                \Moox\UserSession\UserSessionPlugin::make(),
+                \Moox\Passkey\PasskeyPlugin::make(),
+                \Moox\Security\ResetPasswordPlugin::make(),
+
+                // Expiry plugin
+                \Moox\Expiry\ExpiryPlugin::make(),
+
+                // Training plugins
+                \Moox\Training\TrainingPlugin::make(),
+                \Moox\Training\TrainingInvitationPlugin::make(),
+                \Moox\Training\TrainingDatePlugin::make(),
+                \Moox\Training\TrainingTypePlugin::make(),
+
+                // Builder plugin
+                \Moox\Builder\BuilderPlugin::make(),
 
             ]);
     }
