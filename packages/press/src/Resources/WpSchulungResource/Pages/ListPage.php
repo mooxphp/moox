@@ -21,6 +21,6 @@ class ListPage extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('press.resources.training.tabs', WpPost::class);
+        return $this->getDynamicTabs('expiry.resources.training.tabs', WpPost::class);
     }
 }

@@ -461,6 +461,6 @@ class WpUserResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.user_navigation_sort') + 2;
+        return config('press.user_navigation_sort') + 1;
     }
 }

@@ -67,7 +67,7 @@ class WpCommentMetaRelationManager extends RelationManager
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('comment_id')
-                    ->label(__('core::content.comment_id'))
+                    ->label(__('core::comment.comment_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),

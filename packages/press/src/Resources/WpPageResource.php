@@ -329,7 +329,7 @@ class WpPageResource extends Resource
                     ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('to_ping')
-                    ->label(__('core::to_ping'))
+                    ->label(__('core::post.to_ping'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
