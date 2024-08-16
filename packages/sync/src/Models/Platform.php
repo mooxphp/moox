@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Platform extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'domain',
@@ -22,6 +27,11 @@ class Platform extends Model
 
     protected $searchableFields = ['*'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected $casts = [
         'selection' => 'boolean',
         'read_only' => 'boolean',
@@ -29,12 +39,12 @@ class Platform extends Model
         'master' => 'boolean',
     ];
 
-    public function sources()
+    public function sourcePlatform()
     {
         return $this->hasMany(Sync::class, 'source_platform_id');
     }
 
-    public function targets()
+    public function targetPlatform()
     {
         return $this->hasMany(Sync::class, 'target_platform_id');
     }

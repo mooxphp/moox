@@ -1,20 +1,5 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
-
 return [
 
     /*
@@ -146,4 +131,52 @@ return [
     */
 
     'navigation_sort' => 9500,
+
+    /*
+     |--------------------------------------------------------------------------
+     | API
+     |--------------------------------------------------------------------------
+     |
+     | Enable or disable the API and configure all entities.
+     | Public or secured by platform or sanctum.
+     | Available at /api/{entity}
+     |
+     */
+
+    'entities' => [
+        'Sync' => [
+            'api' => [
+                'enabled' => true,
+                'public' => false,
+                'auth_type' => 'platform',
+                'active_routes' => [
+                    'index',
+                    'show',
+                    'store',
+                    'update',
+                    'destroy',
+                ],
+            ],
+            'model' => '\Moox\Sync\Models\Sync',
+            'resource' => '\Moox\Sync\Resources\SyncResource',
+            'api_controller' => '\Moox\Sync\Http\Controllers\Api\SyncController',
+        ],
+        'Platform' => [
+            'api' => [
+                'enabled' => true,
+                'public' => false,
+                'auth_type' => 'platform',
+                'active_routes' => [
+                    'index',
+                    'show',
+                    'store',
+                    'update',
+                    'destroy',
+                ],
+            ],
+            'model' => '\Moox\Sync\Models\Platform',
+            'resource' => '\Moox\Sync\Resources\PlatformResource',
+            'api_controller' => '\Moox\Sync\Http\Controllers\Api\PlatformController',
+        ],
+    ],
 ];

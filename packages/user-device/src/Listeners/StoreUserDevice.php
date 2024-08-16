@@ -66,9 +66,7 @@ class StoreUserDevice
         if (Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
             sleep(1);
             $debug = DB::table('sessions')->where('id', session()->getId())->get();
-            var_dump($debug);
             $debug = DB::table('sessions')->where('id', session()->getId())->update(['device_id' => $device->id]);
-            dd($debug);
         } else {
             Log::warning('The session-table does not have a device_id column. Install Moox User Devices package to add this feature.');
         }

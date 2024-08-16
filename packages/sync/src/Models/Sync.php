@@ -4,8 +4,17 @@ namespace Moox\Sync\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \Moox\Sync\Models\Platform $sourcePlatform
+ * @property \Moox\Sync\Models\Platform $targetPlatform
+ */
 class Sync extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'status',
         'title',
@@ -29,6 +38,11 @@ class Sync extends Model
 
     protected $searchableFields = ['*'];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected $casts = [
         'last_sync' => 'datetime',
         'sync_ids' => 'array',
