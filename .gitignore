@@ -20,6 +20,7 @@ LocalValetDriver.php
 
 # PHPUnit
 .phpunit.result.cache
+phpunit.cache
 phpunit.xml
 
 # Yarn
