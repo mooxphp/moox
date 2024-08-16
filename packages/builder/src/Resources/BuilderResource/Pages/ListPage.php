@@ -2,14 +2,17 @@
 
 namespace Moox\Builder\Resources\BuilderResource\Pages;
 
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\Item;
+use Filament\Actions\CreateAction;
+use Moox\Core\Traits\HasDynamicTabs;
+use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Resources\BuilderResource;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
 
 class ListPage extends ListRecords
 {
+    use HasDynamicTabs;
+
     public static string $resource = BuilderResource::class;
 
     public function getActions(): array
@@ -37,5 +40,10 @@ class ListPage extends ListRecords
                     return $model::create($data);
                 }),
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('builder.resources.builder.tabs', Item::class);
     }
 }

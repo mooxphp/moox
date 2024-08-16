@@ -22,9 +22,9 @@ class BuilderWidgets extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('builder::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('builder::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::builder.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::builder.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::builder.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }
