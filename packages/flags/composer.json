@@ -1,0 +1,51 @@
+{
+    "name": "moox/flags",
+    "description": "A package to easily make use of beautiful stylable country and language flags in your Laravel Blade views and Filament resources.",
+    "keywords": [
+        "Blade",
+        "Icons",
+        "Country Flags",
+        "Language Flags",
+        "Flags",
+        "SVG",
+        "Laravel"
+    ],
+    "homepage": "https://github.com/mooxphp/flags",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Devs"
+        }
+    ],
+    "require": {
+        "php": "~8.2.0|~8.3.0",
+        "blade-ui-kit/blade-icons": "^1.6",
+        "illuminate/support": "^11.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0",
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Flags\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Flags\\FlagsServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

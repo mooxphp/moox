@@ -41,6 +41,10 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
+        "moox/passkey": "*",
+        "moox/notifications": "*",
+        "moox/flags": "*",
+        "moox/locate": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

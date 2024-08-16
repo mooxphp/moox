@@ -20,7 +20,9 @@ jobs:
           - builder
           - core
           - expiry
+          - flags
           - jobs
+          - locate
           - login-link
           - notifications
           - passkey
