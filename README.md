@@ -39,9 +39,9 @@ Welcome to the Moox Project. This is a Monorepo and installable Laravel App to d
 
 ## Packages
 
--   [Moox Jobs](packages/jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
 -   [Moox Builder](packages/builder/README.md), our Skeleton Package to create new Filament Plugins
 -   [Moox Core](packages/core/README.md), required by all of our packages, ships common things
+-   [Moox Jobs](packages/jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
 
 Some are in productive use but not yet documented:
 
@@ -52,15 +52,18 @@ Some are in productive use but not yet documented:
 All other packages are under hard development:
 
 -   [Moox Audit](packages/audit/README.md), logging and auditing, security-related and model-related
--   [Moox Trainings](packages/trainings/README.md), automate trainings, invitations and self-validation
--   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Filament
+-   [Moox Flags](packages/flags/README.md), Flags contains Blade Icons for countries, languages and more
+-   [Moox Locate](packages/locate/README.md), countries, languages, currencies, country prefixes, timezones
 -   [Moox Login Link](packages/login-link/README.md), send Login-Links (aka magic links) to your users
 -   [Moox Page](packages/page/README.md), content management, currently abandoned as we use Press
 -   [Moox Passkey](packages/passkey/README.md), give users the ability to use Passkeys (Webauthn)
--   [Moox Sync](packages/sync/README.md), sync records from server to server, add logic and transformers
--   [Moox User](packages/user/README.md), manage your users in Filament and give users access to their profile
--   [Moox Security](packages/security/README.md), manage your password security and other security features
 -   [Moox Permission](packages/permission/README.md), manage roles and permissions using Spatie Permission
+-   [Moox Press](packages/press/README.md), use WordPress without using WordPress, in Filament
+-   [Moox Redis Model](packages/redis-model/README.md), use Redis as plug-in replacement for your models
+-   [Moox Security](packages/security/README.md), manage your password security and other security features
+-   [Moox Sync](packages/sync/README.md), sync records from server to server, add logic and transformers
+-   [Moox Trainings](packages/trainings/README.md), automate trainings, invitations and self-validation
+-   [Moox User](packages/user/README.md), manage your users in Filament and give users access to their profile
 
 And there is some other stuff NOT in this repo:
 
