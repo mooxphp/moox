@@ -9,4 +9,6 @@ parameters:
         - app
     excludePaths:
         - 'packages/*/vendor/*'
+        - 'packages/press/wordpress/*'
+        - 'packages/redis-model'
     tmpDir: build/phpstan
