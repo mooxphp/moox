@@ -6,6 +6,7 @@ namespace Moox\Press;
 
 use Illuminate\Support\Facades\Auth;
 use Moox\Press\Commands\InstallCommand;
+use Moox\Press\Commands\InstallWordPress;
 use Moox\Press\Commands\UpdateWordPressURL;
 use Moox\Press\Providers\WordPressUserProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -21,7 +22,11 @@ class PressServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
-            ->hasCommands(InstallCommand::class, UpdateWordPressURL::class);
+            ->hasCommands(
+                InstallCommand::class,
+                UpdateWordPressURL::class,
+                InstallWordPress::class
+            );
     }
 
     public function boot()
