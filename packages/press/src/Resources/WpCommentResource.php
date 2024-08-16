@@ -306,6 +306,6 @@ class WpCommentResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.press_navigation_sort') + 2;
+        return config('press.press_navigation_sort') + 6;
     }
 }

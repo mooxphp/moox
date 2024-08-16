@@ -177,6 +177,6 @@ class WpCategoryResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.press_navigation_sort') + 1;
+        return config('press.press_navigation_sort') + 4;
     }
 }

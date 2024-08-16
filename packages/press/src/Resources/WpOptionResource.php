@@ -126,11 +126,11 @@ class WpOptionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return config('press.press_navigation_group');
+        return config('press.system_navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.press_navigation_sort') + 4;
+        return config('press.press_navigation_sort') + 1;
     }
 }
