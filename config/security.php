@@ -75,7 +75,6 @@ return [
 
     'navigation_group' => 'trans//core::user.users',
 
-
     /*
     |--------------------------------------------------------------------------
     | Navigation Sort

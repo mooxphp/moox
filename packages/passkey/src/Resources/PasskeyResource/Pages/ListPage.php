@@ -2,10 +2,10 @@
 
 namespace Moox\Passkey\Resources\PasskeyResource\Pages;
 
-use Moox\Passkey\Models\Passkey;
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 

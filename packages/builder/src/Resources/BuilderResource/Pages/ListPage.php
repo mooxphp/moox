@@ -2,12 +2,12 @@
 
 namespace Moox\Builder\Resources\BuilderResource\Pages;
 
-use Moox\Builder\Models\Item;
 use Filament\Actions\CreateAction;
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\BuilderResource;
 use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Core\Traits\HasDynamicTabs;
 
 class ListPage extends ListRecords
 {

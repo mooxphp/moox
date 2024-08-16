@@ -142,4 +142,3 @@ class WpThemaResource extends Resource
         return config('press.temp_navigation_sort') + 3;
     }
 }
-

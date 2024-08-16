@@ -2,8 +2,8 @@
 
 namespace Moox\UserDevice\Resources\UserDeviceResource\Pages;
 
-use Moox\Core\Traits\HasDynamicTabs;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
