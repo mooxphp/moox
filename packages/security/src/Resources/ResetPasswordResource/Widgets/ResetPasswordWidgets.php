@@ -23,9 +23,9 @@ class ResetPasswordWidgets extends BaseWidget
     //            ->first();
     //
     //        return [
-    //            Stat::make(__('security::translations.totalone'), $aggregatedInfo->count ?? 0),
-    //            Stat::make(__('security::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-    //            Stat::make(__('security::translations.totalthree'), $aggregatedInfo->count ?? 0),
+    //            Stat::make(__('core::security.totalone'), $aggregatedInfo->count ?? 0),
+    //            Stat::make(__('core::security.totaltwo'), $aggregatedInfo->count ?? 0),
+    //            Stat::make(__('core::security.totalthree'), $aggregatedInfo->count ?? 0),
     //        ];
     //    }
 }

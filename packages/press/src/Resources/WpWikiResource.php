@@ -362,11 +362,11 @@ class WpWikiResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return config('press.meta_navigation_group');
+        return config('press.temp_navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.meta_navigation_sort') + 9;
+        return config('press.temp_navigation_sort') + 4;
     }
 }

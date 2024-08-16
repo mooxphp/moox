@@ -3,9 +3,9 @@
 namespace Moox\UserSession\Resources\UserSessionResource\Pages;
 
 use Filament\Resources\Components\Tab;
+use Moox\UserSession\Models\UserSession;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
 
@@ -27,7 +27,7 @@ class ListPage extends ListRecords
 
     public function getTitle(): string
     {
-        return __('user-session::translations.title');
+        return __('core::session.title');
     }
 
     protected function getHeaderActions(): array

@@ -22,9 +22,9 @@ class UserSessionWidgets extends BaseWidget
             ->first();
 
         return [
-            Stat::make(__('user-session::translations.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('user-session::translations.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('user-session::translations.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::session.totalone'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::session.totaltwo'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::session.totalthree'), $aggregatedInfo->count ?? 0),
         ];
     }
 }

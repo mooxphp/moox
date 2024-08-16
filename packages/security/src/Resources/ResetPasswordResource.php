@@ -32,11 +32,14 @@ class ResetPasswordResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('email')
+                    ->label(__('core::user.email'))
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('core::core.created_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('user_type')
+                    ->label(__('core::user.user_type'))
                     ->sortable(),
             ])
             ->actions([
@@ -68,13 +71,33 @@ class ResetPasswordResource extends Resource
         ];
     }
 
+    public static function getModelLabel(): string
+    {
+        return config('security.resources.security.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return config('security.resources.security.plural');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return config('security.resources.security.plural');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return config('security.resources.security.single');
+    }
+
     public static function getNavigationGroup(): ?string
     {
-        return 'Moox User';
+        return config('security.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('security.navigation_sort');
+        return config('security.navigation_sort') + 5;
     }
 }

@@ -28,17 +28,18 @@ class PasskeyResource extends Resource
         return $form
             ->schema([
                 TextInput::make('title')
-                    ->label(__('passkey::translations.name'))
+                    ->label(__('core::passkey.title'))
                     ->maxLength(255)
                     ->required()
                     ->columnSpan(2),
                 Textarea::make('credential_id')
-                    ->label(__('passkey::translations.credential_id'))
+                    ->label(__('core::passkey.credential_id'))
                     ->required(),
                 Textarea::make('public_key')
-                    ->label(__('passkey::translations.public_key'))
+                    ->label(__('core::passkey.public_key'))
                     ->required(),
                 Select::make('user_type')
+                    ->label(__('core::user.user_type'))
                     ->options(function () {
                         $models = Config::get('login-link.user_models', []);
 
@@ -50,6 +51,7 @@ class PasskeyResource extends Resource
                     })
                     ->required(),
                 Select::make('user_id')
+                    ->label(__('core::user.user_id'))
                     ->options(function ($get) {
                         $userType = $get('user_type');
                         if (! $userType) {
@@ -60,12 +62,10 @@ class PasskeyResource extends Resource
                     })
                     ->required(),
                 Select::make('device_id')
-                    ->label(__('passkey::translations.device'))
-
+                    ->label(__('core::session.device_id'))
                     ->relationship('userDevice', 'title'),
                 Select::make('session_id')
-                    ->label(__('passkey::translations.session'))
-
+                    ->label(__('core::session.session_id'))
                     ->string()
                     ->relationship('userSession', 'id'),
             ]);
@@ -76,30 +76,30 @@ class PasskeyResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->label(__('passkey::translations.name'))
+                    ->label(__('core::passkey.title'))
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label(__('passkey::translations.created_at'))
+                    ->label(__('core::core.created_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('updated_at')
-                    ->label(__('passkey::translations.updated_at'))
+                    ->label(__('core::core.updated_at'))
                     ->since()
                     ->sortable(),
                 TextColumn::make('user_type')
-                    ->label(__('passkey::translations.user_type'))
+                    ->label(__('core::user.user_type'))
                     ->sortable(),
                 TextColumn::make('user_id')
-                    ->label(__('passkey::translations.username'))
+                    ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
                         return optional($record->user)->name ?? 'unknown';
                     })
                     ->sortable(),
                 TextColumn::make('device_id')
-                    ->label(__('passkey::translations.device'))
+                    ->label(__('core::session.device_id'))
                     ->sortable(),
                 TextColumn::make('session_id')
-                    ->label(__('passkey::translations.session'))
+                    ->label(__('core::session.session_id'))
                     ->sortable(),
             ])
             ->defaultSort('title', 'desc')
@@ -134,22 +134,22 @@ class PasskeyResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('passkey::translations.single');
+        return config('passkey.resources.passkey.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('passkey::translations.plural');
+        return config('passkey.resources.passkey.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('passkey::translations.navigation_label');
+        return config('passkey.resources.passkey.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('passkey::translations.breadcrumb');
+        return config('passkey.resources.passkey.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -159,11 +159,11 @@ class PasskeyResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('passkey::translations.navigation_group');
+        return config('passkey.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('passkey.navigation_sort');
+        return config('passkey.navigation_sort') + 6;
     }
 }

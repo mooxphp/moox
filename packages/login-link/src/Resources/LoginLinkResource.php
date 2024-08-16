@@ -171,6 +171,6 @@ class LoginLinkResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('login-link.navigation_sort') + 1;
+        return config('login-link.navigation_sort') + 4;
     }
 }

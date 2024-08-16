@@ -33,10 +33,13 @@ class UserSessionResource extends Resource
                 //TextInput::make('id')
                 //    ->maxLength(255),
                 TextInput::make('user_id')
+                    ->label(__('core::user.user_id'))
                     ->maxLength(255),
                 TextInput::make('ip_address')
+                    ->label(__('core::core.ip_address'))
                     ->maxLength(255),
                 TextInput::make('user_agent')
+                    ->label(__('core::user.user_agent'))
                     ->maxLength(255),
                 //Textarea::make('payload'),
                 //TextInput::make('last_activity')
@@ -49,29 +52,29 @@ class UserSessionResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('user_id')
-                    ->label(__('user-device::translations.username'))
+                    ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
                         return optional($record->user)->name ?? 'unknown';
                     })
                     ->sortable(),
 
                 TextColumn::make('id')
-                    ->label(__('user-session::translations.id'))
+                    ->label(__('core::core.id'))
                     ->sortable(),
                 TextColumn::make('user_type')
-                    ->label(__('user-session::translations.user_type'))
+                    ->label(__('core::user.user_type'))
                     ->sortable(),
                 TextColumn::make('device_id')
-                    ->label(__('user-session::translations.device_id'))
+                    ->label(__('core::session.device_id'))
                     ->sortable(),
                 TextColumn::make('ip_address')
-                    ->label(__('user-session::translations.ip_address'))
+                    ->label(__('core::core.ip_address'))
                     ->sortable(),
                 TextColumn::make('whitlisted')
-                    ->label(__('user-session::translations.whitelisted'))
+                    ->label(__('core::session.whitelisted'))
                     ->sortable(),
                 TextColumn::make('last_activity')
-                    ->label(__('user-session::translations.last_activity'))
+                    ->label(__('core::session.last_activity'))
                     ->sortable()
                     ->since(),
             ])
@@ -79,7 +82,7 @@ class UserSessionResource extends Resource
             ->actions([
                 ViewAction::make(),
                 DeleteAction::make()
-                    ->label('Drop')
+                    ->label(__('core::core.drop'))
                     ->action(function ($record) {
                         try {
                             $record->delete();
@@ -126,22 +129,22 @@ class UserSessionResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return __('user-session::translations.single');
+        return config('user-session.resources.session.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('user-session::translations.plural');
+        return config('user-session.resources.session.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('user-session::translations.navigation_label');
+        return config('user-session.resources.session.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return __('user-session::translations.breadcrumb');
+        return config('user-session.resources.session.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -151,11 +154,11 @@ class UserSessionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('user-session::translations.navigation_group');
+        return config('user-session.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('user-session.navigation_sort');
+        return config('user-session.navigation_sort') + 3;
     }
 }
