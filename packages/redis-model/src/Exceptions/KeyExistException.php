@@ -4,6 +4,4 @@ namespace Moox\RedisModel\Exceptions;
 
 use Exception;
 
-class KeyExistException extends Exception
-{
-}
+class KeyExistException extends Exception {}
