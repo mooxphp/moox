@@ -1,0 +1,32 @@
+name: "Split Plugins"
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GITHUB_TOKEN: ${{ secrets.BOT }}
+
+jobs:
+  plugins_split:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - if: "!startsWith(github.ref, 'refs/tags/')"
+        uses: "symplify/monorepo-split-github-action@v2.3.0"
+        with:
+          tag: ${GITHUB_REF#refs/tags/}
+
+          package_directory: "packages/press/wordpress/plugins/moox-press"
+
+          repository_organization: "mooxphp"
+          repository_name: "press-wp"
+
+          user_name: "mooxbot"
+          user_email: "bot@moox.org"

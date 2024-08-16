@@ -30,6 +30,7 @@ jobs:
           - press
           - security
           - sync
+          - redis-model
           - trainings
           - user
           - user-device

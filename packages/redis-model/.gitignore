@@ -4,23 +4,21 @@
 
 # Composer
 /vendor
-auth.json
 composer.lock
+auth.json
 
 # NPM / Node
 /node_modules
+npm-debug.log
 package-lock.json
 
 # Laravel
 /public/hot
 /public/storage
 /storage/*.key
-auth.json
-LocalValetDriver.php
 
 # PHPUnit
 .phpunit.result.cache
-phpunit.cache
 phpunit.xml
 
 # Yarn
@@ -49,18 +47,3 @@ Homestead.yaml
 
 # Windows
 Thumbs.db
-
-# Moox Custom
-/resources/views/custom/*
-!/resources/views/custom/overview.blade.php
-!/resources/views/custom/example.blade.php
-/_custom/*
-!/_custom/composer.json-example
-!/_custom/README.md
-!/_custom/publish.sh
-/routes/custom_*.php
-!/routes/custom_example.php
-
-# Moox Press
-/public/vendor/*
-/public/wp/*
