@@ -243,6 +243,7 @@ class InstallWordPress extends Command
             exit(1);
         }
 
+        // TODO: sudo is not available on Windows
         $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
         $moveProcess = new \Symfony\Component\Process\Process([
             'sudo', 'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
@@ -260,6 +261,7 @@ class InstallWordPress extends Command
 
     public function wpInstall(): void
     {
+        // TODO: Where's the database ... does it seed the database? (with Prefix!?)
         info('Installing WordPress...');
 
         $wpPath = env('WP_PATH', '/public/wp');
@@ -267,7 +269,7 @@ class InstallWordPress extends Command
 
         $siteUrl = env('APP_URL', 'http://localhost').env('WP_SLUG', '/wp');
 
-        $defaultSiteTitle = env('APP_NAME', 'My WordPress Site');
+        $defaultSiteTitle = env('APP_NAME', 'Moox Press');
         $siteTitle = $this->ask('Please enter the site title', $defaultSiteTitle);
 
         $adminUser = 'sysadm';
@@ -346,6 +348,8 @@ class InstallWordPress extends Command
         $tempDir = base_path('temp_moox_plugin');
         $repoUrl = 'https://github.com/mooxphp/press-wp.git';
 
+        // TODO: Instead of cloning, the plugin can be copied from the package
+        // TODO: remove the .git directory, should never end up as subrepo
         info('Cloning the Moox Press plugin repository...');
         $cloneCommand = ['git', 'clone', $repoUrl, $tempDir];
         $process = new \Symfony\Component\Process\Process($cloneCommand);
@@ -393,12 +397,13 @@ class InstallWordPress extends Command
 
     public function seedWpData(): void
     {
-        // Eventually seed the WP database with the necessary data
+        // TODO: Eventually seed the WP database with the necessary data
+        // TODO: and optional demo data
     }
 
     public function setEnvVariables(): void
     {
-        // Eventually set the necessary variables in the .env file
+        // TODO: Eventually set the necessary variables in the .env file
     }
 
     public function sayGoodbye(): void
