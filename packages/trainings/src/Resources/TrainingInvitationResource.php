@@ -25,7 +25,7 @@ class TrainingInvitationResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-insert-invitation';
 
-    protected static ?string $navigationGroup = 'heco Schulungen';
+    protected static ?string $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 

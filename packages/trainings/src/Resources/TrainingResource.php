@@ -27,7 +27,7 @@ class TrainingResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-school';
 
-    protected static ?string $navigationGroup = 'heco Schulungen';
+    protected static ?string $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'title';
 

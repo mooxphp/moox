@@ -18,6 +18,10 @@ class AreaResource extends Resource
 {
     protected static ?string $model = Area::class;
 
+    protected static ?string $navigationGroup = 'System';
+
+    protected static ?string $navigationIcon = 'gmdi-place';
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -58,5 +62,10 @@ class AreaResource extends Resource
             'index' => ListPage::route('/'),
 
         ];
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return 8001;
     }
 }

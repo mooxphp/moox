@@ -25,7 +25,7 @@ class TrainingDateResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-date-range';
 
-    protected static ?string $navigationGroup = 'heco Schulungen';
+    protected static ?string $navigationGroup = 'Trainings';
 
     protected static ?string $recordTitleAttribute = 'link';
 
