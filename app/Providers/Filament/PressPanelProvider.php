@@ -113,9 +113,8 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
 
-
-                \Moox\PressWiki\WpWikiPlugin::make(),
-                \Moox\PressWiki\WpThemaPlugin::make(),
+                // Wiki Plugin
+                \Moox\MooxPressWiki\MooxPressWikiPlugin::make(),
 
             ]);
     }
