@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Press\Resources\WpWikiResource\Pages;
+namespace Moox\MooxPressWiki\Resources\MooxPressWikiResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;

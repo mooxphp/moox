@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Press\Resources\WpWikiResource\RelationManagers;
+namespace Moox\MooxPressWiki\Resources\MooxPressWikiResource\RelationManagers;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
