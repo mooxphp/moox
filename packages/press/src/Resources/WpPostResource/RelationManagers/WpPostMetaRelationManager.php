@@ -16,7 +16,7 @@ use Filament\Tables\Table;
 
 class WpPostMetaRelationManager extends RelationManager
 {
-    protected static string $relationship = 'meta';
+    protected static string $relationship = 'postMeta';
 
     protected static ?string $recordTitleAttribute = 'title';
 

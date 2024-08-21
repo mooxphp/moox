@@ -1109,18 +1109,37 @@ return [
         'admin_color' => 'fresh',
         'use_ssl' => '0',
         'show_admin_bar_front' => 'true',
-        env('WP_PREFIX', 'wp_').'_capabilities' => serialize([
+        env('WP_PREFIX', 'wp_') . '_capabilities' => serialize([
             'subscriber' => true,
         ]),
-        env('WP_PREFIX', 'wp_').'_user_level' => '0',
+        env('WP_PREFIX', 'wp_') . '_user_level' => '0',
         'dismissed_wp_pointers' => '',
-        env('WP_PREFIX', 'wp_').'_dashboard_quick_press_last_post_id' => '0',
+        env('WP_PREFIX', 'wp_') . '_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
 
         // locale
         // comment_shortcuts
         // syntax_highlighting
 
+    ],
+    'default_post_meta' => [
+        '_wp_page_template' => '',
+        '_edit_lock' => '',
+        '_edit_last' => '',
+        '_thumbnail_id' => '',
+        '_wp_attached_file' => '',
+        '_wp_attachment_metadata' => '',
+        '_wp_old_slug' => '',
+        '_wp_trash_meta_status' => '',
+        '_wp_trash_meta_time' => '',
+        '_pingme' => '',
+        '_encloseme' => '',
+        '_menu_order' => '',
+        '_wp_post_lock' => '',
+        '_wp_post_revision' => '',
+        '_wp_post_type' => '',
+        '_wp_old_date' => '',
+        '_wp_old_status' => '',
     ],
 
     /*
