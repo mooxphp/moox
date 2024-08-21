@@ -127,7 +127,6 @@ class AdminPanelProvider extends PanelProvider
                 // Builder plugin
                 \Moox\Builder\BuilderPlugin::make(),
 
-            
                 \Moox\MooxPressWiki\MooxPressWikiPlugin::make(),
 
             ]);

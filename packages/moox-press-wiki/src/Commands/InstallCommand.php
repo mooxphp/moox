@@ -37,8 +37,8 @@ class InstallCommand extends Command
         $this->art();
         $this->welcome();
         $this->publishConfiguration();
-//        $this->publishMigrations();
-//        $this->runMigrations();
+        //        $this->publishMigrations();
+        //        $this->runMigrations();
         $providerPath = app_path('Providers/Filament');
         $panelsToregister = $this->getPanelProviderPath();
         if ($panelsToregister != null) {
@@ -87,6 +87,7 @@ class InstallCommand extends Command
             if (! File::exists('config/moox-press-wiki.php')) {
                 info('Publishing MooxPressWiki Configuration...');
                 $this->call('vendor:publish', ['--tag' => 'moox-press-wiki-config']);
+
                 return;
             }
             warning('The MooxPressWiki config already exist. The config will not be published.');
