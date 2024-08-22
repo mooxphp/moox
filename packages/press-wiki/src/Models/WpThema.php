@@ -2,8 +2,8 @@
 
 namespace Moox\PressWiki\Models;
 
-use Moox\Press\Models\WpTerm;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Press\Models\WpTerm;
 
 class WpThema extends WpTerm
 {

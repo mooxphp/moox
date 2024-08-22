@@ -12,8 +12,8 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Moox\PressWiki\Resources\WpThemaResource\Pages;
 use Moox\PressWiki\Models\WpThema;
+use Moox\PressWiki\Resources\WpThemaResource\Pages;
 
 class WpThemaResource extends Resource
 {
@@ -22,7 +22,6 @@ class WpThemaResource extends Resource
     protected static ?string $navigationIcon = 'gmdi-category';
 
     protected static ?string $recordTitleAttribute = 'name';
-
 
     public static function form(Form $form): Form
     {

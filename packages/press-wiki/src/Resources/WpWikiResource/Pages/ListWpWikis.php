@@ -5,8 +5,8 @@ namespace Moox\PressWiki\Resources\WpWikiResource\Pages;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\HasDynamicTabs;
-use Moox\PressWiki\Resources\WpWikiResource;
 use Moox\PressWiki\Models\WpWiki;
+use Moox\PressWiki\Resources\WpWikiResource;
 
 class ListWpWikis extends ListRecords
 {
