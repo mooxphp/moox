@@ -60,6 +60,39 @@ return [
                 ],
             ],
         ],
+        'moox-press-thema' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//core::moox-press-wiki.moox-press-wiki',
+            'plural' => 'trans//core::moox-press-wiki.moox-press-wikis',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Expiry table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+            ],
+        ],
     ],
 
     /*

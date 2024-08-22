@@ -117,6 +117,7 @@ class PressPanelProvider extends PanelProvider
 
                 // Wiki Plugin
                 \Moox\MooxPressWiki\MooxPressWikiPlugin::make(),
+                \Moox\MooxPressWiki\MooxPressThemaPlugin::make(),
 
             ]);
     }

@@ -5,11 +5,19 @@ namespace Moox\MooxPressWiki\Resources;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
-use Moox\MooxPressWiki\Resources\MooxPressWikiResource\Widgets\MooxPressWikiWidgets;
 use Moox\Press\Models\WpPost;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\MooxPressWiki\Resources\MooxPressWikiResource\Pages;
+use Moox\MooxPressWiki\Resources\MooxPressWikiResource\RelationManagers\WpCommentRelationManager;
+use Moox\MooxPressWiki\Resources\MooxPressWikiResource\RelationManagers\WpPostMetaRelationManager;
 
 class MooxPressWikiResource extends Resource
 {
@@ -270,6 +278,7 @@ class MooxPressWikiResource extends Resource
 
     public static function table(Table $table): Table
     {
+
         return $table
             ->poll('60s')
             ->columns([
@@ -309,7 +318,7 @@ class MooxPressWikiResource extends Resource
                     ->limit(50),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
@@ -332,12 +341,13 @@ class MooxPressWikiResource extends Resource
         ];
     }
 
-    public static function getWidgets(): array
-    {
-        return [
-            MooxPressWikiWidgets::class,
-        ];
-    }
+
+    // public static function getWidgets(): array
+    // {
+    //     return [
+    //         MooxPressWikiWidgets::class,
+    //     ];
+    // }
 
     public static function getModelLabel(): string
     {

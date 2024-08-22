@@ -3,16 +3,16 @@
 namespace Moox\MooxPressWiki\Resources\MooxPressWikiResource\Pages;
 
 use Filament\Actions\Action;
-use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
 use Moox\Press\Models\WpPost;
-use Moox\Press\Resources\WpWikiResource;
+use Moox\Core\Traits\HasDynamicTabs;
+use Filament\Resources\Pages\ListRecords;
+use Moox\MooxPressWiki\Resources\MooxPressWikiResource;
 
 class ListWpWikis extends ListRecords
 {
     use HasDynamicTabs;
 
-    protected static string $resource = WpWikiResource::class;
+    protected static string $resource = MooxPressWikiResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -21,6 +21,6 @@ class ListWpWikis extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('press.resources.wiki.tabs', WpPost::class);
+        return $this->getDynamicTabs('moox-press-wiki.resources.wiki.tabs', WpPost::class);
     }
 }
