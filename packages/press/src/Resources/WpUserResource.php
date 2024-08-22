@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Password;
 use Moox\Press\Models\WpUser;
@@ -30,7 +31,7 @@ class WpUserResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
 
-    //protected static ?string $recordTitleAttribute = 'user_login';
+    protected static ?string $recordTitleAttribute = 'display_name';
 
     public static function form(Form $form): Form
     {
@@ -120,7 +121,6 @@ class WpUserResource extends Resource
                     TextInput::make('first_name')
                         ->label(__('core::user.first_name'))
                         ->rules(['max:255', 'string'])
-                        ->default(fn ($record) => $record->first_name ?? '')
                         ->required()
                         ->columnSpan([
                             'default' => 12,
@@ -138,14 +138,14 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Select::make('jku8u_capabilities')
+                    Select::make(config('press.wordpress_prefix').'capabilities')
                         ->label('Role')
                         ->options($capabilitiesOptions)
                         ->required()
                         ->columnSpan(12),
 
-                    TextInput::make('jku8u_capabilities')
-                        ->label(__('core::user.jku8u_capabilities'))
+                    TextInput::make(config('press.wordpress_prefix').'capabilities')
+                        ->label(__('core::user.capabilities'))
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
@@ -230,6 +230,13 @@ class WpUserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
+
+                ImageColumn::make('attachment.guid')
+                    ->label(__('Profilbild'))
+                    ->circular()
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
                 Tables\Columns\TextColumn::make('user_login')
                     ->label(__('Native: User Login'))
                     ->toggleable()

@@ -45,6 +45,10 @@ class WpUser extends Authenticatable implements FilamentUser
     {
         parent::__construct($attributes);
 
+        $defaultUserMeta = config('press.default_user_meta');
+
+        $this->fillable = array_keys($defaultUserMeta);
+
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'users';
         $this->metatable = $this->wpPrefix.'usermeta';
@@ -163,6 +167,11 @@ class WpUser extends Authenticatable implements FilamentUser
     public function userMeta(): HasMany
     {
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
+    }
+
+    public function attachment()
+    {
+        return $this->belongsTo(WpPost::class, 'mm_sua_attachment_id', 'ID');
     }
 
     protected function newBaseQueryBuilder()
