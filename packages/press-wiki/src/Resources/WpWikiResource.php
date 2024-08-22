@@ -334,31 +334,31 @@ class WpWikiResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('press.resources.wiki.single');
+        return config('press-wiki.resources.wiki.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('press.resources.wiki.plural');
+        return config('press-wiki.resources.wiki.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('press.resources.wiki.plural');
+        return config('press-wiki.resources.wiki.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('press.resources.wiki.single');
+        return config('press-wiki.resources.wiki.single');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return config('press.temp_navigation_group');
+        return config('press-wiki.temp_navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.temp_navigation_sort') + 4;
+        return config('press-wiki.temp_navigation_sort') + 4;
     }
 }

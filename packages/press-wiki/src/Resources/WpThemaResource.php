@@ -106,31 +106,31 @@ class WpThemaResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('press.resources.theme.single');
+        return config('press-wiki.resources.theme.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('press.resources.theme.plural');
+        return config('press-wiki.resources.theme.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('press.resources.theme.plural');
+        return config('press-wiki.resources.theme.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('press.resources.theme.single');
+        return config('press-wiki.resources.theme.single');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return config('press.temp_navigation_group');
+        return config('press-wiki.temp_navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('press.temp_navigation_sort') + 3;
+        return config('press-wiki.temp_navigation_sort') + 3;
     }
 }
