@@ -17,6 +17,6 @@ class LandingPageTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertSee('Welcome');
+        $response->assertSee('Moox');
     }
 }
