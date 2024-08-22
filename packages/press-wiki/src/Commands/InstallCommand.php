@@ -43,7 +43,7 @@ class InstallCommand extends Command
         if ($panelsToregister != null) {
             if (is_array($panelsToregister)) {
                 foreach ($panelsToregister as $panelprovider) {
-                    $this->registerPlugins($providerPath.'/'.$panelprovider);
+                    $this->registerPlugins($providerPath . '/' . $panelprovider);
                 }
             } else {
                 $this->registerPlugins($panelsToregister);
@@ -104,8 +104,8 @@ class InstallCommand extends Command
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['WpWikiPlugin', 'WpThemaPlugin'],
-                default: ['WpWikiPlugin', 'WpThemaPlugin'],
+                options: ['WpWikiPlugin', 'WpTopicPlugin'],
+                default: ['WpWikiPlugin', 'WpTopicPlugin'],
             );
 
             $function = '::make(),';
@@ -114,11 +114,11 @@ class InstallCommand extends Command
             $newPlugins = '';
 
             foreach ($pluginsToAdd as $plugin) {
-                $searchPlugin = '/'.$plugin.'/';
+                $searchPlugin = '/' . $plugin . '/';
                 if (preg_match($searchPlugin, $content)) {
                     warning("$plugin already registered.");
                 } else {
-                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
+                    $newPlugins .= $intend . $namespace . '\\' . $plugin . $function . "\n";
                 }
             }
 
@@ -133,7 +133,7 @@ class InstallCommand extends Command
 
                     $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
                     $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                    $replacement = "$1\n".$pluginsSection;
+                    $replacement = "$1\n" . $pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
 
@@ -160,7 +160,7 @@ class InstallCommand extends Command
             );
         }
         if (count($providers) == 1) {
-            $providerPath .= '/'.$providers[0]->getBasename();
+            $providerPath .= '/' . $providers[0]->getBasename();
         }
 
         return $providerPath;
