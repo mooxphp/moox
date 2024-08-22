@@ -2,7 +2,6 @@
 
 namespace Moox\MooxPressWiki\Resources;
 
-
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -14,7 +13,6 @@ use Moox\Press\Models\WpPost;
 
 class MooxPressWikiResource extends Resource
 {
-
     protected static ?string $model = WpPost::class;
 
     protected static ?string $navigationIcon = 'gmdi-library-books';
@@ -333,7 +331,6 @@ class MooxPressWikiResource extends Resource
             'edit' => Pages\EditWpWiki::route('/{record}/edit'),
         ];
     }
-
 
     public static function getWidgets(): array
     {
