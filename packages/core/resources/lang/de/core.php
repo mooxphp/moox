@@ -80,4 +80,7 @@ return [
     'meta_value' => 'Metawert',
     'term_taxonomy_id' => 'Term Taxonomy ID',
     'taxonomy' => 'Taxonomie',
+    'published' => 'Veröffentlicht',
+    'draft' => 'Entwurf',
+    'trash' => 'Papierkorb'
 ];

@@ -5,9 +5,9 @@ namespace Moox\PressWiki;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\PressWiki\Resources\WpThemaResource;
+use Moox\PressWiki\Resources\WpTopicResource;
 
-class WpThemaPlugin implements Plugin
+class WpTopicPlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -19,7 +19,7 @@ class WpThemaPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpThemaResource::class,
+            WpTopicResource::class,
         ]);
     }
 

@@ -101,5 +101,8 @@ return [
     'rubriks' => 'Rubriks',
     'autoload' => 'Autoload',
     'drop' => 'Drop',
+    'published' => 'Published',
+    'draft' => 'Draft',
+    'trash' => 'Trash'
 
 ];

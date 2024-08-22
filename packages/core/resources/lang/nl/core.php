@@ -80,4 +80,7 @@ return [
     'meta_value' => '',
     'term_taxonomy_id' => '',
     'taxonomy' => '',
+    'published' => 'Published',
+    'draft' => 'Draft',
+    'trash' => 'Trash'
 ];

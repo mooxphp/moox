@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        'theme' => [
+        'topic' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//press-wiki::translations.theme',
-            'plural' => 'trans//press-wiki::translations.themes',
+            'single' => 'trans//press-wiki::translations.topic',
+            'plural' => 'trans//press-wiki::translations.topics',
 
             /*
             |--------------------------------------------------------------------------
@@ -104,6 +104,40 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
+
+                'published' => [
+                    'label' => 'trans//core::core.published',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'publish',
+                        ],
+                    ],
+                ],
+                'drafts' => [
+                    'label' => 'trans//core::core.draft',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'draft',
+                        ],
+                    ],
+                ],
+                'trash' => [
+                    'label' => 'trans//core::core.trash',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'trash',
+                        ],
+                    ],
+                ],
                 /*
                 'error' => [
                     'label' => 'trans//core::core.error',
@@ -132,7 +166,7 @@ return [
     |
     */
 
-    'temp_navigation_group' => 'Press Wiki',
+    'temp_navigation_group' => 'trans//press-wiki::translations.wiki',
 
     /*
     |--------------------------------------------------------------------------

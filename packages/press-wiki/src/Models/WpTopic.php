@@ -5,7 +5,7 @@ namespace Moox\PressWiki\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpTerm;
 
-class WpThema extends WpTerm
+class WpTopic extends WpTerm
 {
     public static function boot()
     {

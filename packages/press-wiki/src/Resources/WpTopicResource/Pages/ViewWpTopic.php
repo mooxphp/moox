@@ -1,15 +1,15 @@
 <?php
 
-namespace Moox\PressWiki\Resources\WpThemaResource\Pages;
+namespace Moox\PressWiki\Resources\WpTopicResource\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-use Moox\PressWiki\Resources\WpThemaResource;
+use Moox\PressWiki\Resources\WpTopicResource;
 
-class ViewWpThema extends ViewRecord
+class ViewWpTopic extends ViewRecord
 {
-    protected static string $resource = WpThemaResource::class;
+    protected static string $resource = WpTopicResource::class;
 
     protected function getHeaderActions(): array
     {

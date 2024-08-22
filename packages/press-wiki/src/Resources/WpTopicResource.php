@@ -12,12 +12,12 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Moox\PressWiki\Models\WpThema;
-use Moox\PressWiki\Resources\WpThemaResource\Pages;
+use Moox\PressWiki\Models\WpTopic;
+use Moox\PressWiki\Resources\WpTopicResource\Pages;
 
-class WpThemaResource extends Resource
+class WpTopicResource extends Resource
 {
-    protected static ?string $model = WpThema::class;
+    protected static ?string $model = WpTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
@@ -96,31 +96,31 @@ class WpThemaResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpThemen::route('/'),
-            'create' => Pages\CreateWpThema::route('/create'),
-            'view' => Pages\ViewWpThema::route('/{record}'),
-            'edit' => Pages\EditWpThema::route('/{record}/edit'),
+            'index' => Pages\ListWpTopics::route('/'),
+            'create' => Pages\CreateWpTopic::route('/create'),
+            'view' => Pages\ViewWpTopic::route('/{record}'),
+            'edit' => Pages\EditWpTopic::route('/{record}/edit'),
         ];
     }
 
     public static function getModelLabel(): string
     {
-        return config('press-wiki.resources.theme.single');
+        return config('press-wiki.resources.topic.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('press-wiki.resources.theme.plural');
+        return config('press-wiki.resources.topic.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('press-wiki.resources.theme.plural');
+        return config('press-wiki.resources.topic.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('press-wiki.resources.theme.single');
+        return config('press-wiki.resources.topic.single');
     }
 
     public static function getNavigationGroup(): ?string

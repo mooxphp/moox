@@ -3,6 +3,6 @@
 return [
     'wiki' => 'Wiki',
     'wikis' => 'Wikis',
-    'theme' => 'Theme',
-    'themes' => 'Themes',
+    'topic' => 'Topic',
+    'tpics' => 'Topics',
 ];
