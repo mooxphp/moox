@@ -35,6 +35,7 @@ jobs:
           - user
           - user-device
           - user-session
+          - press-wiki
 
     steps:
       - uses: actions/checkout@v4

@@ -77,8 +77,6 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Press\WpTermRelationshipPlugin::make(),
 
                 // Press custom plugins - should be moved to separate packages
-                \Moox\Press\WpWikiPlugin::make(),
-                \Moox\Press\WpThemaPlugin::make(),
                 \Moox\Press\WpSchulungPlugin::make(),
                 \Moox\Press\WpRubrikPlugin::make(),
 
@@ -115,9 +113,6 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
 
-                // Wiki Plugin
-                \Moox\MooxPressWiki\MooxPressWikiPlugin::make(),
-                \Moox\MooxPressWiki\MooxPressThemaPlugin::make(),
 
             ]);
     }
