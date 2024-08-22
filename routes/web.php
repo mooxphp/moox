@@ -19,6 +19,10 @@ Route::get('/components', function () {
     return view('components.overview');
 });
 
+Route::get('/demo', function () {
+    return view('demo.overview');
+});
+
 $custom_parts = config('moox.custom_views');
 if (is_array($custom_parts)) {
     foreach ($custom_parts as $custom_part) {

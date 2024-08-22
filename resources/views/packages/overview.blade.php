@@ -2,14 +2,13 @@
 
 @section('content')
 
-            <h1 class="m-12 font-sans text-4xl text-center">
-                The <b>UI</b> for Laravel<br>
-                and the <b>TALL</b>-Stack
-            </h1>
-
             <p class="m-12 leading-6 text-center">
-                TallUI is currently under active development.<br>
-                Our first packages will be available shortly.
+                Moox is currently under active development.<br>
+                <br>
+                Our first packages are available and used in production.<br>
+                For most of our packages, we recommend wearing a hard hat.<br>
+                <br>
+                Visit our <a href="https://github.com/mooxphp/moox">GitHub repository</a> for more information.
             </p>
 
 @stop

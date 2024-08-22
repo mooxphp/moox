@@ -38,18 +38,16 @@
                     class="px-4 text-lg hover:text-[#69bce2]"
                     href="/packages"
                 >Packages</a>
-                <a
-                    class="px-4 text-lg hover:text-[#69bce2]"
-                    href="/components"
-                >Components</a>
+                <!-- Currently not used
                 <a
                     class="px-4 text-lg hover:text-[#69bce2]"
                     href="/custom"
                 >Custom</a>
+                -->
                 <a
                     class="px-4 text-lg hover:text-[#69bce2]"
-                    href="/admin"
-                >Admin</a>
+                    href="/demo"
+                >Demo</a>
                 <a
                     class="has-tooltip"
                     href="https://github.com/mooxphp/moox"
