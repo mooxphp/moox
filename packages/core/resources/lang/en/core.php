@@ -103,6 +103,6 @@ return [
     'drop' => 'Drop',
     'published' => 'Published',
     'draft' => 'Draft',
-    'trash' => 'Trash'
+    'trash' => 'Trash',
 
 ];

@@ -82,5 +82,5 @@ return [
     'taxonomy' => '',
     'published' => 'Published',
     'draft' => 'Draft',
-    'trash' => 'Trash'
+    'trash' => 'Trash',
 ];
