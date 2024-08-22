@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//core::core.theme',
-            'plural' => 'trans//core::core.themes',
+            'single' => 'trans//core::wiki-press.theme',
+            'plural' => 'trans//core::wiki-press.themes',
 
             /*
             |--------------------------------------------------------------------------
@@ -84,8 +84,8 @@ return [
             |
             */
 
-            'single' => 'trans//core::core.wiki',
-            'plural' => 'trans//core::core.wikis',
+            'single' => 'trans//core::wiki-press.wiki',
+            'plural' => 'trans//core::wiki-press.wikis',
 
             /*
             |--------------------------------------------------------------------------

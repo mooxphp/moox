@@ -12,7 +12,9 @@ class WpThema extends WpTerm
         parent::boot();
 
         static::addGlobalScope('thema', function (Builder $builder) {
-            $builder->where('post_type', 'thema');
+            $builder->whereHas('termTaxonomy', function ($query) {
+                $query->where('taxonomy', 'thema');
+            });
         });
     }
 }

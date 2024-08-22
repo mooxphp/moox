@@ -40,6 +40,7 @@ return [
         'passkey' => 'Moox Passkey',
         'permission' => 'Moox Permission',
         'press' => 'Moox Press',
+        'press-wiki' => 'Moox Press Wiki',
         'security' => 'Moox Security',
         'sync' => 'Moox Sync',
         'training' => 'Moox Trainings',

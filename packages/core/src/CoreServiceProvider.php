@@ -22,7 +22,10 @@ class CoreServiceProvider extends PackageServiceProvider
         // TODO: Uncomment this line to enable policies
         //$this->setPolicies();
         $this->useGoogleIcons();
-        $this->translateConfigurations();
+
+        $this->app->booted(function () {
+            $this->translateConfigurations();
+        });
     }
 
     public function configurePackage(Package $package): void
