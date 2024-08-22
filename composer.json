@@ -28,7 +28,9 @@
         "moox/audit": "*",
         "moox/builder": "*",
         "moox/expiry": "*",
+        "moox/flags": "*",
         "moox/jobs": "*",
+        "moox/locate": "*",
         "moox/login-link": "*",
         "moox/notifications": "*",
         "moox/page": "*",
@@ -41,11 +43,6 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
-        "moox/passkey": "*",
-        "moox/notifications": "*",
-        "moox/flags": "*",
-        "moox/locate": "*",
-        "moox/moox-press-wiki": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
