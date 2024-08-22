@@ -2,15 +2,17 @@
 
 namespace Moox\PressWiki\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Moox\PressWiki\Models\WpWiki;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
 use Moox\PressWiki\Models\WpWiki;
@@ -309,7 +311,7 @@ class WpWikiResource extends Resource
                     ->limit(50),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
