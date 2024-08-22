@@ -45,6 +45,7 @@
         "moox/notifications": "*",
         "moox/flags": "*",
         "moox/locate": "*",
+        "moox/moox-press-wiki": "*",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

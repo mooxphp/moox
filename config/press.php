@@ -1122,6 +1122,25 @@ return [
         // syntax_highlighting
 
     ],
+    'default_post_meta' => [
+        '_wp_page_template' => '',
+        '_edit_lock' => '',
+        '_edit_last' => '',
+        '_thumbnail_id' => '',
+        '_wp_attached_file' => '',
+        '_wp_attachment_metadata' => '',
+        '_wp_old_slug' => '',
+        '_wp_trash_meta_status' => '',
+        '_wp_trash_meta_time' => '',
+        '_pingme' => '',
+        '_encloseme' => '',
+        '_menu_order' => '',
+        '_wp_post_lock' => '',
+        '_wp_post_revision' => '',
+        '_wp_post_type' => '',
+        '_wp_old_date' => '',
+        '_wp_old_status' => '',
+    ],
 
     /*
     |--------------------------------------------------------------------------

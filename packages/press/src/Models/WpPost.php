@@ -2,6 +2,7 @@
 
 namespace Moox\Press\Models;
 
+use Awobaz\Mutator\Mutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -15,7 +16,7 @@ use Illuminate\Support\Str;
  */
 class WpPost extends Model
 {
-    use HasFactory;
+    use HasFactory, Mutable;
 
     protected $fillable = [
         'post_author',
@@ -42,12 +43,7 @@ class WpPost extends Model
         'comment_count',
     ];
 
-    public function comment()
-    {
-        return $this->hasMany(WpComment::class, 'comment_post_ID');
-    }
-
-    protected $searchableFields = ['*'];
+    protected $appends;
 
     protected $wpPrefix;
 
@@ -55,15 +51,18 @@ class WpPost extends Model
 
     protected $metatable;
 
+    protected $primaryKey = 'ID';
+
     public $timestamps = false;
 
-    protected $appends;
+    protected $searchableFields = ['*'];
 
-    protected $primaryKey = 'ID';
+    protected $metaFieldsInitialized = false;
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
+
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'posts';
         $this->metatable = $this->wpPrefix.'postmeta';
@@ -74,6 +73,13 @@ class WpPost extends Model
             'turnus',
             'fruhwarnung',
         ];
+
+        $this->initializeMetaField();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
     }
 
     protected $casts = [
@@ -83,6 +89,129 @@ class WpPost extends Model
         'post_modified_gmt' => 'datetime',
     ];
 
+    protected function initializeMetaField()
+    {
+        if ($this->metaFieldsInitialized) {
+            return;
+        }
+
+        $this->metaFieldsInitialized = true;
+    }
+
+    public function metaKey($key)
+    {
+        if (! Str::startsWith($key, $this->wpPrefix)) {
+            $key = "{$this->wpPrefix}{$key}";
+        }
+
+        return $this->getMeta($key);
+    }
+
+    protected function getMeta($key)
+    {
+        if (! $this->relationLoaded('postMeta')) {
+            $this->load('postMeta');
+        }
+
+        $meta = $this->postMeta->where('meta_key', $key)->first();
+
+        return $meta ? $meta->meta_value : null;
+    }
+
+    public function getAttribute($key)
+    {
+        // First, check if the key exists as a native attribute or relationship
+        $value = parent::getAttribute($key);
+
+        // If the native attribute is not found, look for the meta field
+        if (is_null($value) && $this->metaFieldsInitialized && $this->isMetaField($key)) {
+            return $this->getMeta($key);
+        }
+
+        return $value;
+    }
+
+    public function setAttribute($key, $value)
+    {
+        // Check if the key is a meta field first
+        if ($this->metaFieldsInitialized && $this->isMetaField($key)) {
+            $this->addOrUpdateMeta($key, $value);
+        } else {
+            parent::setAttribute($key, $value);
+        }
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        $attributes = parent::toArray();
+
+        // Include meta fields in the array representation
+        $metaFields = config('press.default_post_meta', []);
+        foreach ($metaFields as $key => $defaultValue) {
+            $attributes[$key] = $this->getMeta($key) ?? $defaultValue;
+        }
+
+        return $attributes;
+    }
+
+    public function toJson($options = 0)
+    {
+        return json_encode($this->toArray(), $options);
+    }
+
+    protected function addOrUpdateMeta($key, $value)
+    {
+        /** @disregard  */
+        WpPostMeta::updateOrCreate(
+            ['post_id' => $this->ID, 'meta_key' => $key],
+            ['meta_value' => $value]
+        );
+    }
+
+    protected function isMetaField($key)
+    {
+        return array_key_exists($key, config('press.default_post_meta', []));
+    }
+
+    /*
+     * Relations
+     *
+     */
+    public function postMeta()
+    {
+        return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(WpUser::class, 'post_author', 'ID');
+    }
+
+    public function taxonomies()
+    {
+        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
+    }
+
+    public function categories()
+    {
+        return $this->taxonomies()->where('taxonomy', 'category');
+    }
+
+    public function tags()
+    {
+        return $this->taxonomies()->where('taxonomy', 'post_tag');
+    }
+
+    public function comment()
+    {
+        return $this->hasMany(WpComment::class, 'comment_post_ID');
+    }
+
+    /*
+     * ACF- Fields Getter and Setter
+     */
     public function getVerantwortlicherAttribute()
     {
         return $this->getMeta('verantwortlicher') ?? null;
@@ -121,66 +250,5 @@ class WpPost extends Model
     public function setFruhwarnungAttribute($value)
     {
         $this->addOrUpdateMeta('fruhwarnung', $value);
-    }
-
-    public function postMeta()
-    {
-        return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
-    }
-
-    public function meta()
-    {
-        return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
-    }
-
-    public function metaKey($key)
-    {
-        if (! Str::startsWith($key, $this->wpPrefix)) {
-            $key = "{$this->wpPrefix}{$key}";
-        }
-
-        return $this->getMeta($key);
-    }
-
-    protected function getMeta($key)
-    {
-        $meta = $this->postMeta()->where('meta_key', $key)->first();
-
-        return $meta ? $meta->meta_value : null;
-    }
-
-    protected function addOrUpdateMeta($key, $value)
-    {
-        $meta = $this->postMeta()->where('meta_key', $key)->first();
-
-        if ($meta) {
-            $meta->meta_value = $value;
-            $meta->save();
-        } else {
-            $this->postMeta()->create([
-                'meta_key' => $key,
-                'meta_value' => $value,
-            ]);
-        }
-    }
-
-    public function author()
-    {
-        return $this->belongsTo(WpUser::class, 'post_author', 'ID');
-    }
-
-    public function taxonomies()
-    {
-        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
-    }
-
-    public function categories()
-    {
-        return $this->taxonomies()->where('taxonomy', 'category');
-    }
-
-    public function tags()
-    {
-        return $this->taxonomies()->where('taxonomy', 'post_tag');
     }
 }
