@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
  * @property string $post_title
  * @property string $post_name
  * @property string $post_author
- * @property \Illuminate\Database\Eloquent\Collection|\Moox\Press\Models\WpPostMeta[] $meta
+ * @property Moox\Press\Models\WpPostMeta $postMeta
  */
 class WpPost extends Model
 {
@@ -64,8 +64,8 @@ class WpPost extends Model
         parent::__construct($attributes);
 
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix.'posts';
-        $this->metatable = $this->wpPrefix.'postmeta';
+        $this->table = $this->wpPrefix . 'posts';
+        $this->metatable = $this->wpPrefix . 'postmeta';
 
         $this->appends = [
             'verantwortlicher',
@@ -191,7 +191,7 @@ class WpPost extends Model
 
     public function taxonomies()
     {
-        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function categories()
