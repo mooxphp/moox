@@ -2,12 +2,11 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\ViewRecord;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Models\WpUser;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Illuminate\Support\Facades\DB;
-use Filament\Resources\Pages\ViewRecord;
 use Moox\Press\Resources\WpUserResource;
 
 class ViewWpUser extends ViewRecord
@@ -37,5 +36,4 @@ class ViewWpUser extends ViewRecord
 
         return $data;
     }
-
- }
+}
