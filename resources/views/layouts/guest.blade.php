@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>{{ config('app.name', 'Moox') }}</title>
+    <title>Moox - Packages for Laravel and Filament</title>
     <meta charset="utf-8">
     <meta
         name="viewport"
