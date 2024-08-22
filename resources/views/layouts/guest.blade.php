@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>TallUI Monorepo - Dev App</title>
+    <title>{{ config('app.name', 'Moox') }}</title>
     <meta charset="utf-8">
     <meta
         name="viewport"
