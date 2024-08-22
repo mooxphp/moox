@@ -76,12 +76,6 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Press\WpTermTaxonomyPlugin::make(),
                 \Moox\Press\WpTermRelationshipPlugin::make(),
 
-                // Press custom plugins - should be moved to separate packages
-                \Moox\Press\WpWikiPlugin::make(),
-                \Moox\Press\WpThemaPlugin::make(),
-                \Moox\Press\WpSchulungPlugin::make(),
-                \Moox\Press\WpRubrikPlugin::make(),
-
                 // Notification plugin
                 \Moox\Notification\NotificationPlugin::make(),
 
@@ -114,6 +108,10 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Training\TrainingInvitationPlugin::make(),
                 \Moox\Training\TrainingDatePlugin::make(),
                 \Moox\Training\TrainingTypePlugin::make(),
+
+                \Moox\PressWiki\WpWikiPlugin::make(),
+                \Moox\PressWiki\WpTopicPlugin::make(),
+
             ]);
     }
 }

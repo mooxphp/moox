@@ -95,15 +95,14 @@ return [
     'options' => 'Options',
     'option_name' => 'Option Name',
     'option_value' => 'Option Value',
-    'wiki' => 'Wiki',
-    'wikis' => 'Wikis',
     'training' => 'Training',
     'trainings' => 'Trainings',
-    'theme' => 'Theme',
-    'themes' => 'Themes',
     'rubrik' => 'Rubrik',
     'rubriks' => 'Rubriks',
     'autoload' => 'Autoload',
     'drop' => 'Drop',
+    'published' => 'Published',
+    'draft' => 'Draft',
+    'trash' => 'Trash',
 
 ];

@@ -37,6 +37,7 @@
         "moox/passkey": "*",
         "moox/permission": "*",
         "moox/press": "*",
+        "moox/press-wiki": "*",
         "moox/security": "*",
         "moox/sync": "*",
         "moox/trainings": "*",
