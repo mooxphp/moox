@@ -28,7 +28,7 @@
 >
     <header>
         <nav class="flex justify-between m-8">
-            <img src="{{ asset('img/logo.png') }}" class="h-10 w-auto">
+            <a href="/"><img src="{{ asset('img/logo.png') }}" class="h-10 w-auto"></a>
             <div class="flex items-center text-3xl">
                 <a
                     class="px-4 text-lg hover:text-[#69bce2]"
