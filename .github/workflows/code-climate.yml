@@ -50,7 +50,7 @@ jobs:
           composer update
 
       - name: Coverage
-        uses: paambaati/codeclimate-action@v8.0.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
         with:
