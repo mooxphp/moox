@@ -76,10 +76,6 @@ class PressPanelProvider extends PanelProvider
                 \Moox\Press\WpTermTaxonomyPlugin::make(),
                 \Moox\Press\WpTermRelationshipPlugin::make(),
 
-                // Press custom plugins - should be moved to separate packages
-                \Moox\Press\WpSchulungPlugin::make(),
-                \Moox\Press\WpRubrikPlugin::make(),
-
                 // Notification plugin
                 \Moox\Notification\NotificationPlugin::make(),
 
