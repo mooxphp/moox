@@ -17,3 +17,8 @@
 [x-cloak] {
     display: none !important;
 }
+
+h1 {
+    @apply text-3xl;
+    font-family: "Exo", sans-serif;
+}

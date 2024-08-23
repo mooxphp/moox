@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="flex flex-col justify-center p-5">
-        <h1 class="m-10 font-sans text-4xl text-center">
+        <h1 class="m-10 text-4xl text-center">
             The <b>Moox</b> Project<br>
             Packages for <b>Filament</b> and <b>Laravel</b>
         </h1>

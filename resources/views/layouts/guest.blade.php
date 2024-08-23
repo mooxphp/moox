@@ -15,7 +15,7 @@
         href="https://fonts.bunny.net"
     >
     <link
-        href="https://fonts.bunny.net/css?family=exo-2:400,600,800"
+        href="https://fonts.bunny.net/css?family=exo:400,600,800"
         rel="stylesheet"
     />
 
@@ -24,7 +24,9 @@
 
 <body
     class="bg-[#001829] bg-no-repeat bg-right-top text-[#0e9bdc]"
-    style="background-image: url('{{ asset('img/bg.jpg') }}')"
+    style="
+        font-family: 'Exo', sans-serif;
+        background-image: url('{{ asset('img/bg.jpg') }}')"
 >
     <header>
         <nav class="flex justify-between m-8">
