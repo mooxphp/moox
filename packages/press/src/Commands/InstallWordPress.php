@@ -145,7 +145,7 @@ class InstallWordPress extends Command
     {
         info('Preparing composer.json file...');
 
-        $composerSource = __DIR__ . '/../../wordpress/composer.json';
+        $composerSource = __DIR__.'/../../wordpress/composer.json';
         $composerDestination = public_path('composer.json');
 
         if (File::exists($composerDestination)) {
@@ -196,7 +196,7 @@ class InstallWordPress extends Command
             info("WordPress directory already exists at {$fullWpPath}.");
         }
 
-        $wpConfigSource = __DIR__ . '/../../wordpress/wp-config.php';
+        $wpConfigSource = __DIR__.'/../../wordpress/wp-config.php';
         $wpConfigDestination = $fullWpPath.'/wp-config.php';
 
         if (File::exists($wpConfigDestination)) {
@@ -260,7 +260,7 @@ class InstallWordPress extends Command
         // TODO: Test this on MacOS, Linux and Windows
         if (PHP_OS_FAMILY === 'Windows') {
             $this->info('Moving wp-cli.phar to a directory in your PATH...');
-            if (!@rename(base_path('wp-cli.phar'), 'C:\Windows\System32\wp.bat')) {
+            if (! @rename(base_path('wp-cli.phar'), 'C:\Windows\System32\wp.bat')) {
                 $this->error('Failed to move wp-cli.phar to C:\Windows\System32\wp.bat.');
                 exit(1);
             }
@@ -368,7 +368,7 @@ class InstallWordPress extends Command
 
         $pluginsPath = $fullWpPath.'/wp-content/plugins';
 
-        $pluginSource = __DIR__ . '/../../wordpress/plugins/moox-press';
+        $pluginSource = __DIR__.'/../../wordpress/plugins/moox-press';
         $pluginDestination = $pluginsPath.'/moox-press';
 
         if (! File::exists($pluginSource)) {
@@ -404,7 +404,6 @@ class InstallWordPress extends Command
             exit(1);
         }
     }
-
 
     public function sayGoodbye(): void
     {
