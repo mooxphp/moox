@@ -24,7 +24,6 @@ class StoreRelationsInSession
             $userType = get_class($user);
 
             /**
-             *
              * @disregard
              *
              * Intelephense P1036 Non static method 'pluck' should not be called statically.

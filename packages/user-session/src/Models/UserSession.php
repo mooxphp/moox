@@ -3,7 +3,6 @@
 namespace Moox\UserSession\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Moox\UserDevice\Models\UserDevice;
 
 class UserSession extends Model
 {
