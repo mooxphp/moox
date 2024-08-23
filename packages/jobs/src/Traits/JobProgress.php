@@ -45,6 +45,7 @@ trait JobProgress
 
         $model = JobManager::getModel();
 
+        /* @phpstan-ignore-next-line */
         return $model::whereJobId($jobId)
             ->orderBy('started_at', 'desc')
             ->first();

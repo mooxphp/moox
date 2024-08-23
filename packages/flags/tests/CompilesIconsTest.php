@@ -8,6 +8,8 @@ use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
 use Orchestra\Testbench\TestCase;
 
+// TODO: Care for Testbench
+/* @php-stan ignore-next-line */
 class CompilesIconsTest extends TestCase
 {
     /** @test */

@@ -46,7 +46,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -93,7 +93,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -140,7 +140,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -187,7 +187,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -234,7 +234,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -281,7 +281,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -328,7 +328,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -375,7 +375,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -422,7 +422,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -469,7 +469,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -516,7 +516,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -563,7 +563,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -610,7 +610,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -657,7 +657,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -704,7 +704,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -751,7 +751,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -798,7 +798,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -845,7 +845,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -892,7 +892,7 @@ return [
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Expiry table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
