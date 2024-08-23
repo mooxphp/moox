@@ -2,15 +2,16 @@
 
 namespace Moox\UserSession\Resources\UserSessionResource\Pages;
 
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\HasDynamicTabs;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
 
 class ListPage extends ListRecords
 {
+    use HasDynamicTabs;
+
     public static string $resource = UserSessionResource::class;
 
     public function getActions(): array
@@ -37,18 +38,6 @@ class ListPage extends ListRecords
 
     public function getTabs(): array
     {
-        return [
-            'all' => Tab::make('All')
-                ->badge(UserSession::query()->count())
-                ->icon('gmdi-filter-list'),
-            'user' => Tab::make('User Sessions')
-                ->badge(UserSession::query()->where('user_id', '!=', null)->count())
-                ->icon('gmdi-account-circle')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', '!=', null)),
-            'anonymous' => Tab::make('Anonymous Sessions')
-                ->badge(UserSession::query()->where('user_id', null)->count())
-                ->icon('gmdi-no-accounts')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', null)),
-        ];
+        return $this->getDynamicTabs('user-session.resources.session.tabs', UserSession::class);
     }
 }

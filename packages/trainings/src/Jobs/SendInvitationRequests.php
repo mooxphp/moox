@@ -110,9 +110,6 @@ class SendInvitationRequests implements ShouldQueue
         // TODO: Dynamic user model, not hardcoded
         $user = WpUser::find($userId);
         if ($user) {
-            // TODO: fix this! This is not working since the user_email is not in the fillable array???
-            // or provided by the model like it should
-            /** @phpstan-ignore-next-line */
             return $user->user_email;
         }
 

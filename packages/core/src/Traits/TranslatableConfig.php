@@ -11,7 +11,6 @@ trait TranslatableConfig
      */
     protected function translateConfig(array $config): array
     {
-
         array_walk_recursive($config, function (&$value) {
             if (is_string($value) && str_starts_with($value, 'trans//')) {
                 $key = str_replace('trans//', '', $value);

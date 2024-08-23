@@ -58,6 +58,54 @@ return [
                     'icon' => 'gmdi-filter-list',
                     'query' => [],
                 ],
+                'my' => [
+                    'label' => 'My Sessions',
+                    'icon' => 'gmdi-account-circle',
+                    'query' => [
+                        [
+                            'field' => 'user_id',
+                            'operator' => '=',
+                            'value' => function () {
+                                return auth()->user()->id;
+                            },
+                        ],
+                    ],
+                ],
+                'user' => [
+                    'label' => 'User Sessions',
+                    'icon' => 'gmdi-account-circle',
+                    'query' => [
+                        [
+                            'field' => 'user_type',
+                            'operator' => '=',
+                            'value' => 'Moox\User\Models\User',
+                            'hide-if-not-exists' => true,
+                        ],
+                    ],
+                ],
+                'wpuser' => [
+                    'label' => 'WordPress Sessions',
+                    'icon' => 'gmdi-account-circle',
+                    'query' => [
+                        [
+                            'field' => 'user_type',
+                            'operator' => '=',
+                            'value' => 'Moox\Press\Models\WpUser',
+                            'hide-if-not-exists' => true,
+                        ],
+                    ],
+                ],
+                'anonymous' => [
+                    'label' => 'Anonymous Sessions',
+                    'icon' => 'gmdi-no-accounts',
+                    'query' => [
+                        [
+                            'field' => 'user_id',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
             ],
         ],
     ],
