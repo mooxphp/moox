@@ -157,7 +157,6 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function addOrUpdateMeta($key, $value)
     {
-        /** @disregard  */
         WpUserMeta::updateOrCreate(
             ['user_id' => $this->ID, 'meta_key' => $key],
             ['meta_value' => $value]

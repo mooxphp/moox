@@ -21,7 +21,6 @@ class DefaultPolicy
 
     protected function hasPermission($permission)
     {
-        /** @disregard Undefined method 'hasPermissionTo'.intelephense(P1013) */
         return $this->user->hasPermissionTo($permission);
     }
 

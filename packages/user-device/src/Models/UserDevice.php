@@ -2,13 +2,24 @@
 
 namespace Moox\UserDevice\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class UserDevice extends Model
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'user_devices';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'title',
         'slug',
@@ -26,6 +37,11 @@ class UserDevice extends Model
         'ip_address',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     protected $casts = [
         'active' => 'bool',
         'whitelisted' => 'bool',
@@ -55,14 +71,9 @@ class UserDevice extends Model
     /**
      * Get the owning user model.
      */
-    public function user()
+    public function user(): MorphTo
     {
-        $userModel = $this->user_type;
-        if (class_exists($userModel)) {
-            return $this->belongsTo($userModel, 'user_id');
-        }
-
-        return $this->belongsTo('\App\Models\User', 'user_id');
+        return $this->morphTo();
     }
 
     /**

@@ -2,7 +2,6 @@
 
 use Valet\Drivers\LaravelValetDriver;
 
-/** @disregard Undefined type 'Valet\Drivers\LaravelValetDriver'.intelephense(P1009) */
 class LocalValetDriver extends LaravelValetDriver
 {
     /**

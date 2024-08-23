@@ -3,9 +3,15 @@
 namespace Moox\UserSession\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class UserSession extends Model
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'sessions';
 
     /**
@@ -15,6 +21,11 @@ class UserSession extends Model
      */
     protected $keyType = 'string';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'id',
         'user_type',
@@ -27,6 +38,11 @@ class UserSession extends Model
         'whitelisted',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     protected $casts = [
         'id' => 'string',
         'payload' => 'array',
@@ -34,12 +50,18 @@ class UserSession extends Model
         'whitelisted' => 'boolean',
     ];
 
-    public function user()
+    /**
+     * Get the owning user model.
+     */
+    public function user(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function device()
+    /**
+     * Get the owning device model.
+     */
+    public function device(): MorphTo
     {
         return $this->morphTo();
     }

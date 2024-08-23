@@ -163,7 +163,6 @@ class WpPost extends Model
 
     protected function addOrUpdateMeta($key, $value)
     {
-        /** @disregard  */
         WpPostMeta::updateOrCreate(
             ['post_id' => $this->ID, 'meta_key' => $key],
             ['meta_value' => $value]

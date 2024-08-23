@@ -33,7 +33,6 @@ class PressPermissionsSeeder extends Seeder
         $guardName = 'press';
 
         foreach ($permissions as $permission) {
-            /** @disregard Non static method 'firstOrCreate' should not be called statically.intelephense(P1036) */
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => $guardName]);
         }
     }
