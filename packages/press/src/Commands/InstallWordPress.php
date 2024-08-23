@@ -34,14 +34,13 @@ class InstallWordPress extends Command
         $this->art();
         $this->welcome();
         $this->checkDotenv();
+        $this->testDatabaseConnection();
         $this->prepareComposer();
         $this->composerInstall();
         $this->prepareWpConfig();
         $this->useOrInstallWpCli();
         $this->wpInstall();
         $this->pressPluginInstall();
-        $this->seedWpData();
-        $this->setEnvVariables();
         $this->sayGoodbye();
     }
 
@@ -127,12 +126,26 @@ class InstallWordPress extends Command
         info('All required variables are present in .env.');
     }
 
+    public function testDatabaseConnection(): void
+    {
+        info('Testing database connection...');
+
+        try {
+            // Attempt to connect to the database
+            \DB::connection()->getPdo();
+            info('Database connection successful.');
+        } catch (\Exception $e) {
+            alert('Failed to connect to the database. Please check your database credentials in the .env file.');
+            $this->line($e->getMessage());
+            exit(1);
+        }
+    }
+
     public function prepareComposer(): void
     {
         info('Preparing composer.json file...');
 
-        // TODO: This path will not work if the package is installed via Composer
-        $composerSource = base_path('packages/press/wordpress/composer.json');
+        $composerSource = __DIR__ . '/../../wordpress/composer.json';
         $composerDestination = public_path('composer.json');
 
         if (File::exists($composerDestination)) {
@@ -183,8 +196,7 @@ class InstallWordPress extends Command
             info("WordPress directory already exists at {$fullWpPath}.");
         }
 
-        // TODO: This path will not work if the package is installed via Composer
-        $wpConfigSource = base_path('packages/press/wordpress/wp-config.php');
+        $wpConfigSource = __DIR__ . '/../../wordpress/wp-config.php';
         $wpConfigDestination = $fullWpPath.'/wp-config.php';
 
         if (File::exists($wpConfigDestination)) {
@@ -231,23 +243,34 @@ class InstallWordPress extends Command
             exit(1);
         }
 
-        $this->info('Making wp-cli.phar executable...');
-        $chmodProcess = new \Symfony\Component\Process\Process([
-            'chmod', '+x', base_path('wp-cli.phar'),
-        ]);
-        $chmodProcess->run();
+        if (PHP_OS_FAMILY !== 'Windows') {
+            $this->info('Making wp-cli.phar executable...');
+            $chmodProcess = new \Symfony\Component\Process\Process([
+                'chmod', '+x', base_path('wp-cli.phar'),
+            ]);
+            $chmodProcess->run();
 
-        if (! $chmodProcess->isSuccessful()) {
-            $this->error('Failed to make wp-cli.phar executable.');
-            $this->line($chmodProcess->getErrorOutput());
-            exit(1);
+            if (! $chmodProcess->isSuccessful()) {
+                $this->error('Failed to make wp-cli.phar executable.');
+                $this->line($chmodProcess->getErrorOutput());
+                exit(1);
+            }
         }
 
-        // TODO: sudo is not available on Windows
-        $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
-        $moveProcess = new \Symfony\Component\Process\Process([
-            'sudo', 'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
-        ]);
+        // TODO: Test this on MacOS, Linux and Windows
+        if (PHP_OS_FAMILY === 'Windows') {
+            $this->info('Moving wp-cli.phar to a directory in your PATH...');
+            if (!@rename(base_path('wp-cli.phar'), 'C:\Windows\System32\wp.bat')) {
+                $this->error('Failed to move wp-cli.phar to C:\Windows\System32\wp.bat.');
+                exit(1);
+            }
+        } else {
+            $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
+            $moveProcess = new \Symfony\Component\Process\Process([
+                'sudo', 'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
+            ]);
+        }
+
         $moveProcess->run();
 
         if ($moveProcess->isSuccessful()) {
@@ -261,7 +284,7 @@ class InstallWordPress extends Command
 
     public function wpInstall(): void
     {
-        // TODO: Where's the database ... does it seed the database? (with Prefix!?)
+        // TODO: Test if the DB is migrated successfully
         info('Installing WordPress...');
 
         $wpPath = env('WP_PATH', '/public/wp');
@@ -345,24 +368,13 @@ class InstallWordPress extends Command
 
         $pluginsPath = $fullWpPath.'/wp-content/plugins';
 
-        $tempDir = base_path('temp_moox_plugin');
-        $repoUrl = 'https://github.com/mooxphp/press-wp.git';
+        $pluginSource = __DIR__ . '/../../wordpress/plugins/moox-press';
+        $pluginDestination = $pluginsPath.'/moox-press';
 
-        // TODO: Instead of cloning, the plugin can be copied from the package
-        // TODO: remove the .git directory, should never end up as subrepo
-        info('Cloning the Moox Press plugin repository...');
-        $cloneCommand = ['git', 'clone', $repoUrl, $tempDir];
-        $process = new \Symfony\Component\Process\Process($cloneCommand);
-        $process->setTimeout(null);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            alert('Failed to clone the Moox Press plugin repository.');
-            $this->line($process->getErrorOutput());
+        if (! File::exists($pluginSource)) {
+            alert('The Moox Press plugin source directory does not exist.');
             exit(1);
         }
-
-        $pluginDestination = $pluginsPath.'/moox-press';
 
         if (File::exists($pluginDestination)) {
             $overwrite = $this->ask('The Moox Press plugin already exists in the plugins directory. Do you want to overwrite it? (yes/no)', 'no');
@@ -376,9 +388,7 @@ class InstallWordPress extends Command
         }
 
         info('Copying the Moox Press plugin to the WordPress plugins directory...');
-        File::copyDirectory($tempDir, $pluginDestination);
-
-        File::deleteDirectory($tempDir);
+        File::copyDirectory($pluginSource, $pluginDestination);
 
         info('Activating the Moox Press plugin...');
         $activateCommand = ['wp', 'plugin', 'activate', 'moox-press'];
@@ -395,16 +405,6 @@ class InstallWordPress extends Command
         }
     }
 
-    public function seedWpData(): void
-    {
-        // TODO: Eventually seed the WP database with the necessary data
-        // TODO: and optional demo data
-    }
-
-    public function setEnvVariables(): void
-    {
-        // TODO: Eventually set the necessary variables in the .env file
-    }
 
     public function sayGoodbye(): void
     {
