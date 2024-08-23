@@ -107,6 +107,7 @@ class SendInvitationRequests implements ShouldQueue
 
     protected function getUserEmailById($userId)
     {
+        // TODO: Dynamic user model, not hardcoded
         $user = WpUser::find($userId);
         if ($user) {
             // TODO: fix this! This is not working since the user_email is not in the fillable array???
