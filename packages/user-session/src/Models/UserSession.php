@@ -35,25 +35,13 @@ class UserSession extends Model
         'whitelisted' => 'boolean',
     ];
 
-    /**
-     * Get the owning user model.
-     *
-     * TODO:
-     * By setting the current model as the user_type, we can have a smart start.
-     */
     public function user()
     {
-        return $this->belongsTo($this->user_type, 'user_id');
+        return $this->morphTo();
     }
 
-    /**
-     * Get the owning device model.
-     *
-     * TODO:
-     * This should be dynamic based on the configured device model.
-     */
     public function device()
     {
-        return $this->belongsTo(UserDevice::class, 'device_id');
+        return $this->morphTo();
     }
 }
