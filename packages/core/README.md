@@ -327,7 +327,37 @@ class CoreServiceProvider extends PackageServiceProvider
 
 ### DNS Lookup
 
-The DnsLookupService does just a - you guessed it - DNS Lookup.
+The DnsLookupService does just a - you guessed it - DNS Lookup. That Service is currently used in Moox Sync's PlatformResource like so:
+
+```php
+use Moox\Core\Services\DnsLookupService;
+
+class PlatformResource extends Resource
+{
+		public static function form(Form $form): Form
+    {
+        return $form->schema([
+            Section::make()->schema([
+                Grid::make(['default' => 0])->schema([
+                  TextInput::make('domain')
+                        ->label(__('core::core.domain'))
+                        ->rules(['max:255', 'string'])
+                        ->required()
+                        ->unique(ignoreRecord: true)
+                        ->live(debounce: 500)
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (empty($state)) {
+                                $set('ip_address', 'The host is not resolvable');
+                            } else {
+                                $ipAddress = DnsLookupService::getIpAddress($state);
+                                $set('ip_address', $ipAddress ?: 'The host is not resolvable');
+                            }
+                        })
+                  ]),
+            ]),
+        ]);
+    }
+```
 
 ## API
 
