@@ -329,37 +329,30 @@ class InstallWordPress extends Command
         }
     }
 
+    protected function getInstallationUser(string $path): string
+    {
+        $userInfo = posix_getpwuid(fileowner($path));
+
+        return $userInfo['name'];
+    }
+
     protected function installAndActivateDefaultTheme(string $fullWpPath): void
     {
         $this->info('Ensuring a default theme is installed and activated...');
 
-        $env = [
-            'DB_DATABASE' => env('DB_DATABASE'),
-            'DB_USERNAME' => env('DB_USERNAME'),
-            'DB_PASSWORD' => env('DB_PASSWORD'),
-            'DB_HOST' => env('DB_HOST'),
-            'APP_URL' => env('APP_URL'),
-            'WP_SLUG' => env('WP_SLUG'),
-            'WP_AUTH_KEY' => env('WP_AUTH_KEY'),
-            'WP_SECURE_AUTH_KEY' => env('WP_SECURE_AUTH_KEY'),
-            'WP_LOGGED_IN_KEY' => env('WP_LOGGED_IN_KEY'),
-            'WP_NONCE_KEY' => env('WP_NONCE_KEY'),
-            'WP_AUTH_SALT' => env('WP_AUTH_SALT'),
-            'WP_SECURE_AUTH_SALT' => env('WP_SECURE_AUTH_SALT'),
-            'WP_LOGGED_IN_SALT' => env('WP_LOGGED_IN_SALT'),
-            'WP_NONCE_SALT' => env('WP_NONCE_SALT'),
-        ];
+        // Detect the user who owns the WordPress directory
+        $user = $this->getInstallationUser($fullWpPath);
 
         $checkThemeProcess = new \Symfony\Component\Process\Process([
-            'wp', 'theme', 'is-installed', 'twentytwentyfour',
-        ], $fullWpPath, $env);
+            'sudo', '-u', $user, 'wp', 'theme', 'is-installed', 'twentytwentyfour',
+        ], $fullWpPath);
         $checkThemeProcess->run();
 
         if (! $checkThemeProcess->isSuccessful()) {
             $this->info('Default theme twentytwentyfour is not installed. Installing it now...');
 
             $installThemeProcess = new \Symfony\Component\Process\Process([
-                'wp', 'theme', 'install', 'twentytwentyfour', '--activate',
+                'sudo', '-u', $user, 'wp', 'theme', 'install', 'twentytwentyfour', '--activate',
             ], $fullWpPath);
             $installThemeProcess->setTimeout(null);
             $installThemeProcess->run();
