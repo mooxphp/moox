@@ -2,7 +2,7 @@
 
 # Moox Core
 
-The Moox Core package cares for many common features. It is required by all Moox packages including Moox Builder. If you want to use Moox Builder to generate a Custom Package, check out the features you're able to use.
+The Moox Core package cares for many common features. It is required by all Moox packages including Moox Builder. If you want to use Moox Builder to generate a Custom Package, check out the features you're already able to use, if you want to Moox Core independently in your app or a package, you  need to use the traits accordingly.
 
 ## Installation
 
@@ -50,6 +50,60 @@ A pretty basic example:
             ],
 ```
 
+As mentioned, the DynamicTabs trait is already implemented, if you want to implement this feature from outside Moox, please have a look at one of our Filament resources list pages:
+
+```php
+use Moox\Core\Traits\HasDynamicTabs;
+
+class ListItems extends ListRecords
+{
+    use HasDynamicTabs;
+
+		public function getTabs(): array
+    {
+        return $this->getDynamicTabs('package.resources.item.tabs', Expiry::class);
+    }
+```
+
+and the config of the package:
+
+```php
+    'resources' => [
+        'item' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                'documents' => [
+                    'label' => 'trans//core::core.documents',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'expiry_job',
+                            'operator' => '=',
+                            'value' => 'Documents',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+```
+
 ### Queries in Config
 
 Dynamic Tabs uses the QueriesInConfig Trait, that means you can build queries like this:
@@ -89,10 +143,11 @@ Add more, if you need:
                     ],
 ```
 
-We don't yet support relations nor the like operator. If you're in the need, we would be happy to merge a PR :-) 
+We DON'T YET support relations nor the like operator. If you're in the need, we would be happy to merge a PR :-) 
 
 ```php
-                    'query' => [
+                    // TODO: not implemented yet
+										'query' => [
                         [
                             'field' => 'user_name',
                             'relation' => 'user',
@@ -119,7 +174,8 @@ The value of a query accepts a closure. Following example is perfect for a "My T
 Finally, a special idea and therefor NOT YET implemented: if the value contains a class and a forth parameter `hide-if-not-exists`set to true, Moox will check, if the class exists and otherwise hide the tab. That allows us to register buttons for packages, that are not necessarily required.
 
 ```php
-                    'query' => [
+                    // TODO: not implemented yet
+										'query' => [
                         [
                             'field' => 'status',
                             'operator' => '=',
@@ -199,6 +255,8 @@ And finally the most-known mistake, throws "Cannot access offset of type string 
 
 So don't forget to put the query in an extra array, even if it is a single query.
 
+As mentioned, the QueriesInConfig trait is used in HasDynamicTabs, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
+
 ### Translations in Config
 
 A simple but useful feature is the TranslationsInConfig Trait that is used a lot in our config files, as seen with Tabs:
@@ -207,27 +265,75 @@ A simple but useful feature is the TranslationsInConfig Trait that is used a lot
                     'label' => 'trans//core::core.all',
 ```
 
-most translations of our packages are organized in Moox Core. Only few packages ship with own configuration. These packages are registered in the core.php configuration file. Custom Packages also need to be added to the Package Registration.
+Translations of our packages are generally organized in Moox Core. Only few of our packages ship with own translation files. These packages are registered in the core.php configuration file. If you develop a custom package (preferably using Moox Builder) you need to add your custom package to the [Package Registration](#Package-registration).
+
+Translations in Config are used in the CoreServiceProvider like this:
+
+```php
+use Moox\Core\Traits\TranslatableConfig;
+
+class CoreServiceProvider extends PackageServiceProvider
+{
+    use TranslatableConfig;
+ 
+    public function boot()
+    {
+        parent::boot();
+
+        $this->app->booted(function () {
+            $this->translateConfigurations();
+        });
+    }
+}
+```
 
 ### Request in Model
 
-The RequestInModel Trait is currently used by all Moox Press packages. It allows us to use the request data in our models.
+The RequestInModel Trait is currently used by all Moox Press packages. It allows us to use the request data in some of our models. You can code dive into Moox\Press\Models\WpTerm.php, to find more code examples. The basic implementation looks like this:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Moox\Core\Traits\RequestInModel;
+
+class WpTerm extends Model
+{
+	use RequestInModel;
+  
+  $description = $wpTerm->getRequestData('description');
+}
+```
 
 ### Google Material Design Icons
 
-As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The GoogleIcons Trait changes the default Filament Icons, too.
+As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The GoogleIcons Trait changes the default Filament Icons, too. It is used in the CoreServiceProvider like this:
+
+```php
+use Moox\Core\Traits\GoogleIcons;
+
+class CoreServiceProvider extends PackageServiceProvider
+{
+    use GoogleIcons;
+ 
+    public function boot()
+    {
+        parent::boot();
+
+        $this->useGoogleIcons();
+    }
+}
+```
 
 ## Services
 
 ### DNS Lookup
 
-The DnsLookupService does just this.
+The DnsLookupService does just a - you guessed it - DNS Lookup.
 
 ## API
 
-The Core API  `api/core` provides all available packages and their configuration. It is used by Moox Sync, for example.
+The Core API  `api/core` provides all available packages (and their configuration - work-in-progress). It is used by Moox Sync, for example.
 
-The API is work in progress. It probably will be secured.
+The Core API is work in progress. It probably will be secured.
 
 ## Config
 
