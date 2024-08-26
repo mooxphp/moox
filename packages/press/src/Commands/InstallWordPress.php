@@ -307,6 +307,11 @@ class InstallWordPress extends Command
 
         $env = $this->getDotenv();
 
+        putenv("DB_DATABASE={$env['DB_DATABASE']}");
+        putenv("DB_USERNAME={$env['DB_USERNAME']}");
+        putenv("DB_PASSWORD={$env['DB_PASSWORD']}");
+        putenv("DB_HOST={$env['DB_HOST']}");
+
         $wpPath = base_path(trim($env['WP_PATH'], '/'));
         if (! File::exists($wpPath.'/wp-config.php')) {
             alert('wp-config.php not found! Please ensure the file is created and configured.');
