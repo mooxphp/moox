@@ -304,8 +304,6 @@ class InstallWordPress extends Command
 
         $adminEmail = $this->ask('Please enter the admin email');
 
-        $this->installAndActivateDefaultTheme($fullWpPath);
-
         $command = [
             'wp', 'core', 'install',
             '--url='.$siteUrl,
@@ -327,6 +325,8 @@ class InstallWordPress extends Command
             $this->line($process->getErrorOutput());
             exit(1);
         }
+
+        $this->installAndActivateDefaultTheme($fullWpPath);
     }
 
     protected function getInstallationUser(string $path): string
@@ -340,7 +340,6 @@ class InstallWordPress extends Command
     {
         $this->info('Ensuring a default theme is installed and activated...');
 
-        // Detect the user who owns the WordPress directory
         $user = $this->getInstallationUser($fullWpPath);
 
         $checkThemeProcess = new \Symfony\Component\Process\Process([
