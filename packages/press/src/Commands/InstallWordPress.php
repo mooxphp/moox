@@ -314,19 +314,30 @@ class InstallWordPress extends Command
         $wpPath = env('WP_PATH', '/public/wp');
         $fullWpPath = base_path(trim($wpPath, '/'));
 
-        $siteUrl = env('APP_URL', 'http://localhost').env('WP_SLUG', '/wp');
+        // Ensure wp-config.php exists and has correct settings
+        if (! File::exists($fullWpPath.'/wp-config.php')) {
+            alert('wp-config.php not found! Please ensure the file is created and configured.');
+            exit(1);
+        }
 
-        $defaultSiteTitle = env('APP_NAME', 'Moox Press');
+        // Test the environment variables
+        $env = $this->getEnvVariables();
+        foreach ($env as $key => $value) {
+            if (! $value) {
+                alert("Environment variable $key is not set. Please check your .env file.");
+                exit(1);
+            }
+        }
+
+        $siteUrl = $env['APP_URL'].$env['WP_SLUG'];
+        $defaultSiteTitle = $env['APP_NAME'];
         $siteTitle = $this->ask('Please enter the site title', $defaultSiteTitle);
-
         $adminUser = 'sysadm';
-
         $adminPassword = $this->generateSecurePassword();
+        $adminEmail = $this->ask('Please enter the admin email');
 
         info("A secure password has been generated: $adminPassword");
         warning('Please make sure to save this password as it won’t be shown again.');
-
-        $adminEmail = $this->ask('Please enter the admin email');
 
         $command = [
             'wp', 'core', 'install',
@@ -336,8 +347,6 @@ class InstallWordPress extends Command
             '--admin_password='.$adminPassword,
             '--admin_email='.$adminEmail,
         ];
-
-        $env = $this->getEnvVariables();
 
         $process = new \Symfony\Component\Process\Process($command, $fullWpPath, $env);
         $process->setTimeout(null);
