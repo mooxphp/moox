@@ -333,9 +333,26 @@ class InstallWordPress extends Command
     {
         $this->info('Ensuring a default theme is installed and activated...');
 
+        $env = [
+            'DB_DATABASE' => env('DB_DATABASE'),
+            'DB_USERNAME' => env('DB_USERNAME'),
+            'DB_PASSWORD' => env('DB_PASSWORD'),
+            'DB_HOST' => env('DB_HOST'),
+            'APP_URL' => env('APP_URL'),
+            'WP_SLUG' => env('WP_SLUG'),
+            'WP_AUTH_KEY' => env('WP_AUTH_KEY'),
+            'WP_SECURE_AUTH_KEY' => env('WP_SECURE_AUTH_KEY'),
+            'WP_LOGGED_IN_KEY' => env('WP_LOGGED_IN_KEY'),
+            'WP_NONCE_KEY' => env('WP_NONCE_KEY'),
+            'WP_AUTH_SALT' => env('WP_AUTH_SALT'),
+            'WP_SECURE_AUTH_SALT' => env('WP_SECURE_AUTH_SALT'),
+            'WP_LOGGED_IN_SALT' => env('WP_LOGGED_IN_SALT'),
+            'WP_NONCE_SALT' => env('WP_NONCE_SALT'),
+        ];
+
         $checkThemeProcess = new \Symfony\Component\Process\Process([
             'wp', 'theme', 'is-installed', 'twentytwentyfour',
-        ], $fullWpPath);
+        ], $fullWpPath, $env);
         $checkThemeProcess->run();
 
         if (! $checkThemeProcess->isSuccessful()) {
