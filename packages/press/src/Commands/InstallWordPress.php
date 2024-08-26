@@ -267,18 +267,18 @@ class InstallWordPress extends Command
         } else {
             $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
             $moveProcess = new \Symfony\Component\Process\Process([
-                'sudo', 'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
+                'sudo', '-E', 'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
             ]);
-        }
 
-        $moveProcess->run();
+            $moveProcess->run();
 
-        if ($moveProcess->isSuccessful()) {
-            $this->info('wp-cli installed successfully.');
-        } else {
-            $this->error('Failed to move wp-cli.phar to /usr/local/bin/wp.');
-            $this->line($moveProcess->getErrorOutput());
-            exit(1);
+            if ($moveProcess->isSuccessful()) {
+                $this->info('wp-cli installed successfully.');
+            } else {
+                $this->error('Failed to move wp-cli.phar to /usr/local/bin/wp.');
+                $this->line($moveProcess->getErrorOutput());
+                exit(1);
+            }
         }
     }
 
