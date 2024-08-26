@@ -74,9 +74,14 @@ class JobsResource extends Resource
                     ->sortable(),
                 ProgressColumn::make('progress')
                     ->label(__('jobs::translations.progress'))
+                    ->extraHeaderAttributes(['style' => 'min-width: 200px'])
                     // TODO: ->formatStateUsing(fn (string $state) => "{$state}%")
-                    // TODO: poll, color, width etc.
-                    ->color('warning'),
+                    // TODO: poll? extra poll needed?, color (test live), width etc.
+                    // IDEA: For adding width (of each separately) to the progress bar, fork (into core?)
+                    // SEE: https://github.com/ryangjchandler/filament-progress-column
+                    ->color(function ($record) {
+                        return $record->progress > 99 ? 'success' : '';
+                    }),
                 TextColumn::make('started_at')
                     ->label(__('jobs::translations.started_at'))
                     ->since()
