@@ -313,9 +313,9 @@ class InstallWordPress extends Command
             exit(1);
         }
 
-        foreach ($env as $key => $value) {
-            info("$key: ".(is_bool($value) ? ($value ? 'true' : 'false') : $value));
-        }
+        $envDumpCommand = new \Symfony\Component\Process\Process(['printenv'], $wpPath, $env);
+        $envDumpCommand->run();
+        $this->line($envDumpCommand->getOutput());
 
         $siteUrl = $env['APP_URL'].$env['WP_SLUG'];
         $defaultSiteTitle = $env['APP_NAME'];
