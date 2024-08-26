@@ -17,10 +17,10 @@ php artisan mooxcore:install
 
 Moox Core requires these packages:
 
-- https://filamentphp.com/  and https://laravel.com/ usually in the latest stable version, see composer.json for details
-- https://github.com/Pharaonic/laravel-readable - for formatting numbers and dates to a human readable format
-- https://github.com/ryangjchandler/filament-progress-column - for showing progress bars in Filament tables
-- https://github.com/codeat3/blade-google-material-design-icons - as we use Google Material Design Icons all over
+- https://filamentphp.com/  and https://laravel.com/ usually in the latest stable version, see composer.json
+- https://github.com/Pharaonic/laravel-readable - for formatting numbers and dates to be human readable
+- https://github.com/ryangjchandler/filament-progress-column - to use progress bars in Filament tables
+- https://github.com/codeat3/blade-google-material-design-icons - we use Google Material Design Icons
 
 ## Traits
 
