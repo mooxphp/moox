@@ -33,6 +33,8 @@ class InstallWordPress extends Command
     {
         $this->art();
         $this->welcome();
+        $this->checkDotenv();
+        $env = $this->getDotenv();
         $this->testDatabaseConnection();
         $this->prepareComposer();
         $this->composerInstall();
@@ -69,7 +71,7 @@ class InstallWordPress extends Command
         info('Welcome to Moox Press WordPress Installer');
     }
 
-    public function getDotenv(): array
+    public function checkDotenv(): void
     {
         if (! File::exists(base_path('.env'))) {
             alert('No .env file found, please install Laravel with Moox Press first.');
@@ -77,7 +79,10 @@ class InstallWordPress extends Command
         }
 
         info('.env file found, checking for required variables...');
+    }
 
+    public function getDotenv(): array
+    {
         $requiredVariables = [
             'APP_NAME',
             'APP_URL',
@@ -277,7 +282,7 @@ class InstallWordPress extends Command
         } else {
             $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
             $moveProcess = new \Symfony\Component\Process\Process([
-                'sudo', '-E', 'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
+                'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
             ]);
 
             $moveProcess->run();
@@ -362,7 +367,7 @@ class InstallWordPress extends Command
             $this->info('Default theme twentytwentyfour is not installed. Installing it now...');
 
             $installThemeProcess = new \Symfony\Component\Process\Process([
-                'sudo', '-u', $user, 'wp', 'theme', 'install', 'twentytwentyfour', '--activate',
+                'wp', 'theme', 'install', 'twentytwentyfour', '--activate',
             ], $fullWpPath);
             $installThemeProcess->setTimeout(null);
             $installThemeProcess->run();
