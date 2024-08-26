@@ -113,8 +113,19 @@ class InstallWordPress extends Command
         $envVariables = [];
 
         foreach ($requiredVariables as $variable) {
-            if (env($variable) === null) {
+            $value = env($variable);
+
+            if ($value === null) {
                 $missingVariables[] = $variable;
+            } else {
+                // Convert string 'true'/'false' to actual booleans
+                if ($value === 'false') {
+                    $value = false;
+                } elseif ($value === 'true') {
+                    $value = true;
+                }
+
+                $envVariables[$variable] = $value;
             }
         }
 
@@ -129,14 +140,6 @@ class InstallWordPress extends Command
         }
 
         info('All required variables are present in .env.');
-
-        foreach ($requiredVariables as $variable) {
-            $value = env($variable);
-            if ($value === null) {
-                throw new \RuntimeException("Environment variable $variable is not set. Please check your .env file.");
-            }
-            $envVariables[$variable] = $value;
-        }
 
         return $envVariables;
     }
@@ -301,22 +304,13 @@ class InstallWordPress extends Command
     {
         info('Installing WordPress...');
 
-        $wpPath = env('WP_PATH', '/public/wp');
-        $fullWpPath = base_path(trim($wpPath, '/'));
+        $env = $this->getDotenv();
 
         // Ensure wp-config.php exists and has correct settings
-        if (! File::exists($fullWpPath.'/wp-config.php')) {
+        $wpPath = base_path(trim($env['WP_PATH'], '/'));
+        if (! File::exists($wpPath.'/wp-config.php')) {
             alert('wp-config.php not found! Please ensure the file is created and configured.');
             exit(1);
-        }
-
-        // Test the environment variables
-        $env = $this->getDotenv();
-        foreach ($env as $key => $value) {
-            if (! $value) {
-                alert("Environment variable $key is not set. Please check your .env file.");
-                exit(1);
-            }
         }
 
         $siteUrl = $env['APP_URL'].$env['WP_SLUG'];
@@ -338,7 +332,14 @@ class InstallWordPress extends Command
             '--admin_email='.$adminEmail,
         ];
 
-        $process = new \Symfony\Component\Process\Process($command, $fullWpPath, $env);
+        // Convert boolean values to strings for the environment array
+        foreach ($env as $key => $value) {
+            if (is_bool($value)) {
+                $env[$key] = $value ? 'true' : 'false';
+            }
+        }
+
+        $process = new \Symfony\Component\Process\Process($command, $wpPath, $env);
         $process->setTimeout(null);
 
         $process->run();
@@ -351,7 +352,7 @@ class InstallWordPress extends Command
             exit(1);
         }
 
-        $this->installAndActivateDefaultTheme($fullWpPath);
+        $this->installAndActivateDefaultTheme($wpPath);
     }
 
     protected function installAndActivateDefaultTheme(string $fullWpPath): void
