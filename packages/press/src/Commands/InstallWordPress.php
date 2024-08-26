@@ -126,6 +126,31 @@ class InstallWordPress extends Command
         info('All required variables are present in .env.');
     }
 
+    protected function getEnvVariables(): array
+    {
+        return [
+            'DB_DATABASE' => env('DB_DATABASE'),
+            'DB_USERNAME' => env('DB_USERNAME'),
+            'DB_PASSWORD' => env('DB_PASSWORD'),
+            'DB_HOST' => env('DB_HOST'),
+            'APP_URL' => env('APP_URL'),
+            'WP_SLUG' => env('WP_SLUG'),
+            'WP_PREFIX' => env('WP_PREFIX'),
+            'WP_DEBUG' => env('WP_DEBUG'),
+            'WP_DEBUG_LOG' => env('WP_DEBUG_LOG'),
+            'WP_DEBUG_DISPLAY' => env('WP_DEBUG_DISPLAY'),
+            'WP_MEMORY_LIMIT' => env('WP_MEMORY_LIMIT'),
+            'WP_AUTH_KEY' => env('WP_AUTH_KEY'),
+            'WP_SECURE_AUTH_KEY' => env('WP_SECURE_AUTH_KEY'),
+            'WP_LOGGED_IN_KEY' => env('WP_LOGGED_IN_KEY'),
+            'WP_NONCE_KEY' => env('WP_NONCE_KEY'),
+            'WP_AUTH_SALT' => env('WP_AUTH_SALT'),
+            'WP_SECURE_AUTH_SALT' => env('WP_SECURE_AUTH_SALT'),
+            'WP_LOGGED_IN_SALT' => env('WP_LOGGED_IN_SALT'),
+            'WP_NONCE_SALT' => env('WP_NONCE_SALT'),
+        ];
+    }
+
     public function testDatabaseConnection(): void
     {
         info('Testing database connection...');
@@ -284,7 +309,6 @@ class InstallWordPress extends Command
 
     public function wpInstall(): void
     {
-        // TODO: Test if the DB is migrated successfully
         info('Installing WordPress...');
 
         $wpPath = env('WP_PATH', '/public/wp');
@@ -313,7 +337,9 @@ class InstallWordPress extends Command
             '--admin_email='.$adminEmail,
         ];
 
-        $process = new \Symfony\Component\Process\Process($command, $fullWpPath);
+        $env = $this->getEnvVariables();
+
+        $process = new \Symfony\Component\Process\Process($command, $fullWpPath, $env);
         $process->setTimeout(null);
 
         $process->run();
