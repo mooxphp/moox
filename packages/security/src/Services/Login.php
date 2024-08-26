@@ -22,14 +22,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
+use Jenssegers\Agent\Agent;
+use Moox\UserDevice\Services\LocationService;
+use Moox\UserDevice\Traits\TrackDevices;
+use Moox\UserSession\Models\UserSession;
 
 /**
  * @property Form $form
  */
 class Login extends SimplePage
 {
-    use InteractsWithFormActions;
-    use WithRateLimiting;
+    use InteractsWithFormActions, TrackDevices, WithRateLimiting;
 
     /**
      * @var view-string
@@ -82,10 +85,6 @@ class Login extends SimplePage
                     'seconds' => $exception->secondsUntilAvailable,
                     'minutes' => ceil($exception->secondsUntilAvailable / 60),
                 ]))
-                ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
-                ]) : null)
                 ->danger()
                 ->send();
 
@@ -107,8 +106,7 @@ class Login extends SimplePage
         }
 
         if (! empty($userModelEmail) && $credentialKey === 'email') {
-
-            if ($query->getQuery()->wheres) { // Check if there's already a condition
+            if ($query->getQuery()->wheres) {
                 $query->orWhere($userModelEmail, $credentials[$credentialKey]);
             } else {
                 $query->where($userModelEmail, $credentials[$credentialKey]);
@@ -123,9 +121,7 @@ class Login extends SimplePage
             if (! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
-
         } else {
-
             if (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
                 $this->throwFailureValidationException();
             }
@@ -134,6 +130,11 @@ class Login extends SimplePage
         Auth::guard($guardName)->login($user, $data['remember'] ?? false);
 
         session()->regenerate();
+        session()->save();
+
+        $this->associateUserSession($user);
+
+        $this->addUserDevice(request(), $user, app(Agent::class), app(LocationService::class));
 
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
              && config('press.auth_wordpress') === true) {
@@ -146,6 +147,36 @@ class Login extends SimplePage
             return app(LoginResponse::class);
         }
     }
+
+    // TODO: Move to a service
+    // TODO: Test Login for Moox and Press
+    // TODO: When redirecting to WordPress, the user_id is not set
+    // TODO: When logged in with /press, /press/login should not redirect to moox/login
+    // TODO: Whether all in Security or Class Exists
+    // TODO: When model is missing or does not exist, sessions should work but show the problem
+    protected function associateUserSession($user): void
+    {
+        try {
+            $sessionId = session()->getId();
+            $userType = get_class($user);
+
+            $userSession = UserSession::find($sessionId);
+
+            if ($userSession) {
+                $userSession->update([
+                    'user_type' => $userType,
+                    'user_id' => $user->id,
+                    'last_activity' => now()->getTimestamp(),
+                ]);
+            } else {
+                \Log::warning('Session not found for ID:', ['session_id' => $sessionId]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Failed to associate user session:', ['error' => $e->getMessage()]);
+        }
+    }
+
+    // TODO: Add devices here or in a separate service
 
     protected function getCredentialsFromFormData(array $data): array
     {

@@ -16,6 +16,11 @@ class StoreRelationsInSession
      */
     public function handle($request, Closure $next)
     {
+        \Log::info('StoreRelationsInSession middleware invoked', [
+            'user' => Auth::check() ? Auth::user()->id : null,
+            'session_id' => session()->getId(),
+        ]);
+
         $response = $next($request);
 
         if (Auth::check()) {

@@ -1,9 +1,7 @@
 <?php
 
-namespace Moox\UserDevice\Listeners;
+namespace Moox\UserDevice\Traits;
 
-use GeoIp2\Database\Reader;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -12,36 +10,19 @@ use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Services\LocationService;
 
-class StoreUserDevice
+trait TrackDevices
 {
-    protected $request;
-
-    protected $reader;
-
-    protected $agent;
-
-    protected $locationService;
-
-    public function __construct(Request $request, Agent $agent, LocationService $locationService)
+    protected function addUserDevice(Request $request, $user, Agent $agent, LocationService $locationService)
     {
-        $this->request = $request;
-        $this->agent = $agent;
-        $this->locationService = $locationService;
-        $this->reader = new Reader(__DIR__.'/../../database/geoip/GeoLite2-City.mmdb');
-    }
-
-    public function handle(Login $event)
-    {
-        $user = $event->user;
-        $ipAddress = $this->request->ip();
-        $userAgent = $this->request->userAgent();
+        $ipAddress = $request->ip();
+        $userAgent = $request->userAgent();
         $user_id = $user->getAuthIdentifier();
-        $location = $this->locationService->getLocation($ipAddress);
+        $location = $locationService->getLocation($ipAddress);
 
-        $this->agent->setUserAgent($userAgent);
-        $browser = $this->agent->browser();
-        $os = $this->agent->platform();
-        $platform = $this->agent->isMobile() ? 'Mobile' : 'Desktop';
+        $agent->setUserAgent($userAgent);
+        $browser = $agent->browser();
+        $os = $agent->platform();
+        $platform = $agent->isMobile() ? 'Mobile' : 'Desktop';
 
         $title = $platform.' '.$browser.' on '.$os.' in '.($location['city'] ?? '- Unknown').' - '.($location['country'] ?? null);
 

@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs\Traits;
 
+// TODO: Most probably replace by Laravel Readable package
 trait FormatSeconds
 {
     public function formatSeconds(int $seconds): string

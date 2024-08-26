@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
 use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
+use RyanChandler\FilamentProgressColumn\ProgressColumn;
 
 class JobsResource extends Resource
 {
@@ -71,11 +72,11 @@ class JobsResource extends Resource
                 TextColumn::make('queue')
                     ->label(__('jobs::translations.queue'))
                     ->sortable(),
-                TextColumn::make('progress')
+                ProgressColumn::make('progress')
                     ->label(__('jobs::translations.progress'))
-                    ->formatStateUsing(fn (string $state) => "{$state}%")
-                    ->sortable(),
-                // ProgressColumn::make('progress')->label(__('jobs::translations.progress'))->color('warning'),
+                    // TODO: ->formatStateUsing(fn (string $state) => "{$state}%")
+                    // TODO: poll, color, width etc.
+                    ->color('warning'),
                 TextColumn::make('started_at')
                     ->label(__('jobs::translations.started_at'))
                     ->since()

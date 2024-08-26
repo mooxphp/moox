@@ -36,7 +36,7 @@ class UserSessionServiceProvider extends PackageServiceProvider
             ], 'extend-sessions-table');
         }
 
-        $router = $this->app->make(Router::class);
-        $router->pushMiddlewareToGroup('web', StoreRelationsInSession::class);
+        //$router = $this->app->make(Router::class);
+        //$router->pushMiddlewareToGroup('web', StoreRelationsInSession::class);
     }
 }

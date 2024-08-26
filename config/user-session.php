@@ -72,31 +72,33 @@ return [
                     ],
                 ],
                 'user' => [
-                    'label' => 'User Sessions',
+                    'label' => 'trans//core::session.user_sessions',
                     'icon' => 'gmdi-account-circle',
                     'query' => [
                         [
                             'field' => 'user_type',
                             'operator' => '=',
                             'value' => 'Moox\User\Models\User',
+                            // TODO: Not implemented yet
                             'hide-if-not-exists' => true,
                         ],
                     ],
                 ],
                 'wpuser' => [
-                    'label' => 'WordPress Sessions',
+                    'label' => 'trans//core::press.press_sessions',
                     'icon' => 'gmdi-account-circle',
                     'query' => [
                         [
                             'field' => 'user_type',
                             'operator' => '=',
                             'value' => 'Moox\Press\Models\WpUser',
+                            // TODO: Not implemented yet
                             'hide-if-not-exists' => true,
                         ],
                     ],
                 ],
                 'anonymous' => [
-                    'label' => 'Anonymous Sessions',
+                    'label' => 'trans//core::session.anonymous_sessions',
                     'icon' => 'gmdi-no-accounts',
                     'query' => [
                         [

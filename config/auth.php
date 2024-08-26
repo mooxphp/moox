@@ -35,8 +35,6 @@ return [
     |
     */
 
-    // TODO: Moox Guard, Web Guard, Press Guard
-    // TODO: Moox Provider, Web Provider, Press Provider
     // TODO: Automate installation, create custom auth configs and load them
     'guards' => [
         'web' => [
@@ -66,6 +64,7 @@ return [
     |
     */
 
+    // TODO: Automate installation, create custom auth configs and load them
     'providers' => [
         'users' => [
             'driver' => 'eloquent',

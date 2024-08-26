@@ -11,4 +11,6 @@ return [
     'device_id' => 'Device ID',
     'last_activity' => 'Last Activity',
     'session_id' => 'Session ID',
+    'user_sessions' => 'User Sessions',
+    'anonymous_sessions' => 'Anonymous Sessions',
 ];

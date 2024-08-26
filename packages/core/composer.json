@@ -22,7 +22,8 @@
         "laravel/framework": "^10.0|^11.0",
         "filament/filament": "^3.2",
         "pharaonic/laravel-readable": "^1.0.5",
-        "codeat3/blade-google-material-design-icons": "^1.0"
+        "codeat3/blade-google-material-design-icons": "^1.0",
+        "ryangjchandler/filament-progress-column": "^1.0"
     },
     "autoload": {
         "psr-4": {
@@ -50,7 +51,6 @@
         "phpstan/phpstan-deprecation-rules": "^1.1",
         "phpstan/phpstan-phpunit": "^1.3",
         "spatie/laravel-ray": "^1.35"
-
     },
     "config": {
         "allow-plugins": {

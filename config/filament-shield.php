@@ -1,5 +1,7 @@
 <?php
 
+// TODO: can be deleted, if not used
+
 return [
     'shield_resource' => [
         'should_register_navigation' => true,

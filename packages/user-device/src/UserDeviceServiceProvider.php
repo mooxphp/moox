@@ -35,7 +35,7 @@ class UserDeviceServiceProvider extends PackageServiceProvider
                 );
         */
 
-        $router = $this->app->make(Router::class);
-        $router->pushMiddlewareToGroup('web', \Moox\UserDevice\Http\Middleware\StoreUserDevice::class);
+        //$router = $this->app->make(Router::class);
+        //$router->pushMiddlewareToGroup('web', \Moox\UserDevice\Http\Middleware\StoreUserDevice::class);
     }
 }
