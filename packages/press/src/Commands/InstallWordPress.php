@@ -33,7 +33,6 @@ class InstallWordPress extends Command
     {
         $this->art();
         $this->welcome();
-        $this->checkDotenv();
         $this->testDatabaseConnection();
         $this->prepareComposer();
         $this->composerInstall();
@@ -70,7 +69,7 @@ class InstallWordPress extends Command
         info('Welcome to Moox Press WordPress Installer');
     }
 
-    public function checkDotenv(): void
+    public function getDotenv(): array
     {
         if (! File::exists(base_path('.env'))) {
             alert('No .env file found, please install Laravel with Moox Press first.');
@@ -106,6 +105,7 @@ class InstallWordPress extends Command
         ];
 
         $missingVariables = [];
+        $envVariables = [];
 
         foreach ($requiredVariables as $variable) {
             if (env($variable) === null) {
@@ -124,31 +124,16 @@ class InstallWordPress extends Command
         }
 
         info('All required variables are present in .env.');
-    }
 
-    protected function getEnvVariables(): array
-    {
-        return [
-            'DB_DATABASE' => env('DB_DATABASE'),
-            'DB_USERNAME' => env('DB_USERNAME'),
-            'DB_PASSWORD' => env('DB_PASSWORD'),
-            'DB_HOST' => env('DB_HOST'),
-            'APP_URL' => env('APP_URL'),
-            'WP_SLUG' => env('WP_SLUG'),
-            'WP_PREFIX' => env('WP_PREFIX'),
-            'WP_DEBUG' => env('WP_DEBUG'),
-            'WP_DEBUG_LOG' => env('WP_DEBUG_LOG'),
-            'WP_DEBUG_DISPLAY' => env('WP_DEBUG_DISPLAY'),
-            'WP_MEMORY_LIMIT' => env('WP_MEMORY_LIMIT'),
-            'WP_AUTH_KEY' => env('WP_AUTH_KEY'),
-            'WP_SECURE_AUTH_KEY' => env('WP_SECURE_AUTH_KEY'),
-            'WP_LOGGED_IN_KEY' => env('WP_LOGGED_IN_KEY'),
-            'WP_NONCE_KEY' => env('WP_NONCE_KEY'),
-            'WP_AUTH_SALT' => env('WP_AUTH_SALT'),
-            'WP_SECURE_AUTH_SALT' => env('WP_SECURE_AUTH_SALT'),
-            'WP_LOGGED_IN_SALT' => env('WP_LOGGED_IN_SALT'),
-            'WP_NONCE_SALT' => env('WP_NONCE_SALT'),
-        ];
+        foreach ($requiredVariables as $variable) {
+            $value = env($variable);
+            if ($value === null) {
+                throw new \RuntimeException("Environment variable $variable is not set. Please check your .env file.");
+            }
+            $envVariables[$variable] = $value;
+        }
+
+        return $envVariables;
     }
 
     public function testDatabaseConnection(): void
@@ -321,7 +306,7 @@ class InstallWordPress extends Command
         }
 
         // Test the environment variables
-        $env = $this->getEnvVariables();
+        $env = $this->getDotenv();
         foreach ($env as $key => $value) {
             if (! $value) {
                 alert("Environment variable $key is not set. Please check your .env file.");
@@ -364,21 +349,12 @@ class InstallWordPress extends Command
         $this->installAndActivateDefaultTheme($fullWpPath);
     }
 
-    protected function getInstallationUser(string $path): string
-    {
-        $userInfo = posix_getpwuid(fileowner($path));
-
-        return $userInfo['name'];
-    }
-
     protected function installAndActivateDefaultTheme(string $fullWpPath): void
     {
         $this->info('Ensuring a default theme is installed and activated...');
 
-        $user = $this->getInstallationUser($fullWpPath);
-
         $checkThemeProcess = new \Symfony\Component\Process\Process([
-            'sudo', '-u', $user, 'wp', 'theme', 'is-installed', 'twentytwentyfour',
+            'wp', 'theme', 'is-installed', 'twentytwentyfour',
         ], $fullWpPath);
         $checkThemeProcess->run();
 
