@@ -22,7 +22,8 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            UserSessionWidgets::class,
+            // TODO: Widgets
+            //UserSessionWidgets::class,
         ];
     }
 
