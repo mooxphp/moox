@@ -58,7 +58,7 @@ class UserSessionResource extends Resource
                             return '';
                         }
 
-                        if (! empty($record->user_id) && ! empty($record->user_type)) {
+                        if (! empty($record->user_id) && ! empty($record->user_type) && isset($record->user)) {
                             return $record->user->name;
                         }
 
