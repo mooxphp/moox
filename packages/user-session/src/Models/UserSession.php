@@ -60,7 +60,8 @@ class UserSession extends Model
         }
 
         return $this->morphTo(null, null, null, null)->withDefault(function ($instance) {
-            $instance = null;
+            $instance->id = $this->user_id;
+            $instance->name = 'Unknown User';
         });
     }
 
