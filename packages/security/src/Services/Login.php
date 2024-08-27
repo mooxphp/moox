@@ -23,16 +23,17 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 use Jenssegers\Agent\Agent;
-use Moox\UserDevice\Services\LocationService;
-use Moox\UserDevice\Traits\TrackDevices;
-use Moox\UserSession\Traits\AddSessionRelations;
 
 /**
  * @property Form $form
  */
 class Login extends SimplePage
 {
-    use AddSessionRelations, InteractsWithFormActions, TrackDevices, WithRateLimiting;
+    use InteractsWithFormActions, WithRateLimiting;
+
+    protected $userDeviceTracker;
+
+    protected $sessionRelationService;
 
     /**
      * @var view-string
@@ -43,6 +44,17 @@ class Login extends SimplePage
      * @var array<string, mixed> | null
      */
     public ?array $data = [];
+
+    public function __construct()
+    {
+        if (class_exists(\Moox\UserDevice\Services\UserDeviceTracker::class)) {
+            $this->userDeviceTracker = app(\Moox\UserDevice\Services\UserDeviceTracker::class);
+        }
+
+        if (class_exists(\Moox\UserSession\Services\SessionRelationService::class)) {
+            $this->sessionRelationService = app(\Moox\UserSession\Services\SessionRelationService::class);
+        }
+    }
 
     public function mount(): void
     {
@@ -132,9 +144,13 @@ class Login extends SimplePage
         session()->regenerate();
         session()->save();
 
-        $this->associateUserSession($user);
+        if ($this->sessionRelationService) {
+            $this->sessionRelationService->associateUserSession($user);
+        }
 
-        $this->addUserDevice(request(), $user, app(Agent::class), app(LocationService::class));
+        if ($this->userDeviceTracker) {
+            $this->userDeviceTracker->addUserDevice(request(), $user, app(Agent::class));
+        }
 
         if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
              && config('press.auth_wordpress') === true) {

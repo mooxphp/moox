@@ -62,7 +62,7 @@ class UserSessionResource extends Resource
                             return $record->user->name;
                         }
 
-                        return "ID {$record->user_id} (missing or invalid user type)";
+                        return "ID {$record->user_id} (no user type)";
                     })
                     ->sortable(),
 

@@ -1,8 +1,10 @@
 ![Moox UserSession](https://github.com/mooxphp/moox/raw/main/art/banner/user-session.jpg)
 
-# Moox UserSession
+# Moox User Session
 
-This is my package user-session
+Moox User Session is a package that provides a Filament resource to monitor all sessions, specially user sessions. It ships with a SessionRelationService, that cares for providing the correct relation to multiple user models. This service used with our custom Filament Logins, as well as the Moox User Device service that build a perfect couple with Moox User Session.
+
+Moox User Session is running in production for a couple of weeks now, but it lacks documentation.
 
 ## Quick Installation
 

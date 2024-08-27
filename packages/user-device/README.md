@@ -2,7 +2,11 @@
 
 # Moox UserDevice
 
-This is my package user-device
+Moox User Device allows us to add more security to user logins. The package provides a Filament Resource for the admin panel, showing  user devices and two services UserDeviceTracker and LocationService, that are used in our custom Filament Logins.
+
+Moox User Device has currently no option to inform users or admins about new devices or other features to establish a device-policy, but this is planned in the next iteration.
+
+The package is not yet well documented and tested but running on production to monitor devices for a couple of weeks.
 
 ## Quick Installation
 

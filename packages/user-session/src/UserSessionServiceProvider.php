@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\UserSession;
 
 use Moox\UserSession\Commands\InstallCommand;
+use Moox\UserSession\Services\SessionRelationService;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -18,6 +19,15 @@ class UserSessionServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasCommand(InstallCommand::class);
+    }
+
+    public function register()
+    {
+        parent::register();
+
+        $this->app->singleton(SessionRelationService::class, function ($app) {
+            return new SessionRelationService;
+        });
     }
 
     public function boot()

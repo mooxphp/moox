@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\UserDevice\Traits;
+namespace Moox\UserDevice\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -8,16 +8,22 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
-use Moox\UserDevice\Services\LocationService;
 
-trait TrackDevices
+class UserDeviceTracker
 {
-    protected function addUserDevice(Request $request, $user, Agent $agent, LocationService $locationService)
+    protected $locationService;
+
+    public function __construct(LocationService $locationService)
+    {
+        $this->locationService = $locationService;
+    }
+
+    public function addUserDevice(Request $request, $user, Agent $agent)
     {
         $ipAddress = $request->ip();
         $userAgent = $request->userAgent();
         $user_id = $user->getAuthIdentifier();
-        $location = $locationService->getLocation($ipAddress);
+        $location = $this->locationService->getLocation($ipAddress);
 
         $agent->setUserAgent($userAgent);
         $browser = $agent->browser();
@@ -45,8 +51,7 @@ trait TrackDevices
 
         if (Schema::hasTable('sessions') && Schema::hasColumn('sessions', 'device_id')) {
             sleep(1);
-            $debug = DB::table('sessions')->where('id', session()->getId())->get();
-            $debug = DB::table('sessions')->where('id', session()->getId())->update(['device_id' => $device->id]);
+            DB::table('sessions')->where('id', session()->getId())->update(['device_id' => $device->id]);
         } else {
             Log::warning('The session-table does not have a device_id column. Install Moox User Devices package to add this feature.');
         }
