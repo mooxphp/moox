@@ -54,7 +54,13 @@ class UserSessionResource extends Resource
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
-                        return optional($record->user)->name ?? 'unknown';
+                        try {
+                            return $record->user ? $record->user->name : 'unknown';
+                        } catch (\Exception $e) {
+                            Log::error('Failed to retrieve user name: '.$e->getMessage());
+
+                            return 'unknown';
+                        }
                     })
                     ->sortable(),
 
