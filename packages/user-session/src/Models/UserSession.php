@@ -51,18 +51,11 @@ class UserSession extends Model
     ];
 
     /**
-     * Get the owning user model, if it exists.
+     * Get the owning user model.
      */
     public function user(): MorphTo
     {
-        if (class_exists($this->user_type)) {
-            return $this->morphTo();
-        }
-
-        return $this->morphTo(null, null, null, null)->withDefault(function ($instance) {
-            $instance->id = $this->user_id;
-            $instance->name = 'Unknown User';
-        });
+        return $this->morphTo();
     }
 
     /**
