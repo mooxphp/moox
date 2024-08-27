@@ -12,6 +12,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
@@ -55,7 +56,15 @@ class UserSessionResource extends Resource
                     ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
                         try {
-                            return $record->user ? $record->user->name : 'unknown';
+                            if ($record->relationLoaded('user') && $record->user) {
+                                return $record->user->name;
+                            } else {
+                                return 'unknown';
+                            }
+                        } catch (ModelNotFoundException $e) {
+                            Log::error('User not found: '.$e->getMessage());
+
+                            return 'unknown';
                         } catch (\Exception $e) {
                             Log::error('Failed to retrieve user name: '.$e->getMessage());
 
