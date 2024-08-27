@@ -12,7 +12,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
@@ -55,21 +54,15 @@ class UserSessionResource extends Resource
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
                     ->getStateUsing(function ($record) {
-                        try {
-                            if ($record->relationLoaded('user') && $record->user) {
-                                return $record->user->name;
-                            } else {
-                                return '';
-                            }
-                        } catch (ModelNotFoundException $e) {
-                            Log::error('User not found: '.$e->getMessage());
-
-                            return 'error';
-                        } catch (\Exception $e) {
-                            Log::error('Failed to retrieve user name: '.$e->getMessage());
-
-                            return 'error';
+                        if (empty($record->user_id)) {
+                            return '';
                         }
+
+                        if (! empty($record->user_id) && ! empty($record->user_type)) {
+                            return $record->user->name;
+                        }
+
+                        return 'unknown';
                     })
                     ->sortable(),
 
