@@ -59,14 +59,10 @@ class UserSessionResource extends Resource
                         }
 
                         if (! empty($record->user_id) && ! empty($record->user_type) && isset($record->user)) {
-                            if (class_exists($record->user_type)) {
-                                return $record->user->name;
-                            }
-
-                            return 'unknown model';
+                            return $record->user->name;
                         }
 
-                        return 'missing model';
+                        return "ID {$record->user_id} (missing or invalid user type)";
                     })
                     ->sortable(),
 
