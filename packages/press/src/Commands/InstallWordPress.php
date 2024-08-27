@@ -276,10 +276,25 @@ class InstallWordPress extends Command
         }
 
         if (PHP_OS_FAMILY === 'Windows') {
-            $this->info('Moving wp-cli.phar to a directory in your PATH...');
-            if (! @rename(base_path('wp-cli.phar'), 'C:\Windows\System32\wp.bat')) {
-                $this->error('Failed to move wp-cli.phar to C:\Windows\System32\wp.bat.');
+            $this->info('Moving wp-cli.phar to a user directory in your PATH...');
+
+            // Determine a directory that is in the user's PATH and doesn't require admin rights
+            $targetDir = getenv('APPDATA').'\Composer\vendor\bin';
+            if (! file_exists($targetDir)) {
+                mkdir($targetDir, 0755, true);
+            }
+
+            $targetPath = $targetDir.'\wp.bat';
+
+            // Create a .bat file that runs the .phar
+            $batContent = "@ECHO OFF\r\nphp \"%~dp0wp-cli.phar\" %*";
+            file_put_contents($targetPath, $batContent);
+
+            if (! @rename(base_path('wp-cli.phar'), $targetDir.'\wp-cli.phar')) {
+                $this->error('Failed to move wp-cli.phar to '.$targetDir);
                 exit(1);
+            } else {
+                $this->info('wp-cli installed successfully in '.$targetDir);
             }
         } else {
             $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
