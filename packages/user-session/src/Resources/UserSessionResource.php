@@ -64,7 +64,7 @@ class UserSessionResource extends Resource
                         } catch (ModelNotFoundException $e) {
                             Log::error('User not found: '.$e->getMessage());
 
-                            return 'unknown';
+                            return 'unknown model';
                         } catch (\Exception $e) {
                             Log::error('Failed to retrieve user name: '.$e->getMessage());
 
