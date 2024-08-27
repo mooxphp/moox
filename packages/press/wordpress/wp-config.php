@@ -2,29 +2,71 @@
 
 use Dotenv\Dotenv;
 
+// Load the environment variables
 require __DIR__.'/../vendor/autoload.php';
-
 $dotenv = Dotenv::createImmutable(__DIR__.'/../../');
 $dotenv->load();
 
-define('DB_NAME', $_ENV['DB_DATABASE']);
-define('DB_USER', $_ENV['DB_USERNAME']);
-define('DB_PASSWORD', $_ENV['DB_PASSWORD']);
-define('DB_HOST', $_ENV['DB_HOST']);
+// Determine if we're in CLI mode
+$isCli = (php_sapi_name() == 'cli');
+
+if ($isCli) {
+    // In CLI mode, ensure the environment is loaded correctly using getenv()
+    $env = [
+        'DB_DATABASE' => getenv('DB_DATABASE'),
+        'DB_USERNAME' => getenv('DB_USERNAME'),
+        'DB_PASSWORD' => getenv('DB_PASSWORD'),
+        'DB_HOST' => getenv('DB_HOST'),
+        'APP_URL' => getenv('APP_URL'),
+        'WP_SLUG' => getenv('WP_SLUG'),
+        'WP_AUTH_KEY' => getenv('WP_AUTH_KEY'),
+        'WP_SECURE_AUTH_KEY' => getenv('WP_SECURE_AUTH_KEY'),
+        'WP_LOGGED_IN_KEY' => getenv('WP_LOGGED_IN_KEY'),
+        'WP_NONCE_KEY' => getenv('WP_NONCE_KEY'),
+        'WP_AUTH_SALT' => getenv('WP_AUTH_SALT'),
+        'WP_SECURE_AUTH_SALT' => getenv('WP_SECURE_AUTH_SALT'),
+        'WP_LOGGED_IN_SALT' => getenv('WP_LOGGED_IN_SALT'),
+        'WP_NONCE_SALT' => getenv('WP_NONCE_SALT'),
+    ];
+} else {
+    // In webserver mode, use $_ENV
+    $env = [
+        'DB_DATABASE' => $_ENV['DB_DATABASE'],
+        'DB_USERNAME' => $_ENV['DB_USERNAME'],
+        'DB_PASSWORD' => $_ENV['DB_PASSWORD'],
+        'DB_HOST' => $_ENV['DB_HOST'],
+        'APP_URL' => $_ENV['APP_URL'],
+        'WP_SLUG' => $_ENV['WP_SLUG'],
+        'WP_AUTH_KEY' => $_ENV['WP_AUTH_KEY'],
+        'WP_SECURE_AUTH_KEY' => $_ENV['WP_SECURE_AUTH_KEY'],
+        'WP_LOGGED_IN_KEY' => $_ENV['WP_LOGGED_IN_KEY'],
+        'WP_NONCE_KEY' => $_ENV['WP_NONCE_KEY'],
+        'WP_AUTH_SALT' => $_ENV['WP_AUTH_SALT'],
+        'WP_SECURE_AUTH_SALT' => $_ENV['WP_SECURE_AUTH_SALT'],
+        'WP_LOGGED_IN_SALT' => $_ENV['WP_LOGGED_IN_SALT'],
+        'WP_NONCE_SALT' => $_ENV['WP_NONCE_SALT'],
+    ];
+}
+
+// Define the constants using the hybrid approach
+define('DB_NAME', $env['DB_DATABASE']);
+define('DB_USER', $env['DB_USERNAME']);
+define('DB_PASSWORD', $env['DB_PASSWORD']);
+define('DB_HOST', $env['DB_HOST']);
 define('DB_CHARSET', 'utf8mb4');
 define('DB_COLLATE', '');
 
-define('WP_SITEURL', $_ENV['APP_URL'].$_ENV['WP_SLUG']);
-define('WP_HOME', $_ENV['APP_URL'].$_ENV['WP_SLUG']);
+define('WP_SITEURL', $env['APP_URL'].$env['WP_SLUG']);
+define('WP_HOME', $env['APP_URL'].$env['WP_SLUG']);
 
-define('AUTH_KEY', $_ENV['WP_AUTH_KEY']);
-define('SECURE_AUTH_KEY', $_ENV['WP_SECURE_AUTH_KEY']);
-define('LOGGED_IN_KEY', $_ENV['WP_LOGGED_IN_KEY']);
-define('NONCE_KEY', $_ENV['WP_NONCE_KEY']);
-define('AUTH_SALT', $_ENV['WP_AUTH_SALT']);
-define('SECURE_AUTH_SALT', $_ENV['WP_SECURE_AUTH_SALT']);
-define('LOGGED_IN_SALT', $_ENV['WP_LOGGED_IN_SALT']);
-define('NONCE_SALT', $_ENV['WP_NONCE_SALT']);
+define('AUTH_KEY', $env['WP_AUTH_KEY']);
+define('SECURE_AUTH_KEY', $env['WP_SECURE_AUTH_KEY']);
+define('LOGGED_IN_KEY', $env['WP_LOGGED_IN_KEY']);
+define('NONCE_KEY', $env['WP_NONCE_KEY']);
+define('AUTH_SALT', $env['WP_AUTH_SALT']);
+define('SECURE_AUTH_SALT', $env['WP_SECURE_AUTH_SALT']);
+define('LOGGED_IN_SALT', $env['WP_LOGGED_IN_SALT']);
+define('NONCE_SALT', $env['WP_NONCE_SALT']);
 
 define('MOOX_HASH', $_ENV['APP_KEY']);
 define('ADMIN_SLUG', isset($_ENV['ADMIN_SLUG']) ? $_ENV['ADMIN_SLUG'] : '/admin');
