@@ -131,7 +131,8 @@ class UserSessionResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            UserSessionWidgets::class,
+            // TODO: Implement widgets
+            //UserSessionWidgets::class,
         ];
     }
 

@@ -137,7 +137,8 @@ class UserDeviceResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            UserDeviceWidgets::class,
+            // TODO: Implement widgets
+            //UserDeviceWidgets::class,
         ];
     }
 
