@@ -1,10 +1,25 @@
 # Changelog
 
-## V1.0.1 2024/02/29
+## 2.0.0
+
+First stable and documented release
+
+Adds:
+
+-   Progressbar (Dependency)
+-   Traits and Services as in README
+
+Requires:
+
+-   https://github.com/ryangjchandler/filament-progress-column
+
+Removes all other dependencies for compatibility reasons.
+
+## 1.0.1
 
 -   Requires https://github.com/Pharaonic/laravel-readable
 
-## V1.0 - 2024/02/14
+## 1.0
 
 -   Initial release
 -   Requires https://github.com/leandrocfe/filament-apex-charts
