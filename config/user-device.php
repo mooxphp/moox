@@ -101,4 +101,16 @@ return [
         'Moox Users' => \Moox\User\Models\User::class,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | New User Device Notification
+    |--------------------------------------------------------------------------
+    |
+    | This is the notification that is sent to the user when a new device is
+    | added to their account. You can disable this by setting it to false.
+    |
+    */
+
+    'new_device_notification' => true,
+
 ];

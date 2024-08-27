@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Agent\Agent;
 use Moox\UserDevice\Models\UserDevice;
+use Moox\UserDevice\Notifications\NewDeviceNotification;
 
 class UserDeviceTracker
 {
@@ -56,8 +57,10 @@ class UserDeviceTracker
             Log::warning('The session-table does not have a device_id column. Install Moox User Devices package to add this feature.');
         }
 
-        if ($device->wasRecentlyCreated) {
-            // TODO: Send a notification to the user about the new device.
+        if ($device->wasRecentlyCreated && config('user-device.new_device_notification')) {
+            $user->notify(new NewDeviceNotification([
+                'title' => $title,
+            ]));
         }
     }
 }
