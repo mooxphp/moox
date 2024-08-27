@@ -59,16 +59,16 @@ class UserSessionResource extends Resource
                             if ($record->relationLoaded('user') && $record->user) {
                                 return $record->user->name;
                             } else {
-                                return 'unknown';
+                                return '';
                             }
                         } catch (ModelNotFoundException $e) {
                             Log::error('User not found: '.$e->getMessage());
 
-                            return 'unknown model';
+                            return 'error';
                         } catch (\Exception $e) {
                             Log::error('Failed to retrieve user name: '.$e->getMessage());
 
-                            return 'unknown';
+                            return 'error';
                         }
                     })
                     ->sortable(),
