@@ -29,6 +29,12 @@ class WpUser extends Authenticatable implements FilamentUser
         'display_name',
     ];
 
+    protected $appends = [
+        'name',
+        'email',
+        'password',
+    ];
+
     protected $wpPrefix;
 
     protected $table;
@@ -190,5 +196,35 @@ class WpUser extends Authenticatable implements FilamentUser
     protected function isMetaField($key)
     {
         return array_key_exists($key, config('press.default_user_meta', []));
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->getAttribute('user_login');
+    }
+
+    public function setNameAttribute($value)
+    {
+        return $this->setAttribute('user_login', $value);
+    }
+
+    public function getEmailAttribute()
+    {
+        return $this->getAttribute('user_email');
+    }
+
+    public function setEmailAttribute($value)
+    {
+        $this->setAttribute('user_email', $value);
+    }
+
+    public function getPasswordAttribute()
+    {
+        return $this->getAttribute('user_pass');
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->setAttribute('user_pass', $value);
     }
 }
