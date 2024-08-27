@@ -2,16 +2,13 @@
 
 use Dotenv\Dotenv;
 
-// Load the environment variables
 require __DIR__.'/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__.'/../../');
 $dotenv->load();
 
-// Determine if we're in CLI mode
 $isCli = (php_sapi_name() == 'cli');
 
 if ($isCli) {
-    // In CLI mode, ensure the environment is loaded correctly using getenv()
     $env = [
         'DB_DATABASE' => getenv('DB_DATABASE'),
         'DB_USERNAME' => getenv('DB_USERNAME'),
@@ -29,7 +26,6 @@ if ($isCli) {
         'WP_NONCE_SALT' => getenv('WP_NONCE_SALT'),
     ];
 } else {
-    // In webserver mode, use $_ENV
     $env = [
         'DB_DATABASE' => $_ENV['DB_DATABASE'],
         'DB_USERNAME' => $_ENV['DB_USERNAME'],
@@ -48,7 +44,6 @@ if ($isCli) {
     ];
 }
 
-// Define the constants using the hybrid approach
 define('DB_NAME', $env['DB_DATABASE']);
 define('DB_USER', $env['DB_USERNAME']);
 define('DB_PASSWORD', $env['DB_PASSWORD']);

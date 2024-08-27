@@ -275,8 +275,6 @@ class InstallWordPress extends Command
             }
         }
 
-        // TODO: Test this on MacOS, Linux and Windows
-        // Maybe not necessary anymore, if no sudo ...
         if (PHP_OS_FAMILY === 'Windows') {
             $this->info('Moving wp-cli.phar to a directory in your PATH...');
             if (! @rename(base_path('wp-cli.phar'), 'C:\Windows\System32\wp.bat')) {
@@ -307,20 +305,11 @@ class InstallWordPress extends Command
 
         $env = $this->getDotenv();
 
-        putenv("DB_DATABASE={$env['DB_DATABASE']}");
-        putenv("DB_USERNAME={$env['DB_USERNAME']}");
-        putenv("DB_PASSWORD={$env['DB_PASSWORD']}");
-        putenv("DB_HOST={$env['DB_HOST']}");
-
         $wpPath = base_path(trim($env['WP_PATH'], '/'));
         if (! File::exists($wpPath.'/wp-config.php')) {
             alert('wp-config.php not found! Please ensure the file is created and configured.');
             exit(1);
         }
-
-        $envDumpCommand = new \Symfony\Component\Process\Process(['printenv'], $wpPath, $env);
-        $envDumpCommand->run();
-        $this->line($envDumpCommand->getOutput());
 
         $siteUrl = $env['APP_URL'].$env['WP_SLUG'];
         $defaultSiteTitle = $env['APP_NAME'];
@@ -341,7 +330,6 @@ class InstallWordPress extends Command
             '--admin_email='.$adminEmail,
         ];
 
-        // Convert boolean values to strings for the environment array
         foreach ($env as $key => $value) {
             if (is_bool($value)) {
                 $env[$key] = $value ? 'true' : 'false';
