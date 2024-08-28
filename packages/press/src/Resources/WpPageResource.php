@@ -15,7 +15,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpPage;
 use Moox\Press\Resources\WpPageResource\Pages;
 use Moox\Press\Resources\WpPageResource\RelationManagers\WpPostMetaRelationManager;
@@ -384,7 +383,7 @@ class WpPageResource extends Resource
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
-                Action::make('Wp Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Wp Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
