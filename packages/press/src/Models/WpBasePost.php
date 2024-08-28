@@ -6,8 +6,6 @@ use Awobaz\Mutator\Mutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Builder;
-
 
 /**
  * @property int $ID
@@ -66,8 +64,8 @@ class WpBasePost extends Model
         parent::__construct($attributes);
 
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix . 'posts';
-        $this->metatable = $this->wpPrefix . 'postmeta';
+        $this->table = $this->wpPrefix.'posts';
+        $this->metatable = $this->wpPrefix.'postmeta';
 
         $this->appends = [
             'verantwortlicher',
@@ -192,7 +190,7 @@ class WpBasePost extends Model
 
     public function taxonomies()
     {
-        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function categories()
