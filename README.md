@@ -323,6 +323,7 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="https://pforret.github.io/"><img src="https://avatars.githubusercontent.com/u/474312?v=4?s=100" width="100px;" alt="Peter Forret"/><br /><sub><b>Peter Forret</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=pforret" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Atalanttore"><img src="https://avatars.githubusercontent.com/u/628474?v=4?s=100" width="100px;" alt="Ettore Atalan"/><br /><sub><b>Ettore Atalan</b></sub></a><br /><a href="#translation-Atalanttore" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/p-paul"><img src="https://avatars.githubusercontent.com/u/26795401?v=4?s=100" width="100px;" alt="p-paul"/><br /><sub><b>p-paul</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=p-paul" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/salhdev"><img src="https://avatars.githubusercontent.com/u/16446153?v=4?s=100" width="100px;" alt="Salh"/><br /><sub><b>Salh</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=salhdev" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
