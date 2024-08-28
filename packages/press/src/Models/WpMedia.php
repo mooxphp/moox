@@ -19,7 +19,7 @@ class WpMedia extends WpBasePost
     {
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix . 'posts';
+        $this->table = $this->wpPrefix.'posts';
     }
 
     public static function boot()
@@ -51,7 +51,7 @@ class WpMedia extends WpBasePost
         // TODO: Check if the file is an image
         // TODO: Read wp-config.php to get the upload path
 
-        return $file ? asset($wpslug . '/wp-content/uploads/' . $file) : '';
+        return $file ? asset($wpslug.'/wp-content/uploads/'.$file) : '';
     }
 
     public function getImageSizesAttribute()

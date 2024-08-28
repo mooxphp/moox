@@ -40,7 +40,7 @@ class WpTermTaxonomy extends Model
     {
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix . 'term_taxonomy';
+        $this->table = $this->wpPrefix.'term_taxonomy';
     }
 
     public function term()
