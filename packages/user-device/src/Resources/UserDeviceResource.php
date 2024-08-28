@@ -40,7 +40,11 @@ class UserDeviceResource extends Resource
                     ->label(__('core::core.updated_at')),
                 DateTimePicker::make('created_at')
                     ->label(__('core::core.created_at')),
-
+                TextInput::make('user_type')
+                    ->label(__('core::user.user_type'))
+                    ->required(),
+                // TODO: should we make this editable? Then this needs to be a select field
+                /*
                 Select::make('user_type')
                     ->label(__('core::user.user_type'))
                     ->options(function () {
@@ -53,22 +57,17 @@ class UserDeviceResource extends Resource
                         $set('user_id', null);
                     })
                     ->required(),
-
-                Select::make('user_id')
+                */
+                TextInput::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->options(function ($get) {
-                        $userType = $get('user_type');
-                        if (! $userType) {
-                            return [];
-                        }
-
-                        return $userType::query()->pluck('name', 'id')->toArray();
-                    })
                     ->required(),
-
+                // TODO: Not implemented yet, must be editable then
+                // TODO: Is misleading, should be activated, enabled or similar, because active would better be recently been in use
+                /*
                 Toggle::make('active')
                     ->label(__('core::core.active'))
                     ->required(),
+                */
             ]);
     }
 
@@ -97,10 +96,15 @@ class UserDeviceResource extends Resource
                         return optional($record->user)->name ?? 'unknown';
                     })
                     ->sortable(),
+
+                // TODO: Not implemented yet, must be editable then
+                // TODO: Is misleading, should be activated, enabled or similar, because active would better be recently been in use
+                /*
                 IconColumn::make('active')
                     ->label(__('core::core.active'))
                     ->toggleable()
                     ->boolean(),
+                */
                 TextColumn::make('updated_at')
                     ->label(__('core::core.updated_at'))
                     ->since()
