@@ -2,14 +2,11 @@
 
 All notable changes to `Moox Jobs` will be documented in this file.
 
-## Planned
+## 3.1
 
--   Enhanced support for Redis
--   Enhanced support for SQS
--   Enhanced support for Beanstalkd
--   Support for managing queue workers and Supervisor
+- Google Icons, see README
 
-## v3.0 - 2024/02/15
+## 3.0
 
 -   Breaking changes: database scheme
 -   Provide an update command, so changes don't have to break ;-)
@@ -17,7 +14,7 @@ All notable changes to `Moox Jobs` will be documented in this file.
 -   UI improvements, sorting of Status in Job Monitor
 -   Improved docs: added Beginners guide, Roadmap, Scaling and Testing
 
-## Initial Relase 2023/08/30
+## Initial Release
 
 -   Released as adrolli/filament-job-manager
 -   Became Moox/Jobs a couple of months later

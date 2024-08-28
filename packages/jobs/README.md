@@ -73,6 +73,14 @@ Monitor your job batches, prune batches.
 
 ![screenshot-batches](https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-batches.jpg)
 
+## Configuration
+
+The configuration of the package is work in progress. To make it better suitable for integrators, we will add more flexibility and better translations soon. 
+
+New in 3.1 is the switch to Google Icons and the ability to [switch back to Heroicons in Moox Core](https://github.com/mooxphp/core#disable-google-icons).
+
+If there is something you need to be configurable, drop us an issue.
+
 ## Manual Installation
 
 This Laravel package is made for FilamentPHP and the awesome TALL-Stack. If you don't want to use our install command, follow thes manual steps to install the package.
@@ -463,17 +471,13 @@ As there are many parts (plugins) of Moox that need to be developed, there is no
 
 ### Stability
 
-The planned next release focuses on stability:
-
 -   [ ] Enable Logging with Moox Audit, extend demojob and others
 -   [ ] Cleanup, Pruning, Detention (and config / docs for that) - https://github.com/croustibat/filament-jobs-monitor/commit/4616bb4b2f82d542cbbfe88d5143c9c43ec5196b
 -   [ ] Improve Batches, see https://laravel.com/docs/10.x/queues#inspecting-batches and https://cosme.dev/post/how-to-handle-longrunning-jobs-in-laravel
 -   [ ] Auto-handle the never-ending Jobs running with the sync driver
 -   [ ] Maybe there is an easy way to support Jobs waiting with Redis?
 
-### 3.1 UX
-
-The planned V3.1 release will contain major UX improvements and a new dashboard:
+#### UX
 
 -   [ ] Create a nicer UI (Charts, Apex?) and Dashboard (the Monitor)
 -   [ ] Test progress bars
@@ -484,29 +488,29 @@ The planned V3.1 release will contain major UX improvements and a new dashboard:
 -   [ ] Add filters and simplify usage
 -   [ ] Configuration UX, in Navigation
 
-### 3.2 Notifications
+### Notifications
 
 -   [ ] Notifications / Mailables for failed jobs and daily stats
 
-### 3.2 Redis
+### Redis
 
 -   [ ] Improve the support for Redis
 -   [ ] Add "soft" dependencies to installer (Horizon or Predis?)
 
-### 3.3 Queue Worker and Supervisor
+### Queue Worker and Supervisor
 
 -   [ ] Improve the support for queue workers and Supervisor
 
-### 3.4 SQS
+### SQS
 
 -   [ ] Improve the support for Amazon SQS or document
 -   [ ] Add "soft" dependencies to installer (AWS SDK for PHP)
 
-### 3.5 Beanstalkd
+### Beanstalkd
 
 -   [ ] Improve the support for Beanstalkd or document
 
-### 3.6 API, Scheduler, CRON
+### API, Scheduler, CRON
 
 -   [ ] API
 -   [ ] Scheduler (maybe an additional plugin)

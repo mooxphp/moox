@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+Config option for Google Icons, see README
+
 ## 2.0.0
 
 First stable and documented release
