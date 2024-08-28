@@ -3,6 +3,6 @@
 return [
     'training' => 'Schulung',
     'trainings' => 'Schulungen',
-    'trainings-topic' => 'Thema',
-    'trainings-topics' => 'Themen',
+    'trainings-topic' => 'Rubrik',
+    'trainings-topics' => 'Rubriken',
 ];

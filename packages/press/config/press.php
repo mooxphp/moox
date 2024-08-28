@@ -385,7 +385,47 @@ return [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
-                    'query' => [],
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '!=',
+                            'value' => 'trash',
+                        ],
+                    ],
+                ],
+
+                'published' => [
+                    'label' => 'trans//core::core.published',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'publish',
+                        ],
+                    ],
+                ],
+                'drafts' => [
+                    'label' => 'trans//core::core.draft',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'draft',
+                        ],
+                    ],
+                ],
+                'trash' => [
+                    'label' => 'trans//core::core.trash',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'trash',
+                        ],
+                    ],
                 ],
                 /*
                 'error' => [
@@ -1109,12 +1149,12 @@ return [
         'admin_color' => 'fresh',
         'use_ssl' => '0',
         'show_admin_bar_front' => 'true',
-        env('WP_PREFIX', 'wp_').'_capabilities' => serialize([
+        env('WP_PREFIX', 'wp_') . '_capabilities' => serialize([
             'subscriber' => true,
         ]),
-        env('WP_PREFIX', 'wp_').'_user_level' => '0',
+        env('WP_PREFIX', 'wp_') . '_user_level' => '0',
         'dismissed_wp_pointers' => '',
-        env('WP_PREFIX', 'wp_').'_dashboard_quick_press_last_post_id' => '0',
+        env('WP_PREFIX', 'wp_') . '_dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
 
         // locale
