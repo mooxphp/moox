@@ -13,7 +13,6 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource\Pages;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpCommentRelationManager;
@@ -26,8 +25,6 @@ class WpPostResource extends Resource
     protected static ?string $navigationIcon = 'gmdi-article';
 
     protected static ?string $recordTitleAttribute = 'post_title';
-
-
 
     public static function form(Form $form): Form
     {
@@ -312,7 +309,7 @@ class WpPostResource extends Resource
                     ->limit(50),
             ])
             ->actions([
-                Action::make('Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
