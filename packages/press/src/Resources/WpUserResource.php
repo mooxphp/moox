@@ -3,6 +3,7 @@
 namespace Moox\Press\Resources;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -15,6 +16,8 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
@@ -33,21 +36,113 @@ class WpUserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'display_name';
 
-    public static function form(Form $form): Form
+    protected static function getCapabilitiesOptions(): array
     {
-
         $userCapabilities = config('press.wp_roles');
 
-        $capabilitiesOptions = collect($userCapabilities)->mapWithKeys(function ($key, $value) {
+        return collect($userCapabilities)->mapWithKeys(function ($key, $value) {
             return [$key => $value];
         })->toArray();
+    }
 
+    protected static function getUserLevel($serializedRole)
+    {
+        $roleArray = unserialize($serializedRole);
+
+        if (is_array($roleArray)) {
+            $role = array_key_first($roleArray);
+
+            if ($role) {
+                $role = strtolower($role);
+
+                $userLevels = config('press.wp_user_levels');
+
+                return $userLevels[$role] ?? 0;
+            }
+        }
+
+        return 0;
+    }
+
+    public static function getImageUrlByAttachmentId($attachmentId)
+    {
+        $post = DB::table(config('press.wordpress_prefix').'posts')
+            ->where('ID', $attachmentId)
+            ->first();
+
+        if ($post) {
+            $meta = DB::table(config('press.wordpress_prefix').'postmeta')
+                ->where('post_id', $attachmentId)
+                ->where('meta_key', '_wp_attached_file')
+                ->first();
+
+            if ($meta) {
+                $relativePath = $meta->meta_value;
+
+                return Storage::url($relativePath); // Verwendet Laravel Storage für URLs
+            }
+        }
+
+        return null;
+    }
+
+    public static function form(Form $form): Form
+    {
         return $form->schema([
-            Section::make()->schema([
+            Section::make('Userdata')->schema([
                 Grid::make(['default' => 0])->schema([
+                    Fieldset::make('Avatar')
+                        ->relationship('postmeta')
+                        ->schema([
+                            TextInput::make('_wp_attached_file'),
+                            // ->label('')
+                            // ->avatar()
+                            // ->disk('press')
+                            // ->afterStateUpdated(function ($state, $set) {
+                            //     if ($state) {
+                            //         $tempPath = $state->store('livewire-tmp');
+                            //         $originalName = $state->getClientOriginalName();
+                            //         $set('original_name', $originalName);
+                            //         $set('temporary_file_path', $tempPath);
+                            //     }
+                            // }),
+                        ]),
+
                     TextInput::make('user_login')
                         ->label(__('core::user.user_login'))
                         ->rules(['max:60', 'string'])
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    Select::make(config('press.wordpress_prefix').'capabilities')
+                        ->label('Role')
+                        ->options(self::getCapabilitiesOptions())
+                        ->required()
+                        ->columnSpan(12)
+                        ->dehydrateStateUsing(fn ($state) => $state) // Speichert den Rollenwert direkt
+                        ->live()
+                        ->afterStateUpdated(function ($state, $set) {
+                            $roleLevel = self::getUserLevel($state);
+                            $set(config('press.wordpress_prefix').'user_level', $roleLevel);
+                        }),
+
+                    TextInput::make('first_name')
+                        ->label(__('core::user.first_name'))
+                        ->rules(['max:255', 'string'])
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
+                    TextInput::make('last_name')
+                        ->label(__('core::user.last_name'))
+                        ->rules(['max:255', 'string'])
                         ->required()
                         ->columnSpan([
                             'default' => 12,
@@ -78,7 +173,6 @@ class WpUserResource extends Resource
                     TextInput::make('user_url')
                         ->label(__('core::user.user_url'))
                         ->rules(['max:100', 'string'])
-                        ->required()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -89,70 +183,80 @@ class WpUserResource extends Resource
                         ->label(__('core::user.user_registered'))
                         ->rules(['date'])
                         ->required()
-                        ->default('0000-00-00 00:00:00')
+                        ->default(now())
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                ]),
+            ]),
 
-                    TextInput::make('user_activation_key')
-                        ->label(__('core::user.user_activation_key'))
-                        ->rules(['max:255', 'string'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
+            Section::make('Metadata')->schema([
+                Grid::make(['default' => 2])->schema([
+                    TextInput::make('nickname')
+                        ->label(__('core::user.nickname'))
+                        ->rules(['max:100', 'string']),
+
+                    Select::make('rich_editing')
+                        ->label(__('core::user.rich_editing'))
+                        ->options([
+                            'true' => 'true',
+                            'false' => 'false',
+                        ])
+                        ->default('true')
+                        ->selectablePlaceholder(false),
+
+                    TextInput::make('description')
+                        ->label(__('core::user.description'))
+                        ->rules(['max:100', 'string']),
+
+                    Select::make('comment_shortcuts')
+                        ->label(__('core::user.comment_shortcuts'))
+                        ->options([
+                            'true' => 'true',
+                            'false' => 'false',
+                        ])
+                        ->default('false')
+                        ->selectablePlaceholder(false),
+
+                    Select::make('admin_color')
+                        ->label(__('core::user.admin_color'))
+                        ->options([
+                            'default' => 'Default',
+                            'fresh' => 'Fresh',
+                            'light' => 'Light',
+                            'modern' => 'Modern',
+                            'blue' => 'Blue',
+                            'coffee' => 'Coffee',
+                            'ectoplasm' => 'Ectoplasm',
+                            'midnight' => 'Midnight',
+                            'ocean' => 'Ocean',
+                            'sunrise' => 'Sunrise',
                         ]),
+                    Select::make('show_admin_bar_front')
+                        ->label(__('core::user.show_admin_bar_front'))
+                        ->options([
+                            'true' => 'true',
+                            'false' => 'false',
+                        ])
+                        ->default('true')
+                        ->selectablePlaceholder(false),
 
-                    TextInput::make('user_status')
-                        ->label(__('core::user.user_status'))
-                        ->rules(['numeric'])
-                        ->required()
-                        ->numeric()
-                        ->default('0')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                    TextInput::make(config('press.wordpress_prefix').'user_level')
+                        ->label(__('core::user.user_level'))
+                        ->default(fn ($state) => self::getUserLevel($state)),
 
-                    TextInput::make('first_name')
-                        ->label(__('core::user.first_name'))
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                    TextInput::make('dismissed_wp_pointers')
+                        ->label(__('core::user.dismissed_wp_pointers')),
 
-                    TextInput::make('last_name')
-                        ->label(__('core::user.last_name'))
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                    TextInput::make(config('press.wordpress_prefix').'dashboard_quick_press_last_post_id')
+                        ->label(__('core::user.dashboard_quick_press_last_post_id')),
+                ]),
+            ]),
 
-                    Select::make(config('press.wordpress_prefix').'capabilities')
-                        ->label('Role')
-                        ->options($capabilitiesOptions)
-                        ->required()
-                        ->columnSpan(12),
-
-                    TextInput::make(config('press.wordpress_prefix').'capabilities')
-                        ->label(__('core::user.capabilities'))
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
+            Section::make('Password')->schema([
+                Grid::make(['default' => 0])->schema([
                     TextInput::make('user_pass')
                         ->revealable()
                         ->label(__('core::user.user_pass'))
@@ -172,7 +276,7 @@ class WpUserResource extends Resource
                         ]),
 
                     TextInput::make('password_confirmation')
-                        ->label(__('core::user.first_name'))
+                        ->label(__('core::user.password_confirmation'))
                         ->requiredWith('user_pass')
                         ->password()
                         ->same('user_pass')
@@ -183,38 +287,8 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Select::make('platforms')
-                        ->label('Platforms')
-                        ->multiple()
-                        ->options(function () {
-                            return \Moox\Sync\Models\Platform::pluck('name', 'id')->toArray();
-                        })
-                        ->afterStateHydrated(function ($component, $state, $record) {
-                            if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
-                                $platformService = app('\Moox\Sync\Services\PlatformRelationService');
-                                $platforms = $platformService->getPlatformsForModel($record);
-                                $component->state($platforms->pluck('id')->toArray());
-                            }
-                        })
-                        ->dehydrated(false)
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, $record) {
-                            if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
-                                $platformService = app('\Moox\Sync\Services\PlatformRelationService');
-                                $platformService->syncPlatformsForModel($record, $state ?? []);
-                            }
-                        })
-                        ->preload()
-                        ->searchable()
-                        ->visible(fn () => class_exists('\Moox\Sync\Models\Platform'))
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
                 ]),
-            ]),
+            ])->visibleOn('create'),
 
             Section::make('Update Password')->schema([
                 Grid::make(['default' => 0])->schema([
@@ -260,190 +334,41 @@ class WpUserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-
                 ImageColumn::make('attachment.guid')
-                    ->label(__('Profilbild'))
+                    ->label(__('core::user.avatar'))
                     ->circular()
+                    ->size(50)
                     ->toggleable()
-                    ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('user_login')
-                    ->label(__('Native: User Login'))
+
+                Tables\Columns\TextColumn::make('display_name')
+                    ->label(__('core::user.name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('user_email')
-                    ->label(__('Native: User Email'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('Virtual: Name'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('nickname')
-                    ->label(__('Meta: Nickname'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('first_name')
-                    ->label(__('Meta: First Name'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('last_name')
-                    ->label(__('Meta: Last Name'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('description')
-                    ->label(__('Meta: Description'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('rich_editing')
-                    ->label(__('Meta: Rich Editing'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('comment_shortcuts')
-                    ->label(__('Meta: Comment Shortcuts'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('admin_color')
-                    ->label(__('Meta: Admin Color'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('use_ssl')
-                    ->label(__('Meta: Use SSL'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('show_admin_bar_front')
-                    ->label(__('Meta: Show Admin Bar Front'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                Tables\Columns\TextColumn::make('jku8u_capabilities')
-                    ->label(__('Meta: WP Capabilities'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                /*
-                Tables\Columns\TextColumn::make('wp_user_level')
-                    ->label(__('Meta: WP User Level'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-*/
-
-                Tables\Columns\TextColumn::make('dismissed_wp_pointers')
-                    ->label(__('Meta: Dismissed WP Pointers'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                /*
-                Tables\Columns\TextColumn::make('wp_dashboard_quick_press_last_post_id')
-                    ->label(__('Meta: WP Dashboard Quick Press Last Post ID'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                */
-
-                Tables\Columns\TextColumn::make('mm_sua_attachment_id')
-                    ->label(__('Meta: MM SUA Attachment ID'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-
-                /*
-
-                    'description' => '',
-                    'rich_editing' => 'true',
-                    'comment_shortcuts' => 'false',
-                    'admin_color' => 'fresh',
-                    'use_ssl' => '0',
-                    'show_admin_bar_front' => 'true',
-                    'wp_capabilities' => serialize([
-                        'subscriber' => true,
-                    ]),
-                    'wp_user_level' => '0',
-                    'dismissed_wp_pointers' => '',
-                    'wp_dashboard_quick_press_last_post_id' => '0',
-                    'mm_sua_attachment_id' => '',
-
-*/
-
-                /*
-                Tables\Columns\TextColumn::make('user_login')
-                    ->label(__('core::user.user_login'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('user_pass')
-                    ->label(__('core::user.user_pass'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('user_nicename')
-                    ->label(__('core::user.user_nicename'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
                 Tables\Columns\TextColumn::make('user_email')
                     ->label(__('core::user.user_email'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('user_url')
-                    ->label(__('core::user.user_url'))
+
+                Tables\Columns\TextColumn::make('user_login')
+                    ->label(__('core::user.user_login'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('user_registered')
-                    ->label(__('core::user.user_registered'))
+
+                Tables\Columns\TextColumn::make(config('press.wordpress_prefix').'capabilities')
+                    ->label(__('core::user.role'))
                     ->toggleable()
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('user_activation_key')
-                    ->label(__('core::user.user_activation_key'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('user_status')
-                    ->label(__('core::user.user_status'))
-                    ->toggleable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('display_name')
-                    ->label(__('core::user.display_name'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                Tables\Columns\IconColumn::make('spam')
-                    ->label(__('core::core.spam'))
-                    ->toggleable()
-                    ->boolean(),
-                Tables\Columns\IconColumn::make('deleted')
-                    ->label(__('core::core.deleted'))
-                    ->toggleable()
-                    ->boolean(),
-                */
+                    ->limit(50)
+                    ->formatStateUsing(function ($state) {
+                        $capabilitiesOptions = self::getCapabilitiesOptions();
+
+                        return $capabilitiesOptions[$state] ?? __('No Role');
+                    }),
+
             ])
             ->filters([])
             ->actions([ViewAction::make(), EditAction::make()])

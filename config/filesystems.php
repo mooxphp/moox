@@ -39,9 +39,9 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
-            'visibility' => 'public',
-            'throw' => false,
+            // 'url' => env('APP_URL').'/storage',
+            // 'visibility' => 'public',
+            // 'throw' => false,
         ],
 
         's3' => [
@@ -54,6 +54,13 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
+        ],
+
+        'press' => [
+            'driver' => 'local',
+            'root' => public_path('wp/wp-content/uploads/2024/08'),
+            'url' => env('APP_URL').'/wp/wp-content/uploads/2024/08',
+            'visibility' => 'public',
         ],
 
     ],
