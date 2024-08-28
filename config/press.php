@@ -1149,12 +1149,12 @@ return [
         'admin_color' => 'fresh',
         'use_ssl' => '0',
         'show_admin_bar_front' => 'true',
-        env('WP_PREFIX', 'wp_') . 'capabilities' => serialize([
+        env('WP_PREFIX', 'wp_').'capabilities' => serialize([
             'subscriber' => true,
         ]),
-        env('WP_PREFIX', 'wp_') . 'user_level' => '0',
+        env('WP_PREFIX', 'wp_').'user_level' => '0',
         'dismissed_wp_pointers' => '',
-        env('WP_PREFIX', 'wp_') . 'dashboard_quick_press_last_post_id' => '0',
+        env('WP_PREFIX', 'wp_').'dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
 
         // locale
