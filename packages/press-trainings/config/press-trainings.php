@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        'topic' => [
+        'trainings-topic' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -38,15 +38,15 @@ return [
             |
             */
 
-            'single' => 'trans//press-wiki::translations.topic',
-            'plural' => 'trans//press-wiki::translations.topics',
+            'single' => 'trans//press-trainings::translations.trainings-topic',
+            'plural' => 'trans//press-trainings::translations.trainings-topics',
 
             /*
             |--------------------------------------------------------------------------
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Resource table. They are optional, but
+            | Define the tabs for the Expiry table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -73,7 +73,7 @@ return [
                 */
             ],
         ],
-        'wiki' => [
+        'trainings' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -84,15 +84,15 @@ return [
             |
             */
 
-            'single' => 'trans//press-wiki::translations.wiki',
-            'plural' => 'trans//press-wiki::translations.wikis',
+            'single' => 'trans//press-trainings::translations.training',
+            'plural' => 'trans//press-trainings::translations.trainings',
 
             /*
             |--------------------------------------------------------------------------
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Resource table. They are optional, but
+            | Define the tabs for the Expiry table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -127,30 +127,6 @@ return [
                         ],
                     ],
                 ],
-                'trash' => [
-                    'label' => 'trans//core::core.trash',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'post_status',
-                            'operator' => '=',
-                            'value' => 'trash',
-                        ],
-                    ],
-                ],
-                /*
-                'error' => [
-                    'label' => 'trans//core::core.error',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'subject_type',
-                            'operator' => '=',
-                            'value' => 'Error',
-                        ],
-                    ],
-                ],
-                */
             ],
         ],
     ],
@@ -166,7 +142,7 @@ return [
     |
     */
 
-    'temp_navigation_group' => 'trans//press-wiki::translations.wiki',
+    'temp_navigation_group' => 'trans//press-trainings::translations.training',
 
     /*
     |--------------------------------------------------------------------------

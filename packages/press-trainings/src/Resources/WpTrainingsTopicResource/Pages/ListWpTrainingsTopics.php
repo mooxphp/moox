@@ -1,0 +1,26 @@
+<?php
+
+namespace Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages;
+
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\ListRecords;
+use Moox\Core\Traits\HasDynamicTabs;
+use Moox\PressTrainings\Models\WpTrainingsTopic;
+use Moox\PressTrainings\Resources\WpTrainingsTopicResource;
+
+class ListWpTrainingsTopics extends ListRecords
+{
+    use HasDynamicTabs;
+
+    protected static string $resource = WpTrainingsTopicResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [CreateAction::make()];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('press-trainings.resources.topic.tabs', WpTrainingsTopic::class);
+    }
+}
