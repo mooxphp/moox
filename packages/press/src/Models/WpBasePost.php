@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
  * @property string $post_title
  * @property string $post_name
  * @property string $post_author
- * @property Moox\Press\Models\WpPostMeta $postMeta
+ * @property WpPostMeta $postMeta
  */
 class WpBasePost extends Model
 {
