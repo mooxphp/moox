@@ -49,10 +49,13 @@ class Platform extends Model
         return $this->hasMany(Sync::class, 'target_platform_id');
     }
 
+    // TODO: not implemented yet
+    /*
     public function syncs()
     {
         return $this->sources()->union($this->targets());
     }
+    */
 
     public function platformable()
     {

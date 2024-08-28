@@ -105,9 +105,11 @@ class SendInvitationRequests implements ShouldQueue
         $this->setProgress(100);
     }
 
+    // TODO: Dynamic user model, not hardcoded, Stan ...
+    /*
     protected function getUserEmailById($userId)
     {
-        // TODO: Dynamic user model, not hardcoded
+
         $user = WpUser::find($userId);
         if ($user) {
             return $user->user_email;
@@ -115,4 +117,5 @@ class SendInvitationRequests implements ShouldQueue
 
         return null;
     }
+    */
 }

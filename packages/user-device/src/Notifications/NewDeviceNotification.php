@@ -43,14 +43,13 @@ class NewDeviceNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('New Device Registered')
-            ->greeting('Hello '.$notifiable->name.',')
-            ->line('A new device has been registered on your account.')
-            ->line('Device Details: '.$this->deviceDetails['title'])
-            ->line('If this was not you, please secure your account immediately.')
-            // TODO: Add a button to review devices or Magic Link or to secure account
-            //->action('Review Devices', url('/user/devices'))
-            ->line('Thank you for using our application!');
+            ->subject(__('core::device.new_device_registered'))
+            ->greeting(__('core::notifications.hello').$notifiable->name.',')
+            ->line(__('core::device.new_device_registered_message'))
+            ->line(__('core::device.device_details').': '.$this->deviceDetails['title'])
+            ->line(__('core::device.if_not_you_secure_account'));
+        // TODO: Add a button to review devices (need user profile) or Magic Link or to secure account
+        //->action('Review Devices', url('/user/devices'))
     }
 
     /**

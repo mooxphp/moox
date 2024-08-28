@@ -197,15 +197,13 @@ return [
     | Jobs
     |--------------------------------------------------------------------------
     |
-    | These jobs are used to collect expiries and send summaries.
+    | These jobs are used to collect expiries. You can add more jobs here.
     |
     */
 
     'collect_expiries_jobs' => [
         \Moox\Expiry\Jobs\CollectExpiries::class,
-        // Add more jobs here if needed.
     ],
-    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
 
     /*
     |--------------------------------------------------------------------------
