@@ -16,13 +16,13 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Press\Models\WpPost;
+use Moox\Press\Models\WpPage;
 use Moox\Press\Resources\WpPageResource\Pages;
 use Moox\Press\Resources\WpPageResource\RelationManagers\WpPostMetaRelationManager;
 
 class WpPageResource extends Resource
 {
-    protected static ?string $model = WpPost::class;
+    protected static ?string $model = WpPage::class;
 
     protected static ?string $navigationIcon = 'gmdi-pages';
 
@@ -384,7 +384,7 @@ class WpPageResource extends Resource
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
-                Action::make('Wp Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Wp Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
@@ -399,10 +399,10 @@ class WpPageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpPosts::route('/'),
-            'create' => Pages\CreateWpPost::route('/create'),
-            'view' => Pages\ViewWpPost::route('/{record}'),
-            'edit' => Pages\EditWpPost::route('/{record}/edit'),
+            'index' => Pages\ListWpPage::route('/'),
+            'create' => Pages\CreateWpPage::route('/create'),
+            'view' => Pages\ViewWpPage::route('/{record}'),
+            'edit' => Pages\EditWpPage::route('/{record}/edit'),
         ];
     }
 
@@ -424,13 +424,6 @@ class WpPageResource extends Resource
     public static function getBreadcrumb(): string
     {
         return config('press.resources.page.single');
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('post_type', 'page')
-            ->whereIn('post_status', ['publish', 'draft']);
     }
 
     public static function getNavigationGroup(): ?string
