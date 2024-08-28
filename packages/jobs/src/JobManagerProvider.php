@@ -105,6 +105,8 @@ class JobManagerProvider extends ServiceProvider
                 'status' => 'succeeded',
             ];
 
+            $monitor->update($attributes);
+
             return;
         }
 
