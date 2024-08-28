@@ -19,7 +19,20 @@ class JobsWaitingResource extends Resource
 {
     protected static ?string $model = Job::class;
 
-    protected static ?string $navigationIcon = 'gmdi-pause';
+    protected static ?string $navigationIcon = null;
+
+    public static function getNavigationIcon(): string
+    {
+        if (self::$navigationIcon === null) {
+            if (config('core.use_google_icons', true)) {
+                self::$navigationIcon = 'gmdi-pause';
+            } else {
+                self::$navigationIcon = 'heroicon-o-pause';
+            }
+        }
+
+        return self::$navigationIcon;
+    }
 
     public static function form(Form $form): Form
     {

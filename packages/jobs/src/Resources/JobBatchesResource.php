@@ -13,7 +13,20 @@ class JobBatchesResource extends Resource
 {
     protected static ?string $model = JobBatch::class;
 
-    protected static ?string $navigationIcon = 'gmdi-all-inbox';
+    protected static ?string $navigationIcon = null;
+
+    public static function getNavigationIcon(): string
+    {
+        if (self::$navigationIcon === null) {
+            if (config('core.use_google_icons', true)) {
+                self::$navigationIcon = 'gmdi-all-inbox';
+            } else {
+                self::$navigationIcon = 'heroicon-o-inbox-stack';
+            }
+        }
+
+        return self::$navigationIcon;
+    }
 
     public static function table(Table $table): Table
     {

@@ -20,7 +20,20 @@ class JobsResource extends Resource
 {
     protected static ?string $model = JobManager::class;
 
-    protected static ?string $navigationIcon = 'gmdi-play-arrow';
+    protected static ?string $navigationIcon = null;
+
+    public static function getNavigationIcon(): string
+    {
+        if (self::$navigationIcon === null) {
+            if (config('core.use_google_icons', true)) {
+                self::$navigationIcon = 'gmdi-play-arrow';
+            } else {
+                self::$navigationIcon = 'heroicon-o-play';
+            }
+        }
+
+        return self::$navigationIcon;
+    }
 
     public static function form(Form $form): Form
     {

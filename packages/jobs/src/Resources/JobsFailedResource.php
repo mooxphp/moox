@@ -22,7 +22,20 @@ class JobsFailedResource extends Resource
 {
     protected static ?string $model = FailedJob::class;
 
-    protected static ?string $navigationIcon = 'gmdi-error';
+    protected static ?string $navigationIcon = null;
+
+    public static function getNavigationIcon(): string
+    {
+        if (self::$navigationIcon === null) {
+            if (config('core.use_google_icons', true)) {
+                self::$navigationIcon = 'gmdi-error';
+            } else {
+                self::$navigationIcon = 'heroicon-o-exclamation-triangle';
+            }
+        }
+
+        return self::$navigationIcon;
+    }
 
     public static function form(Form $form): Form
     {
