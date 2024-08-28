@@ -295,6 +295,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "p-paul",
+      "name": "p-paul",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26795401?v=4",
+      "profile": "https://github.com/p-paul",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
