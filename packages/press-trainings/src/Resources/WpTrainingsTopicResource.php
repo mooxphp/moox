@@ -2,16 +2,16 @@
 
 namespace Moox\PressTrainings\Resources;
 
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
 use Moox\PressTrainings\Models\WpTrainingsTopic;
 use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages;
 

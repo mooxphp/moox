@@ -2,9 +2,8 @@
 
 namespace Moox\PressWiki\Models;
 
-use Moox\Press\Models\WpBasePost;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\PressTrainings\Models\WpTrainingsTopic;
+use Moox\Press\Models\WpBasePost;
 
 class WpWiki extends WpBasePost
 {
@@ -22,26 +21,26 @@ class WpWiki extends WpBasePost
 
     public function letterTopics()
     {
-        return $this->belongsToMany(WpWikiLetterTopic::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpWikiLetterTopic::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function companyTopics()
     {
-        return $this->belongsToMany(WpWikiCompanyTopic::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpWikiCompanyTopic::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function departmentTopics()
     {
-        return $this->belongsToMany(WpWikiDepartmentTopic::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpWikiDepartmentTopic::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function locationTopics()
     {
-        return $this->belongsToMany(WpWikiLocationTopic::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpWikiLocationTopic::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function wikiTopics()
     {
-        return $this->belongsToMany(WpWikiTopic::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpWikiTopic::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 }

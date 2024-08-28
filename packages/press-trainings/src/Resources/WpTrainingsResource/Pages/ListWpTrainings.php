@@ -6,7 +6,6 @@ use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\HasDynamicTabs;
 use Moox\PressTrainings\Models\WpTraining;
-use Moox\PressWiki\Models\WpWiki;
 use Moox\PressTrainings\Resources\WpTrainingResource;
 
 class ListWpTrainings extends ListRecords

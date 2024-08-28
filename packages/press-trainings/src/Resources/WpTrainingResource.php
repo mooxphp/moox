@@ -2,18 +2,18 @@
 
 namespace Moox\PressTrainings\Resources;
 
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
-use Moox\PressTrainings\Models\WpTraining;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Moox\PressTrainings\Models\WpTraining;
 use Moox\PressTrainings\Resources\WpTrainingResource\Pages;
 use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers;
 
@@ -282,14 +282,13 @@ class WpTrainingResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-
                 Tables\Columns\TextColumn::make('post_date')
                     ->label(__('core::post.post_date'))
                     ->toggleable()
                     ->dateTime(),
             ])
             ->actions([
-                Action::make('Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }

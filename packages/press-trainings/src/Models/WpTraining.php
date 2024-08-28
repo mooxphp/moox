@@ -2,8 +2,8 @@
 
 namespace Moox\PressTrainings\Models;
 
-use Moox\Press\Models\WpBasePost;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Press\Models\WpBasePost;
 
 class WpTraining extends WpBasePost
 {
@@ -21,6 +21,6 @@ class WpTraining extends WpBasePost
 
     public function trainingsTopic()
     {
-        return $this->belongsToMany(WpTrainingsTopic::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpTrainingsTopic::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 }

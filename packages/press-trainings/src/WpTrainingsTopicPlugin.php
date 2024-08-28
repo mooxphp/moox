@@ -2,8 +2,8 @@
 
 namespace Moox\PressTrainings;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\PressTrainings\Resources\WpTrainingsTopicResource;
 

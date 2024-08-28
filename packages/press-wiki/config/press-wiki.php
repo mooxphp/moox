@@ -291,7 +291,7 @@ return [
                             'field' => 'post_status',
                             'operator' => '!=',
                             'value' => 'trash',
-                        ]
+                        ],
                     ],
                 ],
 
