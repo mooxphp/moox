@@ -43,7 +43,7 @@ class WpTerm extends Model
     {
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix.'terms';
+        $this->table = $this->wpPrefix . 'terms';
     }
 
     public static function boot()

@@ -5,7 +5,7 @@ namespace Moox\Press\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class WpMedia extends WpPost
+class WpMedia extends WpBasePost
 {
     use HasFactory;
 
@@ -19,7 +19,7 @@ class WpMedia extends WpPost
     {
         parent::__construct($attributes);
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix.'posts';
+        $this->table = $this->wpPrefix . 'posts';
     }
 
     public static function boot()
@@ -51,7 +51,7 @@ class WpMedia extends WpPost
         // TODO: Check if the file is an image
         // TODO: Read wp-config.php to get the upload path
 
-        return $file ? asset($wpslug.'/wp-content/uploads/'.$file) : '';
+        return $file ? asset($wpslug . '/wp-content/uploads/' . $file) : '';
     }
 
     public function getImageSizesAttribute()
