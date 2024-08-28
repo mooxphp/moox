@@ -291,21 +291,37 @@ return [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
-                    'query' => [],
-                ],
-                /*
-                'error' => [
-                    'label' => 'trans//core::core.error',
-                    'icon' => 'gmdi-text-snippet',
                     'query' => [
                         [
-                            'field' => 'subject_type',
-                            'operator' => '=',
-                            'value' => 'Error',
+                            'field' => 'post_status',
+                            'operator' => '!=',
+                            'value' => 'trash',
                         ],
                     ],
                 ],
-                */
+
+                'published' => [
+                    'label' => 'trans//core::core.published',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'publish',
+                        ],
+                    ],
+                ],
+                'drafts' => [
+                    'label' => 'trans//core::core.draft',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'draft',
+                        ],
+                    ],
+                ],
             ],
         ],
 

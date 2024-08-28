@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Press\Resources\WpPageResource;
 
-class EditWpPost extends EditRecord
+class EditWpPage extends EditRecord
 {
     protected static string $resource = WpPageResource::class;
 

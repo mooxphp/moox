@@ -13,7 +13,6 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource\Pages;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpCommentRelationManager;
@@ -26,13 +25,6 @@ class WpPostResource extends Resource
     protected static ?string $navigationIcon = 'gmdi-article';
 
     protected static ?string $recordTitleAttribute = 'post_title';
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('post_type', 'post')
-            ->whereIn('post_status', ['publish', 'draft']);
-    }
 
     public static function form(Form $form): Form
     {

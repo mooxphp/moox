@@ -7,7 +7,7 @@ use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Press\Resources\WpPageResource;
 
-class ViewWpPost extends ViewRecord
+class ViewWpPage extends ViewRecord
 {
     protected static string $resource = WpPageResource::class;
 
