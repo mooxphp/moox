@@ -48,4 +48,18 @@ return [
         'user-device' => 'Moox User Device',
         'user-session' => 'Moox User Session',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Google Icons
+    |--------------------------------------------------------------------------
+    |
+    | We use Google Material Design Icons, but if you want to use the
+    | Heroicons, used by Filament as default, you can disable the
+    | Google Icons here. This will affect the whole application.
+    |
+    */
+
+    'use_google_icons' => true,
+
 ];

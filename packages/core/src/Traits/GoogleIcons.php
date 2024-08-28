@@ -37,7 +37,6 @@ trait GoogleIcons
             'panels::user-menu.logout-button' => 'gmdi-logout-o',
             'panels::widgets.account.logout-button' => 'gmdi-logout-o',
             'panels::widgets.filament-info.open-documentation-button' => 'gmdi-library-books-o',
-            //'panels::widgets.filament-info.open-github-button' => 'gmdi-github-o',
             'forms::components.builder.actions.clone' => 'gmdi-content-copy-o',
             'forms::components.builder.actions.collapse' => 'gmdi-expand-less-o',
             'forms::components.builder.actions.delete' => 'gmdi-delete-o',

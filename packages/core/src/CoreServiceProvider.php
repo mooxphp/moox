@@ -21,7 +21,10 @@ class CoreServiceProvider extends PackageServiceProvider
 
         // TODO: Uncomment this line to enable policies
         //$this->setPolicies();
-        $this->useGoogleIcons();
+
+        if (config('core.use_google_icons', true)) {
+            $this->useGoogleIcons();
+        }
 
         $this->app->booted(function () {
             $this->translateConfigurations();

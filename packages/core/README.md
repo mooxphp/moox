@@ -332,6 +332,8 @@ class CoreServiceProvider extends PackageServiceProvider
 }
 ```
 
+You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
+
 ## Services
 
 ### DNS Lookup
@@ -381,8 +383,6 @@ The Core API is work in progress. It probably will be secured.
 Moox has a simple package registration. To ensure that some features of Moox Core are only available for known packages, all Moox  packages and all custom packages, created with Moox Builder, need to register here:
 
 ```php
-return [
-
     /*
     |--------------------------------------------------------------------------
     | Moox Packages
@@ -424,6 +424,27 @@ php artisan vendor:publish --tag="core-config"
 ```
 
  but remember to update the Array regularly then, to allow newer Moox packages to work flawlessly.
+
+### Disable Google Icons
+
+You can disable Google Icons, and use the Filament default iconset (Heroicons) instead.
+
+This disables the replacement of the Filament core icons, done in Core, as well as the individual icons of most of our packages. Some packages will remain with Google Icons, because there is no corresponding icon in the Heroicon set.
+
+```php
+    /*
+    |--------------------------------------------------------------------------
+    | Google Icons
+    |--------------------------------------------------------------------------
+    |
+    | We use Google Material Design Icons, but if you want to use the
+    | Heroicons, used by Filament as default, you can disable the
+    | Google Icons here. This will affect the whole application.
+    |
+    */
+
+    'google_icons' => true,
+```
 
 ## Changelog
 
