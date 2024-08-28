@@ -38,6 +38,7 @@
         "moox/permission": "*",
         "moox/press": "*",
         "moox/press-wiki": "*",
+        "moox/press-trainings": "*",
         "moox/security": "*",
         "moox/sync": "*",
         "moox/trainings": "*",
