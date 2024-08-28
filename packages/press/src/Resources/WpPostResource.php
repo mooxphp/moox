@@ -27,12 +27,7 @@ class WpPostResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('post_type', 'post')
-            ->whereIn('post_status', ['publish', 'draft']);
-    }
+
 
     public static function form(Form $form): Form
     {
@@ -317,7 +312,7 @@ class WpPostResource extends Resource
                     ->limit(50),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
