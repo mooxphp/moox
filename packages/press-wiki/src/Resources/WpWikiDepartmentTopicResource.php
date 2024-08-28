@@ -12,14 +12,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Moox\PressWiki\Models\WpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages;
+use Moox\PressWiki\Models\WpWikiDepartmentTopic;
+use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages;
 
-class WpTopicResource extends Resource
+class WpWikiDepartmentTopicResource extends Resource
 {
-    protected static ?string $model = WpTopic::class;
+    protected static ?string $model = WpWikiDepartmentTopic::class;
 
-    protected static ?string $navigationIcon = 'gmdi-category';
+    protected static ?string $navigationIcon = 'gmdi-apartment';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -96,31 +96,31 @@ class WpTopicResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTopics::route('/'),
-            'create' => Pages\CreateWpTopic::route('/create'),
-            'view' => Pages\ViewWpTopic::route('/{record}'),
-            'edit' => Pages\EditWpTopic::route('/{record}/edit'),
+            'index' => Pages\ListWpWikiDepartmentTopics::route('/'),
+            // 'create' => Pages\CreateWpWikiDepartmentTopic::route('/create'),
+            // 'view' => Pages\ViewWpWikiDepartmentTopic::route('/{record}'),
+            // 'edit' => Pages\EditWpWikiDepartmentTopic::route('/{record}/edit'),
         ];
     }
 
     public static function getModelLabel(): string
     {
-        return config('press-wiki.resources.topic.single');
+        return config('press-wiki.resources.wiki-department-topic.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('press-wiki.resources.topic.plural');
+        return config('press-wiki.resources.wiki-department-topic.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('press-wiki.resources.topic.plural');
+        return config('press-wiki.resources.wiki-department-topic.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('press-wiki.resources.topic.single');
+        return config('press-wiki.resources.wiki-department-topic.single');
     }
 
     public static function getNavigationGroup(): ?string

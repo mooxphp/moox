@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        'topic' => [
+        'wiki-topic' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -38,8 +38,192 @@ return [
             |
             */
 
-            'single' => 'trans//press-wiki::translations.topic',
-            'plural' => 'trans//press-wiki::translations.topics',
+            'single' => 'trans//press-wiki::translations.wiki-topic',
+            'plural' => 'trans//press-wiki::translations.wiki-topics',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
+            ],
+        ],
+        'wiki-letter-topic' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//press-wiki::translations.wiki-letter-topic',
+            'plural' => 'trans//press-wiki::translations.wiki-letter-topics',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
+            ],
+        ],
+        'wiki-department-topic' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//press-wiki::translations.wiki-department-topic',
+            'plural' => 'trans//press-wiki::translations.wiki-department-topics',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
+            ],
+        ],
+        'wiki-company-topic' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//press-wiki::translations.wiki-company-topic',
+            'plural' => 'trans//press-wiki::translations.wiki-company-topics',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                /*
+                'error' => [
+                    'label' => 'trans//core::core.error',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'subject_type',
+                            'operator' => '=',
+                            'value' => 'Error',
+                        ],
+                    ],
+                ],
+                */
+            ],
+        ],
+        'wiki-location-topic' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//press-wiki::translations.wiki-location-topic',
+            'plural' => 'trans//press-wiki::translations.wiki-location-topics',
 
             /*
             |--------------------------------------------------------------------------
@@ -102,7 +286,13 @@ return [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
-                    'query' => [],
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '!=',
+                            'value' => 'trash',
+                        ]
+                    ],
                 ],
 
                 'published' => [

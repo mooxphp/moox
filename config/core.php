@@ -41,6 +41,7 @@ return [
         'permission' => 'Moox Permission',
         'press' => 'Moox Press',
         'press-wiki' => 'Moox Press Wiki',
+        'press-trainings' => 'Moox Trainings Wiki',
         'security' => 'Moox Security',
         'sync' => 'Moox Sync',
         'training' => 'Moox Trainings',

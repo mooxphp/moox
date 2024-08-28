@@ -5,21 +5,21 @@ namespace Moox\PressWiki;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\PressWiki\Resources\WpTopicResource;
+use Moox\PressWiki\Resources\WpWikiCompanyTopicResource;
 
-class WpTopicPlugin implements Plugin
+class WpWikiCompanyTopicPlugin implements Plugin
 {
     use EvaluatesClosures;
 
     public function getId(): string
     {
-        return 'wp-thema';
+        return 'wp-wiki-company-topic';
     }
 
     public function register(Panel $panel): void
     {
         $panel->resources([
-            WpTopicResource::class,
+            WpWikiCompanyTopicResource::class,
         ]);
     }
 

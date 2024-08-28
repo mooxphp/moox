@@ -273,43 +273,35 @@ class WpWikiResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('post_author')
-                    ->label(__('core::post.post_author'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
                 Tables\Columns\TextColumn::make('post_title')
                     ->label(__('core::post.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_status')
-                    ->label(__('core::post.post_status'))
+                Tables\Columns\TextColumn::make('author.display_name')
+                    ->label(__('core::post.post_author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
+                Tables\Columns\TextColumn::make('departmentTopics.name')
+                    ->label(__('press-wiki::translations.wiki-department-topics')),
+                Tables\Columns\TextColumn::make('letterTopics.name')
+                    ->label(__('press-wiki::translations.wiki-letter-topics'))
+                    ->alignCenter(),
+                Tables\Columns\TextColumn::make('companyTopics.name')
+                    ->label(__('press-wiki::translations.wiki-company-topics')),
+                Tables\Columns\TextColumn::make('locationTopics.name')
+                    ->label(__('press-wiki::translations.wiki-location-topics')),
+                Tables\Columns\TextColumn::make('wikiTopics.name')
+                    ->label(__('press-wiki::translations.wiki-topics')),
                 Tables\Columns\TextColumn::make('post_date')
                     ->label(__('core::post.post_date'))
                     ->toggleable()
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('post_modified')
-                    ->label(__('core::post.post_modified'))
-                    ->sortable()
-                    ->toggleable()
-                    ->dateTime(),
-                Tables\Columns\TextColumn::make('post_parent')
-                    ->label(__('core::post.post_parent'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('comment_count')
-                    ->label(__('core::comment.comment_count'))
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
@@ -326,9 +318,9 @@ class WpWikiResource extends Resource
     {
         return [
             'index' => Pages\ListWpWikis::route('/'),
-            'create' => Pages\CreateWpWiki::route('/create'),
-            'view' => Pages\ViewWpWiki::route('/{record}'),
-            'edit' => Pages\EditWpWiki::route('/{record}/edit'),
+            // 'create' => Pages\CreateWpWiki::route('/create'),
+            // 'view' => Pages\ViewWpWiki::route('/{record}'),
+            // 'edit' => Pages\EditWpWiki::route('/{record}/edit'),
         ];
     }
 
@@ -359,6 +351,6 @@ class WpWikiResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('press-wiki.temp_navigation_sort') + 4;
+        return config('press-wiki.temp_navigation_sort');
     }
 }
