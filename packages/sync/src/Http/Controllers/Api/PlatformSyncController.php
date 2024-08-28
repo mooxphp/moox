@@ -19,6 +19,6 @@ class PlatformSyncController extends Controller
 
     return response()->json(SyncResource::collection($syncs), 200);
     }
-            */
+    */
 
 }
