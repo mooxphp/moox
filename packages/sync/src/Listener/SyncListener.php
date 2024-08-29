@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Listener;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Event;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
@@ -14,24 +15,35 @@ class SyncListener
     {
         $domain = explode('.', request()->getHost())[0];
 
-        $platform = Platform::where('domain', $domain)->first();
+        try {
+            $platform = Platform::where('domain', $domain)->first();
 
-        if ($platform) {
-            $this->currentPlatformId = $platform->id;
-        } else {
-            \Log::error("Platform not found for domain: {$domain}");
+            if ($platform) {
+                $this->currentPlatformId = $platform->id;
+            } else {
+                \Log::warning("Platform not found for domain: {$domain}");
+                $this->currentPlatformId = null;
+            }
+        } catch (QueryException $e) {
+            \Log::error("Database error occurred while querying for domain: {$domain}. Error: ".$e->getMessage());
+            $this->currentPlatformId = null;
+        } catch (\Exception $e) {
+            \Log::error('An unexpected error occurred: '.$e->getMessage());
             $this->currentPlatformId = null;
         }
     }
 
     public function registerListeners()
     {
-        $syncs = Sync::where('source_platform_id', $this->currentPlatformId)
-            ->where('status', true)
-            ->get();
+        // Only register listeners if a valid platform ID is found
+        if ($this->currentPlatformId) {
+            $syncs = Sync::where('source_platform_id', $this->currentPlatformId)
+                ->where('status', true)
+                ->get();
 
-        foreach ($syncs as $sync) {
-            $this->registerModelListeners($sync);
+            foreach ($syncs as $sync) {
+                $this->registerModelListeners($sync);
+            }
         }
     }
 

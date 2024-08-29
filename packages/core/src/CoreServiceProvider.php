@@ -41,9 +41,8 @@ class CoreServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
-    protected function translateConfigurations()
+    protected function getPackageNames(): array
     {
-
         $packages = config('core.packages', []);
         $packageNames = [];
 
@@ -51,7 +50,14 @@ class CoreServiceProvider extends PackageServiceProvider
             $packageNames[$key] = $details['package'] ?? null;
         }
 
-        foreach ($packageNames as $slug => $name) {
+        return $packageNames;
+    }
+
+    protected function translateConfigurations()
+    {
+        $packages = $this->getPackageNames();
+
+        foreach ($packages as $slug => $name) {
             $configData = config($slug);
             if (is_array($configData)) {
                 $translatedConfig = $this->translateConfig($configData);
@@ -63,7 +69,7 @@ class CoreServiceProvider extends PackageServiceProvider
     public function setPolicies()
     {
 
-        $packages = config('core.packages', []);
+        $packages = $this->getPackageNames();
 
         foreach ($packages as $package) {
             if (isset($package['models']) && is_array($package['models'])) {
