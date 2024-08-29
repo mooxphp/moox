@@ -1178,6 +1178,18 @@ return [
         // syntax_highlighting
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post Meta
+    |--------------------------------------------------------------------------
+    |
+    | These are the post meta keys for the WordPress posts. Defined meta
+    | keys will be appended to the post model and can be used
+    | in the application. Be careful with this.
+    |
+    */
+
     'default_post_meta' => [
         '_wp_page_template' => '',
         '_edit_lock' => '',
@@ -1196,6 +1208,20 @@ return [
         '_wp_post_type' => '',
         '_wp_old_date' => '',
         '_wp_old_status' => '',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Avatar Attachment ID meta key
+    |--------------------------------------------------------------------------
+    |
+    | This is the user meta key for the WordPress user avatar attachment ID.
+    | It is used to store the attachment ID of the user avatar.
+    |
+    */
+
+    'avatar_meta' => [
+        'meta_key' => 'mm_sua_attachment_id',
     ],
 
     /*
