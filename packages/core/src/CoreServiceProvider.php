@@ -43,9 +43,16 @@ class CoreServiceProvider extends PackageServiceProvider
 
     protected function translateConfigurations()
     {
-        $packages = config('core.packages', []);
 
-        foreach ($packages as $slug => $name) {
+        $packages = config('core.packages', []);
+        $packageNames = [];
+
+        foreach ($packages as $key => $details) {
+            $packageNames[$key] = $details['package'] ?? null;
+        }
+
+
+        foreach ($packageNames as $slug => $name) {
             $configData = config($slug);
             if (is_array($configData)) {
                 $translatedConfig = $this->translateConfig($configData);
@@ -56,6 +63,7 @@ class CoreServiceProvider extends PackageServiceProvider
 
     public function setPolicies()
     {
+
         $packages = config('core.packages', []);
 
         foreach ($packages as $package) {
