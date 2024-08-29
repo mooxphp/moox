@@ -3,7 +3,7 @@
 namespace Moox\Press\Resources;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -16,8 +16,6 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
@@ -64,49 +62,25 @@ class WpUserResource extends Resource
         return 0;
     }
 
-    public static function getImageUrlByAttachmentId($attachmentId)
-    {
-        $post = DB::table(config('press.wordpress_prefix').'posts')
-            ->where('ID', $attachmentId)
-            ->first();
-
-        if ($post) {
-            $meta = DB::table(config('press.wordpress_prefix').'postmeta')
-                ->where('post_id', $attachmentId)
-                ->where('meta_key', '_wp_attached_file')
-                ->first();
-
-            if ($meta) {
-                $relativePath = $meta->meta_value;
-
-                return Storage::url($relativePath); // Verwendet Laravel Storage für URLs
-            }
-        }
-
-        return null;
-    }
-
     public static function form(Form $form): Form
     {
         return $form->schema([
             Section::make('Userdata')->schema([
                 Grid::make(['default' => 0])->schema([
-                    Fieldset::make('Avatar')
-                        ->relationship('postmeta')
-                        ->schema([
-                            TextInput::make('_wp_attached_file'),
-                            // ->label('')
-                            // ->avatar()
-                            // ->disk('press')
-                            // ->afterStateUpdated(function ($state, $set) {
-                            //     if ($state) {
-                            //         $tempPath = $state->store('livewire-tmp');
-                            //         $originalName = $state->getClientOriginalName();
-                            //         $set('original_name', $originalName);
-                            //         $set('temporary_file_path', $tempPath);
-                            //     }
-                            // }),
-                        ]),
+                    FileUpload::make('image_url')
+                        ->label('Avatar')
+                        ->avatar()
+                        ->disk('press')
+                        ->directory(now()->year.'/'.sprintf('%02d', now()->month))
+                        ->preserveFilenames()
+                        ->afterStateUpdated(function ($state, $set) {
+                            if ($state) {
+                                $tempPath = $state->store('livewire-tmp');
+                                $originalName = $state->getClientOriginalName();
+                                $set('original_name', $originalName);
+                                $set('temporary_file_path', $tempPath);
+                            }
+                        }),
 
                     TextInput::make('user_login')
                         ->label(__('core::user.user_login'))
@@ -334,9 +308,10 @@ class WpUserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                ImageColumn::make('attachment.guid')
+                ImageColumn::make('attachment.image_url')
                     ->label(__('core::user.avatar'))
                     ->circular()
+                    ->disk('press')
                     ->size(50)
                     ->toggleable()
                     ->limit(50),

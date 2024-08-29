@@ -39,9 +39,9 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            // 'url' => env('APP_URL').'/storage',
-            // 'visibility' => 'public',
-            // 'throw' => false,
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
         ],
 
         's3' => [
@@ -58,8 +58,8 @@ return [
 
         'press' => [
             'driver' => 'local',
-            'root' => public_path('wp/wp-content/uploads/2024/08'),
-            'url' => env('APP_URL').'/wp/wp-content/uploads/2024/08',
+            'root' => public_path('wp/wp-content/uploads'),
+            'url' => env('APP_URL').'/wp/wp-content/uploads',
             'visibility' => 'public',
         ],
 

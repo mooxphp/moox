@@ -64,18 +64,15 @@ class WpBasePost extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'posts';
         $this->metatable = $this->wpPrefix.'postmeta';
-
         $this->appends = [
             'verantwortlicher',
             'gultig_bis',
             'turnus',
             'fruhwarnung',
         ];
-
         $this->initializeMetaField();
     }
 
@@ -96,7 +93,6 @@ class WpBasePost extends Model
         if ($this->metaFieldsInitialized) {
             return;
         }
-
         $this->metaFieldsInitialized = true;
     }
 
@@ -114,7 +110,6 @@ class WpBasePost extends Model
         if (! $this->relationLoaded('postMeta')) {
             $this->load('postMeta');
         }
-
         $meta = $this->postMeta->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;
@@ -124,7 +119,6 @@ class WpBasePost extends Model
     {
         // First, check if the key exists as a native attribute or relationship
         $value = parent::getAttribute($key);
-
         // If the native attribute is not found, look for the meta field
         if (is_null($value) && $this->metaFieldsInitialized && $this->isMetaField($key)) {
             return $this->getMeta($key);
@@ -148,7 +142,6 @@ class WpBasePost extends Model
     public function toArray()
     {
         $attributes = parent::toArray();
-
         // Include meta fields in the array representation
         $metaFields = config('press.default_post_meta', []);
         foreach ($metaFields as $key => $defaultValue) {

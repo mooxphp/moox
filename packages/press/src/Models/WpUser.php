@@ -187,12 +187,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     public function attachment(): BelongsTo
     {
-        return $this->belongsTo(WpPost::class, 'mm_sua_attachment_id', 'ID');
-    }
-
-    public function postmeta(): BelongsTo
-    {
-        return $this->belongsTo(WpPostMeta::class, 'mm_sua_attachment_id', 'post_id');
+        return $this->belongsTo(WpMedia::class, 'mm_sua_attachment_id', 'ID');
     }
 
     protected function newBaseQueryBuilder()

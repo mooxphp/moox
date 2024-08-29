@@ -19,12 +19,16 @@ class ViewWpUser extends ViewRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $user = WpUser::with('userMeta')->find($data['ID']);
+        $user = WpUser::with(['userMeta', 'attachment'])->find($data['ID']);
 
         if ($user) {
             foreach ($user->userMeta as $meta) {
                 $data[$meta->meta_key] = $meta->meta_value;
             }
+        }
+
+        if ($user->attachment) {
+            $data['image_url'] = $user->attachment->image_url;
         }
 
         return $data;

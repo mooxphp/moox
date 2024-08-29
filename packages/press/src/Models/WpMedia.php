@@ -4,6 +4,7 @@ namespace Moox\Press\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WpMedia extends WpBasePost
 {
@@ -29,6 +30,11 @@ class WpMedia extends WpBasePost
         static::addGlobalScope('media', function (Builder $builder) {
             $builder->where('post_type', 'attachment');
         });
+    }
+
+    public function postMeta(): HasMany
+    {
+        return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
     }
 
     public function getImageUrlAttribute()
