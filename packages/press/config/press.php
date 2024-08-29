@@ -291,21 +291,37 @@ return [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
-                    'query' => [],
-                ],
-                /*
-                'error' => [
-                    'label' => 'trans//core::core.error',
-                    'icon' => 'gmdi-text-snippet',
                     'query' => [
                         [
-                            'field' => 'subject_type',
-                            'operator' => '=',
-                            'value' => 'Error',
+                            'field' => 'post_status',
+                            'operator' => '!=',
+                            'value' => 'trash',
                         ],
                     ],
                 ],
-                */
+
+                'published' => [
+                    'label' => 'trans//core::core.published',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'publish',
+                        ],
+                    ],
+                ],
+                'drafts' => [
+                    'label' => 'trans//core::core.draft',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'post_status',
+                            'operator' => '=',
+                            'value' => 'draft',
+                        ],
+                    ],
+                ],
             ],
         ],
 
@@ -1140,7 +1156,7 @@ return [
     */
 
     'default_user_meta' => [
-        'nickname' => $user_login ?? '',
+        'nickname' => '',
         'first_name' => '',
         'last_name' => '',
         'description' => '',
@@ -1149,18 +1165,63 @@ return [
         'admin_color' => 'fresh',
         'use_ssl' => '0',
         'show_admin_bar_front' => 'true',
-        env('WP_PREFIX', 'wp_').'_capabilities' => serialize([
+        env('WP_PREFIX', 'wp_').'capabilities' => serialize([
             'subscriber' => true,
         ]),
-        env('WP_PREFIX', 'wp_').'_user_level' => '0',
+        env('WP_PREFIX', 'wp_').'user_level' => '0',
         'dismissed_wp_pointers' => '',
-        env('WP_PREFIX', 'wp_').'_dashboard_quick_press_last_post_id' => '0',
+        env('WP_PREFIX', 'wp_').'dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
 
         // locale
         // comment_shortcuts
         // syntax_highlighting
 
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post Meta
+    |--------------------------------------------------------------------------
+    |
+    | These are the post meta keys for the WordPress posts. Defined meta
+    | keys will be appended to the post model and can be used
+    | in the application. Be careful with this.
+    |
+    */
+
+    'default_post_meta' => [
+        '_wp_page_template' => '',
+        '_edit_lock' => '',
+        '_edit_last' => '',
+        '_thumbnail_id' => '',
+        '_wp_attached_file' => '',
+        '_wp_attachment_metadata' => '',
+        '_wp_old_slug' => '',
+        '_wp_trash_meta_status' => '',
+        '_wp_trash_meta_time' => '',
+        '_pingme' => '',
+        '_encloseme' => '',
+        '_menu_order' => '',
+        '_wp_post_lock' => '',
+        '_wp_post_revision' => '',
+        '_wp_post_type' => '',
+        '_wp_old_date' => '',
+        '_wp_old_status' => '',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Avatar Attachment ID meta key
+    |--------------------------------------------------------------------------
+    |
+    | This is the user meta key for the WordPress user avatar attachment ID.
+    | It is used to store the attachment ID of the user avatar.
+    |
+    */
+
+    'avatar_meta' => [
+        'meta_key' => 'mm_sua_attachment_id',
     ],
 
     /*
