@@ -66,8 +66,8 @@ class WpBasePost extends Model
         parent::__construct($attributes);
 
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix . 'posts';
-        $this->metatable = $this->wpPrefix . 'postmeta';
+        $this->table = $this->wpPrefix.'posts';
+        $this->metatable = $this->wpPrefix.'postmeta';
 
         $this->appends = [
             'verantwortlicher',
@@ -192,7 +192,7 @@ class WpBasePost extends Model
 
     public function taxonomies(): BelongsToMany
     {
-        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
     public function categories(): BelongsToMany
@@ -209,6 +209,7 @@ class WpBasePost extends Model
     {
         return $this->hasMany(WpComment::class, 'comment_post_ID');
     }
+
     /*
      * ACF- Fields Getter and Setter
      */
