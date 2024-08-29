@@ -3,11 +3,8 @@
 namespace Moox\Sync\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * @property \Moox\Sync\Models\Platform $sourcePlatform
- * @property \Moox\Sync\Models\Platform $targetPlatform
- */
 class Sync extends Model
 {
     /**
@@ -54,12 +51,12 @@ class Sync extends Model
         'interval' => 'integer',
     ];
 
-    public function sourcePlatform()
+    public function sourcePlatform(): BelongsTo
     {
         return $this->belongsTo(Platform::class, 'source_platform_id');
     }
 
-    public function targetPlatform()
+    public function targetPlatform(): BelongsTo
     {
         return $this->belongsTo(Platform::class, 'target_platform_id');
     }

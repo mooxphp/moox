@@ -5,6 +5,9 @@ namespace Moox\Press\Models;
 use Awobaz\Mutator\Mutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 /**
@@ -12,7 +15,6 @@ use Illuminate\Support\Str;
  * @property string $post_title
  * @property string $post_name
  * @property string $post_author
- * @property WpPostMeta $postMeta
  */
 class WpBasePost extends Model
 {
@@ -64,8 +66,8 @@ class WpBasePost extends Model
         parent::__construct($attributes);
 
         $this->wpPrefix = config('press.wordpress_prefix');
-        $this->table = $this->wpPrefix.'posts';
-        $this->metatable = $this->wpPrefix.'postmeta';
+        $this->table = $this->wpPrefix . 'posts';
+        $this->metatable = $this->wpPrefix . 'postmeta';
 
         $this->appends = [
             'verantwortlicher',
@@ -178,41 +180,35 @@ class WpBasePost extends Model
      * Relations
      *
      */
-    public function postMeta()
+    public function postMeta(): HasMany
     {
         return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
     }
 
-    public function author()
+    public function author(): BelongsTo
     {
         return $this->belongsTo(WpUser::class, 'post_author', 'ID');
     }
 
-    public function taxonomies()
+    public function taxonomies(): BelongsToMany
     {
-        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix').'term_relationships', 'object_id', 'term_taxonomy_id');
+        return $this->belongsToMany(WpTermTaxonomy::class, config('press.wordpress_prefix') . 'term_relationships', 'object_id', 'term_taxonomy_id');
     }
 
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->taxonomies()->where('taxonomy', 'category');
     }
 
-    public function tags()
+    public function tags(): BelongsToMany
     {
         return $this->taxonomies()->where('taxonomy', 'post_tag');
     }
 
-    public function comment()
+    public function comment(): HasMany
     {
         return $this->hasMany(WpComment::class, 'comment_post_ID');
     }
-
-    public function meta()
-    {
-        return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
-    }
-
     /*
      * ACF- Fields Getter and Setter
      */

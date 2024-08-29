@@ -3,6 +3,7 @@
 namespace Moox\Sync\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Platform extends Model
 {
@@ -39,12 +40,12 @@ class Platform extends Model
         'master' => 'boolean',
     ];
 
-    public function sourcePlatform()
+    public function sourcePlatform(): HasMany
     {
         return $this->hasMany(Sync::class, 'source_platform_id');
     }
 
-    public function targetPlatform()
+    public function targetPlatform(): HasMany
     {
         return $this->hasMany(Sync::class, 'target_platform_id');
     }

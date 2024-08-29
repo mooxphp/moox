@@ -4,9 +4,7 @@ namespace Moox\Locate\Resources\AreaResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Locate\Models\Area;
 use Moox\Locate\Resources\AreaResource;
-use Moox\Locate\Resources\LocateResource\Widgets\LocateWidgets;
 
 class ListPage extends ListRecords
 {
@@ -33,7 +31,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Area {
+                ->using(function (array $data, string $model): static {
                     return $model::create($data);
                 }),
         ];
