@@ -12,8 +12,17 @@ class SyncListener
 
     public function __construct()
     {
-        $subdomain = explode('.', request()->getHost())[0];
-        $this->currentPlatformId = Platform::where('domain', $subdomain)->first()->id;
+        $domain = explode('.', request()->getHost())[0];
+
+        $platform = Platform::where('domain', $domain)->first();
+
+        if ($platform) {
+            $this->currentPlatformId = $platform->id;
+        } else {
+            // Handle the case where the platform is not found
+            \Log::warning("Platform not found for domain: {$domain}");
+            $this->currentPlatformId = null;
+        }
     }
 
     public function registerListeners()
@@ -58,8 +67,7 @@ class SyncListener
 
     protected function invokeWebhook(Sync $sync, array $data)
     {
-        // TODO: Finish webhook link
-        $webhookUrl = $sync->targetPlatform->domain;
+        $webhookUrl = $sync->targetPlatform->domain.'/sync/webhook';
 
         \Http::post($webhookUrl, $data);
     }

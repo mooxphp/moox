@@ -57,7 +57,7 @@ class SyncJob implements ShouldQueue
 
     protected function createOrUpdateRecord($targetModelClass)
     {
-        $targetModel = $targetModelClass::updateOrCreate(
+        $targetModelClass::updateOrCreate(
             ['id' => $this->modelData['id']],
             $this->modelData
         );

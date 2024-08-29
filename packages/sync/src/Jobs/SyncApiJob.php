@@ -23,8 +23,8 @@ class SyncApiJob implements ShouldQueue
 
     public function handle()
     {
-        // TODO: correct api endpoint
-        $url = $this->platform->api_url.'/syncs-for-platform';
+        // TODO: this might not be the correct URL
+        $url = $this->platform->domain.'/api/sync';
 
         $response = Http::get($url, [
             'platform_id' => $this->platform->id,

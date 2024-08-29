@@ -47,13 +47,10 @@ class PlatformController extends Controller
         return response()->json(null, 204);
     }
 
-    // TODO: not implemented yet
-    /*
     public function syncs(Platform $platform)
     {
         $syncs = $platform->syncs()->get();
 
         return SyncResource::collection($syncs);
     }
-    */
 }
