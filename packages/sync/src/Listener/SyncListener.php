@@ -19,8 +19,7 @@ class SyncListener
         if ($platform) {
             $this->currentPlatformId = $platform->id;
         } else {
-            // Handle the case where the platform is not found
-            \Log::warning("Platform not found for domain: {$domain}");
+            \Log::error("Platform not found for domain: {$domain}");
             $this->currentPlatformId = null;
         }
     }

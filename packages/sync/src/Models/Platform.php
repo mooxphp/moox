@@ -50,10 +50,13 @@ class Platform extends Model
         return $this->hasMany(Sync::class, 'target_platform_id');
     }
 
+    // TODO: this is not fully implemented and maybe not needed
+    /*
     public function syncs()
     {
         return $this->sources()->union($this->targets());
     }
+    */
 
     public function platformable()
     {
@@ -61,6 +64,9 @@ class Platform extends Model
     }
 
     /* TODO: this model must be dynamic, not user
+
+    // Sync supports all available user models
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_platform');
