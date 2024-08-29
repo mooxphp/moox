@@ -6,6 +6,7 @@ namespace Moox\Sync;
 
 use Moox\Sync\Commands\InstallCommand;
 use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
+use Moox\Sync\Listener\SyncListener;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -31,5 +32,8 @@ class SyncServiceProvider extends PackageServiceProvider
             'auth.platformtoken',
             PlatformTokenAuthMiddleware::class
         );
+
+        $syncListener = new SyncListener;
+        $syncListener->registerListeners();
     }
 }
