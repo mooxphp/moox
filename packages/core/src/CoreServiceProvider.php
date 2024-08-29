@@ -51,7 +51,6 @@ class CoreServiceProvider extends PackageServiceProvider
             $packageNames[$key] = $details['package'] ?? null;
         }
 
-
         foreach ($packageNames as $slug => $name) {
             $configData = config($slug);
             if (is_array($configData)) {
