@@ -3,6 +3,7 @@
 namespace Moox\Sync\Listener;
 
 use Illuminate\Support\Facades\Event;
+use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 
 class SyncListener
@@ -11,8 +12,8 @@ class SyncListener
 
     public function __construct()
     {
-        // Assuming you have a way to identify the current platform ID
-        $this->currentPlatformId = config('sync.current_platform_id');
+        $subdomain = explode('.', request()->getHost())[0];
+        $this->currentPlatformId = Platform::where('domain', $subdomain)->first()->id;
     }
 
     public function registerListeners()
