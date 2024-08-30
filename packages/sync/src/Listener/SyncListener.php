@@ -116,32 +116,35 @@ class SyncListener
         // DEBUG: Log the data and request method
         Log::info('Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
 
+        /*
         try {
-            $response = Http::asJson()->post($webhookUrl, $data); // Ensuring JSON data format
+        */
+        $response = Http::asJson()->post($webhookUrl, $data); // Ensuring JSON data format
 
-            Log::info('Request method:', ['method' => 'POST']); // Explicitly log the method
+        Log::info('Request method:', ['method' => 'POST']); // Explicitly log the method
 
-            if ($response->successful()) {
-                Log::info('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
-            } elseif ($response->clientError()) {
-                Log::warning('Client error occurred when invoking webhook.', [
-                    'url' => $webhookUrl,
-                    'status' => $response->status(),
-                    'response' => $response->body(),
-                ]);
-            } elseif ($response->serverError()) {
-                Log::error('Server error occurred when invoking webhook.', [
-                    'url' => $webhookUrl,
-                    'status' => $response->status(),
-                    'response' => $response->body(),
-                ]);
-            } else {
-                Log::warning('Unexpected status code returned when invoking webhook.', [
-                    'url' => $webhookUrl,
-                    'status' => $response->status(),
-                    'response' => $response->body(),
-                ]);
-            }
+        if ($response->successful()) {
+            Log::info('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
+        } elseif ($response->clientError()) {
+            Log::warning('Client error occurred when invoking webhook.', [
+                'url' => $webhookUrl,
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+        } elseif ($response->serverError()) {
+            Log::error('Server error occurred when invoking webhook.', [
+                'url' => $webhookUrl,
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+        } else {
+            Log::warning('Unexpected status code returned when invoking webhook.', [
+                'url' => $webhookUrl,
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+        }
+        /*
         } catch (RequestException $e) {
             Log::error('Error occurred during HTTP request to webhook.', [
                 'url' => $webhookUrl,
@@ -155,5 +158,6 @@ class SyncListener
                 'trace' => $e->getTraceAsString(),
             ]);
         }
+        */
     }
 }
