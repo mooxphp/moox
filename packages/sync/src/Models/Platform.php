@@ -61,7 +61,8 @@ class Platform extends Model
         return $this->morphTo();
     }
 
-    // TODO: this model must be dynamic, not WpUser
+    // TODO: this model must be dynamic, not WpUser,
+    // see https://chatgpt.com/c/127f0561-026e-43ef-9bb2-0efc1116e21f
     public function users()
     {
         return $this->belongsToMany(WpUser::class, 'user_platform');

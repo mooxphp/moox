@@ -19,6 +19,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Http;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource\Pages\CreateSync;
@@ -135,8 +136,58 @@ class SyncResource extends Resource
                             }
                         }),
 
-                    TextInput::make('source_model')
+                    Select::make('source_model')
                         ->label(__('core::sync.source_model'))
+                        ->options(function (callable $get) {
+                            $sourcePlatformId = $get('source_platform_id');
+
+                            if (! $sourcePlatformId) {
+                                return [];
+                            }
+
+                            $sourcePlatform = Platform::find($sourcePlatformId);
+                            if (! $sourcePlatform || ! $sourcePlatform->domain) {
+                                return [];
+                            }
+
+                            $apiUrl = "https://{$sourcePlatform->domain}/api/core";
+                            try {
+                                $response = Http::get($apiUrl);
+
+                                if ($response->failed()) {
+                                    Notification::make()
+                                        ->title('API Error')
+                                        ->body(__('Failed to fetch models from the source platform.'))
+                                        ->danger()
+                                        ->send();
+
+                                    return [];
+                                }
+
+                                $data = $response->json();
+                                $options = [];
+
+                                foreach ($data['packages'] as $package => $packageData) {
+
+                                    if (! empty($packageData['models'])) {
+                                        foreach ($packageData['models'] as $modelName => $modelData) {
+                                            $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
+                                        }
+                                    }
+                                }
+
+                                return array_flip($options);
+
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('API Error')
+                                    ->body(__('An error occurred while fetching the models.'))
+                                    ->danger()
+                                    ->send();
+
+                                return [];
+                            }
+                        })
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
@@ -190,8 +241,60 @@ class SyncResource extends Resource
                             }
                         }),
 
-                    TextInput::make('target_model')
+                    Select::make('target_model')
                         ->label(__('core::sync.target_model'))
+                        // TODO: I would need the api url here
+                        //->hint(str('[Test API]('. $apiUrl .')')->inlineMarkdown()->toHtmlString())
+                        ->options(function (callable $get) {
+                            $targetPlatformId = $get('target_platform_id');
+
+                            if (! $targetPlatformId) {
+                                return [];
+                            }
+
+                            $targetPlatform = Platform::find($targetPlatformId);
+                            if (! $targetPlatform || ! $targetPlatform->domain) {
+                                return [];
+                            }
+
+                            $apiUrl = "https://{$targetPlatform->domain}/api/core";
+                            try {
+                                $response = Http::get($apiUrl);
+
+                                if ($response->failed()) {
+                                    Notification::make()
+                                        ->title('API Error')
+                                        ->body(__('Failed to fetch models from the target platform.'))
+                                        ->danger()
+                                        ->send();
+
+                                    return [];
+                                }
+
+                                $data = $response->json();
+                                $options = [];
+
+                                foreach ($data['packages'] as $package => $packageData) {
+
+                                    if (! empty($packageData['models'])) {
+                                        foreach ($packageData['models'] as $modelName => $modelData) {
+                                            $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
+                                        }
+                                    }
+                                }
+
+                                return array_flip($options);
+
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('API Error')
+                                    ->body(__('An error occurred while fetching the models.'))
+                                    ->danger()
+                                    ->send();
+
+                                return [];
+                            }
+                        })
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
@@ -202,10 +305,10 @@ class SyncResource extends Resource
                         ])
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourcePlatformId = $get('source_platform_id');
-                            $sourceModel = $get('source_model');
                             $targetPlatformId = $get('target_platform_id');
-                            if ($targetPlatformId === $sourcePlatformId && $state === $sourceModel) {
-                                $set('target_model', null);
+                            $targetModel = $get('target_model');
+                            if ($sourcePlatformId === $targetPlatformId && $state === $targetModel) {
+                                $set('source_model', null);
 
                                 Notification::make()
                                     ->title('Sync Error')
