@@ -24,4 +24,6 @@ Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
     Route::get('platform/{id}/sync', [\Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
 });
 
-Route::post('/sync-webhook', [SyncWebhookController::class, 'handle'])->name('sync-webhook');
+Route::group(['middleware' => ['api', 'without_cors']], function () {
+    Route::post('/sync-webhook', [SyncWebhookController::class, 'handle']);
+});
