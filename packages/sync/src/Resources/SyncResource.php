@@ -96,7 +96,7 @@ class SyncResource extends Resource
         return $platform ? "https://{$platform->domain}/api/core" : null;
     }
 
-    private static function fetchModelsFromApi(string $apiUrl): array
+    private static function fetchModelsFromApi(string $apiUrl, Platform $platform): array
     {
         try {
             $response = Http::get($apiUrl);
@@ -104,7 +104,7 @@ class SyncResource extends Resource
             if ($response->failed()) {
                 Notification::make()
                     ->title('API Error')
-                    ->body(__('Failed to fetch models from the platform.'))
+                    ->body(__('An error occurred while fetching the models from platform: ').$platform->name.' ('.$platform->domain.')')
                     ->danger()
                     ->send();
 
@@ -162,8 +162,8 @@ class SyncResource extends Resource
                                 $set('source_platform_id', null);
 
                                 Notification::make()
-                                    ->title(__('core::sync.resources.sync_error'))
-                                    ->body(__('core::sync.resources.sync_error_platforms'))
+                                    ->title(__('core::sync.sync_error'))
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -177,7 +177,7 @@ class SyncResource extends Resource
                             $sourcePlatform = Platform::find($get('source_platform_id'));
                             $apiUrl = self::getApiUrl($sourcePlatform);
 
-                            return $apiUrl ? self::fetchModelsFromApi($apiUrl) : [];
+                            return $apiUrl ? self::fetchModelsFromApi($apiUrl, $sourcePlatform) : [];
                         })
                         ->rules(['max:255'])
                         ->required()
@@ -190,14 +190,17 @@ class SyncResource extends Resource
                         })
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourcePlatformId = $get('source_platform_id');
+                            $sourceModel = $get('source_model');
                             $targetPlatformId = $get('target_platform_id');
                             $targetModel = $get('target_model');
-                            if ($sourcePlatformId === $targetPlatformId && $state === $targetModel) {
+
+                            // Check if both the platform and model are the same
+                            if ($sourcePlatformId === $targetPlatformId && $sourceModel === $targetModel) {
                                 $set('source_model', null);
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body(__('core::sync.resources.sync_error_platforms'))
+                                    ->body(__('You cannot sync the same platform and model as source and target.'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -221,7 +224,7 @@ class SyncResource extends Resource
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body(__('core::sync.resources.sync_error_platforms'))
+                                    ->body(__('core::sync.sync_error_platforms'))
                                     ->danger()
                                     ->send();
                             } else {
@@ -235,7 +238,7 @@ class SyncResource extends Resource
                             $targetPlatform = Platform::find($get('target_platform_id'));
                             $apiUrl = self::getApiUrl($targetPlatform);
 
-                            return $apiUrl ? self::fetchModelsFromApi($apiUrl) : [];
+                            return $apiUrl ? self::fetchModelsFromApi($apiUrl, $targetPlatform) : [];
                         })
                         ->rules(['max:255'])
                         ->required()
@@ -248,14 +251,17 @@ class SyncResource extends Resource
                         })
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourcePlatformId = $get('source_platform_id');
+                            $sourceModel = $get('source_model');
                             $targetPlatformId = $get('target_platform_id');
                             $targetModel = $get('target_model');
-                            if ($sourcePlatformId === $targetPlatformId && $state === $targetModel) {
+
+                            // Check if both the platform and model are the same
+                            if ($sourcePlatformId === $targetPlatformId && $sourceModel === $targetModel) {
                                 $set('target_model', null);
 
                                 Notification::make()
                                     ->title('Sync Error')
-                                    ->body(__('core::sync.resources.sync_error_platforms'))
+                                    ->body(__('You cannot sync the same platform and model as source and target.'))
                                     ->danger()
                                     ->send();
                             } else {
