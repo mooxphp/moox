@@ -309,7 +309,7 @@ class SyncResource extends Resource
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     TextInput::make('sync_only_ids')
-                        ->label(__('core::sync.resources.sync_only_ids'))
+                        ->label(__('core::sync.sync_only_ids'))
                         ->rules(['array'])
                         ->columnSpan(['default' => 12])
                         ->visible(fn ($get) => $get('filter_ids') === 'sync_only_ids')
@@ -406,7 +406,7 @@ class SyncResource extends Resource
                     ->falseIcon('heroicon-o-x-circle')
                     ->getStateUsing(fn ($record) => empty($record->field_mappings)),
                 IconColumn::make('sync_all_fields')
-                    ->label(__('core::sync.resources.sync_all_fields'))
+                    ->label(__('core::sync.sync_all_fields'))
                     ->toggleable()
                     ->boolean()
                     ->getStateUsing(fn ($record) => ! $record->sync_all_fields),

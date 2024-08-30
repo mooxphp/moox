@@ -207,7 +207,7 @@ class PlatformResource extends Resource
                     ->label('')
                     ->square(),
                 TextColumn::make('name')
-                    ->label(__('core::sync.name'))
+                    ->label(__('core::core.name'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
