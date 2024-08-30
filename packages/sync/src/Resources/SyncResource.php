@@ -127,7 +127,7 @@ class SyncResource extends Resource
         } catch (\Exception $e) {
             Notification::make()
                 ->title('API Error')
-                ->body(__('An error occurred while fetching the models.'))
+                ->body(__('An error occurred while fetching the models from platform: ').$platform->name.' ('.$platform->domain.')')
                 ->danger()
                 ->send();
 
