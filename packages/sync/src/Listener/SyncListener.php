@@ -48,16 +48,7 @@ class SyncListener
             $syncs = Sync::where('source_platform_id', $this->currentPlatformId)
                 ->where('status', true)
                 ->get();
-
-            // DEBUG
-            //Log::info('Register listener for platform: '.$this->currentPlatformId);
-            //Log::info('Count of Syncs '.$syncs->count());
-
             foreach ($syncs as $sync) {
-
-                // DEBUG
-                //Log::info('Register Listener for Sync '.$sync->id);
-
                 $this->registerModelListeners($sync);
             }
         }
@@ -104,47 +95,42 @@ class SyncListener
         ];
 
         // DEBUG
-        Log::info('Invoke Webhook for '.$this->currentPlatformId);
+        //Log::info('Invoke Webhook for '.$this->currentPlatformId);
 
         $this->invokeWebhook($sync, $syncData);
     }
 
     protected function invokeWebhook(Sync $sync, array $data)
     {
-        $webhookUrl = $sync->targetPlatform->domain.'/sync-webhook';
+        $webhookUrl = 'https://'.$sync->targetPlatform->domain.'/sync-webhook';
 
         // DEBUG: Log the data and request method
-        Log::info('Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
+        //Log::info('Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
 
-        /*
         try {
-        */
-        $response = Http::asJson()->post($webhookUrl, $data); // Ensuring JSON data format
+            $response = Http::asJson()->post($webhookUrl, $data);
 
-        Log::info('Request method:', ['method' => 'POST']); // Explicitly log the method
-
-        if ($response->successful()) {
-            Log::info('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
-        } elseif ($response->clientError()) {
-            Log::warning('Client error occurred when invoking webhook.', [
-                'url' => $webhookUrl,
-                'status' => $response->status(),
-                'response' => $response->body(),
-            ]);
-        } elseif ($response->serverError()) {
-            Log::error('Server error occurred when invoking webhook.', [
-                'url' => $webhookUrl,
-                'status' => $response->status(),
-                'response' => $response->body(),
-            ]);
-        } else {
-            Log::warning('Unexpected status code returned when invoking webhook.', [
-                'url' => $webhookUrl,
-                'status' => $response->status(),
-                'response' => $response->body(),
-            ]);
-        }
-        /*
+            if ($response->successful()) {
+                Log::info('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
+            } elseif ($response->clientError()) {
+                Log::warning('Client error occurred when invoking webhook.', [
+                    'url' => $webhookUrl,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+            } elseif ($response->serverError()) {
+                Log::error('Server error occurred when invoking webhook.', [
+                    'url' => $webhookUrl,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+            } else {
+                Log::warning('Unexpected status code returned when invoking webhook.', [
+                    'url' => $webhookUrl,
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+            }
         } catch (RequestException $e) {
             Log::error('Error occurred during HTTP request to webhook.', [
                 'url' => $webhookUrl,
@@ -158,6 +144,5 @@ class SyncListener
                 'trace' => $e->getTraceAsString(),
             ]);
         }
-        */
     }
 }
