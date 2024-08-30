@@ -14,7 +14,7 @@ class SyncListener
 
     public function __construct()
     {
-        $domain = explode('.', request()->getHost())[0];
+        $domain = explode('.', request()->getHost());
 
         try {
             $platform = Platform::where('domain', $domain)->first();
