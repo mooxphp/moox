@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\HtmlString;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource\Pages\CreateSync;
@@ -90,6 +91,50 @@ class SyncResource extends Resource
         $set('title', $title);
     }
 
+    private static function getApiUrl(?Platform $platform): ?string
+    {
+        return $platform ? "https://{$platform->domain}/api/core" : null;
+    }
+
+    private static function fetchModelsFromApi(string $apiUrl): array
+    {
+        try {
+            $response = Http::get($apiUrl);
+
+            if ($response->failed()) {
+                Notification::make()
+                    ->title('API Error')
+                    ->body(__('Failed to fetch models from the platform.'))
+                    ->danger()
+                    ->send();
+
+                return [];
+            }
+
+            $data = $response->json();
+            $options = [];
+
+            foreach ($data['packages'] as $package => $packageData) {
+                if (! empty($packageData['models'])) {
+                    foreach ($packageData['models'] as $modelName => $modelData) {
+                        $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
+                    }
+                }
+            }
+
+            return array_flip($options);
+
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title('API Error')
+                ->body(__('An error occurred while fetching the models.'))
+                ->danger()
+                ->send();
+
+            return [];
+        }
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -97,27 +142,17 @@ class SyncResource extends Resource
                 Grid::make(['default' => 0])->schema([
                     Toggle::make('status')
                         ->label(__('core::core.status'))
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->default(true)
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     Select::make('source_platform_id')
                         ->label(__('core::sync.source_platform_id'))
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('sourcePlatform', 'name')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourceModel = $get('source_model');
@@ -139,63 +174,20 @@ class SyncResource extends Resource
                     Select::make('source_model')
                         ->label(__('core::sync.source_model'))
                         ->options(function (callable $get) {
-                            $sourcePlatformId = $get('source_platform_id');
+                            $sourcePlatform = Platform::find($get('source_platform_id'));
+                            $apiUrl = self::getApiUrl($sourcePlatform);
 
-                            if (! $sourcePlatformId) {
-                                return [];
-                            }
-
-                            $sourcePlatform = Platform::find($sourcePlatformId);
-                            if (! $sourcePlatform || ! $sourcePlatform->domain) {
-                                return [];
-                            }
-
-                            $apiUrl = "https://{$sourcePlatform->domain}/api/core";
-                            try {
-                                $response = Http::get($apiUrl);
-
-                                if ($response->failed()) {
-                                    Notification::make()
-                                        ->title('API Error')
-                                        ->body(__('Failed to fetch models from the source platform.'))
-                                        ->danger()
-                                        ->send();
-
-                                    return [];
-                                }
-
-                                $data = $response->json();
-                                $options = [];
-
-                                foreach ($data['packages'] as $package => $packageData) {
-
-                                    if (! empty($packageData['models'])) {
-                                        foreach ($packageData['models'] as $modelName => $modelData) {
-                                            $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
-                                        }
-                                    }
-                                }
-
-                                return array_flip($options);
-
-                            } catch (\Exception $e) {
-                                Notification::make()
-                                    ->title('API Error')
-                                    ->body(__('An error occurred while fetching the models.'))
-                                    ->danger()
-                                    ->send();
-
-                                return [];
-                            }
+                            return $apiUrl ? self::fetchModelsFromApi($apiUrl) : [];
                         })
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
+                        ->hint(function (callable $get) {
+                            $sourcePlatform = Platform::find($get('source_platform_id'));
+
+                            return $sourcePlatform ? new HtmlString('<a href="'.self::getApiUrl($sourcePlatform).'" target="_blank">Test API</a>') : null;
+                        })
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourcePlatformId = $get('source_platform_id');
                             $targetPlatformId = $get('target_platform_id');
@@ -218,11 +210,7 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('targetPlatform', 'name')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourcePlatformId = $get('source_platform_id');
@@ -243,72 +231,27 @@ class SyncResource extends Resource
 
                     Select::make('target_model')
                         ->label(__('core::sync.target_model'))
-                        // TODO: I would need the api url here
-                        //->hint(str('[Test API]('. $apiUrl .')')->inlineMarkdown()->toHtmlString())
                         ->options(function (callable $get) {
-                            $targetPlatformId = $get('target_platform_id');
+                            $targetPlatform = Platform::find($get('target_platform_id'));
+                            $apiUrl = self::getApiUrl($targetPlatform);
 
-                            if (! $targetPlatformId) {
-                                return [];
-                            }
-
-                            $targetPlatform = Platform::find($targetPlatformId);
-                            if (! $targetPlatform || ! $targetPlatform->domain) {
-                                return [];
-                            }
-
-                            $apiUrl = "https://{$targetPlatform->domain}/api/core";
-                            try {
-                                $response = Http::get($apiUrl);
-
-                                if ($response->failed()) {
-                                    Notification::make()
-                                        ->title('API Error')
-                                        ->body(__('Failed to fetch models from the target platform.'))
-                                        ->danger()
-                                        ->send();
-
-                                    return [];
-                                }
-
-                                $data = $response->json();
-                                $options = [];
-
-                                foreach ($data['packages'] as $package => $packageData) {
-
-                                    if (! empty($packageData['models'])) {
-                                        foreach ($packageData['models'] as $modelName => $modelData) {
-                                            $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
-                                        }
-                                    }
-                                }
-
-                                return array_flip($options);
-
-                            } catch (\Exception $e) {
-                                Notification::make()
-                                    ->title('API Error')
-                                    ->body(__('An error occurred while fetching the models.'))
-                                    ->danger()
-                                    ->send();
-
-                                return [];
-                            }
+                            return $apiUrl ? self::fetchModelsFromApi($apiUrl) : [];
                         })
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
+                        ->hint(function (callable $get) {
+                            $targetPlatform = Platform::find($get('target_platform_id'));
+
+                            return $targetPlatform ? new HtmlString('<a href="'.self::getApiUrl($targetPlatform).'" target="_blank">Test API</a>') : null;
+                        })
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
                             $sourcePlatformId = $get('source_platform_id');
                             $targetPlatformId = $get('target_platform_id');
                             $targetModel = $get('target_model');
                             if ($sourcePlatformId === $targetPlatformId && $state === $targetModel) {
-                                $set('source_model', null);
+                                $set('target_model', null);
 
                                 Notification::make()
                                     ->title('Sync Error')
@@ -325,27 +268,15 @@ class SyncResource extends Resource
                         ->rules(['integer'])
                         ->default(60)
                         ->suffix(fn ($get) => $get('interval') == 1 ? 'minute' : 'minutes')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     Toggle::make('use_platform_relations')
                         ->label(__('core::sync.use_platform_relations'))
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     Select::make('if_exists')
                         ->label(__('core::sync.if_exists'))
@@ -356,11 +287,7 @@ class SyncResource extends Resource
                         ])
                         ->required()
                         ->default('update')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
+                        ->columnSpan(['default' => 12]),
 
                     Select::make('filter_ids')
                         ->label(__('core::sync.filter_ids'))
@@ -369,130 +296,75 @@ class SyncResource extends Resource
                             'sync_only_ids' => 'Sync these IDs only',
                             'ignore_ids' => 'Specify IDs to ignore',
                         ])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->default('sync_all_records')
                         ->label(__('core::sync.sync_all_records'))
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     TextInput::make('sync_only_ids')
                         ->label(__('core::sync.resources.sync_only_ids'))
                         ->rules(['array'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->visible(fn ($get) => $get('filter_ids') === 'sync_only_ids')
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     TextInput::make('ignore_ids')
                         ->label(__('core::sync.ingnore_ids'))
                         ->rules(['array'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->visible(fn ($get) => $get('filter_ids') === 'ignore_ids')
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     Toggle::make('sync_all_fields')
                         ->label(__('core::sync.sync_all_fields'))
                         ->default(true)
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     KeyValue::make('field_mappings')
                         ->label(__('core::sync.field_mappings'))
                         ->rules(['array'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->hidden(fn ($get) => $get('sync_all_fields'))
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     TextInput::make('use_transformer_class')
                         ->label(__('core::sync.use_transformer_class'))
                         ->rules(['max:255'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                            self::updateTitle($set, $get);
-                        }),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
                     Toggle::make('has_errors')
                         ->label(__('core::core.has_errors'))
                         ->rules(['boolean'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->reactive(),
 
                     TextInput::make('error_message')
                         ->label(__('core::core.error_message'))
                         ->rules(['max:255'])
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
+                        ->columnSpan(['default' => 12])
                         ->visible(fn ($get) => $get('has_errors')),
 
                     TextInput::make('title')
                         ->label(__('core::core.title'))
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ])
-                        ->default(function (callable $get) {
-                            return SyncResource::generateTitle($get);
-                        })
+                        ->columnSpan(['default' => 12])
+                        ->default(fn (callable $get) => SyncResource::generateTitle($get))
                         ->reactive(),
 
                     DatePicker::make('last_sync')
                         ->label(__('core::sync.last_sync'))
                         ->rules(['date'])
                         ->disabled()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
+                        ->columnSpan(['default' => 12]),
                 ]),
             ]),
         ]);
@@ -506,16 +378,12 @@ class SyncResource extends Resource
                 TextColumn::make('sourcePlatformAndModel')
                     ->label(__('core::sync.source_platform_and_model'))
                     ->toggleable()
-                    ->getStateUsing(function ($record) {
-                        return "{$record->sourcePlatform->name} ({$record->source_model})";
-                    })
+                    ->getStateUsing(fn ($record) => "{$record->sourcePlatform->name} ({$record->source_model})")
                     ->limit(50),
                 TextColumn::make('targetPlatformAndModel')
                     ->label(__('core::sync.target_platform_and_model'))
                     ->toggleable()
-                    ->getStateUsing(function ($record) {
-                        return "{$record->targetPlatform->name} ({$record->target_model})";
-                    })
+                    ->getStateUsing(fn ($record) => "{$record->targetPlatform->name} ({$record->target_model})")
                     ->limit(50),
                 IconColumn::make('use_platform_relations')
                     ->label(__('core::sync.use_platform_relations'))
