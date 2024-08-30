@@ -25,6 +25,7 @@ class SyncListener
 
             if ($platform) {
                 $this->currentPlatformId = $platform->id;
+                // DEBUG
                 Log::info('Platform found for domain: '.$domain);
             } else {
                 Log::warning("Platform not found for domain: {$domain}");
@@ -45,6 +46,10 @@ class SyncListener
             $syncs = Sync::where('source_platform_id', $this->currentPlatformId)
                 ->where('status', true)
                 ->get();
+
+            // DEBUG
+            Log::info('Register listener for platform: '.$this->currentPlatformId);
+            Log::info('Count of Syncs'.$syncs->count());
 
             foreach ($syncs as $sync) {
                 $this->registerModelListeners($sync);
@@ -77,6 +82,9 @@ class SyncListener
             'model' => $data,
             'sync' => $sync->toArray(),
         ];
+
+        // DEBUG
+        Log::info('Invoke Webhook for '.$this->currentPlatformId);
 
         $this->invokeWebhook($sync, $syncData);
     }
