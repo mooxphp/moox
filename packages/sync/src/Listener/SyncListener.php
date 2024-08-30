@@ -16,6 +16,10 @@ class SyncListener
     {
         $domain = explode('.', request()->getHost());
 
+        if (is_array($domain)) {
+            $domain = implode('.', $domain);
+        }
+
         try {
             $platform = Platform::where('domain', $domain)->first();
 
