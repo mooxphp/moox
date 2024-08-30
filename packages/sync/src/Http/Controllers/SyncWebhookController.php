@@ -16,7 +16,7 @@ class SyncWebhookController extends Controller
 
         $sync = Sync::findOrFail($validatedData['sync']['id']);
 
-        Log::info('Webhook receifed for sync', ['sync' => $sync->id]);
+        Log::info('Webhook recieved for sync', ['sync' => $sync->id]);
 
         SyncJob::dispatch($sync, $validatedData['model'], $validatedData['event_type']);
 
