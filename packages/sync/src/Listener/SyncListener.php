@@ -113,11 +113,13 @@ class SyncListener
     {
         $webhookUrl = $sync->targetPlatform->domain.'/sync-webhook';
 
-        // DEBUG
-        Log::info('Push to Webhook: '.$webhookUrl);
+        // DEBUG: Log the data and request method
+        Log::info('Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
 
         try {
-            $response = Http::post($webhookUrl, $data);
+            $response = Http::asJson()->post($webhookUrl, $data); // Ensuring JSON data format
+
+            Log::info('Request method:', ['method' => 'POST']); // Explicitly log the method
 
             if ($response->successful()) {
                 Log::info('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
