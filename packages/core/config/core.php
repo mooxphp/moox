@@ -387,7 +387,7 @@ return [
     | Logging
     |--------------------------------------------------------------------------
     |
-    | This config array sets the logging level and whether to log in 
+    | This config array sets the logging level and whether to log in
     | production. It is used by some Moox packages where verbose
     | logging is a good thing while implementing complex stuff.
     |

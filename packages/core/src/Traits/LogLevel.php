@@ -2,8 +2,8 @@
 
 namespace Moox\Core\Traits;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 trait LogLevel
 {

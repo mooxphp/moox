@@ -5,9 +5,9 @@ namespace Moox\Sync\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Jobs\SyncJob;
 use Moox\Sync\Models\Sync;
-use Moox\Core\Traits\LogLevel;
 
 class SyncWebhookController extends Controller
 {
