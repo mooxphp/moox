@@ -4,6 +4,7 @@ namespace Moox\Sync\Resources;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -331,13 +332,14 @@ class SyncResource extends Resource
                         ->default(true)
                         ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
+                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get))
+                        ->disabled(fn ($get) => !$get('models_compatible')),
 
                     KeyValue::make('field_mappings')
                         ->label(__('core::sync.field_mappings'))
                         ->rules(['array'])
                         ->columnSpan(['default' => 12])
-                        ->hidden(fn ($get) => $get('sync_all_fields'))
+                        ->hidden(fn ($get) => $get('sync_all_fields') && $get('models_compatible'))
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
@@ -373,6 +375,15 @@ class SyncResource extends Resource
                         ->rules(['date'])
                         ->disabled()
                         ->columnSpan(['default' => 12]),
+
+                    Hidden::make('models_compatible')
+                        ->default(true),
+
+                    Hidden::make('compatibility_error'),
+
+                    Hidden::make('missing_columns'),
+
+                    Hidden::make('extra_columns'),
                 ]),
             ]),
         ]);
@@ -384,15 +395,24 @@ class SyncResource extends Resource
         $targetModel = $get('target_model');
 
         if ($sourceModel && $targetModel) {
-            $isCompatible = ModelCompatibilityChecker::areModelsCompatible($sourceModel, $targetModel);
+            $compatibility = ModelCompatibilityChecker::checkCompatibility($sourceModel, $targetModel);
 
-            if (!$isCompatible) {
+            $set('models_compatible', $compatibility['compatible']);
+            $set('compatibility_error', $compatibility['error']);
+            $set('missing_columns', $compatibility['missingColumns']);
+            $set('extra_columns', $compatibility['extraColumns']);
+
+            if (!$compatibility['compatible']) {
+                $set('sync_all_fields', false);
+
+                $missingColumnsStr = implode(', ', $compatibility['missingColumns']);
+                $extraColumnsStr = implode(', ', $compatibility['extraColumns']);
+
                 Notification::make()
-                    ->title('Model Compatibility Error')
-                    ->body(__('The selected source and target models are not compatible. Disable Sync all fields.'))
-                    ->danger()
+                    ->title('Model Compatibility Warning')
+                    ->body("The selected models are not fully compatible. Missing columns: {$missingColumnsStr}. Extra columns: {$extraColumnsStr}. Please map fields manually.")
+                    ->warning()
                     ->send();
-
             }
         }
     }
