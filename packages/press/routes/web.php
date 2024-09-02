@@ -33,6 +33,7 @@ Route::middleware('web')->group(function () {
 
     // TODO: Would be better as middleware?
     // this must be the last route
+    /*
     if (config('press.redirect_to_wp') === true) {
         Route::any('{any}', function ($any) {
             if (! str_contains(request()->server()['REQUEST_URI'], config('press.wordpress_slug').'/')) {
@@ -40,4 +41,5 @@ Route::middleware('web')->group(function () {
             }
         })->where('any', '.*');
     }
+    */
 });
