@@ -8,7 +8,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Sync\Models\Sync;
-use Illuminate\Support\Facades\DB;
 
 class SyncBackupJob implements ShouldQueue
 {
@@ -33,7 +32,7 @@ class SyncBackupJob implements ShouldQueue
         foreach ($sourceData as $sourceItem) {
             $targetItem = $targetModel::find($sourceItem->id);
 
-            if (!$targetItem) {
+            if (! $targetItem) {
                 $this->createTargetItem($targetModel, $sourceItem, $sync);
             } else {
                 $this->updateTargetItem($targetItem, $sourceItem, $sync);
@@ -65,6 +64,7 @@ class SyncBackupJob implements ShouldQueue
         foreach ($sync->field_mappings as $sourceField => $targetField) {
             $mappedData[$targetField] = $sourceItem->$sourceField;
         }
+
         return $mappedData;
     }
 

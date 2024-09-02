@@ -185,8 +185,8 @@ return [
     | Sync Backup Job
     |--------------------------------------------------------------------------
     |
-    | Enable or disable the Sync Backup Job that automatically syncs data 
-    | based on your sync configurations, when changes are made outside 
+    | Enable or disable the Sync Backup Job that automatically syncs data
+    | based on your sync configurations, when changes are made outside
     | of Eloquent events or you've disabled the Eloquent listener.
     |
     */
@@ -201,8 +201,8 @@ return [
     | Sync Eloquent Listener
     |--------------------------------------------------------------------------
     |
-    | Enable or disable the Eloquent listener that automatically syncs 
-    | data when a model is created, updated or deleted. Use 
+    | Enable or disable the Eloquent listener that automatically syncs
+    | data when a model is created, updated or deleted. Use
     | it wisely together with the Sync Backup Job.
     |
     */

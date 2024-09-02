@@ -9,17 +9,13 @@ class ModelCompatibilityChecker
 {
     /**
      * Check if the source and target models are compatible.
-     *
-     * @param string $sourceModelClass
-     * @param string $targetModelClass
-     * @return bool
      */
     public static function areModelsCompatible(string $sourceModelClass, string $targetModelClass): bool
     {
         $sourceModel = new $sourceModelClass;
         $targetModel = new $targetModelClass;
 
-        if (!$sourceModel instanceof Model || !$targetModel instanceof Model) {
+        if (! $sourceModel instanceof Model || ! $targetModel instanceof Model) {
             return false;
         }
 
@@ -34,7 +30,7 @@ class ModelCompatibilityChecker
         $sourceModel = new $sourceModelClass;
         $targetModel = new $targetModelClass;
 
-        if (!$sourceModel instanceof Model || !$targetModel instanceof Model) {
+        if (! $sourceModel instanceof Model || ! $targetModel instanceof Model) {
             return [
                 'compatible' => false,
                 'error' => 'One or both models are not valid Eloquent models.',

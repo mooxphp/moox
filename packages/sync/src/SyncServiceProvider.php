@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Sync;
 
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Config;
 use Moox\Sync\Commands\InstallCommand;
 use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
-use Moox\Sync\Listener\SyncListener;
 use Moox\Sync\Jobs\SyncBackupJob;
+use Moox\Sync\Listener\SyncListener;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Console\Scheduling\Schedule;
 
 class SyncServiceProvider extends PackageServiceProvider
 {
@@ -47,7 +47,7 @@ class SyncServiceProvider extends PackageServiceProvider
         if ($syncBackupJobConfig['enabled']) {
             $this->app->booted(function () use ($syncBackupJobConfig) {
                 $schedule = $this->app->make(Schedule::class);
-                $schedule->job(new SyncBackupJob())->{$syncBackupJobConfig['frequency']}();
+                $schedule->job(new SyncBackupJob)->{$syncBackupJobConfig['frequency']}();
             });
         }
     }

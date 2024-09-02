@@ -333,7 +333,7 @@ class SyncResource extends Resource
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get))
-                        ->disabled(fn ($get) => !$get('models_compatible')),
+                        ->disabled(fn ($get) => ! $get('models_compatible')),
 
                     KeyValue::make('field_mappings')
                         ->label(__('core::sync.field_mappings'))
@@ -402,7 +402,7 @@ class SyncResource extends Resource
             $set('missing_columns', $compatibility['missingColumns']);
             $set('extra_columns', $compatibility['extraColumns']);
 
-            if (!$compatibility['compatible']) {
+            if (! $compatibility['compatible']) {
                 $set('sync_all_fields', false);
 
                 $missingColumnsStr = implode(', ', $compatibility['missingColumns']);

@@ -175,7 +175,7 @@ class PlatformResource extends Resource
                         ])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, $livewire) {
-                            if (!$state) {
+                            if (! $state) {
                                 $set('order', null);
                                 $livewire->record->order = null;
                                 $livewire->record->save();
