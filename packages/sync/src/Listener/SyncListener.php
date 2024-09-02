@@ -7,11 +7,14 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 
 class SyncListener
 {
+    use LogLevel;
+
     protected $currentPlatformId;
 
     public function __construct()
@@ -27,9 +30,9 @@ class SyncListener
 
             if ($platform) {
                 $this->currentPlatformId = $platform->id;
-                $this->logdebug('Moox Sync: Platform found for domain: '.$domain);
+                $this->verboseLog('Moox Sync: Platform found for domain: '.$domain);
             } else {
-                $this->logDebug("Platform not found for domain: {$domain}");
+                $this->verboseLog("Platform not found for domain: {$domain}");
                 $this->currentPlatformId = null;
             }
         } catch (QueryException $e) {
@@ -51,26 +54,27 @@ class SyncListener
                 $this->registerModelListeners($sync);
             }
         }
+        $this->verboseLog('SyncListener registered', ['platform_id' => $this->currentPlatformId]);
     }
 
     protected function registerModelListeners(Sync $sync)
     {
         $modelClass = $sync->source_model;
 
-        $this->logdebug('Moox Sync: Listen to Events for '.$modelClass);
+        $this->verboseLog('Moox Sync: Listen to Events for '.$modelClass);
 
         Event::listen("eloquent.created: {$modelClass}", function ($model) use ($sync) {
-            $this->logdebug('Moox Sync: Event created for '.$model->id);
+            $this->verboseLog('Moox Sync: Event created for '.$model->id);
             $this->handleEvent($model, 'created', $sync);
         });
 
         Event::listen("eloquent.updated: {$modelClass}", function ($model) use ($sync) {
-            $this->logdebug('Moox Sync: Event updated for '.$model->title);
+            $this->verboseLog('Moox Sync: Event updated for '.$model->title);
             $this->handleEvent($model, 'updated', $sync);
         });
 
         Event::listen("eloquent.deleted: {$modelClass}", function ($model) use ($sync) {
-            $this->logdebug('Moox Sync: Event deleted for '.$model->id);
+            $this->verboseLog('Moox Sync: Event deleted for '.$model->id);
             $this->handleEvent($model, 'deleted', $sync);
         });
     }
@@ -84,7 +88,7 @@ class SyncListener
             'sync' => $sync->toArray(),
         ];
 
-        $this->logdebug('Moox Sync: Invoke Webhook for '.$this->currentPlatformId);
+        $this->verboseLog('Moox Sync: Invoke Webhook for '.$this->currentPlatformId);
 
         $this->invokeWebhook($sync, $syncData);
     }
@@ -93,13 +97,13 @@ class SyncListener
     {
         $webhookUrl = 'https://'.$sync->targetPlatform->domain.'/sync-webhook';
 
-        $this->logdebug('Moox Sync: Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
+        $this->verboseLog('Moox Sync: Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
 
         try {
             $response = Http::asJson()->post($webhookUrl, $data);
 
             if ($response->successful()) {
-                $this->logdebug('Moox Sync: Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
+                $this->verboseLog('Moox Sync: Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
             } elseif ($response->clientError()) {
                 Log::warning('Client error occurred when invoking webhook.', [
                     'url' => $webhookUrl,
@@ -131,13 +135,6 @@ class SyncListener
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-        }
-    }
-
-    protected function logDebug($message, array $context = [])
-    {
-        if (app()->environment() !== 'production') {
-            Log::debug($message, $context);
         }
     }
 }

@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Moox\Sync\Jobs\SyncJob;
 use Moox\Sync\Models\Sync;
+use Moox\Core\Traits\LogLevel;
 
 class SyncWebhookController extends Controller
 {
+    use LogLevel;
+
     public function __construct()
     {
         Log::info('SyncWebhookController instantiated');
@@ -24,7 +27,7 @@ class SyncWebhookController extends Controller
 
         $sync = Sync::findOrFail($validatedData['sync']['id']);
 
-        $this->logdebug('Moox Sync: Webhook recieved for sync', ['sync' => $sync->id]);
+        $this->verboseLog('Moox Sync: Webhook recieved for sync', ['sync' => $sync->id]);
 
         SyncJob::dispatch($sync, $validatedData['model'], $validatedData['event_type']);
 
@@ -39,12 +42,5 @@ class SyncWebhookController extends Controller
             'sync' => 'required|array',
             'sync.id' => 'required|integer|exists:syncs,id',
         ]);
-    }
-
-    protected function logDebug($message, array $context = [])
-    {
-        if (app()->environment() !== 'production') {
-            Log::debug($message, $context);
-        }
     }
 }

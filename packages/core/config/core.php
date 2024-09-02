@@ -382,4 +382,20 @@ return [
 
     'use_google_icons' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Logging
+    |--------------------------------------------------------------------------
+    |
+    | This config array sets the logging level and whether to log in 
+    | production. It is used by some Moox packages where verbose
+    | logging is a good thing while implementing complex stuff.
+    |
+    */
+
+    'logging' => [
+        'verbose_level' => env('VERBOSE_LEVEL', 0), // 0: Off, 1: Debug, 2: Info, 3: All
+        'log_in_production' => env('LOG_IN_PRODUCTION', false),
+    ],
+
 ];
