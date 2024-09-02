@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Moox\Sync\Http\Controllers\SyncWebhookController;
 
 $models = config('sync.entities');
 if (is_array($models)) {
@@ -23,6 +24,10 @@ Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
     Route::get('platform/{id}/sync', [\Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
 });
 
-Route::post('/sync-webhook', function () {
-    return response()->json(['message' => 'Webhook received']);
+Route::post('/sync-webhook', function (\Illuminate\Http\Request $request) {
+    \Log::info('Sync webhook route hit');
+    $controller = app()->make(SyncWebhookController::class);
+    \Log::info('SyncWebhookController instantiated');
+
+    return $controller->handle($request);
 })->withoutMiddleware('*');

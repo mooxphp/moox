@@ -27,10 +27,9 @@ class SyncListener
 
             if ($platform) {
                 $this->currentPlatformId = $platform->id;
-                // DEBUG
-                //Log::info('Platform found for domain: '.$domain);
+                $this->logDebug('Platform found for domain: '.$domain);
             } else {
-                Log::warning("Platform not found for domain: {$domain}");
+                $this->logDebug("Platform not found for domain: {$domain}");
                 $this->currentPlatformId = null;
             }
         } catch (QueryException $e) {
@@ -58,29 +57,20 @@ class SyncListener
     {
         $modelClass = $sync->source_model;
 
-        Log::info('Listen to Events for '.$modelClass);
+        $this->logDebug('Listen to Events for '.$modelClass);
 
         Event::listen("eloquent.created: {$modelClass}", function ($model) use ($sync) {
-
-            // DEBUG
-            //Log::info('Event created for '.$model->id);
-
+            $this->logDebug('Event created for '.$model->id);
             $this->handleEvent($model, 'created', $sync);
         });
 
         Event::listen("eloquent.updated: {$modelClass}", function ($model) use ($sync) {
-
-            // DEBUG
-            //Log::info('Event updated for '.$model->title);
-
+            $this->logDebug('Event updated for '.$model->title);
             $this->handleEvent($model, 'updated', $sync);
         });
 
         Event::listen("eloquent.deleted: {$modelClass}", function ($model) use ($sync) {
-
-            // DEBUG
-            //Log::info('Event deleted for '.$model->id);
-
+            $this->logDebug('Event deleted for '.$model->id);
             $this->handleEvent($model, 'deleted', $sync);
         });
     }
@@ -94,8 +84,7 @@ class SyncListener
             'sync' => $sync->toArray(),
         ];
 
-        // DEBUG
-        //Log::info('Invoke Webhook for '.$this->currentPlatformId);
+        $this->logDebug('Invoke Webhook for '.$this->currentPlatformId);
 
         $this->invokeWebhook($sync, $syncData);
     }
@@ -104,14 +93,13 @@ class SyncListener
     {
         $webhookUrl = 'https://'.$sync->targetPlatform->domain.'/sync-webhook';
 
-        // DEBUG: Log the data and request method
-        //Log::info('Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
+        $this->logDebug('Push to Webhook:', ['url' => $webhookUrl, 'data' => $data]);
 
         try {
             $response = Http::asJson()->post($webhookUrl, $data);
 
             if ($response->successful()) {
-                Log::info('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
+                $this->logDebug('Webhook invoked successfully.', ['url' => $webhookUrl, 'response' => $response->body()]);
             } elseif ($response->clientError()) {
                 Log::warning('Client error occurred when invoking webhook.', [
                     'url' => $webhookUrl,
@@ -143,6 +131,13 @@ class SyncListener
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+        }
+    }
+
+    protected function logDebug($message, array $context = [])
+    {
+        if (app()->environment() !== 'production') {
+            Log::debug($message, $context);
         }
     }
 }

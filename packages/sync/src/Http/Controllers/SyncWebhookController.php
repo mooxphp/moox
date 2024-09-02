@@ -10,13 +10,21 @@ use Moox\Sync\Models\Sync;
 
 class SyncWebhookController extends Controller
 {
+    public function __construct()
+    {
+        Log::info('SyncWebhookController instantiated');
+    }
+
     public function handle(Request $request)
     {
+        Log::info('SyncWebhookController handle method entered');
+        Log::info('Request data:', $request->all());
+
         $validatedData = $this->validateRequest($request);
 
         $sync = Sync::findOrFail($validatedData['sync']['id']);
 
-        Log::info('Webhook recieved for sync', ['sync' => $sync->id]);
+        $this->logDebug('Webhook recieved for sync', ['sync' => $sync->id]);
 
         SyncJob::dispatch($sync, $validatedData['model'], $validatedData['event_type']);
 
@@ -31,5 +39,12 @@ class SyncWebhookController extends Controller
             'sync' => 'required|array',
             'sync.id' => 'required|integer|exists:syncs,id',
         ]);
+    }
+
+    protected function logDebug($message, array $context = [])
+    {
+        if (app()->environment() !== 'production') {
+            Log::debug($message, $context);
+        }
     }
 }

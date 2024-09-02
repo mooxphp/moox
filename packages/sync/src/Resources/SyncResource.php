@@ -27,6 +27,7 @@ use Moox\Sync\Resources\SyncResource\Pages\CreateSync;
 use Moox\Sync\Resources\SyncResource\Pages\EditSync;
 use Moox\Sync\Resources\SyncResource\Pages\ListSyncs;
 use Moox\Sync\Resources\SyncResource\Pages\ViewSync;
+use Moox\Sync\Services\ModelCompatibilityChecker;
 
 class SyncResource extends Resource
 {
@@ -117,6 +118,7 @@ class SyncResource extends Resource
             foreach ($data['packages'] as $package => $packageData) {
                 if (! empty($packageData['models'])) {
                     foreach ($packageData['models'] as $modelName => $modelData) {
+                        $package = str_replace('Moox', '', str_replace(' ', '', ucwords(str_replace('_', ' ', $packageData['package']))));
                         $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
                     }
                 }
@@ -194,7 +196,6 @@ class SyncResource extends Resource
                             $targetPlatformId = $get('target_platform_id');
                             $targetModel = $get('target_model');
 
-                            // Check if both the platform and model are the same
                             if ($sourcePlatformId === $targetPlatformId && $sourceModel === $targetModel) {
                                 $set('source_model', null);
 
@@ -205,6 +206,7 @@ class SyncResource extends Resource
                                     ->send();
                             } else {
                                 self::updateTitle($set, $get);
+                                self::checkModelCompatibility($set, $get);
                             }
                         }),
 
@@ -255,7 +257,6 @@ class SyncResource extends Resource
                             $targetPlatformId = $get('target_platform_id');
                             $targetModel = $get('target_model');
 
-                            // Check if both the platform and model are the same
                             if ($sourcePlatformId === $targetPlatformId && $sourceModel === $targetModel) {
                                 $set('target_model', null);
 
@@ -266,6 +267,7 @@ class SyncResource extends Resource
                                     ->send();
                             } else {
                                 self::updateTitle($set, $get);
+                                self::checkModelCompatibility($set, $get);
                             }
                         }),
 
@@ -374,6 +376,25 @@ class SyncResource extends Resource
                 ]),
             ]),
         ]);
+    }
+
+    private static function checkModelCompatibility(callable $set, callable $get)
+    {
+        $sourceModel = $get('source_model');
+        $targetModel = $get('target_model');
+
+        if ($sourceModel && $targetModel) {
+            $isCompatible = ModelCompatibilityChecker::areModelsCompatible($sourceModel, $targetModel);
+
+            if (!$isCompatible) {
+                Notification::make()
+                    ->title('Model Compatibility Error')
+                    ->body(__('The selected source and target models are not compatible. Disable Sync all fields.'))
+                    ->danger()
+                    ->send();
+
+            }
+        }
     }
 
     public static function table(Table $table): Table

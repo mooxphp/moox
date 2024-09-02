@@ -45,7 +45,7 @@ return [
         'builder' => [
             'package' => 'Moox Builder',
             'models' => [
-                'Builder' => [
+                'Item' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',
