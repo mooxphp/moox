@@ -174,9 +174,11 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            if (! $state) {
+                        ->afterStateUpdated(function ($state, callable $set, $livewire) {
+                            if (!$state) {
                                 $set('order', null);
+                                $livewire->record->order = null;
+                                $livewire->record->save();
                             }
                         }),
 

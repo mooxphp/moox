@@ -7,8 +7,11 @@ namespace Moox\Sync;
 use Moox\Sync\Commands\InstallCommand;
 use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
 use Moox\Sync\Listener\SyncListener;
+use Moox\Sync\Jobs\SyncBackupJob;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Console\Scheduling\Schedule;
 
 class SyncServiceProvider extends PackageServiceProvider
 {
@@ -33,7 +36,29 @@ class SyncServiceProvider extends PackageServiceProvider
             PlatformTokenAuthMiddleware::class
         );
 
-        $syncListener = new SyncListener;
-        $syncListener->registerListeners();
+        $this->registerSyncBackupJob();
+        $this->registerSyncEloquentListener();
+    }
+
+    protected function registerSyncBackupJob()
+    {
+        $syncBackupJobConfig = Config::get('sync.sync_backup_job');
+
+        if ($syncBackupJobConfig['enabled']) {
+            $this->app->booted(function () use ($syncBackupJobConfig) {
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->job(new SyncBackupJob())->{$syncBackupJobConfig['frequency']}();
+            });
+        }
+    }
+
+    protected function registerSyncEloquentListener()
+    {
+        $syncEloquentListenerConfig = Config::get('sync.sync_eloquent_listener');
+
+        if ($syncEloquentListenerConfig['enabled']) {
+            $syncListener = new SyncListener;
+            $syncListener->registerListeners();
+        }
     }
 }
