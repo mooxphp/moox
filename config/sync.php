@@ -1,5 +1,20 @@
 <?php
 
+/*
+|--------------------------------------------------------------------------
+| Moox Configuration
+|--------------------------------------------------------------------------
+|
+| This configuration file uses translatable strings. If you want to
+| translate the strings, you can do so in the language files
+| published from moox_core. Example:
+|
+| 'trans//core::core.all',
+| loads from common.php
+| outputs 'All'
+|
+*/
+
 return [
 
     /*
@@ -179,4 +194,36 @@ return [
             'api_controller' => '\Moox\Sync\Http\Controllers\Api\PlatformController',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Backup Job
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the Sync Backup Job that automatically syncs data
+    | based on your sync configurations, when changes are made outside
+    | of Eloquent events or you've disabled the Eloquent listener.
+    |
+    */
+
+    'sync_backup_job' => [
+        'enabled' => true,
+        'frequency' => 'everyFiveMinutes', // hourly, daily, hourly, etc.
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Eloquent Listener
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the Eloquent listener that automatically syncs
+    | data when a model is created, updated or deleted. Use
+    | it wisely together with the Sync Backup Job.
+    |
+    */
+
+    'sync_eloquent_listener' => [
+        'enabled' => true,
+    ],
+
 ];

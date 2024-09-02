@@ -2,7 +2,7 @@
 
 # Moox Core
 
-The Moox Core package cares for many common features. It is required by all Moox packages including Moox Builder. If you want to use Moox Builder to generate a Custom Package, check out the features you're already able to use, if you want to Moox Core independently in your app or a package, you  need to use the traits accordingly.
+The Moox Core package cares for many common features. It is required by all Moox packages including Moox Builder. If you want to use Moox Builder to generate a Custom Package, check out the features you're already able to use, if you want to Moox Core independently in your app or a package, you need to use the traits accordingly.
 
 ## Installation
 
@@ -17,16 +17,16 @@ php artisan mooxcore:install
 
 Moox Core requires these packages:
 
-- https://filamentphp.com/  and https://laravel.com/ usually in the latest stable version, see composer.json
-- https://github.com/Pharaonic/laravel-readable - for formatting numbers and dates to be human readable
-- https://github.com/ryangjchandler/filament-progress-column - to use progress bars in Filament tables
-- https://github.com/codeat3/blade-google-material-design-icons - we use Google Material Design Icons
+-   https://filamentphp.com/ and https://laravel.com/ usually in the latest stable version, see composer.json
+-   https://github.com/Pharaonic/laravel-readable - for formatting numbers and dates to be human readable
+-   https://github.com/ryangjchandler/filament-progress-column - to use progress bars in Filament tables
+-   https://github.com/codeat3/blade-google-material-design-icons - we use Google Material Design Icons
 
 ## Traits
 
 ### Dynamic Tabs
 
-Moox allows you to change (or remove) the Filter tabs for Filament Resources. The HasDynamicTabs Trait  is used in all of our packages including Moox Builder.
+Moox allows you to change (or remove) the Filter tabs for Filament Resources. The HasDynamicTabs Trait is used in all of our packages including Moox Builder.
 
 #### Disable Tabs
 
@@ -123,7 +123,7 @@ The simplest query is for the All tab, of course:
 					'query' => [],
 ```
 
-All other queries require three parameters: 
+All other queries require three parameters:
 
 ```php
                     'query' => [
@@ -152,7 +152,7 @@ Add more, if you need:
                     ],
 ```
 
-We DON'T YET support relations nor the like operator. If you're in the need, we would be happy to merge a PR :-) 
+We DON'T YET support relations nor the like operator. If you're in the need, we would be happy to merge a PR :-)
 
 ```php
                     // TODO: not implemented yet
@@ -284,7 +284,7 @@ use Moox\Core\Traits\TranslatableConfig;
 class CoreServiceProvider extends PackageServiceProvider
 {
     use TranslatableConfig;
- 
+
     public function boot()
     {
         parent::boot();
@@ -307,7 +307,7 @@ use Moox\Core\Traits\RequestInModel;
 class WpTerm extends Model
 {
 	use RequestInModel;
-  
+
   $description = $wpTerm->getRequestData('description');
 }
 ```
@@ -322,7 +322,7 @@ use Moox\Core\Traits\GoogleIcons;
 class CoreServiceProvider extends PackageServiceProvider
 {
     use GoogleIcons;
- 
+
     public function boot()
     {
         parent::boot();
@@ -333,6 +333,19 @@ class CoreServiceProvider extends PackageServiceProvider
 ```
 
 You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
+
+### Log Level
+
+Log Level is a useful feature to debug things in Moox, even when you're in production, or get your logs silent while developing.
+
+```php
+
+    $this->logDebug('This is a debug message');
+    $this->logInfo('This is an info message');
+
+```
+
+You can adjust the log level and whether to log in production in Moox Core's [Config](#Logging).
 
 ## Services
 
@@ -372,7 +385,7 @@ class PlatformResource extends Resource
 
 ## API
 
-The Core API  `api/core` provides all available packages (and their configuration - work-in-progress). It is used by Moox Sync, for example.
+The Core API `api/core` provides all available packages (and their configuration - work-in-progress). It is used by Moox Sync, for example.
 
 The Core API is work in progress. It probably will be secured.
 
@@ -380,7 +393,7 @@ The Core API is work in progress. It probably will be secured.
 
 ### Package Registration
 
-Moox has a simple package registration. To ensure that some features of Moox Core are only available for known packages, all Moox  packages and all custom packages, created with Moox Builder, need to register here:
+Moox has a simple package registration. To ensure that some features of Moox Core are only available for known packages, all Moox packages and all custom packages, created with Moox Builder, need to register here:
 
 ```php
     /*
@@ -423,7 +436,7 @@ You can publish the Moox Core configuration file and add own packages:
 php artisan vendor:publish --tag="core-config"
 ```
 
- but remember to update the Array regularly then, to allow newer Moox packages to work flawlessly.
+but remember to update the Array regularly then, to allow newer Moox packages to work flawlessly.
 
 ### Disable Google Icons
 
@@ -444,6 +457,28 @@ This disables the replacement of the Filament core icons, done in Core, as well 
     */
 
     'google_icons' => true,
+```
+
+### Logging
+
+You can adjust the log level and whether to log in production. Currently used by Moox Sync and soon by other Moox packages, too.
+
+```php
+    /*
+    |--------------------------------------------------------------------------
+    | Logging
+    |--------------------------------------------------------------------------
+    |
+    | This config array sets the logging level and whether to log in
+    | production. It is used by some Moox packages where verbose
+    | logging is a good thing while implementing complex stuff.
+    |
+    */
+
+    'logging' => [
+        'verbose_level' => env('VERBOSE_LEVEL', 0), // 0: Off, 1: Debug, 2: Info, 3: All
+        'log_in_production' => env('LOG_IN_PRODUCTION', false),
+    ],
 ```
 
 ## Changelog

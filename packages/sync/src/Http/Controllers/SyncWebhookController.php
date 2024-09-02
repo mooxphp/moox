@@ -27,7 +27,7 @@ class SyncWebhookController extends Controller
 
         $sync = Sync::findOrFail($validatedData['sync']['id']);
 
-        $this->verboseLog('Moox Sync: Webhook recieved for sync', ['sync' => $sync->id]);
+        $this->logDebug('Moox Sync: Webhook recieved for sync', ['sync' => $sync->id]);
 
         SyncJob::dispatch($sync, $validatedData['model'], $validatedData['event_type']);
 

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 trait LogLevel
 {
-    protected function verboseLog($message, array $context = [])
+    protected function logDebug($message, array $context = [])
     {
         $this->log('debug', $message, $context);
     }
