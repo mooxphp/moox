@@ -4,11 +4,14 @@ namespace Moox\Sync\Services;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 
 class SyncService
 {
+    use LogLevel;
+
     protected $platformRelationService;
 
     public function __construct(PlatformRelationService $platformRelationService)
@@ -18,17 +21,25 @@ class SyncService
 
     public function shouldSyncModel($model, Platform $targetPlatform)
     {
+        $this->logDebug('shouldSyncModel method entered', ['model' => $model, 'targetPlatform' => $targetPlatform]);
+
         $modelClass = get_class($model);
 
         // Check if the model is in the models_with_platform_relations config
         $modelsWithPlatformRelations = Config::get('sync.models_with_platform_relations', []);
 
         if (! in_array($modelClass, $modelsWithPlatformRelations)) {
+            $this->logDebug('shouldSyncModel has no platform relations', ['model' => $modelClass, 'targetPlatform' => $targetPlatform]);
+
             return false;
         }
 
         if (class_exists($modelClass)) {
+            $this->logDebug('shouldSyncModel method finished', ['model' => $model, 'targetPlatform' => $targetPlatform, 'result' => false]);
+
             return $this->platformRelationService->modelHasPlatform($model, $targetPlatform);
+        } else {
+            $this->logDebug('shouldSyncModel model class does not exist', ['model' => $modelClass, 'targetPlatform' => $targetPlatform]);
         }
 
         return false;
@@ -40,6 +51,8 @@ class SyncService
         $targetPlatform = $sync->targetPlatform;
         $sourceModel = $sync->source_model;
 
+        $this->logDebug('performSync method entered', ['sync' => $sync]);
+
         // Check if the model should be synced
         if (! $this->shouldSyncModel(new $sourceModel, $targetPlatform)) {
             throw new \Exception("Model {$sourceModel} is not configured for platform relations or doesn't have a relation with the target platform.");
@@ -48,11 +61,17 @@ class SyncService
         // Fetch data from source platform
         $sourceData = $this->fetchDataFromSource($sourcePlatform, $sourceModel);
 
+        $this->logDebug('performSync fetched data from source', ['sync' => $sync, 'sourceData' => $sourceData]);
+
         // Transform data if needed
         $transformedData = $this->transformData($sourceData, $sync->field_mappings);
 
+        $this->logDebug('performSync transformed data', ['sync' => $sync, 'transformedData' => $transformedData]);
+
         // Sync to target platform
         $this->syncToTarget($targetPlatform, $sync->target_model, $transformedData, $sync->if_exists);
+
+        $this->logDebug('performSync synced data to target', ['sync' => $sync]);
 
         // Update last sync time
         $sync->update(['last_sync' => now()]);

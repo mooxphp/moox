@@ -7,12 +7,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Services\SyncService;
 
 class SyncJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
 
     protected $sync;
 
@@ -24,7 +25,12 @@ class SyncJob implements ShouldQueue
     public function handle(SyncService $syncService)
     {
         try {
+            $this->logDebug('SyncJob handle method entered', ['sync' => $this->sync->id]);
+
             $syncService->performSync($this->sync);
+
+            $this->logDebug('SyncJob handle method finished', ['sync' => $this->sync->id]);
+
         } catch (\Exception $e) {
             $this->sync->update([
                 'has_errors' => true,

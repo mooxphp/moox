@@ -17,7 +17,7 @@ class QueueWorker extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // TODO: log, activity log is optional
+        // TODO: log, activity log is optional and should be configurable
         activity()->log('Queue worker invoked by route');
 
         $timeout = 60;
