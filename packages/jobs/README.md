@@ -256,7 +256,11 @@ More information:
 
 The Shared Hosting API in Moox Core allows to `schedule/run` from an URL. And in Moox Jobs we use this feature to do a `queue:work` from an URL.
 
-https://yourdomain.com/queue/work?token=secure&timeout=300
+-   https://yourdomain.com/queue/work?token=secure
+
+You can add an optional `timeout` parameter to the URL to specify the timeout for the queue worker in seconds. If no timeout is specified, the default timeout of 60 seconds is used.
+
+-   https://yourdomain.com/queue/work?token=secure&timeout=300
 
 If you want to use the Shared Hosting API, you need to set the `SHARED_HOSTING_ENABLED` in [Core Config](https://github.com/mooxphp/core/blob/main/README.md#Shared-Hosting) to `true` and the `SHARED_HOSTING_TOKEN` config to a secure token.
 

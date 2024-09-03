@@ -401,7 +401,7 @@ The Models API is work in progress. It probably will be secured.
 
 The Shared Hosting API `schedule/run` is used to run scheduled tasks in shared hosting environments.
 
-https://yourdomain.com/schedule/run?token=secure&timeout=300
+https://yourdomain.com/schedule/run?token=secure
 
 If you want to use the Shared Hosting API, you need to set the `SHARED_HOSTING_ENABLED` [config](#Shared-Hosting) to `true` and the `SHARED_HOSTING_TOKEN` config to a secure token.
 
