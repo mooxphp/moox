@@ -24,10 +24,4 @@ Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
     Route::get('platform/{id}/sync', [\Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
 });
 
-Route::post('/sync-webhook', function (\Illuminate\Http\Request $request) {
-    \Log::info('Sync webhook route hit');
-    $controller = app()->make(SyncWebhookController::class);
-    \Log::info('SyncWebhookController instantiated');
-
-    return $controller->handle($request);
-})->withoutMiddleware('*');
+Route::post('/sync-webhook', [SyncWebhookController::class, 'handle'])->withoutMiddleware('*');
