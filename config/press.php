@@ -1240,7 +1240,7 @@ return [
         'wp_users' => [
             'api' => [
                 'enabled' => true,
-                'public' => false, // false for private, true for public
+                'public' => true, // false for private, true for public
                 'auth_type' => 'platform', // 'platform' for platform tokens or 'sanctum' for user-tied tokens
                 'route_only' => ['index', 'show', 'store', 'destroy', 'update'],
             ],

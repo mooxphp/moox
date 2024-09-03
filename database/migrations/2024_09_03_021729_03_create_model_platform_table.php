@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_platform', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id');
+        Schema::create('model_platform', function (Blueprint $table) {
+            $table->id();
+            $table->string('model_type');
+            $table->unsignedBigInteger('model_id');
             $table->unsignedBigInteger('platform_id');
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('RESTRICT');
-            $table->foreign('platform_id')->references('id')->on('platforms')->onDelete('RESTRICT');
-
-            $table->primary(['user_id', 'platform_id']);
-
             $table->timestamps();
+
+            $table->index(['model_type', 'model_id']);
+            $table->foreign('platform_id')->references('id')->on('platforms')->onDelete('cascade');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_platform');
+        Schema::dropIfExists('model_platform');
     }
 };

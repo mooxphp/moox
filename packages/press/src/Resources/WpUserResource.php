@@ -99,7 +99,6 @@ class WpUserResource extends Resource
                     TextInput::make('user_activation_key')
                         ->label(__('core::user.user_activation_key'))
                         ->rules(['max:255', 'string'])
-                        ->required()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -183,6 +182,37 @@ class WpUserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+
+                    Select::make('platforms')
+                        ->label('Platforms')
+                        ->multiple()
+                        ->options(function () {
+                            return \Moox\Sync\Models\Platform::pluck('name', 'id')->toArray();
+                        })
+                        ->afterStateHydrated(function ($component, $state, $record) {
+                            if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
+                                $platformService = app('\Moox\Sync\Services\PlatformRelationService');
+                                $platforms = $platformService->getPlatformsForModel($record);
+                                $component->state($platforms->pluck('id')->toArray());
+                            }
+                        })
+                        ->dehydrated(false)
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set, $record) {
+                            if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
+                                $platformService = app('\Moox\Sync\Services\PlatformRelationService');
+                                $platformService->syncPlatformsForModel($record, $state ?? []);
+                            }
+                        })
+                        ->preload()
+                        ->searchable()
+                        ->visible(fn () => class_exists('\Moox\Sync\Models\Platform'))
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ]),
+
                 ]),
             ]),
 

@@ -116,6 +116,70 @@ Besides the Moox default config options, you can can configure following options
     ],
 ```
 
+## Services
+
+### PlatformRelationService
+
+The `PlatformRelationService` is a key component of Moox Sync that handles the relationships between models and platforms. It provides methods for syncing and retrieving platform associations for any model.
+
+Key methods:
+
+-   `syncPlatformsForModel($model, array $platformIds)`: Syncs the platforms for a given model.
+-   `getPlatformsForModel($model)`: Retrieves the platforms associated with a given model.
+
+### SyncService
+
+The `SyncService` uses the `PlatformRelationService` to determine if a model should be synced with a target platform.
+
+## Implementing
+
+To add platform relations to your model, you need to edit the `models_with_platform_relations` in the `sync.php` config file and implement the platform relation into your UI, like in the following example with a Filament Resource:
+
+### Implementing a Platform Field in a User Resource
+
+To add platform selection functionality to a User Resource (or any other resource), you can use the following pattern:
+
+```php
+use Filament\Forms\Components\Select;
+use Moox\Sync\Models\Platform;
+use Moox\Sync\Services\PlatformRelationService;
+
+public static function form(Form $form): Form
+{
+    return $form->schema([
+        Select::make('platforms')
+            ->label('Platforms')
+            ->multiple()
+            ->options(function () {
+                return Platform::pluck('name', 'id')->toArray();
+            })
+            ->afterStateHydrated(function ($component, $state, $record) {
+                if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
+                    $platformService = app(PlatformRelationService::class);
+                    $platforms = $platformService->getPlatformsForModel($record);
+                    $component->state($platforms->pluck('id')->toArray());
+                }
+            })
+    ->dehydrated(false)
+            ->reactive()
+            ->afterStateUpdated(function ($state, callable $set, $record) {
+                if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
+                    $platformService = app(PlatformRelationService::class);
+                    $platformService->syncPlatformsForModel($record, $state ?? []);
+                }
+            })
+            ->preload()
+            ->searchable()
+            ->visible(fn () => class_exists('\Moox\Sync\Models\Platform'))
+            ->columnSpan([
+                'default' => 12,
+                'md' => 12,
+                'lg' => 12,
+            ]),
+        ]);
+}
+```
+
 ### Logging
 
 Setting up Sync involves the connection of two or more platforms, availability of APIs and running Jobs. This is why we added a logger to the package, that can be setup in [Moox Core config](../core/README.md#logging). The flow of a working sync may look like this:

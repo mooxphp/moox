@@ -8,6 +8,8 @@ class CoreController extends Controller
 {
     public function index()
     {
-        return config('core');
+        $packages = config('core');
+
+        return response()->json($packages);
     }
 }

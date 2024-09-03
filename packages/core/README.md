@@ -383,11 +383,19 @@ class PlatformResource extends Resource
     }
 ```
 
-## API
+## APIs
 
-The Core API `api/core` provides all available packages (and their configuration - work-in-progress). It is used by Moox Sync, for example.
+### Core API
 
-The Core API is work in progress. It probably will be secured.
+The Core API `api/core` provides all available packages (and their configuration).
+
+It is currently not used, and may be changed or removed.
+
+#### Models API
+
+The Models API `api/models` provides all available and loaded models. It is used by Moox Sync, for example.
+
+The Models API is work in progress. It probably will be secured.
 
 ## Config
 

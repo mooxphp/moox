@@ -95,7 +95,7 @@ class SyncResource extends Resource
 
     private static function getApiUrl(?Platform $platform): ?string
     {
-        return $platform ? "https://{$platform->domain}/api/core" : null;
+        return $platform ? "https://{$platform->domain}/api/models" : null;
     }
 
     private static function fetchModelsFromApi(string $apiUrl, Platform $platform): array
@@ -116,13 +116,9 @@ class SyncResource extends Resource
             $data = $response->json();
             $options = [];
 
-            foreach ($data['packages'] as $package => $packageData) {
-                if (! empty($packageData['models'])) {
-                    foreach ($packageData['models'] as $modelName => $modelData) {
-                        $package = str_replace('Moox', '', str_replace(' ', '', ucwords(str_replace('_', ' ', $packageData['package']))));
-                        $options["{$packageData['package']} - {$modelName}"] = "Moox\\{$package}\\Models\\{$modelName}";
-                    }
-                }
+            foreach ($data['models'] as $model) {
+                $package = str_replace('Models', ' - ', str_replace('\\', ' ', $model));
+                $options["{$package}"] = "{$model}";
             }
 
             return array_flip($options);
@@ -272,6 +268,8 @@ class SyncResource extends Resource
                             }
                         }),
 
+                    // TODO: not implemented yet
+                    /*
                     TextInput::make('interval')
                         ->label(__('core::core.interval'))
                         ->rules(['integer'])
@@ -280,6 +278,7 @@ class SyncResource extends Resource
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
+                    */
 
                     Toggle::make('use_platform_relations')
                         ->label(__('core::sync.use_platform_relations'))
@@ -287,6 +286,11 @@ class SyncResource extends Resource
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
 
+                    Hidden::make('if_exists')
+                        ->default('update'),
+
+                    // TODO: not implemented yet
+                    /*
                     Select::make('if_exists')
                         ->label(__('core::sync.if_exists'))
                         ->options([
@@ -298,6 +302,8 @@ class SyncResource extends Resource
                         ->default('update')
                         ->columnSpan(['default' => 12]),
 
+                    // TODO: not implemented yet
+                    /*
                     Select::make('filter_ids')
                         ->label(__('core::sync.filter_ids'))
                         ->options([
@@ -326,6 +332,7 @@ class SyncResource extends Resource
                         ->visible(fn ($get) => $get('filter_ids') === 'ignore_ids')
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
+                    */
 
                     Toggle::make('sync_all_fields')
                         ->label(__('core::sync.sync_all_fields'))
@@ -335,6 +342,8 @@ class SyncResource extends Resource
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get))
                         ->disabled(fn ($get) => ! $get('models_compatible')),
 
+                    // TODO: not implemented yet
+                    /*
                     KeyValue::make('field_mappings')
                         ->label(__('core::sync.field_mappings'))
                         ->rules(['array'])
@@ -342,13 +351,17 @@ class SyncResource extends Resource
                         ->hidden(fn ($get) => $get('sync_all_fields') && $get('models_compatible'))
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
+                    */
 
+                    // TODO: not implemented yet
+                    /*
                     TextInput::make('use_transformer_class')
                         ->label(__('core::sync.use_transformer_class'))
                         ->rules(['max:255'])
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
+                    */
 
                     Toggle::make('has_errors')
                         ->label(__('core::core.has_errors'))
@@ -362,11 +375,9 @@ class SyncResource extends Resource
                         ->columnSpan(['default' => 12])
                         ->visible(fn ($get) => $get('has_errors')),
 
-                    TextInput::make('title')
-                        ->label(__('core::core.title'))
+                    Hidden::make('title')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->columnSpan(['default' => 12])
                         ->default(fn (callable $get) => SyncResource::generateTitle($get))
                         ->reactive(),
 
@@ -409,8 +420,11 @@ class SyncResource extends Resource
                 $extraColumnsStr = implode(', ', $compatibility['extraColumns']);
 
                 Notification::make()
-                    ->title('Model Compatibility Warning')
-                    ->body("The selected models are not fully compatible. Missing columns: {$missingColumnsStr}. Extra columns: {$extraColumnsStr}. Please map fields manually.")
+                    ->title(__('core::sync.model_compatibility_warning'))
+                    ->body(__('core::sync.models_are_not_fully_compatible').'<br><br>'.
+                    __('core::sync.missing_columns').':<br>'.$missingColumnsStr.'<br><br>'.
+                    __('core::sync.extra_columns').':<br>'.$extraColumnsStr.'<br><br>'.
+                    __('core::sync.please_map_fields_manually'))
                     ->warning()
                     ->send();
             }

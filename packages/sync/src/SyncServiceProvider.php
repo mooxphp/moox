@@ -23,7 +23,7 @@ class SyncServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasRoute('api')
-            ->hasMigrations(['01_create_platforms_table', '02_create_syncs_table', '03_create_user_platform_table'])
+            ->hasMigrations(['01_create_platforms_table', '02_create_syncs_table', '03_create_model_platform_table'])
             ->hasCommand(InstallCommand::class);
     }
 
@@ -52,12 +52,12 @@ class SyncServiceProvider extends PackageServiceProvider
         }
     }
 
-    protected function registerSyncEloquentListener()
+    protected function registerSyncEloquentListener(): void
     {
         $syncEloquentListenerConfig = Config::get('sync.sync_eloquent_listener');
 
         if ($syncEloquentListenerConfig['enabled']) {
-            $syncListener = new SyncListener;
+            $syncListener = $this->app->make(SyncListener::class);
             $syncListener->registerListeners();
         }
     }

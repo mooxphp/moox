@@ -191,14 +191,26 @@ class WpUser extends Authenticatable implements FilamentUser
         return new UserQueryBuilder($connection, $grammar, $processor);
     }
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return true;
-    }
-
     protected function isMetaField($key)
     {
         return array_key_exists($key, config('press.default_user_meta', []));
+    }
+
+    public function getAllMetaAttributes()
+    {
+        $metaFields = config('press.default_user_meta', []);
+        $attributes = [];
+
+        foreach ($metaFields as $key => $default) {
+            $attributes[$key] = $this->getMeta($key);
+        }
+
+        return $attributes;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
     }
 
     public function getNameAttribute()

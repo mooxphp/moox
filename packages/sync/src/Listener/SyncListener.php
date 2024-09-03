@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
+use Moox\Sync\Services\SyncService;
 
 class SyncListener
 {
@@ -17,8 +18,11 @@ class SyncListener
 
     protected $currentPlatformId;
 
-    public function __construct()
+    protected $syncService;
+
+    public function __construct(SyncService $syncService)
     {
+        $this->syncService = $syncService;
         $domain = explode('.', request()->getHost());
 
         if (is_array($domain)) {

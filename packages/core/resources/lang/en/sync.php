@@ -98,4 +98,18 @@ return [
     // Lock Reason refers to the reason the platform or model is locked
     'lock_reason' => 'Lock Reason',
 
+    // Model Compatibility Warning
+    'model_compatibility_warning' => 'Model Compatibility Warning',
+
+    // The selected models are not fully compatible
+    'models_are_not_fully_compatible' => 'The selected models are not fully compatible',
+
+    // Missing columns
+    'missing_columns' => 'Missing Columns',
+
+    // Extra columns
+    'extra_columns' => 'Extra Columns',
+
+    // Please map fields manually
+    'please_map_fields_manually' => 'Please map fields manually',
 ];

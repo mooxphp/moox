@@ -226,4 +226,20 @@ return [
         'enabled' => true,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Models with Platform Relations
+    |--------------------------------------------------------------------------
+    |
+    | List of models that should have platform relations.
+    |
+    */
+
+    'models_with_platform_relations' => [
+        'App\Models\User',
+        'Moox\User\Models\User',
+        'Moox\Press\Models\User',
+        // Add any other models here
+    ],
+
 ];
