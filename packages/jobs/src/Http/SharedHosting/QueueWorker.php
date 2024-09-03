@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Jobs\HttpSharedHosting;
+namespace Moox\Jobs\Http\SharedHosting;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
