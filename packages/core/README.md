@@ -391,11 +391,19 @@ The Core API `api/core` provides all available packages (and their configuration
 
 It is currently not used, and may be changed or removed.
 
-#### Models API
+### Models API
 
 The Models API `api/models` provides all available and loaded models. It is used by Moox Sync, for example.
 
 The Models API is work in progress. It probably will be secured.
+
+### Shared Hosting API
+
+The Shared Hosting API `schedule/run` is used to run scheduled tasks in shared hosting environments.
+
+https://yourdomain.com/schedule/run?token=secure&timeout=300
+
+If you want to use the Shared Hosting API, you need to set the `SHARED_HOSTING_ENABLED` [config](#Shared-Hosting) to `true` and the `SHARED_HOSTING_TOKEN` config to a secure token.
 
 ## Config
 
@@ -486,6 +494,27 @@ You can adjust the log level and whether to log in production. Currently used by
     'logging' => [
         'verbose_level' => env('VERBOSE_LEVEL', 0), // 0: Off, 1: Debug, 2: Info, 3: All
         'log_in_production' => env('LOG_IN_PRODUCTION', false),
+    ],
+```
+
+### Shared Hosting
+
+You can enable shared hosting features. This is useful if you want to run scheduled tasks in shared hosting environments. It allows you to run the `queue:work` and 'schedule:run' command from an URL
+
+```php
+    /*
+    |--------------------------------------------------------------------------
+    | Shared Hosting
+    |--------------------------------------------------------------------------
+    |
+    | This config array sets the shared hosting token. This token is used to
+    | authenticate requests from shared hosting environments.
+    |
+    */
+
+    'shared_hosting' => [
+        'enabled' => env('SHARED_HOSTING_ENABLED', false),
+        'token' => env('SHARED_HOSTING_TOKEN', 'secret'),
     ],
 ```
 

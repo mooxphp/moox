@@ -479,4 +479,18 @@ return [
         'log_in_production' => env('LOG_IN_PRODUCTION', false),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Shared Hosting
+    |--------------------------------------------------------------------------
+    |
+    | This config array sets the shared hosting token. This token is used to
+    | authenticate requests from shared hosting environments.
+    |
+    */
+
+    'shared_hosting' => [
+        'enabled' => env('SHARED_HOSTING_ENABLED', false),
+        'token' => env('SHARED_HOSTING_TOKEN', 'secret'),
+    ],
 ];

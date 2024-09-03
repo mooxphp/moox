@@ -75,7 +75,7 @@ Monitor your job batches, prune batches.
 
 ## Configuration
 
-The configuration of the package is work in progress. To make it better suitable for integrators, we will add more flexibility and better translations soon. 
+The configuration of the package is work in progress. To make it better suitable for integrators, we will add more flexibility and better translations soon.
 
 New in 3.1 is the switch to Google Icons and the ability to [switch back to Heroicons in Moox Core](https://github.com/mooxphp/core#disable-google-icons).
 
@@ -251,6 +251,14 @@ More information:
 
 -   [Laravel Queues for Beginners](https://sagardhiman021.medium.com/demystifying-queues-and-jobs-in-laravel-a-beginners-guide-with-examples-in-2023-a8e52698a298)
 -   [Using Laravel Queues on Shared Hosting](https://talltips.novate.co.uk/laravel/using-queues-on-shared-hosting-with-laravel)
+
+### Shared Hosting API
+
+The Shared Hosting API in Moox Core allows to `schedule/run` from an URL. And in Moox Jobs we use this feature to do a `queue:work` from an URL.
+
+https://yourdomain.com/queue/work?token=secure&timeout=300
+
+If you want to use the Shared Hosting API, you need to set the `SHARED_HOSTING_ENABLED` in [Core Config](https://github.com/mooxphp/core/blob/main/README.md#Shared-Hosting) to `true` and the `SHARED_HOSTING_TOKEN` config to a secure token.
 
 ### Root Server
 

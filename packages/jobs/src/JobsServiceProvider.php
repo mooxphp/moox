@@ -13,6 +13,7 @@ class JobsServiceProvider extends PackageServiceProvider
     {
         $package->name('jobs')
             ->hasConfigFile()
+            ->hasRoutes('api')
             ->hasTranslations()
             ->hasCommands(InstallCommand::class, UpdateCommand::class);
     }
