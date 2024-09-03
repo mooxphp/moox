@@ -26,13 +26,38 @@ class SyncService
             'targetPlatform' => $targetPlatform ? $targetPlatform->id : 'all',
         ]);
 
-        if ($targetPlatform) {
-            $this->syncToSinglePlatform($modelClass, $modelData, $eventType, $sourcePlatform, $targetPlatform);
+        if ($modelClass === Platform::class) {
+            $this->syncPlatform($modelData, $eventType, $targetPlatform);
         } else {
-            $this->syncToAllPlatforms($modelClass, $modelData, $eventType, $sourcePlatform);
+            if ($targetPlatform) {
+                $this->syncToSinglePlatform($modelClass, $modelData, $eventType, $sourcePlatform, $targetPlatform);
+            } else {
+                $this->syncToAllPlatforms($modelClass, $modelData, $eventType, $sourcePlatform);
+            }
         }
 
         $this->logDebug('performSync method finished');
+    }
+
+    protected function syncPlatform(array $platformData, string $eventType, ?Platform $targetPlatform = null)
+    {
+        if ($targetPlatform) {
+            $this->updatePlatform($platformData, $targetPlatform);
+        } else {
+            $allPlatforms = Platform::where('id', '!=', $platformData['id'])->get();
+            foreach ($allPlatforms as $platform) {
+                $this->updatePlatform($platformData, $platform);
+            }
+        }
+    }
+
+    protected function updatePlatform(array $platformData, Platform $targetPlatform)
+    {
+        $this->logDebug('Updating platform', ['platformId' => $platformData['id'], 'targetPlatform' => $targetPlatform->id]);
+
+        $targetPlatform->update($platformData);
+
+        $this->logDebug('Platform updated', ['platformId' => $platformData['id'], 'targetPlatform' => $targetPlatform->id]);
     }
 
     protected function syncToSinglePlatform($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, Platform $targetPlatform)

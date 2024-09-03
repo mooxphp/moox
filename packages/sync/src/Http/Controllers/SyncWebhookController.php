@@ -26,13 +26,17 @@ class SyncWebhookController extends Controller
 
             $this->logDebug('SyncWebhookController validated request', ['data' => $validatedData]);
 
-            $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
+            if ($validatedData['model_class'] === Platform::class) {
+                $this->handlePlatformSync($validatedData);
+            } else {
+                $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
 
-            if (! $sourcePlatform) {
-                throw new \Exception('Source platform not found');
+                if (! $sourcePlatform) {
+                    throw new \Exception('Source platform not found');
+                }
+
+                SyncJob::dispatch($validatedData['model_class'], $validatedData['model'], $validatedData['event_type'], $sourcePlatform);
             }
-
-            SyncJob::dispatch($validatedData['model_class'], $validatedData['model'], $validatedData['event_type'], $sourcePlatform);
 
             return response()->json(['status' => 'success'], 200);
         } catch (\Exception $e) {
@@ -40,6 +44,16 @@ class SyncWebhookController extends Controller
 
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
+    }
+
+    protected function handlePlatformSync($data)
+    {
+        $platform = Platform::updateOrCreate(
+            ['id' => $data['model']['id']],
+            $data['model']
+        );
+
+        $this->logDebug('Platform synced', ['platform' => $platform->id]);
     }
 
     protected function validateRequest(Request $request)
