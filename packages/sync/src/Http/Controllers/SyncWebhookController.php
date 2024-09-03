@@ -4,7 +4,6 @@ namespace Moox\Sync\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Jobs\SyncJob;
 use Moox\Sync\Models\Sync;
@@ -15,19 +14,20 @@ class SyncWebhookController extends Controller
 
     public function __construct()
     {
-        Log::info('SyncWebhookController instantiated');
+        $this->logDebug('SyncWebhookController instantiated');
     }
 
     public function handle(Request $request)
     {
-        Log::info('SyncWebhookController handle method entered');
-        Log::info('Request data:', $request->all());
+        $this->logDebug('SyncWebhookController handle method entered with data', ['data' => $request->all()]);
 
         $validatedData = $this->validateRequest($request);
 
+        $this->logDebug('SyncWebhookController validated request', ['data' => $validatedData]);
+
         $sync = Sync::findOrFail($validatedData['sync']['id']);
 
-        $this->logDebug('Moox Sync: Webhook recieved for sync', ['sync' => $sync->id]);
+        $this->logDebug('SyncWebhookController dispatching SyncJob', ['sync' => $sync->id]);
 
         SyncJob::dispatch($sync);
 
@@ -36,6 +36,8 @@ class SyncWebhookController extends Controller
 
     protected function validateRequest(Request $request)
     {
+        $this->logDebug('SyncWebhookController validating request', ['data' => $request->all()]);
+
         return $request->validate([
             'event_type' => 'required|string|in:created,updated,deleted',
             'model' => 'required|array',
