@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('moox:batchjob')->everyDay();
+        $schedule->command('moox:batchjob')->daily();
         $schedule->command('moox:demojob')->everyHour();
         //$schedule->command('moox:failjob')->cron('0 */3 * * *');        // Every 3 minutes
         //$schedule->command('moox:longjob')->cron('0 */45 * * *');       // Every 45 minutes
