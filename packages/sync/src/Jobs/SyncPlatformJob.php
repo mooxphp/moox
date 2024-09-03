@@ -35,8 +35,8 @@ class SyncPlatformJob implements ShouldQueue
         foreach ($targetPlatforms as $targetPlatform) {
             try {
                 $this->logDebug('Syncing platform', [
-                    'source' => $sourcePlatform->id,
-                    'target' => $targetPlatform->id,
+                    'source' => $sourcePlatform->name,
+                    'target' => $targetPlatform->name,
                 ]);
 
                 $this->sendWebhook($sourcePlatform, $targetPlatform);
