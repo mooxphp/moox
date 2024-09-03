@@ -7,28 +7,28 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
-use Moox\Sync\Services\SyncService;
 
 class SyncPlatformJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
 
-    public function handle(SyncService $syncService)
+    public function handle()
     {
         $this->logDebug('SyncPlatformJob handle method entered');
 
         $platforms = Platform::all();
 
         foreach ($platforms as $sourcePlatform) {
-            $this->syncPlatform($syncService, $sourcePlatform);
+            $this->syncPlatform($sourcePlatform);
         }
 
         $this->logDebug('SyncPlatformJob handle method finished');
     }
 
-    protected function syncPlatform(SyncService $syncService, Platform $sourcePlatform)
+    protected function syncPlatform(Platform $sourcePlatform)
     {
         $targetPlatforms = Platform::where('id', '!=', $sourcePlatform->id)->get();
 
@@ -39,13 +39,7 @@ class SyncPlatformJob implements ShouldQueue
                     'target' => $targetPlatform->id,
                 ]);
 
-                $syncService->performSync(
-                    Platform::class,
-                    $sourcePlatform->toArray(),
-                    'updated',
-                    $sourcePlatform,
-                    $targetPlatform
-                );
+                $this->sendWebhook($sourcePlatform, $targetPlatform);
 
             } catch (\Exception $e) {
                 $this->logDebug('Error syncing platform', [
@@ -54,6 +48,35 @@ class SyncPlatformJob implements ShouldQueue
                     'error' => $e->getMessage(),
                 ]);
             }
+        }
+    }
+
+    protected function sendWebhook(Platform $sourcePlatform, Platform $targetPlatform)
+    {
+        $webhookUrl = 'https://'.$targetPlatform->domain.'/api/sync-webhook';
+
+        $data = [
+            'event_type' => 'updated',
+            'model_class' => Platform::class,
+            'model' => $sourcePlatform->toArray(),
+            'platform' => $sourcePlatform->toArray(),
+        ];
+
+        $response = Http::withToken($targetPlatform->api_token)
+            ->post($webhookUrl, $data);
+
+        if ($response->successful()) {
+            $this->logDebug('Webhook sent successfully', [
+                'source' => $sourcePlatform->id,
+                'target' => $targetPlatform->id,
+            ]);
+        } else {
+            $this->logDebug('Webhook failed', [
+                'source' => $sourcePlatform->id,
+                'target' => $targetPlatform->id,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
         }
     }
 }

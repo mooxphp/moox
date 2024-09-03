@@ -27,15 +27,9 @@ class SyncWebhookController extends Controller
             $this->logDebug('SyncWebhookController validated request', ['data' => $validatedData]);
 
             if ($validatedData['model_class'] === Platform::class) {
-                $this->handlePlatformSync($validatedData);
+                $this->handlePlatformSync($validatedData['model']);
             } else {
-                $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
-
-                if (! $sourcePlatform) {
-                    throw new \Exception('Source platform not found');
-                }
-
-                SyncJob::dispatch($validatedData['model_class'], $validatedData['model'], $validatedData['event_type'], $sourcePlatform);
+                $this->handleModelSync($validatedData);
             }
 
             return response()->json(['status' => 'success'], 200);
@@ -46,14 +40,36 @@ class SyncWebhookController extends Controller
         }
     }
 
-    protected function handlePlatformSync($data)
+    protected function handlePlatformSync(array $platformData)
     {
         $platform = Platform::updateOrCreate(
-            ['id' => $data['model']['id']],
-            $data['model']
+            ['id' => $platformData['id']],
+            $platformData
         );
 
         $this->logDebug('Platform synced', ['platform' => $platform->id]);
+    }
+
+    protected function handleModelSync(array $validatedData)
+    {
+        $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
+
+        if (! $sourcePlatform) {
+            throw new \Exception('Source platform not found');
+        }
+
+        SyncJob::dispatch(
+            $validatedData['model_class'],
+            $validatedData['model'],
+            $validatedData['event_type'],
+            $sourcePlatform
+        );
+
+        $this->logDebug('SyncJob dispatched for model', [
+            'model_class' => $validatedData['model_class'],
+            'model_id' => $validatedData['model']['id'],
+            'event_type' => $validatedData['event_type'],
+        ]);
     }
 
     protected function validateRequest(Request $request)
