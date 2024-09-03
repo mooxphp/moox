@@ -206,7 +206,7 @@ return [
     */
 
     'sync_platform_job' => [
-        'enabled' => true,
+        'enabled' => env('SYNC_PLATFORM_JOB_ENABLED', false),
         'frequency' => 'everyFiveMinutes', // hourly, daily, hourly, etc.
     ],
 
@@ -222,7 +222,7 @@ return [
     */
 
     'sync_backup_job' => [
-        'enabled' => true,
+        'enabled' => env('SYNC_BACKUP_JOB_ENABLED', false),
         'frequency' => 'everyFiveMinutes', // hourly, daily, hourly, etc.
     ],
 
@@ -238,7 +238,22 @@ return [
     */
 
     'sync_eloquent_listener' => [
-        'enabled' => true,
+        'enabled' => env('SYNC_LISTENER_ENABLED', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Webhook
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the webhook that automatically syncs
+    | data when a model is created, updated or deleted. Use
+    | it wisely together with the Sync Backup Job.
+    |
+    */
+
+    'sync_webhook' => [
+        'enabled' => env('SYNC_WEBHOOK_ENABLED', false),
     ],
 
     /*

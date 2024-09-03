@@ -15,6 +15,15 @@ class SyncWebhookController extends Controller
     public function __construct()
     {
         $this->logDebug('SyncWebhookController instantiated');
+
+        if (! config('sync.sync_webhook.enabled')) {
+            $this->logDebug('SyncWebhookController is disabled');
+
+            abort(404);
+        }
+
+        $this->logDebug('SyncWebhookController enabled', ['enabled' => config('sync.sync_webhook.enabled')]);
+
     }
 
     public function handle(Request $request)

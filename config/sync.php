@@ -201,12 +201,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | Enable or disable the Sync Platform Job that automatically syncs data
-    | between all platforms.
+    | between all platforms. Use this Job only on one platform, preferably
+    | that platform that is configured as master. Should not be a target
+    | platform.
     |
     */
 
     'sync_platform_job' => [
-        'enabled' => true,
+        'enabled' => env('SYNC_PLATFORM_JOB_ENABLED', false),
         'frequency' => 'everyFiveMinutes', // hourly, daily, hourly, etc.
     ],
 
@@ -218,11 +220,12 @@ return [
     | Enable or disable the Sync Backup Job that automatically syncs data
     | based on your sync configurations, when changes are made outside
     | of Eloquent events or you've disabled the Eloquent listener.
+    | Enable the Backup Job only on source platforms.
     |
     */
 
     'sync_backup_job' => [
-        'enabled' => true,
+        'enabled' => env('SYNC_BACKUP_JOB_ENABLED', false),
         'frequency' => 'everyFiveMinutes', // hourly, daily, hourly, etc.
     ],
 
@@ -231,14 +234,30 @@ return [
     | Sync Eloquent Listener
     |--------------------------------------------------------------------------
     |
-    | Enable or disable the Eloquent listener that automatically syncs
-    | data when a model is created, updated or deleted. Use
-    | it wisely together with the Sync Backup Job.
+    | Enable or disable the Eloquent listener that listens to model
+    | events and invokes the Sync Webhook on the target platforms.
+    | So the listener should be enabled on source platforms.
+    | Plays nice together with the sync backup job.
     |
     */
 
     'sync_eloquent_listener' => [
-        'enabled' => true,
+        'enabled' => env('SYNC_LISTENER_ENABLED', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Webhook
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the webhook that automatically syncs
+    | data when a model is created, updated or deleted.
+    | Enable it on all target platforms.
+    |
+    */
+
+    'sync_webhook' => [
+        'enabled' => env('SYNC_WEBHOOK_ENABLED', false),
     ],
 
     /*
