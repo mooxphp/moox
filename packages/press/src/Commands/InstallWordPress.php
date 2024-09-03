@@ -56,7 +56,7 @@ class InstallWordPress extends Command
         ▓▒░░░░▓▓▓▓  ▓▓░░░░░▓▓▓  ▓▓▓░░░░▒▓▓░░░░▒▓▓▓   ▓▓▓▓░░░░░▓░░░░░░▓▓▓▓   ▓▓▓▒░░░░▓▓▓▒░░░░░▓▓▓░░░░░▓▓▓
         ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▓░░▒░░░░░▓▓▓        ▓▓░░░░▒▓▓▓▓░░░░░░░░░░░▓▓
         ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓          ▓▓▓░░░░░▒▓▓          ▓▓▒░░░░▓ ▓▓▓░░░░░░░░░▓▓
-        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▒░░░░░▒░░▒▓▓        ▓▓░░░░▒▓▓▓▒░░░░░▒░░░░░▒▓
+        ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓░░░░▒▓▓        ▓▓▒░░░░░▒░░▒▓▓        ▓���░░░░▒▓▓▓▒░░░░░▒░░░░░▒▓
         ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓░░░░▒▓▓▓   ▓▓▓▒░░░░░▒▒░░░░░▒▓▓▓   ▓▓▓░░░░░▓▓▓░░░░░▒▓▓▓░░░░░▒▓▓
         ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓░░░░░░▒▒▓▓▒░░░░░░▒▓▓▓▓░░░░░░░▒▒▓▓▒░░░░░░▓▓▓░░░░░▒▓▓▓▓▓▒░░░░░▓▓
         ▓▒░░░░▒▓    ▓▓░░░░░▓▓    ▓▓░░░░▒▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▓ ▓▓▓▓▒░░░░░░░░░░░░░▒▓▓▒░░░░░▓▓▓   ▓▓▒░░░░░▒▓
@@ -334,7 +334,7 @@ class InstallWordPress extends Command
         $adminEmail = $this->ask('Please enter the admin email');
 
         info("A secure password has been generated: $adminPassword");
-        warning('Please make sure to save this password as it won’t be shown again.');
+        warning('Please make sure to save this password as it will not be shown again.');
 
         $command = [
             'wp', 'core', 'install',
@@ -449,19 +449,28 @@ class InstallWordPress extends Command
     }
 
     /**
-     * Generate a secure password with 20 characters, including
-     * uppercase, lowercase, numbers, and special characters.
+     * Generate a secure password with 20 characters, must include
+     * uppercase, lowercase, number, and special character.
      */
     protected function generateSecurePassword(): string
     {
         $length = 20;
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $numbers = '0123456789';
+        $special = '!@#$%^&*()';
+        $all = $lowercase.$uppercase.$numbers.$special;
+
+        $password = '';
+        $password .= $lowercase[rand(0, strlen($lowercase) - 1)];
+        $password .= $uppercase[rand(0, strlen($uppercase) - 1)];
+        $password .= $numbers[rand(0, strlen($numbers) - 1)];
+        $password .= $special[rand(0, strlen($special) - 1)];
+
+        for ($i = 0; $i < $length - 4; $i++) {
+            $password .= $all[rand(0, strlen($all) - 1)];
         }
 
-        return $randomString;
+        return str_shuffle($password);
     }
 }
