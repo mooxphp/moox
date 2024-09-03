@@ -53,7 +53,7 @@ class SyncPlatformJob implements ShouldQueue
 
     protected function sendWebhook(Platform $sourcePlatform, Platform $targetPlatform)
     {
-        $webhookUrl = 'https://'.$targetPlatform->domain.'/api/sync-webhook';
+        $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
 
         $data = [
             'event_type' => 'updated',
