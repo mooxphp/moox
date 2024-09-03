@@ -62,7 +62,6 @@ class SyncListener
                 $this->registerModelListeners($sync);
             }
         }
-        $this->logDebug('SyncListener registered', ['platform_id' => $this->currentPlatformId]);
     }
 
     protected function registerModelListeners(Sync $sync)

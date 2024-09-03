@@ -31,21 +31,6 @@ Then you are able to create a Sync between platforms. Choose source and target p
 
 Here are some key components and the basic flow of Sync:
 
--   **Moox Sync API**
-
-    -   `Platforms`: Manage and retrieve platform configurations.
-    -   `Syncs`: Manage sync configurations, including CRUD operations for sync setups.
-    -   `Syncs for Platform`: Retrieve sync configurations specific to a platform. This API is essential for the ...
-    -   `SyncApiJob` to query the latest sync configurations.
-
--   **SyncApiJob**
-
-    -   Periodically (or on-demand) fetch sync configurations from the Moox Sync API to ensure that the latest sync rules are applied.
-    -   Flow:
-        -   Triggered based on a defined schedule or event.
-        -   Queries the Moox Sync API for sync configurations related to a specific platform.
-        -   Refreshes the local sync table to reflect the latest sync setups.
-
 -   **SyncListener**
 
     -   Monitor model events (e.g., create, update, delete) on the source platform.
@@ -70,6 +55,10 @@ Here are some key components and the basic flow of Sync:
     -   Executes the query on the target platform to create, update, or delete records based on the data received from the source platform.
     -   Handles conditions like conflict resolution (e.g., updating existing records if they match certain criteria).
     -   Logs success or failure, including error handling (e.g., retry logic if the sync fails due to temporary issues).
+
+-   **SyncPlatformJob**
+
+    -   Periodically sync all platforms to all platforms. This Job should not be activated on more than one instance.
 
 -   **Sync Backup Job**
 
