@@ -29,7 +29,7 @@ class SyncWebhookController extends Controller
 
         $this->logDebug('Moox Sync: Webhook recieved for sync', ['sync' => $sync->id]);
 
-        SyncJob::dispatch($sync, $validatedData['model'], $validatedData['event_type']);
+        SyncJob::dispatch($sync);
 
         return response()->json(['status' => 'success'], 200);
     }
