@@ -3,10 +3,8 @@
 namespace Moox\Sync\Services;
 
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Http;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
-use Moox\Sync\Models\Sync;
 
 class SyncService
 {
@@ -19,98 +17,115 @@ class SyncService
         $this->platformRelationService = $platformRelationService;
     }
 
-    public function shouldSyncModel($model, Platform $targetPlatform)
+    public function performSync($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, ?Platform $targetPlatform = null)
     {
-        $this->logDebug('shouldSyncModel method entered', ['model' => $model, 'targetPlatform' => $targetPlatform]);
+        $this->logDebug('performSync method entered', [
+            'modelClass' => $modelClass,
+            'eventType' => $eventType,
+            'sourcePlatform' => $sourcePlatform->id,
+            'targetPlatform' => $targetPlatform ? $targetPlatform->id : 'all',
+        ]);
 
-        $modelClass = get_class($model);
+        if ($targetPlatform) {
+            $this->syncToSinglePlatform($modelClass, $modelData, $eventType, $sourcePlatform, $targetPlatform);
+        } else {
+            $this->syncToAllPlatforms($modelClass, $modelData, $eventType, $sourcePlatform);
+        }
 
-        // Check if the model is in the models_with_platform_relations config
+        $this->logDebug('performSync method finished');
+    }
+
+    protected function syncToSinglePlatform($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, Platform $targetPlatform)
+    {
+        if ($this->shouldSyncModel($modelClass, $targetPlatform)) {
+            $this->processSyncEvent($modelClass, $modelData, $eventType, $targetPlatform);
+        }
+    }
+
+    protected function syncToAllPlatforms($modelClass, array $modelData, string $eventType, Platform $sourcePlatform)
+    {
+        $targetPlatforms = Platform::where('id', '!=', $sourcePlatform->id)->get();
+
+        foreach ($targetPlatforms as $targetPlatform) {
+            if ($this->shouldSyncModel($modelClass, $targetPlatform)) {
+                $this->processSyncEvent($modelClass, $modelData, $eventType, $targetPlatform);
+            }
+        }
+    }
+
+    protected function shouldSyncModel($modelClass, Platform $targetPlatform)
+    {
         $modelsWithPlatformRelations = Config::get('sync.models_with_platform_relations', []);
 
         if (! in_array($modelClass, $modelsWithPlatformRelations)) {
-            $this->logDebug('shouldSyncModel has no platform relations', ['model' => $modelClass, 'targetPlatform' => $targetPlatform]);
+            $this->logDebug('Model has no platform relations', ['model' => $modelClass, 'targetPlatform' => $targetPlatform->id]);
 
             return false;
         }
 
-        if (class_exists($modelClass)) {
-            $this->logDebug('shouldSyncModel method finished', ['model' => $model, 'targetPlatform' => $targetPlatform, 'result' => false]);
-
-            return $this->platformRelationService->modelHasPlatform($model, $targetPlatform);
-        } else {
-            $this->logDebug('shouldSyncModel model class does not exist', ['model' => $modelClass, 'targetPlatform' => $targetPlatform]);
-        }
-
-        return false;
+        // Additional logic can be added here if needed
+        return true;
     }
 
-    public function performSync(Sync $sync)
+    protected function processSyncEvent($modelClass, array $modelData, string $eventType, Platform $targetPlatform)
     {
-        $sourcePlatform = $sync->sourcePlatform;
-        $targetPlatform = $sync->targetPlatform;
-        $sourceModel = $sync->source_model;
+        $this->logDebug('Processing sync event', [
+            'modelClass' => $modelClass,
+            'eventType' => $eventType,
+            'targetPlatform' => $targetPlatform->id,
+        ]);
 
-        $this->logDebug('performSync method entered', ['sync' => $sync]);
-
-        // Check if the model should be synced
-        if (! $this->shouldSyncModel(new $sourceModel, $targetPlatform)) {
-            throw new \Exception("Model {$sourceModel} is not configured for platform relations or doesn't have a relation with the target platform.");
+        switch ($eventType) {
+            case 'created':
+                $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform);
+                break;
+            case 'updated':
+                $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform);
+                break;
+            case 'deleted':
+                $this->deleteModel($modelClass, $modelData, $targetPlatform);
+                break;
+            default:
+                $this->logDebug('Unknown event type', ['eventType' => $eventType]);
         }
-
-        // Fetch data from source platform
-        $sourceData = $this->fetchDataFromSource($sourcePlatform, $sourceModel);
-
-        $this->logDebug('performSync fetched data from source', ['sync' => $sync, 'sourceData' => $sourceData]);
-
-        // Transform data if needed
-        $transformedData = $this->transformData($sourceData, $sync->field_mappings);
-
-        $this->logDebug('performSync transformed data', ['sync' => $sync, 'transformedData' => $transformedData]);
-
-        // Sync to target platform
-        $this->syncToTarget($targetPlatform, $sync->target_model, $transformedData, $sync->if_exists);
-
-        $this->logDebug('performSync synced data to target', ['sync' => $sync]);
-
-        // Update last sync time
-        $sync->update(['last_sync' => now()]);
     }
 
-    protected function fetchDataFromSource(Platform $platform, string $model)
+    protected function createOrUpdateModel($modelClass, array $modelData, Platform $targetPlatform)
     {
-        $response = Http::withToken($platform->api_token)
-            ->get("{$platform->domain}/api/{$model}");
+        $model = $modelClass::updateOrCreate(
+            ['id' => $modelData['id']],
+            $modelData
+        );
 
-        if ($response->successful()) {
-            return $response->json();
+        $this->logDebug('Model created or updated', [
+            'modelClass' => $modelClass,
+            'modelId' => $model->id,
+            'targetPlatform' => $targetPlatform->id,
+        ]);
+
+        // Sync platform relations if necessary
+        if (method_exists($model, 'platforms')) {
+            $this->platformRelationService->syncPlatformsForModel($model, [$targetPlatform->id]);
         }
-
-        throw new \Exception('Failed to fetch data from source platform: '.$response->body());
     }
 
-    protected function transformData(array $data, array $fieldMappings): array
+    protected function deleteModel($modelClass, array $modelData, Platform $targetPlatform)
     {
-        $transformedData = [];
-        foreach ($fieldMappings as $sourceField => $targetField) {
-            $transformedData[$targetField] = $data[$sourceField] ?? null;
-        }
+        $model = $modelClass::find($modelData['id']);
 
-        return $transformedData;
-    }
-
-    protected function syncToTarget(Platform $platform, string $model, array $data, string $ifExists)
-    {
-        $response = Http::withToken($platform->api_token)
-            ->post("{$platform->domain}/api/{$model}", [
-                'data' => $data,
-                'if_exists' => $ifExists,
+        if ($model) {
+            $model->delete();
+            $this->logDebug('Model deleted', [
+                'modelClass' => $modelClass,
+                'modelId' => $modelData['id'],
+                'targetPlatform' => $targetPlatform->id,
             ]);
-
-        if (! $response->successful()) {
-            throw new \Exception('Failed to sync data to target platform: '.$response->body());
+        } else {
+            $this->logDebug('Model not found for deletion', [
+                'modelClass' => $modelClass,
+                'modelId' => $modelData['id'],
+                'targetPlatform' => $targetPlatform->id,
+            ]);
         }
-
-        return $response->json();
     }
 }

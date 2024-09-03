@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Jobs\SyncJob;
-use Moox\Sync\Models\Sync;
+use Moox\Sync\Models\Platform;
 
 class SyncWebhookController extends Controller
 {
@@ -26,11 +26,13 @@ class SyncWebhookController extends Controller
 
             $this->logDebug('SyncWebhookController validated request', ['data' => $validatedData]);
 
-            $sync = Sync::findOrFail($validatedData['sync']['id']);
+            $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
 
-            $this->logDebug('SyncWebhookController dispatching SyncJob', ['sync' => $sync->id]);
+            if (! $sourcePlatform) {
+                throw new \Exception('Source platform not found');
+            }
 
-            SyncJob::dispatch($sync);
+            SyncJob::dispatch($validatedData['model_class'], $validatedData['model'], $validatedData['event_type'], $sourcePlatform);
 
             return response()->json(['status' => 'success'], 200);
         } catch (\Exception $e) {
@@ -44,20 +46,12 @@ class SyncWebhookController extends Controller
     {
         $this->logDebug('SyncWebhookController validating request', ['data' => $request->all()]);
 
-        try {
-            $validatedData = $request->validate([
-                'event_type' => 'required|string|in:created,updated,deleted',
-                'model' => 'required|array',
-                'sync' => 'required|array',
-                'sync.id' => 'required|integer|exists:syncs,id',
-            ]);
-
-            $this->logDebug('SyncWebhookController validation successful', ['validatedData' => $validatedData]);
-
-            return $validatedData;
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            $this->logDebug('SyncWebhookController validation failed', ['errors' => $e->errors()]);
-            throw $e;
-        }
+        return $request->validate([
+            'event_type' => 'required|string|in:created,updated,deleted',
+            'model' => 'required|array',
+            'model_class' => 'required|string',
+            'platform' => 'required|array',
+            'platform.domain' => 'required|string',
+        ]);
     }
 }

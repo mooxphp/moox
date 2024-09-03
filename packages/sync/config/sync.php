@@ -197,6 +197,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Sync Platform Job
+    |--------------------------------------------------------------------------
+    |
+    | Enable or disable the Sync Platform Job that automatically syncs data
+    | between all platforms.
+    |
+    */
+
+    'sync_platform_job' => [
+        'enabled' => true,
+        'frequency' => 'everyFiveMinutes', // hourly, daily, hourly, etc.
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Sync Backup Job
     |--------------------------------------------------------------------------
     |

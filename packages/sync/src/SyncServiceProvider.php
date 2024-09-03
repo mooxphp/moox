@@ -27,7 +27,7 @@ class SyncServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
-    public function boot()
+    public function boot(): void
     {
         parent::boot();
 
@@ -40,7 +40,19 @@ class SyncServiceProvider extends PackageServiceProvider
         $this->registerSyncEloquentListener();
     }
 
-    protected function registerSyncBackupJob()
+    protected function registerSyncPlatformJob(): void
+    {
+        $syncPlatformJobConfig = Config::get('sync.sync_platform_job');
+
+        if ($syncPlatformJobConfig['enabled']) {
+            $this->app->booted(function () use ($syncPlatformJobConfig) {
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->job(new SyncPlatformJob)->{$syncPlatformJobConfig['frequency']}();
+            });
+        }
+    }
+
+    protected function registerSyncBackupJob(): void
     {
         $syncBackupJobConfig = Config::get('sync.sync_backup_job');
 
