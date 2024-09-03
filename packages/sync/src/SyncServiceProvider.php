@@ -37,6 +37,7 @@ class SyncServiceProvider extends PackageServiceProvider
             PlatformTokenAuthMiddleware::class
         );
 
+        $this->registerSyncPlatformJob();
         $this->registerSyncBackupJob();
         $this->registerSyncEloquentListener();
     }
