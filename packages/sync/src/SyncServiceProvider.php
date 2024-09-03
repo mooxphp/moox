@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Config;
 use Moox\Sync\Commands\InstallCommand;
 use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
 use Moox\Sync\Jobs\SyncBackupJob;
+use Moox\Sync\Jobs\SyncPlatformJob;
 use Moox\Sync\Listener\SyncListener;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
