@@ -74,15 +74,28 @@ class SyncJob implements ShouldQueue
             throw new \Exception('Slug field is required for syncing models');
         }
 
-        $model = $this->modelClass::updateOrCreate(
-            ['slug' => $this->modelData['slug']],
-            $this->modelData
-        );
+        $model = $this->modelClass::where('slug', $this->modelData['slug'])->first();
 
-        $this->logDebug('Model synced successfully', [
-            'model_class' => $this->modelClass,
-            'model_id' => $model->id,
-            'model_slug' => $model->slug,
-        ]);
+        if ($this->eventType === 'deleted') {
+            if ($model) {
+                $model->delete();
+                $this->logDebug('Model deleted successfully', [
+                    'model_class' => $this->modelClass,
+                    'model_id' => $model->id,
+                    'model_slug' => $model->slug,
+                ]);
+            }
+        } else {
+            $model = $this->modelClass::updateOrCreate(
+                ['slug' => $this->modelData['slug']],
+                $this->modelData
+            );
+
+            $this->logDebug('Model synced successfully', [
+                'model_class' => $this->modelClass,
+                'model_id' => $model->id,
+                'model_slug' => $model->slug,
+            ]);
+        }
     }
 }
