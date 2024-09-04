@@ -40,15 +40,11 @@ class SyncJob implements ShouldQueue
         ]);
 
         try {
-            $model = $this->modelClass::updateOrCreate(
-                ['id' => $this->modelData['id']],
-                $this->modelData
-            );
-
-            $this->logDebug('Model synced successfully', [
-                'model_class' => $this->modelClass,
-                'model_id' => $model->id,
-            ]);
+            if ($this->modelClass === Platform::class) {
+                $this->syncPlatform();
+            } else {
+                $this->syncModel();
+            }
         } catch (\Exception $e) {
             $this->logDebug('Error syncing model', [
                 'model_class' => $this->modelClass,
@@ -57,5 +53,31 @@ class SyncJob implements ShouldQueue
             ]);
             throw $e;
         }
+    }
+
+    protected function syncPlatform()
+    {
+        $platform = Platform::updateOrCreate(
+            ['domain' => $this->modelData['domain']],
+            $this->modelData
+        );
+
+        $this->logDebug('Platform synced successfully', [
+            'platform_id' => $platform->id,
+            'platform_domain' => $platform->domain,
+        ]);
+    }
+
+    protected function syncModel()
+    {
+        $model = $this->modelClass::updateOrCreate(
+            ['id' => $this->modelData['id']],
+            $this->modelData
+        );
+
+        $this->logDebug('Model synced successfully', [
+            'model_class' => $this->modelClass,
+            'model_id' => $model->id,
+        ]);
     }
 }
