@@ -4,7 +4,7 @@ namespace Moox\Press\Providers;
 
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
-use Moox\Security\Services\WordPressAuthService;
+use Moox\Press\Services\WordPressAuthService;
 
 class WordPressUserProvider extends EloquentUserProvider
 {
