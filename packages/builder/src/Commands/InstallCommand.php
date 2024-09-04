@@ -126,8 +126,8 @@ class InstallCommand extends Command
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['BuilderPlugin'],
-                default: ['BuilderPlugin'],
+                options: ['ItemPlugin'],
+                default: ['ItemPlugin'],
             );
 
             $function = '::make(),';

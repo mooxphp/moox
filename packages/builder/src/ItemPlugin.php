@@ -5,9 +5,9 @@ namespace Moox\Builder;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Builder\Resources\BuilderResource;
+use Moox\Builder\Resources\ItemResource;
 
-class BuilderPlugin implements Plugin
+class ItemPlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -19,7 +19,7 @@ class BuilderPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
-            BuilderResource::class,
+            ItemResource::class,
         ]);
     }
 

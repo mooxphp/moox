@@ -210,18 +210,18 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/BuilderPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
+        str_contains($file, determineSeparator('src/ItemPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
         str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
+        str_contains($file, determineSeparator('src/Resources/ItemResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
         str_contains($file, determineSeparator('src/Models/Item.php')) => rename($file, determineSeparator('./src/Models/'.$entity.'.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
+        str_contains($file, determineSeparator('src/Resources/ItemResource/Widgets/ItemWidgets.php')) => rename($file, determineSeparator('./src/Resources/ItemResource/Widgets/'.$className.'Widgets.php')),
         str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };
 }
 rename(determineSeparator('config/builder.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
-rename(determineSeparator('src/Resources/BuilderResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
+rename(determineSeparator('src/Resources/ItemResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 

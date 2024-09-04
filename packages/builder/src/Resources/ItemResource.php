@@ -2,9 +2,7 @@
 
 namespace Moox\Builder\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -12,10 +10,10 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Builder\Resources\ItemResource\Pages\ListPage;
+use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 
-class BuilderResource extends Resource
+class ItemResource extends Resource
 {
     protected static ?string $model = Item::class;
 
@@ -25,16 +23,17 @@ class BuilderResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label(__('core::core.name'))
-                    ->maxLength(255),
-                DateTimePicker::make('started_at')
-                    ->label(__('core::core.started_at')),
-                DateTimePicker::make('finished_at')
-                    ->label(__('core::core.finished_at')),
-                Toggle::make('failed')
-                    ->label(__('core::core.failed'))
+                TextInput::make('title')
+                    ->label(__('core::core.title'))
                     ->required(),
+                TextInput::make('slug')
+                    ->label(__('core::core.slug'))
+                    ->required(),
+                TextInput::make('content')
+                    ->label(__('core::core.content'))
+                    ->required(),
+                Item::getStatusFormField(),
+                Item::getTypeFormField(),
             ]);
     }
 
@@ -79,7 +78,7 @@ class BuilderResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            ItemWidgets::class,
         ];
     }
 

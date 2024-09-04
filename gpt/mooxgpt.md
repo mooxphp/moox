@@ -317,18 +317,18 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/BuilderPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
+        str_contains($file, determineSeparator('src/ItemPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
         str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
+        str_contains($file, determineSeparator('src/Resources/ItemResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
         str_contains($file, determineSeparator('src/Models/Item.php')) => rename($file, determineSeparator('./src/Models/'.$entity.'.php')),
-        str_contains($file, determineSeparator('src/Resources/BuilderResource/Widgets/BuilderWidgets.php')) => rename($file, determineSeparator('./src/Resources/BuilderResource/Widgets/'.$className.'Widgets.php')),
+        str_contains($file, determineSeparator('src/Resources/ItemResource/Widgets/ItemWidgets.php')) => rename($file, determineSeparator('./src/Resources/ItemResource/Widgets/'.$className.'Widgets.php')),
         str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };
 }
 rename(determineSeparator('config/builder.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
-rename(determineSeparator('src/Resources/BuilderResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
+rename(determineSeparator('src/Resources/ItemResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 
@@ -543,9 +543,9 @@ namespace Moox\Builder;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Moox\Builder\Resources\BuilderResource;
+use Moox\Builder\Resources\ItemResource;
 
-class BuilderPlugin implements Plugin
+class ItemPlugin implements Plugin
 {
     use EvaluatesClosures;
 
@@ -557,7 +557,7 @@ class BuilderPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
-            BuilderResource::class,
+            ItemResource::class,
         ]);
     }
 
@@ -590,10 +590,10 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\BuilderResource\Pages\ListPage;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Builder\Resources\ItemResource\Pages\ListPage;
+use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 
-class BuilderResource extends Resource
+class ItemResource extends Resource
 {
     protected static ?string $model = Item::class;
 
@@ -657,7 +657,7 @@ class BuilderResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            ItemWidgets::class,
         ];
     }
 
@@ -708,20 +708,20 @@ class BuilderResource extends Resource
 ```
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Pages;
+namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\BuilderResource;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Builder\Resources\ItemResource;
+use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 use Moox\Core\Traits\HasDynamicTabs;
 
 class ListPage extends ListRecords
 {
     use HasDynamicTabs;
 
-    public static string $resource = BuilderResource::class;
+    public static string $resource = ItemResource::class;
 
     public function getActions(): array
     {
@@ -731,7 +731,7 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            ItemWidgets::class,
         ];
     }
 

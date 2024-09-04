@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->timestamp('started_at')->nullable()->index();
-            $table->timestamp('finished_at')->nullable();
-            $table->boolean('failed')->default(false)->index();
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->text('content')->nullable();
+            $table->string('status')->default('draft');
+            $table->string('type')->default('post');
+            $table->timestamp('deleted_at')->nullable()->index();
             $table->timestamps();
         });
     }
@@ -25,7 +27,8 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
+
     {
-        Schema::dropIfExists('builder');
+        Schema::dropIfExists('items');
     }
 };

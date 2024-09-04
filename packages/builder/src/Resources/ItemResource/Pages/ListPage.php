@@ -1,19 +1,19 @@
 <?php
 
-namespace Moox\Builder\Resources\BuilderResource\Pages;
+namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\BuilderResource;
-use Moox\Builder\Resources\BuilderResource\Widgets\BuilderWidgets;
+use Moox\Builder\Resources\ItemResource;
+use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 use Moox\Core\Traits\HasDynamicTabs;
 
 class ListPage extends ListRecords
 {
     use HasDynamicTabs;
 
-    public static string $resource = BuilderResource::class;
+    public static string $resource = ItemResource::class;
 
     public function getActions(): array
     {
@@ -23,7 +23,7 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            BuilderWidgets::class,
+            ItemWidgets::class,
         ];
     }
 

@@ -106,7 +106,7 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Training\TrainingTypePlugin::make(),
 
                 // Builder plugin
-                \Moox\Builder\BuilderPlugin::make(),
+                \Moox\Builder\ItemPlugin::make(),
 
             ]);
     }
