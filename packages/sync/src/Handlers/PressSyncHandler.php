@@ -64,21 +64,43 @@ class PressSyncHandler
         $this->logDebug('Main table data after processing', ['mainTableData' => $mainTableData]);
 
         try {
-            $model = $this->modelClass::updateOrCreate(
-                [$idField => $mainTableData[$idField]],
-                []
-            );
+            $tableName = (new $this->modelClass)->getTable();
 
-            // Manually update fields
-            foreach ($mainTableData as $key => $value) {
-                $model->$key = $value;
+            // Check if the record exists
+            $existingRecord = DB::table($tableName)
+                ->where($idField, $mainTableData[$idField])
+                ->first();
+
+            if ($existingRecord) {
+                // Update existing record
+                DB::table($tableName)
+                    ->where($idField, $mainTableData[$idField])
+                    ->update($mainTableData);
+
+                $this->logDebug('Existing record updated', [
+                    'table' => $tableName,
+                    'id' => $mainTableData[$idField],
+                    'data' => $mainTableData,
+                ]);
+            } else {
+                // Insert new record
+                DB::table($tableName)->insert($mainTableData);
+
+                $this->logDebug('New record inserted', [
+                    'table' => $tableName,
+                    'data' => $mainTableData,
+                ]);
             }
-            $model->save();
+
+            // Fetch the record to return
+            $model = DB::table($tableName)
+                ->where($idField, $mainTableData[$idField])
+                ->first();
 
             $this->logDebug('Main record synced successfully', [
                 'model_class' => $this->modelClass,
-                'id' => $model->getKey(),
-                'attributes' => $model->getAttributes(),
+                'id' => $model->$idField,
+                'attributes' => (array) $model,
             ]);
 
             return $model;
@@ -181,13 +203,20 @@ class PressSyncHandler
         ]);
 
         foreach ($metaData as $key => $value) {
-            if ($value !== null) {
-                // Special handling for capabilities
-                if ($key === 'jku8u_capabilities' && ! is_string($value)) {
-                    $value = maybe_serialize($value);
-                }
+            try {
+                if ($value === null) {
+                    // Delete the meta if it exists
+                    $metaModel::where([
+                        $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
+                        'meta_key' => $key,
+                    ])->delete();
+                    $this->logDebug('Deleted null meta value', ['key' => $key]);
+                } else {
+                    // Special handling for capabilities
+                    if ($key === 'jku8u_capabilities' && ! is_string($value)) {
+                        $value = maybe_serialize($value);
+                    }
 
-                try {
                     $metaModel::updateOrCreate(
                         [
                             $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
@@ -195,20 +224,17 @@ class PressSyncHandler
                         ],
                         ['meta_value' => $value]
                     );
-
                     $this->logDebug('Meta data synced successfully', [
                         'key' => $key,
                         'value' => $value,
                     ]);
-                } catch (\Exception $e) {
-                    $this->logDebug('Error syncing meta data', [
-                        'key' => $key,
-                        'value' => $value,
-                        'error' => $e->getMessage(),
-                    ]);
                 }
-            } else {
-                $this->logDebug('Skipped null meta value', ['key' => $key]);
+            } catch (\Exception $e) {
+                $this->logDebug('Error syncing meta data', [
+                    'key' => $key,
+                    'value' => $value,
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
 
@@ -229,16 +255,27 @@ class PressSyncHandler
 
         foreach ($metaData as $key => $value) {
             $syncedValue = $syncedMeta->where('meta_key', $key)->first();
-            if ($syncedValue) {
-                if ($syncedValue->meta_value !== $value) {
+            if ($value === null) {
+                if ($syncedValue) {
+                    $this->logDebug('Meta value should have been deleted', ['key' => $key]);
+                }
+            } else {
+                if (! $syncedValue) {
+                    $this->logDebug('Missing meta value', ['key' => $key, 'expected_value' => $value]);
+                } elseif ($syncedValue->meta_value !== $value) {
                     $this->logDebug('Meta value mismatch', [
                         'key' => $key,
                         'expectedValue' => $value,
                         'actualValue' => $syncedValue->meta_value,
                     ]);
                 }
-            } else {
-                $this->logDebug('Missing meta value', ['key' => $key]);
+            }
+        }
+
+        // Check for any extra meta fields that shouldn't be there
+        foreach ($syncedMeta as $meta) {
+            if (! array_key_exists($meta->meta_key, $metaData)) {
+                $this->logDebug('Unexpected meta field', ['key' => $meta->meta_key, 'value' => $meta->meta_value]);
             }
         }
     }
@@ -269,7 +306,7 @@ class PressSyncHandler
         // Ensure we include fields that might be considered meta in WordPress
         $additionalMetaFields = ['nickname', 'first_name', 'last_name', 'description', 'rich_editing', 'comment_shortcuts', 'admin_color', 'use_ssl', 'show_admin_bar_front', 'jku8u_capabilities', 'jku8u_user_level'];
         foreach ($additionalMetaFields as $field) {
-            if (isset($this->modelData[$field])) {
+            if (array_key_exists($field, $this->modelData)) {
                 $metaData[$field] = $this->modelData[$field];
             }
         }
@@ -277,8 +314,8 @@ class PressSyncHandler
         // Check for nested user_meta data
         if (isset($this->modelData['user_meta']) && is_array($this->modelData['user_meta'])) {
             foreach ($this->modelData['user_meta'] as $meta) {
-                if (isset($meta['meta_key']) && isset($meta['meta_value'])) {
-                    $metaData[$meta['meta_key']] = $meta['meta_value'];
+                if (isset($meta['meta_key'])) {
+                    $metaData[$meta['meta_key']] = $meta['meta_value'] ?? null;
                 }
             }
         }
