@@ -4,9 +4,9 @@ namespace Moox\Sync\Listener;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
+use Moox\Sync\Jobs\DeferredSyncJob;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Services\SyncService;
@@ -88,63 +88,14 @@ class SyncListener
             return;
         }
 
-        $this->logDebug('Handling model event', [
+        $this->logDebug('Dispatching DeferredSyncJob', [
             'model' => get_class($model),
             'id' => $model->id,
             'event' => $eventType,
             'platform' => $this->currentPlatform->id,
         ]);
 
-        $modelData = $model->toArray();
-
-        // If this is a WordPress user model, include all meta data
-        if ($model instanceof \Moox\Press\Models\WpUser) {
-            $userMeta = $model->getAllMetaAttributes();
-            $this->logDebug('User meta data retrieved', ['user_meta' => $userMeta]);
-            $modelData = array_merge($modelData, $userMeta);
-        }
-
-        $syncData = [
-            'event_type' => $eventType,
-            'model' => $modelData,
-            'model_class' => get_class($model),
-            'platform' => $this->currentPlatform->toArray(),
-        ];
-
-        $this->logDebug('Sync data prepared', ['sync_data' => $syncData]);
-
-        $this->invokeWebhooks($syncData);
-    }
-
-    protected function invokeWebhooks(array $data)
-    {
-        $targetPlatforms = Platform::where('id', '!=', $this->currentPlatform->id)->get();
-        $this->logDebug('Moox Sync: Invoking webhooks', ['target_platforms' => $targetPlatforms->pluck('id')]);
-
-        foreach ($targetPlatforms as $targetPlatform) {
-            $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
-
-            $this->logDebug('Moox Sync: Sending webhook', ['url' => $webhookUrl, 'target_platform' => $targetPlatform->id]);
-
-            try {
-                $response = Http::withToken($targetPlatform->api_token)
-                    ->post($webhookUrl, $data);
-
-                if ($response->successful()) {
-                    $this->logDebug('Moox Sync: Webhook sent successfully', ['target_platform' => $targetPlatform->id]);
-                } else {
-                    Log::error('Moox Sync: Webhook failed', [
-                        'target_platform' => $targetPlatform->id,
-                        'status' => $response->status(),
-                        'body' => $response->body(),
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Log::error('Moox Sync: Webhook error', [
-                    'target_platform' => $targetPlatform->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-        }
+        DeferredSyncJob::dispatch($model->id, get_class($model), $eventType, $this->currentPlatform->id)
+            ->delay(now()->addSeconds(5));
     }
 }
