@@ -65,18 +65,20 @@ class SyncListener
         $this->logDebug('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
 
         Event::listen("eloquent.created: {$modelClass}", function ($model) use ($modelClass) {
-            // Logs model id = null from here on
-            $this->logDebug('Moox Sync: Created event triggered', ['model' => $modelClass, 'id' => $model->id]);
+            $localIdentifier = $this->getLocalIdentifier($model);
+            $this->logDebug('Moox Sync: Created event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'created');
         });
 
         Event::listen("eloquent.updated: {$modelClass}", function ($model) use ($modelClass) {
-            $this->logDebug('Moox Sync: Updated event triggered', ['model' => $modelClass, 'id' => $model->id]);
+            $localIdentifier = $this->getLocalIdentifier($model);
+            $this->logDebug('Moox Sync: Updated event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'updated');
         });
 
         Event::listen("eloquent.deleted: {$modelClass}", function ($model) use ($modelClass) {
-            $this->logDebug('Moox Sync: Deleted event triggered', ['model' => $modelClass, 'id' => $model->id]);
+            $localIdentifier = $this->getLocalIdentifier($model);
+            $this->logDebug('Moox Sync: Deleted event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'deleted');
         });
     }
@@ -84,19 +86,36 @@ class SyncListener
     protected function handleModelEvent($model, $eventType)
     {
         if (! $this->currentPlatform) {
-            $this->logDebug('Moox Sync: Model event ignored - current platform not set', ['model' => get_class($model), 'id' => $model->id, 'event' => $eventType]);
+            $this->logDebug('Moox Sync: Model event ignored - current platform not set', ['model' => get_class($model), 'event' => $eventType]);
 
             return;
         }
 
+        $localIdentifier = $this->getLocalIdentifier($model);
+
         $this->logDebug('Dispatching PrepareSyncJob', [
             'model' => get_class($model),
-            'id' => $model->id,
+            'local_identifier' => $localIdentifier,
             'event' => $eventType,
             'platform' => $this->currentPlatform->id,
         ]);
 
-        PrepareSyncJob::dispatch($model->id, get_class($model), $eventType, $this->currentPlatform->id)
+        PrepareSyncJob::dispatch($localIdentifier, get_class($model), $eventType, $this->currentPlatform->id)
             ->delay(now()->addSeconds(5));
+    }
+
+    protected function getLocalIdentifier($model)
+    {
+        $localIdentifierFields = config('sync.local_identifier_fields', ['id']);
+
+        foreach ($localIdentifierFields as $field) {
+            if (isset($model->$field)) {
+                return $model->$field;
+            }
+        }
+
+        $this->logDebug('No local identifier found for model', ['model' => get_class($model)]);
+
+        return null;
     }
 }
