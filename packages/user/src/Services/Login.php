@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Security\Services;
+namespace Moox\User\Services;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
@@ -109,8 +109,8 @@ class Login extends SimplePage
         $credentialKey = array_key_first($credentials);
         $guardProvider = config("auth.guards.$guardName.provider");
         $userModel = config("auth.providers.$guardProvider.model");
-        $userModelUsername = config("security.auth.$guardName.username");
-        $userModelEmail = config("security.auth.$guardName.email");
+        $userModelUsername = config("user.auth.$guardName.username");
+        $userModelEmail = config("user.auth.$guardName.email");
         $query = $userModel::query();
 
         if (! empty($userModelUsername) && $credentialKey === 'name') {
@@ -127,16 +127,8 @@ class Login extends SimplePage
 
         $user = $query->first();
 
-        if (config('security.wpModel') && $user instanceof (config('security.wpModel'))) {
-            $wpAuthService = new \Moox\Security\Services\WordPressAuthService;
-
-            if (! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
-                $this->throwFailureValidationException();
-            }
-        } else {
-            if (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
-                $this->throwFailureValidationException();
-            }
+        if (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
+            $this->throwFailureValidationException();
         }
 
         Auth::guard($guardName)->login($user, $data['remember'] ?? false);
@@ -152,16 +144,8 @@ class Login extends SimplePage
             $this->userDeviceTracker->addUserDevice(request(), $user, app(Agent::class));
         }
 
-        if (config('security.wpModel') && $user instanceof (config('security.wpModel'))
-             && config('press.auth_wordpress') === true) {
-            $payload = base64_encode($user->ID);
-            $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
-            $token = "{$payload}.{$signature}";
+        return app(LoginResponse::class);
 
-            return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
-        } else {
-            return app(LoginResponse::class);
-        }
     }
 
     protected function getCredentialsFromFormData(array $data): array
@@ -202,15 +186,9 @@ class Login extends SimplePage
             ->autocomplete('current-password')
             ->required()
             ->extraInputAttributes(['tabindex' => 2])
-            ->rules(config('security.password.validation'))
-            ->validationMessages([
-                'min' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
-                'max' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
-                'password.symbols' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
-                'password.mixed' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
-                'password.numbers' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
-                'password.uncompromised' => 'Dein Passwort entspricht nicht unserer Passwortqualität - Bitte ändere dein Passwort!',
-            ]);
+            ->rules(config('user.password.validation'));
+        // TODO: How to solve validation messages
+        // ->validationMessages([]);
     }
 
     protected function getRememberFormComponent(): Component

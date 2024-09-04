@@ -47,9 +47,6 @@ return new class extends Migration {
             if (!Schema::hasColumn('users', 'avatar_url')) {
                 $table->string('avatar_url', 2048)->nullable()->after('two_factor_confirmed_at');
             }
-            if (!Schema::hasColumn('users', 'profile_photo_path')) {
-                $table->string('profile_photo_path')->nullable()->after('avatar_url');
-            }
         });
     }
 

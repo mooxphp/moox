@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Security\Services;
+namespace Moox\Press\Services;
 
 use Moox\Security\Helper\PasswordHash;
 

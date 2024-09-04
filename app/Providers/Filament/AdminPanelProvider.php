@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Awcodes\FilamentGravatar\GravatarPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +19,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Security\Services\RequestPasswordReset;
+use Moox\User\Services\Login;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -28,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('moox')
             ->path('moox')
             ->passwordReset(RequestPasswordReset::class)
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -89,6 +91,7 @@ class AdminPanelProvider extends PanelProvider
 
                 // User plugins
                 \Moox\User\UserPlugin::make(),
+                GravatarPlugin::make(),
 
                 \Moox\UserDevice\UserDevicePlugin::make(),
                 \Moox\LoginLink\LoginLinkPlugin::make(),
