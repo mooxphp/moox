@@ -4,6 +4,7 @@ namespace Moox\Press\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $meta_value
@@ -30,7 +31,7 @@ class WpPostMeta extends Model
         $this->table = $this->wpPrefix.'postmeta';
     }
 
-    public function post()
+    public function post(): BelongsTo
     {
         return $this->belongsTo(WpPost::class, 'post_id', 'ID');
     }

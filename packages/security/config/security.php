@@ -90,19 +90,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | WordPress User Model
-    |--------------------------------------------------------------------------
-    |
-    | If you use a custom WordPress User Model, you can define it here.
-    | We already provide a default model for WordPress users.
-    | If you don't have Press installed, ignore this.
-    |
-    */
-
-    'wpModel' => Moox\Press\Models\WpUser::class,
-
-    /*
-    |--------------------------------------------------------------------------
     | Auth guards
     |--------------------------------------------------------------------------
     |
@@ -123,29 +110,6 @@ return [
             'email' => 'email',
             'password' => 'password',
         ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Password Validation
-    |--------------------------------------------------------------------------
-    |
-    | Define the password validation rules for your application.
-    | If you want to be hacked pretty soon, you can disable
-    | the password validation by emptying the rules.
-    |
-    */
-
-    'password' => [
-        'validation' => [
-            'rules' => Illuminate\Validation\Rules\Password::min(20)
-                ->max(64)
-                ->mixedCase()
-                ->numbers()
-                ->symbols()
-                ->uncompromised(),
-        ],
-        'helperText' => 'Das Passwort muss zwischen 20 und 64 Zeichen lang sein, Groß- und Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.',
     ],
 
     /*

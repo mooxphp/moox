@@ -7,6 +7,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -71,6 +72,13 @@ class WpUser extends Authenticatable implements FilamentUser
 
         static::created(function ($model) {
             $model->addOrUpdateMeta('created_at', now()->toDateTimeString());
+        });
+
+        static::saving(function ($post) {
+            // Überprüfe, ob das Datum ungültig ist, und setze es auf NULL oder ein Standarddatum
+            if ($post->post_modified == '0000-00-00 00:00:00') {
+                $post->post_modified = null; // oder ein anderes gültiges Datum wie '1970-01-01 00:00:00'
+            }
         });
 
         static::updated(function ($model) {
@@ -177,9 +185,9 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->hasMany(WpUserMeta::class, 'user_id', 'ID');
     }
 
-    public function attachment()
+    public function attachment(): BelongsTo
     {
-        return $this->belongsTo(WpPost::class, 'mm_sua_attachment_id', 'ID');
+        return $this->belongsTo(WpMedia::class, 'mm_sua_attachment_id', 'ID');
     }
 
     protected function newBaseQueryBuilder()

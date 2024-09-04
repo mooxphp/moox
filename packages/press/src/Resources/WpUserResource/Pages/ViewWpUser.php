@@ -5,7 +5,6 @@ namespace Moox\Press\Resources\WpUserResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
-use Moox\Press\Models\WpPost;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource;
 
@@ -20,7 +19,7 @@ class ViewWpUser extends ViewRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $user = WpUser::with('userMeta')->find($data['ID']);
+        $user = WpUser::with(['userMeta', 'attachment'])->find($data['ID']);
 
         if ($user) {
             foreach ($user->userMeta as $meta) {
@@ -28,10 +27,8 @@ class ViewWpUser extends ViewRecord
             }
         }
 
-        $attachmentId = $user->userMeta->where('meta_key', 'mm_sua_attachment_id')->first()?->meta_value;
-        if ($attachmentId) {
-            $attachment = WpPost::find($attachmentId);
-            $data['attachment_guid'] = $attachment['guid'];
+        if ($user->attachment) {
+            $data['image_url'] = $user->attachment->image_url;
         }
 
         return $data;

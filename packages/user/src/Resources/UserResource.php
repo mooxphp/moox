@@ -41,18 +41,10 @@ class UserResource extends Resource
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
-                    FileUpload::make('profile_photo_path')
-                        ->label(__('core::user.profile_photo_path'))
-                        ->avatar()
-                        ->nullable()
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
 
                     FileUpload::make('avatar_url')
-                        ->label(__('core::user.avatar_url')),
+                        ->label(__('core::user.avatar_url'))
+                        ->avatar(),
 
                     TextInput::make('name')
                         ->label(__('core::core.name'))
@@ -103,7 +95,7 @@ class UserResource extends Resource
                         ]),
 
                     TextInput::make('title')
-                        ->label(__('core::user.user'))
+                        ->label(__('core::user.title'))
                         ->rules(['max:255', 'string'])
                         ->nullable()
                         ->columnSpan([
@@ -240,19 +232,14 @@ class UserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                ImageColumn::make('profile_photo_path')
+                ImageColumn::make('avatar_url')
                     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
                     ->circular()
-                    ->label(__('core::user.profile_photo_path'))
-                    ->toggleable(),
-                TextColumn::make('name')
-                    ->label(__('core::core.name'))
+                    ->label(__('core::user.avatar'))
                     ->toggleable()
-                    ->sortable()
-                    ->searchable()
-                    ->limit(50),
-                TextColumn::make('last_name')
-                    ->label(__('core::user.last_name'))
+                    ->size(50),
+                TextColumn::make('name')
+                    ->label(__('core::user.name'))
                     ->formatStateUsing(function ($state, User $user) {
                         return $user->first_name.' '.$user->last_name;
                     })

@@ -56,6 +56,13 @@ return [
             'throw' => false,
         ],
 
+        'press' => [
+            'driver' => 'local',
+            'root' => public_path('wp/wp-content/uploads'),
+            'url' => env('APP_URL').'/wp/wp-content/uploads',
+            'visibility' => 'public',
+        ],
+
     ],
 
     /*
