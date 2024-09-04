@@ -128,7 +128,6 @@ class SyncService
             'targetPlatform' => $targetPlatform->id,
         ]);
 
-        // Sync platform relations if necessary
         if (method_exists($model, 'platforms')) {
             $this->platformRelationService->syncPlatformsForModel($model, [$targetPlatform->id]);
         }

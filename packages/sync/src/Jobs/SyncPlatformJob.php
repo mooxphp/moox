@@ -76,13 +76,13 @@ class SyncPlatformJob implements ShouldQueue
 
         if ($response->successful()) {
             $this->logDebug('Webhook sent successfully', [
-                'source' => $sourcePlatform->id,
-                'target' => $targetPlatform->id,
+                'source' => $sourcePlatform->name,
+                'target' => $targetPlatform->name,
             ]);
         } else {
             $this->logDebug('Webhook failed', [
-                'source' => $sourcePlatform->id,
-                'target' => $targetPlatform->id,
+                'source' => $sourcePlatform->name,
+                'target' => $targetPlatform->name,
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
