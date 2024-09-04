@@ -53,7 +53,7 @@ class SyncWebhookController extends Controller
     {
         $platform = Platform::updateOrCreate(
             ['id' => $platformData['id']],
-            $platformData
+            array_merge($platformData, ['id' => $platformData['id']])
         );
 
         $this->logDebug('Platform synced', ['platform' => $platform->id]);
