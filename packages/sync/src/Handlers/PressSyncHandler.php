@@ -50,9 +50,13 @@ class PressSyncHandler
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
-        // Ensure user_registered is set to current time if it's missing or invalid
+        // Handle user_registered for WpUser
         if ($this->modelClass === \Moox\Press\Models\WpUser::class) {
-            $mainTableData['user_registered'] = $this->sanitizeDate($mainTableData['user_registered'] ?? null);
+            if (! isset($mainTableData['user_registered']) || $mainTableData['user_registered'] === '0000-00-00 00:00:00') {
+                $mainTableData['user_registered'] = now()->format('Y-m-d H:i:s');
+            } else {
+                $mainTableData['user_registered'] = $this->sanitizeDate($mainTableData['user_registered']);
+            }
         }
 
         $this->logDebug('Syncing main record', [
@@ -139,20 +143,15 @@ class PressSyncHandler
     protected function sanitizeDate($date)
     {
         if (empty($date) || $date === '0000-00-00 00:00:00') {
-            $this->logDebug('Empty or invalid date, using current time', ['original_date' => $date]);
-
-            return now();
+            return now()->format('Y-m-d H:i:s');
         }
 
         try {
-            $parsedDate = Carbon::parse($date);
-            $this->logDebug('Date parsed successfully', ['original_date' => $date, 'parsed_date' => $parsedDate]);
-
-            return $parsedDate;
+            return Carbon::parse($date)->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
             $this->logDebug('Failed to parse date, using current time', ['date' => $date, 'error' => $e->getMessage()]);
 
-            return now();
+            return now()->format('Y-m-d H:i:s');
         }
     }
 
