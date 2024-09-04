@@ -33,6 +33,10 @@ class WpUser extends Authenticatable implements FilamentUser
         'display_name',
     ];
 
+    protected $dates = [
+        'user_registered',
+    ];
+
     protected $appends = [
         'name',
         'email',
