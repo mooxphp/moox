@@ -46,7 +46,7 @@ class PressSyncHandler
 
     protected function syncMainRecord()
     {
-        $this->logDebug('Starting syncMainRecord', ['modelClass' => $this->modelClass, 'modelData' => $this->modelData]);
+        $this->logDebug('Starting syncMainRecord with full model data', ['modelData' => $this->modelData]);
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
@@ -181,22 +181,64 @@ class PressSyncHandler
         ]);
 
         foreach ($metaData as $key => $value) {
-            // Skip null values to avoid creating empty meta entries
             if ($value !== null) {
-                $metaModel::updateOrCreate(
-                    [
-                        $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
-                        'meta_key' => $key,
-                    ],
-                    ['meta_value' => $value]
-                );
+                // Special handling for capabilities
+                if ($key === 'jku8u_capabilities' && ! is_string($value)) {
+                    $value = maybe_serialize($value);
+                }
 
-                $this->logDebug('Meta data synced', [
-                    'key' => $key,
-                    'value' => $value,
-                ]);
+                try {
+                    $metaModel::updateOrCreate(
+                        [
+                            $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
+                            'meta_key' => $key,
+                        ],
+                        ['meta_value' => $value]
+                    );
+
+                    $this->logDebug('Meta data synced successfully', [
+                        'key' => $key,
+                        'value' => $value,
+                    ]);
+                } catch (\Exception $e) {
+                    $this->logDebug('Error syncing meta data', [
+                        'key' => $key,
+                        'value' => $value,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             } else {
                 $this->logDebug('Skipped null meta value', ['key' => $key]);
+            }
+        }
+
+        // Verify meta data after sync
+        $this->verifyMetaDataSync($mainRecord, $metaData);
+    }
+
+    protected function verifyMetaDataSync(Model $mainRecord, array $metaData)
+    {
+        $metaModel = $this->getMetaModel($mainRecord);
+        $syncedMeta = $metaModel::where($this->getForeignKeyName($mainRecord), $mainRecord->getKey())->get();
+
+        $this->logDebug('Verifying synced meta data', [
+            'mainRecordId' => $mainRecord->getKey(),
+            'syncedMetaCount' => $syncedMeta->count(),
+            'expectedMetaCount' => count($metaData),
+        ]);
+
+        foreach ($metaData as $key => $value) {
+            $syncedValue = $syncedMeta->where('meta_key', $key)->first();
+            if ($syncedValue) {
+                if ($syncedValue->meta_value !== $value) {
+                    $this->logDebug('Meta value mismatch', [
+                        'key' => $key,
+                        'expectedValue' => $value,
+                        'actualValue' => $syncedValue->meta_value,
+                    ]);
+                }
+            } else {
+                $this->logDebug('Missing meta value', ['key' => $key]);
             }
         }
     }
@@ -223,6 +265,23 @@ class PressSyncHandler
     {
         $mainFields = $this->getMainFields();
         $metaData = array_diff_key($this->modelData, array_flip($mainFields));
+
+        // Ensure we include fields that might be considered meta in WordPress
+        $additionalMetaFields = ['nickname', 'first_name', 'last_name', 'description', 'rich_editing', 'comment_shortcuts', 'admin_color', 'use_ssl', 'show_admin_bar_front', 'jku8u_capabilities', 'jku8u_user_level'];
+        foreach ($additionalMetaFields as $field) {
+            if (isset($this->modelData[$field])) {
+                $metaData[$field] = $this->modelData[$field];
+            }
+        }
+
+        // Check for nested user_meta data
+        if (isset($this->modelData['user_meta']) && is_array($this->modelData['user_meta'])) {
+            foreach ($this->modelData['user_meta'] as $meta) {
+                if (isset($meta['meta_key']) && isset($meta['meta_value'])) {
+                    $metaData[$meta['meta_key']] = $meta['meta_value'];
+                }
+            }
+        }
 
         $this->logDebug('Meta data extracted', [
             'metaData' => $metaData,
