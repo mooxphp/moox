@@ -164,6 +164,14 @@ return [
         'press' => [
             'package' => 'Moox Press',
             'models' => [
+                'WpCategory' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
                 'WpComment' => [
                     'api' => [
                         'Index' => '',
