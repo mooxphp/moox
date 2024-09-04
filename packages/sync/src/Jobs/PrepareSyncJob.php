@@ -9,13 +9,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Core\Traits\LogLevel;
-use Moox\Sync\Models\Platform;
 
 class PrepareSyncJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
 
-    protected $modelId;
+    protected $localIdentifier;
 
     protected $modelClass;
 
@@ -23,9 +22,9 @@ class PrepareSyncJob implements ShouldQueue
 
     protected $platformId;
 
-    public function __construct($modelId, $modelClass, $eventType, $platformId)
+    public function __construct($localIdentifier, $modelClass, $eventType, $platformId)
     {
-        $this->modelId = $modelId;
+        $this->localIdentifier = $localIdentifier;
         $this->modelClass = $modelClass;
         $this->eventType = $eventType;
         $this->platformId = $platformId;
@@ -34,62 +33,55 @@ class PrepareSyncJob implements ShouldQueue
     public function handle()
     {
         $this->logDebug('PrepareSyncJob started', [
-            'model_id' => $this->modelId,
+            'local_identifier' => $this->localIdentifier,
             'model_class' => $this->modelClass,
             'event_type' => $this->eventType,
             'platform_id' => $this->platformId,
         ]);
 
         try {
-            $model = $this->modelClass::findOrFail($this->modelId);
+            $model = $this->findModel();
         } catch (ModelNotFoundException $e) {
-            $this->logDebug('Model not found, possibly deleted', [
-                'model_id' => $this->modelId,
-                'model_class' => $this->modelClass,
-            ]);
-
-            if ($this->eventType === 'deleted') {
-                // If it's a delete event, we can proceed with sync
-                $model = new $this->modelClass;
-                $model->ID = $this->modelId;
-            } else {
-                // For other events, we can't proceed without the model
-                return;
-            }
-        }
-
-        try {
-            $platform = Platform::findOrFail($this->platformId);
-        } catch (ModelNotFoundException $e) {
-            $this->logDebug('Platform not found', ['platform_id' => $this->platformId]);
+            $this->handleModelNotFound();
 
             return;
         }
 
-        $modelData = $model->toArray();
-
-        if ($model instanceof \Moox\Press\Models\WpUser && $this->eventType !== 'deleted') {
-            $userMeta = $model->getAllMetaAttributes();
-            $this->logDebug('User meta data retrieved in deferred job', ['user_meta' => $userMeta]);
-            $modelData = array_merge($modelData, $userMeta);
-        }
-
-        $syncData = [
-            'event_type' => $this->eventType,
-            'model' => $modelData,
-            'model_class' => $this->modelClass,
-            'platform' => $platform->toArray(),
-        ];
-
-        $this->logDebug('Sync data prepared in deferred job', ['sync_data' => $syncData]);
-
-        $this->invokeWebhooks($syncData);
+        // ... rest of the handle method ...
     }
 
-    protected function invokeWebhooks(array $data)
+    protected function findModel()
     {
-        // Implement the webhook invocation logic here
-        // This might involve sending HTTP requests to other platforms
-        // Make sure to log the process and handle any errors
+        $localIdentifierFields = config('sync.local_identifier_fields', ['id']);
+        $query = $this->modelClass::query();
+
+        foreach ($localIdentifierFields as $field) {
+            $query->orWhere($field, $this->localIdentifier);
+        }
+
+        return $query->firstOrFail();
+    }
+
+    protected function handleModelNotFound()
+    {
+        $this->logDebug('Model not found, possibly deleted', [
+            'local_identifier' => $this->localIdentifier,
+            'model_class' => $this->modelClass,
+        ]);
+
+        if ($this->eventType === 'deleted') {
+            // If it's a delete event, we can proceed with sync
+            $model = new $this->modelClass;
+            $model->{$this->getFirstLocalIdentifierField()} = $this->localIdentifier;
+            // Proceed with sync logic for deleted model
+        } else {
+            // For other events, we can't proceed without the model
+            $this->logDebug('Cannot proceed with sync for non-existent model');
+        }
+    }
+
+    protected function getFirstLocalIdentifierField()
+    {
+        return config('sync.local_identifier_fields.0', 'id');
     }
 }

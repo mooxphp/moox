@@ -65,6 +65,7 @@ class SyncListener
         $this->logDebug('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
 
         Event::listen("eloquent.created: {$modelClass}", function ($model) use ($modelClass) {
+            // Logs model id = null from here on
             $this->logDebug('Moox Sync: Created event triggered', ['model' => $modelClass, 'id' => $model->id]);
             $this->handleModelEvent($model, 'created');
         });

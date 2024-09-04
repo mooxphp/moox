@@ -316,4 +316,22 @@ return [
         'name',
         'title',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Local Identifier Fields
+    |--------------------------------------------------------------------------
+    |
+    | These are the fields that are used as unique identifiers for
+    | the models. They are used to identify the models on the
+    | source platform. They may auto-increment.
+    |
+    */
+
+    'local_identifier_fields' => [
+        'id',
+        'ID',
+        'uuid',
+        'ulid',
+    ],
 ];
