@@ -35,6 +35,7 @@ class SyncPlatformJob implements ShouldQueue
         $otherPlatforms = Platform::where('id', '!=', $this->currentPlatform->id)->get();
 
         foreach ($otherPlatforms as $targetPlatform) {
+            $this->logInfo('Syncing platform '.$targetPlatform->id.' from '.$this->currentPlatform->id);
             $this->syncPlatform($this->currentPlatform, $targetPlatform);
         }
 
