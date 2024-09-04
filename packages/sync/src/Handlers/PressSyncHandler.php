@@ -65,9 +65,15 @@ class PressSyncHandler
 
         try {
             $model = $this->modelClass::updateOrCreate(
-                [$idField => $this->modelData[$idField]],
-                $mainTableData
+                [$idField => $mainTableData[$idField]],
+                []
             );
+
+            // Manually update fields
+            foreach ($mainTableData as $key => $value) {
+                $model->$key = $value;
+            }
+            $model->save();
 
             $this->logDebug('Main record synced successfully', [
                 'model_class' => $this->modelClass,
