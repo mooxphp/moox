@@ -15,45 +15,54 @@ class SyncPlatformJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
 
+    protected $currentPlatform;
+
+    public function __construct()
+    {
+        $this->currentPlatform = Platform::where('domain', request()->getHost())->first();
+    }
+
     public function handle()
     {
         $this->logDebug('SyncPlatformJob handle method entered');
 
-        $platforms = Platform::all();
+        if (! $this->currentPlatform) {
+            $this->logDebug('Current platform not found. Aborting sync.');
 
-        foreach ($platforms as $sourcePlatform) {
-            $this->syncPlatform($sourcePlatform);
+            return;
+        }
+
+        $otherPlatforms = Platform::where('id', '!=', $this->currentPlatform->id)->get();
+
+        foreach ($otherPlatforms as $targetPlatform) {
+            $this->syncPlatform($this->currentPlatform, $targetPlatform);
         }
 
         $this->logDebug('SyncPlatformJob handle method finished');
     }
 
-    protected function syncPlatform(Platform $sourcePlatform)
+    protected function syncPlatform(Platform $sourcePlatform, Platform $targetPlatform)
     {
-        $targetPlatforms = Platform::where('id', '!=', $sourcePlatform->id)->get();
+        try {
+            $this->logDebug('Syncing platform', [
+                'source' => $sourcePlatform->id,
+                'target' => $targetPlatform->id,
+            ]);
 
-        foreach ($targetPlatforms as $targetPlatform) {
-            try {
-                $this->logDebug('Syncing platform', [
-                    'source' => $sourcePlatform->name,
-                    'target' => $targetPlatform->name,
-                ]);
+            $this->sendWebhook($sourcePlatform, $targetPlatform);
 
-                $this->sendWebhook($sourcePlatform, $targetPlatform);
-
-            } catch (\Exception $e) {
-                $this->logDebug('Error syncing platform', [
-                    'source' => $sourcePlatform->id,
-                    'target' => $targetPlatform->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+        } catch (\Exception $e) {
+            $this->logDebug('Error syncing platform', [
+                'source' => $sourcePlatform->id,
+                'target' => $targetPlatform->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 
     protected function sendWebhook(Platform $sourcePlatform, Platform $targetPlatform)
     {
-        $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
+        $webhookUrl = 'https://'.$targetPlatform->domain.'/api/sync-webhook';
 
         $data = [
             'event_type' => 'updated',
