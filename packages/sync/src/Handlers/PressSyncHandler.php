@@ -50,6 +50,8 @@ class PressSyncHandler
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
+        $this->logDebug('Main table data before processing', ['mainTableData' => $mainTableData]);
+
         // Handle user_registered for WpUser
         if ($this->modelClass === \Moox\Press\Models\WpUser::class) {
             if (! isset($mainTableData['user_registered']) || $mainTableData['user_registered'] === '0000-00-00 00:00:00') {
@@ -59,12 +61,7 @@ class PressSyncHandler
             }
         }
 
-        $this->logDebug('Syncing main record', [
-            'model_class' => $this->modelClass,
-            'id_field' => $idField,
-            'id_value' => $this->modelData[$idField],
-            'main_table_data' => $mainTableData,
-        ]);
+        $this->logDebug('Main table data after processing', ['mainTableData' => $mainTableData]);
 
         try {
             $model = $this->modelClass::updateOrCreate(
@@ -171,6 +168,12 @@ class PressSyncHandler
         $metaData = $this->getMetaData();
         $metaModel = $this->getMetaModel($mainRecord);
 
+        $this->logDebug('Syncing meta data', [
+            'mainRecordId' => $mainRecord->getKey(),
+            'metaData' => $metaData,
+            'metaModel' => $metaModel,
+        ]);
+
         foreach ($metaData as $key => $value) {
             $metaModel::updateOrCreate(
                 [
@@ -179,6 +182,11 @@ class PressSyncHandler
                 ],
                 ['meta_value' => $value]
             );
+
+            $this->logDebug('Meta data synced', [
+                'key' => $key,
+                'value' => $value,
+            ]);
         }
     }
 
@@ -190,8 +198,14 @@ class PressSyncHandler
     protected function getMainTableData(): array
     {
         $mainFields = $this->getMainFields();
+        $mainTableData = array_intersect_key($this->modelData, array_flip($mainFields));
 
-        return array_intersect_key($this->modelData, array_flip($mainFields));
+        $this->logDebug('Main table data extracted', [
+            'mainFields' => $mainFields,
+            'mainTableData' => $mainTableData,
+        ]);
+
+        return $mainTableData;
     }
 
     protected function getMetaData(): array
