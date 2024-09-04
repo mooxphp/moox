@@ -22,48 +22,59 @@ class SyncListener
     {
         $this->syncService = $syncService;
         $this->setCurrentPlatform();
+        $this->logDebug('Moox Sync: SyncListener constructed');
     }
 
     protected function setCurrentPlatform()
     {
         $domain = request()->getHost();
+        $this->logDebug('Moox Sync: Setting current platform for domain', ['domain' => $domain]);
 
         try {
             $this->currentPlatform = Platform::where('domain', $domain)->first();
 
             if ($this->currentPlatform) {
-                $this->logDebug('Moox Sync: Platform found for domain: '.$domain);
+                $this->logDebug('Moox Sync: Current platform set', ['platform' => $this->currentPlatform->id]);
             } else {
-                $this->logDebug("Platform not found for domain: {$domain}");
+                $this->logDebug('Moox Sync: Platform not found for domain', ['domain' => $domain]);
             }
         } catch (QueryException $e) {
-            Log::error("Database error occurred while querying for domain: {$domain}. Error: ".$e->getMessage());
+            Log::error('Moox Sync: Database error occurred while querying for domain', ['domain' => $domain, 'error' => $e->getMessage()]);
         } catch (\Exception $e) {
-            Log::error('An unexpected error occurred: '.$e->getMessage());
+            Log::error('Moox Sync: An unexpected error occurred', ['error' => $e->getMessage()]);
         }
     }
 
     public function registerListeners()
     {
+        $this->logDebug('Moox Sync: Registering listeners');
         if ($this->currentPlatform) {
             $modelsToSync = config('sync.models_with_platform_relations', []);
             foreach ($modelsToSync as $modelClass) {
                 $this->registerModelListeners($modelClass);
             }
+            $this->logDebug('Moox Sync: Listeners registered', ['models' => $modelsToSync]);
+        } else {
+            $this->logDebug('Moox Sync: No listeners registered - current platform not set');
         }
     }
 
     protected function registerModelListeners($modelClass)
     {
-        Event::listen("eloquent.created: {$modelClass}", function ($model) {
+        $this->logDebug('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
+
+        Event::listen("eloquent.created: {$modelClass}", function ($model) use ($modelClass) {
+            $this->logDebug('Moox Sync: Created event triggered', ['model' => $modelClass, 'id' => $model->id]);
             $this->handleModelEvent($model, 'created');
         });
 
-        Event::listen("eloquent.updated: {$modelClass}", function ($model) {
+        Event::listen("eloquent.updated: {$modelClass}", function ($model) use ($modelClass) {
+            $this->logDebug('Moox Sync: Updated event triggered', ['model' => $modelClass, 'id' => $model->id]);
             $this->handleModelEvent($model, 'updated');
         });
 
-        Event::listen("eloquent.deleted: {$modelClass}", function ($model) {
+        Event::listen("eloquent.deleted: {$modelClass}", function ($model) use ($modelClass) {
+            $this->logDebug('Moox Sync: Deleted event triggered', ['model' => $modelClass, 'id' => $model->id]);
             $this->handleModelEvent($model, 'deleted');
         });
     }
@@ -71,8 +82,17 @@ class SyncListener
     protected function handleModelEvent($model, $eventType)
     {
         if (! $this->currentPlatform) {
+            $this->logDebug('Moox Sync: Model event ignored - current platform not set', ['model' => get_class($model), 'id' => $model->id, 'event' => $eventType]);
+
             return;
         }
+
+        $this->logDebug('Handling model event', [
+            'model' => get_class($model),
+            'id' => $model->id,
+            'event' => $eventType,
+            'platform' => $this->currentPlatform->id,
+        ]);
 
         $syncData = [
             'event_type' => $eventType,
@@ -81,36 +101,35 @@ class SyncListener
             'platform' => $this->currentPlatform->toArray(),
         ];
 
-        $this->logDebug('Moox Sync: Handling model event', $syncData);
-
         $this->invokeWebhooks($syncData);
     }
 
     protected function invokeWebhooks(array $data)
     {
         $targetPlatforms = Platform::where('id', '!=', $this->currentPlatform->id)->get();
+        $this->logDebug('Moox Sync: Invoking webhooks', ['target_platforms' => $targetPlatforms->pluck('id')]);
 
         foreach ($targetPlatforms as $targetPlatform) {
             $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
 
-            $this->logDebug('Moox Sync: Invoking webhook', ['url' => $webhookUrl, 'data' => $data]);
+            $this->logDebug('Moox Sync: Sending webhook', ['url' => $webhookUrl, 'target_platform' => $targetPlatform->id]);
 
             try {
                 $response = Http::withToken($targetPlatform->api_token)
                     ->post($webhookUrl, $data);
 
                 if ($response->successful()) {
-                    $this->logDebug('Moox Sync: Webhook invoked successfully', ['platform' => $targetPlatform->name]);
+                    $this->logDebug('Moox Sync: Webhook sent successfully', ['target_platform' => $targetPlatform->id]);
                 } else {
-                    $this->logDebug('Moox Sync: Webhook invocation failed', [
-                        'platform' => $targetPlatform->name,
+                    Log::error('Moox Sync: Webhook failed', [
+                        'target_platform' => $targetPlatform->id,
                         'status' => $response->status(),
                         'body' => $response->body(),
                     ]);
                 }
             } catch (\Exception $e) {
-                $this->logDebug('Moox Sync: Webhook invocation error', [
-                    'platform' => $targetPlatform->name,
+                Log::error('Moox Sync: Webhook error', [
+                    'target_platform' => $targetPlatform->id,
                     'error' => $e->getMessage(),
                 ]);
             }
