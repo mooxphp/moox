@@ -214,7 +214,7 @@ class PressSyncHandler
                 } else {
                     // Special handling for capabilities
                     if ($key === 'jku8u_capabilities' && ! is_string($value)) {
-                        $value = maybe_serialize($value);
+                        $value = serialize($value);
                     }
 
                     $metaModel::updateOrCreate(

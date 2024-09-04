@@ -93,6 +93,12 @@ class SyncListener
 
         $localIdentifier = $this->getLocalIdentifier($model);
 
+        if (! $localIdentifier) {
+            $this->logDebug('Moox Sync: Model event ignored - no local identifier found', ['model' => get_class($model), 'event' => $eventType]);
+
+            return;
+        }
+
         $this->logDebug('Dispatching PrepareSyncJob', [
             'model' => get_class($model),
             'local_identifier' => $localIdentifier,
@@ -100,17 +106,17 @@ class SyncListener
             'platform' => $this->currentPlatform->id,
         ]);
 
-        PrepareSyncJob::dispatch($localIdentifier, get_class($model), $eventType, $this->currentPlatform->id)
+        PrepareSyncJob::dispatch($localIdentifier['field'], $localIdentifier['value'], get_class($model), $eventType, $this->currentPlatform->id)
             ->delay(now()->addSeconds(5));
     }
 
     protected function getLocalIdentifier($model)
     {
-        $localIdentifierFields = config('sync.local_identifier_fields', ['id']);
+        $localIdentifierFields = config('sync.local_identifier_fields', ['id', 'ID', 'uuid', 'ulid']);
 
         foreach ($localIdentifierFields as $field) {
             if (isset($model->$field)) {
-                return $model->$field;
+                return ['field' => $field, 'value' => $model->$field];
             }
         }
 
