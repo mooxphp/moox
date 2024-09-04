@@ -9,7 +9,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
-use Moox\Sync\Services\SyncService;
 
 class SyncJob implements ShouldQueue
 {
@@ -31,21 +30,31 @@ class SyncJob implements ShouldQueue
         $this->sourcePlatform = $sourcePlatform;
     }
 
-    public function handle(SyncService $syncService)
+    public function handle()
     {
+        $this->logDebug('SyncJob handle method entered', [
+            'model_class' => $this->modelClass,
+            'model_id' => $this->modelData['id'],
+            'event_type' => $this->eventType,
+            'source_platform' => $this->sourcePlatform->id,
+        ]);
+
         try {
-            $this->logDebug('SyncJob handle method entered', [
-                'modelClass' => $this->modelClass,
-                'eventType' => $this->eventType,
-                'sourcePlatform' => $this->sourcePlatform->id,
+            $model = $this->modelClass::updateOrCreate(
+                ['id' => $this->modelData['id']],
+                $this->modelData
+            );
+
+            $this->logDebug('Model synced successfully', [
+                'model_class' => $this->modelClass,
+                'model_id' => $model->id,
             ]);
-
-            $syncService->performSync($this->modelClass, $this->modelData, $this->eventType, $this->sourcePlatform);
-
-            $this->logDebug('SyncJob handle method finished successfully');
-
         } catch (\Exception $e) {
-            $this->logDebug('SyncJob encountered an error', ['error' => $e->getMessage()]);
+            $this->logDebug('Error syncing model', [
+                'model_class' => $this->modelClass,
+                'model_id' => $this->modelData['id'],
+                'error' => $e->getMessage(),
+            ]);
             throw $e;
         }
     }
