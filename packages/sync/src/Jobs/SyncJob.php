@@ -30,25 +30,39 @@ class SyncJob implements ShouldQueue
         $this->sourcePlatform = $sourcePlatform;
     }
 
+    protected function getModelId()
+    {
+        $idFields = ['ulid', 'uuid', 'id', 'ID', 'slug', 'user_login'];
+        foreach ($idFields as $field) {
+            if (isset($this->modelData[$field])) {
+                return [
+                    'field' => $field,
+                    'value' => $this->modelData[$field],
+                ];
+            }
+        }
+        throw new \Exception('No suitable ID field found for model');
+    }
+
     public function handle()
     {
-        $this->logDebug('SyncJob handle method entered', [
-            'model_class' => $this->modelClass,
-            'model_id' => $this->modelData['id'],
-            'event_type' => $this->eventType,
-            'source_platform' => $this->sourcePlatform->id,
-        ]);
-
         try {
+            $modelId = $this->getModelId();
+            $this->logDebug('Syncing model', [
+                'model_class' => $this->modelClass,
+                'model_id_field' => $modelId['field'],
+                'model_id_value' => $modelId['value'],
+                'event_type' => $this->eventType,
+            ]);
+
             if ($this->modelClass === Platform::class) {
                 $this->syncPlatform();
             } else {
-                $this->syncModel();
+                $this->syncModel($modelId);
             }
         } catch (\Exception $e) {
             $this->logDebug('Error syncing model', [
                 'model_class' => $this->modelClass,
-                'model_id' => $this->modelData['id'],
                 'error' => $e->getMessage(),
             ]);
             throw $e;
@@ -68,33 +82,29 @@ class SyncJob implements ShouldQueue
         ]);
     }
 
-    protected function syncModel()
+    protected function syncModel($modelId)
     {
-        if (! isset($this->modelData['slug'])) {
-            throw new \Exception('Slug field is required for syncing models');
-        }
-
-        $model = $this->modelClass::where('slug', $this->modelData['slug'])->first();
+        $model = $this->modelClass::where($modelId['field'], $modelId['value'])->first();
 
         if ($this->eventType === 'deleted') {
             if ($model) {
                 $model->delete();
                 $this->logDebug('Model deleted successfully', [
                     'model_class' => $this->modelClass,
-                    'model_id' => $model->id,
-                    'model_slug' => $model->slug,
+                    'model_id_field' => $modelId['field'],
+                    'model_id_value' => $modelId['value'],
                 ]);
             }
         } else {
             $model = $this->modelClass::updateOrCreate(
-                ['slug' => $this->modelData['slug']],
+                [$modelId['field'] => $modelId['value']],
                 $this->modelData
             );
 
             $this->logDebug('Model synced successfully', [
                 'model_class' => $this->modelClass,
-                'model_id' => $model->id,
-                'model_slug' => $model->slug,
+                'model_id_field' => $modelId['field'],
+                'model_id_value' => $modelId['value'],
             ]);
         }
     }
