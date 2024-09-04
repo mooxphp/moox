@@ -181,18 +181,23 @@ class PressSyncHandler
         ]);
 
         foreach ($metaData as $key => $value) {
-            $metaModel::updateOrCreate(
-                [
-                    $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
-                    'meta_key' => $key,
-                ],
-                ['meta_value' => $value]
-            );
+            // Skip null values to avoid creating empty meta entries
+            if ($value !== null) {
+                $metaModel::updateOrCreate(
+                    [
+                        $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
+                        'meta_key' => $key,
+                    ],
+                    ['meta_value' => $value]
+                );
 
-            $this->logDebug('Meta data synced', [
-                'key' => $key,
-                'value' => $value,
-            ]);
+                $this->logDebug('Meta data synced', [
+                    'key' => $key,
+                    'value' => $value,
+                ]);
+            } else {
+                $this->logDebug('Skipped null meta value', ['key' => $key]);
+            }
         }
     }
 
@@ -217,8 +222,13 @@ class PressSyncHandler
     protected function getMetaData(): array
     {
         $mainFields = $this->getMainFields();
+        $metaData = array_diff_key($this->modelData, array_flip($mainFields));
 
-        return array_diff_key($this->modelData, array_flip($mainFields));
+        $this->logDebug('Meta data extracted', [
+            'metaData' => $metaData,
+        ]);
+
+        return $metaData;
     }
 
     protected function getMainFields(): array
