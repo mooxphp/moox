@@ -6,7 +6,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
-use Moox\Sync\Jobs\DeferredSyncJob;
+use Moox\Sync\Jobs\PrepareSyncJob;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Services\SyncService;
@@ -88,14 +88,14 @@ class SyncListener
             return;
         }
 
-        $this->logDebug('Dispatching DeferredSyncJob', [
+        $this->logDebug('Dispatching PrepareSyncJob', [
             'model' => get_class($model),
             'id' => $model->id,
             'event' => $eventType,
             'platform' => $this->currentPlatform->id,
         ]);
 
-        DeferredSyncJob::dispatch($model->id, get_class($model), $eventType, $this->currentPlatform->id)
+        PrepareSyncJob::dispatch($model->id, get_class($model), $eventType, $this->currentPlatform->id)
             ->delay(now()->addSeconds(5));
     }
 }
