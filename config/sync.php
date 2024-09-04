@@ -278,6 +278,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | // TODO: Models with syncable Relations - not implemented yet
+    |--------------------------------------------------------------------------
+    |
+    | List of models that should have syncable relations, which should be
+    | synced to other platforms, when changes are made. This does not
+    | add the related models to the listener, but syncs them with
+    | the sync model automatically. So platform-related models
+    | (like WpUsers and WpUserMetaare able to use this
+    | feature, too.
+    |
+    */
+
+    'models_with_syncable_relations' => [
+        'Moox\User\Models\User',
+        'Moox\Press\Models\WpUser' => [
+            'Moox\UserSession\Models\Session',
+        ],
+        // Add any other models here
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Unique Identifier Fields
     |--------------------------------------------------------------------------
     |
