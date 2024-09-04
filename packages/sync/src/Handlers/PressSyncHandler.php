@@ -59,15 +59,32 @@ class PressSyncHandler
             'main_table_data' => $mainTableData,
         ]);
 
-        // Ensure user_registered is not empty
-        if ($this->modelClass === \Moox\Press\Models\WpUser::class && empty($mainTableData['user_registered'])) {
-            $mainTableData['user_registered'] = now()->toDateTimeString();
+        // Handle WpUser specific logic
+        if ($this->modelClass === \Moox\Press\Models\WpUser::class) {
+            return $this->syncWpUser($mainTableData, $idField);
         }
 
+        // For other models, use the default logic
         return $this->modelClass::updateOrCreate(
             [$idField => $this->modelData[$idField]],
             $mainTableData
         );
+    }
+
+    protected function syncWpUser(array $mainTableData, string $idField)
+    {
+        $user = $this->modelClass::updateOrCreate(
+            [$idField => $this->modelData[$idField]],
+            $mainTableData
+        );
+
+        // Sync meta fields
+        $metaFields = array_diff_key($this->modelData, array_flip($this->getMainFields()));
+        foreach ($metaFields as $key => $value) {
+            $user->addOrUpdateMeta($key, $value);
+        }
+
+        return $user;
     }
 
     protected function sanitizeDateFields(array $data): array
@@ -92,17 +109,15 @@ class PressSyncHandler
     protected function sanitizeDate($date)
     {
         if (empty($date) || $date === '0000-00-00 00:00:00') {
-            return null;
+            return now()->toDateTimeString();
         }
 
         try {
-            $carbonDate = Carbon::parse($date);
-
-            return $carbonDate->year > 1970 ? $carbonDate->toDateTimeString() : null;
+            return Carbon::parse($date)->toDateTimeString();
         } catch (\Exception $e) {
-            $this->logDebug('Failed to parse date', ['date' => $date, 'error' => $e->getMessage()]);
+            $this->logDebug('Failed to parse date, using current time', ['date' => $date, 'error' => $e->getMessage()]);
 
-            return null;
+            return now()->toDateTimeString();
         }
     }
 
@@ -111,9 +126,7 @@ class PressSyncHandler
         switch ($this->modelClass) {
             case \Moox\Press\Models\WpUser::class:
                 return ['user_registered'];
-            case \Moox\Press\Models\WpPost::class:
-                return ['post_date', 'post_date_gmt', 'post_modified', 'post_modified_gmt'];
-                // Add cases for other Press models as needed
+                // ... other cases ...
             default:
                 return [];
         }
@@ -159,9 +172,7 @@ class PressSyncHandler
         switch ($this->modelClass) {
             case \Moox\Press\Models\WpUser::class:
                 return ['ID', 'user_login', 'user_pass', 'user_nicename', 'user_email', 'user_url', 'user_registered', 'user_activation_key', 'user_status', 'display_name'];
-            case \Moox\Press\Models\WpPost::class:
-                return ['ID', 'post_author', 'post_date', 'post_content', 'post_title', 'post_excerpt', 'post_status', 'comment_status', 'ping_status', 'post_password', 'post_name', 'to_ping', 'pinged', 'post_modified', 'post_content_filtered', 'post_parent', 'guid', 'menu_order', 'post_type', 'post_mime_type', 'comment_count'];
-                // Add cases for other Press models as needed
+                // ... other cases ...
             default:
                 throw new \Exception("Unsupported model class: {$this->modelClass}");
         }
