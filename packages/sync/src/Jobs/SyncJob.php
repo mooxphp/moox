@@ -58,26 +58,31 @@ class SyncJob implements ShouldQueue
     protected function syncPlatform()
     {
         $platform = Platform::updateOrCreate(
-            ['domain' => $this->modelData['domain']],
+            ['name' => $this->modelData['name']],
             $this->modelData
         );
 
         $this->logDebug('Platform synced successfully', [
             'platform_id' => $platform->id,
-            'platform_domain' => $platform->domain,
+            'platform_name' => $platform->name,
         ]);
     }
 
     protected function syncModel()
     {
+        if (! isset($this->modelData['slug'])) {
+            throw new \Exception('Slug field is required for syncing models');
+        }
+
         $model = $this->modelClass::updateOrCreate(
-            ['id' => $this->modelData['id']],
+            ['slug' => $this->modelData['slug']],
             $this->modelData
         );
 
         $this->logDebug('Model synced successfully', [
             'model_class' => $this->modelClass,
             'model_id' => $model->id,
+            'model_slug' => $model->slug,
         ]);
     }
 }
