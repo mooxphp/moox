@@ -5,9 +5,12 @@ namespace Moox\Sync\Handlers;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Moox\Core\Traits\LogLevel;
 
 class PressSyncHandler
 {
+    use LogLevel;
+
     protected $modelClass;
 
     protected $modelData;
@@ -32,6 +35,11 @@ class PressSyncHandler
             return $mainRecord;
         } catch (\Exception $e) {
             DB::rollBack();
+            $this->logDebug('Sync failed: '.$e->getMessage(), [
+                'model_class' => $this->modelClass,
+                'model_data' => $this->modelData,
+                'trace' => $e->getTraceAsString(),
+            ]);
             throw $e;
         }
     }
@@ -43,6 +51,13 @@ class PressSyncHandler
 
         // Sanitize date fields
         $mainTableData = $this->sanitizeDateFields($mainTableData);
+
+        $this->logDebug('Syncing main record', [
+            'model_class' => $this->modelClass,
+            'id_field' => $idField,
+            'id_value' => $this->modelData[$idField],
+            'main_table_data' => $mainTableData,
+        ]);
 
         return $this->modelClass::updateOrCreate(
             [$idField => $this->modelData[$idField]],
@@ -56,7 +71,13 @@ class PressSyncHandler
 
         foreach ($dateFields as $field) {
             if (isset($data[$field])) {
+                $originalValue = $data[$field];
                 $data[$field] = $this->sanitizeDate($data[$field]);
+                $this->logDebug('Sanitized date field', [
+                    'field' => $field,
+                    'original_value' => $originalValue,
+                    'sanitized_value' => $data[$field],
+                ]);
             }
         }
 
@@ -72,6 +93,8 @@ class PressSyncHandler
         try {
             return Carbon::parse($date)->format('Y-m-d H:i:s');
         } catch (\Exception $e) {
+            $this->logDebug('Failed to parse date', ['date' => $date, 'error' => $e->getMessage()]);
+
             return null;
         }
     }
