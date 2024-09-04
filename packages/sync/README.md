@@ -73,6 +73,9 @@ Here are some key components and the basic flow of Sync:
 Besides the Moox default config options, you can can configure following options:
 
 ```php
+
+    // TODO: A lot of config options are missing, because the package is under heavy development. See config/sync.php for more details.
+
     /*
     |--------------------------------------------------------------------------
     | Sync Backup Job
