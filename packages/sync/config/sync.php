@@ -272,4 +272,24 @@ return [
         // Add any other models here
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Unique Identifier Fields
+    |--------------------------------------------------------------------------
+    |
+    | The synced model should have a unique identifier. The id auto-
+    | increments, so it is not suitable. Perfect would be a ULID
+    | or UUID, but any other unique identifier will work, too.
+    | This is the list of identifiers Moox Sync searches for.
+    | for, in the given order. Ad more as you need them.
+    |
+    */
+
+    'unique_identifier_fields' => [
+        'ulid',
+        'uuid',
+        'slug',
+        'name',
+        'title',
+    ],
 ];

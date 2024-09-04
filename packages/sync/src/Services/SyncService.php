@@ -117,14 +117,29 @@ class SyncService
 
     protected function createOrUpdateModel($modelClass, array $modelData, Platform $targetPlatform)
     {
+        $uniqueFields = config('sync.unique_identifier_fields', ['ulid', 'uuid', 'slug', 'name', 'title']);
+        $uniqueIdentifier = null;
+
+        foreach ($uniqueFields as $field) {
+            if (isset($modelData[$field])) {
+                $uniqueIdentifier = $field;
+                break;
+            }
+        }
+
+        if (! $uniqueIdentifier) {
+            throw new \Exception("No unique identifier found for model {$modelClass}");
+        }
+
         $model = $modelClass::updateOrCreate(
-            ['id' => $modelData['id']],
+            [$uniqueIdentifier => $modelData[$uniqueIdentifier]],
             $modelData
         );
 
         $this->logDebug('Model created or updated', [
             'modelClass' => $modelClass,
             'modelId' => $model->id,
+            'uniqueIdentifier' => $uniqueIdentifier,
             'targetPlatform' => $targetPlatform->id,
         ]);
 
