@@ -46,6 +46,7 @@ class PressSyncHandler
 
     protected function syncMainRecord()
     {
+        $this->logDebug('Starting syncMainRecord', ['modelClass' => $this->modelClass, 'modelData' => $this->modelData]);
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
@@ -86,16 +87,27 @@ class PressSyncHandler
 
     protected function syncWpUser(array $mainTableData, string $idField)
     {
-        $user = $this->modelClass::updateOrCreate(
+        $this->logDebug('Syncing WpUser', ['mainTableData' => $mainTableData, 'idField' => $idField]);
+
+        // Ensure user_registered is set to current time if it's missing or invalid
+        if (! isset($mainTableData['user_registered']) || $mainTableData['user_registered'] === '0000-00-00 00:00:00') {
+            $mainTableData['user_registered'] = now()->toDateTimeString();
+        }
+
+        $user = \Moox\Press\Models\WpUser::updateOrCreate(
             [$idField => $this->modelData[$idField]],
             $mainTableData
         );
+
+        $this->logDebug('WpUser synced', ['user' => $user->toArray()]);
 
         // Sync meta fields
         $metaFields = array_diff_key($this->modelData, array_flip($this->getMainFields()));
         foreach ($metaFields as $key => $value) {
             $user->addOrUpdateMeta($key, $value);
         }
+
+        $this->logDebug('WpUser meta synced', ['metaFields' => $metaFields]);
 
         return $user;
     }
@@ -122,11 +134,16 @@ class PressSyncHandler
     protected function sanitizeDate($date)
     {
         if (empty($date) || $date === '0000-00-00 00:00:00') {
+            $this->logDebug('Empty or invalid date, using current time', ['original_date' => $date]);
+
             return now()->toDateTimeString();
         }
 
         try {
-            return Carbon::parse($date)->toDateTimeString();
+            $parsedDate = Carbon::parse($date);
+            $this->logDebug('Date parsed successfully', ['original_date' => $date, 'parsed_date' => $parsedDate->toDateTimeString()]);
+
+            return $parsedDate->toDateTimeString();
         } catch (\Exception $e) {
             $this->logDebug('Failed to parse date, using current time', ['date' => $date, 'error' => $e->getMessage()]);
 
