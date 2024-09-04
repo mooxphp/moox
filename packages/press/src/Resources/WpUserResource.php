@@ -108,15 +108,35 @@ class WpUserResource extends Resource
                         ->label(__('core::user.first_name'))
                         ->rules(['max:255', 'string'])
                         ->required()
+                        ->live(debounce: 1000)
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
-                        ]),
+                        ])
+                        ->afterStateUpdated(function ($state, $set, $get) {
+                            $set('user_nicename', strtolower($get('first_name').'-'.$get('last_name')));
+                            $set('display_name', ucwords($get('first_name').' '.$get('last_name')));
+                        }),
 
                     TextInput::make('last_name')
                         ->label(__('core::user.last_name'))
                         ->rules(['max:255', 'string'])
+                        ->required()
+                        ->columnSpan([
+                            'default' => 12,
+                            'md' => 12,
+                            'lg' => 12,
+                        ])
+                        ->live(debounce: 1000)
+                        ->afterStateUpdated(function ($state, $set, $get) {
+                            $set('user_nicename', strtolower($get('first_name').'-'.$get('last_name')));
+                            $set('display_name', ucwords($get('first_name').' '.$get('last_name')));
+                        }),
+
+                    TextInput::make('display_name')
+                        ->label(__('core::user.display_name'))
+                        ->rules(['max:50', 'string'])
                         ->required()
                         ->columnSpan([
                             'default' => 12,
@@ -128,6 +148,7 @@ class WpUserResource extends Resource
                         ->label(__('core::user.user_nicename'))
                         ->rules(['max:50', 'string'])
                         ->required()
+                        ->readonly()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -138,6 +159,7 @@ class WpUserResource extends Resource
                         ->label(__('core::user.user_email'))
                         ->rules(['max:100', 'string'])
                         ->required()
+
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -157,6 +179,7 @@ class WpUserResource extends Resource
                         ->label(__('core::user.user_registered'))
                         ->rules(['date'])
                         ->required()
+                        ->readonly()
                         ->default(now())
                         ->columnSpan([
                             'default' => 12,

@@ -16,16 +16,6 @@ class CreateWpUser extends CreateRecord
 {
     protected static string $resource = WpUserResource::class;
 
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-
-        if (filled($data['first_name']) && filled($data['last_name'])) {
-            $data['display_name'] = $data['first_name'].' '.$data['last_name'];
-        }
-
-        return $data;
-    }
-
     public function afterCreate(): void
     {
         $temporaryFilePath = $this->data['temporary_file_path'] ?? null;
