@@ -30,8 +30,7 @@ class ItemResource extends Resource
                     ->label(__('core::core.slug'))
                     ->required(),
                 TextInput::make('content')
-                    ->label(__('core::core.content'))
-                    ->required(),
+                    ->label(__('core::core.content')),
                 Item::getStatusFormField(),
                 Item::getTypeFormField(),
             ]);

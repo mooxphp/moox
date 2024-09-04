@@ -48,6 +48,7 @@ class Item extends Model
     {
         return Select::make('status')
             ->options(self::getStatusOptions())
+            ->default('draft')
             ->required();
     }
 
@@ -55,6 +56,7 @@ class Item extends Model
     {
         return Select::make('type')
             ->options(self::getTypeOptions())
+            ->default('post')
             ->required();
     }
 }
