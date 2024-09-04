@@ -49,8 +49,10 @@ class PressSyncHandler
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
-        // Sanitize date fields
-        $mainTableData = $this->sanitizeDateFields($mainTableData);
+        // Ensure user_registered is set to current time if it's missing or invalid
+        if ($this->modelClass === \Moox\Press\Models\WpUser::class) {
+            $mainTableData['user_registered'] = $this->sanitizeDate($mainTableData['user_registered'] ?? null);
+        }
 
         $this->logDebug('Syncing main record', [
             'model_class' => $this->modelClass,
@@ -59,16 +61,27 @@ class PressSyncHandler
             'main_table_data' => $mainTableData,
         ]);
 
-        // Handle WpUser specific logic
-        if ($this->modelClass === \Moox\Press\Models\WpUser::class) {
-            return $this->syncWpUser($mainTableData, $idField);
-        }
+        try {
+            $model = $this->modelClass::updateOrCreate(
+                [$idField => $this->modelData[$idField]],
+                $mainTableData
+            );
 
-        // For other models, use the default logic
-        return $this->modelClass::updateOrCreate(
-            [$idField => $this->modelData[$idField]],
-            $mainTableData
-        );
+            $this->logDebug('Main record synced successfully', [
+                'model_class' => $this->modelClass,
+                'id' => $model->getKey(),
+                'attributes' => $model->getAttributes(),
+            ]);
+
+            return $model;
+        } catch (\Exception $e) {
+            $this->logDebug('Error syncing main record', [
+                'model_class' => $this->modelClass,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     protected function syncWpUser(array $mainTableData, string $idField)
