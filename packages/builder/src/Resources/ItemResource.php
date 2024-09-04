@@ -41,18 +41,23 @@ class ItemResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('core::core.name'))
+                TextColumn::make('title')
+                    ->label(__('core::core.title'))
                     ->sortable(),
-                TextColumn::make('started_at')
-                    ->label(__('core::core.started_at'))
-                    ->since()
+                TextColumn::make('slug')
+                    ->label(__('core::core.slug'))
                     ->sortable(),
-                TextColumn::make('failed')
-                    ->label(__('core::core.failed'))
+                TextColumn::make('content')
+                    ->label(__('core::core.content'))
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->label(__('core::core.status'))
+                    ->sortable(),
+                TextColumn::make('type')
+                    ->label(__('core::core.type'))
                     ->sortable(),
             ])
-            ->defaultSort('name', 'desc')
+            ->defaultSort('slug', 'desc')
             ->actions([
                 EditAction::make(),
             ])
