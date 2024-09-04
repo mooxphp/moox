@@ -99,7 +99,8 @@ class SyncListener
 
         // If this is a WordPress user model, include all meta data
         if ($model instanceof \Moox\Press\Models\WpUser) {
-            $userMeta = $model->metas()->get()->pluck('meta_value', 'meta_key')->toArray();
+            $userMeta = $model->getAllMetaAttributes();
+            $this->logDebug('User meta data retrieved', ['user_meta' => $userMeta]);
             $modelData = array_merge($modelData, $userMeta);
         }
 
