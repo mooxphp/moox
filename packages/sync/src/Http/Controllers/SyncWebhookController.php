@@ -32,6 +32,11 @@ class SyncWebhookController extends Controller
                 throw new \Exception('Source platform not found');
             }
 
+            $modelId = $validatedData['model']['ID'] ?? $validatedData['model']['id'] ?? null;
+            if (! $modelId) {
+                throw new \Exception('Model ID not found in the request data');
+            }
+
             SyncJob::dispatch(
                 $validatedData['model_class'],
                 $validatedData['model'],
@@ -41,7 +46,7 @@ class SyncWebhookController extends Controller
 
             $this->logDebug('SyncJob dispatched', [
                 'model_class' => $validatedData['model_class'],
-                'model_id' => $validatedData['model']['id'],
+                'model_id' => $modelId,
                 'event_type' => $validatedData['event_type'],
                 'source_platform' => $sourcePlatform->id,
             ]);

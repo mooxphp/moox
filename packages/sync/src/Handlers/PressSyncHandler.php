@@ -59,6 +59,11 @@ class PressSyncHandler
             'main_table_data' => $mainTableData,
         ]);
 
+        // Ensure user_registered is not empty
+        if ($this->modelClass === \Moox\Press\Models\WpUser::class && empty($mainTableData['user_registered'])) {
+            $mainTableData['user_registered'] = now()->toDateTimeString();
+        }
+
         return $this->modelClass::updateOrCreate(
             [$idField => $this->modelData[$idField]],
             $mainTableData
@@ -91,7 +96,9 @@ class PressSyncHandler
         }
 
         try {
-            return Carbon::parse($date)->format('Y-m-d H:i:s');
+            $carbonDate = Carbon::parse($date);
+
+            return $carbonDate->year > 1970 ? $carbonDate->toDateTimeString() : null;
         } catch (\Exception $e) {
             $this->logDebug('Failed to parse date', ['date' => $date, 'error' => $e->getMessage()]);
 
