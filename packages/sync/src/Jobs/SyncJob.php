@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Moox\Core\Traits\LogLevel;
+use Moox\Sync\Handlers\PressSyncHandler;
 use Moox\Sync\Models\Platform;
 
 class SyncJob implements ShouldQueue
@@ -84,9 +85,8 @@ class SyncJob implements ShouldQueue
 
     protected function syncModel($modelId)
     {
-        $model = $this->modelClass::where($modelId['field'], $modelId['value'])->first();
-
         if ($this->eventType === 'deleted') {
+            $model = $this->modelClass::where($modelId['field'], $modelId['value'])->first();
             if ($model) {
                 $model->delete();
                 $this->logDebug('Model deleted successfully', [
@@ -96,10 +96,15 @@ class SyncJob implements ShouldQueue
                 ]);
             }
         } else {
-            $model = $this->modelClass::updateOrCreate(
-                [$modelId['field'] => $modelId['value']],
-                $this->modelData
-            );
+            if ($this->isPressSyncableModel()) {
+                $handler = new PressSyncHandler($this->modelClass, $this->modelData);
+                $model = $handler->sync();
+            } else {
+                $model = $this->modelClass::updateOrCreate(
+                    [$modelId['field'] => $modelId['value']],
+                    $this->modelData
+                );
+            }
 
             $this->logDebug('Model synced successfully', [
                 'model_class' => $this->modelClass,
@@ -107,5 +112,14 @@ class SyncJob implements ShouldQueue
                 'model_id_value' => $modelId['value'],
             ]);
         }
+    }
+
+    protected function isPressSyncableModel(): bool
+    {
+        return in_array($this->modelClass, [
+            \Moox\Press\Models\WpUser::class,
+            \Moox\Press\Models\WpPost::class,
+            // Add other Press models as needed
+        ]);
     }
 }
