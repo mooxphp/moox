@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
+use Moox\Sync\Models\Sync;
 use Moox\Sync\Services\SyncService;
 
 class SyncListener
@@ -49,11 +50,11 @@ class SyncListener
     {
         $this->logDebug('Moox Sync: Registering listeners');
         if ($this->currentPlatform) {
-            $modelsToSync = config('sync.models_with_platform_relations', []);
-            foreach ($modelsToSync as $modelClass) {
-                $this->registerModelListeners($modelClass);
+            $syncsToListen = Sync::where('source_platform_id', $this->currentPlatform->id)->get();
+            foreach ($syncsToListen as $sync) {
+                $this->registerModelListeners($sync->source_model);
             }
-            $this->logDebug('Moox Sync: Listeners registered', ['models' => $modelsToSync]);
+            $this->logDebug('Moox Sync: Listeners registered', ['models' => $syncsToListen->pluck('source_model')]);
         } else {
             $this->logDebug('Moox Sync: No listeners registered - current platform not set');
         }
