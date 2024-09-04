@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Handlers;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -40,10 +41,52 @@ class PressSyncHandler
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
+        // Sanitize date fields
+        $mainTableData = $this->sanitizeDateFields($mainTableData);
+
         return $this->modelClass::updateOrCreate(
             [$idField => $this->modelData[$idField]],
             $mainTableData
         );
+    }
+
+    protected function sanitizeDateFields(array $data): array
+    {
+        $dateFields = $this->getDateFields();
+
+        foreach ($dateFields as $field) {
+            if (isset($data[$field])) {
+                $data[$field] = $this->sanitizeDate($data[$field]);
+            }
+        }
+
+        return $data;
+    }
+
+    protected function sanitizeDate($date)
+    {
+        if (empty($date) || $date === '0000-00-00 00:00:00') {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($date)->format('Y-m-d H:i:s');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    protected function getDateFields(): array
+    {
+        switch ($this->modelClass) {
+            case \Moox\Press\Models\WpUser::class:
+                return ['user_registered'];
+            case \Moox\Press\Models\WpPost::class:
+                return ['post_date', 'post_date_gmt', 'post_modified', 'post_modified_gmt'];
+                // Add cases for other Press models as needed
+            default:
+                return [];
+        }
     }
 
     protected function syncMetaData(Model $mainRecord)
