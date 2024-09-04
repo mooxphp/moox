@@ -95,12 +95,22 @@ class SyncListener
             'platform' => $this->currentPlatform->id,
         ]);
 
+        $modelData = $model->toArray();
+
+        // If this is a WordPress user model, include all meta data
+        if ($model instanceof \Moox\Press\Models\WpUser) {
+            $userMeta = $model->metas()->get()->pluck('meta_value', 'meta_key')->toArray();
+            $modelData = array_merge($modelData, $userMeta);
+        }
+
         $syncData = [
             'event_type' => $eventType,
-            'model' => $model->toArray(),
+            'model' => $modelData,
             'model_class' => get_class($model),
             'platform' => $this->currentPlatform->toArray(),
         ];
+
+        $this->logDebug('Sync data prepared', ['sync_data' => $syncData]);
 
         $this->invokeWebhooks($syncData);
     }
