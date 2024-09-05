@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.2
+
+-   Loglevel feature, see README
+-   Shared Hosting feature, see README
+
 ## 2.0.1
 
 Config option for Google Icons, see README
