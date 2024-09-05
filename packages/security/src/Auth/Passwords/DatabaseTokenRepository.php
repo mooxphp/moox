@@ -74,9 +74,9 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
     protected function deleteSomeExisting(string $email, string $userType)
     {
         return $this->getTable()
-        ->where('email', $email)
-        ->where('user_type', $userType)
-        ->delete();
+            ->where('email', $email)
+            ->where('user_type', $userType)
+            ->delete();
     }
 
     protected function createPayload(string $email, string $token, string $userType): array
