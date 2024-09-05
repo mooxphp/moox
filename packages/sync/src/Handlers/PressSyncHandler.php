@@ -2,7 +2,6 @@
 
 namespace Moox\Sync\Handlers;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Traits\LogLevel;
 
@@ -14,10 +13,16 @@ class PressSyncHandler
 
     protected $modelData;
 
+    protected $tableName;
+
+    protected $metaTableName;
+
     public function __construct(string $modelClass, array $modelData)
     {
         $this->modelClass = $modelClass;
         $this->modelData = $modelData;
+        $this->tableName = (new $modelClass)->getTable();
+        $this->metaTableName = $this->tableName.'_meta';
     }
 
     public function sync()
@@ -42,28 +47,35 @@ class PressSyncHandler
         }
     }
 
-    protected function syncMainRecord(): Model
+    protected function syncMainRecord()
     {
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
-        $model = $this->modelClass::updateOrCreate(
+        $this->logDebug('Syncing main record', [
+            'table' => $this->tableName,
+            'id_field' => $idField,
+            'id_value' => $mainTableData[$idField],
+            'data' => $mainTableData,
+        ]);
+
+        DB::table($this->tableName)->updateOrInsert(
             [$idField => $mainTableData[$idField]],
             $mainTableData
         );
 
-        return $model;
+        return $mainTableData[$idField];
     }
 
-    protected function syncMetaData(Model $mainRecord)
+    protected function syncMetaData($mainRecordId)
     {
         $metaData = $this->getMetaData();
-        $metaModel = $this->getMetaModel($mainRecord);
+        $foreignKeyName = $this->getForeignKeyName();
 
         foreach ($metaData as $key => $value) {
-            $metaModel::updateOrCreate(
+            DB::table($this->metaTableName)->updateOrInsert(
                 [
-                    $this->getForeignKeyName($mainRecord) => $mainRecord->getKey(),
+                    $foreignKeyName => $mainRecordId,
                     'meta_key' => $key,
                 ],
                 ['meta_value' => $value]
@@ -76,13 +88,6 @@ class PressSyncHandler
         $mainFields = $this->getMainFields();
         $mainTableData = array_intersect_key($this->modelData, array_flip($mainFields));
 
-        // Ensure all required fields are present, even if empty
-        foreach ($mainFields as $field) {
-            if (! isset($mainTableData[$field])) {
-                $mainTableData[$field] = '';
-            }
-        }
-
         // Ensure user_url and user_activation_key are not null
         $mainTableData['user_url'] = $mainTableData['user_url'] ?? '';
         $mainTableData['user_activation_key'] = $mainTableData['user_activation_key'] ?? '';
@@ -93,13 +98,8 @@ class PressSyncHandler
     protected function getMetaData(): array
     {
         $defaultMeta = config('press.default_user_meta', []);
-        $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
 
-        foreach ($defaultMeta as $key) {
-            $metaData[$key] = $metaData[$key] ?? '';
-        }
-
-        return $metaData;
+        return array_intersect_key($this->modelData, array_flip($defaultMeta));
     }
 
     protected function getMainFields(): array
@@ -110,38 +110,13 @@ class PressSyncHandler
         ];
     }
 
-    protected function getMetaModel(Model $mainRecord): string
-    {
-        switch (get_class($mainRecord)) {
-            case \Moox\Press\Models\WpUser::class:
-                return \Moox\Press\Models\WpUserMeta::class;
-            case \Moox\Press\Models\WpPost::class:
-                return \Moox\Press\Models\WpPostMeta::class;
-            default:
-                throw new \Exception('Unsupported model class: '.get_class($mainRecord));
-        }
-    }
-
     protected function getIdField(): string
     {
-        $idFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
-        foreach ($idFields as $field) {
-            if (isset($this->modelData[$field])) {
-                return $field;
-            }
-        }
-        throw new \Exception('No suitable ID field found for model');
+        return 'ID';
     }
 
-    protected function getForeignKeyName(Model $mainRecord): string
+    protected function getForeignKeyName(): string
     {
-        switch (get_class($mainRecord)) {
-            case \Moox\Press\Models\WpUser::class:
-                return 'user_id';
-            case \Moox\Press\Models\WpPost::class:
-                return 'post_id';
-            default:
-                throw new \Exception('Unsupported model class: '.get_class($mainRecord));
-        }
+        return strtolower(class_basename($this->modelClass)).'_id';
     }
 }

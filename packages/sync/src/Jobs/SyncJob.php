@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Handlers\PressSyncHandler;
@@ -92,21 +93,18 @@ class SyncJob implements ShouldQueue
     protected function syncModel($modelId)
     {
         if ($this->eventType === 'deleted') {
-            $model = $this->modelClass::where($modelId['field'], $modelId['value'])->first();
-            if ($model) {
-                $model->delete();
-                $this->logDebug('Model deleted successfully', [
-                    'model_class' => $this->modelClass,
-                    'model_id_field' => $modelId['field'],
-                    'model_id_value' => $modelId['value'],
-                ]);
-            }
+            DB::table((new $this->modelClass)->getTable())->where($modelId['field'], $modelId['value'])->delete();
+            $this->logDebug('Model deleted successfully', [
+                'model_class' => $this->modelClass,
+                'model_id_field' => $modelId['field'],
+                'model_id_value' => $modelId['value'],
+            ]);
         } else {
             if ($this->isPressSyncableModel()) {
                 $handler = new PressSyncHandler($this->modelClass, $this->modelData);
-                $model = $handler->sync();
+                $handler->sync();
             } else {
-                $model = $this->modelClass::updateOrCreate(
+                DB::table((new $this->modelClass)->getTable())->updateOrInsert(
                     [$modelId['field'] => $modelId['value']],
                     $this->modelData
                 );
