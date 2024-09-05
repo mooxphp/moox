@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "moox/core": "^2.1.0"
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {

@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "moox/core": "^2.1.0",
+        "moox/core": "*",
         "bezhansalleh/filament-shield": "^3.0",
         "stechstudio/filament-impersonate": "^3.5",
         "jeffgreco13/filament-breezy": "^2.2",

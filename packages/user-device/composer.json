@@ -19,7 +19,7 @@
     "require": {
         "geoip2/geoip2": "^3.0",
         "jenssegers/agent": "^2.6",
-        "moox/core": "^2.1.0"
+        "moox/core": "*"
     },
     "autoload": {
         "psr-4": {
