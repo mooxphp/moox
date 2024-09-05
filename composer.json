@@ -37,14 +37,15 @@
         "moox/passkey": "*",
         "moox/permission": "*",
         "moox/press": "*",
-        "moox/press-wiki": "*",
         "moox/press-trainings": "*",
+        "moox/press-wiki": "*",
         "moox/security": "*",
         "moox/sync": "*",
         "moox/trainings": "*",
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
+        "resend/resend-laravel": "^1.0@dev",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
