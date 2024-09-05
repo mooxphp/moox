@@ -101,7 +101,7 @@ return [
         'wpusers' => [
             'provider' => 'wpusers',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 120,
+            'expire' => 10080,
             'throttle' => 60,
         ],
     ],

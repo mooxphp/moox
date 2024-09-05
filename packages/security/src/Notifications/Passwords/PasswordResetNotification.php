@@ -55,7 +55,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
 
     protected function getReadableExpiryTime(): string
     {
-        $expiryMinutes = config('auth.passwords.'.config('auth.defaults.passwords').'.expire');
+        $expiryMinutes = config('auth.passwords.'.$this->panel->getAuthPasswordBroker().'.expire') ?? config('auth.passwords.users.expire');
         $expiryTime = Carbon::now()->addMinutes($expiryMinutes + 1);
 
         return $expiryTime->diffForHumans();
