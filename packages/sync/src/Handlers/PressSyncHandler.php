@@ -23,7 +23,7 @@ class PressSyncHandler
         $this->modelClass = $modelClass;
         $this->modelData = $modelData;
         $this->tableName = (new $modelClass)->getTable();
-        $this->metaTableName = $this->tableName.'_meta';
+        $this->metaTableName = str_replace('users', 'usermeta', $this->tableName);
     }
 
     public function sync()
@@ -130,6 +130,6 @@ class PressSyncHandler
 
     protected function getForeignKeyName(): string
     {
-        return strtolower(class_basename($this->modelClass)).'_id';
+        return 'user_id';
     }
 }
