@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Handlers;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Traits\LogLevel;
 
@@ -30,12 +31,12 @@ class PressSyncHandler
         DB::beginTransaction();
 
         try {
-            $mainRecord = $this->syncMainRecord();
-            $this->syncMetaData($mainRecord);
+            $mainRecordId = $this->syncMainRecord();
+            $this->syncMetaData($mainRecordId);
 
             DB::commit();
 
-            return $mainRecord;
+            return $mainRecordId;
         } catch (\Exception $e) {
             DB::rollBack();
             $this->logDebug('Sync failed: '.$e->getMessage(), [
@@ -81,6 +82,12 @@ class PressSyncHandler
                 ['meta_value' => $value]
             );
         }
+
+        $this->logDebug('Synced meta data', [
+            'table' => $this->metaTableName,
+            'main_record_id' => $mainRecordId,
+            'meta_data' => $metaData,
+        ]);
     }
 
     protected function getMainTableData(): array
@@ -88,7 +95,6 @@ class PressSyncHandler
         $mainFields = $this->getMainFields();
         $mainTableData = array_intersect_key($this->modelData, array_flip($mainFields));
 
-        // Ensure user_url and user_activation_key are not null
         $mainTableData['user_url'] = $mainTableData['user_url'] ?? '';
         $mainTableData['user_activation_key'] = $mainTableData['user_activation_key'] ?? '';
 
@@ -97,9 +103,16 @@ class PressSyncHandler
 
     protected function getMetaData(): array
     {
-        $defaultMeta = config('press.default_user_meta', []);
+        $defaultMeta = Config::get('press.default_user_meta', []);
+        $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
 
-        return array_intersect_key($this->modelData, array_flip($defaultMeta));
+        foreach ($defaultMeta as $metaKey) {
+            if (! isset($metaData[$metaKey])) {
+                $metaData[$metaKey] = '';
+            }
+        }
+
+        return $metaData;
     }
 
     protected function getMainFields(): array
