@@ -4,11 +4,12 @@ namespace Moox\Sync\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
 use Moox\Core\Traits\LogLevel;
+use Moox\Sync\Models\Platform;
 
 class PrepareSyncJob implements ShouldQueue
 {
@@ -35,46 +36,39 @@ class PrepareSyncJob implements ShouldQueue
 
     public function handle()
     {
-        $this->logDebug('PrepareSyncJob started', [
-            'identifier_field' => $this->identifierField,
-            'identifier_value' => $this->identifierValue,
-            'model_class' => $this->modelClass,
+        $model = $this->findModel();
+        $sourcePlatform = Platform::findOrFail($this->platformId);
+
+        $syncData = [
             'event_type' => $this->eventType,
-            'platform_id' => $this->platformId,
-        ]);
+            'model' => $model ? $model->toArray() : [$this->identifierField => $this->identifierValue],
+            'model_class' => $this->modelClass,
+            'platform' => $sourcePlatform->toArray(),
+        ];
 
-        try {
-            $model = $this->findModel();
-        } catch (ModelNotFoundException $e) {
-            $this->handleModelNotFound();
-
-            return;
-        }
-
-        // ... rest of the handle method ...
+        $this->invokeWebhooks($syncData);
     }
 
     protected function findModel()
     {
-        return $this->modelClass::where($this->identifierField, $this->identifierValue)->firstOrFail();
+        return $this->modelClass::where($this->identifierField, $this->identifierValue)->first();
     }
 
-    protected function handleModelNotFound()
+    protected function invokeWebhooks(array $data)
     {
-        $this->logDebug('Model not found, possibly deleted', [
-            'identifier_field' => $this->identifierField,
-            'identifier_value' => $this->identifierValue,
-            'model_class' => $this->modelClass,
-        ]);
+        $targetPlatforms = Platform::where('id', '!=', $this->platformId)->get();
 
-        if ($this->eventType === 'deleted') {
-            // If it's a delete event, we can proceed with sync
-            $model = new $this->modelClass;
-            $model->{$this->identifierField} = $this->identifierValue;
-            // Proceed with sync logic for deleted model
-        } else {
-            // For other events, we can't proceed without the model
-            $this->logDebug('Cannot proceed with sync for non-existent model');
+        foreach ($targetPlatforms as $targetPlatform) {
+            $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
+
+            try {
+                Http::withToken($targetPlatform->api_token)->post($webhookUrl, $data);
+            } catch (\Exception $e) {
+                $this->logDebug('Webhook invocation error', [
+                    'platform' => $targetPlatform->name,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 }
