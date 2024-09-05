@@ -31,10 +31,19 @@ class PressSyncHandler
         DB::beginTransaction();
 
         try {
+            $this->logDebug('Starting sync process', [
+                'model_class' => $this->modelClass,
+                'model_data' => $this->modelData,
+            ]);
+
             $mainRecordId = $this->syncMainRecord();
             $this->syncMetaData($mainRecordId);
 
             DB::commit();
+
+            $this->logDebug('Sync process completed successfully', [
+                'main_record_id' => $mainRecordId,
+            ]);
 
             return $mainRecordId;
         } catch (\Exception $e) {
@@ -73,17 +82,30 @@ class PressSyncHandler
         $metaData = $this->getMetaData();
         $foreignKeyName = $this->getForeignKeyName();
 
+        $this->logDebug('Starting meta data sync', [
+            'main_record_id' => $mainRecordId,
+            'foreign_key_name' => $foreignKeyName,
+            'meta_data' => $metaData,
+        ]);
+
         foreach ($metaData as $key => $value) {
+            $serializedValue = is_array($value) ? serialize($value) : $value;
+            $this->logDebug('Syncing meta item', [
+                'key' => $key,
+                'value' => $value,
+                'serialized_value' => $serializedValue,
+            ]);
+
             DB::table($this->metaTableName)->updateOrInsert(
                 [
                     $foreignKeyName => $mainRecordId,
                     'meta_key' => $key,
                 ],
-                ['meta_value' => is_array($value) ? serialize($value) : $value]
+                ['meta_value' => $serializedValue]
             );
         }
 
-        $this->logDebug('Synced meta data', [
+        $this->logDebug('Completed meta data sync', [
             'table' => $this->metaTableName,
             'main_record_id' => $mainRecordId,
             'meta_data' => $metaData,
@@ -104,14 +126,18 @@ class PressSyncHandler
     protected function getMetaData(): array
     {
         $defaultMeta = Config::get('press.default_user_meta', []);
-        $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
+        $this->logDebug('Default meta keys', ['default_meta' => $defaultMeta]);
 
-        // Ensure all default meta keys are present, even if empty
+        $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
+        $this->logDebug('Initial meta data', ['meta_data' => $metaData]);
+
         foreach ($defaultMeta as $metaKey) {
             if (! isset($metaData[$metaKey])) {
                 $metaData[$metaKey] = '';
             }
         }
+
+        $this->logDebug('Final meta data', ['meta_data' => $metaData]);
 
         return $metaData;
     }
