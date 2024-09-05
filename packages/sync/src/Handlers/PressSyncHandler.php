@@ -128,12 +128,12 @@ class PressSyncHandler
         $defaultMeta = Config::get('press.default_user_meta', []);
         $this->logDebug('Default meta keys', ['default_meta' => $defaultMeta]);
 
-        $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
+        $metaData = array_intersect_key($this->modelData, $defaultMeta);
         $this->logDebug('Initial meta data', ['meta_data' => $metaData]);
 
-        foreach ($defaultMeta as $metaKey) {
+        foreach ($defaultMeta as $metaKey => $defaultValue) {
             if (! isset($metaData[$metaKey])) {
-                $metaData[$metaKey] = '';
+                $metaData[$metaKey] = $defaultValue;
             }
         }
 
