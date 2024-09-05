@@ -79,7 +79,7 @@ class PressSyncHandler
                     $foreignKeyName => $mainRecordId,
                     'meta_key' => $key,
                 ],
-                ['meta_value' => $value]
+                ['meta_value' => is_array($value) ? serialize($value) : $value]
             );
         }
 
@@ -106,6 +106,7 @@ class PressSyncHandler
         $defaultMeta = Config::get('press.default_user_meta', []);
         $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
 
+        // Ensure all default meta keys are present, even if empty
         foreach ($defaultMeta as $metaKey) {
             if (! isset($metaData[$metaKey])) {
                 $metaData[$metaKey] = '';
