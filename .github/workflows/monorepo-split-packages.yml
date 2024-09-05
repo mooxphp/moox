@@ -18,11 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Read and parse moox.json
+      # Read and parse moox-workflow.json
       - id: set-vars
         run: |
-          core_version=$(jq -r '.core_version' moox.json)
-          packages=$(jq -r '.packages | join(",")' moox.json)
+          core_version=$(jq -r '.core_version' moox-workflow.json)
+          packages=$(jq -r '.packages | join(",")' moox-workflow.json)
 
           echo "CORE_VERSION=${core_version}" >> $GITHUB_ENV
           echo "PACKAGES=${packages}" >> $GITHUB_ENV
