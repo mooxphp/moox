@@ -57,7 +57,7 @@ jobs:
           if [ -f composer.json ]; then
             core_version=${{ env.core_version }}
             echo "Updating moox/core version to $core_version in ${{ matrix.package }}"
-            jq '.require["moox/core"] = "^'$core_version'"' composer.json > tmp.$$.json && mv tmp.$$.json composer.json
+            jq '.require["moox/core"] = "^2.1.0"' composer.json > tmp.$$.json && mv tmp.$$.json composer.json
           fi
 
       # Commit the updated composer.json (if there was a change)
