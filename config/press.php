@@ -1173,6 +1173,7 @@ return [
         'dismissed_wp_pointers' => '',
         env('WP_PREFIX', 'wp_').'dashboard_quick_press_last_post_id' => '0',
         'mm_sua_attachment_id' => '',
+        'remember_token' => '',
 
         // locale
         // syntax_highlighting

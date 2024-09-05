@@ -140,10 +140,10 @@ class ResetPassword extends SimplePage
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->rules(config('security.password.validation'))
+            ->rules(config('press.password.validation'))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::pages/auth/password-reset/reset-password.form.password.validation_attribute'))
-            ->helperText(config('security.password.helperText'));
+            ->helperText(config('press.password.helperText'));
     }
 
     protected function getPasswordConfirmationFormComponent(): Component
