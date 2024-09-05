@@ -23,19 +23,19 @@ class SyncListener
     {
         $this->syncService = $syncService;
         $this->setCurrentPlatform();
-        $this->logDebug('Moox Sync: SyncListener constructed');
+        $this->logInfo('Moox Sync: SyncListener constructed');
     }
 
     protected function setCurrentPlatform()
     {
         $domain = request()->getHost();
-        $this->logDebug('Moox Sync: Setting current platform for domain', ['domain' => $domain]);
+        $this->logInfo('Moox Sync: Setting current platform for domain', ['domain' => $domain]);
 
         try {
             $this->currentPlatform = Platform::where('domain', $domain)->first();
 
             if ($this->currentPlatform) {
-                $this->logDebug('Moox Sync: Current platform set', ['platform' => $this->currentPlatform->id]);
+                $this->logInfo('Moox Sync: Current platform set', ['platform' => $this->currentPlatform->id]);
             } else {
                 $this->logDebug('Moox Sync: Platform not found for domain', ['domain' => $domain]);
             }
@@ -48,13 +48,13 @@ class SyncListener
 
     public function registerListeners()
     {
-        $this->logDebug('Moox Sync: Registering listeners');
+        $this->logInfo('Moox Sync: Registering listeners');
         if ($this->currentPlatform) {
             $syncsToListen = Sync::where('source_platform_id', $this->currentPlatform->id)->get();
             foreach ($syncsToListen as $sync) {
                 $this->registerModelListeners($sync->source_model);
             }
-            $this->logDebug('Moox Sync: Listeners registered', ['models' => $syncsToListen->pluck('source_model')]);
+            $this->logInfo('Moox Sync: Listeners registered', ['models' => $syncsToListen->pluck('source_model')]);
         } else {
             $this->logDebug('Moox Sync: No listeners registered - current platform not set');
         }
@@ -62,7 +62,7 @@ class SyncListener
 
     protected function registerModelListeners($modelClass)
     {
-        $this->logDebug('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
+        $this->logInfo('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
 
         Event::listen("eloquent.created: {$modelClass}", function ($model) use ($modelClass) {
             $localIdentifier = $this->getLocalIdentifier($model);
@@ -99,7 +99,7 @@ class SyncListener
             return;
         }
 
-        $this->logDebug('Dispatching PrepareSyncJob', [
+        $this->logInfo('Dispatching PrepareSyncJob', [
             'model' => get_class($model),
             'local_identifier' => $localIdentifier,
             'event' => $eventType,
