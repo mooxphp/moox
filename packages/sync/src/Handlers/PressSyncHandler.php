@@ -42,28 +42,17 @@ class PressSyncHandler
         }
     }
 
-    protected function syncMainRecord()
+    protected function syncMainRecord(): Model
     {
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
-        $tableName = (new $this->modelClass)->getTable();
+        $model = $this->modelClass::updateOrCreate(
+            [$idField => $mainTableData[$idField]],
+            $mainTableData
+        );
 
-        $existingRecord = DB::table($tableName)
-            ->where($idField, $mainTableData[$idField])
-            ->first();
-
-        if ($existingRecord) {
-            DB::table($tableName)
-                ->where($idField, $mainTableData[$idField])
-                ->update($mainTableData);
-        } else {
-            DB::table($tableName)->insert($mainTableData);
-        }
-
-        return DB::table($tableName)
-            ->where($idField, $mainTableData[$idField])
-            ->first();
+        return $model;
     }
 
     protected function syncMetaData(Model $mainRecord)
@@ -99,9 +88,7 @@ class PressSyncHandler
         $metaData = array_intersect_key($this->modelData, array_flip($defaultMeta));
 
         foreach ($defaultMeta as $key) {
-            if (! isset($metaData[$key])) {
-                $metaData[$key] = '';
-            }
+            $metaData[$key] = $metaData[$key] ?? '';
         }
 
         return $metaData;
