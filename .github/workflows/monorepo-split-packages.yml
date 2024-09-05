@@ -10,7 +10,6 @@ env:
   CORE_VERSION: "^2.1.0"
 
 jobs:
-
  load-config:
     runs-on: ubuntu-latest
     outputs:
