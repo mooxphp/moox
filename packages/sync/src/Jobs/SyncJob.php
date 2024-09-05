@@ -33,7 +33,7 @@ class SyncJob implements ShouldQueue
 
     protected function getModelId()
     {
-        $idFields = ['ulid', 'uuid', 'id', 'ID', 'slug', 'user_login'];
+        $idFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
         foreach ($idFields as $field) {
             if (isset($this->modelData[$field])) {
                 return [
@@ -65,6 +65,7 @@ class SyncJob implements ShouldQueue
             $this->logDebug('Error syncing model', [
                 'model_class' => $this->modelClass,
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
         }

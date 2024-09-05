@@ -116,7 +116,13 @@ class PressSyncHandler
 
     protected function getIdField(): string
     {
-        return 'ID';
+        $idFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
+        foreach ($idFields as $field) {
+            if (isset($this->modelData[$field])) {
+                return $field;
+            }
+        }
+        throw new \Exception('No suitable ID field found for model');
     }
 
     protected function getForeignKeyName(Model $mainRecord): string

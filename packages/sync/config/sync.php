@@ -324,14 +324,14 @@ return [
     |
     | These are the fields that are used as unique identifiers for
     | the models. They are used to identify the models on the
-    | source platform. They may auto-increment.
+    | source platform. The array is sorted by priority.
     |
     */
 
     'local_identifier_fields' => [
-        'id',
         'ID',
         'uuid',
         'ulid',
+        'id',
     ],
 ];

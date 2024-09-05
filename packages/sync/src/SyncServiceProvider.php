@@ -81,7 +81,7 @@ class SyncServiceProvider extends PackageServiceProvider
 
         if ($syncEloquentListenerConfig['enabled']) {
 
-            $this->logDebug('Moox Sync: Registering sync eloquent listener');
+            $this->logInfo('Moox Sync: Registering sync eloquent listener');
 
             $syncListener = $this->app->make(SyncListener::class);
             $syncListener->registerListeners();
