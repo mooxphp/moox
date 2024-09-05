@@ -35,7 +35,7 @@ class SyncListener
             $this->currentPlatform = Platform::where('domain', $domain)->first();
 
             if ($this->currentPlatform) {
-                $this->logInfo('Moox Sync: Current platform set', ['platform' => $this->currentPlatform->id]);
+                $this->logInfo('Moox Sync: Current platform set', ['platform_id' => $this->currentPlatform->id, 'platform_name' => $this->currentPlatform->name]);
             } else {
                 $this->logDebug('Moox Sync: Platform not found for domain', ['domain' => $domain]);
             }
@@ -51,6 +51,7 @@ class SyncListener
         $this->logInfo('Moox Sync: Registering listeners');
         if ($this->currentPlatform) {
             $syncsToListen = Sync::where('source_platform_id', $this->currentPlatform->id)->get();
+            $this->logInfo('Moox Sync: Syncs to listen', ['count' => $syncsToListen->count(), 'syncs' => $syncsToListen->toArray()]);
             foreach ($syncsToListen as $sync) {
                 $this->registerModelListeners($sync->source_model);
             }

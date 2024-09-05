@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
@@ -100,13 +101,22 @@ class SyncJob implements ShouldQueue
                 'model_id_value' => $modelId['value'],
             ]);
         } else {
+            $data = $this->modelData;
+
             if ($this->isPressSyncableModel()) {
-                $handler = new PressSyncHandler($this->modelClass, $this->modelData);
+                $handler = new PressSyncHandler($this->modelClass, $data);
                 $handler->sync();
             } else {
+                // Format datetime fields for non-Press models
+                foreach (['created_at', 'updated_at'] as $dateField) {
+                    if (isset($data[$dateField])) {
+                        $data[$dateField] = $this->formatDatetime($data[$dateField]);
+                    }
+                }
+
                 DB::table((new $this->modelClass)->getTable())->updateOrInsert(
                     [$modelId['field'] => $modelId['value']],
-                    $this->modelData
+                    $data
                 );
             }
 
@@ -116,6 +126,11 @@ class SyncJob implements ShouldQueue
                 'model_id_value' => $modelId['value'],
             ]);
         }
+    }
+
+    protected function formatDatetime($dateString)
+    {
+        return Carbon::parse($dateString)->format('Y-m-d H:i:s');
     }
 
     protected function isPressSyncableModel(): bool
