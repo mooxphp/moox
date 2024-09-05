@@ -14,27 +14,17 @@ class SyncWebhookController extends Controller
 
     public function __construct()
     {
-        $this->logDebug('SyncWebhookController instantiated');
+        $this->logInfo('Moox Sync: WebhookController instantiated');
     }
 
     public function handle(Request $request)
     {
-        $this->logDebug('SyncWebhookController handle method entered', ['full_request_data' => $request->all()]);
+        $this->logInfo('Moox Sync: WebhookController handle method entered', ['full_request_data' => $request->all()]);
 
         try {
             $validatedData = $this->validateRequest($request);
 
-            $this->logDebug('SyncWebhookController validated request', ['validated_data' => $validatedData]);
-
-            // Log specific fields we're interested in
-            $this->logDebug('Important fields from validated data', [
-                'event_type' => $validatedData['event_type'],
-                'model_class' => $validatedData['model_class'],
-                'user_registered' => $validatedData['model']['user_registered'] ?? 'not set',
-                'capabilities' => $validatedData['model']['jku8u_capabilities'] ?? 'not set',
-                'description' => $validatedData['model']['description'] ?? 'not set',
-                // Add any other fields you want to check
-            ]);
+            $this->logDebug('Moox Sync: WebhookController validated request', ['validated_data' => $validatedData]);
 
             $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
 
@@ -47,8 +37,7 @@ class SyncWebhookController extends Controller
                 throw new \Exception('Model ID not found in the request data');
             }
 
-            // Log the exact data being passed to SyncJob
-            $this->logDebug('Data being passed to SyncJob', [
+            $this->logInfo('Data being passed to SyncJob', [
                 'model_class' => $validatedData['model_class'],
                 'model_data' => $validatedData['model'],
                 'event_type' => $validatedData['event_type'],
@@ -82,7 +71,7 @@ class SyncWebhookController extends Controller
 
     protected function validateRequest(Request $request)
     {
-        $this->logDebug('SyncWebhookController validating request', ['raw_request_data' => $request->all()]);
+        $this->logInfo('SyncWebhookController validating request', ['raw_request_data' => $request->all()]);
 
         $validatedData = $request->validate([
             'event_type' => 'required|string|in:created,updated,deleted',

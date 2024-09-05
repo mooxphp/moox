@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Handlers\PressSyncHandler;
 use Moox\Sync\Models\Platform;
@@ -42,14 +43,18 @@ class SyncJob implements ShouldQueue
                 ];
             }
         }
-        throw new \Exception('No suitable ID field found for model');
+
+        Log::error('Moox Sync: No suitable ID field found for model', [
+            'model_class' => $this->modelClass,
+            'model_data' => $this->modelData,
+        ]);
     }
 
     public function handle()
     {
         try {
             $modelId = $this->getModelId();
-            $this->logDebug('Syncing model', [
+            $this->logInfo('Moox Sync: Syncing model', [
                 'model_class' => $this->modelClass,
                 'model_id_field' => $modelId['field'],
                 'model_id_value' => $modelId['value'],
@@ -62,7 +67,7 @@ class SyncJob implements ShouldQueue
                 $this->syncModel($modelId);
             }
         } catch (\Exception $e) {
-            $this->logDebug('Error syncing model', [
+            Log::error('Moox Sync: Error syncing model', [
                 'model_class' => $this->modelClass,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

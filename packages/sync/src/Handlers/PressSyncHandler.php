@@ -76,6 +76,14 @@ class PressSyncHandler
         $mainFields = $this->getMainFields();
         $mainTableData = array_intersect_key($this->modelData, array_flip($mainFields));
 
+        // Ensure all required fields are present, even if empty
+        foreach ($mainFields as $field) {
+            if (! isset($mainTableData[$field])) {
+                $mainTableData[$field] = '';
+            }
+        }
+
+        // Ensure user_url and user_activation_key are not null
         $mainTableData['user_url'] = $mainTableData['user_url'] ?? '';
         $mainTableData['user_activation_key'] = $mainTableData['user_activation_key'] ?? '';
 
