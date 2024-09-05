@@ -7,7 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.BOT }}
-  CORE_VERSION: "^2.1.0"
+  CORE_VERSION: "^2.1.2"
 
 jobs:
   packages_split:
