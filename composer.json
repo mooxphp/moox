@@ -21,7 +21,6 @@
     ],
     "license": "MIT",
     "require": {
-        "awobaz/eloquent-mutators": "^1.0",
         "laravel-lang/lang": "^15.5",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
