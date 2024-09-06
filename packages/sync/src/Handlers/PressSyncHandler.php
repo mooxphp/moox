@@ -77,7 +77,6 @@ class PressSyncHandler
     protected function syncMainRecord()
     {
         $mainTableData = $this->getMainTableData();
-        $this->checkDataTypes($mainTableData);
         $idField = $this->getIdField();
 
         $this->logInfo('Moox Sync: Syncing main record', [
@@ -87,14 +86,25 @@ class PressSyncHandler
             'data' => $mainTableData,
         ]);
 
-        $updateData = array_diff_key($mainTableData, [$idField => true]);
-        $this->logInfo('Moox Sync: Data to be updated', ['update_data' => $updateData]);
-
         DB::enableQueryLog();
 
-        $affected = DB::table($this->tableName)
+        // Check if the record already exists
+        $exists = DB::table($this->tableName)
             ->where($idField, $mainTableData[$idField])
-            ->update($updateData);
+            ->exists();
+
+        if ($exists) {
+            // Update existing record
+            $updateData = array_diff_key($mainTableData, [$idField => true]);
+            $affected = DB::table($this->tableName)
+                ->where($idField, $mainTableData[$idField])
+                ->update($updateData);
+            $operation = 'update';
+        } else {
+            // Insert new record
+            $affected = DB::table($this->tableName)->insert($mainTableData);
+            $operation = 'insert';
+        }
 
         $queries = DB::getQueryLog();
         DB::disableQueryLog();
@@ -102,6 +112,7 @@ class PressSyncHandler
         $this->logInfo('Moox Sync: Main record sync result', [
             'affected_rows' => $affected,
             'queries' => $queries,
+            'operation' => $operation,
         ]);
 
         return $mainTableData[$idField];
