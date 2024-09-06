@@ -108,7 +108,7 @@ class SyncListener
         ]);
 
         PrepareSyncJob::dispatch($localIdentifier['field'], $localIdentifier['value'], get_class($model), $eventType, $this->currentPlatform->id)
-            ->delay(now()->addSeconds(5));
+            ->delay(now()->addSeconds(10));
     }
 
     protected function getLocalIdentifier($model)
