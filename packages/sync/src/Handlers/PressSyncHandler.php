@@ -39,8 +39,17 @@ class PressSyncHandler
             $existingData = DB::table($this->tableName)->where($this->getIdField(), $this->modelData[$this->getIdField()])->first();
             $this->logInfo('Moox Sync: Existing data before sync', ['existing_data' => $existingData]);
 
+            $beforeMainData = $this->getMainRecordData($this->modelData[$this->getIdField()]);
+            $this->logInfo('Moox Sync: Main record data before sync', ['before_data' => $beforeMainData]);
+
             $mainRecordId = $this->syncMainRecord();
             $this->syncMetaData($mainRecordId);
+
+            $afterMainData = $this->getMainRecordData($mainRecordId);
+            $this->logInfo('Moox Sync: Main record data after sync', ['after_data' => $afterMainData]);
+
+            $mainDataDifferences = $this->compareData($beforeMainData, $afterMainData);
+            $this->logInfo('Moox Sync: Main record data differences', ['differences' => $mainDataDifferences]);
 
             $this->logInfo('Moox Sync: About to commit transaction');
             DB::commit();
@@ -68,6 +77,7 @@ class PressSyncHandler
     protected function syncMainRecord()
     {
         $mainTableData = $this->getMainTableData();
+        $this->checkDataTypes($mainTableData);
         $idField = $this->getIdField();
 
         $this->logInfo('Moox Sync: Syncing main record', [
@@ -77,10 +87,22 @@ class PressSyncHandler
             'data' => $mainTableData,
         ]);
 
-        DB::table($this->tableName)->updateOrInsert(
-            [$idField => $mainTableData[$idField]],
-            $mainTableData
-        );
+        $updateData = array_diff_key($mainTableData, [$idField => true]);
+        $this->logInfo('Moox Sync: Data to be updated', ['update_data' => $updateData]);
+
+        DB::enableQueryLog();
+
+        $affected = DB::table($this->tableName)
+            ->where($idField, $mainTableData[$idField])
+            ->update($updateData);
+
+        $queries = DB::getQueryLog();
+        DB::disableQueryLog();
+
+        $this->logInfo('Moox Sync: Main record sync result', [
+            'affected_rows' => $affected,
+            'queries' => $queries,
+        ]);
 
         return $mainTableData[$idField];
     }
@@ -166,5 +188,69 @@ class PressSyncHandler
     protected function getForeignKeyName(): string
     {
         return 'user_id';
+    }
+
+    protected function checkDataTypes($mainTableData)
+    {
+        $tableColumns = DB::getSchemaBuilder()->getColumnListing($this->tableName);
+        $columnTypes = [];
+        foreach ($tableColumns as $column) {
+            $columnTypes[$column] = DB::getSchemaBuilder()->getColumnType($this->tableName, $column);
+        }
+
+        $potentialMismatches = [];
+        foreach ($mainTableData as $field => $value) {
+            if (isset($columnTypes[$field])) {
+                $expectedType = $columnTypes[$field];
+                $actualType = gettype($value);
+                if ($this->isTypeMismatch($expectedType, $actualType)) {
+                    $potentialMismatches[$field] = [
+                        'expected' => $expectedType,
+                        'actual' => $actualType,
+                        'value' => $value,
+                    ];
+                }
+            }
+        }
+
+        if (! empty($potentialMismatches)) {
+            $this->logWarning('Moox Sync: Potential data type mismatches', ['mismatches' => $potentialMismatches]);
+        }
+    }
+
+    protected function isTypeMismatch($expectedType, $actualType)
+    {
+        $typeMap = [
+            'int' => ['integer'],
+            'bigint' => ['integer'],
+            'varchar' => ['string'],
+            'text' => ['string'],
+            'datetime' => ['string', 'object'],
+            // Add more mappings as needed
+        ];
+
+        return ! in_array($actualType, $typeMap[$expectedType] ?? [$expectedType]);
+    }
+
+    protected function getMainRecordData($id)
+    {
+        return DB::table($this->tableName)->where($this->getIdField(), $id)->first();
+    }
+
+    protected function compareData($before, $after)
+    {
+        $differences = [];
+        if ($before && $after) {
+            foreach ((array) $before as $key => $value) {
+                if ($value !== $after->$key) {
+                    $differences[$key] = [
+                        'before' => $value,
+                        'after' => $after->$key,
+                    ];
+                }
+            }
+        }
+
+        return $differences;
     }
 }
