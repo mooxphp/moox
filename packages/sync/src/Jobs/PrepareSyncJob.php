@@ -80,8 +80,6 @@ class PrepareSyncJob implements ShouldQueue
         // Special handling for WpUser model
         if ($model instanceof \Moox\Press\Models\WpUser) {
             $data['user_email'] = $model->user_email;
-            $data['user_login'] = $model->user_login;
-            $data['display_name'] = $model->display_name;
             // Add any other fields that need special handling
         }
 
