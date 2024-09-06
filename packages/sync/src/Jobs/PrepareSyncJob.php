@@ -39,12 +39,24 @@ class PrepareSyncJob implements ShouldQueue
         $model = $this->findModel();
         $sourcePlatform = Platform::findOrFail($this->platformId);
 
+        $this->logDebug('Moox Sync: PrepareSyncJob handling', [
+            'identifier_field' => $this->identifierField,
+            'identifier_value' => $this->identifierValue,
+            'model_class' => $this->modelClass,
+            'event_type' => $this->eventType,
+            'platform_id' => $this->platformId,
+        ]);
+
         $syncData = [
             'event_type' => $this->eventType,
-            'model' => $model ? $model->toArray() : [$this->identifierField => $this->identifierValue],
+            'model' => $model ? $this->getFullModelData($model) : [$this->identifierField => $this->identifierValue],
             'model_class' => $this->modelClass,
             'platform' => $sourcePlatform->toArray(),
         ];
+
+        $this->logDebug('Moox Sync: Prepared sync data', [
+            'sync_data' => $syncData,
+        ]);
 
         $this->invokeWebhooks($syncData);
     }
@@ -52,6 +64,20 @@ class PrepareSyncJob implements ShouldQueue
     protected function findModel()
     {
         return $this->modelClass::where($this->identifierField, $this->identifierValue)->first();
+    }
+
+    protected function getFullModelData($model)
+    {
+        $model->refresh();
+
+        $data = $model->getAttributes();
+
+        if (method_exists($model, 'meta')) {
+            $metaData = $model->meta()->pluck('meta_value', 'meta_key')->toArray();
+            $data = array_merge($data, $metaData);
+        }
+
+        return $data;
     }
 
     protected function invokeWebhooks(array $data)
