@@ -40,16 +40,17 @@ class PressSyncHandler
             $this->logInfo('Moox Sync: Existing data before sync', ['existing_data' => $existingData]);
 
             $beforeMainData = $this->getMainRecordData($this->modelData[$this->getIdField()]);
-            $this->logInfo('Moox Sync: Main record data before sync', ['before_data' => $beforeMainData]);
-
             $mainRecordId = $this->syncMainRecord();
-            $this->syncMetaData($mainRecordId);
-
             $afterMainData = $this->getMainRecordData($mainRecordId);
-            $this->logInfo('Moox Sync: Main record data after sync', ['after_data' => $afterMainData]);
 
             $mainDataDifferences = $this->compareData($beforeMainData, $afterMainData);
             $this->logInfo('Moox Sync: Main record data differences', ['differences' => $mainDataDifferences]);
+
+            if (empty($mainDataDifferences)) {
+                $this->logInfo('Moox Sync: No changes detected in main record');
+            }
+
+            $this->syncMetaData($mainRecordId);
 
             $this->logInfo('Moox Sync: About to commit transaction');
             DB::commit();
@@ -113,6 +114,15 @@ class PressSyncHandler
             'affected_rows' => $affected,
             'queries' => $queries,
             'operation' => $operation,
+        ]);
+
+        // Verify the update
+        $updatedRecord = DB::table($this->tableName)
+            ->where($idField, $mainTableData[$idField])
+            ->first();
+
+        $this->logInfo('Moox Sync: Verified main record after sync', [
+            'updated_record' => $updatedRecord,
         ]);
 
         return $mainTableData[$idField];
