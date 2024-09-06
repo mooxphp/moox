@@ -9,9 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
-use Moox\Sync\Handlers\PressSyncHandler;
 use Moox\Sync\Models\Platform;
 
 class SyncJob implements ShouldQueue
@@ -34,24 +32,6 @@ class SyncJob implements ShouldQueue
         $this->sourcePlatform = $sourcePlatform;
     }
 
-    protected function getModelId()
-    {
-        $idFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
-        foreach ($idFields as $field) {
-            if (isset($this->modelData[$field])) {
-                return [
-                    'field' => $field,
-                    'value' => $this->modelData[$field],
-                ];
-            }
-        }
-
-        Log::error('Moox Sync: No suitable ID field found for model', [
-            'model_class' => $this->modelClass,
-            'model_data' => $this->modelData,
-        ]);
-    }
-
     public function handle()
     {
         try {
@@ -66,10 +46,10 @@ class SyncJob implements ShouldQueue
             if ($this->modelClass === Platform::class) {
                 $this->syncPlatform();
             } else {
-                $this->syncModel($modelId);
+                $this->syncModel();
             }
         } catch (\Exception $e) {
-            Log::error('Moox Sync: Error syncing model', [
+            $this->logError('Moox Sync: Error syncing model', [
                 'model_class' => $this->modelClass,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -91,41 +71,48 @@ class SyncJob implements ShouldQueue
         ]);
     }
 
-    protected function syncModel($modelId)
+    protected function syncModel()
     {
+        $handlerClass = config("sync.sync_bindings.{$this->modelClass}");
+
+        if ($handlerClass && class_exists($handlerClass)) {
+            $handler = new $handlerClass($this->modelClass, $this->modelData, $this->eventType);
+            $handler->handle();
+        } else {
+            $this->defaultSync();
+        }
+    }
+
+    protected function defaultSync()
+    {
+        $modelId = $this->getModelId();
+
         if ($this->eventType === 'deleted') {
             DB::table((new $this->modelClass)->getTable())->where($modelId['field'], $modelId['value'])->delete();
-            $this->logDebug('Model deleted successfully', [
-                'model_class' => $this->modelClass,
-                'model_id_field' => $modelId['field'],
-                'model_id_value' => $modelId['value'],
-            ]);
         } else {
-            $data = $this->modelData;
-
-            if ($this->isPressSyncableModel()) {
-                $handler = new PressSyncHandler($this->modelClass, $data);
-                $handler->sync();
-            } else {
-                // Format datetime fields for non-Press models
-                foreach (['created_at', 'updated_at'] as $dateField) {
-                    if (isset($data[$dateField])) {
-                        $data[$dateField] = $this->formatDatetime($data[$dateField]);
-                    }
-                }
-
-                DB::table((new $this->modelClass)->getTable())->updateOrInsert(
-                    [$modelId['field'] => $modelId['value']],
-                    $data
-                );
-            }
-
-            $this->logDebug('Model synced successfully', [
-                'model_class' => $this->modelClass,
-                'model_id_field' => $modelId['field'],
-                'model_id_value' => $modelId['value'],
-            ]);
+            $data = $this->formatDatetimeFields($this->modelData);
+            DB::table((new $this->modelClass)->getTable())->updateOrInsert(
+                [$modelId['field'] => $modelId['value']],
+                $data
+            );
         }
+
+        $this->logDebug('Model synced successfully', [
+            'model_class' => $this->modelClass,
+            'model_id_field' => $modelId['field'],
+            'model_id_value' => $modelId['value'],
+        ]);
+    }
+
+    protected function formatDatetimeFields($data)
+    {
+        foreach (['created_at', 'updated_at'] as $dateField) {
+            if (isset($data[$dateField])) {
+                $data[$dateField] = $this->formatDatetime($data[$dateField]);
+            }
+        }
+
+        return $data;
     }
 
     protected function formatDatetime($dateString)
@@ -133,12 +120,21 @@ class SyncJob implements ShouldQueue
         return Carbon::parse($dateString)->format('Y-m-d H:i:s');
     }
 
-    protected function isPressSyncableModel(): bool
+    protected function getModelId()
     {
-        return in_array($this->modelClass, [
-            \Moox\Press\Models\WpUser::class,
-            \Moox\Press\Models\WpPost::class,
-            // Add other Press models as needed
+        $idFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
+        foreach ($idFields as $field) {
+            if (isset($this->modelData[$field])) {
+                return [
+                    'field' => $field,
+                    'value' => $this->modelData[$field],
+                ];
+            }
+        }
+
+        $this->logError('Moox Sync: No suitable ID field found for model', [
+            'model_class' => $this->modelClass,
+            'model_data' => $this->modelData,
         ]);
     }
 }

@@ -68,26 +68,20 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function getFullModelData($model)
     {
-        $model->refresh();
+        $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
+
+        if ($transformerClass && class_exists($transformerClass)) {
+            $transformer = new $transformerClass($model::query());
+
+            return $transformer->transform();
+        }
 
         $data = $model->getAttributes();
 
-        if ($model instanceof \Moox\Press\Models\WpUser) {
-            // For WpUser, include meta fields
-            $metaFields = config('press.default_user_meta', []);
-            foreach ($metaFields as $metaKey => $defaultValue) {
-                $data[$metaKey] = $model->getMeta($metaKey) ?? $defaultValue;
-            }
-        } elseif (method_exists($model, 'meta')) {
-            // For other models with a meta method
+        if (method_exists($model, 'meta')) {
             $metaData = $model->meta()->pluck('meta_value', 'meta_key')->toArray();
             $data = array_merge($data, $metaData);
         }
-
-        $this->logDebug('Moox Sync: Full model data', [
-            'model_class' => get_class($model),
-            'data' => $data,
-        ]);
 
         return $data;
     }

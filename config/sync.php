@@ -336,4 +336,51 @@ return [
         'ulid',
         'id',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transformer
+    |--------------------------------------------------------------------------
+    |
+    | You can register Transformer Classes here, to make them available
+    | when creating Syncs. These classes can contain queries or
+    | translation maybe. Alternatively you can bind models.
+    |
+    */
+
+    // TODO: Not implemented yet, use bindings instead
+    'transformer_classes' => [
+        // TODO: Add translation transformer as example
+        // Moox\Sync\Transformer\TranslationTransformer,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Transformer Bindings
+    |--------------------------------------------------------------------------
+    |
+    | You can register custom Transformer Bindings, used for Press models for
+    | example, where we have to read meta data or custom tables like
+    | terms and taxonomies instead of native categories.
+    |
+    */
+
+    'transformer_bindings' => [
+        \Moox\Press\Models\WpUser::class => \Moox\Press\Transformer\WpUserTransformer::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Bindings
+    |--------------------------------------------------------------------------
+    |
+    | You can register custom Sync Bindings, used for Press models for
+    | example, where we have to write meta data or custom tables
+    | like terms and taxonomies instead of native categories.
+    |
+    */
+
+    'sync_bindings' => [
+        \Moox\Press\Models\WpUser::class => \Moox\Press\Handlers\WpUserSyncHandler::class,
+    ],
 ];
