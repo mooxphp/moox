@@ -6,6 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpBasePost;
 use Moox\Press\Models\WpPostMeta;
@@ -43,25 +44,28 @@ class EditWpUser extends EditRecord
     {
         $user = $this->record;
 
-        // Update main user fields
-        $mainFields = [
-            'user_login', 'user_email', 'user_url', 'user_registered', 'user_activation_key',
-            'user_status', 'display_name', 'user_nicename',
-        ];
+        if ($user instanceof WpUser) {
+            $mainFields = [
+                'user_login', 'user_email', 'user_url', 'user_registered', 'user_activation_key',
+                'user_status', 'display_name', 'user_nicename',
+            ];
 
-        foreach ($mainFields as $field) {
-            if (isset($this->data[$field])) {
-                $user->setAttribute($field, $this->data[$field]);
+            foreach ($mainFields as $field) {
+                if (isset($this->data[$field])) {
+                    $user->setAttribute($field, $this->data[$field]);
+                }
             }
-        }
 
-        $user->save();
+            $user->save();
 
-        $metaFields = config('press.default_user_meta', []);
-        foreach ($metaFields as $metaKey => $defaultValue) {
-            if (isset($this->data[$metaKey])) {
-                $user->addOrUpdateMeta($metaKey, $this->data[$metaKey]);
+            $metaFields = config('press.default_user_meta', []);
+            foreach ($metaFields as $metaKey => $defaultValue) {
+                if (isset($this->data[$metaKey])) {
+                    $user->addOrUpdateMeta($metaKey, $this->data[$metaKey]);
+                }
             }
+        } else {
+            Log::error('User record is not an instance of WpUser in EditWpUser::afterSave');
         }
 
         $temporaryFilePath = $this->data['temporary_file_path'] ?? null;
