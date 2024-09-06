@@ -5,6 +5,7 @@ namespace Moox\Press\Resources\WpUserResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpBasePost;
 use Moox\Press\Models\WpPostMeta;
@@ -147,5 +148,7 @@ class EditWpUser extends EditRecord
                 );
             }
         }
+
+        Event::dispatch('eloquent.updated: '.get_class($this->record), $this->record);
     }
 }
