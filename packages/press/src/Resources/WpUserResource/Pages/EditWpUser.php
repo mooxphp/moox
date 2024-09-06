@@ -52,7 +52,7 @@ class EditWpUser extends EditRecord
 
         foreach ($mainFields as $field) {
             if (isset($this->data[$field])) {
-                $user->$field = $this->data[$field];
+                $user->setAttribute($field, $this->data[$field]);
             }
         }
 
