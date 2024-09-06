@@ -42,6 +42,22 @@ class EditWpUser extends EditRecord
 
     protected function afterSave(): void
     {
+        $user = $this->record;
+
+        // Update main user fields
+        $mainFields = [
+            'user_login', 'user_email', 'user_url', 'user_registered', 'user_activation_key',
+            'user_status', 'display_name', 'user_nicename',
+        ];
+
+        foreach ($mainFields as $field) {
+            if (isset($this->data[$field])) {
+                $user->$field = $this->data[$field];
+            }
+        }
+
+        $user->save();
+
         $temporaryFilePath = $this->data['temporary_file_path'] ?? null;
         $originalName = $this->data['original_name'] ?? null;
         $attachmentId = null;
