@@ -70,12 +70,25 @@ class PrepareSyncJob implements ShouldQueue
     {
         $model->refresh();
 
-        $data = $model->toArray();
+        $data = $model->getAttributes();
 
         if (method_exists($model, 'meta')) {
             $metaData = $model->meta()->pluck('meta_value', 'meta_key')->toArray();
             $data = array_merge($data, $metaData);
         }
+
+        // Special handling for WpUser model
+        if ($model instanceof \Moox\Press\Models\WpUser) {
+            $data['user_email'] = $model->user_email;
+            $data['user_login'] = $model->user_login;
+            $data['display_name'] = $model->display_name;
+            // Add any other fields that need special handling
+        }
+
+        $this->logDebug('Moox Sync: Full model data', [
+            'model_class' => get_class($model),
+            'data' => $data,
+        ]);
 
         return $data;
     }
