@@ -31,24 +31,32 @@ class PressSyncHandler
         DB::beginTransaction();
 
         try {
-            $this->logDebug('Starting sync process', [
+            $this->logInfo('Moox Sync: Starting sync process', [
                 'model_class' => $this->modelClass,
                 'model_data' => $this->modelData,
             ]);
 
+            $existingData = DB::table($this->tableName)->where($this->getIdField(), $this->modelData[$this->getIdField()])->first();
+            $this->logInfo('Moox Sync: Existing data before sync', ['existing_data' => $existingData]);
+
             $mainRecordId = $this->syncMainRecord();
             $this->syncMetaData($mainRecordId);
 
+            $this->logInfo('Moox Sync: About to commit transaction');
             DB::commit();
+            $this->logInfo('Moox Sync: Transaction committed');
 
-            $this->logDebug('Sync process completed successfully', [
+            $updatedData = DB::table($this->tableName)->where($this->getIdField(), $this->modelData[$this->getIdField()])->first();
+            $this->logInfo('Moox Sync: Updated data after sync', ['updated_data' => $updatedData]);
+
+            $this->logDebug('Moox Sync: Sync process completed successfully', [
                 'main_record_id' => $mainRecordId,
             ]);
 
             return $mainRecordId;
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->logDebug('Sync failed: '.$e->getMessage(), [
+            $this->logDebug('Moox Sync: Sync failed: '.$e->getMessage(), [
                 'model_class' => $this->modelClass,
                 'model_data' => $this->modelData,
                 'trace' => $e->getTraceAsString(),
@@ -62,7 +70,7 @@ class PressSyncHandler
         $mainTableData = $this->getMainTableData();
         $idField = $this->getIdField();
 
-        $this->logDebug('Syncing main record', [
+        $this->logInfo('Moox Sync: Syncing main record', [
             'table' => $this->tableName,
             'id_field' => $idField,
             'id_value' => $mainTableData[$idField],
@@ -82,7 +90,7 @@ class PressSyncHandler
         $metaData = $this->getMetaData();
         $foreignKeyName = $this->getForeignKeyName();
 
-        $this->logDebug('Starting meta data sync', [
+        $this->logInfo('Moox Sync: Starting meta data sync', [
             'main_record_id' => $mainRecordId,
             'foreign_key_name' => $foreignKeyName,
             'meta_data' => $metaData,
@@ -90,7 +98,7 @@ class PressSyncHandler
 
         foreach ($metaData as $key => $value) {
             $serializedValue = is_array($value) ? serialize($value) : $value;
-            $this->logDebug('Syncing meta item', [
+            $this->logInfo('Moox Sync: Syncing meta item', [
                 'key' => $key,
                 'value' => $value,
                 'serialized_value' => $serializedValue,
@@ -105,7 +113,7 @@ class PressSyncHandler
             );
         }
 
-        $this->logDebug('Completed meta data sync', [
+        $this->logInfo('Moox Sync: Completed meta data sync', [
             'table' => $this->metaTableName,
             'main_record_id' => $mainRecordId,
             'meta_data' => $metaData,
@@ -126,10 +134,10 @@ class PressSyncHandler
     protected function getMetaData(): array
     {
         $defaultMeta = Config::get('press.default_user_meta', []);
-        $this->logDebug('Default meta keys', ['default_meta' => $defaultMeta]);
+        $this->logInfo('Moox Sync: Default meta keys', ['default_meta' => $defaultMeta]);
 
         $metaData = array_intersect_key($this->modelData, $defaultMeta);
-        $this->logDebug('Initial meta data', ['meta_data' => $metaData]);
+        $this->logInfo('Moox Sync: Initial meta data', ['meta_data' => $metaData]);
 
         foreach ($defaultMeta as $metaKey => $defaultValue) {
             if (! isset($metaData[$metaKey])) {
@@ -137,7 +145,7 @@ class PressSyncHandler
             }
         }
 
-        $this->logDebug('Final meta data', ['meta_data' => $metaData]);
+        $this->logInfo('Moox Sync: Final meta data', ['meta_data' => $metaData]);
 
         return $metaData;
     }
