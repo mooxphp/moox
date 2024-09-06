@@ -225,7 +225,7 @@ class PressSyncHandler
         }
 
         if (! empty($potentialMismatches)) {
-            $this->logWarning('Moox Sync: Potential data type mismatches', ['mismatches' => $potentialMismatches]);
+            $this->logDebug('Moox Sync: Potential data type mismatches', ['mismatches' => $potentialMismatches]);
         }
     }
 
