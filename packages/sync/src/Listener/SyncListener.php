@@ -107,8 +107,16 @@ class SyncListener
             'platform' => $this->currentPlatform->id,
         ]);
 
+        $transformerClass = config('sync.transformer_bindings.'.get_class($model));
+        $delay = 0;
+
+        if ($transformerClass && class_exists($transformerClass)) {
+            $transformer = new $transformerClass($model::query());
+            $delay = $transformer->getDelay();
+        }
+
         PrepareSyncJob::dispatch($localIdentifier['field'], $localIdentifier['value'], get_class($model), $eventType, $this->currentPlatform->id)
-            ->delay(now()->addSeconds(10));
+            ->delay(now()->addSeconds($delay));
     }
 
     protected function getLocalIdentifier($model)

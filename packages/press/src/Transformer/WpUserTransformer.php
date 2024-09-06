@@ -20,4 +20,9 @@ class WpUserTransformer extends AbstractTransformer
     {
         return array_keys(config('press.default_user_meta', []));
     }
+
+    public function getDelay(): int
+    {
+        return 5;
+    }
 }

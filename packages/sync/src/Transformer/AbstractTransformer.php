@@ -38,4 +38,9 @@ abstract class AbstractTransformer
 
         return null;
     }
+
+    public function getDelay(): int
+    {
+        return 0; // seconds
+    }
 }
