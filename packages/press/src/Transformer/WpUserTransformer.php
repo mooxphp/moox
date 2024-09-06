@@ -2,13 +2,24 @@
 
 namespace Moox\Press\Transformer;
 
+use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Transformer\AbstractTransformer;
 
 class WpUserTransformer extends AbstractTransformer
 {
+    use LogLevel;
+
     protected function transformCustomFields(array $data): array
     {
+        $this->logDebug('Moox Press: Transform custom fields', [
+            'data' => $data,
+        ]);
+
         $mainFields = $this->getMainFields();
+
+        $this->logDebug('Moox Press: Main fields', [
+            'main_fields' => $mainFields,
+        ]);
 
         foreach ($mainFields as $field) {
             if (! isset($data[$field])) {
@@ -16,10 +27,18 @@ class WpUserTransformer extends AbstractTransformer
             }
         }
 
+        $this->logDebug('Moox Press: Main fields after', [
+            'data' => $data,
+        ]);
+
         $metaFields = $this->getMetaFields();
         foreach ($metaFields as $metaKey) {
             $data[$metaKey] = $this->getMetaValue($metaKey) ?? config("press.default_user_meta.{$metaKey}", '');
         }
+
+        $this->logDebug('Moox Press: Meta fields after', [
+            'data' => $data,
+        ]);
 
         return $data;
     }

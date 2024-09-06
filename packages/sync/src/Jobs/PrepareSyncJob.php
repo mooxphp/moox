@@ -47,6 +47,8 @@ class PrepareSyncJob implements ShouldQueue
             'platform_id' => $this->platformId,
         ]);
 
+        // TODO: from here we have no data anymore, if WpUser
+
         $syncData = [
             'event_type' => $this->eventType,
             'model' => $model ? $this->getFullModelData($model) : [$this->identifierField => $this->identifierValue],
