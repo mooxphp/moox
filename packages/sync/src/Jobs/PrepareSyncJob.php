@@ -72,7 +72,14 @@ class PrepareSyncJob implements ShouldQueue
 
         $data = $model->getAttributes();
 
-        if (method_exists($model, 'meta')) {
+        if ($model instanceof \Moox\Press\Models\WpUser) {
+            // For WpUser, include meta fields
+            $metaFields = config('press.default_user_meta', []);
+            foreach ($metaFields as $metaKey => $defaultValue) {
+                $data[$metaKey] = $model->getMeta($metaKey) ?? $defaultValue;
+            }
+        } elseif (method_exists($model, 'meta')) {
+            // For other models with a meta method
             $metaData = $model->meta()->pluck('meta_value', 'meta_key')->toArray();
             $data = array_merge($data, $metaData);
         }
