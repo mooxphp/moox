@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpBasePost;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Models\WpUser;
-use Moox\Press\Models\WpUserMeta;
 use Moox\Press\Resources\WpUserResource;
 use Symfony\Component\Mime\MimeTypes;
 
@@ -57,6 +56,13 @@ class EditWpUser extends EditRecord
         }
 
         $user->save();
+
+        $metaFields = config('press.default_user_meta', []);
+        foreach ($metaFields as $metaKey => $defaultValue) {
+            if (isset($this->data[$metaKey])) {
+                $user->addOrUpdateMeta($metaKey, $this->data[$metaKey]);
+            }
+        }
 
         $temporaryFilePath = $this->data['temporary_file_path'] ?? null;
         $originalName = $this->data['original_name'] ?? null;
@@ -136,33 +142,6 @@ class EditWpUser extends EditRecord
             $attachmentId = $postId;
 
             Storage::delete($temporaryFilePath);
-        }
-
-        $metaDataConfig = config('press.default_user_meta');
-
-        foreach ($metaDataConfig as $metaKey => $defaultValue) {
-            $metaValue = $this->data[$metaKey] ?? $defaultValue;
-
-            if ($metaKey === 'nickname') {
-                $metaValue = $this->data['user_login'];
-            }
-
-            if ($metaKey === 'mm_sua_attachment_id') {
-                if ($temporaryFilePath) {
-                    $metaValue = $attachmentId;
-                } elseif (empty($this->data['image_url'])) {
-                    $metaValue = '';
-                }
-            }
-
-            if ($this->record instanceof WpUser) {
-                $userId = $this->record->ID;
-
-                WpUserMeta::updateOrCreate(
-                    ['user_id' => $userId, 'meta_key' => $metaKey],
-                    ['meta_value' => $metaValue]
-                );
-            }
         }
 
         Event::dispatch('eloquent.updated: '.get_class($this->record), $this->record);
