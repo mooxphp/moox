@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
 
@@ -49,7 +50,7 @@ class SyncJob implements ShouldQueue
                 $this->syncModel();
             }
         } catch (\Exception $e) {
-            $this->logError('Moox Sync: Error syncing model', [
+            Log::error('Moox Sync: Error syncing model', [
                 'model_class' => $this->modelClass,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -132,7 +133,7 @@ class SyncJob implements ShouldQueue
             }
         }
 
-        $this->logError('Moox Sync: No suitable ID field found for model', [
+        Log::error('Moox Sync: No suitable ID field found for model', [
             'model_class' => $this->modelClass,
             'model_data' => $this->modelData,
         ]);
