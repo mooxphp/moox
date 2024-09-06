@@ -70,6 +70,12 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function getFullModelData($model)
     {
+        $this->logDebug('Moox Sync: Getting full model data', [
+            'model_class' => $this->modelClass,
+            'identifier_field' => $this->identifierField,
+            'identifier_value' => $this->identifierValue,
+        ]);
+
         $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
 
         if ($transformerClass && class_exists($transformerClass)) {
