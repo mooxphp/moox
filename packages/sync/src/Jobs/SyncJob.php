@@ -49,7 +49,7 @@ class SyncJob implements ShouldQueue
                 $this->syncModel();
             }
         } catch (\Exception $e) {
-            $this->logDebug('Moox Sync: Error syncing model', [
+            $this->logError('Moox Sync: Error syncing model', [
                 'model_class' => $this->modelClass,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -132,7 +132,7 @@ class SyncJob implements ShouldQueue
             }
         }
 
-        $this->logDebug('Moox Sync: No suitable ID field found for model', [
+        $this->logError('Moox Sync: No suitable ID field found for model', [
             'model_class' => $this->modelClass,
             'model_data' => $this->modelData,
         ]);
