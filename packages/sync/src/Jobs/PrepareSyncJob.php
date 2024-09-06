@@ -70,7 +70,7 @@ class PrepareSyncJob implements ShouldQueue
     {
         $model->refresh();
 
-        $data = $model->getAttributes();
+        $data = $model->toArray();
 
         if (method_exists($model, 'meta')) {
             $metaData = $model->meta()->pluck('meta_value', 'meta_key')->toArray();
