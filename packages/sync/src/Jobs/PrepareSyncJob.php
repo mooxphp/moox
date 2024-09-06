@@ -77,12 +77,6 @@ class PrepareSyncJob implements ShouldQueue
             $data = array_merge($data, $metaData);
         }
 
-        // Special handling for WpUser model
-        if ($model instanceof \Moox\Press\Models\WpUser) {
-            $data['user_email'] = $model->user_email;
-            // Add any other fields that need special handling
-        }
-
         $this->logDebug('Moox Sync: Full model data', [
             'model_class' => get_class($model),
             'data' => $data,
