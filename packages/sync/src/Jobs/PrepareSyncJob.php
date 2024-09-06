@@ -61,24 +61,26 @@ class PrepareSyncJob implements ShouldQueue
         foreach ($targetPlatforms as $targetPlatform) {
             $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
 
-            $this->logInfo('Moox Sync: Invoking webhook', [
+            $this->logDebug('Moox Sync: Preparing to invoke webhook', [
                 'platform' => $targetPlatform->name,
                 'webhook_url' => $webhookUrl,
-                'data' => $data,
+                'full_data' => $data,
             ]);
 
             try {
-                Http::withToken($targetPlatform->api_token)->post($webhookUrl, $data);
+                $response = Http::withToken($targetPlatform->api_token)->post($webhookUrl, $data);
 
-                $this->logDebug('Moox Sync: Webhook invoked successfully', [
+                $this->logDebug('Moox Sync: Webhook invoked', [
                     'platform' => $targetPlatform->name,
                     'webhook_url' => $webhookUrl,
-                    'data' => $data,
+                    'response_status' => $response->status(),
+                    'response_body' => $response->body(),
                 ]);
             } catch (\Exception $e) {
                 $this->logDebug('Moox Sync: Webhook invocation error', [
                     'platform' => $targetPlatform->name,
                     'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                 ]);
             }
         }
