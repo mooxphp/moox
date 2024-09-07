@@ -33,7 +33,9 @@ class WpUserTransformer extends AbstractTransformer
 
         $metaFields = $this->getMetaFields();
         foreach ($metaFields as $metaKey) {
-            $data[$metaKey] = $this->getMetaValue($metaKey) ?? config("press.default_user_meta.{$metaKey}", '');
+            if (! isset($data[$metaKey])) {
+                $data[$metaKey] = $this->getMetaValue($metaKey) ?? config("press.default_user_meta.{$metaKey}", '');
+            }
         }
 
         $this->logDebug('Moox Press: Meta fields after', [
@@ -59,6 +61,6 @@ class WpUserTransformer extends AbstractTransformer
 
     public function getDelay(): int
     {
-        return 5;
+        return 10;
     }
 }

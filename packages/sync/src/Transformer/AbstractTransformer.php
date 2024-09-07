@@ -18,7 +18,7 @@ abstract class AbstractTransformer
 
     public function transform(): array
     {
-        $data = $this->model->getAttributes();
+        $data = $this->model->toArray();
 
         return $this->transformCustomFields($data);
     }
