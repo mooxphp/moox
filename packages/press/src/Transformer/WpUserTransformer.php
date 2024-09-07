@@ -83,11 +83,11 @@ class WpUserTransformer extends AbstractTransformer
         $transformedData = [];
 
         foreach ($mainFields as $field) {
-            $transformedData[$field] = $this->wpUser->$field;
+            $transformedData[$field] = $this->wpUser->$field ?? '';
         }
 
         foreach ($metaFields as $field) {
-            $transformedData[$field] = $this->wpUser->$field;
+            $transformedData[$field] = $this->wpUser->$field ?? '';
         }
 
         $this->logDebug('WpUserTransformer: Transformed data', ['data' => $transformedData]);
