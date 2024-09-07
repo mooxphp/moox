@@ -123,8 +123,9 @@ class SyncJob implements ShouldQueue
 
     protected function getModelId()
     {
-        $idFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
-        foreach ($idFields as $field) {
+        $localIdentifierFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
+
+        foreach ($localIdentifierFields as $field) {
             if (isset($this->modelData[$field])) {
                 return [
                     'field' => $field,
@@ -137,5 +138,7 @@ class SyncJob implements ShouldQueue
             'model_class' => $this->modelClass,
             'model_data' => $this->modelData,
         ]);
+
+        throw new \Exception('No valid identifier found for the model');
     }
 }

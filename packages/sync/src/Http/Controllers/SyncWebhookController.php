@@ -12,37 +12,20 @@ class SyncWebhookController extends Controller
 {
     use LogLevel;
 
-    public function __construct()
-    {
-        $this->logInfo('Moox Sync: WebhookController instantiated');
-    }
-
     public function handle(Request $request)
     {
         $this->logInfo('Moox Sync: WebhookController handle method entered', ['full_request_data' => $request->all()]);
 
         try {
             $validatedData = $this->validateRequest($request);
-
             $this->logDebug('Moox Sync: WebhookController validated request', ['validated_data' => $validatedData]);
 
-            $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->first();
-
-            if (! $sourcePlatform) {
-                throw new \Exception('Source platform not found');
-            }
-
-            $modelId = $validatedData['model']['ID'] ?? $validatedData['model']['id'] ?? null;
+            $modelId = $this->getModelId($validatedData['model']);
             if (! $modelId) {
-                throw new \Exception('Model ID not found in the request data');
+                throw new \Exception('No valid identifier found for the model');
             }
 
-            $this->logInfo('Data being passed to SyncJob', [
-                'model_class' => $validatedData['model_class'],
-                'model_data' => $validatedData['model'],
-                'event_type' => $validatedData['event_type'],
-                'source_platform_id' => $sourcePlatform->id,
-            ]);
+            $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->firstOrFail();
 
             SyncJob::dispatch(
                 $validatedData['model_class'],
@@ -51,14 +34,7 @@ class SyncWebhookController extends Controller
                 $sourcePlatform
             );
 
-            $this->logDebug('SyncJob dispatched', [
-                'model_class' => $validatedData['model_class'],
-                'model_id' => $modelId,
-                'event_type' => $validatedData['event_type'],
-                'source_platform' => $sourcePlatform->id,
-            ]);
-
-            return response()->json(['status' => 'success'], 200);
+            return response()->json(['status' => 'success', 'message' => 'Sync job dispatched']);
         } catch (\Exception $e) {
             $this->logDebug('SyncWebhookController encountered an error', [
                 'error' => $e->getMessage(),
@@ -73,16 +49,28 @@ class SyncWebhookController extends Controller
     {
         $this->logInfo('SyncWebhookController validating request', ['raw_request_data' => $request->all()]);
 
-        $validatedData = $request->validate([
+        return $request->validate([
             'event_type' => 'required|string|in:created,updated,deleted',
             'model' => 'required|array',
             'model_class' => 'required|string',
             'platform' => 'required|array',
             'platform.domain' => 'required|string',
         ]);
+    }
 
-        $this->logDebug('Request validation result', ['validated_data' => $validatedData]);
+    protected function getModelId(array $modelData)
+    {
+        $localIdentifierFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
 
-        return $validatedData;
+        foreach ($localIdentifierFields as $field) {
+            if (isset($modelData[$field])) {
+                return [
+                    'field' => $field,
+                    'value' => $modelData[$field],
+                ];
+            }
+        }
+
+        return null;
     }
 }
