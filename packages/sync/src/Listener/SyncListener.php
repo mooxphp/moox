@@ -111,7 +111,7 @@ class SyncListener
         $delay = 0;
 
         if ($transformerClass && class_exists($transformerClass)) {
-            $transformer = new $transformerClass($model::query());
+            $transformer = new $transformerClass($model);
             $delay = $transformer->getDelay();
         }
 
