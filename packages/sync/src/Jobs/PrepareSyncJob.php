@@ -96,14 +96,20 @@ class PrepareSyncJob implements ShouldQueue
             'model_class' => $this->modelClass,
             'identifier_field' => $this->identifierField,
             'identifier_value' => $this->identifierValue,
+            'model_data' => $model->toArray(),
         ]);
 
         $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
 
         if ($transformerClass && class_exists($transformerClass)) {
-            $transformer = new $transformerClass($model::query()->where($this->identifierField, $this->identifierValue));
+            $transformer = new $transformerClass($model);
+            $transformedData = $transformer->transform();
 
-            return $transformer->transform();
+            $this->logDebug('Moox Sync: Transformed data', [
+                'transformed_data' => $transformedData,
+            ]);
+
+            return $transformedData;
         }
 
         return $model->toArray();

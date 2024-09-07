@@ -3,11 +3,20 @@
 namespace Moox\Press\Transformer;
 
 use Moox\Core\Traits\LogLevel;
+use Moox\Press\Models\WpUser;
 use Moox\Sync\Transformer\AbstractTransformer;
 
 class WpUserTransformer extends AbstractTransformer
 {
     use LogLevel;
+
+    protected $wpUser;
+
+    public function __construct(WpUser $wpUser)
+    {
+        parent::__construct($wpUser::query());
+        $this->wpUser = $wpUser;
+    }
 
     protected function transformCustomFields(array $data): array
     {
@@ -23,7 +32,7 @@ class WpUserTransformer extends AbstractTransformer
 
         foreach ($mainFields as $field) {
             if (! isset($data[$field])) {
-                $data[$field] = $this->model->$field ?? null;
+                $data[$field] = $this->wpUser->$field ?? null;
             }
         }
 
@@ -34,7 +43,7 @@ class WpUserTransformer extends AbstractTransformer
         $metaFields = $this->getMetaFields();
         foreach ($metaFields as $metaKey) {
             if (! isset($data[$metaKey])) {
-                $data[$metaKey] = $this->getMetaValue($metaKey) ?? config("press.default_user_meta.{$metaKey}", '');
+                $data[$metaKey] = $this->wpUser->getMeta($metaKey) ?? config("press.default_user_meta.{$metaKey}", '');
             }
         }
 
