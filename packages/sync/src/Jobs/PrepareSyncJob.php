@@ -101,19 +101,12 @@ class PrepareSyncJob implements ShouldQueue
         $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
 
         if ($transformerClass && class_exists($transformerClass)) {
-            $transformer = new $transformerClass($model::query());
+            $transformer = new $transformerClass($model::query()->where($this->identifierField, $this->identifierValue));
 
             return $transformer->transform();
         }
 
-        $data = $model->getAttributes();
-
-        if (method_exists($model, 'meta')) {
-            $metaData = $model->meta()->pluck('meta_value', 'meta_key')->toArray();
-            $data = array_merge($data, $metaData);
-        }
-
-        return $data;
+        return $model->toArray();
     }
 
     protected function invokeWebhooks(array $data)
