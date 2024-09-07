@@ -72,4 +72,26 @@ class WpUserTransformer extends AbstractTransformer
     {
         return 10;
     }
+
+    public function transform(): array
+    {
+        $this->logDebug('WpUserTransformer: Starting transformation', ['user_id' => $this->wpUser->ID]);
+
+        $mainFields = $this->getMainFields();
+        $metaFields = $this->getMetaFields();
+
+        $transformedData = [];
+
+        foreach ($mainFields as $field) {
+            $transformedData[$field] = $this->wpUser->$field;
+        }
+
+        foreach ($metaFields as $field) {
+            $transformedData[$field] = $this->wpUser->$field;
+        }
+
+        $this->logDebug('WpUserTransformer: Transformed data', ['data' => $transformedData]);
+
+        return $transformedData;
+    }
 }

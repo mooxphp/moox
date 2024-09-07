@@ -96,7 +96,6 @@ class PrepareSyncJob implements ShouldQueue
             'model_class' => $this->modelClass,
             'identifier_field' => $this->identifierField,
             'identifier_value' => $this->identifierValue,
-            'model_data' => $model->toArray(),
         ]);
 
         $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
