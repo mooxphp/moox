@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
 
@@ -65,7 +66,28 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function findModel()
     {
-        return $this->modelClass::where($this->identifierField, $this->identifierValue)->first();
+        $this->logDebug('Moox Sync: Finding model', [
+            'model_class' => $this->modelClass,
+            'identifier_field' => $this->identifierField,
+            'identifier_value' => $this->identifierValue,
+        ]);
+
+        $model = $this->modelClass::where($this->identifierField, $this->identifierValue)->first();
+
+        if (! $model) {
+            Log::warning('Moox Sync: Model not found', [
+                'model_class' => $this->modelClass,
+                'identifier_field' => $this->identifierField,
+                'identifier_value' => $this->identifierValue,
+            ]);
+        } else {
+            $this->logDebug('Moox Sync: Model found', [
+                'model_class' => $this->modelClass,
+                'model_data' => $model->toArray(),
+            ]);
+        }
+
+        return $model;
     }
 
     protected function getFullModelData($model)
