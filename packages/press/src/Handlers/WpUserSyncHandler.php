@@ -34,6 +34,8 @@ class WpUserSyncHandler extends AbstractSyncHandler
     protected function syncMainRecord()
     {
         $mainTableData = $this->getMainTableData();
+        $mainTableData = $this->ensureAllFieldsHaveValue($mainTableData);
+
         $idField = $this->getIdField();
 
         DB::table($this->tableName)->updateOrInsert(
@@ -47,18 +49,25 @@ class WpUserSyncHandler extends AbstractSyncHandler
     protected function syncMetaData($mainRecordId)
     {
         $metaData = $this->getMetaData();
+        $metaData = $this->ensureAllFieldsHaveValue($metaData);
         $foreignKeyName = $this->getForeignKeyName();
 
         foreach ($metaData as $key => $value) {
-            $serializedValue = is_array($value) ? serialize($value) : $value;
             DB::table($this->metaTableName)->updateOrInsert(
                 [
                     $foreignKeyName => $mainRecordId,
                     'meta_key' => $key,
                 ],
-                ['meta_value' => $serializedValue]
+                ['meta_value' => $value]
             );
         }
+    }
+
+    protected function ensureAllFieldsHaveValue(array $data): array
+    {
+        return array_map(function ($value) {
+            return $value ?? '';
+        }, $data);
     }
 
     protected function getMainTableData(): array
