@@ -26,13 +26,16 @@ class PrepareSyncJob implements ShouldQueue
 
     protected $platformId;
 
-    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $platformId)
+    protected $syncConfigurations;
+
+    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $platformId, $syncConfigurations)
     {
         $this->identifierField = $identifierField;
         $this->identifierValue = $identifierValue;
         $this->modelClass = $modelClass;
         $this->eventType = $eventType;
         $this->platformId = $platformId;
+        $this->syncConfigurations = $syncConfigurations;
     }
 
     public function handle()
@@ -47,8 +50,6 @@ class PrepareSyncJob implements ShouldQueue
             'event_type' => $this->eventType,
             'platform_id' => $this->platformId,
         ]);
-
-        // TODO: from here we have no data anymore, if WpUser
 
         $syncData = [
             'event_type' => $this->eventType,
@@ -116,9 +117,8 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function invokeWebhooks(array $data)
     {
-        $targetPlatforms = Platform::where('id', '!=', $this->platformId)->get();
-
-        foreach ($targetPlatforms as $targetPlatform) {
+        foreach ($this->syncConfigurations as $syncConfig) {
+            $targetPlatform = Platform::findOrFail($syncConfig['target_platform_id']);
             $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
 
             $this->logDebug('Moox Sync: Preparing to invoke webhook', [

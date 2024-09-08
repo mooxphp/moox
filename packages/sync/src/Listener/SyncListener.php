@@ -115,8 +115,25 @@ class SyncListener
             $delay = $transformer->getDelay();
         }
 
-        PrepareSyncJob::dispatch($localIdentifier['field'], $localIdentifier['value'], get_class($model), $eventType, $this->currentPlatform->id)
-            ->delay(now()->addSeconds($delay));
+        $relevantSyncs = Sync::where('source_platform_id', $this->currentPlatform->id)
+            ->where('source_model', get_class($model))
+            ->where('status', true)
+            ->get()
+            ->map(function ($sync) {
+                return [
+                    'target_platform_id' => $sync->target_platform_id,
+                    'target_model' => $sync->target_model,
+                ];
+            });
+
+        PrepareSyncJob::dispatch(
+            $localIdentifier['field'],
+            $localIdentifier['value'],
+            get_class($model),
+            $eventType,
+            $this->currentPlatform->id,
+            $relevantSyncs
+        )->delay(now()->addSeconds($delay));
     }
 
     protected function getLocalIdentifier($model)
