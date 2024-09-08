@@ -68,7 +68,8 @@ class SyncPlatformJob implements ShouldQueue
 
     protected function sendWebhook(Platform $platform, Platform $targetPlatform)
     {
-        $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
+        $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
+        $webhookUrl = 'https://'.$targetPlatform->domain.$webhookPath;
 
         $data = [
             'event_type' => 'updated',
@@ -85,12 +86,14 @@ class SyncPlatformJob implements ShouldQueue
                 'source' => $this->currentPlatform->id,
                 'platform' => $platform->id,
                 'target' => $targetPlatform->id,
+                'webhook_url' => $webhookUrl,
             ]);
         } else {
             $this->logDebug('Webhook failed', [
                 'source' => $this->currentPlatform->id,
                 'platform' => $platform->id,
                 'target' => $targetPlatform->id,
+                'webhook_url' => $webhookUrl,
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);

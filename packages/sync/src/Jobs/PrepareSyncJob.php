@@ -117,9 +117,11 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function invokeWebhooks(array $data)
     {
+        $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
+
         foreach ($this->syncConfigurations as $syncConfig) {
             $targetPlatform = Platform::findOrFail($syncConfig['target_platform_id']);
-            $webhookUrl = 'https://'.$targetPlatform->domain.'/sync-webhook';
+            $webhookUrl = 'https://'.$targetPlatform->domain.$webhookPath;
 
             $this->logDebug('Moox Sync: Preparing to invoke webhook', [
                 'platform' => $targetPlatform->name,

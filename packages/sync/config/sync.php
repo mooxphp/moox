@@ -258,15 +258,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Models with Platform Relations
+    | Sync Webhook URL
     |--------------------------------------------------------------------------
     |
-    | List of models that should have platform relations. This adds the
-    | platforms relation to the model. No need to add a trait or
-    | any dependency to the model or the package.
+    | The URL that the webhook is reachable at and called at.
     |
     */
 
+    'sync_webhook_url' => env('SYNC_WEBHOOK_URL', '/sync-webhook'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Models with Platform Relations
+    |--------------------------------------------------------------------------
+    |
+    | List of models that should be synced to other platforms, when changes are made.
+    | This does not add the related models to the listener, but syncs them with
     'models_with_platform_relations' => [
         'App\Models\User',
         'Moox\User\Models\User',
@@ -280,11 +287,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | List of models that should have syncable relations, which should be
-    | synced to other platforms, when changes are made. This does not
-    | add the related models to the listener, but syncs them with
-    | the sync model automatically. So platform-related models
-    | (like WpUsers and WpUserMetaare able to use this
-    | feature, too.
+    | synced to other platforms, when changes are made. Adds the related
+    | models to the listener, syncs them and cares for the relations.
     |
     */
 
