@@ -123,6 +123,9 @@ class PrepareSyncJob implements ShouldQueue
             $targetPlatform = Platform::findOrFail($syncConfig['target_platform_id']);
             $webhookUrl = 'https://'.$targetPlatform->domain.$webhookPath;
 
+            $payload = json_encode($data);
+            $signature = hash_hmac('sha256', $payload, $targetPlatform->api_token);
+
             $this->logDebug('Moox Sync: Preparing to invoke webhook', [
                 'platform' => $targetPlatform->name,
                 'webhook_url' => $webhookUrl,
@@ -130,7 +133,10 @@ class PrepareSyncJob implements ShouldQueue
             ]);
 
             try {
-                $response = Http::withToken($targetPlatform->api_token)->post($webhookUrl, $data);
+                $response = Http::withHeaders([
+                    'X-Platform-Token' => $targetPlatform->api_token,
+                    'X-Webhook-Signature' => $signature,
+                ])->post($webhookUrl, $data);
 
                 $this->logDebug('Moox Sync: Webhook invoked', [
                     'platform' => $targetPlatform->name,

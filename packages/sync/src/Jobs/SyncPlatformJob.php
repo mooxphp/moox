@@ -78,8 +78,13 @@ class SyncPlatformJob implements ShouldQueue
             'platform' => $this->currentPlatform->toArray(),
         ];
 
-        $response = Http::withToken($targetPlatform->api_token)
-            ->post($webhookUrl, $data);
+        $payload = json_encode($data);
+        $signature = hash_hmac('sha256', $payload, $targetPlatform->api_token);
+
+        $response = Http::withHeaders([
+            'X-Platform-Token' => $targetPlatform->api_token,
+            'X-Webhook-Signature' => $signature,
+        ])->post($webhookUrl, $data);
 
         if ($response->successful()) {
             $this->logDebug('Webhook sent successfully', [

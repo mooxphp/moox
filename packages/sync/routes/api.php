@@ -25,4 +25,5 @@ Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
 });
 
 $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
-Route::post($webhookPath, [SyncWebhookController::class, 'handle'])->withoutMiddleware('*');
+Route::post($webhookPath, [SyncWebhookController::class, 'handle'])
+    ->middleware('webhook.auth');

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Commands\InstallCommand;
 use Moox\Sync\Http\Middleware\PlatformTokenAuthMiddleware;
+use Moox\Sync\Http\Middleware\WebhookAuthMiddleware;
 use Moox\Sync\Jobs\SyncBackupJob;
 use Moox\Sync\Jobs\SyncPlatformJob;
 use Moox\Sync\Listener\SyncListener;
@@ -38,6 +39,11 @@ class SyncServiceProvider extends PackageServiceProvider
         $this->app->make('router')->aliasMiddleware(
             'auth.platformtoken',
             PlatformTokenAuthMiddleware::class
+        );
+
+        $this->app->make('router')->aliasMiddleware(
+            'webhook.auth',
+            WebhookAuthMiddleware::class
         );
 
         $this->registerSyncPlatformJob();
