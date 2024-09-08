@@ -70,7 +70,7 @@ class WpUserTransformer extends AbstractTransformer
 
     public function getDelay(): int
     {
-        return 10;
+        return 1;
     }
 
     public function transform(): array
