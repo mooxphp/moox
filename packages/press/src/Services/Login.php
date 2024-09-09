@@ -79,11 +79,11 @@ class Login extends SimplePage
     {
         return
             TextInput::make('login')
-                ->label('Login')
-                ->required()
-                ->autocomplete()
-                ->autofocus()
-                ->extraInputAttributes(['tabindex' => 1]);
+            ->label('Login')
+            ->required()
+            ->autocomplete()
+            ->autofocus()
+            ->extraInputAttributes(['tabindex' => 1]);
     }
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
@@ -96,6 +96,10 @@ class Login extends SimplePage
                     'seconds' => $exception->secondsUntilAvailable,
                     'minutes' => ceil($exception->secondsUntilAvailable / 60),
                 ]))
+                ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
+                    'seconds' => $exception->secondsUntilAvailable,
+                    'minutes' => $exception->minutesUntilAvailable,
+                ]) : null)
                 ->danger()
                 ->send();
 
@@ -159,7 +163,7 @@ class Login extends SimplePage
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
 
-            return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
+            return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token);
         } else {
             return app(LoginResponse::class);
         }
