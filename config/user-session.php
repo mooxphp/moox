@@ -151,7 +151,7 @@ return [
     /*
     | Session expiry for different scopes, currently not implemented!
     */
-    'session-expiry' => [
+    'session_expiry' => [
         'Default' => 1, // day
         'Whitelisted' => 365, // days
     ],
@@ -161,7 +161,7 @@ return [
     | They are also used to distinguish between internal and external IPs
     | in the user session list.
     */
-    'whitelisted-ips' => [
+    'whitelisted_ips' => [
         'heco Network' => '62.26.138.101',
     ],
 
@@ -169,7 +169,7 @@ return [
     | Known IPs can be associated with a name. This is useful to identify
     | services like monitoring platforms in the user session list.
     */
-    'known-ips' => [
+    'known_ips' => [
         'Oh Dear' => ['104.236.192.248',
             '13.245.37.23',
             '134.209.122.208',
