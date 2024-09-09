@@ -2,13 +2,10 @@
 
 namespace Moox\Sync\Resources;
 
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -94,10 +91,12 @@ class SyncResource extends Resource
 
             foreach ($data['models'] as $model) {
                 $package = str_replace('Models', ' - ', str_replace('\\', ' ', $model));
-                $options["{$package}"] = "{$model}";
+                if ($package && $model) {
+                    $options["{$package}"] = "{$model}";
+                }
             }
 
-            return array_flip($options);
+            return array_filter(array_flip($options)); // Remove any null values
 
         } catch (\Exception $e) {
             Notification::make()
@@ -127,6 +126,11 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('sourcePlatform', 'name')
+                        ->options(function () {
+                            return Platform::all()->mapWithKeys(function ($platform) {
+                                return [$platform->id => $platform->name ?? "Platform {$platform->id}"];
+                            })->toArray();
+                        })
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
@@ -152,7 +156,11 @@ class SyncResource extends Resource
                             $sourcePlatform = Platform::find($get('source_platform_id'));
                             $apiUrl = self::getApiUrl($sourcePlatform);
 
-                            return $apiUrl ? self::fetchModelsFromApi($apiUrl, $sourcePlatform) : [];
+                            $options = $apiUrl ? self::fetchModelsFromApi($apiUrl, $sourcePlatform) : [];
+
+                            return collect($options)->filter(function ($value, $key) {
+                                return $key !== null && $value !== null;
+                            })->toArray();
                         })
                         ->rules(['max:255'])
                         ->required()
@@ -188,6 +196,11 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('targetPlatform', 'name')
+                        ->options(function () {
+                            return Platform::all()->mapWithKeys(function ($platform) {
+                                return [$platform->id => $platform->name ?? "Platform {$platform->id}"];
+                            })->toArray();
+                        })
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
@@ -213,7 +226,11 @@ class SyncResource extends Resource
                             $targetPlatform = Platform::find($get('target_platform_id'));
                             $apiUrl = self::getApiUrl($targetPlatform);
 
-                            return $apiUrl ? self::fetchModelsFromApi($apiUrl, $targetPlatform) : [];
+                            $options = $apiUrl ? self::fetchModelsFromApi($apiUrl, $targetPlatform) : [];
+
+                            return collect($options)->filter(function ($value, $key) {
+                                return $key !== null && $value !== null;
+                            })->toArray();
                         })
                         ->rules(['max:255'])
                         ->required()
@@ -244,18 +261,6 @@ class SyncResource extends Resource
                             }
                         }),
 
-                    // TODO: not implemented yet, may be removed
-                    /*
-                    TextInput::make('interval')
-                        ->label(__('core::core.interval'))
-                        ->rules(['integer'])
-                        ->default(60)
-                        ->suffix(fn ($get) => $get('interval') == 1 ? 'minute' : 'minutes')
-                        ->columnSpan(['default' => 12])
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-                    */
-
                     Toggle::make('use_platform_relations')
                         ->label(__('core::sync.use_platform_relations'))
                         ->columnSpan(['default' => 12])
@@ -265,109 +270,11 @@ class SyncResource extends Resource
                     Hidden::make('if_exists')
                         ->default('update'),
 
-                    // TODO: not implemented yet
-                    /*
-                    Select::make('if_exists')
-                        ->label(__('core::sync.if_exists'))
-                        ->options([
-                            'update' => 'Update',
-                            'skip' => 'Skip',
-                            'error' => 'Error',
-                        ])
-                        ->required()
-                        ->default('update')
-                        ->columnSpan(['default' => 12]),
-
-                    // TODO: not implemented yet
-                    /*
-                    Select::make('filter_ids')
-                        ->label(__('core::sync.filter_ids'))
-                        ->options([
-                            'sync_all_records' => 'Sync all records',
-                            'sync_only_ids' => 'Sync these IDs only',
-                            'ignore_ids' => 'Specify IDs to ignore',
-                        ])
-                        ->columnSpan(['default' => 12])
-                        ->default('sync_all_records')
-                        ->label(__('core::sync.sync_all_records'))
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-
-                    TextInput::make('sync_only_ids')
-                        ->label(__('core::sync.sync_only_ids'))
-                        ->rules(['array'])
-                        ->columnSpan(['default' => 12])
-                        ->visible(fn ($get) => $get('filter_ids') === 'sync_only_ids')
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-
-                    TextInput::make('ignore_ids')
-                        ->label(__('core::sync.ingnore_ids'))
-                        ->rules(['array'])
-                        ->columnSpan(['default' => 12])
-                        ->visible(fn ($get) => $get('filter_ids') === 'ignore_ids')
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-                    */
-
-                    // TODO: not implemented yet
-                    /*
-                    Toggle::make('sync_all_fields')
-                        ->label(__('core::sync.sync_all_fields'))
-                        ->default(true)
-                        ->columnSpan(['default' => 12])
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get))
-                        ->disabled(fn ($get) => ! $get('models_compatible')),
-
-
-                    KeyValue::make('field_mappings')
-                        ->label(__('core::sync.field_mappings'))
-                        ->rules(['array'])
-                        ->columnSpan(['default' => 12])
-                        ->hidden(fn ($get) => $get('sync_all_fields') && $get('models_compatible'))
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-                    */
-
-                    // TODO: not implemented yet
-                    /*
-                    TextInput::make('use_transformer_class')
-                        ->label(__('core::sync.use_transformer_class'))
-                        ->rules(['max:255'])
-                        ->columnSpan(['default' => 12])
-                        ->reactive()
-                        ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-
-                    Toggle::make('has_errors')
-                        ->label(__('core::core.has_errors'))
-                        ->rules(['boolean'])
-                        ->columnSpan(['default' => 12])
-                        ->reactive(),
-
-                    TextInput::make('error_message')
-                        ->label(__('core::core.error_message'))
-                        ->rules(['max:255'])
-                        ->columnSpan(['default' => 12])
-                        ->visible(fn ($get) => $get('has_errors')),
-                    */
-
-                    // @Deprecated
-                    // TODO: may be removed
                     Hidden::make('title')
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->default(fn (callable $get) => SyncResource::generateTitle($get))
                         ->reactive(),
-
-                    // TODO: not implemented yet
-                    /*
-                    DatePicker::make('last_sync')
-                        ->label(__('core::sync.last_sync'))
-                        ->rules(['date'])
-                        ->disabled()
-                        ->columnSpan(['default' => 12]),
-                    */
 
                     Hidden::make('models_compatible')
                         ->default(true),
@@ -396,10 +303,6 @@ class SyncResource extends Resource
             $set('extra_columns', $compatibility['extraColumns']);
 
             if (! $compatibility['compatible']) {
-
-                // TODO: not implemented yet
-                //$set('sync_all_fields', false);
-
                 $missingColumnsStr = implode(', ', $compatibility['missingColumns']);
                 $extraColumnsStr = implode(', ', $compatibility['extraColumns']);
 
@@ -437,30 +340,6 @@ class SyncResource extends Resource
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->getStateUsing(fn ($record) => $record->use_platform_relations),
-                // TODO: not implemented yet
-                /*
-                IconColumn::make('filter_ids')
-                    ->label(__('core::sync.filter_ids'))
-                    ->toggleable()
-                    ->boolean()
-                    ->trueIcon('heroicon-o-check-circle')
-                    ->falseIcon('heroicon-o-x-circle')
-                    ->getStateUsing(fn ($record) => empty($record->field_mappings)),
-                IconColumn::make('sync_all_fields')
-                    ->label(__('core::sync.sync_all_fields'))
-                    ->toggleable()
-                    ->boolean()
-                    ->getStateUsing(fn ($record) => ! $record->sync_all_fields),
-                IconColumn::make('has_errors')
-                    ->label(__('core::core.has_errors'))
-                    ->toggleable()
-                    ->boolean(),
-                TextColumn::make('last_sync')
-                    ->label(__('core::sync.last_sync'))
-                    ->toggleable()
-                    ->date()
-                    ->since(),
-                */
             ])
             ->filters([
                 SelectFilter::make('source_platform_id')
