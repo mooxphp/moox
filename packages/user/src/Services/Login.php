@@ -79,11 +79,11 @@ class Login extends SimplePage
     {
         return
             TextInput::make('login')
-            ->label('Login')
-            ->required()
-            ->autocomplete()
-            ->autofocus()
-            ->extraInputAttributes(['tabindex' => 1]);
+                ->label('Login')
+                ->required()
+                ->autocomplete()
+                ->autofocus()
+                ->extraInputAttributes(['tabindex' => 1]);
     }
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
