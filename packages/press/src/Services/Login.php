@@ -92,19 +92,13 @@ class Login extends SimplePage
         try {
             $this->rateLimit(5);
         } catch (TooManyRequestsException $exception) {
-            // Notification::make()
-            //     ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
-            //         'seconds' => $exception->secondsUntilAvailable,
-            //         'minutes' => ceil($exception->secondsUntilAvailable / 60),
-            //     ]))
-            //     ->danger()
-            //     ->send();
-            $this->getRateLimitedNotification($exception)?->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
-                'seconds' => $exception->secondsUntilAvailable,
-                'minutes' => ceil($exception->secondsUntilAvailable / 60),
-            ]))
+            Notification::make()
+                ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
+                    'seconds' => $exception->secondsUntilAvailable,
+                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                ]))
                 ->danger()
-                ->send();;
+                ->send();
 
             return null;
         }
