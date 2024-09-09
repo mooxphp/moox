@@ -30,8 +30,19 @@ class PlatformRelationService
         DB::table('model_platform')->insert($insertData);
     }
 
-    public function getPlatformsForModel($modelClass, $modelId)
+    public function getPlatformsForModel($modelClassOrInstance, $modelId = null)
     {
+        if (is_object($modelClassOrInstance)) {
+            $modelClass = get_class($modelClassOrInstance);
+            $modelId = $modelClassOrInstance->getKey();
+        } else {
+            $modelClass = $modelClassOrInstance;
+        }
+
+        if ($modelId === null) {
+            throw new \InvalidArgumentException('Model ID must be provided when passing a class name.');
+        }
+
         return DB::table('model_platform')
             ->where('model_type', $modelClass)
             ->where('model_id', $modelId)
