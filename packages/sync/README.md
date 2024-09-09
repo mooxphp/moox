@@ -19,82 +19,98 @@ php artisan mooxsync:install
 
 Curious what the install command does? See manual installation below.
 
-## Manage Platforms
+## Create Platforms
 
-First, you need to create a platform, better two. Even if you would be able to sync on the same platform (but different model), that is not the main idea of Sync.
+First, you need to create a platform, better two. You would be able to sync on the same platform (but different model of course), but that is not the main idea of Sync.
 
-There are two Filament Resource to manage Platforms and Syncs.
+![Create Sync Platform](https://github.com/mooxphp/moox/raw/main/art/screenshot/sync-plattform-create.jpeg)
 
-## Manage Syncs
+![List Sync Platforms](https://github.com/mooxphp/moox/raw/main/art/sync-plattforms.jpeg)
 
-Then you are able to create a Sync between platforms. Choose source and target platform and model, add parameters, sync.
+## Create Syncs
 
-## How Sync works
+Then you are able to create a Sync between platforms.
 
-Here are some key components and the basic flow of Sync:
+![Create Syncs like this](https://github.com/mooxphp/moox/raw/main/art/sync-sync-edit.jpeg)
 
--   **SyncListener**
+![List your Syncs](https://github.com/mooxphp/moox/raw/main/art/sync-syncs.jpeg)
 
-    -   Monitor model events (e.g., create, update, delete) on the source platform.
-    -   Flow:
-        -   Attached to models specified in the sync configuration.
-        -   When an event occurs (e.g., a new record is created), the listener triggers.
-        -   The listener then invokes a Webhook on the target platform by sending the relevant data (e.g., model data) through an HTTP request to the `SyncWebhook`.
 
--   **PrepareSyncJob**
 
-    -   Prepare the data for the target platform.
-    -   Flow:
-        -   Receives the data from the source platform.
-        -   Validates the incoming data and checks for any transformation or field mapping requirements specified in the sync configuration.
-        -   Triggers the `SyncJob` with the validated and transformed data.
+## The basic flow
 
--   **Transformer**
+### SyncPlattformsJob
 
-    -   Transform the data for the target platform.
-    -   Extensible via config.
-    -   Flow:
-        -   Receives the data from the source platform.
-        -   Validates the incoming data and checks for any transformation or field mapping requirements specified in the sync configuration.
-        -   Triggers the `SyncJob` with the validated and transformed data.
+Platforms are automatically synced between all platforms. For the first time done with basic security only using the Sync Token from config, afterwards adding the platform-token to provide first class security including HMAC. 
 
--   **SyncWebhook**
+The SyncPlatformsJob can be enabled via config or .env. This should run on not more than ONE platform. 
 
-    -   Act as the entry point on the target platform, receiving data from the source platform via the `SyncListener`.
-    -   Flow:
-        -   Receives the data from the source platform.
-        -   Validates the incoming data and checks for any transformation or field mapping requirements specified in the sync configuration.
-        -   Triggers the `SyncJob` with the validated and transformed data.
+As an alternative to running the job periodically (minutely by default), you can manually start the Job by pressing the `Sync Platforms` button after making updates to platforms.
 
--   **Sync**
+### SyncListener
 
-    -   Perform the actual data synchronization on the target platform.
-    -   Extensible via config.
-    -   Flow:
-        -   Receives the data from the source platform.
-        -   Validates the incoming data and checks for any transformation or field mapping requirements specified in the sync configuration.
-        -   Triggers the `SyncJob` with the validated and transformed data.
+The SyncListener runs an Eloquent Event Listener for each Sync and catches up all model changes done with Eloquent. If you change data in models without using Eloquent, you may consider firing an event:
 
--   **SyncJob**
+```php
+Event::dispatch('eloquent.updated: '.get_class($this->record), $this->record);
+```
 
--   Perform the actual data synchronization on the target platform.
--   Flow:
+Note: For handling imports or changes done outside of Laravel, we recommend running the `SyncBackupJob`.
 
-    -   Executes the query on the target platform to create, update, or delete records based on the data received from the source platform.
-    -   Handles conditions like conflict resolution (e.g., updating existing records if they match certain criteria).
-    -   Logs success or failure, including error handling (e.g., retry logic if the sync fails due to temporary issues).
+The SyncListener runs the `PrepareSynJob`.
 
--   **SyncPlatformJob**
+The SyncListener needs to be activated in Moox Sync Configuration. That should be done on Source platforms only.
 
-    -   Periodically sync all platforms to all platforms. This Job should not be activated on more than one instance.
+### PrepareSyncJob
 
--   **Sync Backup Job**
+The PrepareSyncJob is invoked by the SyncListener. It prepares the data and triggers the `SyncWebhook`.
 
-    -   To ensure data consistency even when changes are made outside of Eloquent events, you can use the SyncBackupJob. This job compares and updates data based on your sync configurations.
+The PrepareSyncJob supports custom data handling like custom queries, data manipulation, so called Transformers, also available as Transformer Bindings, configured in Moox Sync Configuration.
 
-    ```bash
-    php artisan sync:backup
-    ```
+### Transformer
+
+Transformers are not implemented yet. We recommend using Transformer Bindings instead.
+
+### Transformer Bindings
+
+See how `WpUserTransformer` (in Moox Press) extends `AbstractTransformer`  on how to implement a transformer binding. Register your transformer binding in the Moox Sync config.
+
+### SyncWebhook
+
+Act as the entry point on the target platform, receiving data from the source platform via the `PrepareSyncJob`. Validates the incoming data using HMAC and checks for any transformation or field mapping requirements specified in the sync configuration.
+
+Triggers the `SyncJob` with the validated and transformed data.
+
+The SyncWebhook needs to be activated in Moox Sync Configuration. It needs to be enabled on Target platforms only.
+
+### SyncJob
+
+The SyncJob queues the actual sync by using the `SyncService`.
+
+### SyncService
+
+The Sync writes the data on the Target platform. It supports `Custom SyncHandler`and `PlatformRelations`.
+
+### SyncHandler
+
+See how `WpUserSyncHandler`(in Moox Press) extends `AbstractSyncHandler`on how to implement your own SyncHandler. Register your sync handler in the Moox Sync config.
+
+### PlatformRelations
+
+The `PlatformRelationService` is an optional feature, you can set for every sync. It is a key component of Moox Sync that handles the relationships between models and platforms. It provides methods for syncing and retrieving platform associations for any model.
+
+Key methods:
+
+-   `syncPlatformsForModel($model, array $platformIds)`: Syncs the platforms for a given model.
+-   `getPlatformsForModel($model)`: Retrieves the platforms associated with a given model.
+
+### SyncBackupJob
+
+Not implemented yet.
+
+## Security
+
+Platform Token and HMAC.
 
 ## Config
 
@@ -487,77 +503,9 @@ return [
 
 ```
 
-## Services
-
-### PlatformRelationService
-
-The `PlatformRelationService` is a key component of Moox Sync that handles the relationships between models and platforms. It provides methods for syncing and retrieving platform associations for any model.
-
-Key methods:
-
--   `syncPlatformsForModel($model, array $platformIds)`: Syncs the platforms for a given model.
--   `getPlatformsForModel($model)`: Retrieves the platforms associated with a given model.
-
-### SyncService
-
-The `SyncService` syncs the data given from the source platform, if set in the Sync, uses the `PlatformRelationService` to determine if a model should be synced with a target platform.
-
-## Implementing
-
-To add platform relations to your model, you need to edit the `models_with_platform_relations` in the `sync.php` config file and implement the platform relation into your UI, like in the following example with a Filament Resource:
-
-### Implementing a Platform Field in a User Resource
-
-To add platform selection functionality to a User Resource (or any other resource), you can use the following pattern:
-
-```php
-use Filament\Forms\Components\Select;
-use Moox\Sync\Models\Platform;
-use Moox\Sync\Services\PlatformRelationService;
-
-public static function form(Form $form): Form
-{
-    return $form->schema([
-        Select::make('platforms')
-            ->label('Platforms')
-            ->multiple()
-            ->options(function () {
-                return Platform::pluck('name', 'id')->toArray();
-            })
-            ->afterStateHydrated(function ($component, $state, $record) {
-                if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
-                    $platformService = app(PlatformRelationService::class);
-                    $platforms = $platformService->getPlatformsForModel($record);
-                    $component->state($platforms->pluck('id')->toArray());
-                }
-            })
-    ->dehydrated(false)
-            ->reactive()
-            ->afterStateUpdated(function ($state, callable $set, $record) {
-                if ($record && class_exists('\Moox\Sync\Services\PlatformRelationService')) {
-                    $platformService = app(PlatformRelationService::class);
-                    $platformService->syncPlatformsForModel($record, $state ?? []);
-                }
-            })
-            ->preload()
-            ->searchable()
-            ->visible(fn () => class_exists('\Moox\Sync\Models\Platform'))
-            ->columnSpan([
-                'default' => 12,
-                'md' => 12,
-                'lg' => 12,
-            ]),
-        ]);
-}
-```
-
 ### Logging
 
-Setting up Sync involves the connection of two or more platforms, availability of APIs and running Jobs. This is why we added a logger to the package, that can be setup in [Moox Core config](../core/README.md#logging). The flow of a working sync may look like this:
-
-```php
-// TODO: Add logging example
-```
+Setting up Sync involves the connection of two or more platforms, availability of APIs and running Jobs. This is why we added a logger to the package, that can be setup in [Moox Core config](../core/README.md#logging). The flow of a working sync may look like this. Depending on the log level you get very detailed information about the data flow in Moox Sync. On production anything else than 0 should not be the default, but can perfectly used to implement or debug Moox Sync.
 
 ## Manual Installation
 
@@ -571,6 +519,8 @@ php artisan migrate
 // Publish the config file with:
 php artisan vendor:publish --tag="sync-config"
 ```
+
+Edit your PanelProvider to add both Plugins to your Navigation.
 
 ## Changelog
 
