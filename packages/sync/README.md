@@ -6,6 +6,8 @@ Moox Sync is under hard development.
 
 Moox Sync enables you to synchronize records between Moox platforms or other Filament and Laravel platforms.
 
+https://github.com/user-attachments/assets/877e52a8-3f7b-4527-ab75-03996155ec41
+
 ## Quick Installation
 
 These two commmands are all you need to install the package:
