@@ -25,25 +25,23 @@ First, you need to create a platform, better two. You would be able to sync on t
 
 ![Create Sync Platform](https://github.com/mooxphp/moox/raw/main/art/screenshot/sync-plattform-create.jpeg)
 
-![List Sync Platforms](https://github.com/mooxphp/moox/raw/main/art/sync-plattforms.jpeg)
+![List Sync Platforms](https://github.com/mooxphp/moox/raw/main/art/screenshot/sync-plattforms.jpeg)
 
 ## Create Syncs
 
 Then you are able to create a Sync between platforms.
 
-![Create Syncs like this](https://github.com/mooxphp/moox/raw/main/art/sync-sync-edit.jpeg)
+![Create Syncs like this](https://github.com/mooxphp/moox/raw/main/art/screenshot/sync-sync-edit.jpeg)
 
-![List your Syncs](https://github.com/mooxphp/moox/raw/main/art/sync-syncs.jpeg)
-
-
+![List your Syncs](https://github.com/mooxphp/moox/raw/main/art/screenshot/sync-syncs.jpeg)
 
 ## The basic flow
 
 ### SyncPlattformsJob
 
-Platforms are automatically synced between all platforms. For the first time done with basic security only using the Sync Token from config, afterwards adding the platform-token to provide first class security including HMAC. 
+Platforms are automatically synced between all platforms. For the first time done with basic security only using the Sync Token from config, afterwards adding the platform-token to provide first class security including HMAC.
 
-The SyncPlatformsJob can be enabled via config or .env. This should run on not more than ONE platform. 
+The SyncPlatformsJob can be enabled via config or .env. This should run on not more than ONE platform.
 
 As an alternative to running the job periodically (minutely by default), you can manually start the Job by pressing the `Sync Platforms` button after making updates to platforms.
 
@@ -73,7 +71,7 @@ Transformers are not implemented yet. We recommend using Transformer Bindings in
 
 ### Transformer Bindings
 
-See how `WpUserTransformer` (in Moox Press) extends `AbstractTransformer`  on how to implement a transformer binding. Register your transformer binding in the Moox Sync config.
+See how `WpUserTransformer` (in Moox Press) extends `AbstractTransformer` on how to implement a transformer binding. Register your transformer binding in the Moox Sync config.
 
 ### SyncWebhook
 
