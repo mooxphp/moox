@@ -3,8 +3,6 @@
 namespace Moox\User\Services;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use DanHarrin\LivewireRateLimiting\WithRateLimiting;
-use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
@@ -79,7 +77,7 @@ class Login extends SimplePage
     protected function getLoginFormComponent(): Component
     {
         return
-        TextInput::make('login')
+            TextInput::make('login')
             ->label('Login')
             ->required()
             ->autocomplete()
@@ -145,7 +143,6 @@ class Login extends SimplePage
         }
 
         return app(LoginResponse::class);
-
     }
 
     protected function getCredentialsFromFormData(array $data): array
