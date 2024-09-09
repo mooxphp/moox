@@ -4,12 +4,12 @@ namespace Moox\User\Services;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
