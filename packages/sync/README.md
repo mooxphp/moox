@@ -498,7 +498,7 @@ Key methods:
 
 ### SyncService
 
-The `SyncService` uses the `PlatformRelationService` to determine if a model should be synced with a target platform.
+The `SyncService` syncs the data given from the source platform, if set in the Sync, uses the `PlatformRelationService` to determine if a model should be synced with a target platform.
 
 ## Implementing
 
