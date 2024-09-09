@@ -69,4 +69,13 @@ class PlatformRelationService
             'platform_id' => $platform->id,
         ])->exists();
     }
+
+    public function checkPlatformRelationForModel($modelClass, $modelId, $platformId)
+    {
+        return DB::table('model_platform')
+            ->where('model_type', $modelClass)
+            ->where('model_id', $modelId)
+            ->where('platform_id', $platformId)
+            ->exists();
+    }
 }

@@ -62,8 +62,8 @@ class SyncService
 
     protected function syncToSinglePlatform($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, Platform $targetPlatform)
     {
-        if ($this->shouldSyncModel($modelClass, $targetPlatform)) {
-            $this->processSyncEvent($modelClass, $modelData, $eventType, $targetPlatform);
+        if ($this->shouldSyncModel($modelClass, $modelData, $targetPlatform, $this->platformRelationService->getSync())) {
+            $this->processSyncEvent($modelClass, $modelData, $eventType, $targetPlatform, $this->platformRelationService->getSync());
         }
     }
 
@@ -72,14 +72,20 @@ class SyncService
         $targetPlatforms = Platform::where('id', '!=', $sourcePlatform->id)->get();
 
         foreach ($targetPlatforms as $targetPlatform) {
-            if ($this->shouldSyncModel($modelClass, $targetPlatform)) {
-                $this->processSyncEvent($modelClass, $modelData, $eventType, $targetPlatform);
+            if ($this->shouldSyncModel($modelClass, $modelData, $targetPlatform, $this->platformRelationService->getSync())) {
+                $this->processSyncEvent($modelClass, $modelData, $eventType, $targetPlatform, $this->platformRelationService->getSync());
             }
         }
     }
 
-    protected function shouldSyncModel($modelClass, Platform $targetPlatform)
+    protected function shouldSyncModel($modelClass, array $modelData, Platform $targetPlatform, $sync)
     {
+        if (! $sync->use_platform_relations) {
+            $this->logDebug('Platform relations not used for this sync', ['model' => $modelClass, 'targetPlatform' => $targetPlatform->id]);
+
+            return true;
+        }
+
         $modelsWithPlatformRelations = Config::get('sync.models_with_platform_relations', []);
 
         if (! in_array($modelClass, $modelsWithPlatformRelations)) {
@@ -88,11 +94,33 @@ class SyncService
             return false;
         }
 
-        // Additional logic can be added here if needed
-        return true;
+        $modelId = $this->getModelId($modelData);
+        $hasRelation = $this->platformRelationService->checkPlatformRelationForModel($modelClass, $modelId, $targetPlatform->id);
+
+        $this->logDebug('Checking platform relation', [
+            'model' => $modelClass,
+            'modelId' => $modelId,
+            'targetPlatform' => $targetPlatform->id,
+            'hasRelation' => $hasRelation,
+        ]);
+
+        return $hasRelation;
     }
 
-    protected function processSyncEvent($modelClass, array $modelData, string $eventType, Platform $targetPlatform)
+    protected function getModelId(array $modelData)
+    {
+        $identifierFields = Config::get('sync.local_identifier_fields', ['id', 'uuid', 'ulid']);
+
+        foreach ($identifierFields as $field) {
+            if (isset($modelData[$field])) {
+                return $modelData[$field];
+            }
+        }
+
+        throw new \Exception('Unable to determine model identifier');
+    }
+
+    protected function processSyncEvent($modelClass, array $modelData, string $eventType, Platform $targetPlatform, $sync)
     {
         $this->logDebug('Processing sync event', [
             'modelClass' => $modelClass,
@@ -100,18 +128,36 @@ class SyncService
             'targetPlatform' => $targetPlatform->id,
         ]);
 
-        switch ($eventType) {
-            case 'created':
-                $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform);
-                break;
-            case 'updated':
-                $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform);
-                break;
-            case 'deleted':
-                $this->deleteModel($modelClass, $modelData, $targetPlatform);
-                break;
-            default:
-                $this->logDebug('Unknown event type', ['eventType' => $eventType]);
+        if ($this->shouldSyncModel($modelClass, $modelData, $targetPlatform, $sync)) {
+            switch ($eventType) {
+                case 'created':
+                case 'updated':
+                    $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform);
+                    break;
+                case 'deleted':
+                    $this->deleteModel($modelClass, $modelData, $targetPlatform);
+                    break;
+                default:
+                    $this->logDebug('Unknown event type', ['eventType' => $eventType]);
+            }
+        } elseif ($sync->use_platform_relations && $eventType !== 'deleted') {
+            // If the model should not be synced but exists on the target, delete it
+            $this->deleteModelIfExists($modelClass, $modelData, $targetPlatform);
+        }
+    }
+
+    protected function deleteModelIfExists($modelClass, array $modelData, Platform $targetPlatform)
+    {
+        $modelId = $this->getModelId($modelData);
+        $existingModel = $modelClass::where($this->getModelId($modelData), $modelId)->first();
+
+        if ($existingModel) {
+            $this->logDebug('Deleting model that no longer has relation to target platform', [
+                'model' => $modelClass,
+                'modelId' => $modelId,
+                'targetPlatform' => $targetPlatform->id,
+            ]);
+            $this->deleteModel($modelClass, $modelData, $targetPlatform);
         }
     }
 
