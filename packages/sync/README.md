@@ -2,9 +2,7 @@
 
 # Moox Sync
 
-Moox Sync is under hard development.
-
-Moox Sync enables you to synchronize records between Moox platforms or other Filament and Laravel platforms.
+Moox Sync is a powerful package for synchronizing data across multiple platforms in Laravel applications. It enables you to keep records in sync between different Moox platforms or other Filament and Laravel platforms. It is designed to be easy to use and configurable, with a focus on security (for synchronizing users) and flexibility.
 
 https://github.com/user-attachments/assets/877e52a8-3f7b-4527-ab75-03996155ec41
 
@@ -182,8 +180,8 @@ Moox Sync implements robust security measures:
 
 The `WebhookAuthMiddleware` handles this authentication and verification process:
 
--   The API token authenticates the source platform, so even the very first sync (of platforms) is done securely
--   After platforms are synced, the platform token provides additional security using HMAC.
+-   The API token authenticates the source platform with a shared secret, so be changed in config, so even the initial platform sync is done securely
+-   After platforms are synced, the shared secret and platform token are used together to provide additional security
 -   The HMAC signature verifies the integrity of the payload.
 -   HTTPS (which you should enforce) protects against man-in-the-middle attacks
 

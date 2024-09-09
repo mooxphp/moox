@@ -70,6 +70,7 @@ class SyncPlatformJob implements ShouldQueue
     {
         $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
         $webhookUrl = 'https://'.$targetPlatform->domain.$webhookPath;
+        $syncToken = config('sync.sync_token');
 
         $data = [
             'event_type' => 'updated',
@@ -79,10 +80,10 @@ class SyncPlatformJob implements ShouldQueue
         ];
 
         $payload = json_encode($data);
-        $signature = hash_hmac('sha256', $payload, $targetPlatform->api_token);
+        $signature = hash_hmac('sha256', $payload, $targetPlatform->api_token.$syncToken);
 
         $response = Http::withHeaders([
-            'X-Platform-Token' => $targetPlatform->api_token,
+            'X-Platform-Token' => $targetPlatform->api_token ?? $syncToken,
             'X-Webhook-Signature' => $signature,
         ])->post($webhookUrl, $data);
 

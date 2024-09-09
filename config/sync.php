@@ -394,4 +394,18 @@ return [
     'sync_bindings' => [
         \Moox\Press\Models\WpUser::class => \Moox\Press\Handlers\WpUserSyncHandler::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sync Token
+    |--------------------------------------------------------------------------
+    |
+    | The sync token is used to authenticate the sync process even before
+    | the platforms are initially synced. It must be one key for
+    | all platforms that should be able to sync together.
+    |
+    */
+
+    'sync_token' => env('SYNC_TOKEN', 'Y0U_N3V3R_GU355_TH15_S3CR3T_K3Y'),
+
 ];
