@@ -5,6 +5,7 @@ namespace Moox\Sync\Resources;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -80,6 +81,8 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    // TODO: not implemented yet
+                    /*
                     FileUpload::make('thumbnail')
                         ->label(__('core::core.thumbnail'))
                         ->rules(['file'])
@@ -90,6 +93,7 @@ class PlatformResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                    */
 
                     TextInput::make('api_token')
                         ->label(__('core::sync.api_token'))
@@ -136,6 +140,8 @@ class PlatformResource extends Resource
                             }
                         }),
 
+                    // TODO: not implemented yet
+                    /*
                     Toggle::make('locked')
                         ->label(__('core::sync.locked'))
                         ->rules(['boolean'])
@@ -151,7 +157,13 @@ class PlatformResource extends Resource
                                 $set('lock_reason', null);
                             }
                         }),
+                    */
 
+                    Hidden::make('locked')
+                        ->default(false),
+
+                    // TODO: not implemented yet
+                    /*
                     TextInput::make('lock_reason')
                         ->label(__('core::sync.lock_reason'))
                         ->rules(['max:255'])
@@ -163,7 +175,10 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ])
                         ->visible(fn ($get) => $get('locked')),
+                    */
 
+                    // TODO: not implemented yet
+                    /*
                     Toggle::make('show_in_menu')
                         ->label(__('core::core.show_in_menu'))
                         ->rules(['boolean'])
@@ -181,7 +196,13 @@ class PlatformResource extends Resource
                                 $livewire->record->save();
                             }
                         }),
+                    */
 
+                    Hidden::make('show_in_menu')
+                        ->default(false),
+
+                    // TODO: not implemented yet
+                    /*
                     TextInput::make('order')
                         ->label(__('core::core.order'))
                         ->rules(['max:255'])
@@ -193,6 +214,7 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ])
                         ->visible(fn ($get) => $get('show_in_menu')),
+                    */
                 ]),
             ]),
         ]);
@@ -203,11 +225,14 @@ class PlatformResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
+                // TODO: not implemented yet
+                /*
                 ImageColumn::make('thumbnail')
                     ->label(__('core::core.thumbnail'))
                     ->toggleable()
                     ->label('')
                     ->square(),
+                */
                 TextColumn::make('name')
                     ->label(__('core::core.name'))
                     ->toggleable()
@@ -225,16 +250,21 @@ class PlatformResource extends Resource
                     ->toggleable()
                     ->sortable()
                     ->boolean(),
+                // TODO: not implemented yet
+                /*
                 IconColumn::make('locked')
                     ->label(__('core::sync.locked'))
                     ->toggleable()
                     ->sortable()
                     ->boolean(),
+                */
                 IconColumn::make('api_token')
                     ->label(__('core::sync.api_token'))
                     ->boolean()
                     ->sortable()
                     ->toggleable(),
+                // TODO: not implemented yet
+                /*
                 IconColumn::make('show_in_menu')
                     ->label(__('core::core.show_in_menu'))
                     ->toggleable()
@@ -246,6 +276,7 @@ class PlatformResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->limit(50),
+                */
                 TextColumn::make('created_at')
                     ->label(__('core::core.created_at'))
                     ->dateTime()
@@ -260,7 +291,7 @@ class PlatformResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // TODO: debug - SQLSTATE[42000]: Syntax error or access violation: 1250 Table 'syncs' from one of the SELECTs cannot be used in global ORDER clause
+            // TODO: not implemented yet
             // PlatformResource\RelationManagers\SyncsRelationManager::class,
         ];
     }

@@ -44,44 +44,20 @@ class SyncResource extends Resource
             return '';
         }
 
-        $status = $get('status');
         $sourceModel = $get('source_model');
         $sourcePlatform = Platform::find($get('source_platform_id'));
         $targetModel = $get('target_model');
         $targetPlatform = Platform::find($get('target_platform_id'));
         $usePlatformRelations = $get('use_platform_relations');
-        $useTransformerClass = $get('use_transformer_class');
-        $filterIds = $get('filter_ids');
-        $fieldMappings = $get('field_mappings');
-        $interval = $get('interval');
 
         if (! $sourcePlatform || ! $targetPlatform) {
             return '';
         }
 
-        $sync_status = $status ? '' : 'Disabled: ';
-        $sync_action = $useTransformerClass ? 'Transform' : 'Sync';
-
-        $title = "{$sync_status}{$sync_action} {$sourcePlatform->domain} ({$sourceModel}) to {$targetPlatform->domain} ({$targetModel})";
-
-        if ($filterIds == 'sync_only_ids') {
-            $title .= ' partially';
-        } elseif ($filterIds == 'ignore_ids') {
-            $title .= ' excluding records';
-        }
+        $title = "{$sourcePlatform->domain} ({$sourceModel}) to {$targetPlatform->domain} ({$targetModel})";
 
         if ($usePlatformRelations) {
             $title .= ' by platform';
-        }
-
-        if ($fieldMappings) {
-            $title .= ' with mapping';
-        }
-
-        if ($interval == 1) {
-            $title .= ' every minute';
-        } else {
-            $title .= " every {$interval} minutes";
         }
 
         return $title;
@@ -268,7 +244,7 @@ class SyncResource extends Resource
                             }
                         }),
 
-                    // TODO: not implemented yet
+                    // TODO: not implemented yet, may be removed
                     /*
                     TextInput::make('interval')
                         ->label(__('core::core.interval'))
@@ -334,6 +310,8 @@ class SyncResource extends Resource
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
                     */
 
+                    // TODO: not implemented yet
+                    /*
                     Toggle::make('sync_all_fields')
                         ->label(__('core::sync.sync_all_fields'))
                         ->default(true)
@@ -342,8 +320,7 @@ class SyncResource extends Resource
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get))
                         ->disabled(fn ($get) => ! $get('models_compatible')),
 
-                    // TODO: not implemented yet
-                    /*
+
                     KeyValue::make('field_mappings')
                         ->label(__('core::sync.field_mappings'))
                         ->rules(['array'])
@@ -361,7 +338,6 @@ class SyncResource extends Resource
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(fn ($state, callable $set, callable $get) => self::updateTitle($set, $get)),
-                    */
 
                     Toggle::make('has_errors')
                         ->label(__('core::core.has_errors'))
@@ -374,18 +350,24 @@ class SyncResource extends Resource
                         ->rules(['max:255'])
                         ->columnSpan(['default' => 12])
                         ->visible(fn ($get) => $get('has_errors')),
+                    */
 
+                    // @Deprecated
+                    // TODO: may be removed
                     Hidden::make('title')
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->default(fn (callable $get) => SyncResource::generateTitle($get))
                         ->reactive(),
 
+                    // TODO: not implemented yet
+                    /*
                     DatePicker::make('last_sync')
                         ->label(__('core::sync.last_sync'))
                         ->rules(['date'])
                         ->disabled()
                         ->columnSpan(['default' => 12]),
+                    */
 
                     Hidden::make('models_compatible')
                         ->default(true),
@@ -414,7 +396,9 @@ class SyncResource extends Resource
             $set('extra_columns', $compatibility['extraColumns']);
 
             if (! $compatibility['compatible']) {
-                $set('sync_all_fields', false);
+
+                // TODO: not implemented yet
+                //$set('sync_all_fields', false);
 
                 $missingColumnsStr = implode(', ', $compatibility['missingColumns']);
                 $extraColumnsStr = implode(', ', $compatibility['extraColumns']);
@@ -453,6 +437,8 @@ class SyncResource extends Resource
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->getStateUsing(fn ($record) => $record->use_platform_relations),
+                // TODO: not implemented yet
+                /*
                 IconColumn::make('filter_ids')
                     ->label(__('core::sync.filter_ids'))
                     ->toggleable()
@@ -474,6 +460,7 @@ class SyncResource extends Resource
                     ->toggleable()
                     ->date()
                     ->since(),
+                */
             ])
             ->filters([
                 SelectFilter::make('source_platform_id')
