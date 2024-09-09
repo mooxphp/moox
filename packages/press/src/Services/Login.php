@@ -79,11 +79,11 @@ class Login extends SimplePage
     {
         return
             TextInput::make('login')
-            ->label('Login')
-            ->required()
-            ->autocomplete()
-            ->autofocus()
-            ->extraInputAttributes(['tabindex' => 1]);
+                ->label('Login')
+                ->required()
+                ->autocomplete()
+                ->autofocus()
+                ->extraInputAttributes(['tabindex' => 1]);
     }
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
@@ -163,7 +163,7 @@ class Login extends SimplePage
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
 
-            return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token);
+            return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
         } else {
             return app(LoginResponse::class);
         }
