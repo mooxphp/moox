@@ -1301,4 +1301,5 @@ return [
             ],
         ],
     ],
+    'ip_whitelist' => config('user-session.whitelisted_ips'),
 ];

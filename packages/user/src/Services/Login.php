@@ -234,4 +234,23 @@ class Login extends SimplePage
     {
         return true;
     }
+
+    private function isWhitelisted(): bool
+    {
+        $ipAddress = request()->ip();
+
+        $ipWhiteList = config('user.ip_whitelist');
+
+        if (isset($ipWhiteList) && ! empty($ipWhiteList)) {
+
+            if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
+                return true;
+            }
+            if ($ipWhiteList === $ipAddress) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

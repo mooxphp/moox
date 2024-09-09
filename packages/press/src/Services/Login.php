@@ -89,22 +89,24 @@ class Login extends SimplePage
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
     {
-        try {
-            $this->rateLimit(5);
-        } catch (TooManyRequestsException $exception) {
-            Notification::make()
-                ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
-                ]))
-                ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => $exception->minutesUntilAvailable,
-                ]) : null)
-                ->danger()
-                ->send();
+        if (! $this->isWhitelisted()) {
+            try {
+                $this->rateLimit(5);
+            } catch (TooManyRequestsException $exception) {
+                Notification::make()
+                    ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
+                        'seconds' => $exception->secondsUntilAvailable,
+                        'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                    ]))
+                    ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
+                        'seconds' => $exception->secondsUntilAvailable,
+                        'minutes' => $exception->minutesUntilAvailable,
+                    ]) : null)
+                    ->danger()
+                    ->send();
 
-            return null;
+                return null;
+            }
         }
 
         $guardName = Filament::getAuthGuard();
@@ -263,5 +265,24 @@ class Login extends SimplePage
     protected function hasFullWidthFormActions(): bool
     {
         return true;
+    }
+
+    private function isWhitelisted(): bool
+    {
+        $ipAddress = request()->ip();
+
+        $ipWhiteList = config('press.ip_whitelist');
+
+        if (isset($ipWhiteList) && ! empty($ipWhiteList)) {
+
+            if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
+                return true;
+            }
+            if ($ipWhiteList === $ipAddress) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
