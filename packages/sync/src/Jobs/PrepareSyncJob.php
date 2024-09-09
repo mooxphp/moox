@@ -52,23 +52,30 @@ class PrepareSyncJob implements ShouldQueue
             ->where('source_platform_id', $this->sourcePlatform->id)
             ->first();
 
-        if (! $sync || ! $sync->use_platform_relations) {
-            // Existing logic for syncing to all platforms
+        if (! $sync) {
+            $this->logDebug('No sync configuration found for this model and platform');
+
             return;
         }
 
         $modelId = $this->getModelId($this->modelData);
-        $relatedPlatforms = $platformRelationService->getPlatformsForModel($this->modelClass, $modelId);
-
         $allPlatforms = Platform::where('id', '!=', $this->sourcePlatform->id)->get();
 
         foreach ($allPlatforms as $platform) {
-            if ($relatedPlatforms->contains($platform->id)) {
-                $this->syncToPlatform($platform, false);
-            } else {
-                $this->syncToPlatform($platform, true);
+            $shouldDelete = false;
+            if ($sync->use_platform_relations) {
+                $relatedPlatforms = $platformRelationService->getPlatformsForModel($this->modelClass, $modelId);
+                $shouldDelete = ! $relatedPlatforms->contains($platform->id);
             }
+
+            $this->sendToWebhook($platform, $shouldDelete);
         }
+    }
+
+    protected function sendToWebhook(Platform $platform, bool $shouldDelete)
+    {
+        // Implement the logic to send data to the target platform's webhook
+        // This should include the model data, shouldDelete flag, and any other necessary information
     }
 
     protected function syncToPlatform(Platform $platform, bool $shouldDelete)

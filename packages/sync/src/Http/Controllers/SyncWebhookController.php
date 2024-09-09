@@ -20,11 +20,6 @@ class SyncWebhookController extends Controller
             $validatedData = $this->validateRequest($request);
             $this->logDebug('Moox Sync: WebhookController validated request', ['validated_data' => $validatedData]);
 
-            $modelId = $this->getModelId($validatedData['model']);
-            if (! $modelId) {
-                throw new \Exception('No valid identifier found for the model');
-            }
-
             $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->firstOrFail();
             $targetPlatform = Platform::where('domain', $request->getHost())->firstOrFail();
 
