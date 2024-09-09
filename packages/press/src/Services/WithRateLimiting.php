@@ -24,9 +24,9 @@ trait WithRateLimiting
 
         $component ??= static::class;
 
-        $identifier = session()->getId() . request()->ip();
+        $identifier = session()->getId().request()->ip();
 
-        return sha1($component . '|' . $method . '|' . $identifier);
+        return sha1($component.'|'.$method.'|'.$identifier);
     }
 
     protected function hitRateLimiter($method = null, $decaySeconds = 60, $component = null)
