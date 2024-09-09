@@ -74,8 +74,48 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function sendToWebhook(Platform $platform, bool $shouldDelete)
     {
-        // Implement the logic to send data to the target platform's webhook
-        // This should include the model data, shouldDelete flag, and any other necessary information
+        $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
+        $syncToken = config('sync.sync_token');
+        $webhookUrl = 'https://'.$platform->domain.$webhookPath;
+
+        $data = [
+            'event_type' => $this->eventType,
+            'model' => $this->modelData,
+            'model_class' => $this->modelClass,
+            'platform' => [
+                'domain' => $this->sourcePlatform->domain,
+            ],
+            'should_delete' => $shouldDelete,
+        ];
+
+        $payload = json_encode($data);
+        $signature = hash_hmac('sha256', $payload, $platform->api_token.$syncToken);
+
+        $this->logDebug('Moox Sync: Preparing to invoke webhook', [
+            'platform' => $platform->name,
+            'webhook_url' => $webhookUrl,
+            'full_data' => $data,
+        ]);
+
+        try {
+            $response = Http::withHeaders([
+                'X-Platform-Token' => $platform->api_token ?? $syncToken,
+                'X-Webhook-Signature' => $signature,
+            ])->post($webhookUrl, $data);
+
+            $this->logDebug('Moox Sync: Webhook invoked', [
+                'platform' => $platform->name,
+                'webhook_url' => $webhookUrl,
+                'response_status' => $response->status(),
+                'response_body' => $response->body(),
+            ]);
+        } catch (\Exception $e) {
+            $this->logDebug('Moox Sync: Webhook invocation error', [
+                'platform' => $platform->name,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
     }
 
     protected function syncToPlatform(Platform $platform, bool $shouldDelete)
