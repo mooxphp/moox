@@ -43,10 +43,12 @@ class PlatformRelationService
             throw new \InvalidArgumentException('Model ID must be provided when passing a class name.');
         }
 
-        return DB::table('model_platform')
+        $platformIds = DB::table('model_platform')
             ->where('model_type', $modelClass)
             ->where('model_id', $modelId)
             ->pluck('platform_id');
+
+        return Platform::whereIn('id', $platformIds)->get();
     }
 
     public function addPlatformToModel($model, Platform $platform)
