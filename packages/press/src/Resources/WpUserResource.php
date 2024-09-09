@@ -272,6 +272,7 @@ class WpUserResource extends Resource
 
                     TextInput::make(config('press.wordpress_prefix').'user_level')
                         ->label(__('core::user.user_level'))
+                        ->readonly()
                         ->default(fn ($state) => self::getUserLevel($state)),
 
                     TextInput::make('dismissed_wp_pointers')
