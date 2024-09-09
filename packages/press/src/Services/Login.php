@@ -2,26 +2,27 @@
 
 namespace Moox\Press\Services;
 
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Forms\Form;
+use Jenssegers\Agent\Agent;
 use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
+use Filament\Pages\SimplePage;
+use Filament\Actions\ActionGroup;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
-use Filament\Pages\Concerns\InteractsWithFormActions;
-use Filament\Pages\SimplePage;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
-use Jenssegers\Agent\Agent;
+use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 
 /**
  * @property Form $form
@@ -79,11 +80,11 @@ class Login extends SimplePage
     {
         return
             TextInput::make('login')
-                ->label('Login')
-                ->required()
-                ->autocomplete()
-                ->autofocus()
-                ->extraInputAttributes(['tabindex' => 1]);
+            ->label('Login')
+            ->required()
+            ->autocomplete()
+            ->autofocus()
+            ->extraInputAttributes(['tabindex' => 1]);
     }
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
@@ -163,7 +164,7 @@ class Login extends SimplePage
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
 
-            return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
+            return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token);
         } else {
             return app(LoginResponse::class);
         }

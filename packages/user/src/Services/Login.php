@@ -2,25 +2,26 @@
 
 namespace Moox\User\Services;
 
-use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use Filament\Actions\ActionGroup;
+use Filament\Forms\Form;
+use Jenssegers\Agent\Agent;
 use Filament\Facades\Filament;
+use Filament\Pages\SimplePage;
+use Filament\Actions\ActionGroup;
+use Illuminate\Routing\Redirector;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
-use Filament\Pages\Concerns\InteractsWithFormActions;
-use Filament\Pages\SimplePage;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
-use Jenssegers\Agent\Agent;
+use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 
 /**
  * @property Form $form
