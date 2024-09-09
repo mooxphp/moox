@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
+use Moox\Sync\Models\Sync;
+use Moox\Sync\Services\PlatformRelationService;
 
 class PrepareSyncJob implements ShouldQueue
 {
@@ -28,6 +30,10 @@ class PrepareSyncJob implements ShouldQueue
 
     protected $syncConfigurations;
 
+    protected $sourcePlatform;
+
+    protected $modelData;
+
     public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $platformId, $syncConfigurations)
     {
         $this->identifierField = $identifierField;
@@ -36,33 +42,45 @@ class PrepareSyncJob implements ShouldQueue
         $this->eventType = $eventType;
         $this->platformId = $platformId;
         $this->syncConfigurations = $syncConfigurations;
+        $this->sourcePlatform = Platform::findOrFail($platformId);
+        $this->modelData = $this->findModel()->toArray();
     }
 
-    public function handle()
+    public function handle(PlatformRelationService $platformRelationService)
     {
-        $model = $this->findModel();
-        $sourcePlatform = Platform::findOrFail($this->platformId);
+        $sync = Sync::where('source_model', $this->modelClass)
+            ->where('source_platform_id', $this->sourcePlatform->id)
+            ->first();
 
-        $this->logDebug('Moox Sync: PrepareSyncJob handling', [
-            'identifier_field' => $this->identifierField,
-            'identifier_value' => $this->identifierValue,
-            'model_class' => $this->modelClass,
-            'event_type' => $this->eventType,
-            'platform_id' => $this->platformId,
-        ]);
+        if (! $sync || ! $sync->use_platform_relations) {
+            // Existing logic for syncing to all platforms
+            return;
+        }
 
-        $syncData = [
-            'event_type' => $this->eventType,
-            'model' => $model ? $this->getFullModelData($model) : [$this->identifierField => $this->identifierValue],
-            'model_class' => $this->modelClass,
-            'platform' => $sourcePlatform->toArray(),
-        ];
+        $modelId = $this->getModelId($this->modelData);
+        $relatedPlatforms = $platformRelationService->getPlatformsForModel($this->modelClass, $modelId);
 
-        $this->logDebug('Moox Sync: Prepared sync data', [
-            'sync_data' => $syncData,
-        ]);
+        $allPlatforms = Platform::where('id', '!=', $this->sourcePlatform->id)->get();
 
-        $this->invokeWebhooks($syncData);
+        foreach ($allPlatforms as $platform) {
+            if ($relatedPlatforms->contains($platform->id)) {
+                $this->syncToPlatform($platform, false);
+            } else {
+                $this->syncToPlatform($platform, true);
+            }
+        }
+    }
+
+    protected function syncToPlatform(Platform $platform, bool $shouldDelete)
+    {
+        dispatch(new SyncJob(
+            $this->modelClass,
+            $this->modelData,
+            $this->eventType,
+            $this->sourcePlatform,
+            $platform,
+            $shouldDelete
+        ));
     }
 
     protected function findModel()
@@ -153,5 +171,18 @@ class PrepareSyncJob implements ShouldQueue
                 ]);
             }
         }
+    }
+
+    protected function getModelId($modelData)
+    {
+        $identifierFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
+
+        foreach ($identifierFields as $field) {
+            if (isset($modelData[$field])) {
+                return $modelData[$field];
+            }
+        }
+
+        return $modelData[$this->identifierField] ?? null;
     }
 }

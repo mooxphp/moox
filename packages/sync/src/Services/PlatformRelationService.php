@@ -30,17 +30,12 @@ class PlatformRelationService
         DB::table('model_platform')->insert($insertData);
     }
 
-    public function getPlatformsForModel($model)
+    public function getPlatformsForModel($modelClass, $modelId)
     {
-        $modelType = get_class($model);
-        $modelId = $model->getKey();
-
-        $platformIds = DB::table('model_platform')
-            ->where('model_type', $modelType)
+        return DB::table('model_platform')
+            ->where('model_type', $modelClass)
             ->where('model_id', $modelId)
             ->pluck('platform_id');
-
-        return Platform::whereIn('id', $platformIds)->get();
     }
 
     public function addPlatformToModel($model, Platform $platform)

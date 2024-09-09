@@ -25,38 +25,56 @@ class SyncJob implements ShouldQueue
 
     protected $sourcePlatform;
 
-    public function __construct($modelClass, $modelData, $eventType, Platform $sourcePlatform)
+    protected $targetPlatform;
+
+    protected $shouldDelete;
+
+    public function __construct($modelClass, $modelData, $eventType, Platform $sourcePlatform, Platform $targetPlatform, bool $shouldDelete)
     {
         $this->modelClass = $modelClass;
         $this->modelData = $modelData;
         $this->eventType = $eventType;
         $this->sourcePlatform = $sourcePlatform;
+        $this->targetPlatform = $targetPlatform;
+        $this->shouldDelete = $shouldDelete;
     }
 
     public function handle()
     {
         try {
-            $modelId = $this->getModelId();
-            $this->logInfo('Moox Sync: Syncing model', [
-                'model_class' => $this->modelClass,
-                'model_id_field' => $modelId['field'],
-                'model_id_value' => $modelId['value'],
-                'event_type' => $this->eventType,
-            ]);
-
-            if ($this->modelClass === Platform::class) {
-                $this->syncPlatform();
+            if ($this->shouldDelete) {
+                $this->deleteModel();
             } else {
-                $this->syncModel();
+                // Existing sync logic
+                if ($this->modelClass === Platform::class) {
+                    $this->syncPlatform();
+                } else {
+                    $this->syncModel();
+                }
             }
         } catch (\Exception $e) {
             Log::error('Moox Sync: Error syncing model', [
                 'model_class' => $this->modelClass,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
+                'source_platform' => $this->sourcePlatform->id,
+                'target_platform' => $this->targetPlatform->id,
+                'should_delete' => $this->shouldDelete,
             ]);
             throw $e;
         }
+    }
+
+    protected function deleteModel()
+    {
+        $modelId = $this->getModelId();
+        $this->logInfo('Moox Sync: Deleting model', [
+            'model_class' => $this->modelClass,
+            'model_id_field' => $modelId['field'],
+            'model_id_value' => $modelId['value'],
+        ]);
+
+        DB::table((new $this->modelClass)->getTable())->where($modelId['field'], $modelId['value'])->delete();
     }
 
     protected function syncPlatform()

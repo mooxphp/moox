@@ -196,11 +196,12 @@ class SyncService
 
     protected function deleteModel($modelClass, array $modelData, Platform $targetPlatform)
     {
-        $model = $modelClass::find($modelData['id']);
+        $modelId = $this->getModelId($modelData);
+        $model = $modelClass::where($this->getModelId($modelData), $modelId)->first();
 
         if ($model) {
             $model->delete();
-            $this->logDebug('Model deleted', [
+            $this->logDebug('Model deleted on target platform', [
                 'modelClass' => $modelClass,
                 'modelId' => $modelData['id'],
                 'targetPlatform' => $targetPlatform->id,

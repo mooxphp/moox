@@ -26,12 +26,15 @@ class SyncWebhookController extends Controller
             }
 
             $sourcePlatform = Platform::where('domain', $validatedData['platform']['domain'])->firstOrFail();
+            $targetPlatform = Platform::where('domain', $request->getHost())->firstOrFail();
 
             SyncJob::dispatch(
                 $validatedData['model_class'],
                 $validatedData['model'],
                 $validatedData['event_type'],
-                $sourcePlatform
+                $sourcePlatform,
+                $targetPlatform,
+                $validatedData['should_delete']
             );
 
             return response()->json(['status' => 'success', 'message' => 'Sync job dispatched']);
@@ -55,6 +58,7 @@ class SyncWebhookController extends Controller
             'model_class' => 'required|string',
             'platform' => 'required|array',
             'platform.domain' => 'required|string',
+            'should_delete' => 'required|boolean',
         ]);
     }
 
