@@ -9,6 +9,7 @@ use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
+use Filament\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Notifications\Notification;
@@ -88,18 +89,24 @@ class Login extends SimplePage
 
     public function authenticate(): Redirector|RedirectResponse|LoginResponse|null
     {
-        try {
-            $this->rateLimit(5);
-        } catch (TooManyRequestsException $exception) {
-            Notification::make()
-                ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
-                ]))
-                ->danger()
-                ->send();
+        if (! $this->isWhitelisted()) {
+            try {
+                $this->rateLimit(5);
+            } catch (TooManyRequestsException $exception) {
+                Notification::make()
+                    ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
+                        'seconds' => $exception->secondsUntilAvailable,
+                        'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                    ]))
+                    ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
+                        'seconds' => $exception->secondsUntilAvailable,
+                        'minutes' => $exception->minutesUntilAvailable,
+                    ]) : null)
+                    ->danger()
+                    ->send();
 
-            return null;
+                return null;
+            }
         }
 
         $guardName = Filament::getAuthGuard();
