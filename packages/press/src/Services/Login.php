@@ -79,7 +79,7 @@ class Login extends SimplePage
     protected function getLoginFormComponent(): Component
     {
         return
-        TextInput::make('login')
+            TextInput::make('login')
             ->label('Login')
             ->required()
             ->autocomplete()
@@ -92,13 +92,19 @@ class Login extends SimplePage
         try {
             $this->rateLimit(5);
         } catch (TooManyRequestsException $exception) {
-            Notification::make()
-                ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
-                ]))
+            // Notification::make()
+            //     ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
+            //         'seconds' => $exception->secondsUntilAvailable,
+            //         'minutes' => ceil($exception->secondsUntilAvailable / 60),
+            //     ]))
+            //     ->danger()
+            //     ->send();
+            $this->getRateLimitedNotification($exception)?->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
+                'seconds' => $exception->secondsUntilAvailable,
+                'minutes' => ceil($exception->secondsUntilAvailable / 60),
+            ]))
                 ->danger()
-                ->send();
+                ->send();;
 
             return null;
         }
@@ -152,13 +158,15 @@ class Login extends SimplePage
             $this->userDeviceTracker->addUserDevice(request(), $user, app(Agent::class));
         }
 
-        if (config('press.wpModel') && $user instanceof (config('press.wpModel'))
-             && config('press.auth_wordpress') === true) {
+        if (
+            config('press.wpModel') && $user instanceof (config('press.wpModel'))
+            && config('press.auth_wordpress') === true
+        ) {
             $payload = base64_encode($user->ID);
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
 
-            return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
+            return redirect('https://' . $_SERVER['SERVER_NAME'] . config('press.wordpress_slug') . '/wp-login.php?auth_token=' . $token);
         } else {
             return app(LoginResponse::class);
         }
