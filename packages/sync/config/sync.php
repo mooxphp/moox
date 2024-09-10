@@ -400,4 +400,134 @@ return [
 
     'sync_token' => env('SYNC_TOKEN', 'Y0U_N3V3R_GU355_TH15_S3CR3T_K3Y'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Enable File Sync
+    |--------------------------------------------------------------------------
+    |
+    | Enables the file sync feature, which allows you to sync files between
+    | platforms, that can be auto-detected in your models based on
+    | configurable rules or by using a custom resolver.
+    |
+    */
+
+    'file_sync' => [
+        'enabled' => env('FILE_SYNC_ENABLED', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Allowed Extensions
+    |--------------------------------------------------------------------------
+    |
+    | The file sync allowed extensions are used to check if the file extension
+    | is allowed to be synced. You may add more extensions as needed.
+    |
+    */
+
+    'file_sync_allowed_extensions' => [
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+        'svg',
+        'webp',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Mode
+    |--------------------------------------------------------------------------
+    |
+    | The file sync mode is used to determine the underlying
+    | file sync method. Currently only http is supported.
+    | Rsync is planned for future implementation.
+    |
+    */
+
+    'file_sync_mode' => 'http', // TODO: rsync not implemented yet
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Size
+    |--------------------------------------------------------------------------
+    |
+    | The file sync max size is used to limit the size of the file
+    | that can be synced over http or rsync (planned).
+    | The chunk size is only relevant for http.
+    |
+    */
+
+    'file_sync_max_size_http' => 2 * 1024 * 1024, // 5 MB
+    'file_sync_max_size_rsync' => 50 * 1024 * 1024, // 50 MB, not implemented yet
+    'file_sync_chunk_size_http' => 1 * 1024 * 1024, // 1 MB
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Files Count
+    |--------------------------------------------------------------------------
+    |
+    | The file sync files count is used to limit the number
+    | of files that can be synced over http or
+    | rsync (planned) per sync record.
+    |
+    */
+
+    'file_sync_files_count_http' => 10,
+    'file_sync_files_count_rsync' => 100, // TODO: rsync not implemented yet
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Temp Directory
+    |--------------------------------------------------------------------------
+    |
+    | The file sync temp directory is used to store the file chunks
+    | during transfer. It should be writable by the webserver
+    | user, not tracked by git and maybe not backed up.
+    |
+    */
+
+    'file_sync_temp_directory' => 'temp/file_sync',
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Fieldsearch
+    |--------------------------------------------------------------------------
+    |
+    | The file sync fields are used to detect the file sync for a model.
+    | If any of these words are found within the column name,
+    | the content will be checked for being a file path.
+    |
+    */
+
+    'file_sync_fieldsearch' => [
+        'file',
+        'image',
+        'media',
+        'attachment',
+        'avatar',
+        'logo',
+        'thumbnail',
+        'cover',
+        'banner',
+        'picture',
+        'image',
+        'photo',
+        'picture',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Sync Resolver
+    |--------------------------------------------------------------------------
+    |
+    | The file sync resolver is used to resolve the file sync for a model.
+    | You can activate Moox Press resolver here or create your own.
+    |
+    */
+
+    'file_sync_resolver' => [
+        // \Moox\Press\Models\WpUser::class => \Moox\Press\Resolver\WpUserFileSyncResolver::class,
+    ],
+
 ];
