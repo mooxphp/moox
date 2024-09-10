@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Sync refers to the package name Moox Sync, and data transfer between platforms
     'sync' => 'Sync',
@@ -34,13 +33,13 @@ return [
     // If exists refers to the action to take if the record already exists
     'if_exists' => 'If exists',
     // Filter ids refers to the ids to filter when syncing
-    'filter_ids' => 'Filter ids',
+    'filter_ids' => 'ID de filtros',
     // Ignore ids refers to the ids to ignore when syncing
-    'ignore_ids' => 'Ignore ids',
+    'ignore_ids' => 'Ignorar identificadores',
     // Sync all records refers to syncing all records
     'sync_all_records' => 'Sync all Records',
     // Sync only ids refers to syncing only the ids
-    'sync_only_ids' => 'Sync only ids',
+    'sync_only_ids' => 'Sincronizar solo ID',
     // Sync all fields refers to syncing all fields
     'sync_all_fields' => 'Sync all Fields',
     // Sync only fields defined in the field mappings
@@ -65,4 +64,9 @@ return [
     'locked' => 'Locked',
     // Lock Reason refers to the reason the platform or model is locked
     'lock_reason' => 'Lock Reason',
+    'model_compatibility_warning' => 'Advertencia de compatibilidad de modelos',
+    'models_are_not_fully_compatible' => 'Los modelos seleccionados no son totalmente compatibles',
+    'missing_columns' => 'Columnas que faltan',
+    'extra_columns' => 'Columnas adicionales',
+    'please_map_fields_manually' => 'Por favor, asigne los campos manualmente',
 ];
