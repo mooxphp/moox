@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Moox\Sync\Http\Controllers\SyncResponseController;
 use Moox\Sync\Http\Controllers\SyncWebhookController;
 
 $models = config('sync.entities');
@@ -27,3 +28,7 @@ Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
 $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
 Route::post($webhookPath, [SyncWebhookController::class, 'handle'])
     ->middleware('webhook.auth');
+
+$responsePath = config('sync.sync_response_url', '/sync-response');
+Route::post($responsePath, [SyncResponseController::class, 'sync'])
+    ->middleware('sync.response.auth');

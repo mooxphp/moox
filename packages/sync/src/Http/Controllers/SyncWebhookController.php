@@ -4,6 +4,8 @@ namespace Moox\Sync\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Jobs\FileSyncJob;
 use Moox\Sync\Jobs\SyncJob;
@@ -33,9 +35,13 @@ class SyncWebhookController extends Controller
                 $validatedData['should_delete']
             );
 
-            $this->handleFileSyncJobs($validatedData, $sourcePlatform, $targetPlatform);
+            $missingFiles = $this->checkForMissingFiles($validatedData);
 
-            return response()->json(['status' => 'success', 'message' => 'Sync jobs dispatched']);
+            if (! empty($missingFiles)) {
+                $this->requestMissingFiles($validatedData, $missingFiles, $sourcePlatform);
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'Sync job dispatched']);
         } catch (\Exception $e) {
             $this->logDebug('SyncWebhookController encountered an error', [
                 'error' => $e->getMessage(),
@@ -58,6 +64,42 @@ class SyncWebhookController extends Controller
             'platform.domain' => 'required|string',
             'should_delete' => 'required|boolean',
             '_file_sync' => 'sometimes|array',
+        ]);
+    }
+
+    protected function checkForMissingFiles(array $data): array
+    {
+        $missingFiles = [];
+        if (isset($data['_file_sync']) && is_array($data['_file_sync'])) {
+            foreach ($data['_file_sync'] as $field => $fileInfo) {
+                if (! $this->fileExists($fileInfo['path'])) {
+                    $missingFiles[$field] = $fileInfo;
+                }
+            }
+        }
+
+        return $missingFiles;
+    }
+
+    protected function fileExists(string $path): bool
+    {
+        // Implement logic to check if the file exists on the target platform
+        // This might involve checking the local filesystem or a remote storage service
+        return Storage::exists($path);
+    }
+
+    protected function requestMissingFiles(array $data, array $missingFiles, Platform $sourcePlatform)
+    {
+        $responsePath = config('sync.sync_response_url', '/sync-response');
+        $url = "https://{$sourcePlatform->domain}{$responsePath}";
+
+        Http::post($url, [
+            'model_class' => $data['model_class'],
+            'model_id' => $data['model']['id'],
+            'sync_status' => 'success',
+            'message' => 'Sync successful, but some files are missing',
+            'missing_files' => $missingFiles,
+            'target_platform_id' => Platform::where('domain', request()->getHost())->first()->id,
         ]);
     }
 
