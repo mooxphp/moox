@@ -59,26 +59,37 @@ class EditWpUser extends EditRecord
             $user->save();
 
             $metaFields = config('press.default_user_meta', []);
+            $userAvatarMetaKey = config('press.user_avatar_meta');
+
+            if ($userAvatarMetaKey) {
+                unset($metaFields[$userAvatarMetaKey]);
+            }
+
             foreach ($metaFields as $metaKey => $defaultValue) {
                 if (isset($this->data[$metaKey])) {
                     $user->addOrUpdateMeta($metaKey, $this->data[$metaKey]);
                 }
             }
+
+            $this->handleAvatarUpload($user, $userAvatarMetaKey);
         } else {
             Log::error('User record is not an instance of WpUser in EditWpUser::afterSave');
         }
 
+        Event::dispatch('eloquent.updated: '.get_class($this->record), $this->record);
+    }
+
+    protected function handleAvatarUpload(WpUser $user, ?string $userAvatarMetaKey): void
+    {
         $temporaryFilePath = $this->data['temporary_file_path'] ?? null;
         $originalName = $this->data['original_name'] ?? null;
-        $attachmentId = null;
 
-        if ($temporaryFilePath) {
-
+        if ($temporaryFilePath && $userAvatarMetaKey) {
             $mimeTypes = new MimeTypes;
             $mimeType = $mimeTypes->guessMimeType(storage_path('app/'.$temporaryFilePath));
 
             if (! in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])) {
-                throw new \Exception('The file must be an image of type: jpeg, png, gif, webp. or svg.');
+                throw new \Exception('The file must be an image of type: jpeg, png, gif, webp, or svg.');
             }
 
             $currentYear = now()->year;
@@ -92,22 +103,13 @@ class EditWpUser extends EditRecord
             $disk = Storage::disk('press');
             $newPath = "{$relativeDirectory}/{$filename}";
 
+            $disk->put($newPath, Storage::get($temporaryFilePath));
+
             $fileSize = $disk->size($newPath);
-            $imageSize = [];
-            if ($mimeType === 'image/svg+xml') {
-                $svgContent = file_get_contents($disk->path($newPath));
-
-                preg_match('/<svg[^>]+(width|height)="([^"]*)"/i', $svgContent, $width);
-                preg_match('/<svg[^>]+(width|height)="([^"]*)"/i', $svgContent, $height);
-
-                $imageSize[0] = isset($width[2]) ? (float) $width[2] : 0;
-                $imageSize[1] = isset($height[2]) ? (float) $height[2] : 0;
-            } else {
-                $imageSize = getimagesize($disk->path($newPath));
-            }
+            $imageSize = $this->getImageSize($disk->path($newPath), $mimeType);
 
             $imageMeta = [
-                'file' => "{$relativeDirectory}/{$filename}",
+                'file' => $newPath,
                 'width' => $imageSize[0],
                 'height' => $imageSize[1],
                 'filesize' => $fileSize,
@@ -139,15 +141,31 @@ class EditWpUser extends EditRecord
             ]);
 
             WpPostMeta::insert([
-                ['post_id' => $postId, 'meta_key' => '_wp_attached_file', 'meta_value' => $currentYear.'/'.$currentMonth.'/'.$filename],
+                ['post_id' => $postId, 'meta_key' => '_wp_attached_file', 'meta_value' => $newPath],
                 ['post_id' => $postId, 'meta_key' => '_wp_attachment_metadata', 'meta_value' => serialize($imageMeta)],
             ]);
 
-            $attachmentId = $postId;
+            $user->addOrUpdateMeta($userAvatarMetaKey, $postId);
 
             Storage::delete($temporaryFilePath);
+        } elseif ($userAvatarMetaKey && empty($this->data['image_url'])) {
+            $user->addOrUpdateMeta($userAvatarMetaKey, '');
+        }
+    }
+
+    protected function getImageSize(string $path, string $mimeType): array
+    {
+        if ($mimeType === 'image/svg+xml') {
+            $svgContent = file_get_contents($path);
+            preg_match('/<svg[^>]+(width|height)="([^"]*)"/i', $svgContent, $width);
+            preg_match('/<svg[^>]+(width|height)="([^"]*)"/i', $svgContent, $height);
+
+            return [
+                isset($width[2]) ? (float) $width[2] : 0,
+                isset($height[2]) ? (float) $height[2] : 0,
+            ];
         }
 
-        Event::dispatch('eloquent.updated: '.get_class($this->record), $this->record);
+        return getimagesize($path);
     }
 }

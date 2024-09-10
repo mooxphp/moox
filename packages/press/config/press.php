@@ -1171,14 +1171,24 @@ return [
         env('WP_PREFIX', 'wp_').'user_level' => '0',
         'dismissed_wp_pointers' => '',
         env('WP_PREFIX', 'wp_').'dashboard_quick_press_last_post_id' => '0',
-        'mm_sua_attachment_id' => '',
         'remember_token' => '',
-
-        // locale
-        // comment_shortcuts
-        // syntax_highlighting
-
+        'mm_sua_attachment_id' => '',
+        // locale currently not used
+        // syntax_highlighting currently not used
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Avatar Attachment ID meta key
+    |--------------------------------------------------------------------------
+    |
+    | This is the user meta key for the WordPress user avatar attachment ID.
+    | It is used to store the attachment ID of the user avatar.
+    | Must contain the ID of the Post of type attachment.
+    |
+    */
+
+    'user_avatar_meta' => 'mm_sua_attachment_id',
 
     /*
     |--------------------------------------------------------------------------
@@ -1209,20 +1219,6 @@ return [
         '_wp_post_type' => '',
         '_wp_old_date' => '',
         '_wp_old_status' => '',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | User Avatar Attachment ID meta key
-    |--------------------------------------------------------------------------
-    |
-    | This is the user meta key for the WordPress user avatar attachment ID.
-    | It is used to store the attachment ID of the user avatar.
-    |
-    */
-
-    'avatar_meta' => [
-        'meta_key' => 'mm_sua_attachment_id',
     ],
 
     /*
