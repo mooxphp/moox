@@ -12,14 +12,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
-use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property string $user_email
  */
 class WpUser extends Authenticatable implements FilamentUser
 {
-    use HasFactory, HasRoles, Mutable, Notifiable;
+    use HasFactory, Mutable, Notifiable;
 
     protected $fillable = [
         'user_login',
