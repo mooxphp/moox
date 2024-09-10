@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Jobs\FileSyncJob;
