@@ -34,16 +34,19 @@ class PrepareSyncJob implements ShouldQueue
 
     protected $modelData;
 
-    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $platformId, $syncConfigurations)
+    protected $fileFields;
+
+    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $sourcePlatformId, $relevantSyncs, $fileFields = [])
     {
         $this->identifierField = $identifierField;
         $this->identifierValue = $identifierValue;
         $this->modelClass = $modelClass;
         $this->eventType = $eventType;
-        $this->platformId = $platformId;
-        $this->syncConfigurations = $syncConfigurations;
-        $this->sourcePlatform = Platform::findOrFail($platformId);
+        $this->platformId = $sourcePlatformId;
+        $this->syncConfigurations = $relevantSyncs;
+        $this->sourcePlatform = Platform::findOrFail($sourcePlatformId);
         $this->modelData = $this->findModel()->toArray();
+        $this->fileFields = $fileFields;
     }
 
     public function handle(PlatformRelationService $platformRelationService)

@@ -8,11 +8,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
 
 class FileSyncJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
 
     protected $modelClass;
 
@@ -38,15 +40,32 @@ class FileSyncJob implements ShouldQueue
 
     public function handle()
     {
-        if (! $this->validateFile()) {
-            return;
-        }
+        try {
+            if (! $this->validateFile()) {
+                $this->logDebug('File validation failed', [
+                    'model_class' => $this->modelClass,
+                    'model_id' => $this->modelId,
+                    'field' => $this->field,
+                ]);
 
-        if (! $this->shouldSyncFile()) {
-            return;
-        }
+                return;
+            }
 
-        $this->syncFile();
+            if (! $this->shouldSyncFile()) {
+                return;
+            }
+
+            $this->syncFile();
+
+        } catch (\Exception $e) {
+            Log::error('File sync failed', [
+                'model_class' => $this->modelClass,
+                'model_id' => $this->modelId,
+                'field' => $this->field,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     protected function validateFile(): bool

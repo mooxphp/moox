@@ -35,10 +35,8 @@ class SyncWebhookController extends Controller
                 $validatedData['should_delete']
             );
 
-            $missingFiles = $this->checkForMissingFiles($validatedData);
-
-            if (! empty($missingFiles)) {
-                $this->requestMissingFiles($validatedData, $missingFiles, $sourcePlatform);
+            if (isset($validatedData['_file_sync']) && is_array($validatedData['_file_sync'])) {
+                $this->handleFileSyncJobs($validatedData, $sourcePlatform, $targetPlatform);
             }
 
             return response()->json(['status' => 'success', 'message' => 'Sync job dispatched']);

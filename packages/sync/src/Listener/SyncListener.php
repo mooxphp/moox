@@ -126,13 +126,25 @@ class SyncListener
                 ];
             });
 
+        $fileFields = [];
+        foreach ($model->getAttributes() as $field => $value) {
+            if ($this->isFileField($model, $field)) {
+                $fileFields[$field] = [
+                    'path' => $value,
+                    'size' => @filesize($value),
+                    'hash' => @md5_file($value),
+                ];
+            }
+        }
+
         PrepareSyncJob::dispatch(
             $localIdentifier['field'],
             $localIdentifier['value'],
             get_class($model),
             $eventType,
             $this->currentPlatform->id,
-            $relevantSyncs
+            $relevantSyncs,
+            $fileFields
         )->delay(now()->addSeconds($delay));
     }
 
@@ -149,5 +161,24 @@ class SyncListener
         $this->logDebug('No local identifier found for model', ['model' => get_class($model)]);
 
         return null;
+    }
+
+    protected function isFileField($model, $field)
+    {
+        $fileFieldSearch = config('sync.file_sync_fieldsearch', []);
+        foreach ($fileFieldSearch as $search) {
+            if (strpos(strtolower($field), strtolower($search)) !== false) {
+                return true;
+            }
+        }
+
+        $resolverClass = config('sync.file_sync_resolver.'.get_class($model));
+        if ($resolverClass && class_exists($resolverClass)) {
+            $resolver = new $resolverClass($model);
+
+            return $resolver->isFileField($field);
+        }
+
+        return false;
     }
 }

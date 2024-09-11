@@ -535,7 +535,6 @@ return [
     */
 
     'file_sync_resolver' => [
-        \Moox\Press\Models\WpUser::class => \Moox\Press\Resolver\WpUserFileSyncResolver::class,
+        \Moox\Press\Models\WpUser::class => \Moox\Press\Resolver\WpUserFileResolver::class,
     ],
-
 ];
