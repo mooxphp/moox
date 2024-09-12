@@ -5,10 +5,11 @@ namespace Moox\Builder\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Traits\HasSlug;
 
 class Item extends Model
 {
-    use SoftDeletes;
+    use HasSlug, SoftDeletes;
 
     protected $table = 'items';
 

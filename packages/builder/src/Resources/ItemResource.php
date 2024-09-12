@@ -8,7 +8,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -24,6 +23,7 @@ use Moox\Builder\Resources\ItemResource\Pages\EditPage;
 use Moox\Builder\Resources\ItemResource\Pages\ListPage;
 use Moox\Builder\Resources\ItemResource\Pages\ViewPage;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
+use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class ItemResource extends Resource
 {
@@ -40,19 +40,20 @@ class ItemResource extends Resource
 
     public static function form(Form $form): Form
     {
-        static::initAuthorModel();
-
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
+                    ...TitleWithSlugInput::make('title')
+                        ->titleLabel(__('core::core.title'))
+                        ->slugLabel(__('core::core.slug'))
+                        ->showSlugInput(fn ($record) => ! $record ||
+                            (config('builder.allow_slug_change_after_saved') || ! $record->exists) &&
+                            (config('builder.allow_slug_change_after_publish') || ! $record->published_at)
+                        )
+                        ->slugPrefix(url('/'))
+                        ->components(),
                     DateTimePicker::make('publish_at')
                         ->label(__('core::core.publish_at')),
-                    TextInput::make('title')
-                        ->label(__('core::core.title'))
-                        ->required(),
-                    TextInput::make('slug')
-                        ->label(__('core::core.slug'))
-                        ->required(),
                     FileUpload::make('featured_image_url')
                         ->label(__('builder::translations.featured_image_url')),
                     Textarea::make('content')
