@@ -12,11 +12,14 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreatePage;
 use Moox\Builder\Resources\ItemResource\Pages\EditPage;
@@ -29,7 +32,9 @@ class ItemResource extends Resource
 {
     protected static ?string $model = Item::class;
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    protected static ?string $currentTab = null;
+
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->withoutGlobalScopes();
     }
@@ -96,7 +101,7 @@ class ItemResource extends Resource
 
     public static function table(Table $table): Table
     {
-        static::initAuthorModel();
+        $currentTab = static::getCurrentTab();
 
         return $table
             ->columns([
@@ -157,7 +162,16 @@ class ItemResource extends Resource
                 EditAction::make(),
             ])
             ->bulkActions([
-                DeleteBulkAction::make(),
+                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
+                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
+
+                    return $isHidden;
+                }),
+                RestoreBulkAction::make()->visible(function () use ($currentTab) {
+                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
+
+                    return $isVisible;
+                }),
             ])
             ->filters([
                 SelectFilter::make('type')
@@ -245,5 +259,33 @@ class ItemResource extends Resource
     protected static function shouldShowAuthorField(): bool
     {
         return static::$authorModel && class_exists(static::$authorModel);
+    }
+
+    public static function getCurrentTab(): ?string
+    {
+        if (static::$currentTab === null) {
+            static::$currentTab = request()->query('tab', '');
+        }
+
+        return static::$currentTab ?: null;
+    }
+
+    public static function getTableQuery(?string $currentTab = null): Builder
+    {
+        $query = parent::getEloquentQuery()->withoutGlobalScopes();
+
+        if ($currentTab === 'trash' || $currentTab === 'deleted') {
+            $model = static::getModel();
+            if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
+                $query->whereNotNull($model::make()->getQualifiedDeletedAtColumn());
+            }
+        }
+
+        return $query;
+    }
+
+    public static function setCurrentTab(?string $tab): void
+    {
+        static::$currentTab = $tab;
     }
 }
