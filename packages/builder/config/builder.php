@@ -56,7 +56,76 @@ return [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
-                    'query' => [],
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'published' => [
+                    'label' => 'trans//core::core.published',
+                    'icon' => 'gmdi-check-circle',
+                    'query' => [
+                        [
+                            'field' => 'publish_at',
+                            'operator' => '<=',
+                            'value' => function () {
+                                return now();
+                            },
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'scheduled' => [
+                    'label' => 'trans//core::core.scheduled',
+                    'icon' => 'gmdi-schedule',
+                    'query' => [
+                        [
+                            'field' => 'publish_at',
+                            'operator' => '>',
+                            'value' => function () {
+                                return now();
+                            },
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'draft' => [
+                    'label' => 'trans//core::core.draft',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'publish_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -106,10 +175,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Author Model
+    |--------------------------------------------------------------------------
+    |
+    | This sets the user model that can be used as author. It should be an
+    | authenticatable model and support the morph relationship.
+    | It should have fields similar to Moox User or WpUser.
+    |
+    */
+
+    'author_model' => \App\Models\User::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Allow Slug Change - WIP
     |--------------------------------------------------------------------------
     |
-    | Work in progress.
+    | // TODO: Work in progress.
     |
     */
 

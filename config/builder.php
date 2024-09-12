@@ -70,7 +70,7 @@ return [
                     'query' => [
                         [
                             'field' => 'publish_at',
-                            'operator' => '<',
+                            'operator' => '<=',
                             'value' => function () {
                                 return now();
                             },
@@ -88,7 +88,7 @@ return [
                     'query' => [
                         [
                             'field' => 'publish_at',
-                            'operator' => '>=',
+                            'operator' => '>',
                             'value' => function () {
                                 return now();
                             },
@@ -185,5 +185,17 @@ return [
     */
 
     'author_model' => \Moox\User\Models\User::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Slug Change - WIP
+    |--------------------------------------------------------------------------
+    |
+    | // TODO: Work in progress.
+    |
+    */
+
+    'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
+    'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 
 ];

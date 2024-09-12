@@ -40,41 +40,57 @@ class ItemResource extends Resource
 
     public static function form(Form $form): Form
     {
+        static::initAuthorModel();
+
         return $form->schema([
-            Section::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    ...TitleWithSlugInput::make('title')
-                        ->titleLabel(__('core::core.title'))
-                        ->slugLabel(__('core::core.slug'))
-                        ->showSlugInput(fn ($record) => ! $record ||
-                            (config('builder.allow_slug_change_after_saved') || ! $record->exists) &&
-                            (config('builder.allow_slug_change_after_publish') || ! $record->published_at)
-                        )
-                        ->slugPrefix(url('/'))
-                        ->components(),
-                    DateTimePicker::make('publish_at')
-                        ->label(__('core::core.publish_at')),
-                    FileUpload::make('featured_image_url')
-                        ->label(__('builder::translations.featured_image_url')),
-                    Textarea::make('content')
-                        ->label(__('core::core.content'))
-                        ->rows(10)
-                        ->columnSpanFull(),
-                    FileUpload::make('gallery_image_urls')
-                        ->multiple()
-                        ->label(__('builder::translations.gallery_image_urls')),
-                    Select::make('type')
-                        ->options(static::getModel()::getTypeOptions())
-                        ->default('post')
-                        ->required(),
-                    Select::make('author_id')
-                        ->label(__('core::core.author'))
-                        ->options(fn () => static::getAuthorOptions())
-                        ->required()
-                        ->searchable()
-                        ->visible(fn () => static::shouldShowAuthorField()),
-                ]),
-            ]),
+            Grid::make(2)
+                ->schema([
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    ...TitleWithSlugInput::make('title')
+                                        ->titleLabel(__('core::core.title'))
+                                        ->slugLabel(__('core::core.slug'))
+                                        ->showSlugInput(fn ($record) => ! $record ||
+                                            (config('builder.allow_slug_change_after_saved') || ! $record->exists) &&
+                                            (config('builder.allow_slug_change_after_publish') || ! $record->published_at)
+                                        )
+                                        ->slugPrefix(url('/').'/'.config('builder.url_slug', 'items/'))
+                                        ->components(),
+                                    FileUpload::make('featured_image_url')
+                                        ->label(__('builder::translations.featured_image_url')),
+                                    Textarea::make('content')
+                                        ->label(__('core::core.content'))
+                                        ->rows(10),
+                                    FileUpload::make('gallery_image_urls')
+                                        ->multiple()
+                                        ->label(__('builder::translations.gallery_image_urls')),
+                                ]),
+                        ])
+                        ->columnSpan(['lg' => 2]),
+
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    Select::make('type')
+                                        ->options(static::getModel()::getTypeOptions())
+                                        ->default('post')
+                                        ->required(),
+                                    DateTimePicker::make('publish_at')
+                                        ->label(__('core::core.publish_at')),
+                                    Select::make('author_id')
+                                        ->label(__('core::core.author'))
+                                        ->options(fn () => static::getAuthorOptions())
+                                        ->required()
+                                        ->searchable()
+                                        ->visible(fn () => static::shouldShowAuthorField()),
+                                ]),
+                        ])
+                        ->columnSpan(['lg' => 1]),
+                ])
+                ->columns(['lg' => 3]),
         ]);
     }
 
