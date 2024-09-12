@@ -29,7 +29,7 @@ class ListPage extends ListRecords
 
     public function getTitle(): string
     {
-        return __('builder::translations.title');
+        return __('core::builder.builder');
     }
 
     protected function getHeaderActions(): array

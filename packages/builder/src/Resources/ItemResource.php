@@ -2,66 +2,150 @@
 
 namespace Moox\Builder\Resources;
 
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Builder\Models\Item;
+use Moox\Builder\Resources\ItemResource\Pages\CreatePage;
+use Moox\Builder\Resources\ItemResource\Pages\EditPage;
 use Moox\Builder\Resources\ItemResource\Pages\ListPage;
+use Moox\Builder\Resources\ItemResource\Pages\ViewPage;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 
 class ItemResource extends Resource
 {
     protected static ?string $model = Item::class;
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->withoutGlobalScopes();
+    }
+
     protected static ?string $navigationIcon = 'gmdi-engineering';
+
+    protected static ?string $authorModel = null;
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                TextInput::make('title')
-                    ->label(__('core::core.title'))
-                    ->required(),
-                TextInput::make('slug')
-                    ->label(__('core::core.slug'))
-                    ->required(),
-                TextInput::make('content')
-                    ->label(__('core::core.content')),
-                Item::getStatusFormField(),
-                Item::getTypeFormField(),
-            ]);
+        static::initAuthorModel();
+
+        return $form->schema([
+            Section::make()->schema([
+                Grid::make(['default' => 0])->schema([
+                    DateTimePicker::make('publish_at')
+                        ->label(__('core::core.publish_at')),
+                    TextInput::make('title')
+                        ->label(__('core::core.title'))
+                        ->required(),
+                    TextInput::make('slug')
+                        ->label(__('core::core.slug'))
+                        ->required(),
+                    FileUpload::make('featured_image_url')
+                        ->label(__('builder::translations.featured_image_url')),
+                    Textarea::make('content')
+                        ->label(__('core::core.content'))
+                        ->rows(10)
+                        ->columnSpanFull(),
+                    FileUpload::make('gallery_image_urls')
+                        ->multiple()
+                        ->label(__('builder::translations.gallery_image_urls')),
+                    Select::make('type')
+                        ->options(static::getModel()::getTypeOptions())
+                        ->default('post')
+                        ->required(),
+                    Select::make('author_id')
+                        ->label(__('core::core.author'))
+                        ->options(fn () => static::getAuthorOptions())
+                        ->required()
+                        ->searchable()
+                        ->visible(fn () => static::shouldShowAuthorField()),
+                ]),
+            ]),
+        ]);
     }
 
     public static function table(Table $table): Table
     {
+        static::initAuthorModel();
+
         return $table
             ->columns([
+                ImageColumn::make('featured_image_url')
+                    ->label(__('core::core.image'))
+                    ->alignment('center')
+                    ->square()
+                    ->toggleable(),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
+                    ->searchable()
+                    ->toggleable()
                     ->sortable(),
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('content')
                     ->label(__('core::core.content'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
+                ImageColumn::make('author.avatar_url')
+                    ->label(__('core::core.author'))
+                    ->tooltip(fn ($record) => $record->author?->name)
+                    ->alignment('center')
+                    ->circular()
+                    ->visible(fn () => static::shouldShowAuthorField())
+                    ->toggleable(),
+                TextColumn::make('type')
+                    ->label(__('core::core.type'))
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('status')
                     ->label(__('core::core.status'))
+                    ->alignment('center')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => strtoupper($state))
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'primary',
+                        'published' => 'success',
+                        'scheduled' => 'warning',
+                        default => 'secondary',
+                    })
+                    ->toggleable()
                     ->sortable(),
-                TextColumn::make('type')
-                    ->label(__('core::core.type'))
+                TextColumn::make('publish_at')
+                    ->label(__('core::core.publish_at'))
+                    ->dateTime('Y-m-d H:i:s')
+                    ->toggleable()
+                    ->since()
                     ->sortable(),
             ])
             ->defaultSort('slug', 'desc')
             ->actions([
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),
+            ])
+            ->filters([
+                SelectFilter::make('type')
+                    ->options(static::getModel()::getTypeOptions())
+                    ->label(__('core::core.type')),
             ]);
     }
 
@@ -76,6 +160,9 @@ class ItemResource extends Resource
     {
         return [
             'index' => ListPage::route('/'),
+            'edit' => EditPage::route('/{record}/edit'),
+            'create' => CreatePage::route('/create'),
+            'view' => ViewPage::route('/{record}'),
         ];
     }
 
@@ -124,5 +211,22 @@ class ItemResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return config('builder.navigation_sort') + 3;
+    }
+
+    protected static function initAuthorModel(): void
+    {
+        if (static::$authorModel === null) {
+            static::$authorModel = config('builder.author_model');
+        }
+    }
+
+    protected static function getAuthorOptions(): array
+    {
+        return static::$authorModel::query()->get()->pluck('name', 'id')->toArray();
+    }
+
+    protected static function shouldShowAuthorField(): bool
+    {
+        return static::$authorModel && class_exists(static::$authorModel);
     }
 }

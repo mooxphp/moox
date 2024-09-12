@@ -2,11 +2,11 @@
 
 return [
 
+    'item' => 'Item',
+    'items' => 'Items',
     'builder' => 'Builder',
-    'builders' => 'Builders',
-    'title' => 'Builder',
-    'totalone' => 'Builder One',
-    'totaltwo' => 'Builder Two',
-    'totalthree' => 'Builder Three',
+    'published' => 'Published',
+    'scheduled' => 'Scheduled',
+    'drafted' => 'Drafted',
 
 ];

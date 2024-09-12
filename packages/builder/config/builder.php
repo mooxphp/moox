@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//core::builder.builder',
-            'plural' => 'trans//core::builder.builders',
+            'single' => 'trans//core::builder.item',
+            'plural' => 'trans//core::builder.items',
 
             /*
             |--------------------------------------------------------------------------
@@ -88,4 +88,19 @@ return [
 
     'navigation_sort' => 9990,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Item Types
+    |--------------------------------------------------------------------------
+    |
+    | This array contains the types of items entities. You can delete
+    | the types you don't need and add new ones. If you don't need
+    | types, you can empty this array like this: 'types' => [],
+    |
+    */
+
+    'types' => [
+        'post' => 'Post',
+        'page' => 'Page',
+    ],
 ];

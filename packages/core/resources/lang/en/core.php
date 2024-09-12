@@ -56,6 +56,8 @@ return [
     'deleted_at' => 'Deleted at',
     'started_at' => 'Started at',
     'finished_at' => 'Finished at',
+    'publish_at' => 'Publish at',
+    'published_at' => 'Published at',
     'failed_at' => 'Failed at',
     'canceled_at' => 'Canceled at',
     'reserved_at' => 'Reserved at',
@@ -102,7 +104,9 @@ return [
     'autoload' => 'Autoload',
     'drop' => 'Drop',
     'published' => 'Published',
+    'scheduled' => 'Scheduled',
     'draft' => 'Draft',
     'trash' => 'Trash',
-
+    'image' => 'Image',
+    'author' => 'Author',
 ];
