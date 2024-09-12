@@ -20,9 +20,9 @@ class ItemWidgets extends BaseWidget
         $aggregatedInfo = Item::select($aggregationColumns)->first();
 
         return [
-            Stat::make(__('core::builder.published'), $aggregatedInfo['published_count']),
-            Stat::make(__('core::builder.scheduled'), $aggregatedInfo['scheduled_count']),
-            Stat::make(__('core::builder.drafted'), $aggregatedInfo['draft_count']),
+            Stat::make(__('core::core.published'), $aggregatedInfo['published_count']),
+            Stat::make(__('core::core.scheduled'), $aggregatedInfo['scheduled_count']),
+            Stat::make(__('core::core.drafted'), $aggregatedInfo['draft_count']),
         ];
     }
 }

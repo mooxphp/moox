@@ -101,6 +101,8 @@ class ItemResource extends Resource
 
     public static function table(Table $table): Table
     {
+        static::initAuthorModel();
+
         $currentTab = static::getCurrentTab();
 
         return $table
@@ -144,7 +146,8 @@ class ItemResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'primary',
                         'published' => 'success',
-                        'scheduled' => 'warning',
+                        'scheduled' => 'info',
+                        'deleted' => 'danger',
                         default => 'secondary',
                     })
                     ->toggleable()
@@ -159,7 +162,7 @@ class ItemResource extends Resource
             ->defaultSort('slug', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->hidden(function () use ($currentTab) {

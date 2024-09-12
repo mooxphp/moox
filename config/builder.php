@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//core::builder.item',
-            'plural' => 'trans//core::builder.items',
+            'single' => 'trans//builder::translations.item',
+            'plural' => 'trans//builder::translations.items',
 
             /*
             |--------------------------------------------------------------------------

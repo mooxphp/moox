@@ -109,4 +109,8 @@ return [
     'trash' => 'Trash',
     'image' => 'Image',
     'author' => 'Author',
+    'drafted' => 'Drafted',
+    'featured_image_url' => 'Featured Image',
+    'gallery_image_urls' => 'Gallery Images',
+
 ];

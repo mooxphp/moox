@@ -24,6 +24,21 @@ class ListPage extends ListRecords
         static::getResource()::setCurrentTab($this->activeTab);
     }
 
+    // Correct method signature for Filament 3.2
+    public function updatedActiveTab(): void
+    {
+        static::getResource()::setCurrentTab($this->activeTab);
+        $this->tableFilters = null;
+        $this->tableSortColumn = null;
+        $this->tableSortDirection = null;
+        $this->resetTable();
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return static::getResource()::getTableQuery($this->activeTab);
+    }
+
     protected function getHeaderActions(): array
     {
         return [
@@ -52,17 +67,12 @@ class ListPage extends ListRecords
 
     public function getTitle(): string
     {
-        return __('core::builder.builder');
+        return config('builder.resources.builder.plural');
     }
 
     public function getTabs(): array
     {
         return $this->getDynamicTabs('builder.resources.builder.tabs', Item::class);
-    }
-
-    protected function getTableQuery(): Builder
-    {
-        return static::getResource()::getTableQuery($this->activeTab);
     }
 
     public function getHeaderWidgets(): array

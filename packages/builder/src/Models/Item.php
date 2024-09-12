@@ -36,6 +36,10 @@ class Item extends Model
 
     public function getStatusAttribute(): string
     {
+        if ($this->deleted_at) {
+            return 'deleted';
+        }
+
         if (! $this->publish_at) {
             return 'draft';
         }
