@@ -166,7 +166,12 @@ class Login extends SimplePage
             $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
             $token = "{$payload}.{$signature}";
 
-            return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
+            if ($data['remember'] ?? false) {
+                return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token);
+            } else {
+                return redirect('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug').'/wp-login.php?auth_token='.$token.'&remember_me=true');
+            }
+
         } else {
             return app(LoginResponse::class);
         }

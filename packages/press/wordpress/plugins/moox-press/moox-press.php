@@ -53,6 +53,7 @@ function moox_auth_token()
     if ($authWp === 'true') {
         if (isset($_GET['auth_token'])) {
             $token = $_GET['auth_token'];
+            $rememberMe = isset($_GET['remember_me']) && $_GET['remember_me'] === 'true';  // Check for remember me parameter
 
             $parts = explode('.', $token);
             if (count($parts) === 2) {
@@ -64,7 +65,12 @@ function moox_auth_token()
                     $user_id = base64_decode($payload);
 
                     wp_clear_auth_cookie();
-                    wp_set_auth_cookie($user_id);
+
+                    if ($rememberMe) {
+                        wp_set_auth_cookie($user_id, true);
+                    } else {
+                        wp_set_auth_cookie($user_id, false);
+                    }
 
                     wp_redirect(admin_url());
                     exit;
