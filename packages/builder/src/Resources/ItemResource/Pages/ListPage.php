@@ -48,15 +48,15 @@ class ListPage extends ListRecords
                 })
                 ->hidden(fn () => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
-                ->label(__('Empty Trash'))
+                ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
                 ->action(function () {
                     $trashedCount = Item::onlyTrashed()->count();
                     Item::onlyTrashed()->forceDelete();
                     Notification::make()
-                        ->title('Trash emptied successfully')
-                        ->body("{$trashedCount} items were permanently deleted.")
+                        ->title(__('core::core.trash_emptied_successfully'))
+                        ->body(trans_choice('core::core.items_permanently_deleted', $trashedCount, ['count' => $trashedCount]))
                         ->success()
                         ->send();
                 })

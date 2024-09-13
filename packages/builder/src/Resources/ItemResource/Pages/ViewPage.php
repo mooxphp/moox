@@ -15,8 +15,8 @@ class ViewPage extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make()->hidden(fn () => $this->isRecordTrashed()),
-            RestoreAction::make()->visible(fn () => $this->isRecordTrashed()),
+            // EditAction::make()->hidden(fn () => $this->isRecordTrashed()),
+            // RestoreAction::make()->visible(fn () => $this->isRecordTrashed()),
         ];
     }
 
@@ -24,7 +24,7 @@ class ViewPage extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = __('DELETED!').' '.$title;
+            $title = $title.' - '.__('core::core.deleted');
         }
 
         return $title;

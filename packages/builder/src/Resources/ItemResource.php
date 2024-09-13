@@ -2,6 +2,8 @@
 
 namespace Moox\Builder\Resources;
 
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -26,7 +28,8 @@ use Moox\Builder\Resources\ItemResource\Pages\EditPage;
 use Moox\Builder\Resources\ItemResource\Pages\ListPage;
 use Moox\Builder\Resources\ItemResource\Pages\ViewPage;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
-use Moox\Core\Forms\Components\TitleWithSlugInput;
+
+//use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class ItemResource extends Resource
 {
@@ -54,6 +57,12 @@ class ItemResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
+                                    TitleWithSlugInput::make(
+                                        fieldTitle: 'title', // The name of the field in your model that stores the title.
+                                        fieldSlug: 'slug', // The name of the field in your model that will store the slug.
+                                    ),
+
+                                    /*
                                     ...TitleWithSlugInput::make('title')
                                         ->titleLabel(__('core::core.title'))
                                         ->slugLabel(__('core::core.slug'))
@@ -63,14 +72,15 @@ class ItemResource extends Resource
                                         )
                                         ->slugPrefix(url('/').'/'.config('builder.url_slug', 'items/'))
                                         ->components(),
+                                    */
                                     FileUpload::make('featured_image_url')
-                                        ->label(__('builder::translations.featured_image_url')),
+                                        ->label(__('core::core.featured_image_url')),
                                     Textarea::make('content')
                                         ->label(__('core::core.content'))
                                         ->rows(10),
                                     FileUpload::make('gallery_image_urls')
                                         ->multiple()
-                                        ->label(__('builder::translations.gallery_image_urls')),
+                                        ->label(__('core::core.gallery_image_urls')),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -79,6 +89,88 @@ class ItemResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
+                                    Actions::make([
+                                        Actions\Action::make('restore')
+                                            ->label(__('core::core.restore'))
+                                            ->color('success')
+                                            ->button()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->action(fn ($record) => $record->restore())
+                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewPage),
+                                        Actions\Action::make('save')
+                                            ->label(__('core::core.save'))
+                                            ->color('primary')
+                                            ->button()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->action(function ($livewire) {
+                                                $livewire->validate();
+                                                if ($livewire instanceof CreatePage) {
+                                                    $record = $livewire->form->getState();
+                                                    $livewire->record = static::getModel()::create($record);
+                                                } else {
+                                                    $livewire->form->getState();
+                                                    $livewire->record->save();
+                                                }
+                                            })
+                                            ->visible(fn ($livewire) => $livewire instanceof CreatePage || $livewire instanceof EditPage),
+                                        Actions\Action::make('publish')
+                                            ->label(__('core::core.publish'))
+                                            ->color('success')
+                                            ->button()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->action(function ($livewire) {
+                                                $livewire->validate();
+                                                if ($livewire instanceof CreatePage) {
+                                                    $record = $livewire->form->getState();
+                                                    $record['publish_at'] = now();
+                                                    $livewire->record = static::getModel()::create($record);
+                                                } else {
+                                                    $livewire->record->publish_at = now();
+                                                    $livewire->record->save();
+                                                }
+                                            })
+                                            ->hidden(fn ($livewire, $record) => $record && $record->trashed()),
+                                        Actions\Action::make('saveAndCreateAnother')
+                                            ->label(__('core::core.save_and_create_another'))
+                                            ->color('secondary')
+                                            ->button()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->action(function ($livewire) {
+                                                $livewire->validate();
+                                                $record = $livewire->form->getState();
+                                                static::getModel()::create($record);
+                                                $livewire->form->fill();
+                                            })
+                                            ->visible(fn ($livewire) => $livewire instanceof CreatePage),
+                                        Actions\Action::make('cancel')
+                                            ->label(__('core::core.cancel'))
+                                            ->color('danger')
+                                            ->outlined()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->url(fn () => static::getUrl('index'))
+                                            ->visible(fn ($livewire) => $livewire instanceof CreatePage),
+                                        Actions\Action::make('edit')
+                                            ->label(__('core::core.edit'))
+                                            ->color('primary')
+                                            ->button()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
+                                            ->visible(fn ($livewire, $record) => $livewire instanceof ViewPage && ! $record->trashed()),
+                                        Actions\Action::make('restore')
+                                            ->label(__('core::core.restore'))
+                                            ->color('success')
+                                            ->button()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->action(fn ($record) => $record->restore())
+                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditPage),
+                                        Actions\Action::make('delete')
+                                            ->label(__('core::core.delete'))
+                                            ->color('danger')
+                                            ->outlined()
+                                            ->extraAttributes(['class' => 'w-full'])
+                                            ->action(fn ($record) => $record->delete())
+                                            ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditPage),
+                                    ]),
                                     Select::make('type')
                                         ->options(static::getModel()::getTypeOptions())
                                         ->default('post')
