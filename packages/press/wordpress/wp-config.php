@@ -29,6 +29,7 @@ if ($isCli) {
         'ADMIN_SLUG' => getenv('ADMIN_SLUG'),
         'LOCK_WP' => getenv('LOCK_WP'),
         'AUTH_WP' => getenv('AUTH_WP'),
+        'REDIRECT_AFTER_LOGIN' => getenv('REDIRECT_AFTER_LOGIN'),
         'REDIRECT_INDEX' => getenv('REDIRECT_INDEX'),
         'REDIRECT_TO_WP' => getenv('REDIRECT_TO_WP'),
         'REDIRECT_LOGIN' => getenv('REDIRECT_LOGIN'),
@@ -63,6 +64,7 @@ if ($isCli) {
         'ADMIN_SLUG' => $_ENV['ADMIN_SLUG'],
         'LOCK_WP' => $_ENV['LOCK_WP'],
         'AUTH_WP' => $_ENV['AUTH_WP'],
+        'REDIRECT_AFTER_LOGIN' => $_ENV['REDIRECT_AFTER_LOGIN'],
         'REDIRECT_INDEX' => $_ENV['REDIRECT_INDEX'],
         'REDIRECT_TO_WP' => $_ENV['REDIRECT_TO_WP'],
         'REDIRECT_LOGIN' => $_ENV['REDIRECT_LOGIN'],
@@ -104,6 +106,7 @@ define('ADMIN_SLUG', $env['ADMIN_SLUG']);
 
 define('LOCK_WP', isset($env['LOCK_WP']) ? $env['LOCK_WP'] : false);
 define('AUTH_WP', isset($env['AUTH_WP']) ? $env['AUTH_WP'] : false);
+define('REDIRECT_AFTER_LOGIN', isset($env['REDIRECT_AFTER_LOGIN']) ? $env['REDIRECT_AFTER_LOGIN'] : '');
 define('REDIRECT_INDEX', isset($env['REDIRECT_INDEX']) ? $env['REDIRECT_INDEX'] : false);
 define('REDIRECT_TO_WP', isset($env['REDIRECT_TO_WP']) ? $env['REDIRECT_TO_WP'] : false);
 define('REDIRECT_LOGIN', isset($env['REDIRECT_LOGIN']) ? $env['REDIRECT_LOGIN'] : false);

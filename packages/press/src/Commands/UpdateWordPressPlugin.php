@@ -35,6 +35,8 @@ class UpdateWordPressPlugin extends Command
         $this->welcome();
         $this->checkDotenv();
         $env = $this->getDotenv();
+        $this->pressPluginInstall();
+        $this->updateWpConfig();
         $this->sayGoodbye();
     }
 
@@ -138,6 +140,36 @@ class UpdateWordPressPlugin extends Command
 
         info('Copying the Moox Press plugin to the WordPress plugins directory...');
         File::copyDirectory($pluginSource, $pluginDestination);
+    }
+
+    public function updateWpConfig(): void
+    {
+        info('Updating the wp-config.php file...');
+
+        $wpPath = env('WP_PATH', '/public/wp');
+        $fullWpPath = base_path(trim($wpPath, '/'));
+
+        $wpconfigPath = $fullWpPath.'/wp-config.php';
+
+        $configSource = __DIR__.'/../../wordpress/wp-config.php';
+        $configDestination = $wpconfigPath;
+
+        if (! File::exists($configSource)) {
+            alert('The source wp-config.php file does not exist.');
+            exit(1);
+        }
+
+        if (File::exists($configDestination)) {
+            info('Deleting the existing wp-config.php file...');
+            File::delete($configDestination);
+        }
+
+        if (File::copy($configSource, $configDestination)) {
+            info('wp-config.php file updated successfully.');
+        } else {
+            alert('Error occurred while copying the wp-config.php file.');
+            exit(1);
+        }
     }
 
     public function sayGoodbye(): void

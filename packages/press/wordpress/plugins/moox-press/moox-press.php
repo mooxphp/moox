@@ -34,6 +34,10 @@ if (defined('REDIRECT_LOGOUT')) {
     $redirectLogout = REDIRECT_LOGOUT;
 }
 
+if (defined('REDIRECT_AFTER_LOGIN')) {
+    $redirectAfterLogin = REDIRECT_AFTER_LOGIN;
+}
+
 function moox_lock_wp_frontend()
 {
     global $lockWp;
@@ -48,14 +52,17 @@ add_action('template_redirect', 'moox_lock_wp_frontend');
 
 function moox_auth_token()
 {
+
     global $authWp;
+    global $adminSlug;
+    global $redirectAfterLogin;
 
     if ($authWp === 'true') {
+
         if (isset($_GET['auth_token'])) {
             $token = $_GET['auth_token'];
-            $rememberMe = isset($_GET['remember_me']) && $_GET['remember_me'] === 'true';  // Check for remember me parameter
-
             $parts = explode('.', $token);
+
             if (count($parts) === 2) {
                 $payload = $parts[0];
                 $signature = $parts[1];
@@ -65,20 +72,28 @@ function moox_auth_token()
                     $user_id = base64_decode($payload);
 
                     wp_clear_auth_cookie();
+                    wp_set_auth_cookie($user_id);
 
-                    if ($rememberMe) {
-                        wp_set_auth_cookie($user_id, true);
-                    } else {
-                        wp_set_auth_cookie($user_id, false);
+                    if ($redirectAfterLogin === '') {
+                        wp_redirect('https://'.$_SERVER['SERVER_NAME'].$adminSlug);
+
+                    } elseif ($redirectAfterLogin === 'frontend') {
+                        wp_redirect(home_url());
+
+                    } elseif ($redirectAfterLogin === 'wpadmin') {
+                        wp_redirect(admin_url());
                     }
-
-                    wp_redirect(admin_url());
                     exit;
+
                 }
             }
+
         }
+
     }
+
 }
+
 add_action('init', 'moox_auth_token');
 
 function moox_redirect_logout()
