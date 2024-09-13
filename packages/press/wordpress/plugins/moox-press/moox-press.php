@@ -128,3 +128,31 @@ function enqueue_moox_admin_script()
     }
 }
 add_action('admin_enqueue_scripts', 'enqueue_moox_admin_script');
+
+// TODO: not heavily tested, assuming there is a session table in the laravel database
+function moox_check_laravel_db_session()
+{
+    global $wpdb;
+
+    if (isset($_COOKIE['laravel_session'])) {
+        $laravelSessionId = $_COOKIE['laravel_session'];
+
+        $session = $wpdb->get_row($wpdb->prepare('
+            SELECT * FROM sessions WHERE id = %s
+        ', $laravelSessionId));
+
+        if ($session) {
+            $sessionData = unserialize(base64_decode($session->payload));
+
+            if (isset($sessionData['login_web_'.sha1('web')])) {
+                $userId = $sessionData['login_web_'.sha1('web')];
+
+                if (! is_user_logged_in()) {
+                    wp_clear_auth_cookie();
+                    wp_set_auth_cookie($userId, true);
+                }
+            }
+        }
+    }
+}
+add_action('init', 'moox_check_laravel_db_session');
