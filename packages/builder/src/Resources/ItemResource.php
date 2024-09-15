@@ -7,6 +7,7 @@ use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -57,6 +58,7 @@ class ItemResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
+                                    // TODO: Slug Plugin
                                     TitleWithSlugInput::make(
                                         fieldTitle: 'title', // The name of the field in your model that stores the title.
                                         fieldSlug: 'slug', // The name of the field in your model that will store the slug.
@@ -75,16 +77,18 @@ class ItemResource extends Resource
                                     */
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
+                                    MarkdownEditor::make('content')
+                                        ->label(__('core::core.content')),
                                     Textarea::make('content')
                                         ->label(__('core::core.content'))
                                         ->rows(10),
                                     FileUpload::make('gallery_image_urls')
                                         ->multiple()
                                         ->label(__('core::core.gallery_image_urls')),
+                                    // TODO: JSON Plugin
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
-
                     Grid::make()
                         ->schema([
                             Section::make()
@@ -103,14 +107,7 @@ class ItemResource extends Resource
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(function ($livewire) {
-                                                $livewire->validate();
-                                                if ($livewire instanceof CreatePage) {
-                                                    $record = $livewire->form->getState();
-                                                    $livewire->record = static::getModel()::create($record);
-                                                } else {
-                                                    $livewire->form->getState();
-                                                    $livewire->record->save();
-                                                }
+                                                $livewire instanceof CreatePage ? $livewire->create() : $livewire->save();
                                             })
                                             ->visible(fn ($livewire) => $livewire instanceof CreatePage || $livewire instanceof EditPage),
                                         Actions\Action::make('publish')
@@ -119,15 +116,12 @@ class ItemResource extends Resource
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(function ($livewire) {
-                                                $livewire->validate();
-                                                if ($livewire instanceof CreatePage) {
-                                                    $record = $livewire->form->getState();
-                                                    $record['publish_at'] = now();
-                                                    $livewire->record = static::getModel()::create($record);
-                                                } else {
-                                                    $livewire->record->publish_at = now();
-                                                    $livewire->record->save();
+                                                $data = $livewire->form->getState();
+                                                if (! $data['published_at']) {
+                                                    $data['published_at'] = now();
                                                 }
+                                                $livewire->form->fill($data);
+                                                $livewire instanceof CreatePage ? $livewire->create() : $livewire->save();
                                             })
                                             ->hidden(fn ($livewire, $record) => $record && $record->trashed()),
                                         Actions\Action::make('saveAndCreateAnother')
@@ -136,15 +130,12 @@ class ItemResource extends Resource
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(function ($livewire) {
-                                                $livewire->validate();
-                                                $record = $livewire->form->getState();
-                                                static::getModel()::create($record);
-                                                $livewire->form->fill();
+                                                $livewire->saveAndCreateAnother();
                                             })
                                             ->visible(fn ($livewire) => $livewire instanceof CreatePage),
                                         Actions\Action::make('cancel')
                                             ->label(__('core::core.cancel'))
-                                            ->color('danger')
+                                            ->color('secondary')
                                             ->outlined()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->url(fn () => static::getUrl('index'))
@@ -166,7 +157,7 @@ class ItemResource extends Resource
                                         Actions\Action::make('delete')
                                             ->label(__('core::core.delete'))
                                             ->color('danger')
-                                            ->outlined()
+                                            ->link()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->delete())
                                             ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditPage),
@@ -177,13 +168,16 @@ class ItemResource extends Resource
                                         ->required(),
                                     DateTimePicker::make('publish_at')
                                         ->label(__('core::core.publish_at')),
+
                                     Select::make('author_id')
                                         ->label(__('core::core.author'))
                                         ->options(fn () => static::getAuthorOptions())
+                                        ->default(fn () => auth()->id())
                                         ->required()
                                         ->searchable()
                                         ->visible(fn () => static::shouldShowAuthorField()),
                                 ]),
+                            // TODO: Taxonomy Plugin
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
