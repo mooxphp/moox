@@ -50,6 +50,7 @@ function moox_lock_wp_frontend()
 }
 add_action('template_redirect', 'moox_lock_wp_frontend');
 
+/*
 function moox_auth_token()
 {
     global $authWp;
@@ -88,6 +89,7 @@ function moox_auth_token()
     }
 }
 add_action('init', 'moox_auth_token');
+*/
 
 function moox_redirect_logout()
 {
@@ -104,6 +106,8 @@ function moox_redirect_logout()
     }
 }
 add_action('init', 'moox_redirect_logout');
+
+/* Uses the Moox (Laravel) login page */
 
 function moox_redirect_login()
 {
@@ -137,30 +141,167 @@ function enqueue_moox_admin_script()
 }
 add_action('admin_enqueue_scripts', 'enqueue_moox_admin_script');
 
-// TODO: not heavily tested, assuming there is a session table in the laravel database
+function decrypt_laravel_data($encryptedData)
+{
+    $key = defined('LARAVEL_KEY') ? LARAVEL_KEY : null;
+    if (! $key) {
+        error_log('Laravel encryption key not defined');
+
+        return null;
+    }
+
+    // Decode the base64 encoded key
+    $key = base64_decode(substr($key, 7));
+    error_log('Decoded key length: '.strlen($key));
+
+    $cipher = 'AES-256-CBC';
+    $ivLength = openssl_cipher_iv_length($cipher);
+
+    $data = base64_decode($encryptedData);
+    error_log('Base64 decoded data length: '.strlen($data));
+
+    $iv = substr($data, 0, $ivLength);
+    $payload = substr($data, $ivLength);
+
+    error_log('IV length: '.strlen($iv).', Payload length: '.strlen($payload));
+
+    // Add OPENSSL_RAW_DATA flag
+    $decrypted = openssl_decrypt($payload, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+
+    if ($decrypted === false) {
+        error_log('Decryption failed: '.openssl_error_string());
+    } else {
+        error_log('Decryption successful. Decrypted data length: '.strlen($decrypted));
+    }
+
+    return $decrypted !== false ? $decrypted : null;
+}
+
 function moox_check_laravel_db_session()
 {
-    global $wpdb;
+    static $already_checked = false;
+    if ($already_checked || did_action('moox_session_checked')) {
+        return;
+    }
+    $already_checked = true;
+    do_action('moox_session_checked');
 
-    if (isset($_COOKIE['laravel_session'])) {
-        $laravelSessionId = $_COOKIE['laravel_session'];
+    error_log('Checking laravel db session');
 
-        $session = $wpdb->get_row($wpdb->prepare('
-            SELECT * FROM sessions WHERE id = %s
-        ', $laravelSessionId));
+    if (isset($_COOKIE['moox_session'])) {
+        $encryptedSession = $_COOKIE['moox_session'];
+        $sessionData = json_decode(base64_decode($encryptedSession), true);
 
-        if ($session) {
-            $sessionData = unserialize(base64_decode($session->payload));
+        error_log('Found moox_session: '.$encryptedSession);
 
-            if (isset($sessionData['login_web_'.sha1('web')])) {
-                $userId = $sessionData['login_web_'.sha1('web')];
+        if ($sessionData && isset($sessionData['value'])) {
+            error_log('Attempting to decrypt session data');
 
-                if (! is_user_logged_in()) {
-                    wp_clear_auth_cookie();
-                    wp_set_auth_cookie($userId, true);
+            $decryptedValue = decrypt_laravel_data($sessionData['value']);
+
+            if ($decryptedValue) {
+                error_log('Successfully decrypted session data');
+                error_log('Decrypted data: '.bin2hex($decryptedValue));
+
+                // Split the decrypted data by the pipe character
+                $parts = explode('|', $decryptedValue);
+                if (count($parts) == 2) {
+                    $sessionId = $parts[1]; // Use the second part as the session ID
+                    error_log('Session ID: '.$sessionId);
+
+                    // Here, we need to query the Laravel database to get the user ID associated with this session ID
+                    $userId = get_user_id_from_laravel_session($sessionId);
+
+                    if ($userId) {
+                        error_log('Found session with user-id: '.$userId);
+
+                        if (! is_user_logged_in()) {
+                            wp_clear_auth_cookie();
+                            wp_set_auth_cookie($userId, true);
+                            error_log('Set WordPress auth cookie for user ID: '.$userId);
+                        } else {
+                            error_log('User already logged in to WordPress');
+                        }
+                    }
+                } else {
+                    error_log('Unexpected data format in decrypted session');
                 }
+            } else {
+                error_log('Failed to decrypt session data');
             }
+        } else {
+            error_log('Invalid session data structure: '.print_r($sessionData, true));
         }
+    } else {
+        error_log('No moox_session cookie found');
     }
 }
-add_action('init', 'moox_check_laravel_db_session');
+
+function get_user_id_from_laravel_session($sessionId)
+{
+    error_log('Attempting to get user ID for session: '.$sessionId);
+
+    // Use WordPress database credentials for Laravel connection
+    $host = DB_HOST;
+    $db = DB_NAME;
+    $user = DB_USER;
+    $pass = DB_PASSWORD;
+    $charset = DB_CHARSET;
+
+    error_log("Attempting to connect to Laravel database: host=$host, db=$db, user=$user");
+
+    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+
+    try {
+        $pdo = new PDO($dsn, $user, $pass, $options);
+        error_log('Successfully connected to the Laravel database');
+
+        // Query to get user ID from session ID
+        $stmt = $pdo->prepare('SELECT payload FROM sessions WHERE id = :session_id');
+        $stmt->execute(['session_id' => $sessionId]);
+        $result = $stmt->fetch();
+
+        if ($result) {
+            $payload = unserialize(base64_decode($result['payload']));
+            error_log('Session payload: '.print_r($payload, true));
+
+            // Look for a key that starts with 'login_press_'
+            $loginPressKey = null;
+            foreach ($payload as $key => $value) {
+                if (strpos($key, 'login_press_') === 0) {
+                    $loginPressKey = $key;
+                    break;
+                }
+            }
+
+            if ($loginPressKey !== null) {
+                $userId = $payload[$loginPressKey];
+                error_log('Found user ID: '.$userId);
+
+                return $userId;
+            } else {
+                error_log('User ID not found in session payload');
+
+                return null;
+            }
+        } else {
+            error_log('No session found for session ID: '.$sessionId);
+
+            return null;
+        }
+    } catch (\PDOException $e) {
+        error_log('Database connection error: '.$e->getMessage());
+        error_log('DSN: '.$dsn);
+
+        return null;
+    }
+}
+
+// Ensure this function is only called once
+remove_action('init', 'moox_check_laravel_db_session');
+add_action('init', 'moox_check_laravel_db_session', 1);
