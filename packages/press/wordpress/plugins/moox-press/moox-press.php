@@ -52,13 +52,11 @@ add_action('template_redirect', 'moox_lock_wp_frontend');
 
 function moox_auth_token()
 {
-
     global $authWp;
     global $adminSlug;
     global $redirectAfterLogin;
 
     if ($authWp === 'true') {
-
         if (isset($_GET['auth_token'])) {
             $token = $_GET['auth_token'];
             $parts = explode('.', $token);
@@ -74,26 +72,21 @@ function moox_auth_token()
                     wp_clear_auth_cookie();
                     wp_set_auth_cookie($user_id);
 
-                    if ($redirectAfterLogin === '') {
-                        wp_redirect('https://'.$_SERVER['SERVER_NAME'].$adminSlug);
+                    $redirectTarget = isset($_GET['redirect_to']) ? $_GET['redirect_to'] : $redirectAfterLogin;
 
-                    } elseif ($redirectAfterLogin === 'frontend') {
+                    if ($redirectTarget === 'frontend') {
                         wp_redirect(home_url());
-
-                    } elseif ($redirectAfterLogin === 'wpadmin') {
+                    } elseif ($redirectTarget === 'wpadmin') {
                         wp_redirect(admin_url());
+                    } else {
+                        wp_redirect('https://'.$_SERVER['SERVER_NAME'].$adminSlug);
                     }
                     exit;
-
                 }
             }
-
         }
-
     }
-
 }
-
 add_action('init', 'moox_auth_token');
 
 function moox_redirect_logout()

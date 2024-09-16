@@ -17,6 +17,7 @@ package-lock.json
 /storage/*.key
 auth.json
 LocalValetDriver.php
+herd.yml
 
 # PHPUnit
 .phpunit.result.cache

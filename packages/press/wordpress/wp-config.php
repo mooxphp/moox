@@ -15,6 +15,7 @@ if ($isCli) {
         'DB_PASSWORD' => getenv('DB_PASSWORD'),
         'DB_HOST' => getenv('DB_HOST'),
         'APP_URL' => getenv('APP_URL'),
+        'APP_KEY' => getenv('APP_KEY'),
         'WP_SLUG' => getenv('WP_SLUG'),
         'WP_AUTH_KEY' => getenv('WP_AUTH_KEY'),
         'WP_SECURE_AUTH_KEY' => getenv('WP_SECURE_AUTH_KEY'),
@@ -50,6 +51,7 @@ if ($isCli) {
         'DB_PASSWORD' => $_ENV['DB_PASSWORD'],
         'DB_HOST' => $_ENV['DB_HOST'],
         'APP_URL' => $_ENV['APP_URL'],
+        'APP_KEY' => $_ENV['APP_KEY'],
         'WP_SLUG' => $_ENV['WP_SLUG'],
         'WP_AUTH_KEY' => $_ENV['WP_AUTH_KEY'],
         'WP_SECURE_AUTH_KEY' => $_ENV['WP_SECURE_AUTH_KEY'],
@@ -91,6 +93,7 @@ $table_prefix = $env['TABLE_PREFIX'];
 
 define('WP_SITEURL', $env['APP_URL'].$env['WP_SLUG']);
 define('WP_HOME', $env['APP_URL'].$env['WP_SLUG']);
+define('LARAVEL_KEY', $env['APP_KEY']);
 
 define('AUTH_KEY', $env['WP_AUTH_KEY']);
 define('SECURE_AUTH_KEY', $env['WP_SECURE_AUTH_KEY']);
@@ -106,7 +109,7 @@ define('ADMIN_SLUG', $env['ADMIN_SLUG']);
 
 define('LOCK_WP', isset($env['LOCK_WP']) ? $env['LOCK_WP'] : false);
 define('AUTH_WP', isset($env['AUTH_WP']) ? $env['AUTH_WP'] : false);
-define('REDIRECT_AFTER_LOGIN', isset($env['REDIRECT_AFTER_LOGIN']) ? $env['REDIRECT_AFTER_LOGIN'] : '');
+define('REDIRECT_AFTER_LOGIN', isset($env['REDIRECT_AFTER_LOGIN']) ? $env['REDIRECT_AFTER_LOGIN'] : 'wp-admin');
 define('REDIRECT_INDEX', isset($env['REDIRECT_INDEX']) ? $env['REDIRECT_INDEX'] : false);
 define('REDIRECT_TO_WP', isset($env['REDIRECT_TO_WP']) ? $env['REDIRECT_TO_WP'] : false);
 define('REDIRECT_LOGIN', isset($env['REDIRECT_LOGIN']) ? $env['REDIRECT_LOGIN'] : false);
