@@ -191,19 +191,43 @@ return [
     'create_expiry_action' => false,
     'collect_expiries_action' => true,
     'send_summary_action' => true,
+    'set_date_action' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Turnus
+    |--------------------------------------------------------------------------
+    |
+    | Define the turnus options for the Expiry table.
+    |
+    */
+
+    'turnus_options' => [
+        'jährlich' => 365,
+        'halbjährlich' => 182,
+        'quartalsweise' => 90,
+        'monatlich' => 30,
+        'wöchentlich' => 7,
+        'ohne_festen_turnus' => 0,
+    ],
+
+    'helper_text' => 'Falls kein Turnus festgelegt ist, muss das Ablaufdatum manuell gesetzt werden.',
 
     /*
     |--------------------------------------------------------------------------
     | Jobs
     |--------------------------------------------------------------------------
     |
-    | These jobs are used to collect expiries. You can add more jobs here.
+    | These jobs are used to collect expiries and send summaries.
     |
     */
 
     'collect_expiries_jobs' => [
-        \Moox\Expiry\Jobs\CollectExpiries::class,
+        App\Jobs\GetExpiredWikiPostsJob::class,
+        App\Jobs\GetExpiredWikiDocsJob::class,
+        // Add more jobs here if needed.
     ],
+    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
 
     /*
     |--------------------------------------------------------------------------
