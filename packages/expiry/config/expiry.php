@@ -191,7 +191,7 @@ return [
     'create_expiry_action' => false,
     'collect_expiries_action' => true,
     'send_summary_action' => true,
-    'set_date_action' => true,
+    'set_date_action' => false,
 
     /*
     |--------------------------------------------------------------------------
