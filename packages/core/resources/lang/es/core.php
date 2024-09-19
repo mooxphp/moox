@@ -1,7 +1,5 @@
 <?php
-
 return [
-
     'title' => 'Title',
     'slug' => 'Slug',
     'item' => 'Item',
@@ -11,17 +9,17 @@ return [
     'articles' => 'Articles',
     'tasks' => 'Tasks',
     'id' => 'ID',
-    'name' => 'Name',
+    'name' => 'Nombre',
     'dashboard' => 'Dashboard',
     'main' => 'Main',
     'delete' => 'Delete',
-    'uuid' => 'Uuid',
+    'uuid' => 'UUID',
     'payload' => 'Payload',
     'connection' => 'Connection',
     'retry' => 'Retry',
     'description' => 'Description',
     'subject_type' => 'Subject type',
-    'subject_id' => 'Subject id',
+    'subject_id' => 'Identificación del sujeto',
     'event' => 'Event',
     'properties' => 'Properties',
     'used' => 'Used',
@@ -84,5 +82,7 @@ return [
     'published' => 'Published',
     'draft' => 'Draft',
     'trash' => 'Trash',
-
+    'tag' => 'Etiqueta',
+    'term' => 'Término',
+    'terms' => 'Términos',
 ];

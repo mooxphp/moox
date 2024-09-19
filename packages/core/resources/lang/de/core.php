@@ -1,5 +1,4 @@
 <?php
-
 return [
     'title' => 'Titel',
     'slug' => 'Slug',
@@ -14,7 +13,7 @@ return [
     'dashboard' => 'Dashboard',
     'main' => 'Haupt',
     'delete' => 'Delete',
-    'uuid' => 'Uuid',
+    'uuid' => 'UUID',
     'payload' => 'Nutzlast',
     'connection' => 'Verbindung',
     'retry' => 'Retry',
@@ -83,4 +82,13 @@ return [
     'published' => 'Veröffentlicht',
     'draft' => 'Entwurf',
     'trash' => 'Papierkorb',
+    'term' => 'Begriff',
+    'terms' => 'Begriffe',
+    'tag' => 'Schlagwort',
+    'option' => 'Option',
+    'options' => 'Optionen',
+    'option_name' => 'Optionsname',
+    'option_value' => 'Optionswert',
+    'training' => 'Training',
+    'trainings' => 'Trainings',
 ];
