@@ -219,16 +219,18 @@ return [
     | Jobs
     |--------------------------------------------------------------------------
     |
-    | These jobs are used to collect expiries and send summaries.
+    | These jobs are used to collect expiries.
+    | You can add more jobs here if needed.
     |
     */
 
+    // TODO: Siehe expiry package
     'collect_expiries_jobs' => [
-        App\Jobs\GetExpiredWikiPostsJob::class,
-        App\Jobs\GetExpiredWikiDocsJob::class,
+        //        App\Jobs\GetExpiredWikiPostsJob::class,
+        //        App\Jobs\GetExpiredWikiDocsJob::class,
         // Add more jobs here if needed.
     ],
-    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
+    //    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
 
     /*
     |--------------------------------------------------------------------------

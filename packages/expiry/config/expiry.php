@@ -202,6 +202,7 @@ return [
     |
     */
 
+    // TODO: cycle_options und translatable config verwenden
     'turnus_options' => [
         'jährlich' => 365,
         'halbjährlich' => 182,
@@ -211,6 +212,7 @@ return [
         'ohne_festen_turnus' => 0,
     ],
 
+    // TODO: auch translatable machen
     'helper_text_datetime' => 'Falls kein Turnus festgelegt ist, muss das Ablaufdatum manuell gesetzt werden.',
     'after_now' => 'Das Ablaufdatum muss in der Zukunft liegen.',
 
@@ -219,16 +221,33 @@ return [
     | Jobs
     |--------------------------------------------------------------------------
     |
-    | These jobs are used to collect expiries and send summaries.
+    | These jobs are used to collect expiries.
+    | You can add more jobs here if needed.
     |
     */
 
     'collect_expiries_jobs' => [
-        App\Jobs\GetExpiredWikiPostsJob::class,
-        App\Jobs\GetExpiredWikiDocsJob::class,
+        // TODO: App nur bei der gepublishten version bzw. im heco-projekt, hier muss auf mitgelieferte (demo)-jobs zurückgegriffen werden
+        //        App\Jobs\GetExpiredWikiPostsJob::class,
+        //        App\Jobs\GetExpiredWikiDocsJob::class,
         // Add more jobs here if needed.
     ],
-    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
+
+    // TODO: Send summary job wird nicht mehr benötigt, nutzen wir nicht
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Expiry Action
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define a custom expiry action. This action is used
+    | to set the expiry date or do something else with the expired
+    | record. It is shown in the Expiry Resource list table.
+    |
+    */
+
+    // TODO: not implemented yet
+    'expiry_action' => null,
 
     /*
     |--------------------------------------------------------------------------
