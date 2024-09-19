@@ -52,6 +52,8 @@ class SetDateAction extends Action
                                         return 'Titel des Artikels';
                                     } elseif ($record->category === 'Aufgabe') {
                                         return 'Titel der Aufgabe';
+                                    } elseif ($record->category === 'OneDrive') {
+                                        return 'Titel des OneDrive-Dokuments';
                                     }
 
                                     return 'Titel';
