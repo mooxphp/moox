@@ -1,4 +1,5 @@
 <?php
+
 return [
     'notification' => 'Notification',
     'notifications' => 'Notifications',
