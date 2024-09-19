@@ -80,6 +80,9 @@ class SetDateAction extends Action
                         ->label('Neues Ablaufdatum setzen basierend auf dem Turnus')
                         ->required()
                         ->rule('after:now')
+                        ->validationMessages([
+                            'after' => config('expiry.after_now'),
+                        ])
                         ->default(function ($record) {
                             $now = Carbon::now();
 
@@ -88,7 +91,7 @@ class SetDateAction extends Action
                             return $now->addDays($turnusDays);
                         })
                         ->columnSpan('full')
-                        ->helperText(config('expiry.helper_text')),
+                        ->helperText(config('expiry.helper_text_datetime')),
 
                 ];
             })

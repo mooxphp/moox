@@ -211,7 +211,8 @@ return [
         'ohne_festen_turnus' => 0,
     ],
 
-    'helper_text' => 'Falls kein Turnus festgelegt ist, muss das Ablaufdatum manuell gesetzt werden.',
+    'helper_text_datetime' => 'Falls kein Turnus festgelegt ist, muss das Ablaufdatum manuell gesetzt werden.',
+    'after_now' => 'Das Ablaufdatum muss in der Zukunft liegen.',
 
     /*
     |--------------------------------------------------------------------------
