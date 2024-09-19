@@ -88,9 +88,9 @@ class SetDateAction extends Action
                         ->default(function ($record) {
                             $now = Carbon::now();
 
-                            $turnusDays = config('expiry.turnus_options.'.$record->cycle, 0);
+                            $cycleDays = config('expiry.turnus_options.'.$record->cycle, 0);
 
-                            return $now->addDays($turnusDays);
+                            return $now->addDays($cycleDays);
                         })
                         ->columnSpan('full')
                         ->helperText(config('expiry.helper_text_datetime')),
