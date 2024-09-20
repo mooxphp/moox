@@ -190,22 +190,59 @@ return [
 
     'create_expiry_action' => false,
     'collect_expiries_action' => true,
-    'send_summary_action' => true,
+    'send_summary_action' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cycle
+    |--------------------------------------------------------------------------
+    |
+    | Define the cycle options for the Expiry table.
+    |
+    */
+
+    'cycle_options' => [
+        'yearly' => 365,
+        'half_yearly' => 182,
+        'quarterly' => 90,
+        'monthly' => 30,
+        'weekly' => 7,
+        'no_fixed_cycle' => 0,
+    ],
+
+    'helper_text_datetime' => 'trans//core::expiry.no_expiry_set',
+    'after_now' => 'trans//core::expiry.expiry_in_future',
 
     /*
     |--------------------------------------------------------------------------
     | Jobs
     |--------------------------------------------------------------------------
     |
-    | These jobs are used to collect expiries and send summaries.
+    | These jobs are used to collect expiries.
+    | You can add more jobs here if needed.
     |
     */
 
     'collect_expiries_jobs' => [
-        \Moox\Expiry\Jobs\CollectExpiries::class,
+        Moox\Expiry\Jobs\CollectExpiries::class,
         // Add more jobs here if needed.
     ],
-    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Expiry Action
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define a custom expiry action. This action is used
+    | to set the expiry date or do something else with the expired
+    | record. It is shown in the Expiry Resource list table.
+    |
+    */
+
+    // TODO: not implemented yet
+    'expiry_action' => Moox\Expiry\Actions\CustomExpiryAction::class,
+    'expiry_action_enable' => true,
+    'expiry_action_name' => 'Custom Expiry Action',
 
     /*
     |--------------------------------------------------------------------------

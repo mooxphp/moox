@@ -20,7 +20,7 @@ class ListExpiries extends ListRecords
         return config('expiry.collect_expiries_action')
             ? [
                 Action::make('collectExpiries')
-                    ->label('Expiries aktualisieren')
+                    ->label(__('core::expiry.update_expiries'))
                     ->requiresConfirmation()
                     ->action(function () {
                         self::collectExpiries();
@@ -37,7 +37,7 @@ class ListExpiries extends ListRecords
         }
 
         Notification::make()
-            ->title('Aktualisieren gestartet')
+            ->title(__('core::expiry.updating_started'))
             ->success()
             ->send();
     }
