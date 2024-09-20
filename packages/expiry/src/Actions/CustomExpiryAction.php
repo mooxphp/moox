@@ -10,7 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\DB;
 
-class SetDateAction extends Action
+class CustomExpiryAction extends Action
 {
     public static function getDefaultName(): ?string
     {
@@ -21,19 +21,17 @@ class SetDateAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('core::expiry.set_date'))
+        $this->label(config('expiry.expiry_action_name', 'Set Expiry Date'))
             ->icon('gmdi-event-available')
             ->action(function ($record, array $data) {
                 $postId = $record->item_id;
 
                 if ($postId) {
-                    $metaKey = 'gultig_bis';
                     $newValue = Carbon::createFromFormat('Y-m-d', $data['expired_at'])->format('Ymd');
 
-                    DB::table(config('press.wordpress_prefix').'postmeta')
-                        ->where('post_id', $postId)
-                        ->where('meta_key', $metaKey)
-                        ->update(['meta_value' => $newValue]);
+                    DB::table('expiries')
+                        ->where('id', $record->id)
+                        ->update(['expired_at' => $newValue]);
 
                     Notification::make()
                         ->title(__('core::expiry.date_updated'))
@@ -42,22 +40,16 @@ class SetDateAction extends Action
                 }
             })
             ->form(function ($record) {
+
+                $cycleOptions = collect(config('expiry.cycle_options'))->mapWithKeys(function ($value, $key) {
+                    return [__('core::expiry.'.$key) => $value];
+                });
+
                 return [
                     Grid::make(2)
                         ->schema([
-
                             TextInput::make('title')
-                                ->label(function ($record) {
-                                    if ($record->expiry_job === 'Wiki Artikel') {
-                                        return 'Titel des Artikels';
-                                    } elseif ($record->category === 'Aufgabe') {
-                                        return 'Titel der Aufgabe';
-                                    } elseif ($record->category === 'OneDrive') {
-                                        return 'Titel des OneDrive-Dokuments';
-                                    }
-
-                                    return 'Titel';
-                                })
+                                ->label(__('core::core.title'))
                                 ->default($record->title)
                                 ->disabled(),
 
@@ -79,41 +71,27 @@ class SetDateAction extends Action
                         ]),
 
                     DatePicker::make('expired_at')
-                        ->label('Neues Ablaufdatum setzen basierend auf dem Turnus')
+                        ->label(__('core::expiry.set_new_expiry_date'))
                         ->required()
                         ->rule('after:now')
                         ->validationMessages([
                             'after' => config('expiry.after_now'),
                         ])
-                        ->default(function ($record) {
+                        ->default(function ($record) use ($cycleOptions) {
                             $now = Carbon::now();
-
-                            $cycleDays = config('expiry.turnus_options.'.$record->cycle, 0);
+                            $cycleDays = $cycleOptions[$record->cycle] ?? 0;
 
                             return $now->addDays($cycleDays);
                         })
                         ->columnSpan('full')
                         ->helperText(config('expiry.helper_text_datetime')),
-
                 ];
             })
             ->modalHeading(__('core::expiry.set_date'))
             ->modalSubmitActionLabel(__('core::expiry.save'))
             ->color('primary')
             ->visible(function ($record) {
-                if (! config('expiry.set_date_action')) {
-                    return false;
-                }
-
-                if ($record->expiry_job === 'Wiki Artikel') {
-                    return true;
-                }
-
-                if ($record->expiry_job === 'Wiki Dokumente' && $record->category !== 'Download') {
-                    return true;
-                }
-
-                return false;
+                return config('expiry.expiry_action_enable', true);
             });
     }
 }

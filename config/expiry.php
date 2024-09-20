@@ -190,29 +190,28 @@ return [
 
     'create_expiry_action' => false,
     'collect_expiries_action' => true,
-    'send_summary_action' => true,
-    'set_date_action' => true,
+    'send_summary_action' => false,
 
     /*
     |--------------------------------------------------------------------------
-    | Turnus
+    | Cycle
     |--------------------------------------------------------------------------
     |
-    | Define the turnus options for the Expiry table.
+    | Define the cycle options for the Expiry table.
     |
     */
 
-    'turnus_options' => [
-        'jährlich' => 365,
-        'halbjährlich' => 182,
-        'quartalsweise' => 90,
-        'monatlich' => 30,
-        'wöchentlich' => 7,
-        'ohne_festen_turnus' => 0,
+    'cycle_options' => [
+        'yearly' => 365,
+        'half_yearly' => 182,
+        'quarterly' => 90,
+        'monthly' => 30,
+        'weekly' => 7,
+        'no_fixed_cycle' => 0,
     ],
 
-    'helper_text_datetime' => 'Falls kein Turnus festgelegt ist, muss das Ablaufdatum manuell gesetzt werden.',
-    'after_now' => 'Das Ablaufdatum muss in der Zukunft liegen.',
+    'helper_text_datetime' => 'trans//core::expiry.no_expiry_set',
+    'after_now' => 'trans//core::expiry.expiry_in_future',
 
     /*
     |--------------------------------------------------------------------------
@@ -224,13 +223,26 @@ return [
     |
     */
 
-    // TODO: Siehe expiry package
     'collect_expiries_jobs' => [
-        //        App\Jobs\GetExpiredWikiPostsJob::class,
-        //        App\Jobs\GetExpiredWikiDocsJob::class,
+        Moox\Expiry\Jobs\CollectExpiries::class,
         // Add more jobs here if needed.
     ],
-    //    'send_summary_job' => \Moox\Expiry\Jobs\SendSummary::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Expiry Action
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define a custom expiry action. This action is used
+    | to set the expiry date or do something else with the expired
+    | record. It is shown in the Expiry Resource list table.
+    |
+    */
+
+    // TODO: not implemented yet
+    'expiry_action' => Moox\Expiry\Actions\CustomExpiryAction::class,
+    'expiry_action_enable' => true,
+    'expiry_action_name' => 'Custom Expiry Action',
 
     /*
     |--------------------------------------------------------------------------

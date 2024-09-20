@@ -189,32 +189,29 @@ return [
     */
 
     'create_expiry_action' => false,
-    'collect_expiries_action' => true,
-    'send_summary_action' => true,
-    'set_date_action' => false,
+    'collect_expiries_action' => false,
+    'send_summary_action' => false,
 
     /*
     |--------------------------------------------------------------------------
-    | Turnus
+    | Cycle
     |--------------------------------------------------------------------------
     |
-    | Define the turnus options for the Expiry table.
+    | Define the cycle options for the Expiry table.
     |
     */
 
-    // TODO: cycle_options und translatable config verwenden
-    'turnus_options' => [
-        'jährlich' => 365,
-        'halbjährlich' => 182,
-        'quartalsweise' => 90,
-        'monatlich' => 30,
-        'wöchentlich' => 7,
-        'ohne_festen_turnus' => 0,
+    'cycle_options' => [
+        'yearly' => 365,
+        'half_yearly' => 182,
+        'quarterly' => 90,
+        'monthly' => 30,
+        'weekly' => 7,
+        'no_fixed_cycle' => 0,
     ],
 
-    // TODO: auch translatable machen
-    'helper_text_datetime' => 'Falls kein Turnus festgelegt ist, muss das Ablaufdatum manuell gesetzt werden.',
-    'after_now' => 'Das Ablaufdatum muss in der Zukunft liegen.',
+    'helper_text_datetime' => 'trans//core::expiry.no_expiry_set',
+    'after_now' => 'trans//core::expiry.expiry_in_future',
 
     /*
     |--------------------------------------------------------------------------
@@ -227,13 +224,9 @@ return [
     */
 
     'collect_expiries_jobs' => [
-        // TODO: App nur bei der gepublishten version bzw. im heco-projekt, hier muss auf mitgelieferte (demo)-jobs zurückgegriffen werden
-        //        App\Jobs\GetExpiredWikiPostsJob::class,
-        //        App\Jobs\GetExpiredWikiDocsJob::class,
+        Moox\Expiry\Jobs\CollectExpiries::class,
         // Add more jobs here if needed.
     ],
-
-    // TODO: Send summary job wird nicht mehr benötigt, nutzen wir nicht
 
     /*
     |--------------------------------------------------------------------------
@@ -247,7 +240,9 @@ return [
     */
 
     // TODO: not implemented yet
-    'expiry_action' => null,
+    'expiry_action' => Moox\Expiry\Actions\CustomExpiryAction::class,
+    'expiry_action_enable' => false,
+    'expiry_action_name' => 'Custom Expiry Action',
 
     /*
     |--------------------------------------------------------------------------

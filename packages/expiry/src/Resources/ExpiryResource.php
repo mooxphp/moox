@@ -10,7 +10,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Expiry\Actions\SetDateAction;
+use Moox\Expiry\Actions\CustomExpiryAction;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource\Pages;
 
@@ -114,7 +114,7 @@ class ExpiryResource extends Resource
                     })
                     ->openUrlInNewTab(),
 
-                SetDateAction::make(),
+                config('expiry.expiry_action', CustomExpiryAction::class)::make(),
 
             ])
             ->bulkActions([DeleteBulkAction::make()]);
