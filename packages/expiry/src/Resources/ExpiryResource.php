@@ -120,7 +120,7 @@ class ExpiryResource extends Resource
                             return $record->link;
                         }
                     })
-                    ->color('primary')
+                    ->color(config('expiry.expiry_view_action_color'))
                     ->openUrlInNewTab(),
 
             ])
