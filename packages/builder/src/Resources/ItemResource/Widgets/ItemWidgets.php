@@ -12,19 +12,17 @@ class ItemWidgets extends BaseWidget
     protected function getCards(): array
     {
         $aggregationColumns = [
-            DB::raw('COUNT(*) as count'),
-            DB::raw('COUNT(*) as count'),
-            DB::raw('COUNT(*) as count'),
+            DB::raw('COUNT(CASE WHEN publish_at <= NOW() THEN 1 END) as published_count'),
+            DB::raw('COUNT(CASE WHEN publish_at > NOW() THEN 1 END) as scheduled_count'),
+            DB::raw('COUNT(CASE WHEN publish_at IS NULL THEN 1 END) as draft_count'),
         ];
 
-        $aggregatedInfo = Item::query()
-            ->select($aggregationColumns)
-            ->first();
+        $aggregatedInfo = Item::select($aggregationColumns)->first();
 
         return [
-            Stat::make(__('core::builder.totalone'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('core::builder.totaltwo'), $aggregatedInfo->count ?? 0),
-            Stat::make(__('core::builder.totalthree'), $aggregatedInfo->count ?? 0),
+            Stat::make(__('core::core.published'), $aggregatedInfo['published_count']),
+            Stat::make(__('core::core.scheduled'), $aggregatedInfo['scheduled_count']),
+            Stat::make(__('core::core.drafted'), $aggregatedInfo['draft_count']),
         ];
     }
 }

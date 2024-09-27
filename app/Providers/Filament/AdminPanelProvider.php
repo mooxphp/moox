@@ -31,8 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ->path('moox')
             ->passwordReset(RequestPasswordReset::class)
             ->login(Login::class)
+            // TODO: check this
+            //->authGuard('admin')
+            ->brandLogo(asset('img/logo.png'))
+            ->brandLogoHeight('1.6rem')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Indigo,
+                'secondary' => Color::Neutral,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

@@ -20,6 +20,10 @@ class WebhookAuthMiddleware
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
+        if ($this->isFileSyncRequest($request)) {
+            return $next($request);
+        }
+
         $payload = $request->getContent();
         $calculatedSignature = hash_hmac('sha256', $payload, ($platform ? $platform->api_token : '').$syncToken);
 
@@ -28,5 +32,18 @@ class WebhookAuthMiddleware
         }
 
         return $next($request);
+    }
+
+    protected function isFileSyncRequest(Request $request): bool
+    {
+        $fileSyncPaths = [
+            'file-sync/chunk',
+            'file-sync/finalize',
+            'file-sync/check',
+            'file-sync/size',
+            'file-sync/hash',
+        ];
+
+        return in_array($request->path(), $fileSyncPaths);
     }
 }

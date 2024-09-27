@@ -34,16 +34,19 @@ class PrepareSyncJob implements ShouldQueue
 
     protected $modelData;
 
-    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $platformId, $syncConfigurations)
+    protected $fileFields;
+
+    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $sourcePlatformId, $relevantSyncs, $fileFields = [])
     {
         $this->identifierField = $identifierField;
         $this->identifierValue = $identifierValue;
         $this->modelClass = $modelClass;
         $this->eventType = $eventType;
-        $this->platformId = $platformId;
-        $this->syncConfigurations = $syncConfigurations;
-        $this->sourcePlatform = Platform::findOrFail($platformId);
+        $this->platformId = $sourcePlatformId;
+        $this->syncConfigurations = $relevantSyncs;
+        $this->sourcePlatform = Platform::findOrFail($sourcePlatformId);
         $this->modelData = $this->findModel()->toArray();
+        $this->fileFields = $fileFields;
     }
 
     public function handle(PlatformRelationService $platformRelationService)
@@ -68,11 +71,14 @@ class PrepareSyncJob implements ShouldQueue
                 $shouldDelete = ! $relatedPlatforms->contains($platform->id);
             }
 
-            $this->sendToWebhook($platform, $shouldDelete);
+            $transformedData = $this->transformData($this->findModel());
+            $transformedData = $this->addFileMetadata($transformedData);
+
+            $this->sendToWebhook($platform, $shouldDelete, $transformedData);
         }
     }
 
-    protected function sendToWebhook(Platform $platform, bool $shouldDelete)
+    protected function sendToWebhook(Platform $platform, bool $shouldDelete, array $transformedData)
     {
         $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');
         $syncToken = config('sync.sync_token');
@@ -80,7 +86,7 @@ class PrepareSyncJob implements ShouldQueue
 
         $data = [
             'event_type' => $this->eventType,
-            'model' => $this->modelData,
+            'model' => $transformedData,
             'model_class' => $this->modelClass,
             'platform' => [
                 'domain' => $this->sourcePlatform->domain,
@@ -116,6 +122,55 @@ class PrepareSyncJob implements ShouldQueue
                 'trace' => $e->getTraceAsString(),
             ]);
         }
+    }
+
+    protected function transformData($model)
+    {
+        $this->logDebug('Moox Sync: Transforming data', [
+            'model_class' => $this->modelClass,
+            'identifier_field' => $this->identifierField,
+            'identifier_value' => $this->identifierValue,
+        ]);
+
+        $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
+
+        if ($transformerClass && class_exists($transformerClass)) {
+            $transformer = new $transformerClass($model);
+            $transformedData = $transformer->transform();
+
+            $this->logDebug('Moox Sync: Transformed data', [
+                'transformed_data' => $transformedData,
+            ]);
+
+            return $transformedData;
+        }
+
+        return $model->toArray();
+    }
+
+    protected function addFileMetadata(array $data): array
+    {
+        $fileResolverClass = config("sync.file_sync_resolver.{$this->modelClass}");
+        if (! $fileResolverClass || ! class_exists($fileResolverClass)) {
+            return $data;
+        }
+
+        $fileResolver = new $fileResolverClass($this->findModel());
+        $fileFields = $fileResolver->getFileFields();
+        $fileData = [];
+
+        foreach ($fileFields as $field) {
+            $fieldData = $fileResolver->getFileData($field);
+            if ($fieldData) {
+                $fileData[$field] = $fieldData;
+            }
+        }
+
+        if (! empty($fileData)) {
+            $data['_file_sync'] = $fileData;
+        }
+
+        return $data;
     }
 
     protected function syncToPlatform(Platform $platform, bool $shouldDelete)
