@@ -31,6 +31,12 @@ class ExpiryResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $expiryActionClass = config('expiry.expiry_action');
+
+        if (empty($expiryActionClass)) {
+            $expiryActionClass = CustomExpiryAction::class;
+        }
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
@@ -101,6 +107,8 @@ class ExpiryResource extends Resource
                     ->options(Expiry::getUserOptions()),
             ])
             ->actions([
+                $expiryActionClass::make(),
+
                 ViewAction::make()
                     ->url(function ($record) {
                         if (config('expiry.url_patterns.enabled')) {
@@ -112,9 +120,8 @@ class ExpiryResource extends Resource
                             return $record->link;
                         }
                     })
+                    ->color(config('expiry.expiry_view_action_color'))
                     ->openUrlInNewTab(),
-
-                config('expiry.expiry_action', CustomExpiryAction::class)::make(),
 
             ])
             ->bulkActions([DeleteBulkAction::make()]);

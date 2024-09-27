@@ -239,10 +239,10 @@ return [
     |
     */
 
-    // TODO: not implemented yet
     'expiry_action' => Moox\Expiry\Actions\CustomExpiryAction::class,
     'expiry_action_enable' => false,
     'expiry_action_name' => 'Custom Expiry Action',
+    'expiry_view_action_color' => 'primary',
 
     /*
     |--------------------------------------------------------------------------
