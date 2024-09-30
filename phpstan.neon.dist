@@ -11,5 +11,5 @@ parameters:
         - 'packages/*/vendor/*'
         - 'packages/press/wordpress/*'
         - 'packages/redis-model'
-        - 'packages/*/tests'
+        - 'packages/*/tests/*'
     tmpDir: build/phpstan
