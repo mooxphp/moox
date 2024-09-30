@@ -7,7 +7,6 @@ use Moox\Builder\Models\Item;
 
 class ItemFactory extends Factory
 {
-
     protected $model = Item::class;
 
     /**
