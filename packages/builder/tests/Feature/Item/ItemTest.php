@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Schema;
 use Moox\Builder\Models\Item;
 
-
 test('items Table exists with correct columns', function () {
 
     expect(Schema::hasTable('items'))->toBeTrue();

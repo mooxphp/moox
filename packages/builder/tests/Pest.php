@@ -1,7 +1,7 @@
 <?php
 
-use Workbench\App\Models\User;
 use Moox\Builder\Tests\TestCase;
+use Workbench\App\Models\User;
 
 /*
 |--------------------------------------------------------------------------

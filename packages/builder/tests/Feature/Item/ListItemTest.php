@@ -6,7 +6,6 @@ use Moox\Builder\Resources\ItemResource\Pages\ListItem;
 
 use function Pest\Livewire\livewire;
 
-
 it('can render ItemResource', function () {
     $this
         ->get(ItemResource::getUrl('index'))
