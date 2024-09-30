@@ -1,5 +1,7 @@
 <?php
 
+use Moox\Builder\Tests\TestCase;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,7 +13,8 @@
 |
 */
 
-// pest()->extend(Tests\TestCase::class)->in('Feature');
+pest()->extends(TestCase::class)->in('Feature');
+
 
 /*
 |--------------------------------------------------------------------------
