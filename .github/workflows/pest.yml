@@ -13,7 +13,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      DB_DATABASE: moox-test
+      DB_DATABASE: testing
       DB_USER: user
       DB_PASSWORD: secret
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
