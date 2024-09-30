@@ -3,14 +3,6 @@
 use Illuminate\Support\Facades\Schema;
 use Moox\Builder\Models\Item;
 
-beforeEach(function () {
-    $this->artisan('optimize:clear');
-    $this->artisan('migrate');
-});
-
-afterEach(function () {
-    $this->artisan('db:wipe ');
-});
 
 test('items Table exists with correct columns', function () {
 

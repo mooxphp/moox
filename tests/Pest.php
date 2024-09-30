@@ -14,7 +14,7 @@ use Moox\User\Models\User;
 |
 */
 
-uses(Tests\TestCase::class)->use(RefreshDatabase::class)
+uses(Tests\TestCase::class)
     ->beforeEach(function () {
         $this->artisan('migrate');
         $user = new User;

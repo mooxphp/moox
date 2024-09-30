@@ -1,12 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
-
-beforeEach(function () {
-    // Optionally, you can refresh the application routes
-    Artisan::call('route:cache');
-});
-
 test('healthy response', function () {
 
     $response = $this->get('/');

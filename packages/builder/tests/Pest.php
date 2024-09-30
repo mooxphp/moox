@@ -1,5 +1,6 @@
 <?php
 
+use Workbench\App\Models\User;
 use Moox\Builder\Tests\TestCase;
 
 /*
@@ -13,7 +14,15 @@ use Moox\Builder\Tests\TestCase;
 |
 */
 
-pest()->extends(TestCase::class)->in('Feature');
+pest()->extends(TestCase::class)
+    ->beforeEach(function () {
+        $this->artisan('migrate');
+        $user = User::factory()->create();
+        $this->actingAs($user);
+    })->afterEach(function () {
+        $this->artisan('db:wipe');
+        $this->artisan('optimize:clear');
+    })->in('Feature');
 
 /*
 |--------------------------------------------------------------------------

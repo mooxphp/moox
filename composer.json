@@ -59,9 +59,6 @@
         "pestphp/pest-plugin-livewire": "^3.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^1.10",
-        "phpstan/phpstan-deprecation-rules": "^1.0",
-        "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": "^11.3.4",
         "spatie/laravel-ignition": "^2.3",
         "spatie/laravel-ray": "^1.33"
     },

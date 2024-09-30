@@ -6,14 +6,6 @@ use Moox\Builder\Resources\ItemResource\Pages\ListItem;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
-    $this->artisan('optimize:clear');
-    $this->artisan('migrate');
-});
-
-afterEach(function () {
-    $this->artisan('db:wipe ');
-});
 
 it('can render ItemResource', function () {
     $this
