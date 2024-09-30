@@ -2,16 +2,16 @@
 
 namespace Moox\Builder\Models;
 
-use Moox\Core\Traits\HasSlug;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Database\Factories\ItemFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Moox\Core\Traits\HasSlug;
 
 class Item extends Model
 {
-    use HasSlug, HasFactory, SoftDeletes;
+    use HasFactory, HasSlug, SoftDeletes;
 
     protected $table = 'items';
 

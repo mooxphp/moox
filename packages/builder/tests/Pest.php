@@ -15,7 +15,6 @@ use Moox\Builder\Tests\TestCase;
 
 pest()->extends(TestCase::class)->in('Feature');
 
-
 /*
 |--------------------------------------------------------------------------
 | Expectations

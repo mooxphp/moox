@@ -2,9 +2,9 @@
 
 namespace Moox\Builder\Tests;
 
-use Workbench\App\Models\User;
-use Orchestra\Testbench\TestCase as Orchestra;
 use Orchestra\Testbench\Concerns\WithWorkbench;
+use Orchestra\Testbench\TestCase as Orchestra;
+use Workbench\App\Models\User;
 
 abstract class TestCase extends Orchestra
 {
