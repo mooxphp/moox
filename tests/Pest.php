@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Moox\User\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,7 @@ uses(Tests\TestCase::class)
         $user->password = bcrypt('password');
         $user->save();
         $this->actingAs($user);
+        dump(DB::select('show tables'));
     })->afterEach(function () {
         $this->artisan('db:wipe');
         $this->artisan('optimize:clear');
