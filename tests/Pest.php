@@ -1,8 +1,7 @@
 <?php
 
-use Moox\User\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Moox\User\Models\User;
 
 /*
 |--------------------------------------------------------------------------
