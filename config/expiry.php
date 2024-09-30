@@ -68,6 +68,9 @@ return [
                             'value' => 'Documents',
                         ],
                     ],
+                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+                        config('app.url'),
+                    ]),
                 ],
                 'articles' => [
                     'label' => 'trans//core::core.articles',
@@ -79,6 +82,9 @@ return [
                             'value' => 'Articles',
                         ],
                     ],
+                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+                        config('app.url'),
+                    ]),
                 ],
                 'tasks' => [
                     'label' => 'trans//core::core.tasks',
@@ -90,6 +96,9 @@ return [
                             'value' => 'Tasks',
                         ],
                     ],
+                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+                        config('app.url'),
+                    ]),
                 ],
                 'no-user' => [
                     'label' => 'trans//core::expiry.no_assignee',
@@ -101,6 +110,9 @@ return [
                             'value' => 'No assignee',
                         ],
                     ],
+                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+                        config('app.url'),
+                    ]),
                 ],
                 'no-date' => [
                     'label' => 'trans//core::expiry.no_expiry_date',
@@ -112,6 +124,9 @@ return [
                             'value' => 'No expiry date',
                         ],
                     ],
+                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+                        config('app.url'),
+                    ]),
                 ],
             ],
         ],

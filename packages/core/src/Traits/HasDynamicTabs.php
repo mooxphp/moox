@@ -15,6 +15,10 @@ trait HasDynamicTabs
         $tabs = [];
 
         foreach ($tabsConfig as $key => $tabConfig) {
+            if (isset($tabConfig['visible']) && ! $tabConfig['visible']) {
+                continue;
+            }
+
             $tab = Tab::make($tabConfig['label'])
                 ->icon($tabConfig['icon']);
 
