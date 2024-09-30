@@ -54,7 +54,6 @@
         "mockery/mockery": "^1.6.6",
         "nunomaduro/collision": "^8.0",
         "larastan/larastan": "^2.6",
-        "orchestra/testbench": "^9.0",
         "pestphp/pest": "^3.0",
         "pestphp/pest-plugin-laravel": "^3.0",
         "pestphp/pest-plugin-livewire": "^3.0",

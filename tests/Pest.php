@@ -1,5 +1,8 @@
 <?php
 
+use Moox\User\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,7 +14,19 @@
 |
 */
 
-uses(Tests\TestCase::class)->in('Feature');
+uses(Tests\TestCase::class)->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        $this->artisan('migrate');
+        $user = new User();
+        $user->name = 'Test User';
+        $user->email = 'test@example.com';
+        $user->password = bcrypt('password');
+        $user->save();
+        $this->actingAs($user);
+    })->afterEach(function () {
+        $this->artisan('db:wipe');
+        $this->artisan('optimize:clear');
+    })->in('Feature', '../packages/*/tests/Feature');
 
 /*
 |--------------------------------------------------------------------------

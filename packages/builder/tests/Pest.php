@@ -1,6 +1,7 @@
 <?php
 
 use Moox\Builder\Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /*
 |--------------------------------------------------------------------------

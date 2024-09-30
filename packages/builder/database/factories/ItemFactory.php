@@ -7,11 +7,7 @@ use Moox\Builder\Models\Item;
 
 class ItemFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var class-string<TModel>
-     */
+
     protected $model = Item::class;
 
     /**
