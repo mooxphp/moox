@@ -38,7 +38,7 @@ jobs:
         env:
           MYSQL_USER: user
           MYSQL_PASSWORD: secret
-          MYSQL_DATABASE: laravel_test
+          MYSQL_DATABASE: testing
           MYSQL_ROOT_PASSWORD: secretroot
         ports:
           - 3306
