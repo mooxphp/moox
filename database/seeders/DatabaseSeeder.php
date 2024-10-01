@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-
         // From the permission package, emtpy
         $this->call(ModelHasPermissionsSeeder::class);
 
@@ -31,6 +30,5 @@ class DatabaseSeeder extends Seeder
 
         // From the permission package, demo data
         $this->call(UsersSeeder::class);
-
     }
 }

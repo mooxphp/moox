@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Http\SharedHosting;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 
 class Scheduler extends Controller

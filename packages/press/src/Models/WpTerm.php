@@ -51,7 +51,6 @@ class WpTerm extends Model
         parent::boot();
 
         static::created(function ($wpTerm) {
-
             $taxonomy = $wpTerm->taxonomy;
             $description = $wpTerm->getRequestData('description') ?? '';
             $parent = $wpTerm->getRequestData('parent') ?? 0;
@@ -66,7 +65,6 @@ class WpTerm extends Model
         });
 
         static::updated(function ($wpTerm) {
-
             $taxonomy = $wpTerm->taxonomy;
             $description = $wpTerm->getRequestData('description') ?? $wpTerm->getOriginal('description') ?? '';
             $parent = $wpTerm->getRequestData('parent') ?? $wpTerm->getOriginal('parent') ?? 0;

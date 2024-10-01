@@ -2,7 +2,7 @@
 
 namespace Moox\Jobs\Http\SharedHosting;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 
 class QueueWorker extends Controller
@@ -37,6 +37,5 @@ class QueueWorker extends Controller
 
             return 'Queue worker ran with output: '.$output;
         }
-
     }
 }

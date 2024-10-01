@@ -22,7 +22,6 @@ class WpPostMetaRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-
         return $form->schema([
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([

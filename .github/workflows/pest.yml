@@ -13,20 +13,18 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      DB_DATABASE: moox-test
-      DB_USER: user
-      DB_PASSWORD: secret
+      DB_DATABASE: testing
+      DB_ROOT_PASSWORD: secretroot
+      DB_HOST: 127.0.0.1
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
+         os: [ubuntu-latest]
         php: [8.2]
-        laravel: [10.*, 11.*]
+        laravel: [11.*]
         stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: 8.*
           - laravel: 11.*
             testbench: 9.*
 
@@ -36,21 +34,22 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_USER: user
-          MYSQL_PASSWORD: secret
-          MYSQL_DATABASE: laravel_test
+          MYSQL_DATABASE: testing
+          MYSQL_HOST: 127.0.0.1
           MYSQL_ROOT_PASSWORD: secretroot
         ports:
           - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
 
     steps:
+      - name: Show Docker containers
+        run: docker ps -a
 
-      - name: Verfify MySQL connection
+      - name: Verifiy MySQL connection
         run: |
           mysql --version
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port 32768 -uroot -psecretroot -e "SHOW DATABASES"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -67,7 +66,6 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-
       - name: Remove PHP-PSR Extension
         run: |
           sudo apt remove php8.2-psr
@@ -81,3 +79,9 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+
+          DB_PASSWORD: secretroot

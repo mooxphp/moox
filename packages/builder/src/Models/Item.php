@@ -2,14 +2,16 @@
 
 namespace Moox\Builder\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Builder\Database\Factories\ItemFactory;
 use Moox\Core\Traits\HasSlug;
 
 class Item extends Model
 {
-    use HasSlug, SoftDeletes;
+    use HasFactory, HasSlug, SoftDeletes;
 
     protected $table = 'items';
 
@@ -55,5 +57,10 @@ class Item extends Model
         }
 
         return null;
+    }
+
+    protected static function newFactory()
+    {
+        return ItemFactory::new();
     }
 }

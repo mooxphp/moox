@@ -140,7 +140,7 @@ class InstallCommand extends Command
                 if (isset($translations['nav']['group'])) {
                     $translations['nav']['group'] = 'Moox User';
                     $outputPath = $file->getPathname();
-                    $content = "<?php\n\nreturn ".var_export($translations, true).";\n";
+                    $content = "<?php\n\nreturn ".print_r($translations, true).";\n";
                     File::put($outputPath, $content);
                     $this->info("Updated {$file->getFilename()} in {$localePath}");
                 }
@@ -215,14 +215,12 @@ class InstallCommand extends Command
                 options: [...$providerNames],
                 default: [$providerNames[0]],
             );
-
         }
         if (count($providers) == 1) {
             $providerPath .= '/'.$providers[0]->getBasename();
         }
 
         return $providerPath;
-
     }
 
     public function sayGoodbye(): void

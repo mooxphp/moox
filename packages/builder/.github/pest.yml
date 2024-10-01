@@ -1,0 +1,50 @@
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    env:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: :memory:
+      APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest]
+        php: [8.2]
+        laravel: [10.*, 11.*]
+        stability: [prefer-lowest, prefer-stable]
+        include:
+          - laravel: 10.*
+            testbench: 8.*
+          - laravel: 11.*
+            testbench: 9.*
+
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
+
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer update
+
+      - name: Run Pest
+        run: ./vendor/bin/pest

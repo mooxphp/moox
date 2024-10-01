@@ -2,7 +2,7 @@
 
 namespace Moox\Notification\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Moox\Notification\Models\Notification;
 
 class NotificationController extends Controller

@@ -405,7 +405,6 @@ abstract class Model implements Arrayable, ArrayAccess, CanBeEscapedWhenCastToSt
             if ($this->isFillable($key)) {
                 $this->setAttribute($key, $value);
             } elseif ($totallyGuarded) {
-
                 throw new MassAssignmentException(sprintf(
                     'Add [%s] to fillable property to allow mass assignment on [%s].',
                     $key, get_class($this)

@@ -14,7 +14,6 @@ class PermissionsSeeder extends Seeder
      */
     public function run()
     {
-
         Permission::create([
             'id' => 1,
             'name' => 'view_blog',
@@ -1222,6 +1221,5 @@ class PermissionsSeeder extends Seeder
             'created_at' => '2023-12-10 23:32:42',
             'updated_at' => '2023-12-10 23:32:42',
         ]);
-
     }
 }

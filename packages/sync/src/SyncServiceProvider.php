@@ -57,7 +57,6 @@ class SyncServiceProvider extends PackageServiceProvider
 
         if ($syncPlatformJobConfig['enabled']) {
             $this->app->booted(function () use ($syncPlatformJobConfig) {
-
                 $this->logDebug('Moox Sync: Registering sync platform job');
 
                 $schedule = $this->app->make(Schedule::class);
@@ -72,7 +71,6 @@ class SyncServiceProvider extends PackageServiceProvider
 
         if ($syncBackupJobConfig['enabled']) {
             $this->app->booted(function () use ($syncBackupJobConfig) {
-
                 $this->logDebug('Moox Sync: Registering sync backup job');
 
                 $schedule = $this->app->make(Schedule::class);
@@ -86,7 +84,6 @@ class SyncServiceProvider extends PackageServiceProvider
         $syncEloquentListenerConfig = Config::get('sync.sync_eloquent_listener');
 
         if ($syncEloquentListenerConfig['enabled']) {
-
             $this->logInfo('Moox Sync: Registering sync eloquent listener');
 
             $syncListener = $this->app->make(SyncListener::class);

@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 
 class CoreController extends Controller
 {
