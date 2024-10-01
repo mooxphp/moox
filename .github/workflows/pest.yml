@@ -20,11 +20,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
+         os: [ubuntu-latest]
         php: [8.2]
-        laravel: [11.*]
+        laravel: [10.*, 11.*]
         stability: [prefer-lowest, prefer-stable]
         include:
+          - laravel: 10.*
+            testbench: 8.*
           - laravel: 11.*
             testbench: 9.*
 
