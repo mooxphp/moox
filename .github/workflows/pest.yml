@@ -80,7 +80,7 @@ jobs:
 
       - name: Show Database for Root User
         run: |
-          mysql -u root -psecretroot -e "SHOW DATABASES;"
+          mysql --host 127.0.0.1 --port 32768 -uroot -psecretroot -e "SHOW DATABASES"
 
 
       - name: Execute tests
