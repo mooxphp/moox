@@ -83,5 +83,4 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
           DB_HOST: 127.0.0.1
           DB_USER: root
-
           DB_PASSWORD: secretroot
