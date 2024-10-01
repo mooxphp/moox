@@ -43,15 +43,12 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
       - name: Remove PHP-PSR Extension
         run: |
           sudo apt remove php8.2-psr
-
       - name: Install dependencies
         run: |
           composer update
-
       - name: List Installed Dependencies
         run: composer show -D
 
