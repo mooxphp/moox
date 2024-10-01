@@ -71,8 +71,9 @@ jobs:
       - name: Show Docker containers
         run: docker ps -a
 
-      - name: Show databases for root user
-        run: mysql --protocol=tcp -h mysql -P 3306 -uroot -p$MYSQL_ROOT_PASSWORD -e "SHOW DATABASES"
+      - name: Show Database for Root User
+        run: |
+          mysql -h 127.0.0.1 -u root -psecretroot -e "SHOW DATABASES;"
 
 
       - name: Execute tests
