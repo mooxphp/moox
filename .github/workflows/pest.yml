@@ -72,7 +72,7 @@ jobs:
         run: docker ps -a
 
       - name: Show MySQL Docker container
-        run: docker ps -a --filter "name=mysql"
+        run: docker ps -a --filter "name=mysql" --format "{{.Command}}"
 
       - name: Show Database for Root User
         run: |
