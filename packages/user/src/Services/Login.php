@@ -249,7 +249,6 @@ class Login extends SimplePage
         $ipWhiteList = config('user.ip_whitelist');
 
         if (isset($ipWhiteList) && ! empty($ipWhiteList)) {
-
             if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
                 return true;
             }
