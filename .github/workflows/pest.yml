@@ -14,8 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       DB_DATABASE: testing
-      DB_USER: user
-      DB_PASSWORD: secret
+      DB_ROOT_PASSWORD: secretroot
       DB_HOST: 127.0.0.1
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     strategy:
@@ -35,8 +34,6 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_USER: user
-          MYSQL_PASSWORD: secret
           MYSQL_DATABASE: testing
           MYSQL_HOST: 127.0.0.1
           MYSQL_ROOT_PASSWORD: secretroot
@@ -81,7 +78,7 @@ jobs:
             sleep 2
           done
           # Verify connection
-          mysql --host=127.0.0.1 --port=3306 -uuser -psecret -e "SHOW DATABASES;"
+          mysql --host=127.0.0.1 --port=3306 -uroot -psecretroot -e "SHOW DATABASES;"
 
 
       - name: Execute tests
