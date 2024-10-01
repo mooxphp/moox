@@ -76,7 +76,7 @@ jobs:
 
       - name: Show Database for Root User
         run: |
-          mysql -h 0.0.0.0 -p32768 -u root -psecretroot -e "SHOW DATABASES;"
+          mysql -h 0.0.0.0:32768 -u root -psecretroot -e "SHOW DATABASES;"
 
 
       - name: Execute tests
