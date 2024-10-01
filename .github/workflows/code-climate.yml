@@ -65,9 +65,6 @@ jobs:
         uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: secretroot
         with:
           coverageCommand: vendor/bin/pest --coverage-clover clover.xml
+
