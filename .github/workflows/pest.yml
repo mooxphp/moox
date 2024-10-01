@@ -55,8 +55,7 @@ jobs:
       - name: Verifiy MySQL connection
         run: |
           mysql --version
-          sudo apt-get install -y mysql-client
-          mysql  -uuser -psecret -e "SHOW DATABASES" --host=mysql
+          mysql --host=$MYSQL_HOST --port=3306 -uroot -p$MYSQL_ROOT_PASSWORD -D$MYSQL_DATABASE
 
       - name: Setup problem matchers
         run: |
