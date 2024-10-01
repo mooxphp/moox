@@ -23,7 +23,6 @@ uses(Tests\TestCase::class)
         $user->password = bcrypt('password');
         $user->save();
         $this->actingAs($user);
-        dump(DB::select('show tables'));
     })->afterEach(function () {
         $this->artisan('db:wipe');
         $this->artisan('optimize:clear');
