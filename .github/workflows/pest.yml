@@ -71,9 +71,7 @@ jobs:
       - name: Show Docker containers
         run: docker ps -a
       - name: Show databases for root user
-        run: mysql --protocol=tcp -h localhost -P 3306 -u root -proot_password -e "SHOW DATABASES"
-      - name: Show databases for user1
-        run: mysql --protocol=tcp -h localhost -P 3306 -u user1 -puser1_password -e "SHOW DATABASES"
+        run: mysql --protocol=tcp -h 127.0.0.1 -P 3306 -u root -p$MYSQL_ROOT_PASSWORD -e "SHOW DATABASES"
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
