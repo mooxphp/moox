@@ -2,7 +2,7 @@
 
 namespace Moox\Jobs\Http\SharedHosting;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Artisan;
 
 class QueueWorker extends Controller
@@ -26,17 +26,16 @@ class QueueWorker extends Controller
             $timeout = request('timeout');
         }
 
-        $output = Artisan::call('queue:work --once --timeout='.$timeout);
+        $output = Artisan::call('queue:work --once --timeout=' . $timeout);
 
         if ($output == 0) {
             activity()->log('Queue worker ran successfully');
 
             return 'Queue worker run was successful';
         } else {
-            activity()->log('Ran queue worker with output: '.$output);
+            activity()->log('Ran queue worker with output: ' . $output);
 
-            return 'Queue worker ran with output: '.$output;
+            return 'Queue worker ran with output: ' . $output;
         }
-
     }
 }

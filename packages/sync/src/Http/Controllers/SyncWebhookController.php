@@ -2,14 +2,14 @@
 
 namespace Moox\Sync\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Moox\Sync\Jobs\SyncJob;
 use Illuminate\Http\Request;
+use Moox\Core\Traits\LogLevel;
+use Moox\Sync\Models\Platform;
+use Moox\Sync\Jobs\FileSyncJob;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Moox\Core\Traits\LogLevel;
-use Moox\Sync\Jobs\FileSyncJob;
-use Moox\Sync\Jobs\SyncJob;
-use Moox\Sync\Models\Platform;
 
 class SyncWebhookController extends Controller
 {

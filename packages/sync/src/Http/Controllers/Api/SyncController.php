@@ -2,7 +2,7 @@
 
 namespace Moox\Sync\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Moox\Sync\Http\Resources\SyncResource;
 use Moox\Sync\Models\Sync;

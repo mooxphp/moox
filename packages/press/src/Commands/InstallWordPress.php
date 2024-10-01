@@ -163,7 +163,7 @@ class InstallWordPress extends Command
     {
         info('Preparing composer.json file...');
 
-        $composerSource = __DIR__.'/../../wordpress/composer.json';
+        $composerSource = __DIR__ . '/../../wordpress/composer.json';
         $composerDestination = public_path('composer.json');
 
         if (File::exists($composerDestination)) {
@@ -214,8 +214,8 @@ class InstallWordPress extends Command
             info("WordPress directory already exists at {$fullWpPath}.");
         }
 
-        $wpConfigSource = __DIR__.'/../../wordpress/wp-config.php';
-        $wpConfigDestination = $fullWpPath.'/wp-config.php';
+        $wpConfigSource = __DIR__ . '/../../wordpress/wp-config.php';
+        $wpConfigDestination = $fullWpPath . '/wp-config.php';
 
         if (File::exists($wpConfigDestination)) {
             $overwrite = $this->ask('The wp-config.php file already exists in the WordPress directory. Do you want to overwrite it? (yes/no)', 'no');
@@ -249,7 +249,9 @@ class InstallWordPress extends Command
         $this->info('Downloading wp-cli.phar...');
 
         $downloadProcess = new \Symfony\Component\Process\Process([
-            'curl', '-O', 'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
+            'curl',
+            '-O',
+            'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
         ], base_path());
         $downloadProcess->setTimeout(null);
         $downloadProcess->run();
@@ -264,7 +266,9 @@ class InstallWordPress extends Command
         if (PHP_OS_FAMILY !== 'Windows') {
             $this->info('Making wp-cli.phar executable...');
             $chmodProcess = new \Symfony\Component\Process\Process([
-                'chmod', '+x', base_path('wp-cli.phar'),
+                'chmod',
+                '+x',
+                base_path('wp-cli.phar'),
             ]);
             $chmodProcess->run();
 
@@ -279,27 +283,29 @@ class InstallWordPress extends Command
             $this->info('Moving wp-cli.phar to a user directory in your PATH...');
 
             // Determine a directory that is in the user's PATH and doesn't require admin rights
-            $targetDir = getenv('APPDATA').'\Composer\vendor\bin';
+            $targetDir = getenv('APPDATA') . '\Composer\vendor\bin';
             if (! file_exists($targetDir)) {
                 mkdir($targetDir, 0755, true);
             }
 
-            $targetPath = $targetDir.'\wp.bat';
+            $targetPath = $targetDir . '\wp.bat';
 
             // Create a .bat file that runs the .phar
             $batContent = "@ECHO OFF\r\nphp \"%~dp0wp-cli.phar\" %*";
             file_put_contents($targetPath, $batContent);
 
-            if (! @rename(base_path('wp-cli.phar'), $targetDir.'\wp-cli.phar')) {
-                $this->error('Failed to move wp-cli.phar to '.$targetDir);
+            if (! @rename(base_path('wp-cli.phar'), $targetDir . '\wp-cli.phar')) {
+                $this->error('Failed to move wp-cli.phar to ' . $targetDir);
                 exit(1);
             } else {
-                $this->info('wp-cli installed successfully in '.$targetDir);
+                $this->info('wp-cli installed successfully in ' . $targetDir);
             }
         } else {
             $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
             $moveProcess = new \Symfony\Component\Process\Process([
-                'mv', base_path('wp-cli.phar'), '/usr/local/bin/wp',
+                'mv',
+                base_path('wp-cli.phar'),
+                '/usr/local/bin/wp',
             ]);
 
             $moveProcess->run();
@@ -321,12 +327,12 @@ class InstallWordPress extends Command
         $env = $this->getDotenv();
 
         $wpPath = base_path(trim($env['WP_PATH'], '/'));
-        if (! File::exists($wpPath.'/wp-config.php')) {
+        if (! File::exists($wpPath . '/wp-config.php')) {
             alert('wp-config.php not found! Please ensure the file is created and configured.');
             exit(1);
         }
 
-        $siteUrl = $env['APP_URL'].$env['WP_SLUG'];
+        $siteUrl = $env['APP_URL'] . $env['WP_SLUG'];
         $defaultSiteTitle = $env['APP_NAME'];
         $siteTitle = $this->ask('Please enter the site title', $defaultSiteTitle);
         $adminUser = 'sysadm';
@@ -337,12 +343,14 @@ class InstallWordPress extends Command
         warning('Please make sure to save this password as it will not be shown again.');
 
         $command = [
-            'wp', 'core', 'install',
-            '--url='.$siteUrl,
-            '--title='.$siteTitle,
-            '--admin_user='.$adminUser,
-            '--admin_password='.$adminPassword,
-            '--admin_email='.$adminEmail,
+            'wp',
+            'core',
+            'install',
+            '--url=' . $siteUrl,
+            '--title=' . $siteTitle,
+            '--admin_user=' . $adminUser,
+            '--admin_password=' . $adminPassword,
+            '--admin_email=' . $adminEmail,
         ];
 
         foreach ($env as $key => $value) {
@@ -372,7 +380,10 @@ class InstallWordPress extends Command
         $this->info('Ensuring a default theme is installed and activated...');
 
         $checkThemeProcess = new \Symfony\Component\Process\Process([
-            'wp', 'theme', 'is-installed', 'twentytwentyfour',
+            'wp',
+            'theme',
+            'is-installed',
+            'twentytwentyfour',
         ], $fullWpPath);
         $checkThemeProcess->run();
 
@@ -380,7 +391,11 @@ class InstallWordPress extends Command
             $this->info('Default theme twentytwentyfour is not installed. Installing it now...');
 
             $installThemeProcess = new \Symfony\Component\Process\Process([
-                'wp', 'theme', 'install', 'twentytwentyfour', '--activate',
+                'wp',
+                'theme',
+                'install',
+                'twentytwentyfour',
+                '--activate',
             ], $fullWpPath);
             $installThemeProcess->setTimeout(null);
             $installThemeProcess->run();
@@ -404,10 +419,10 @@ class InstallWordPress extends Command
         $wpPath = env('WP_PATH', '/public/wp');
         $fullWpPath = base_path(trim($wpPath, '/'));
 
-        $pluginsPath = $fullWpPath.'/wp-content/plugins';
+        $pluginsPath = $fullWpPath . '/wp-content/plugins';
 
-        $pluginSource = __DIR__.'/../../wordpress/plugins/moox-press';
-        $pluginDestination = $pluginsPath.'/moox-press';
+        $pluginSource = __DIR__ . '/../../wordpress/plugins/moox-press';
+        $pluginDestination = $pluginsPath . '/moox-press';
 
         if (! File::exists($pluginSource)) {
             alert('The Moox Press plugin source directory does not exist.');
@@ -459,17 +474,19 @@ class InstallWordPress extends Command
         $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $numbers = '0123456789';
         $special = '!@#$%^&*()';
-        $all = $lowercase.$uppercase.$numbers.$special;
+        $all = $lowercase . $uppercase . $numbers . $special;
 
         $password = '';
-        $password .= $lowercase[rand(0, strlen($lowercase) - 1)];
-        $password .= $uppercase[rand(0, strlen($uppercase) - 1)];
-        $password .= $numbers[rand(0, strlen($numbers) - 1)];
-        $password .= $special[rand(0, strlen($special) - 1)];
+        $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+        $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
+        $password .= $numbers[random_int(0, strlen($numbers) - 1)];
+        $password .= $special[random_int(0, strlen($special) - 1)];
 
         for ($i = 0; $i < $length - 4; $i++) {
-            $password .= $all[rand(0, strlen($all) - 1)];
+            $password .= $all[random_int(0, strlen($all) - 1)];
         }
+
+
 
         return str_shuffle($password);
     }

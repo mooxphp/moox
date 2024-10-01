@@ -2,16 +2,16 @@
 
 namespace Moox\LoginLink\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Contracts\Encryption\DecryptException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Moox\LoginLink\Mail\LoginLinkEmail;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Moox\LoginLink\Models\LoginLink;
+use Illuminate\Support\Facades\Config;
+use Moox\LoginLink\Mail\LoginLinkEmail;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class LoginLinkController extends Controller
 {
@@ -72,7 +72,7 @@ class LoginLinkController extends Controller
 
         $loginLink->update(['used_at' => now()]);
 
-        $userModel = Config::get('login-link.user_models.'.$userType, User::class);
+        $userModel = Config::get('login-link.user_models.' . $userType, User::class);
         $user = $userModel::findOrFail($userId);
         Auth::login($user);
 

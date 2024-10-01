@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 
 class ModelController extends Controller
 {
@@ -12,10 +12,10 @@ class ModelController extends Controller
         $available_models = [];
 
         foreach ($packages as $package) {
-            $namespace = str_replace(' ', '\\', $package['package']).'\\Models\\';
+            $namespace = str_replace(' ', '\\', $package['package']) . '\\Models\\';
 
             foreach ($package['models'] as $model => $api) {
-                $fullModelName = $namespace.$model;
+                $fullModelName = $namespace . $model;
                 if (class_exists($fullModelName)) {
                     $available_models[] = $fullModelName;
                 }

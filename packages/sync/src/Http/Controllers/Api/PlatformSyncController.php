@@ -2,9 +2,9 @@
 
 namespace Moox\Sync\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use Moox\Sync\Http\Resources\SyncResource;
 use Moox\Sync\Models\Sync;
+use Illuminate\Routing\Controller;
+use Moox\Sync\Http\Resources\SyncResource;
 
 class PlatformSyncController extends Controller
 {

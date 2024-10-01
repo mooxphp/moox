@@ -2,9 +2,9 @@
 
 namespace Moox\Expiry\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Moox\Expiry\Models\Expiry;
+use Illuminate\Routing\Controller;
 
 class ExpiryController extends Controller
 {
