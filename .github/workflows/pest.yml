@@ -39,7 +39,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: secretroot
         ports:
           - 3306
-        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
 
     steps:
       - name: Checkout code
@@ -56,7 +56,7 @@ jobs:
         run: |
           mysql --version
           sudo apt-get install -y mysql-client
-          mysql -uuser -psecret -e "SHOW DATABASES"
+          mysql  -uuser -psecret -e "SHOW DATABASES" --host=mysql
 
       - name: Setup problem matchers
         run: |
