@@ -14,9 +14,9 @@ jobs:
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ubuntu-latest
 
-  name: Checkout
+    name: Checkout
 
-  services:
+    services:
       mysql:
         image: mysql:latest
         env:
