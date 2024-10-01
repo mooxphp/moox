@@ -27,7 +27,7 @@ jobs:
         include:
           - laravel: 11.*
             testbench: 9.*
-
+            
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
     services:
