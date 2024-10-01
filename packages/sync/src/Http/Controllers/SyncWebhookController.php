@@ -2,8 +2,8 @@
 
 namespace Moox\Sync\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Moox\Core\Traits\LogLevel;

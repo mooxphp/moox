@@ -22,11 +22,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         php: [8.2]
-        laravel: [10.*, 11.*]
+        laravel: [11.*]
         stability: [prefer-lowest, prefer-stable]
         include:
-          - laravel: 10.*
-            testbench: 8.*
           - laravel: 11.*
             testbench: 9.*
 
@@ -51,7 +49,6 @@ jobs:
           mysql --version
           sudo apt-get install -y mysql-client
           mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -66,16 +63,12 @@ jobs:
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
-
       - name: Remove PHP-PSR Extension
         run: |
           sudo apt remove php8.2-psr
-
       - name: Install dependencies
         run: |
           composer update
-
       - name: List Installed Dependencies
         run: composer show -D
 

@@ -14,7 +14,6 @@ class RolesSeeder extends Seeder
      */
     public function run()
     {
-
         Role::create([
             'id' => 1,
             'name' => 'super_admin',
@@ -30,6 +29,5 @@ class RolesSeeder extends Seeder
             'created_at' => '2023-12-10 23:32:43',
             'updated_at' => '2023-12-10 23:32:43',
         ]);
-
     }
 }

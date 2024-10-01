@@ -23,7 +23,6 @@ class CreateWpUser extends CreateRecord
         $attachmentId = null;
 
         if ($temporaryFilePath) {
-
             $mimeTypes = new MimeTypes;
             $mimeType = $mimeTypes->guessMimeType(storage_path('app/'.$temporaryFilePath));
 
@@ -84,7 +83,6 @@ class CreateWpUser extends CreateRecord
             $attachmentId = $postId;
 
             Storage::delete($temporaryFilePath);
-
         }
 
         $metaDataConfig = config('press.default_user_meta');
@@ -107,6 +105,5 @@ class CreateWpUser extends CreateRecord
                 );
             }
         }
-
     }
 }

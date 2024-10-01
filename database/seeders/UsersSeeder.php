@@ -117,6 +117,5 @@ class UsersSeeder extends Seeder
             'created_at' => '2023-12-14 08:44:35',
             'updated_at' => '2023-12-14 08:44:35',
         ]);
-
     }
 }

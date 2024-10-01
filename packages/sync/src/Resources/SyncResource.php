@@ -97,7 +97,6 @@ class SyncResource extends Resource
             }
 
             return array_filter(array_flip($options)); // Remove any null values
-
         } catch (\Exception $e) {
             Notification::make()
                 ->title('API Error')

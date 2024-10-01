@@ -21,9 +21,7 @@ class LocalValetDriver extends LaravelValetDriver
         $wpslug = '/wp';
 
         if (str_contains($uri, $wpslug.'/') || str_ends_with($uri, $wpslug)) {
-
             if (str_contains($uri, '/wp-admin')) {
-
                 if (str_ends_with($uri, '/wp-admin/') || str_ends_with($uri, '/wp-admin') || str_ends_with($uri, '/wp-admin/index.php')) {
                     return $this->convertForWindows($sitePath.$public.$wpslug.'/wp-admin/index.php');
                 }

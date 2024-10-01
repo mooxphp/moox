@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\ItemResource;
 
-class EditPage extends EditRecord
+class EditItem extends EditRecord
 {
     protected static string $resource = ItemResource::class;
 

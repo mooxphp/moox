@@ -12,7 +12,7 @@ use Moox\Builder\Resources\ItemResource;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 use Moox\Core\Traits\HasDynamicTabs;
 
-class ListPage extends ListRecords
+class ListItem extends ListRecords
 {
     use HasDynamicTabs;
 
