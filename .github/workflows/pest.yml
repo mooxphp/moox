@@ -45,13 +45,6 @@ jobs:
         options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-
-      - name: Verfify MySQL connection
-        run: |
-          mysql --version
-          sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u$MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -67,7 +60,6 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
-
       - name: Remove PHP-PSR Extension
         run: |
           sudo apt remove php8.2-psr
@@ -78,6 +70,19 @@ jobs:
 
       - name: List Installed Dependencies
         run: composer show -D
+
+      - name: Verify MySQL connection
+        run: |
+          sudo apt-get install -y mysql-client
+          # Wait for MySQL to be ready
+          for i in {1..30}; do
+            nc -z 127.0.0.1 3306 && echo "MySQL is ready" && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+          # Verify connection
+          mysql --host=127.0.0.1 --port=3306 -uuser -psecret -e "SHOW DATABASES;"
+
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
