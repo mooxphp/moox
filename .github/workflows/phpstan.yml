@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-      #- "feature/**"
+      - "feature/**"
 
 jobs:
   phpstan:
