@@ -1,7 +1,6 @@
 <?php
 
 test('healthy response', function () {
-
     $response = $this->get('/');
 
     $response->assertStatus(200);

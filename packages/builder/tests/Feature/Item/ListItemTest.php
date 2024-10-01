@@ -13,7 +13,6 @@ it('can render ItemResource', function () {
 });
 
 it('can list Items', function () {
-
     $posts = Item::factory()->count(10)->create();
 
     livewire(ListItem::class)

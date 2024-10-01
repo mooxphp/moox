@@ -56,7 +56,6 @@ class FileSyncJob implements ShouldQueue
             }
 
             $this->syncFile();
-
         } catch (\Exception $e) {
             Log::error('File sync failed', [
                 'model_class' => $this->modelClass,

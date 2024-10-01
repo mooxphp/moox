@@ -117,7 +117,6 @@ class InstallCommand extends Command
 
     public function registerPlugins(string $providerPath): void
     {
-
         if (File::exists($providerPath)) {
             $content = File::get($providerPath);
 
@@ -164,7 +163,6 @@ class InstallCommand extends Command
             }
         } else {
             alert('There are no new plugins detected.');
-
         }
     }
 

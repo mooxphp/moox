@@ -7,7 +7,6 @@ trait FormatSeconds
 {
     public function formatSeconds(int $seconds): string
     {
-
         $days = 0;
         $hours = 0;
         $minutes = 0;

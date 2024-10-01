@@ -10,7 +10,6 @@ class PlatformSyncController extends Controller
 {
     public function index($platformId)
     {
-
         $syncs = Sync::whereHas('sourcePlatform', function ($query) use ($platformId) {
             $query->where('id', $platformId);
         })->with(['sourcePlatform', 'targetPlatform'])->get();
