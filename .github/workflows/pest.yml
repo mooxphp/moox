@@ -71,6 +71,9 @@ jobs:
       - name: Show Docker containers
         run: docker ps -a
 
+      - name: Show MySQL Docker container
+        run: docker ps -a --filter "name=mysql"
+
       - name: Show Database for Root User
         run: |
           mysql -h 127.0.0.1 -u root -psecretroot -e "SHOW DATABASES;"
