@@ -52,11 +52,6 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: pcov
 
-      - name: Verifiy MySQL connection
-        run: |
-          mysql --version
-          mysql --host=$MYSQL_HOST --port=3306 -uroot -p$MYSQL_ROOT_PASSWORD -D$MYSQL_DATABASE
-
       - name: Setup problem matchers
         run: |
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
@@ -76,3 +71,5 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
