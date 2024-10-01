@@ -38,6 +38,7 @@ jobs:
           MYSQL_USER: user
           MYSQL_PASSWORD: secret
           MYSQL_DATABASE: testing
+          MYSQL_HOST: 127.0.0.1
           MYSQL_ROOT_PASSWORD: secretroot
         ports:
           - 3306
@@ -45,16 +46,11 @@ jobs:
 
     steps:
 
-      - name: Start MySQL
-        run: |
-          sudo /etc/init.d/mysql start
-          mysql -e "CREATE DATABASE IF NOT EXISTS $DB_DATABASE;" -u$DB_USER -p$DB_PASSWORD --host 127.0.0.1
-
       - name: Verfify MySQL connection
         run: |
           mysql --version
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u$MYSQL_USER -p$MYSQL_PASSWORD --host$MYSQL_HOST -e "SHOW DATABASES"
 
       - name: Checkout code
         uses: actions/checkout@v4
