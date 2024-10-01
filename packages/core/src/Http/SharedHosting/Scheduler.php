@@ -26,9 +26,9 @@ class Scheduler extends Controller
 
             return 'Scheduler run was successful';
         } else {
-            activity()->log('Ran Scheduler with output: ' . $output);
+            activity()->log('Ran Scheduler with output: '.$output);
 
-            return 'Scheduler ran with output: ' . $output;
+            return 'Scheduler ran with output: '.$output;
         }
     }
 }

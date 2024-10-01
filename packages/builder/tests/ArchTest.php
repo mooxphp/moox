@@ -1,4 +1,5 @@
 <?php
+
 arch()
     ->expect('Moox\Builder')
     ->toUseStrictTypes()

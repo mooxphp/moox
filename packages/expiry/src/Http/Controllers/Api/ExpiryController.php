@@ -3,8 +3,8 @@
 namespace Moox\Expiry\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Moox\Expiry\Models\Expiry;
 use Illuminate\Routing\Controller;
+use Moox\Expiry\Models\Expiry;
 
 class ExpiryController extends Controller
 {

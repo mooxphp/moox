@@ -3,10 +3,10 @@
 namespace Moox\Sync\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Moox\Sync\Models\Platform;
 use Illuminate\Routing\Controller;
-use Moox\Sync\Http\Resources\SyncResource;
 use Moox\Sync\Http\Resources\PlatformResource;
+use Moox\Sync\Http\Resources\SyncResource;
+use Moox\Sync\Models\Platform;
 
 class PlatformController extends Controller
 {
