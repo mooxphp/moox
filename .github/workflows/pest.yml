@@ -42,6 +42,8 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
 
     steps:
+      - name: Show Docker containers
+        run: docker ps -a
 
       - name: Verifiy MySQL connection
         run: |
@@ -74,14 +76,6 @@ jobs:
 
       - name: List Installed Dependencies
         run: composer show -D
-
-      - name: Show Docker containers
-        run: docker ps -a
-
-      - name: Show Database for Root User
-        run: |
-          mysql --host 127.0.0.1 --port 32768 -uroot -psecretroot -e "SHOW TABLES FROM testing"
-
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
