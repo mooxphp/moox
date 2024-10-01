@@ -50,7 +50,7 @@ jobs:
         run: |
           mysql --version
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u$MYSQL_USER -p$MYSQL_PASSWORD --host$MYSQL_HOST -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u$MYSQL_USER -p$MYSQL_PASSWORD -e "SHOW DATABASES"
 
       - name: Checkout code
         uses: actions/checkout@v4
