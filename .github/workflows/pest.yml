@@ -80,7 +80,7 @@ jobs:
 
       - name: Show Database for Root User
         run: |
-          mysql --host 127.0.0.1 --port 32768 -uroot -psecretroot -e "SELECT * FROM testing"
+          mysql --host 127.0.0.1 --port 32768 -uroot -psecretroot -e "SHOW TABLES FROM testing"
 
 
       - name: Execute tests
@@ -89,4 +89,5 @@ jobs:
           DB_PORT: ${{ job.services.mysql.ports[3306] }}
           DB_HOST: 127.0.0.1
           DB_USER: root
+
           DB_PASSWORD: secretroot
