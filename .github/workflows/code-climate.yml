@@ -17,13 +17,25 @@ on:
 jobs:
   test:
     env:
-      DB_CONNECTION: sqlite
-      SESSION_DRIVER: array
-      DB_DATABASE: ":memory:"
+      DB_DATABASE: testing
+      DB_ROOT_PASSWORD: secretroot
+      DB_HOST: 127.0.0.1
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ubuntu-latest
 
     name: Checkout
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: secretroot
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
+
 
     steps:
       - name: Checkout code
@@ -53,5 +65,9 @@ jobs:
         uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: 49c2958be5b2f72fa7202fd4b91b4668cbfefa9aa51e949b8a0bde13bc893ae5
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: secretroot
         with:
           coverageCommand: vendor/bin/pest --coverage-clover clover.xml

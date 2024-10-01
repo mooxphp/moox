@@ -8,11 +8,22 @@ on:
 jobs:
   coverage:
     env:
-      DB_CONNECTION: sqlite
-      SESSION_DRIVER: array
-      DB_DATABASE: ":memory:"
+     DB_DATABASE: testing
+      DB_ROOT_PASSWORD: secretroot
+      DB_HOST: 127.0.0.1
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     runs-on: ubuntu-latest
+
+  services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: testing
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_ROOT_PASSWORD: secretroot
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --name=mysql
 
     name: Checkout
 
@@ -45,6 +56,11 @@ jobs:
 
       - name: Execute tests
         run: vendor/bin/pest --coverage-clover clover.xml
+          env:
+            DB_PORT: ${{ job.services.mysql.ports[3306] }}
+            DB_HOST: 127.0.0.1
+            DB_USER: root
+            DB_PASSWORD: secretroot
 
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
