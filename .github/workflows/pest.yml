@@ -13,9 +13,8 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     env:
-      DB_DATABASE: moox-test
-      DB_USER: user
-      DB_PASSWORD: secret
+      DB_DATABASE: testing
+      DB_PASSWORD: secretroot
       APP_KEY: base64:1NxfrNErQ0vo1ZnPcLeVhnE7tOZdKlKiFORzPA92krM=
     strategy:
       fail-fast: true
@@ -36,9 +35,7 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          MYSQL_USER: user
-          MYSQL_PASSWORD: secret
-          MYSQL_DATABASE: laravel_test
+          MYSQL_DATABASE: testing
           MYSQL_ROOT_PASSWORD: secretroot
         ports:
           - 3306
@@ -50,7 +47,7 @@ jobs:
         run: |
           mysql --version
           sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uuser -psecret -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -p$DB_PASSWORD -e "SHOW DATABASES"
       - name: Checkout code
         uses: actions/checkout@v4
 
