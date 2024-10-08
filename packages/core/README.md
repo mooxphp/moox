@@ -544,6 +544,10 @@ You can enable shared hosting features. This is useful if you want to run schedu
     ],
 ```
 
+## Assets
+
+Moox Core provides a couple of (non-publishable) assets, loaded by a dynamic route. All images and assets in /public can be used like `url('/moox/core/assets/noimage.svg'`.
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.

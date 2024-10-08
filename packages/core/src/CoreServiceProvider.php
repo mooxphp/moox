@@ -37,7 +37,7 @@ class CoreServiceProvider extends PackageServiceProvider
             ->name('core')
             ->hasConfigFile()
             ->hasTranslations()
-            ->hasRoute('api')
+            ->hasRoutes(['api', 'web'])
             ->hasCommand(InstallCommand::class);
     }
 

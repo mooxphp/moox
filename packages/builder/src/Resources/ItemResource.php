@@ -165,6 +165,7 @@ class ItemResource extends Resource
                                     Select::make('type')
                                         ->options(static::getModel()::getTypeOptions())
                                         ->default('post')
+                                        ->visible(! empty(config('builder.types')))
                                         ->required(),
                                     DateTimePicker::make('publish_at')
                                         ->label(__('core::core.publish_at')),
@@ -195,12 +196,14 @@ class ItemResource extends Resource
             ->columns([
                 ImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
+                    ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
                     ->alignment('center')
                     ->square()
                     ->toggleable(),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->searchable()
+                    ->limit(30)
                     ->toggleable()
                     ->sortable(),
                 TextColumn::make('slug')
@@ -211,6 +214,7 @@ class ItemResource extends Resource
                 TextColumn::make('content')
                     ->label(__('core::core.content'))
                     ->sortable()
+                    ->limit(30)
                     ->searchable()
                     ->toggleable(),
                 ImageColumn::make('author.avatar_url')
@@ -222,7 +226,8 @@ class ItemResource extends Resource
                     ->toggleable(),
                 TextColumn::make('type')
                     ->label(__('core::core.type'))
-                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visible(! empty(config('builder.types')))
+                    ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
                     ->sortable(),
                 TextColumn::make('status')
                     ->label(__('core::core.status'))
