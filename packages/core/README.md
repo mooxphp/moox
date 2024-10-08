@@ -36,6 +36,8 @@ If you want to disable tabs for this resource, just do a
             'tabs' => [],
 ```
 
+#### Basic Tabs
+
 A pretty basic example:
 
 ```php
@@ -55,11 +57,33 @@ A pretty basic example:
                             'value' => null,
                         ],
                     ],
+                  	'visible' => true,
                 ],
             ],
 ```
 
-As mentioned, the DynamicTabs trait is already implemented, if you want to implement this feature from outside Moox, please have a look at one of our Filament resources list pages:
+#### Visibility
+
+The `visible`-option is not necessary, as it defaults to true. But if you want to toggle the visibility of a Tab, you can use a Closure like this:
+
+```php
+										'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+												'https://visible.test',
+                        'http://localhost',
+                    ]),
+```
+
+#### Translation
+
+See [Translations in Config](#translations-in-config) on how to use the trans feature.
+
+#### Queries
+
+See [Queries in Config](#queries-in-config) on how to use the query feature.
+
+#### Custom implementation
+
+As mentioned, the DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature from outside Moox, please have a look at one of our Filament resources list pages:
 
 ```php
 use Moox\Core\Traits\HasDynamicTabs;
@@ -112,6 +136,8 @@ and the config of the package:
         ],
     ],
 ```
+
+on how to implement the feature in your custom package.
 
 ### Queries in Config
 

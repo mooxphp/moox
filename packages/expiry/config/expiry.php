@@ -124,9 +124,6 @@ return [
                             'value' => 'No expiry date',
                         ],
                     ],
-                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
-                        config('app.url'),
-                    ]),
                 ],
             ],
         ],
