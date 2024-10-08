@@ -20,7 +20,7 @@
         "php": "^8.2.0",
         "adrolli/filament-title-with-slug": "*",
         "spatie/laravel-package-tools": "^1.13.0",
-        "laravel/framework": "^10.0|^11.0",
+        "laravel/framework": "46011",
         "filament/filament": "^3.2",
         "pharaonic/laravel-readable": "^1.0.5",
         "codeat3/blade-google-material-design-icons": "^1.0",
