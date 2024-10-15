@@ -1,10 +1,10 @@
 <?php
 
 use Moox\Builder\Models\Item;
-use function Pest\Livewire\livewire;
-
 use Moox\Builder\Resources\ItemResource;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
+
+use function Pest\Livewire\livewire;
 
 /*_____________________________________________________
 
@@ -24,8 +24,6 @@ it('can list Items', function () {
         ->assertCanSeeTableRecords($items);
 });
 
-
-
 //it('can edit an item', function () {
 //    $item = Item::factory()->create();
 //
@@ -33,8 +31,6 @@ it('can list Items', function () {
 //       ->call('edit', $item->id)
 //        ->assertRedirectTo(ItemResource::getUrl('edit', ['record' => $item->id]));
 //});
-
-
 
 /*
 it('can render all tabs', function () {
@@ -50,7 +46,6 @@ it('can render all tabs', function () {
     // ->assertDontSee('Trashed');
 });
 */
-
 
 it('can render index view ', function () {
     $this->get(ItemResource::getUrl('index'))->assertSuccessful();

@@ -26,7 +26,7 @@ class ViewItem extends ViewRecord
     {
         $title = parent::getTitle();
         if ($this->isRecordTrashed()) {
-            $title = $title . ' - ' . __('core::core.deleted');
+            $title = $title.' - '.__('core::core.deleted');
         }
 
         return $title;

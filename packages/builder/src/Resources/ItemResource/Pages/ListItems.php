@@ -48,7 +48,7 @@ class ListItems extends ListRecords
                 ->using(function (array $data, string $model): Item {
                     return $model::create($data);
                 })
-                ->hidden(fn() => $this->activeTab === 'deleted'),
+                ->hidden(fn () => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -63,7 +63,7 @@ class ListItems extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn() => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
+                ->visible(fn () => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
         ];
     }
 
