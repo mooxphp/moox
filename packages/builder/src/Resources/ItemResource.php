@@ -1,33 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Resources;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Models\Item;
-use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
-use Moox\Builder\Resources\ItemResource\Pages\ListItem;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
+use Moox\Builder\Resources\ItemResource\Pages\ListItems;
+use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 
 //use Moox\Core\Forms\Components\TitleWithSlugInput;
@@ -64,17 +66,18 @@ class ItemResource extends Resource
                                         fieldSlug: 'slug', // The name of the field in your model that will store the slug.
                                     ),
 
-                                    /*
-                                    ...TitleWithSlugInput::make('title')
+
+                                    /*TitleWithSlugInput::make('title')
                                         ->titleLabel(__('core::core.title'))
                                         ->slugLabel(__('core::core.slug'))
-                                        ->showSlugInput(fn ($record) => ! $record ||
-                                            (config('builder.allow_slug_change_after_saved') || ! $record->exists) &&
-                                            (config('builder.allow_slug_change_after_publish') || ! $record->published_at)
+                                        ->showSlugInput(
+                                            fn($record) => ! $record ||
+                                                (config('builder.allow_slug_change_after_saved') || ! $record->exists) &&
+                                                (config('builder.allow_slug_change_after_publish') || ! $record->published_at)
                                         )
-                                        ->slugPrefix(url('/').'/'.config('builder.url_slug', 'items/'))
-                                        ->components(),
-                                    */
+                                        ->slugPrefix(url('/') . '/' . config('builder.url_slug', 'items/'))
+                                        ->components(),*/
+
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
@@ -99,8 +102,8 @@ class ItemResource extends Resource
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewItem),
+                                            ->action(fn($record) => $record->restore())
+                                            ->visible(fn($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewItem),
                                         Actions\Action::make('save')
                                             ->label(__('core::core.save'))
                                             ->color('primary')
@@ -109,7 +112,7 @@ class ItemResource extends Resource
                                             ->action(function ($livewire) {
                                                 $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
                                             })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateItem || $livewire instanceof EditItem),
+                                            ->visible(fn($livewire) => $livewire instanceof CreateItem || $livewire instanceof EditItem),
                                         Actions\Action::make('publish')
                                             ->label(__('core::core.publish'))
                                             ->color('success')
@@ -123,7 +126,7 @@ class ItemResource extends Resource
                                                 $livewire->form->fill($data);
                                                 $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
                                             })
-                                            ->hidden(fn ($livewire, $record) => $record && $record->trashed()),
+                                            ->hidden(fn($livewire, $record) => $record && $record->trashed()),
                                         Actions\Action::make('saveAndCreateAnother')
                                             ->label(__('core::core.save_and_create_another'))
                                             ->color('secondary')
@@ -132,35 +135,35 @@ class ItemResource extends Resource
                                             ->action(function ($livewire) {
                                                 $livewire->saveAndCreateAnother();
                                             })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateItem),
+                                            ->visible(fn($livewire) => $livewire instanceof CreateItem),
                                         Actions\Action::make('cancel')
                                             ->label(__('core::core.cancel'))
                                             ->color('secondary')
                                             ->outlined()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn () => static::getUrl('index'))
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateItem),
+                                            ->url(fn() => static::getUrl('index'))
+                                            ->visible(fn($livewire) => $livewire instanceof CreateItem),
                                         Actions\Action::make('edit')
                                             ->label(__('core::core.edit'))
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-                                            ->visible(fn ($livewire, $record) => $livewire instanceof ViewItem && ! $record->trashed()),
+                                            ->url(fn($record) => static::getUrl('edit', ['record' => $record]))
+                                            ->visible(fn($livewire, $record) => $livewire instanceof ViewItem && ! $record->trashed()),
                                         Actions\Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditItem),
+                                            ->action(fn($record) => $record->restore())
+                                            ->visible(fn($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditItem),
                                         Actions\Action::make('delete')
                                             ->label(__('core::core.delete'))
                                             ->color('danger')
                                             ->link()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn ($record) => $record->delete())
-                                            ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditItem),
+                                            ->action(fn($record) => $record->delete())
+                                            ->visible(fn($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditItem),
                                     ]),
                                     Select::make('type')
                                         ->options(static::getModel()::getTypeOptions())
@@ -172,11 +175,11 @@ class ItemResource extends Resource
 
                                     Select::make('author_id')
                                         ->label(__('core::core.author'))
-                                        ->options(fn () => static::getAuthorOptions())
-                                        ->default(fn () => auth()->id())
+                                        ->options(fn() => static::getAuthorOptions())
+                                        ->default(fn() => auth()->id())
                                         ->required()
                                         ->searchable()
-                                        ->visible(fn () => static::shouldShowAuthorField()),
+                                        ->visible(fn() => static::shouldShowAuthorField()),
                                 ]),
                             // TODO: Taxonomy Plugin
                         ])
@@ -219,22 +222,22 @@ class ItemResource extends Resource
                     ->toggleable(),
                 ImageColumn::make('author.avatar_url')
                     ->label(__('core::core.author'))
-                    ->tooltip(fn ($record) => $record->author?->name)
+                    ->tooltip(fn($record) => $record->author?->name)
                     ->alignment('center')
                     ->circular()
-                    ->visible(fn () => static::shouldShowAuthorField())
+                    ->visible(fn() => static::shouldShowAuthorField())
                     ->toggleable(),
                 TextColumn::make('type')
                     ->label(__('core::core.type'))
                     ->visible(! empty(config('builder.types')))
-                    ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
+                    ->formatStateUsing(fn($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
                     ->sortable(),
                 TextColumn::make('status')
                     ->label(__('core::core.status'))
                     ->alignment('center')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => strtoupper($state))
-                    ->color(fn (string $state): string => match ($state) {
+                    ->formatStateUsing(fn(string $state): string => strtoupper($state))
+                    ->color(fn(string $state): string => match ($state) {
                         'draft' => 'primary',
                         'published' => 'success',
                         'scheduled' => 'info',
@@ -253,7 +256,7 @@ class ItemResource extends Resource
             ->defaultSort('slug', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn() => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->hidden(function () use ($currentTab) {
@@ -284,7 +287,7 @@ class ItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListItem::route('/'),
+            'index' => ListItems::route('/'),
             'edit' => EditItem::route('/{record}/edit'),
             'create' => CreateItem::route('/create'),
             'view' => ViewItem::route('/{record}'),

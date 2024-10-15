@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Actions\DeleteAction;

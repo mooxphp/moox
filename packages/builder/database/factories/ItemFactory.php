@@ -18,10 +18,15 @@ class ItemFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence,
-            'slug' => $this->faker->slug,
+            'slug' => $this->faker->unique()->slug,
+            'featured_image_url' => $this->faker->image(null, 30, 30),
             'content' => $this->faker->paragraph,
-            'status' => 'published',
+            'gallery_image_urls' => null,
+            'status' => 'draft',
             'type' => 'post',
+            'author_id' => null,
+            'publish_at' => null,
+            'deleted_at' => null,
         ];
     }
 }

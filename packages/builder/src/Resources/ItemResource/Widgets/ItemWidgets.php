@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Resources\ItemResource\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -9,7 +11,7 @@ use Moox\Builder\Models\Item;
 
 class ItemWidgets extends BaseWidget
 {
-    protected function getCards(): array
+    protected function getStats(): array
     {
         $aggregationColumns = [
             DB::raw('COUNT(CASE WHEN publish_at <= NOW() THEN 1 END) as published_count'),

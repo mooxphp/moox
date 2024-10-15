@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Actions\Action;
@@ -12,7 +14,7 @@ use Moox\Builder\Resources\ItemResource;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 use Moox\Core\Traits\HasDynamicTabs;
 
-class ListItem extends ListRecords
+class ListItems extends ListRecords
 {
     use HasDynamicTabs;
 
@@ -46,7 +48,7 @@ class ListItem extends ListRecords
                 ->using(function (array $data, string $model): Item {
                     return $model::create($data);
                 })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->hidden(fn() => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
@@ -61,7 +63,7 @@ class ListItem extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
+                ->visible(fn() => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
         ];
     }
 

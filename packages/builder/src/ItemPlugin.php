@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder;
 
 use Filament\Contracts\Plugin;
