@@ -25,6 +25,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
@@ -180,7 +182,33 @@ class ItemResource extends Resource
                                         ->searchable()
                                         ->visible(fn () => static::shouldShowAuthorField()),
                                 ]),
-                            // TODO: Taxonomy Plugin
+                            // TODO: Taxonomy Plugin here
+                            Section::make('Taxonomies')
+                                ->schema(
+                                    collect(config('builder.taxonomies', []))->map(function ($settings, $taxonomy) {
+                                        $field = Select::make($taxonomy)
+                                            ->label($settings['label'] ?? Str::title($taxonomy))
+                                            ->multiple()
+                                            ->preload()
+                                            ->searchable();
+
+                                        try {
+                                            $relationshipMethod = app(static::getModel())->$taxonomy();
+                                            if ($relationshipMethod === null) {
+                                                Log::error("Relationship method returned null for taxonomy: $taxonomy");
+                                                $field->options([])->disabled()->helperText("Unable to load $taxonomy. Please check configuration.");
+                                            } else {
+                                                $field->relationship($taxonomy, 'name');
+                                            }
+                                        } catch (\Exception $e) {
+                                            Log::error("Error setting up relationship for taxonomy: $taxonomy", ['error' => $e->getMessage()]);
+                                            $field->options([])->disabled()->helperText("Unable to load $taxonomy. Please check configuration.");
+                                        }
+
+                                        return $field;
+                                    })->toArray()
+                                )
+                                ->columns(2),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])

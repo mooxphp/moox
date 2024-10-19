@@ -298,6 +298,19 @@ return [
                 ],
             ],
         ],
+        'tag' => [
+            'package' => 'Moox Tag',
+            'models' => [
+                'Tag' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'training' => [
             'package' => 'Moox Training',
             'models' => [

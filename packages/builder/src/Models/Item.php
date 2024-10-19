@@ -61,7 +61,19 @@ class Item extends Model
         return null;
     }
 
-    protected static function newFactory()
+    public function taxonomies(): array
+    {
+        $relations = [];
+        foreach (config('builder.taxonomies') as $taxonomy => $settings) {
+            $relations[$taxonomy] = function () use ($settings) {
+                return $this->belongsToMany($settings['model']);
+            };
+        }
+
+        return $relations;
+    }
+
+    protected static function newFactory(): ItemFactory
     {
         return ItemFactory::new();
     }
