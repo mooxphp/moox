@@ -1,46 +1,55 @@
-<?php
+![Moox Tag](https://github.com/mooxphp/moox/raw/main/art/banner/tag.jpg)
 
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
+# Moox Tag
 
-return [
+A simple Tag system for Filament.
 
-    /*
-    |--------------------------------------------------------------------------
-    | Resources
-    |--------------------------------------------------------------------------
-    |
-    | The following configuration is done per Filament resource.
-    |
-    */
+## Quick Installation
 
-    'resources' => [
-        'builder' => [
+These two commmands are all you need to install the package:
 
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
+```bash
+composer require moox/tag
+php artisan mooxtag:install
+```
 
-            'single' => 'trans//builder::builder.item',
-            'plural' => 'trans//builder::builder.items',
+Curious what the install command does? See manual installation below.
 
+## What it does
+
+<!--whatdoes-->
+
+This Laravel Package Template can be used to create a package including a powerful Filament resource called Tag.
+
+![Moox Tag Tag](https://github.com/mooxphp/moox/raw/main/art/screenshot/tag-item.jpg)
+
+Name and table for the Resource can be changed while building your package.
+
+### Using the Template
+
+1. Go to https://github.com/mooxphp/tag
+2. Press the `Use this template` button
+3. Create a new repository based on the template
+4. Clone the repository locally
+5. Run `php build.php`in the repo's directory and follow the steps
+   - Author Name (Default: Moox Developer): Your Name
+   - Author Email (Default: dev@moox.org): your@mail.com
+   - Package Name (Default: Blog Package): Your Package
+   - Package Description (Default: This is my package Blog Package)
+   - Package Entity (Default: Tag): e.g. Post
+   - Tablename (Default: tags): e.g. posts
+
+After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
+
+### Config
+
+After that the Resource is highly configurable. 
+
+#### Tabs and Translation
+
+Moox Core features like Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
+
+```php
             /*
             |--------------------------------------------------------------------------
             | Tabs
@@ -129,40 +138,21 @@ return [
                 ],
             ],
         ],
-    ],
+```
 
+All options for Tabs are explained in [Moox Core docs](https://github.com/mooxphp/core/blob/main/README.md#dynamic-tabs).
+
+#### Tag Types
+
+The item also support 'item' types, means you are able to configure selectable types for your Entity. By default, we provide "Post" and "Page" as example. If you don't want to use types, just empty the array and the field and column become invisible.
+
+```php
     /*
     |--------------------------------------------------------------------------
-    | Navigation Group
+    | Tag Types
     |--------------------------------------------------------------------------
     |
-    | The translatable title of the navigation group in the
-    | Filament Admin Panel. Instead of a translatable
-    | string, you may also use a simple string.
-    |
-    */
-
-    'navigation_group' => 'trans//core::core.tools',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Builder - Navigation Sort
-    |--------------------------------------------------------------------------
-    |
-    | This value is the sort order of the navigation item in the
-    | Filament Admin Panel. If you use a bunch of Moox
-    | plugins, everything should be in order.
-    |
-    */
-
-    'navigation_sort' => 9990,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Item Types
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the types of items entities. You can delete
+    | This array contains the types of tags entities. You can delete
     | the types you don't need and add new ones. If you don't need
     | types, you can empty this array like this: 'types' => [],
     |
@@ -172,7 +162,13 @@ return [
         'post' => 'Post',
         'page' => 'Page',
     ],
+```
 
+#### Author Model
+
+You can configure the user model used for displaying Authors. By default it is tied to App User:
+
+```php
     /*
     |--------------------------------------------------------------------------
     | Author Model
@@ -185,45 +181,47 @@ return [
     */
 
     'author_model' => \App\Models\User::class,
+```
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the relationships that should be shown ... wip.
-    |
-    */
+You may probably use Moox User
 
-    'relationships' => [
-    ],
+```php
+    'author_model' => \Moox\User\Models\User::class,
+```
 
-    /*
-    |--------------------------------------------------------------------------
-    | Taxonomies
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the taxonomies that should be shown ... wip.
-    |
-    */
+or Moox Press User instead:
 
-    'taxonomies' => [
-        'tag' => [
-            'label' => 'Tags',
-            'model' => \Moox\Tag\Models\Tag::class,
-            'table' => 'taggables',
-        ],
-    ],
+```php
+    'author_model' => \Moox\Press\Models\WpUser::class,
+```
 
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Slug Change - WIP
-    |--------------------------------------------------------------------------
-    |
-    | // TODO: Work in progress.
-    |
-    */
+<!--/whatdoes-->
 
-    'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
-    'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
-];
+## Manual Installation
+
+Instead of using the install-command `php artisan mooxtag:install` you are able to install this package manually step by step:
+
+```bash
+// Publish and run the migrations:
+php artisan vendor:publish --tag="tag-migrations"
+php artisan migrate
+
+// Publish the config file with:
+php artisan vendor:publish --tag="tag-config"
+```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Security Vulnerabilities
+
+Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
+
+## Credits
+
+-   [All Contributors](../../contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.

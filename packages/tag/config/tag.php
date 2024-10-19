@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        'builder' => [
+        'tag' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//builder::builder.item',
-            'plural' => 'trans//builder::builder.items',
+            'single' => 'trans//tag::tag.item',
+            'plural' => 'trans//tag::tag.tags',
 
             /*
             |--------------------------------------------------------------------------
@@ -146,7 +146,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Builder - Navigation Sort
+    | Tag - Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This value is the sort order of the navigation item in the
@@ -159,10 +159,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Item Types
+    | Tag Types
     |--------------------------------------------------------------------------
     |
-    | This array contains the types of items entities. You can delete
+    | This array contains the types of tags entities. You can delete
     | the types you don't need and add new ones. If you don't need
     | types, you can empty this array like this: 'types' => [],
     |
@@ -185,35 +185,6 @@ return [
     */
 
     'author_model' => \App\Models\User::class,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the relationships that should be shown ... wip.
-    |
-    */
-
-    'relationships' => [
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Taxonomies
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the taxonomies that should be shown ... wip.
-    |
-    */
-
-    'taxonomies' => [
-        'tag' => [
-            'label' => 'Tags',
-            'model' => \Moox\Tag\Models\Tag::class,
-            'table' => 'taggables',
-        ],
-    ],
 
     /*
     |--------------------------------------------------------------------------

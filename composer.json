@@ -40,6 +40,7 @@
         "moox/press-wiki": "*",
         "moox/security": "*",
         "moox/sync": "*",
+        "moox/tag": "*",
         "moox/trainings": "*",
         "moox/user": "*",
         "moox/user-device": "*",
