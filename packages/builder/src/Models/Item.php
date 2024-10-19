@@ -7,6 +7,7 @@ namespace Moox\Builder\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Database\Factories\ItemFactory;
 use Moox\Core\Traits\HasSlug;
@@ -71,6 +72,13 @@ class Item extends Model
         }
 
         return $relations;
+    }
+
+    // TODO: Working but hardcoded to tags, need to make it dynamic.
+    // could be a trait that we load based on the config?
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(config('builder.taxonomies.tags.model'), 'taggable');
     }
 
     protected static function newFactory(): ItemFactory

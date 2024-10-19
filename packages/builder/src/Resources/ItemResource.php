@@ -26,6 +26,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
@@ -193,13 +194,13 @@ class ItemResource extends Resource
                                             ->searchable();
 
                                         try {
-                                            $relationshipMethod = app(static::getModel())->$taxonomy();
-                                            if ($relationshipMethod === null) {
-                                                Log::error("Relationship method returned null for taxonomy: $taxonomy");
-                                                $field->options([])->disabled()->helperText("Unable to load $taxonomy. Please check configuration.");
-                                            } else {
-                                                $field->relationship($taxonomy, 'name');
-                                            }
+                                            $model = app($settings['model']);
+                                            $table = $model->getTable();
+
+                                            // Check if 'title' column exists, otherwise fall back to 'name'
+                                            $labelColumn = Schema::hasColumn($table, 'title') ? 'title' : 'name';
+
+                                            $field->relationship($taxonomy, $labelColumn);
                                         } catch (\Exception $e) {
                                             Log::error("Error setting up relationship for taxonomy: $taxonomy", ['error' => $e->getMessage()]);
                                             $field->options([])->disabled()->helperText("Unable to load $taxonomy. Please check configuration.");
@@ -208,7 +209,7 @@ class ItemResource extends Resource
                                         return $field;
                                     })->toArray()
                                 )
-                                ->columns(2),
+                                ->columns(1),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])

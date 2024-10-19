@@ -208,7 +208,7 @@ return [
     */
 
     'taxonomies' => [
-        'tag' => [
+        'tags' => [
             'label' => 'Tags',
             'model' => \Moox\Tag\Models\Tag::class,
             'table' => 'taggables',
