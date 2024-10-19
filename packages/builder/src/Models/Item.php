@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Moox\Builder\Database\Factories\ItemFactory;
 use Moox\Core\Traits\HasSlug;
 
@@ -62,27 +64,90 @@ class Item extends Model
         return null;
     }
 
-    public function taxonomies(): array
+    public function taxonomy(string $taxonomy): MorphToMany
     {
-        $relations = [];
-        foreach (config('builder.taxonomies') as $taxonomy => $settings) {
-            $relations[$taxonomy] = function () use ($settings) {
-                return $this->belongsToMany($settings['model']);
-            };
+        $taxonomies = config('builder.taxonomies', []);
+
+        if (! isset($taxonomies[$taxonomy])) {
+            Log::error("Taxonomy not found: $taxonomy");
+
+            return $this->morphToMany(Model::class, 'taggable', 'taggables')->where('id', 0);
         }
 
-        return $relations;
+        return $this->morphToMany(
+            $taxonomies[$taxonomy]['model'],
+            'taggable',
+            'taggables',
+            'taggable_id',
+            'tag_id'
+        )->withTimestamps();
     }
 
-    // TODO: Working but hardcoded to tags, need to make it dynamic.
-    // could be a trait that we load based on the config?
-    public function tags(): MorphToMany
+    protected function nullRelation()
     {
-        return $this->morphToMany(config('builder.taxonomies.tags.model'), 'taggable');
+        return new class
+        {
+            public function all()
+            {
+                return collect();
+            }
+
+            public function get()
+            {
+                return collect();
+            }
+
+            public function count()
+            {
+                return 0;
+            }
+
+            public function getResults()
+            {
+                return collect();
+            }
+        };
     }
 
-    protected static function newFactory(): ItemFactory
+    protected static function newFactory(): mixed
     {
         return ItemFactory::new();
+    }
+
+    public function __call($method, $parameters)
+    {
+        $taxonomies = config('builder.taxonomies', []);
+        if (array_key_exists($method, $taxonomies)) {
+            return $this->morphToMany(
+                $taxonomies[$method]['model'],
+                'taggable',
+                'taggables',
+                'taggable_id',
+                'tag_id'
+            )->withTimestamps();
+        }
+
+        // If it's not a taxonomy, try to get the relation
+        $relation = parent::__call($method, $parameters);
+
+        // If the relation is null, return an empty collection to avoid the getResults() error
+        if ($relation === null) {
+            return new Collection;
+        }
+
+        return $relation;
+    }
+
+    // This method will handle getting taxonomy attributes dynamically
+    public function getTaxonomyAttribute($key)
+    {
+        $taxonomies = config('builder.taxonomies', []);
+        if (array_key_exists($key, $taxonomies)) {
+            $relation = $this->$key();
+
+            return $relation instanceof MorphToMany ? $relation->get() : new Collection;
+        }
+
+        return parent::getAttribute($key);
     }
 }

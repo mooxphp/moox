@@ -12,7 +12,7 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -24,10 +24,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
@@ -56,6 +54,24 @@ class ItemResource extends Resource
     {
         static::initAuthorModel();
 
+        $taxonomyFields = collect(config('builder.taxonomies', []))
+            ->map(function ($settings, $taxonomy) {
+                return Select::make($taxonomy)
+                    ->multiple()
+                    ->options(function () use ($settings) {
+                        $model = app($settings['model']);
+
+                        return $model::pluck('title', 'id');
+                    })
+                    ->createOptionForm([
+                        TextInput::make('title')
+                            ->required(),
+                    ])
+                    ->preload()
+                    ->searchable();
+            })
+            ->toArray();
+
         return $form->schema([
             Grid::make(2)
                 ->schema([
@@ -63,34 +79,17 @@ class ItemResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    // TODO: Slug Plugin
                                     TitleWithSlugInput::make(
-                                        fieldTitle: 'title', // The name of the field in your model that stores the title.
-                                        fieldSlug: 'slug', // The name of the field in your model that will store the slug.
+                                        fieldTitle: 'title',
+                                        fieldSlug: 'slug',
                                     ),
-
-                                    /*TitleWithSlugInput::make('title')
-                                        ->titleLabel(__('core::core.title'))
-                                        ->slugLabel(__('core::core.slug'))
-                                        ->showSlugInput(
-                                            fn($record) => ! $record ||
-                                                (config('builder.allow_slug_change_after_saved') || ! $record->exists) &&
-                                                (config('builder.allow_slug_change_after_publish') || ! $record->published_at)
-                                        )
-                                        ->slugPrefix(url('/') . '/' . config('builder.url_slug', 'items/'))
-                                        ->components(),*/
-
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
                                         ->label(__('core::core.content')),
-                                    Textarea::make('content')
-                                        ->label(__('core::core.content'))
-                                        ->rows(10),
                                     FileUpload::make('gallery_image_urls')
                                         ->multiple()
                                         ->label(__('core::core.gallery_image_urls')),
-                                    // TODO: JSON Plugin
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -183,32 +182,8 @@ class ItemResource extends Resource
                                         ->searchable()
                                         ->visible(fn () => static::shouldShowAuthorField()),
                                 ]),
-                            // TODO: Taxonomy Plugin here
-                            Section::make('Taxonomies')
-                                ->schema(
-                                    collect(config('builder.taxonomies', []))->map(function ($settings, $taxonomy) {
-                                        $field = Select::make($taxonomy)
-                                            ->label($settings['label'] ?? Str::title($taxonomy))
-                                            ->multiple()
-                                            ->preload()
-                                            ->searchable();
-
-                                        try {
-                                            $model = app($settings['model']);
-                                            $table = $model->getTable();
-
-                                            // Check if 'title' column exists, otherwise fall back to 'name'
-                                            $labelColumn = Schema::hasColumn($table, 'title') ? 'title' : 'name';
-
-                                            $field->relationship($taxonomy, $labelColumn);
-                                        } catch (\Exception $e) {
-                                            Log::error("Error setting up relationship for taxonomy: $taxonomy", ['error' => $e->getMessage()]);
-                                            $field->options([])->disabled()->helperText("Unable to load $taxonomy. Please check configuration.");
-                                        }
-
-                                        return $field;
-                                    })->toArray()
-                                )
+                            Section::make()
+                                ->schema($taxonomyFields)
                                 ->columns(1),
                         ])
                         ->columnSpan(['lg' => 1]),
@@ -412,5 +387,34 @@ class ItemResource extends Resource
     public static function setCurrentTab(?string $tab): void
     {
         static::$currentTab = $tab;
+    }
+
+    protected static function handleTaxonomies(Model $record, array $data): void
+    {
+        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+            if (isset($data[$taxonomy])) {
+                $record->$taxonomy()->sync($data[$taxonomy]);
+            }
+        }
+    }
+
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        return $data;
+    }
+
+    public static function mutateFormDataBeforeUpdate(Model $record, array $data): array
+    {
+        return $data;
+    }
+
+    protected static function afterCreate(Model $record, array $data): void
+    {
+        static::handleTaxonomies($record, $data);
+    }
+
+    protected static function afterUpdate(Model $record, array $data): void
+    {
+        static::handleTaxonomies($record, $data);
     }
 }
