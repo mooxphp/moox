@@ -32,6 +32,18 @@ class ViewItem extends ViewRecord
         return $title;
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+            $taxonomyModel = app($settings['model']);
+            $taxonomyTable = $taxonomyModel->getTable();
+
+            $data[$taxonomy] = $this->record->$taxonomy()->pluck("{$taxonomyTable}.id")->toArray();
+        }
+
+        return $data;
+    }
+
     private function isRecordTrashed(): bool
     {
         return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
