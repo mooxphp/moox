@@ -22,6 +22,7 @@ class EditItem extends EditRecord
 
     protected function afterSave(): void
     {
+        $this->record->refresh();
         $this->handleTaxonomies();
     }
 
@@ -31,17 +32,23 @@ class EditItem extends EditRecord
         $data = $this->data;
 
         foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
-            Log::info("Checking taxonomy: $taxonomy", ['isset' => isset($data[$taxonomy]), 'method_exists' => method_exists($record, $taxonomy)]);
-            if (isset($data[$taxonomy]) && method_exists($record, $taxonomy)) {
-                Log::info("Attempting to sync taxonomy: $taxonomy", ['data' => $data[$taxonomy]]);
-                try {
-                    $record->$taxonomy()->sync($data[$taxonomy]);
-                    Log::info("Successfully synced taxonomy: $taxonomy");
-                } catch (\Exception $e) {
-                    Log::error("Error syncing taxonomy: $taxonomy", ['error' => $e->getMessage()]);
-                }
+            if (isset($data[$taxonomy])) {
+                Log::info("Syncing taxonomy: $taxonomy", ['data' => $data[$taxonomy]]);
+                $record->$taxonomy()->sync($data[$taxonomy]);
             }
         }
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+            $taxonomyModel = app($settings['model']);
+            $taxonomyTable = $taxonomyModel->getTable();
+
+            $data[$taxonomy] = $this->record->$taxonomy()->pluck("{$taxonomyTable}.id")->toArray();
+        }
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeSave(array $data): array

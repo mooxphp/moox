@@ -14,6 +14,7 @@ class CreateItem extends CreateRecord
 
     protected function afterCreate(): void
     {
+        $this->record->refresh();
         $this->handleTaxonomies();
     }
 
@@ -22,10 +23,16 @@ class CreateItem extends CreateRecord
         $record = $this->record;
         $data = $this->data;
 
+        if (! ($record instanceof \Moox\Builder\Models\Item)) {
+            return;
+        }
+
         foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
-            if (isset($data[$taxonomy]) && method_exists($record, $taxonomy)) {
+            if (isset($data[$taxonomy])) {
                 Log::info("Syncing taxonomy: $taxonomy", ['data' => $data[$taxonomy]]);
-                $record->$taxonomy()->sync($data[$taxonomy]);
+                if (method_exists($record, $taxonomy)) {
+                    $record->$taxonomy()->sync($data[$taxonomy]);
+                }
             }
         }
     }
