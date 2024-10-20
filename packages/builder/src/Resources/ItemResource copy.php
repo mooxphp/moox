@@ -26,6 +26,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
@@ -61,15 +62,7 @@ class ItemResource extends Resource
                     ->options(function () use ($settings) {
                         $model = app($settings['model']);
 
-                        return $model::pluck('title', 'id'); // Fetch available taxonomy options
-                    })
-                    ->default(function ($record) use ($taxonomy) {
-                        // Ensure we load existing taxonomies only when editing an item
-                        if ($record) {
-                            return $record->$taxonomy()->pluck('id')->toArray();
-                        }
-
-                        return [];
+                        return $model::pluck('title', 'id');
                     })
                     ->createOptionForm([
                         TextInput::make('title')
@@ -206,6 +199,19 @@ class ItemResource extends Resource
 
         $currentTab = static::getCurrentTab();
 
+        $taxonomyColumns = collect(config('builder.taxonomies', []))
+            ->map(function ($settings, $taxonomy) {
+                TextColumn::make($taxonomy)
+                    ->getStateUsing(function (Item $record) use ($taxonomy) {
+                        $relatedTaxonomies = $record->$taxonomy;
+
+                        return $relatedTaxonomies->pluck('title')->implode(', ');
+                    })
+                    ->searchable()
+                    ->sortable();
+            })
+            ->toArray();
+
         return $table
             ->columns([
                 ImageColumn::make('featured_image_url')
@@ -263,7 +269,7 @@ class ItemResource extends Resource
                     ->toggleable()
                     ->since()
                     ->sortable(),
-            ])
+            ] + $taxonomyColumns)
             ->defaultSort('slug', 'desc')
             ->actions([
                 ViewAction::make(),
@@ -399,9 +405,14 @@ class ItemResource extends Resource
 
     protected static function handleTaxonomies(Model $record, array $data): void
     {
+        if (! ($record instanceof Item)) {
+            return;
+        }
+
         foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
             if (isset($data[$taxonomy])) {
-                $record->$taxonomy()->sync($data[$taxonomy]);
+                Log::info("Syncing taxonomy: $taxonomy", ['data' => $data[$taxonomy]]);
+                $record->syncTaxonomy($taxonomy, $data[$taxonomy]);
             }
         }
     }

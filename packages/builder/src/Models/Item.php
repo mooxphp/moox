@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Moox\Builder\Database\Factories\ItemFactory;
 use Moox\Core\Traits\HasSlug;
@@ -83,32 +82,6 @@ class Item extends Model
         )->withTimestamps();
     }
 
-    protected function nullRelation()
-    {
-        return new class
-        {
-            public function all()
-            {
-                return collect();
-            }
-
-            public function get()
-            {
-                return collect();
-            }
-
-            public function count()
-            {
-                return 0;
-            }
-
-            public function getResults()
-            {
-                return collect();
-            }
-        };
-    }
-
     protected static function newFactory(): mixed
     {
         return ItemFactory::new();
@@ -127,27 +100,14 @@ class Item extends Model
             )->withTimestamps();
         }
 
-        // If it's not a taxonomy, try to get the relation
-        $relation = parent::__call($method, $parameters);
-
-        // If the relation is null, return an empty collection to avoid the getResults() error
-        if ($relation === null) {
-            return new Collection;
-        }
-
-        return $relation;
+        return parent::__call($method, $parameters);
     }
 
-    // This method will handle getting taxonomy attributes dynamically
-    public function getTaxonomyAttribute($key)
+    public function syncTaxonomy(string $taxonomy, array $ids): void
     {
         $taxonomies = config('builder.taxonomies', []);
-        if (array_key_exists($key, $taxonomies)) {
-            $relation = $this->$key();
-
-            return $relation instanceof MorphToMany ? $relation->get() : new Collection;
+        if (array_key_exists($taxonomy, $taxonomies)) {
+            $this->$taxonomy()->sync($ids);
         }
-
-        return parent::getAttribute($key);
     }
 }
