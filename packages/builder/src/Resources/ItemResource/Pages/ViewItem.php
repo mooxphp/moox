@@ -9,10 +9,21 @@ use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\ItemResource;
+use Moox\Core\Services\TaxonomyService;
 
 class ViewItem extends ViewRecord
 {
     protected static string $resource = ItemResource::class;
+
+    protected function getTaxonomyService(): TaxonomyService
+    {
+        return app(TaxonomyService::class);
+    }
+
+    public function mount($record = null): void
+    {
+        parent::mount($record);
+    }
 
     protected function getHeaderActions(): array
     {
@@ -34,7 +45,7 @@ class ViewItem extends ViewRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+        foreach ($this->getTaxonomyService()->getTaxonomies() as $taxonomy => $settings) {
             $taxonomyModel = app($settings['model']);
             $taxonomyTable = $taxonomyModel->getTable();
 

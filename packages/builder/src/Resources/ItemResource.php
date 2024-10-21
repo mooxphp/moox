@@ -31,7 +31,7 @@ use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
-use Moox\Builder\Traits\HasDynamicTaxonomyFields;
+use Moox\Core\Traits\HasDynamicTaxonomyFields;
 
 class ItemResource extends Resource
 {
@@ -368,7 +368,8 @@ class ItemResource extends Resource
 
     protected static function handleTaxonomies(Model $record, array $data): void
     {
-        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+        $taxonomyService = static::getTaxonomyService();
+        foreach ($taxonomyService->getTaxonomies() as $taxonomy => $settings) {
             if (isset($data[$taxonomy])) {
                 $record->$taxonomy()->sync($data[$taxonomy]);
             }

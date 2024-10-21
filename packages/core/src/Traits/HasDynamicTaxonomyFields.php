@@ -1,28 +1,34 @@
 <?php
 
-namespace Moox\Builder\Traits;
+namespace Moox\Core\Traits;
 
 use Filament\Forms\Components\Select;
+use Moox\Core\Services\TaxonomyService;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 
 trait HasDynamicTaxonomyFields
 {
+    protected static function getTaxonomyService(): TaxonomyService
+    {
+        return app(TaxonomyService::class);
+    }
+
     public static function getTaxonomyFields(): array
     {
-        return collect(config('builder.taxonomies', []))
-            ->map(function ($settings, $taxonomy) {
-                return static::createTaxonomyField($taxonomy, $settings);
+        $taxonomyService = static::getTaxonomyService();
+
+        return collect($taxonomyService->getTaxonomies())
+            ->map(function ($settings, $taxonomy) use ($taxonomyService) {
+                return static::createTaxonomyField($taxonomy, $settings, $taxonomyService);
             })
             ->toArray();
     }
 
-    protected static function createTaxonomyField(string $taxonomy, array $settings): Select
+    protected static function createTaxonomyField(string $taxonomy, array $settings, TaxonomyService $taxonomyService): Select
     {
-        $modelClass = $settings['model'] ?? null;
+        $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
 
-        if (! $modelClass || ! class_exists($modelClass)) {
-            throw new \InvalidArgumentException("Invalid model class for taxonomy: $taxonomy");
-        }
+        $taxonomyService->validateTaxonomy($taxonomy);
 
         return Select::make($taxonomy)
             ->multiple()

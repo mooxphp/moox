@@ -1,16 +1,25 @@
 <?php
 
-namespace Moox\Builder\Traits;
+namespace Moox\Core\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Log;
+use Moox\Core\Services\TaxonomyService;
 
 trait HasDynamicTaxonomies
 {
+    protected TaxonomyService $taxonomyService;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->taxonomyService = app(TaxonomyService::class);
+    }
+
     public function taxonomy(string $taxonomy): MorphToMany
     {
-        $taxonomies = config('builder.taxonomies', []);
+        $taxonomies = $this->taxonomyService->getTaxonomies();
 
         if (! isset($taxonomies[$taxonomy])) {
             Log::error("Taxonomy not found: $taxonomy");
@@ -19,11 +28,11 @@ trait HasDynamicTaxonomies
         }
 
         return $this->morphToMany(
-            $taxonomies[$taxonomy]['model'],
-            $taxonomies[$taxonomy]['relationship'] ?? 'taggable',
-            $taxonomies[$taxonomy]['table'] ?? 'taggables',
-            $taxonomies[$taxonomy]['foreignKey'] ?? 'taggable_id',
-            $taxonomies[$taxonomy]['relatedKey'] ?? 'tag_id'
+            $this->taxonomyService->getTaxonomyModel($taxonomy),
+            $this->taxonomyService->getTaxonomyRelationship($taxonomy),
+            $this->taxonomyService->getTaxonomyTable($taxonomy),
+            $this->taxonomyService->getTaxonomyForeignKey($taxonomy),
+            $this->taxonomyService->getTaxonomyRelatedKey($taxonomy)
         )->withTimestamps();
     }
 
@@ -34,7 +43,7 @@ trait HasDynamicTaxonomies
 
     public function __call($method, $parameters)
     {
-        $taxonomies = config('builder.taxonomies', []);
+        $taxonomies = $this->taxonomyService->getTaxonomies();
         if (array_key_exists($method, $taxonomies)) {
             return $this->taxonomy($method);
         }
@@ -44,7 +53,7 @@ trait HasDynamicTaxonomies
 
     public function syncTaxonomy(string $taxonomy, array $ids): void
     {
-        $taxonomies = config('builder.taxonomies', []);
+        $taxonomies = $this->taxonomyService->getTaxonomies();
         if (array_key_exists($taxonomy, $taxonomies)) {
             $this->$taxonomy()->sync($ids);
         }
