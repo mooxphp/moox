@@ -7,6 +7,7 @@ namespace Moox\Tag\Resources;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
@@ -131,13 +132,13 @@ class TagResource extends Resource
                                     TextInput::make('count')
                                         ->disabled()
                                         ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
-                                    TextInput::make('created_at')
+                                    DateTimePicker::make('created_at')
                                         ->disabled()
                                         ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
-                                    TextInput::make('updated_at')
+                                    DateTimePicker::make('updated_at')
                                         ->disabled()
                                         ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
-                                    TextInput::make('deleted_at')
+                                    DateTimePicker::make('deleted_at')
                                         ->disabled()
                                         ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewTag),
                                 ]),

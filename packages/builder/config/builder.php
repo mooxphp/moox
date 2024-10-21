@@ -212,6 +212,9 @@ return [
             'label' => 'Tags',
             'model' => \Moox\Tag\Models\Tag::class,
             'table' => 'taggables',
+            'relationship' => 'taggable',
+            'foreignKey' => 'taggable_id',
+            'relatedKey' => 'tag_id',
         ],
     ],
 

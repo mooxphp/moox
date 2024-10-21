@@ -6,7 +6,9 @@ namespace Moox\Tag\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
 
 class Tag extends Model
@@ -31,13 +33,6 @@ class Tag extends Model
         'count' => 'integer',
     ];
 
-    protected static function booted(): void
-    {
-        static::deleting(function ($tag) {
-            $tag->items()->detach();
-        });
-    }
-
     protected static function newFactory(): TagFactory
     {
         return TagFactory::new();
@@ -45,10 +40,23 @@ class Tag extends Model
 
     public function getStatusAttribute(): string
     {
-        if ($this->trashed()) {
-            return 'deleted';
-        }
+        return $this->trashed() ? 'deleted' : 'published';
+    }
 
-        return 'published';
+    public function taggables(string $type): MorphToMany
+    {
+        return $this->morphedByMany($type, 'taggable');
+    }
+
+    public function detachAllTaggables(): void
+    {
+        DB::table('taggables')->where('tag_id', $this->id)->delete();
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Tag $tag) {
+            $tag->detachAllTaggables();
+        });
     }
 }
