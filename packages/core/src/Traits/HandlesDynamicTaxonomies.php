@@ -18,7 +18,7 @@ trait HandlesDynamicTaxonomies
 
     protected function getResourceName(): string
     {
-        return strtolower(class_basename($this));
+        return static::$resource::getResourceName();
     }
 
     protected function handleTaxonomies(): void
