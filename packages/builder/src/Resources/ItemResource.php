@@ -159,9 +159,11 @@ class ItemResource extends Resource
                                         ->searchable()
                                         ->visible(fn () => static::shouldShowAuthorField()),
                                 ]),
+
                             Section::make()
                                 ->schema(static::getTaxonomyFields())
-                                ->columns(1),
+                                ->columns(1)
+                                ->visible(fn () => ! empty(static::getTaxonomyFields())),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
