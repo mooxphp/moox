@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\ItemResource\Pages;
 
-use Filament\Actions\EditAction;
-use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Core\Services\TaxonomyService;
+use Moox\Core\Traits\HandlesDynamicTaxonomies;
 
 class ViewItem extends ViewRecord
 {
-    protected static string $resource = ItemResource::class;
+    use HandlesDynamicTaxonomies;
 
-    protected function getTaxonomyService(): TaxonomyService
-    {
-        return app(TaxonomyService::class);
-    }
+    protected static string $resource = ItemResource::class;
 
     public function mount($record = null): void
     {
@@ -28,8 +23,6 @@ class ViewItem extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            // EditAction::make()->hidden(fn () => $this->isRecordTrashed()),
-            // RestoreAction::make()->visible(fn () => $this->isRecordTrashed()),
         ];
     }
 
@@ -41,18 +34,6 @@ class ViewItem extends ViewRecord
         }
 
         return $title;
-    }
-
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        foreach ($this->getTaxonomyService()->getTaxonomies() as $taxonomy => $settings) {
-            $taxonomyModel = app($settings['model']);
-            $taxonomyTable = $taxonomyModel->getTable();
-
-            $data[$taxonomy] = $this->record->$taxonomy()->pluck("{$taxonomyTable}.id")->toArray();
-        }
-
-        return $data;
     }
 
     private function isRecordTrashed(): bool

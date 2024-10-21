@@ -26,7 +26,6 @@ class ListItems extends ListRecords
         static::getResource()::setCurrentTab($this->activeTab);
     }
 
-    // Correct method signature for Filament 3.2
     public function updatedActiveTab(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);

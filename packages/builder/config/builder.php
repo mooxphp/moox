@@ -211,7 +211,7 @@ return [
     */
 
     // TODO: This array must be per resource.
-    // used in EditItem.php and HandlesDynamicTaxonomies trait.
+    // used in TaxonomyService.php.
 
     'taxonomies' => [
         'tags' => [
