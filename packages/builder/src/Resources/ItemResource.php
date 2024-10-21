@@ -6,6 +6,7 @@ namespace Moox\Builder\Resources;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -26,6 +27,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
@@ -56,15 +58,28 @@ class ItemResource extends Resource
 
         $taxonomyFields = collect(config('builder.taxonomies', []))
             ->map(function ($settings, $taxonomy) {
+                if (! is_string($taxonomy)) {
+                    throw new \InvalidArgumentException('Taxonomy key must be a string');
+                }
+
+                $modelClass = $settings['model'] ?? null;
+                if (! $modelClass || ! class_exists($modelClass)) {
+                    throw new \InvalidArgumentException("Invalid model class for taxonomy: $taxonomy");
+                }
+
                 return Select::make($taxonomy)
                     ->multiple()
-                    ->options(function () use ($settings) {
-                        $model = app($settings['model']);
-
-                        return $model::pluck('title', 'id'); // Fetch available taxonomy options
+                    ->options(function () use ($modelClass) {
+                        return app($modelClass)::pluck('title', 'id')->toArray();
                     })
+                    ->getOptionLabelUsing(fn ($value): ?string => app($modelClass)::find($value)?->title)
+                    ->getSearchResultsUsing(
+                        fn (string $search) => app($modelClass)::where('title', 'like', "%{$search}%")
+                            ->limit(50)
+                            ->pluck('title', 'id')
+                            ->toArray()
+                    )
                     ->default(function ($record) use ($taxonomy) {
-                        // Ensure we load existing taxonomies only when editing an item
                         if ($record) {
                             return $record->$taxonomy()->pluck('id')->toArray();
                         }
@@ -72,9 +87,37 @@ class ItemResource extends Resource
                         return [];
                     })
                     ->createOptionForm([
-                        TextInput::make('title')
-                            ->required(),
+                        TitleWithSlugInput::make(
+                            fieldTitle: 'title',
+                            fieldSlug: 'slug',
+                        ),
+                        FileUpload::make('featured_image_url')
+                            ->label(__('core::core.featured_image_url')),
+                        MarkdownEditor::make('content')
+                            ->label(__('core::core.content')),
+                        Grid::make(2)
+                            ->schema([
+                                ColorPicker::make('color')
+                                    ->label(__('core::core.color')),
+                                TextInput::make('weight')
+                                    ->label(__('core::core.weight'))
+                                    ->numeric(),
+                            ]),
                     ])
+                    ->createOptionUsing(function (array $data, callable $set) use ($modelClass, $taxonomy) {
+                        Log::info('Creating new tag with data:', $data);
+                        $newTag = app($modelClass)::create($data);
+                        Log::info('New tag created:', ['id' => $newTag->id, 'title' => $newTag->title]);
+
+                        $set($taxonomy, function ($state) use ($newTag) {
+                            $state = is_array($state) ? $state : [];
+                            $state[] = $newTag->id;
+
+                            return array_unique($state);
+                        });
+
+                        return $newTag->id;
+                    })
                     ->preload()
                     ->searchable();
             })

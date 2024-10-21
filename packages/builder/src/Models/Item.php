@@ -91,12 +91,14 @@ class Item extends Model
     {
         $taxonomies = config('builder.taxonomies', []);
         if (array_key_exists($method, $taxonomies)) {
+            $config = $taxonomies[$method];
+
             return $this->morphToMany(
-                $taxonomies[$method]['model'],
-                'taggable',
-                'taggables',
-                'taggable_id',
-                'tag_id'
+                $config['model'],
+                $config['relationship'] ?? 'taggable',
+                $config['table'] ?? 'taggables',
+                $config['foreignKey'] ?? 'taggable_id',
+                $config['relatedKey'] ?? 'tag_id'
             )->withTimestamps();
         }
 
