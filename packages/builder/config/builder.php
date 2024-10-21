@@ -128,6 +128,41 @@ return [
                     ],
                 ],
             ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relationships
+            |--------------------------------------------------------------------------
+            |
+            | This array contains the relationships that should be shown ... wip.
+            | // TODO: Implement this or remove it, if not needed anymore.
+            |
+            */
+
+            'relationships' => [
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Taxonomies
+            |--------------------------------------------------------------------------
+            |
+            | This array contains the taxonomies that should be shown.
+            | This is work in progress and not yet fully documented.
+            | // TODO: Add documentation and examples for this.
+            |
+            */
+
+            'taxonomies' => [
+                'tags' => [
+                    'label' => 'Tags',
+                    'model' => \Moox\Tag\Models\Tag::class,
+                    'table' => 'taggables',
+                    'relationship' => 'taggable',
+                    'foreignKey' => 'taggable_id',
+                    'relatedKey' => 'tag_id',
+                ],
+            ],
         ],
     ],
 
@@ -185,44 +220,6 @@ return [
     */
 
     'author_model' => \App\Models\User::class,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the relationships that should be shown ... wip.
-    | // TODO: Implement this or remove it, if not needed anymore.
-    |
-    */
-
-    'relationships' => [
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Taxonomies
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the taxonomies that should be shown.
-    | This is work in progress and not yet fully documented.
-    | // TODO: Add documentation and examples for this.
-    |
-    */
-
-    // TODO: This array must be per resource.
-    // used in TaxonomyService.php.
-
-    'taxonomies' => [
-        'tags' => [
-            'label' => 'Tags',
-            'model' => \Moox\Tag\Models\Tag::class,
-            'table' => 'taggables',
-            'relationship' => 'taggable',
-            'foreignKey' => 'taggable_id',
-            'relatedKey' => 'tag_id',
-        ],
-    ],
 
     /*
     |--------------------------------------------------------------------------

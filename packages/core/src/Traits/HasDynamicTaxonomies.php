@@ -9,17 +9,26 @@ use Moox\Core\Services\TaxonomyService;
 
 trait HasDynamicTaxonomies
 {
-    protected TaxonomyService $taxonomyService;
+    protected ?TaxonomyService $taxonomyService = null;
 
-    public function __construct(array $attributes = [])
+    protected function getTaxonomyService(): TaxonomyService
     {
-        parent::__construct($attributes);
-        $this->taxonomyService = app(TaxonomyService::class);
+        if ($this->taxonomyService === null) {
+            $this->taxonomyService = app(TaxonomyService::class);
+            $this->taxonomyService->setCurrentResource($this->getResourceName());
+        }
+
+        return $this->taxonomyService;
+    }
+
+    protected function getResourceName(): string
+    {
+        return 'builder'; // or use a more dynamic way to determine the resource name
     }
 
     public function taxonomy(string $taxonomy): MorphToMany
     {
-        $taxonomies = $this->taxonomyService->getTaxonomies();
+        $taxonomies = $this->getTaxonomyService()->getTaxonomies();
 
         if (! isset($taxonomies[$taxonomy])) {
             Log::error("Taxonomy not found: $taxonomy");
@@ -28,11 +37,11 @@ trait HasDynamicTaxonomies
         }
 
         return $this->morphToMany(
-            $this->taxonomyService->getTaxonomyModel($taxonomy),
-            $this->taxonomyService->getTaxonomyRelationship($taxonomy),
-            $this->taxonomyService->getTaxonomyTable($taxonomy),
-            $this->taxonomyService->getTaxonomyForeignKey($taxonomy),
-            $this->taxonomyService->getTaxonomyRelatedKey($taxonomy)
+            $this->getTaxonomyService()->getTaxonomyModel($taxonomy),
+            $this->getTaxonomyService()->getTaxonomyRelationship($taxonomy),
+            $this->getTaxonomyService()->getTaxonomyTable($taxonomy),
+            $this->getTaxonomyService()->getTaxonomyForeignKey($taxonomy),
+            $this->getTaxonomyService()->getTaxonomyRelatedKey($taxonomy)
         )->withTimestamps();
     }
 
@@ -43,7 +52,7 @@ trait HasDynamicTaxonomies
 
     public function __call($method, $parameters)
     {
-        $taxonomies = $this->taxonomyService->getTaxonomies();
+        $taxonomies = $this->getTaxonomyService()->getTaxonomies();
         if (array_key_exists($method, $taxonomies)) {
             return $this->taxonomy($method);
         }
@@ -53,7 +62,7 @@ trait HasDynamicTaxonomies
 
     public function syncTaxonomy(string $taxonomy, array $ids): void
     {
-        $taxonomies = $this->taxonomyService->getTaxonomies();
+        $taxonomies = $this->getTaxonomyService()->getTaxonomies();
         if (array_key_exists($taxonomy, $taxonomies)) {
             $this->$taxonomy()->sync($ids);
         }

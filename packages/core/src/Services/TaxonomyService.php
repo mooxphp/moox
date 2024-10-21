@@ -6,9 +6,30 @@ use Illuminate\Support\Facades\Config;
 
 class TaxonomyService
 {
+    private ?string $currentResource = null;
+
+    public function setCurrentResource(string $resource): void
+    {
+        $this->currentResource = $resource;
+    }
+
+    public function getCurrentResource(): ?string
+    {
+        return $this->currentResource;
+    }
+
+    private function ensureResourceIsSet(): void
+    {
+        if ($this->currentResource === null) {
+            throw new \RuntimeException('Current resource is not set. Call setCurrentResource() first.');
+        }
+    }
+
     public function getTaxonomies(): array
     {
-        return Config::get('builder.taxonomies', []);
+        $this->ensureResourceIsSet();
+
+        return Config::get("builder.resources.{$this->currentResource}.taxonomies", []);
     }
 
     public function getTaxonomyModel(string $taxonomy): ?string
@@ -21,7 +42,7 @@ class TaxonomyService
         $modelClass = $this->getTaxonomyModel($taxonomy);
 
         if (! $modelClass || ! class_exists($modelClass)) {
-            throw new \InvalidArgumentException("Invalid model class for taxonomy: $taxonomy");
+            throw new \InvalidArgumentException("Invalid model class for taxonomy: $taxonomy in resource: {$this->currentResource}");
         }
     }
 
@@ -43,5 +64,12 @@ class TaxonomyService
     public function getTaxonomyRelatedKey(string $taxonomy): string
     {
         return $this->getTaxonomies()[$taxonomy]['relatedKey'] ?? 'tag_id';
+    }
+
+    public function hasTaxonomies(): bool
+    {
+        $this->ensureResourceIsSet();
+
+        return ! empty($this->getTaxonomies());
     }
 }

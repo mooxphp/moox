@@ -10,7 +10,15 @@ trait HasDynamicTaxonomyFields
 {
     protected static function getTaxonomyService(): TaxonomyService
     {
-        return app(TaxonomyService::class);
+        $service = app(TaxonomyService::class);
+        $service->setCurrentResource(static::getResourceName());
+
+        return $service;
+    }
+
+    protected static function getResourceName(): string
+    {
+        return strtolower(class_basename(static::class));
     }
 
     public static function getTaxonomyFields(): array
