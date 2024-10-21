@@ -18,7 +18,7 @@ trait HandlesDynamicTaxonomies
         $record = $this->record;
         $data = $this->data;
 
-        foreach ($this->getTaxonomyService()->getTaxonomies() as $taxonomy => $settings) {
+        foreach ($this->getTaxonomies() as $taxonomy => $settings) {
             if (isset($data[$taxonomy])) {
                 $tagIds = collect($data[$taxonomy])->map(function ($item) {
                     return is_array($item) ? $item['id'] : $item;
@@ -28,16 +28,36 @@ trait HandlesDynamicTaxonomies
         }
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        return $this->mutateFormDataBeforeFillWithTaxonomies($data);
+    }
+
     protected function mutateFormDataBeforeFillWithTaxonomies(array $data): array
     {
-        foreach ($this->getTaxonomyService()->getTaxonomies() as $taxonomy => $settings) {
-            $taxonomyModel = app($settings['model']);
+        foreach ($this->getTaxonomies() as $taxonomy => $settings) {
+            $taxonomyModel = app($this->getTaxonomyModel($taxonomy));
             $taxonomyTable = $taxonomyModel->getTable();
 
             $data[$taxonomy] = $this->record->$taxonomy()->pluck("{$taxonomyTable}.id")->toArray();
         }
 
         return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return $data;
+    }
+
+    protected function getTaxonomyAttributes(): array
+    {
+        return array_keys($this->getTaxonomies());
     }
 
     public function getFormSelectOptionLabels(string $statePath): array
@@ -70,10 +90,10 @@ trait HandlesDynamicTaxonomies
                 $label = $options[$value] ?? null;
 
                 if ($label === null) {
-                    $taxonomies = config('builder.taxonomies', []);
+                    $taxonomies = $this->getTaxonomies();
                     foreach ($taxonomies as $taxonomy => $settings) {
                         if ($statePath === "data.{$taxonomy}") {
-                            $modelClass = $settings['model'];
+                            $modelClass = $this->getTaxonomyModel($taxonomy);
                             $model = app($modelClass)::find($value);
                             if ($model) {
                                 $label = $model->title;
@@ -90,5 +110,40 @@ trait HandlesDynamicTaxonomies
         }
 
         return $labels;
+    }
+
+    protected function getTaxonomies(): array
+    {
+        return $this->getTaxonomyService()->getTaxonomies();
+    }
+
+    protected function getTaxonomyModel(string $taxonomy): ?string
+    {
+        return $this->getTaxonomyService()->getTaxonomyModel($taxonomy);
+    }
+
+    protected function validateTaxonomy(string $taxonomy): void
+    {
+        $this->getTaxonomyService()->validateTaxonomy($taxonomy);
+    }
+
+    protected function getTaxonomyRelationship(string $taxonomy): string
+    {
+        return $this->getTaxonomyService()->getTaxonomyRelationship($taxonomy);
+    }
+
+    protected function getTaxonomyTable(string $taxonomy): string
+    {
+        return $this->getTaxonomyService()->getTaxonomyTable($taxonomy);
+    }
+
+    protected function getTaxonomyForeignKey(string $taxonomy): string
+    {
+        return $this->getTaxonomyService()->getTaxonomyForeignKey($taxonomy);
+    }
+
+    protected function getTaxonomyRelatedKey(string $taxonomy): string
+    {
+        return $this->getTaxonomyService()->getTaxonomyRelatedKey($taxonomy);
     }
 }

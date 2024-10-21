@@ -19,9 +19,4 @@ class CreateItem extends CreateRecord
         $this->record->refresh();
         $this->handleTaxonomies();
     }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        return $data;
-    }
 }
