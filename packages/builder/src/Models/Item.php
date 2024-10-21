@@ -7,15 +7,14 @@ namespace Moox\Builder\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
 use Moox\Builder\Database\Factories\ItemFactory;
+use Moox\Builder\Traits\HasDynamicTaxonomies;
 use Moox\Core\Traits\HasSlug;
 
 class Item extends Model
 {
-    use HasFactory, HasSlug, SoftDeletes;
+    use HasDynamicTaxonomies, HasFactory, HasSlug, SoftDeletes;
 
     protected $table = 'items';
 
@@ -63,53 +62,8 @@ class Item extends Model
         return null;
     }
 
-    public function taxonomy(string $taxonomy): MorphToMany
-    {
-        $taxonomies = config('builder.taxonomies', []);
-
-        if (! isset($taxonomies[$taxonomy])) {
-            Log::error("Taxonomy not found: $taxonomy");
-
-            return $this->morphToMany(Model::class, 'taggable', 'taggables')->where('id', 0);
-        }
-
-        return $this->morphToMany(
-            $taxonomies[$taxonomy]['model'],
-            'taggable',
-            'taggables',
-            'taggable_id',
-            'tag_id'
-        )->withTimestamps();
-    }
-
     protected static function newFactory(): mixed
     {
         return ItemFactory::new();
-    }
-
-    public function __call($method, $parameters)
-    {
-        $taxonomies = config('builder.taxonomies', []);
-        if (array_key_exists($method, $taxonomies)) {
-            $config = $taxonomies[$method];
-
-            return $this->morphToMany(
-                $config['model'],
-                $config['relationship'] ?? 'taggable',
-                $config['table'] ?? 'taggables',
-                $config['foreignKey'] ?? 'taggable_id',
-                $config['relatedKey'] ?? 'tag_id'
-            )->withTimestamps();
-        }
-
-        return parent::__call($method, $parameters);
-    }
-
-    public function syncTaxonomy(string $taxonomy, array $ids): void
-    {
-        $taxonomies = config('builder.taxonomies', []);
-        if (array_key_exists($taxonomy, $taxonomies)) {
-            $this->$taxonomy()->sync($ids);
-        }
     }
 }

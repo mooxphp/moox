@@ -192,6 +192,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | This array contains the relationships that should be shown ... wip.
+    | // TODO: Implement this or remove it, if not needed anymore.
     |
     */
 
@@ -203,7 +204,9 @@ return [
     | Taxonomies
     |--------------------------------------------------------------------------
     |
-    | This array contains the taxonomies that should be shown ... wip.
+    | This array contains the taxonomies that should be shown.
+    | This is work in progress and not yet fully documented.
+    | // TODO: Add documentation and examples for this.
     |
     */
 

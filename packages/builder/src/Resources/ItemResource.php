@@ -6,14 +6,12 @@ namespace Moox\Builder\Resources;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -27,101 +25,29 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
-
-//use Moox\Core\Forms\Components\TitleWithSlugInput;
+use Moox\Builder\Traits\HasDynamicTaxonomyFields;
 
 class ItemResource extends Resource
 {
+    use HasDynamicTaxonomyFields;
+
     protected static ?string $model = Item::class;
 
     protected static ?string $currentTab = null;
 
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->withoutGlobalScopes();
-    }
+    protected static ?string $authorModel = null;
 
     protected static ?string $navigationIcon = 'gmdi-engineering';
-
-    protected static ?string $authorModel = null;
 
     public static function form(Form $form): Form
     {
         static::initAuthorModel();
-
-        $taxonomyFields = collect(config('builder.taxonomies', []))
-            ->map(function ($settings, $taxonomy) {
-                if (! is_string($taxonomy)) {
-                    throw new \InvalidArgumentException('Taxonomy key must be a string');
-                }
-
-                $modelClass = $settings['model'] ?? null;
-                if (! $modelClass || ! class_exists($modelClass)) {
-                    throw new \InvalidArgumentException("Invalid model class for taxonomy: $taxonomy");
-                }
-
-                return Select::make($taxonomy)
-                    ->multiple()
-                    ->options(function () use ($modelClass) {
-                        return app($modelClass)::pluck('title', 'id')->toArray();
-                    })
-                    ->getOptionLabelUsing(fn ($value): ?string => app($modelClass)::find($value)?->title)
-                    ->getSearchResultsUsing(
-                        fn (string $search) => app($modelClass)::where('title', 'like', "%{$search}%")
-                            ->limit(50)
-                            ->pluck('title', 'id')
-                            ->toArray()
-                    )
-                    ->default(function ($record) use ($taxonomy) {
-                        if ($record) {
-                            return $record->$taxonomy()->pluck('id')->toArray();
-                        }
-
-                        return [];
-                    })
-                    ->createOptionForm([
-                        TitleWithSlugInput::make(
-                            fieldTitle: 'title',
-                            fieldSlug: 'slug',
-                        ),
-                        FileUpload::make('featured_image_url')
-                            ->label(__('core::core.featured_image_url')),
-                        MarkdownEditor::make('content')
-                            ->label(__('core::core.content')),
-                        Grid::make(2)
-                            ->schema([
-                                ColorPicker::make('color')
-                                    ->label(__('core::core.color')),
-                                TextInput::make('weight')
-                                    ->label(__('core::core.weight'))
-                                    ->numeric(),
-                            ]),
-                    ])
-                    ->createOptionUsing(function (array $data, callable $set) use ($modelClass, $taxonomy) {
-                        Log::info('Creating new tag with data:', $data);
-                        $newTag = app($modelClass)::create($data);
-                        Log::info('New tag created:', ['id' => $newTag->id, 'title' => $newTag->title]);
-
-                        $set($taxonomy, function ($state) use ($newTag) {
-                            $state = is_array($state) ? $state : [];
-                            $state[] = $newTag->id;
-
-                            return array_unique($state);
-                        });
-
-                        return $newTag->id;
-                    })
-                    ->preload()
-                    ->searchable();
-            })
-            ->toArray();
 
         return $form->schema([
             Grid::make(2)
@@ -234,7 +160,7 @@ class ItemResource extends Resource
                                         ->visible(fn () => static::shouldShowAuthorField()),
                                 ]),
                             Section::make()
-                                ->schema($taxonomyFields)
+                                ->schema(static::getTaxonomyFields()) // Now using static method
                                 ->columns(1),
                         ])
                         ->columnSpan(['lg' => 1]),
