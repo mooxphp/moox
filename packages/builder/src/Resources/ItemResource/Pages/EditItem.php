@@ -7,7 +7,7 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Builder\Traits\HandlesDynamicTaxonomies;
+use Moox\Core\Traits\HandlesDynamicTaxonomies;
 
 class EditItem extends EditRecord
 {

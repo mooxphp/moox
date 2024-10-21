@@ -6,7 +6,7 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Builder\Traits\HandlesDynamicTaxonomies;
+use Moox\Core\Traits\HandlesDynamicTaxonomies;
 
 class CreateItem extends CreateRecord
 {

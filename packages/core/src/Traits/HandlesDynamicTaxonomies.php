@@ -1,18 +1,24 @@
 <?php
 
-namespace Moox\Builder\Traits;
+namespace Moox\Core\Traits;
 
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Arr;
+use Moox\Core\Services\TaxonomyService;
 
 trait HandlesDynamicTaxonomies
 {
+    protected function getTaxonomyService(): TaxonomyService
+    {
+        return app(TaxonomyService::class);
+    }
+
     protected function handleTaxonomies(): void
     {
         $record = $this->record;
         $data = $this->data;
 
-        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+        foreach ($this->getTaxonomyService()->getTaxonomies() as $taxonomy => $settings) {
             if (isset($data[$taxonomy])) {
                 $tagIds = collect($data[$taxonomy])->map(function ($item) {
                     return is_array($item) ? $item['id'] : $item;
@@ -24,7 +30,7 @@ trait HandlesDynamicTaxonomies
 
     protected function mutateFormDataBeforeFillWithTaxonomies(array $data): array
     {
-        foreach (config('builder.taxonomies', []) as $taxonomy => $settings) {
+        foreach ($this->getTaxonomyService()->getTaxonomies() as $taxonomy => $settings) {
             $taxonomyModel = app($settings['model']);
             $taxonomyTable = $taxonomyModel->getTable();
 

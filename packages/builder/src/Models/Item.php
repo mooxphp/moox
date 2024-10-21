@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Database\Factories\ItemFactory;
-use Moox\Builder\Traits\HasDynamicTaxonomies;
+use Moox\Core\Traits\HasDynamicTaxonomies;
 use Moox\Core\Traits\HasSlug;
 
 class Item extends Model

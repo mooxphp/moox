@@ -210,6 +210,9 @@ return [
     |
     */
 
+    // TODO: This array must be per resource.
+    // used in EditItem.php and HandlesDynamicTaxonomies trait.
+
     'taxonomies' => [
         'tags' => [
             'label' => 'Tags',
