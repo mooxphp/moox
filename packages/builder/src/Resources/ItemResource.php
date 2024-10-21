@@ -396,8 +396,8 @@ class ItemResource extends Resource
         static::handleTaxonomies($record, $data);
     }
 
-    protected static function getResourceName(): string
+    public static function getResourceName(): string
     {
-        return 'builder';
+        return static::getModel()::getResourceName();
     }
 }
