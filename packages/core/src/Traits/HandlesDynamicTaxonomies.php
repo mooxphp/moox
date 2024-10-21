@@ -10,7 +10,15 @@ trait HandlesDynamicTaxonomies
 {
     protected function getTaxonomyService(): TaxonomyService
     {
-        return app(TaxonomyService::class);
+        $service = app(TaxonomyService::class);
+        $service->setCurrentResource($this->getResourceName());
+
+        return $service;
+    }
+
+    protected function getResourceName(): string
+    {
+        return strtolower(class_basename($this));
     }
 
     protected function handleTaxonomies(): void

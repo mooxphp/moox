@@ -160,7 +160,7 @@ class ItemResource extends Resource
                                         ->visible(fn () => static::shouldShowAuthorField()),
                                 ]),
                             Section::make()
-                                ->schema(static::getTaxonomyFields()) // Now using static method
+                                ->schema(static::getTaxonomyFields())
                                 ->columns(1),
                         ])
                         ->columnSpan(['lg' => 1]),
@@ -394,5 +394,10 @@ class ItemResource extends Resource
     protected static function afterUpdate(Model $record, array $data): void
     {
         static::handleTaxonomies($record, $data);
+    }
+
+    protected static function getResourceName(): string
+    {
+        return 'builder';
     }
 }

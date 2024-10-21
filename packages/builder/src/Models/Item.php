@@ -18,6 +18,12 @@ class Item extends Model
 
     protected $table = 'items';
 
+    // TODO: document this
+    protected function getResourceName(): string
+    {
+        return 'builder';
+    }
+
     protected $fillable = [
         'title',
         'slug',
