@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Traits;
 
+use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Select;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Tag\Forms\TaxonomyCreateForm;
@@ -32,11 +33,29 @@ trait HasDynamicTaxonomyFields
             ->toArray();
     }
 
-    protected static function createTaxonomyField(string $taxonomy, array $settings, TaxonomyService $taxonomyService): Select
+    protected static function createTaxonomyField(string $taxonomy, array $settings, TaxonomyService $taxonomyService): Select|SelectTree
     {
         $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
 
         $taxonomyService->validateTaxonomy($taxonomy);
+
+        $isHierarchical = $settings['hierarchical'] ?? false;
+
+        if ($isHierarchical) {
+            return SelectTree::make($taxonomy)
+                ->relationship(
+                    relationship: $taxonomy,
+                    titleAttribute: 'title',
+                    parentAttribute: 'parent_id'
+                )
+                ->label($settings['label'] ?? ucfirst($taxonomy))
+                ->searchable()
+                ->enableBranchNode()
+                ->createOptionForm(TaxonomyCreateForm::getSchema())
+                ->createOptionUsing(function (array $data) use ($modelClass) {
+                    return app($modelClass)::create($data);
+                });
+        }
 
         return Select::make($taxonomy)
             ->multiple()
@@ -62,6 +81,7 @@ trait HasDynamicTaxonomyFields
                 return $newTag->id;
             })
             ->preload()
-            ->searchable();
+            ->searchable()
+            ->label($settings['label'] ?? ucfirst($taxonomy));
     }
 }

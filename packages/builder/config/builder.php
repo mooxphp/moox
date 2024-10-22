@@ -154,6 +154,15 @@ return [
             */
 
             'taxonomies' => [
+                'categories' => [
+                    'label' => 'Categories',
+                    'model' => \Moox\Category\Models\Category::class,
+                    'table' => 'categorizables',
+                    'relationship' => 'categorizable',
+                    'foreignKey' => 'categorizable_id',
+                    'relatedKey' => 'category_id',
+                    'hierarchical' => true,
+                ],
                 'tags' => [
                     'label' => 'Tags',
                     'model' => \Moox\Tag\Models\Tag::class,
