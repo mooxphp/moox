@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        'builder' => [
+        'category' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -38,15 +38,15 @@ return [
             |
             */
 
-            'single' => 'trans//builder::translations.item',
-            'plural' => 'trans//builder::translations.items',
+            'single' => 'trans//category::category.item',
+            'plural' => 'trans//category::category.categories',
 
             /*
             |--------------------------------------------------------------------------
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Builder table. They are optional, but
+            | Define the tabs for the Resource table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -128,48 +128,6 @@ return [
                     ],
                 ],
             ],
-            /*
-            |--------------------------------------------------------------------------
-            | Relationships
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the relationships that should be shown ... wip.
-            | // TODO: Implement this or remove it, if not needed anymore.
-            |
-            */
-
-            'relationships' => [
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Taxonomies
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the taxonomies that should be shown.
-            | This is work in progress and not yet fully documented.
-            | // TODO: Add documentation and examples for this.
-            |
-            */
-
-            'taxonomies' => [
-                'categories' => [
-                    'label' => 'Categories',
-                    'model' => \Moox\Category\Models\Category::class,
-                    'table' => 'categorizables',
-                    'relationship' => 'categorizable',
-                    'foreignKey' => 'categorizable_id',
-                    'relatedKey' => 'category_id',
-                ],
-                'tags' => [
-                    'label' => 'Tags',
-                    'model' => \Moox\Tag\Models\Tag::class,
-                    'table' => 'taggables',
-                    'relationship' => 'taggable',
-                    'foreignKey' => 'taggable_id',
-                    'relatedKey' => 'tag_id',
-                ],
-            ],
         ],
     ],
 
@@ -188,7 +146,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Navigation Sort
+    | Category - Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This value is the sort order of the navigation item in the
@@ -201,10 +159,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Item Types
+    | Category Types
     |--------------------------------------------------------------------------
     |
-    | This array contains the types of items entities. You can delete
+    | This array contains the types of categories entities. You can delete
     | the types you don't need and add new ones. If you don't need
     | types, you can empty this array like this: 'types' => [],
     |
@@ -226,7 +184,7 @@ return [
     |
     */
 
-    'author_model' => \Moox\User\Models\User::class,
+    'author_model' => \App\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -239,5 +197,4 @@ return [
 
     'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
     'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
-
 ];

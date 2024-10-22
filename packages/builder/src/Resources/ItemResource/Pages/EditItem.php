@@ -19,10 +19,8 @@ class EditItem extends EditRecord
         return [];
     }
 
-    protected function afterSave(): void
+    protected function getFormActions(): array
     {
-        $this->record->refresh();
-        $this->handleTaxonomies();
-        $this->refreshFormData($this->getTaxonomyAttributes());
+        return [];
     }
 }

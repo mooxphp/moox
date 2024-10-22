@@ -3,6 +3,7 @@
 namespace Moox\Core\Traits;
 
 use Filament\Forms\Components\Select;
+use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Arr;
 use Moox\Core\Services\TaxonomyService;
 
@@ -153,5 +154,32 @@ trait HandlesDynamicTaxonomies
     protected function getTaxonomyRelatedKey(string $taxonomy): string
     {
         return $this->getTaxonomyService()->getTaxonomyRelatedKey($taxonomy);
+    }
+
+    protected function afterCreate(): void
+    {
+        $this->record->refresh();
+        $this->handleTaxonomies();
+    }
+
+    protected function afterSave(): void
+    {
+        $this->record->refresh();
+        $this->handleTaxonomies();
+        $this->refreshTaxonomyFormData();
+    }
+
+    protected function refreshTaxonomyFormData(): void
+    {
+        if ($this instanceof EditRecord) {
+            $this->refreshFormData($this->getTaxonomyAttributes());
+        }
+    }
+
+    public function refreshFormData(array $attributes = []): void
+    {
+        if (method_exists($this, 'fillForm')) {
+            $this->fillForm();
+        }
     }
 }

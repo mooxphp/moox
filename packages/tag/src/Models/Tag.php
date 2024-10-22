@@ -28,7 +28,6 @@ class Tag extends Model
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
         'weight' => 'integer',
         'count' => 'integer',
     ];
