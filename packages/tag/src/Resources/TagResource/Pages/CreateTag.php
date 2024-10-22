@@ -10,4 +10,9 @@ use Moox\Tag\Resources\TagResource;
 class CreateTag extends CreateRecord
 {
     protected static string $resource = TagResource::class;
+
+    protected function getFormActions(): array
+    {
+        return [];
+    }
 }

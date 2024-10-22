@@ -26,6 +26,7 @@
         "laravel/tinker": "^2.8",
         "moox/audit": "*",
         "moox/builder": "*",
+        "moox/category": "*",
         "moox/expiry": "*",
         "moox/flags": "*",
         "moox/jobs": "*",

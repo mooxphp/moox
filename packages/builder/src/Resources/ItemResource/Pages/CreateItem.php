@@ -14,9 +14,8 @@ class CreateItem extends CreateRecord
 
     protected static string $resource = ItemResource::class;
 
-    protected function afterCreate(): void
+    protected function getFormActions(): array
     {
-        $this->record->refresh();
-        $this->handleTaxonomies();
+        return [];
     }
 }

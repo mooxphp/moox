@@ -68,6 +68,7 @@ class AdminPanelProvider extends PanelProvider
 
                 // Development
                 // GravatarPlugin::make(),
+                \Moox\Category\CategoryPlugin::make(),
                 \Moox\Tag\TagPlugin::make(),
                 \Moox\Sync\PlatformPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
