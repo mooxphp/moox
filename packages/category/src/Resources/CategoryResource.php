@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Category\Resources;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
@@ -67,6 +68,17 @@ class CategoryResource extends Resource
                                             ->label(__('core::core.featured_image_url')),
                                         MarkdownEditor::make('content')
                                             ->label(__('core::core.content')),
+                                        SelectTree::make('parent_id')
+                                            ->relationship(
+                                                relationship: 'parent',
+                                                titleAttribute: 'title',
+                                                parentAttribute: 'parent_id',
+                                                modifyQueryUsing: fn (Builder $query, $get) => $query->where('id', '!=', $get('id'))
+                                            )
+                                            ->label('Parent Category')
+                                            ->searchable()
+                                            ->disabledOptions(fn ($get) => [$get('id')])
+                                            ->enableBranchNode(),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
