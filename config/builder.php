@@ -160,6 +160,7 @@ return [
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
+                    'hierarchical' => true,
                 ],
                 'tags' => [
                     'label' => 'Tags',

@@ -6,12 +6,14 @@ namespace Moox\Category\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Kalnoy\Nestedset\NodeTrait;
 use Moox\Category\Database\Factories\CategoryFactory;
 
 class Category extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, NodeTrait, SoftDeletes;
 
     protected $table = 'categories';
 
@@ -23,6 +25,7 @@ class Category extends Model
         'weight',
         'count',
         'featured_image_url',
+        'parent_id',
     ];
 
     protected $casts = [
@@ -38,5 +41,10 @@ class Category extends Model
     protected static function newFactory()
     {
         return CategoryFactory::new();
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 }
