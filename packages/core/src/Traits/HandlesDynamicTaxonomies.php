@@ -4,6 +4,7 @@ namespace Moox\Core\Traits;
 
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Moox\Core\Services\TaxonomyService;
 
@@ -44,11 +45,11 @@ trait HandlesDynamicTaxonomies
 
     protected function mutateFormDataBeforeFillWithTaxonomies(array $data): array
     {
-        foreach ($this->getTaxonomies() as $taxonomy => $settings) {
-            $taxonomyModel = app($this->getTaxonomyModel($taxonomy));
-            $taxonomyTable = $taxonomyModel->getTable();
+        $taxonomies = $this->getTaxonomyService()->getTaxonomies();
 
-            $data[$taxonomy] = $this->record->$taxonomy()->pluck("{$taxonomyTable}.id")->toArray();
+        foreach ($taxonomies as $taxonomy => $settings) {
+            $relationshipName = $settings['relationship'] ?? $taxonomy;
+            $data[$taxonomy] = $this->getRelatedTaxonomyIds($relationshipName);
         }
 
         return $data;
@@ -181,5 +182,20 @@ trait HandlesDynamicTaxonomies
         if (method_exists($this, 'fillForm')) {
             $this->fillForm();
         }
+    }
+
+    protected function getRelatedTaxonomyIds(string $relationshipName): array
+    {
+        if (! method_exists($this->record, $relationshipName)) {
+            return [];
+        }
+
+        $relation = $this->record->$relationshipName();
+
+        if (! $relation instanceof MorphToMany) {
+            return [];
+        }
+
+        return $relation->pluck('id')->toArray();
     }
 }
