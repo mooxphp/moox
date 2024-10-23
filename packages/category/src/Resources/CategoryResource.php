@@ -20,6 +20,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -41,7 +42,9 @@ class CategoryResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->withoutGlobalScopes();
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes()
+            ->orderBy('_lft');
     }
 
     protected static ?string $navigationIcon = 'gmdi-engineering';
@@ -103,20 +106,6 @@ class CategoryResource extends Resource
                                                     $livewire instanceof CreateCategory ? $livewire->create() : $livewire->save();
                                                 })
                                                 ->visible(fn ($livewire) => $livewire instanceof CreateCategory || $livewire instanceof EditCategory),
-                                            Actions\Action::make('publish')
-                                                ->label(__('core::core.publish'))
-                                                ->color('success')
-                                                ->button()
-                                                ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire) {
-                                                    $data = $livewire->form->getState();
-                                                    if (! $data['published_at']) {
-                                                        $data['published_at'] = now();
-                                                    }
-                                                    $livewire->form->fill($data);
-                                                    $livewire instanceof CreateCategory ? $livewire->create() : $livewire->save();
-                                                })
-                                                ->hidden(fn ($livewire, $record) => $record && $record->trashed()),
                                             Actions\Action::make('saveAndCreateAnother')
                                                 ->label(__('core::core.save_and_create_another'))
                                                 ->color('secondary')
@@ -184,6 +173,8 @@ class CategoryResource extends Resource
         $currentTab = static::getCurrentTab();
 
         return $table
+            ->query(fn () => static::getEloquentQuery())
+            ->defaultSort('_lft', 'asc')
             ->columns([
                 ImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
@@ -191,43 +182,52 @@ class CategoryResource extends Resource
                     ->alignment('center')
                     ->square()
                     ->toggleable(),
-                TextColumn::make('title')
-                    ->label(__('core::core.title'))
-                    ->searchable()
-                    ->limit(30)
-                    ->toggleable()
-                    ->sortable(),
+                TextColumn::make('modified_title')
+                    ->label('Title')
+                    ->getStateUsing(function (Category $record): string {
+                        $depth = $record->ancestors->count();
+                        $prefix = str_repeat('--', $depth);
+
+                        return "{$prefix} {$record->title}";
+                    })
+                    ->searchable(),
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
+                TextColumn::make('level')
+                    ->label('Level')
+                    ->getStateUsing(fn (Category $record): int => $record->ancestors->count() + 1)
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('children_count')
+                    ->label('Subs')
+                    ->counts('children')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('parent.title')
+                    ->label('Parent')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
                     ->label(__('core::core.content'))
                     ->sortable()
                     ->limit(30)
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('status')
-                    ->label(__('core::core.status'))
-                    ->alignment('center')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => strtoupper($state))
-                    ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'primary',
-                        'published' => 'success',
-                        'scheduled' => 'info',
-                        'deleted' => 'danger',
-                        default => 'secondary',
-                    })
-                    ->toggleable()
-                    ->sortable(),
-                TextColumn::make('publish_at')
-                    ->label(__('core::core.publish_at'))
-                    ->dateTime('Y-m-d H:i:s')
-                    ->toggleable()
-                    ->since()
-                    ->sortable(),
+                TextColumn::make('count')
+                    ->label(__('core::core.count'))
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('weight')
+                    ->label(__('tag::translations.weight'))
+                    ->sortable()
+                    ->toggleable(),
+                ColorColumn::make('color')
+                    ->label(__('tag::translations.color'))
+                    ->sortable()
+                    ->toggleable(),
             ])
             ->defaultSort('slug', 'desc')
             ->actions([
