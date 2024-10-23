@@ -9,8 +9,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Moox\Core\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
-use Moox\Tag\Forms\TaxonomyCreateForm;
 
 trait HasDynamicTaxonomyFields
 {
@@ -42,6 +42,8 @@ trait HasDynamicTaxonomyFields
         $taxonomyService->validateTaxonomy($taxonomy);
         $isHierarchical = $settings['hierarchical'] ?? false;
 
+        $createFormClass = $settings['createForm'] ?? CoreTaxonomyCreateForm::class;
+
         if ($isHierarchical) {
             return SelectTree::make($taxonomy)
                 ->relationship(
@@ -51,8 +53,16 @@ trait HasDynamicTaxonomyFields
                 )
                 ->label($settings['label'] ?? ucfirst($taxonomy))
                 ->searchable()
-                ->createOptionForm(TaxonomyCreateForm::getSchema())
+                ->createOptionForm($createFormClass::getSchema())
                 ->createOptionUsing(function (array $data) use ($modelClass) {
+                    $validator = validator($data, [
+                        'slug' => ['required', 'string', 'max:255', 'unique:'.app($modelClass)->getTable().',slug'],
+                    ]);
+
+                    if ($validator->fails()) {
+                        return $validator->errors()->first('slug');
+                    }
+
                     return app($modelClass)::create($data)->id;
                 })
                 ->enableBranchNode();
@@ -68,8 +78,16 @@ trait HasDynamicTaxonomyFields
                     ->toArray()
             )
             ->default(fn ($record) => $record ? $record->$taxonomy()->pluck('id')->toArray() : [])
-            ->createOptionForm(TaxonomyCreateForm::getSchema())
+            ->createOptionForm($createFormClass::getSchema())
             ->createOptionUsing(function (array $data, callable $set) use ($modelClass, $taxonomy) {
+                $validator = validator($data, [
+                    'slug' => ['required', 'string', 'max:255', 'unique:'.app($modelClass)->getTable().',slug'],
+                ]);
+
+                if ($validator->fails()) {
+                    return $validator->errors()->first('slug');
+                }
+
                 $newTag = app($modelClass)::create($data);
                 $set($taxonomy, function ($state) use ($newTag) {
                     $state = is_array($state) ? $state : [];
