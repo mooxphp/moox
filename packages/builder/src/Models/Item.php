@@ -11,11 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Database\Factories\ItemFactory;
 use Moox\Core\Traits\HasDynamicTaxonomies;
-use Moox\Core\Traits\HasSlug;
 
 class Item extends Model
 {
-    use HasDynamicTaxonomies, HasFactory, HasSlug, SoftDeletes;
+    use HasDynamicTaxonomies, HasFactory, SoftDeletes;
 
     protected $table = 'items';
 
