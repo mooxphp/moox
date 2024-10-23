@@ -30,6 +30,8 @@ class ViewItem extends ViewRecord
         $taxonomyService = $this->getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
+        $record = $this->getRecord();
+
         foreach ($taxonomies as $taxonomy => $settings) {
             $table = $taxonomyService->getTaxonomyTable($taxonomy);
             $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
@@ -41,7 +43,7 @@ class ViewItem extends ViewRecord
 
             $tags = DB::table($table)
                 ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
-                ->where("{$table}.{$foreignKey}", $this->record->id)
+                ->where("{$table}.{$foreignKey}", $record->getKey())
                 ->pluck("{$modelTable}.id")
                 ->toArray();
 
