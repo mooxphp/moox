@@ -6,6 +6,7 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Moox\Builder\Resources\ItemResource;
 use Moox\Core\Traits\HandlesDynamicTaxonomies;
 
@@ -26,7 +27,28 @@ class EditItem extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        return $this->mutateFormDataBeforeFillWithTaxonomies($data);
+        $taxonomyService = $this->getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        foreach ($taxonomies as $taxonomy => $settings) {
+            $table = $taxonomyService->getTaxonomyTable($taxonomy);
+            $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
+            $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
+            $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
+
+            $model = app($modelClass);
+            $modelTable = $model->getTable();
+
+            $tags = DB::table($table)
+                ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
+                ->where("{$table}.{$foreignKey}", $this->record->id)
+                ->pluck("{$modelTable}.id")
+                ->toArray();
+
+            $data[$taxonomy] = $tags;
+        }
+
+        return $data;
     }
 
     protected function fillForm(): void
