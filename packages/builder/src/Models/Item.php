@@ -45,6 +45,16 @@ class Item extends Model
         return config('builder.types');
     }
 
+    public static function getStatusOptions(): array
+    {
+        return [
+            'draft' => 'Draft',
+            'scheduled' => 'Scheduled',
+            'published' => 'Published',
+            'deleted' => 'Deleted',
+        ];
+    }
+
     public function getStatusAttribute(): string
     {
         if ($this->deleted_at) {
