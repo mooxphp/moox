@@ -406,7 +406,7 @@ class PlatformResource extends Resource
                   ]),
             ]),
         ]);
-    }
+    
 ```
 
 ## APIs
