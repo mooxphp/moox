@@ -214,6 +214,9 @@ class ItemResource extends Resource
                     ->visible(! empty(config('builder.types')))
                     ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
                     ->sortable(),
+
+                ...static::getTaxonomyColumns(),
+
                 TextColumn::make('status')
                     ->label(__('core::core.status'))
                     ->alignment('center')
@@ -436,5 +439,41 @@ class ItemResource extends Resource
     public static function getResourceName(): string
     {
         return static::getModel()::getResourceName();
+    }
+
+    protected static function getTaxonomyColumns(): array
+    {
+        $taxonomyService = static::getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        return collect($taxonomies)->map(function ($settings, $taxonomy) {
+            return TextColumn::make($taxonomy)
+                ->label($settings['label'] ?? ucfirst($taxonomy))
+                ->formatStateUsing(function ($record) use ($taxonomy, $settings) {
+                    $relationshipName = $settings['relationship'] ?? $taxonomy;
+                    if ($record->relationLoaded($relationshipName)) {
+                        return $record->$relationshipName->pluck('title')->implode(', ');
+                    }
+
+                    return $record->$relationshipName()->pluck('title')->implode(', ');
+                })
+                ->toggleable()
+                ->searchable(false)
+                ->sortable(false);
+        })->toArray();
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $taxonomyService = static::getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        foreach ($taxonomies as $taxonomy => $settings) {
+            $relationshipName = $settings['relationship'] ?? $taxonomy;
+            $query->with($relationshipName);
+        }
+
+        return $query;
     }
 }
