@@ -19,12 +19,14 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
@@ -446,20 +448,30 @@ class ItemResource extends Resource
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-        return collect($taxonomies)->map(function ($settings, $taxonomy) {
-            return TextColumn::make($taxonomy)
+        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService) {
+            return TagsColumn::make($taxonomy)
                 ->label($settings['label'] ?? ucfirst($taxonomy))
-                ->formatStateUsing(function ($record) use ($taxonomy, $settings) {
+                ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
                     $relationshipName = $settings['relationship'] ?? $taxonomy;
-                    if ($record->relationLoaded($relationshipName)) {
-                        return $record->$relationshipName->pluck('title')->implode(', ');
-                    }
+                    $table = $taxonomyService->getTaxonomyTable($taxonomy);
+                    $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
+                    $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
+                    $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
 
-                    return $record->$relationshipName()->pluck('title')->implode(', ');
+                    $model = app($modelClass);
+                    $modelTable = $model->getTable();
+
+                    $tags = DB::table($table)
+                        ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
+                        ->where("{$table}.{$foreignKey}", $record->id)
+                        ->pluck("{$modelTable}.title")
+                        ->toArray();
+
+                    return $tags;
                 })
-                ->toggleable()
-                ->searchable(false)
-                ->sortable(false);
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->separator(',')
+                ->searchable();
         })->toArray();
     }
 
@@ -470,7 +482,7 @@ class ItemResource extends Resource
         $taxonomies = $taxonomyService->getTaxonomies();
 
         foreach ($taxonomies as $taxonomy => $settings) {
-            $relationshipName = $settings['relationship'] ?? $taxonomy;
+            $relationshipName = $taxonomyService->getTaxonomyRelationship($taxonomy);
             $query->with($relationshipName);
         }
 
