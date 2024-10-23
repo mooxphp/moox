@@ -51,9 +51,11 @@ trait HasDynamicTaxonomyFields
                 )
                 ->label($settings['label'] ?? ucfirst($taxonomy))
                 ->searchable()
-                ->enableBranchNode()
                 ->createOptionForm(TaxonomyCreateForm::getSchema())
-                ->createOptionUsing(fn (array $data) => app($modelClass)::create($data));
+                ->createOptionUsing(function (array $data) use ($modelClass) {
+                    return app($modelClass)::create($data)->id;
+                })
+                ->enableBranchNode();
         }
 
         return Select::make($taxonomy)
@@ -69,7 +71,11 @@ trait HasDynamicTaxonomyFields
             ->createOptionForm(TaxonomyCreateForm::getSchema())
             ->createOptionUsing(function (array $data, callable $set) use ($modelClass, $taxonomy) {
                 $newTag = app($modelClass)::create($data);
-                $set($taxonomy, fn ($state) => array_unique(array_merge(is_array($state) ? $state : [], [$newTag->id])));
+                $set($taxonomy, function ($state) use ($newTag) {
+                    $state = is_array($state) ? $state : [];
+
+                    return array_merge($state, [$newTag->id]);
+                });
 
                 return $newTag->id;
             })
