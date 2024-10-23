@@ -19,14 +19,12 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
@@ -380,16 +378,6 @@ class ItemResource extends Resource
         static::$currentTab = $tab;
     }
 
-    protected static function handleTaxonomies(Model $record, array $data): void
-    {
-        $taxonomyService = static::getTaxonomyService();
-        foreach ($taxonomyService->getTaxonomies() as $taxonomy => $settings) {
-            if (isset($data[$taxonomy])) {
-                $record->$taxonomy()->sync($data[$taxonomy]);
-            }
-        }
-    }
-
     public static function mutateFormDataBeforeCreate(array $data): array
     {
         return $data;
@@ -415,36 +403,14 @@ class ItemResource extends Resource
         return static::getModel()::getResourceName();
     }
 
-    protected static function getTaxonomyColumns(): array
+    protected static function handleTaxonomies(Model $record, array $data): void
     {
         $taxonomyService = static::getTaxonomyService();
-        $taxonomies = $taxonomyService->getTaxonomies();
-
-        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService) {
-            return TagsColumn::make($taxonomy)
-                ->label($settings['label'] ?? ucfirst($taxonomy))
-                ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
-                    $relationshipName = $settings['relationship'] ?? $taxonomy;
-                    $table = $taxonomyService->getTaxonomyTable($taxonomy);
-                    $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
-                    $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
-                    $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
-
-                    $model = app($modelClass);
-                    $modelTable = $model->getTable();
-
-                    $tags = DB::table($table)
-                        ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
-                        ->where("{$table}.{$foreignKey}", $record->id)
-                        ->pluck("{$modelTable}.title")
-                        ->toArray();
-
-                    return $tags;
-                })
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->separator(',')
-                ->searchable();
-        })->toArray();
+        foreach ($taxonomyService->getTaxonomies() as $taxonomy => $settings) {
+            if (isset($data[$taxonomy])) {
+                $record->$taxonomy()->sync($data[$taxonomy]);
+            }
+        }
     }
 
     public static function getEloquentQuery(): Builder

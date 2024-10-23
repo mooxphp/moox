@@ -124,14 +124,17 @@ trait HasDynamicTaxonomyFields
                     $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
                     $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
                     $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
+
                     $model = app($modelClass);
                     $modelTable = $model->getTable();
 
-                    return DB::table($table)
+                    $tags = DB::table($table)
                         ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
                         ->where("{$table}.{$foreignKey}", $record->id)
                         ->pluck("{$modelTable}.title")
                         ->toArray();
+
+                    return $tags;
                 })
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->separator(',')
