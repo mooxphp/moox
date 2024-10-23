@@ -4,6 +4,11 @@ namespace Moox\Core\Traits;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TagsColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Tag\Forms\TaxonomyCreateForm;
 
@@ -27,18 +32,14 @@ trait HasDynamicTaxonomyFields
         $taxonomyService = static::getTaxonomyService();
 
         return collect($taxonomyService->getTaxonomies())
-            ->map(function ($settings, $taxonomy) use ($taxonomyService) {
-                return static::createTaxonomyField($taxonomy, $settings, $taxonomyService);
-            })
+            ->map(fn ($settings, $taxonomy) => static::createTaxonomyField($taxonomy, $settings, $taxonomyService))
             ->toArray();
     }
 
     protected static function createTaxonomyField(string $taxonomy, array $settings, TaxonomyService $taxonomyService): Select|SelectTree
     {
         $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
-
         $taxonomyService->validateTaxonomy($taxonomy);
-
         $isHierarchical = $settings['hierarchical'] ?? false;
 
         if ($isHierarchical) {
@@ -52,9 +53,7 @@ trait HasDynamicTaxonomyFields
                 ->searchable()
                 ->enableBranchNode()
                 ->createOptionForm(TaxonomyCreateForm::getSchema())
-                ->createOptionUsing(function (array $data) use ($modelClass) {
-                    return app($modelClass)::create($data);
-                });
+                ->createOptionUsing(fn (array $data) => app($modelClass)::create($data));
         }
 
         return Select::make($taxonomy)
@@ -70,18 +69,84 @@ trait HasDynamicTaxonomyFields
             ->createOptionForm(TaxonomyCreateForm::getSchema())
             ->createOptionUsing(function (array $data, callable $set) use ($modelClass, $taxonomy) {
                 $newTag = app($modelClass)::create($data);
-
-                $set($taxonomy, function ($state) use ($newTag) {
-                    $state = is_array($state) ? $state : [];
-                    $state[] = $newTag->id;
-
-                    return array_unique($state);
-                });
+                $set($taxonomy, fn ($state) => array_unique(array_merge(is_array($state) ? $state : [], [$newTag->id])));
 
                 return $newTag->id;
             })
             ->preload()
             ->searchable()
             ->label($settings['label'] ?? ucfirst($taxonomy));
+    }
+
+    public static function getTaxonomyFilters(): array
+    {
+        $taxonomyService = static::getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        return collect($taxonomies)->map(function ($taxonomy, $key) use ($taxonomyService) {
+            return SelectFilter::make($key)
+                ->label($taxonomy['label'])
+                ->multiple()
+                ->options(fn () => $taxonomyService->getTaxonomyModel($key)::pluck('title', 'id')->toArray())
+                ->query(function (Builder $query, array $data) use ($taxonomy) {
+                    $selectedIds = $data['values'] ?? [];
+                    if (! empty($selectedIds)) {
+                        $query->whereHas($taxonomy['relationship'], fn ($q) => $q->whereIn('id', $selectedIds));
+                    }
+                });
+        })->toArray();
+    }
+
+    protected static function getTaxonomyColumns(): array
+    {
+        $taxonomyService = static::getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService) {
+            return TagsColumn::make($taxonomy)
+                ->label($settings['label'] ?? ucfirst($taxonomy))
+                ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
+                    $relationshipName = $settings['relationship'] ?? $taxonomy;
+                    $table = $taxonomyService->getTaxonomyTable($taxonomy);
+                    $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
+                    $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
+                    $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
+                    $model = app($modelClass);
+                    $modelTable = $model->getTable();
+
+                    return DB::table($table)
+                        ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
+                        ->where("{$table}.{$foreignKey}", $record->id)
+                        ->pluck("{$modelTable}.title")
+                        ->toArray();
+                })
+                ->toggleable(isToggledHiddenByDefault: true)
+                ->separator(',')
+                ->searchable();
+        })->toArray();
+    }
+
+    protected static function handleTaxonomies(Model $record, array $data): void
+    {
+        $taxonomyService = static::getTaxonomyService();
+        foreach ($taxonomyService->getTaxonomies() as $taxonomy => $settings) {
+            if (isset($data[$taxonomy])) {
+                $record->$taxonomy()->sync($data[$taxonomy]);
+            }
+        }
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $taxonomyService = static::getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        foreach ($taxonomies as $taxonomy => $settings) {
+            $relationshipName = $taxonomyService->getTaxonomyRelationship($taxonomy);
+            $query->with($relationshipName);
+        }
+
+        return $query;
     }
 }
