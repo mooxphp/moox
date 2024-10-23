@@ -23,6 +23,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -247,7 +248,101 @@ class CategoryResource extends Resource
                 }),
             ])
             ->filters([
+                SelectFilter::make('parent_id')
+                    ->label('Parent Category')
+                    ->relationship('parent', 'title', fn ($query) => $query->has('children'))
+                    ->searchable(),
+                SelectFilter::make('children_count')
+                    ->label('Subs')
+                    ->options([
+                        '0' => '0',
+                        '1-5' => '1-5',
+                        '6-10' => '6-10',
+                        '10+' => '10+',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query->when($data['value'], function ($query, $option) {
+                            switch ($option) {
+                                case '0':
+                                    return $query->doesntHave('children');
+                                case '1-5':
+                                    return $query->has('children', '>=', 1)->has('children', '<=', 5);
+                                case '6-10':
+                                    return $query->has('children', '>=', 6)->has('children', '<=', 10);
+                                case '10+':
+                                    return $query->has('children', '>', 10);
+                            }
+                        });
+                    }),
+                SelectFilter::make('depth')
+                    ->label('Level')
+                    ->options(fn () => array_combine(range(1, 5), range(1, 5)))
+                    ->query(function (Builder $query, array $data) {
+                        return $query->when($data['value'], function ($query, $depth) {
+                            $query->whereIn('id', function ($subquery) use ($depth) {
+                                $subquery->select('id')
+                                    ->from('categories as c')
+                                    ->whereRaw('(SELECT COUNT(*) FROM categories as ancestors WHERE ancestors._lft < c._lft AND ancestors._rgt > c._rgt) = ?', [$depth - 1]);
+                            });
+                        });
+                    }),
+            ])
+            ->defaultSort('slug', 'desc')
+            ->actions([
+                ViewAction::make(),
+                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+            ])
+            ->bulkActions([
+                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
+                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
 
+                    return $isHidden;
+                }),
+                RestoreBulkAction::make()->visible(function () use ($currentTab) {
+                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
+
+                    return $isVisible;
+                }),
+            ])
+            ->filters([
+                SelectFilter::make('parent_id')
+                    ->label('Parent Category')
+                    ->relationship('parent', 'title', fn ($query) => $query->has('children'))
+                    ->searchable(),
+                SelectFilter::make('children_count')
+                    ->label('Subs')
+                    ->options([
+                        '0' => '0',
+                        '1-5' => '1-5',
+                        '6-10' => '6-10',
+                        '10+' => '10+',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return $query->when($data['value'], function ($query, $option) {
+                            switch ($option) {
+                                case '0':
+                                    return $query->doesntHave('children');
+                                case '1-5':
+                                    return $query->has('children', '>=', 1)->has('children', '<=', 5);
+                                case '6-10':
+                                    return $query->has('children', '>=', 6)->has('children', '<=', 10);
+                                case '10+':
+                                    return $query->has('children', '>', 10);
+                            }
+                        });
+                    }),
+                SelectFilter::make('depth')
+                    ->label('Level')
+                    ->options(fn () => array_combine(range(1, 5), range(1, 5)))
+                    ->query(function (Builder $query, array $data) {
+                        return $query->when($data['value'], function ($query, $depth) {
+                            $query->whereIn('id', function ($subquery) use ($depth) {
+                                $subquery->select('id')
+                                    ->from('categories as c')
+                                    ->whereRaw('(SELECT COUNT(*) FROM categories as ancestors WHERE ancestors._lft < c._lft AND ancestors._rgt > c._rgt) = ?', [$depth - 1]);
+                            });
+                        });
+                    }),
             ]);
     }
 
