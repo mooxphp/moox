@@ -38,15 +38,15 @@ return [
             |
             */
 
-            'single' => 'trans//builder::builder.item',
-            'plural' => 'trans//builder::builder.items',
+            'single' => 'trans//builder::translations.item',
+            'plural' => 'trans//builder::translations.items',
 
             /*
             |--------------------------------------------------------------------------
             | Tabs
             |--------------------------------------------------------------------------
             |
-            | Define the tabs for the Resource table. They are optional, but
+            | Define the tabs for the Builder table. They are optional, but
             | pretty awesome to filter the table by certain values.
             | You may simply do a 'tabs' => [], to disable them.
             |
@@ -128,7 +128,6 @@ return [
                     ],
                 ],
             ],
-
             /*
             |--------------------------------------------------------------------------
             | Relationships
@@ -161,6 +160,7 @@ return [
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
+                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'tags' => [
@@ -170,6 +170,7 @@ return [
                     'relationship' => 'taggable',
                     'foreignKey' => 'taggable_id',
                     'relatedKey' => 'tag_id',
+                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
                 ],
             ],
         ],
@@ -190,7 +191,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Builder - Navigation Sort
+    | Navigation Sort
     |--------------------------------------------------------------------------
     |
     | This value is the sort order of the navigation item in the
@@ -228,7 +229,7 @@ return [
     |
     */
 
-    'author_model' => \App\Models\User::class,
+    'author_model' => \Moox\User\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -241,4 +242,5 @@ return [
 
     'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
     'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
+
 ];

@@ -160,6 +160,7 @@ return [
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
+                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'tags' => [
@@ -169,6 +170,7 @@ return [
                     'relationship' => 'taggable',
                     'foreignKey' => 'taggable_id',
                     'relatedKey' => 'tag_id',
+                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
                 ],
             ],
         ],
