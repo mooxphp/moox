@@ -82,16 +82,29 @@ trait HasDynamicTaxonomyFields
     {
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
+        $resourceModel = static::getModel();
+        $resourceTable = app($resourceModel)->getTable();
 
-        return collect($taxonomies)->map(function ($taxonomy, $key) use ($taxonomyService) {
-            return SelectFilter::make($key)
-                ->label($taxonomy['label'])
+        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService, $resourceTable) {
+            $taxonomyModel = $taxonomyService->getTaxonomyModel($taxonomy);
+            $pivotTable = $taxonomyService->getTaxonomyTable($taxonomy);
+            $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
+            $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
+            $taxonomyTable = app($taxonomyModel)->getTable();
+
+            return SelectFilter::make($taxonomy)
+                ->label($settings['label'] ?? ucfirst($taxonomy))
                 ->multiple()
-                ->options(fn () => $taxonomyService->getTaxonomyModel($key)::pluck('title', 'id')->toArray())
-                ->query(function (Builder $query, array $data) use ($taxonomy) {
+                ->options(fn () => $taxonomyModel::pluck('title', 'id')->toArray())
+                ->query(function (Builder $query, array $data) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable) {
                     $selectedIds = $data['values'] ?? [];
                     if (! empty($selectedIds)) {
-                        $query->whereHas($taxonomy['relationship'], fn ($q) => $q->whereIn('id', $selectedIds));
+                        $query->whereExists(function ($subQuery) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable, $selectedIds) {
+                            $subQuery->select(DB::raw(1))
+                                ->from($pivotTable)
+                                ->whereColumn("{$pivotTable}.{$foreignKey}", "{$resourceTable}.id")
+                                ->whereIn("{$pivotTable}.{$relatedKey}", $selectedIds);
+                        });
                     }
                 });
         })->toArray();

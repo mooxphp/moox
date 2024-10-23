@@ -267,8 +267,7 @@ class ItemResource extends Resource
                     ->options(fn () => static::getAuthorOptions())
                     ->searchable(),
 
-                ...self::getTaxonomyFilters(),
-
+                ...static::getTaxonomyFilters(),
             ]);
     }
 

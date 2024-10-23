@@ -42,10 +42,12 @@ trait HandlesDynamicTaxonomies
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        if (! $this->record) {
+            return $data;
+        }
+
         $taxonomyService = $this->getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
-
-        $record = $this->getRecord();
 
         foreach ($taxonomies as $taxonomy => $settings) {
             $table = $taxonomyService->getTaxonomyTable($taxonomy);
@@ -58,7 +60,7 @@ trait HandlesDynamicTaxonomies
 
             $tags = DB::table($table)
                 ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
-                ->where("{$table}.{$foreignKey}", $record->getKey())
+                ->where("{$table}.{$foreignKey}", $this->record->getKey())
                 ->pluck("{$modelTable}.id")
                 ->toArray();
 
@@ -228,7 +230,7 @@ trait HandlesDynamicTaxonomies
     {
         $this->callHook('beforeFill');
 
-        $data = $this->record->toArray();
+        $data = $this->record ? $this->record->toArray() : [];
 
         $data = $this->mutateFormDataBeforeFill($data);
 
