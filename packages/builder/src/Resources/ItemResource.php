@@ -272,33 +272,6 @@ class ItemResource extends Resource
             ]);
     }
 
-    protected static function getTaxonomyFilters(): array
-    {
-        $taxonomyFilters = [];
-        $taxonomies = config('builder.resources.builder.taxonomies', []);
-
-        foreach ($taxonomies as $key => $taxonomy) {
-            $taxonomyFilters[] = SelectFilter::make($key)
-                ->label($taxonomy['label'])
-                ->multiple()
-                ->options(function () use ($taxonomy) {
-                    $modelClass = $taxonomy['model'];
-
-                    return $modelClass::pluck('title', 'id')->toArray();
-                })
-                ->query(function (Builder $query, array $data) use ($taxonomy) {
-                    $selectedIds = $data['values'] ?? [];
-                    if (! empty($selectedIds)) {
-                        $query->whereHas($taxonomy['relationship'], function ($q) use ($selectedIds) {
-                            $q->whereIn('id', $selectedIds);
-                        });
-                    }
-                });
-        }
-
-        return $taxonomyFilters;
-    }
-
     public static function getRelations(): array
     {
         return [
