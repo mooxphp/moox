@@ -4,8 +4,10 @@ namespace Moox\Core\Traits;
 
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Moox\Core\Services\TaxonomyService;
 
 trait HandlesDynamicTaxonomies
@@ -40,7 +42,30 @@ trait HandlesDynamicTaxonomies
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        return $this->mutateFormDataBeforeFillWithTaxonomies($data);
+        $taxonomyService = $this->getTaxonomyService();
+        $taxonomies = $taxonomyService->getTaxonomies();
+
+        $record = $this->getRecord();
+
+        foreach ($taxonomies as $taxonomy => $settings) {
+            $table = $taxonomyService->getTaxonomyTable($taxonomy);
+            $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
+            $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
+            $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
+
+            $model = app($modelClass);
+            $modelTable = $model->getTable();
+
+            $tags = DB::table($table)
+                ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
+                ->where("{$table}.{$foreignKey}", $record->getKey())
+                ->pluck("{$modelTable}.id")
+                ->toArray();
+
+            $data[$taxonomy] = $tags;
+        }
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeFillWithTaxonomies(array $data): array
@@ -197,5 +222,27 @@ trait HandlesDynamicTaxonomies
         }
 
         return $relation->pluck('id')->toArray();
+    }
+
+    protected function fillForm(): void
+    {
+        $this->callHook('beforeFill');
+
+        $data = $this->record->toArray();
+
+        $data = $this->mutateFormDataBeforeFill($data);
+
+        $this->form->fill($data);
+
+        $this->callHook('afterFill');
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $record->update($data);
+
+        $this->handleTaxonomies();
+
+        return $record;
     }
 }
