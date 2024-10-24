@@ -174,17 +174,19 @@ $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
 $description = ask('Package description', "This is my package {$packageSlug}");
-$entity = ask('Package Entity', "{$className}");
-$entityPlural = ask('Tablename', title_snake($packageSlug).'s');
+// will move to Artisan command
+//$entity = ask('Package Entity', "{$className}");
+//$entityPlural = ask('Tablename', title_snake($packageSlug).'s');
 
 writeln('------');
 writeln("Author : {$authorName}");
 writeln("Author Email : {$authorEmail}");
 writeln("Namespace  : Moox\\{$className}");
 writeln("Packagename : moox\\{$packageSlug}");
-writeln("Class name : {$className}Plugin");
-writeln("Entity : {$entity}");
-writeln("Tablename : {$entityPlural}");
+// will move to Artisan command
+//writeln("Class name : {$className}Plugin");
+//writeln("Entity : {$entity}");
+//writeln("Tablename : {$entityPlural}");
 writeln('------');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
@@ -201,27 +203,31 @@ foreach ($files as $file) {
         'dev@moox.org' => $authorEmail,
         'Builder' => $className,
         'builder' => $packageSlug,
-        'Item' => $entity,
-        'items' => $entityPlural,
-        'create_items_table' => 'create_'.title_snake($entityPlural).'_table',
+
+        // will move to Artisan command
+        // 'Item' => $entity,
+        // 'items' => $entityPlural,
+        // 'create_items_table' => 'create_'.title_snake($entityPlural).'_table',
         'This template is used for generating all Moox packages.' => $description,
         'Here are some things missing, like an overview with screenshots about this package,
         or simply a link to the package\'s docs.' => $description,
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/ItemPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
         str_contains($file, determineSeparator('src/BuilderServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains($file, determineSeparator('src/Resources/ItemResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
-        str_contains($file, determineSeparator('src/Models/Item.php')) => rename($file, determineSeparator('./src/Models/'.$entity.'.php')),
-        str_contains($file, determineSeparator('src/Resources/ItemResource/Widgets/ItemWidgets.php')) => rename($file, determineSeparator('./src/Resources/ItemResource/Widgets/'.$className.'Widgets.php')),
-        str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
+        // will move to Artisan command
+        //str_contains($file, determineSeparator('src/ItemPlugin.php')) => rename($file, determineSeparator('./src/'.$className.'Plugin.php')),
+        //str_contains($file, determineSeparator('src/Resources/ItemResource.php')) => rename($file, determineSeparator('./src/Resources/'.$className.'Resource.php')),
+        //str_contains($file, determineSeparator('src/Models/Item.php')) => rename($file, determineSeparator('./src/Models/'.$entity.'.php')),
+        //str_contains($file, determineSeparator('src/Resources/ItemResource/Widgets/ItemWidgets.php')) => rename($file, determineSeparator('./src/Resources/ItemResource/Widgets/'.$className.'Widgets.php')),
+        //str_contains($file, determineSeparator('database/migrations/create_items_table.php.stub')) => rename($file, determineSeparator('./database/migrations/create_'.title_snake($entityPlural).'_table.php.stub')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };
 }
 rename(determineSeparator('config/builder.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
-rename(determineSeparator('src/Resources/ItemResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
+// will move to Artisan command
+//rename(determineSeparator('src/Resources/ItemResource'), determineSeparator('./src/Resources/'.$className.'Resource'));
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 
