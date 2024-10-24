@@ -402,28 +402,4 @@ class ItemResource extends Resource
     {
         return static::getModel()::getResourceName();
     }
-
-    protected static function handleTaxonomies(Model $record, array $data): void
-    {
-        $taxonomyService = static::getTaxonomyService();
-        foreach ($taxonomyService->getTaxonomies() as $taxonomy => $settings) {
-            if (isset($data[$taxonomy])) {
-                $record->$taxonomy()->sync($data[$taxonomy]);
-            }
-        }
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-        $taxonomyService = static::getTaxonomyService();
-        $taxonomies = $taxonomyService->getTaxonomies();
-
-        foreach ($taxonomies as $taxonomy => $settings) {
-            $relationshipName = $taxonomyService->getTaxonomyRelationship($taxonomy);
-            $query->with($relationshipName);
-        }
-
-        return $query;
-    }
 }

@@ -23,7 +23,7 @@ trait HasDynamicTaxonomies
 
     protected function getResourceName(): string
     {
-        return 'builder'; // or use a more dynamic way to determine the resource name
+        return static::getModel()::getResourceName();
     }
 
     public function taxonomy(string $taxonomy): MorphToMany

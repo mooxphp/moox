@@ -24,7 +24,7 @@ trait HasDynamicTaxonomyFields
 
     protected static function getResourceName(): string
     {
-        return strtolower(class_basename(static::class));
+        return static::getModel()::getResourceName();
     }
 
     public static function getTaxonomyFields(): array

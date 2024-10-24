@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,7 +17,6 @@ class Item extends Model
 
     protected $table = 'items';
 
-    // TODO: document this
     protected function getResourceName(): string
     {
         return 'builder';
@@ -81,12 +79,5 @@ class Item extends Model
     protected static function newFactory(): mixed
     {
         return ItemFactory::new();
-    }
-
-    public function scopeWithTaxonomy(Builder $query, string $taxonomy, array $ids): Builder
-    {
-        return $query->whereHas($taxonomy, function ($query) use ($ids) {
-            $query->whereIn('id', $ids);
-        });
     }
 }
