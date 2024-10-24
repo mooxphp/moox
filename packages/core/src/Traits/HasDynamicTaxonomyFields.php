@@ -44,6 +44,25 @@ trait HasDynamicTaxonomyFields
 
         $createFormClass = $settings['createForm'] ?? CoreTaxonomyCreateForm::class;
 
+        $commonConfig = [
+            'label' => $settings['label'] ?? ucfirst($taxonomy),
+            'searchable' => true,
+            'createOptionForm' => $createFormClass::getSchema(),
+            'createOptionUsing' => function (array $data) use ($modelClass) {
+                $validator = validator($data, [
+                    'slug' => ['required', 'string', 'max:255', 'unique:'.app($modelClass)->getTable().',slug'],
+                ]);
+
+                if ($validator->fails()) {
+                    return $validator->errors()->first('slug');
+                }
+
+                $newTaxonomy = app($modelClass)::create($data);
+
+                return $newTaxonomy->id;
+            },
+        ];
+
         if ($isHierarchical) {
             return SelectTree::make($taxonomy)
                 ->relationship(
@@ -51,21 +70,11 @@ trait HasDynamicTaxonomyFields
                     titleAttribute: 'title',
                     parentAttribute: 'parent_id'
                 )
-                ->label($settings['label'] ?? ucfirst($taxonomy))
+                ->enableBranchNode()
                 ->searchable()
-                ->createOptionForm($createFormClass::getSchema())
-                ->createOptionUsing(function (array $data) use ($modelClass) {
-                    $validator = validator($data, [
-                        'slug' => ['required', 'string', 'max:255', 'unique:'.app($modelClass)->getTable().',slug'],
-                    ]);
-
-                    if ($validator->fails()) {
-                        return $validator->errors()->first('slug');
-                    }
-
-                    return app($modelClass)::create($data)->id;
-                })
-                ->enableBranchNode();
+                ->createOptionForm($commonConfig['createOptionForm'])
+                ->createOptionUsing($commonConfig['createOptionUsing'])
+                ->label($commonConfig['label']);
         }
 
         return Select::make($taxonomy)
@@ -77,29 +86,10 @@ trait HasDynamicTaxonomyFields
                     ->pluck('title', 'id')
                     ->toArray()
             )
-            ->default(fn ($record) => $record ? $record->$taxonomy()->pluck('id')->toArray() : [])
-            ->createOptionForm($createFormClass::getSchema())
-            ->createOptionUsing(function (array $data, callable $set) use ($modelClass, $taxonomy) {
-                $validator = validator($data, [
-                    'slug' => ['required', 'string', 'max:255', 'unique:'.app($modelClass)->getTable().',slug'],
-                ]);
-
-                if ($validator->fails()) {
-                    return $validator->errors()->first('slug');
-                }
-
-                $newTag = app($modelClass)::create($data);
-                $set($taxonomy, function ($state) use ($newTag) {
-                    $state = is_array($state) ? $state : [];
-
-                    return array_merge($state, [$newTag->id]);
-                });
-
-                return $newTag->id;
-            })
-            ->preload()
+            ->createOptionForm($commonConfig['createOptionForm'])
+            ->createOptionUsing($commonConfig['createOptionUsing'])
             ->searchable()
-            ->label($settings['label'] ?? ucfirst($taxonomy));
+            ->label($commonConfig['label']);
     }
 
     public static function getTaxonomyFilters(): array
