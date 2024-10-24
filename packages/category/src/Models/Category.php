@@ -7,7 +7,9 @@ namespace Moox\Category\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Moox\Category\Database\Factories\CategoryFactory;
 
@@ -46,5 +48,22 @@ class Category extends Model
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function categorizables(string $type): MorphToMany
+    {
+        return $this->morphedByMany($type, 'categorizable');
+    }
+
+    public function detachAllCategorizables(): void
+    {
+        DB::table('categorizables')->where('category_id', $this->id)->delete();
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Category $category) {
+            $category->detachAllCategorizables();
+        });
     }
 }
