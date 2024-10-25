@@ -39,11 +39,6 @@ class ViewItem extends ViewRecord
         return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
     }
 
-    public function getRelationManagers(): array
-    {
-        return [];
-    }
-
     protected function getHeaderActions(): array
     {
         return [];
