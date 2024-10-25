@@ -6,14 +6,13 @@ namespace Moox\Builder\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Builder\Database\Factories\ItemFactory;
-use Moox\Core\Traits\TaxonomyInModel;
+use Illuminate\Support\Facades\DB;
 
 class SimpleTaxonomy extends Model
 {
-    use HasFactory, SoftDeletes, TaxonomyInModel;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'simple_taxonomies';
 
@@ -26,57 +25,36 @@ class SimpleTaxonomy extends Model
         'title',
         'slug',
         'content',
+        'color',
+        'weight',
+        'count',
         'featured_image_url',
-        'gallery_image_urls',
-        'type',
-        'author_id',
-        'publish_at',
     ];
 
     protected $casts = [
-        'publish_at' => 'datetime',
-        'gallery_image_urls' => 'array',
+        'weight' => 'integer',
+        'count' => 'integer',
     ];
-
-    public static function getTypeOptions(): array
-    {
-        return config('builder.types');
-    }
-
-    public static function getStatusOptions(): array
-    {
-        return [
-            'draft' => 'Draft',
-            'scheduled' => 'Scheduled',
-            'published' => 'Published',
-            'deleted' => 'Deleted',
-        ];
-    }
 
     public function getStatusAttribute(): string
     {
-        if ($this->trashed()) {
-            return 'deleted';
-        }
-
-        return $this->getAttribute('publish_at')
-            ? ($this->getAttribute('publish_at')->isFuture() ?
-            'scheduled' : 'published')
-            : 'draft';
+        return $this->trashed() ? 'deleted' : 'active';
     }
 
-    public function author(): ?BelongsTo
+    public function simpletaxonomyables(string $type): MorphToMany
     {
-        $authorModel = config('builder.author_model');
-        if ($authorModel && class_exists($authorModel)) {
-            return $this->belongsTo($authorModel, 'author_id');
-        }
-
-        return null;
+        return $this->morphedByMany($type, 'simpletaxonomyable');
     }
 
-    protected static function newFactory(): mixed
+    public function detachAllSimpletaxonomyables(): void
     {
-        return ItemFactory::new();
+        DB::table('simpletaxonomyables')->where('simple_taxonomy_id', $this->id)->delete();
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (SimpleTaxonomy $simpleTaxonomy) {
+            $simpleTaxonomy->detachAllSimpletaxonomyables();
+        });
     }
 }

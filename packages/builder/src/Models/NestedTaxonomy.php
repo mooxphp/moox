@@ -7,13 +7,14 @@ namespace Moox\Builder\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Builder\Database\Factories\ItemFactory;
-use Moox\Core\Traits\TaxonomyInModel;
+use Illuminate\Support\Facades\DB;
+use Kalnoy\Nestedset\NodeTrait;
 
 class NestedTaxonomy extends Model
 {
-    use HasFactory, SoftDeletes, TaxonomyInModel;
+    use HasFactory, NodeTrait, SoftDeletes;
 
     protected $table = 'nested_taxonomies';
 
@@ -38,45 +39,30 @@ class NestedTaxonomy extends Model
         'count' => 'integer',
     ];
 
-    public static function getTypeOptions(): array
-    {
-        return config('builder.types');
-    }
-
-    public static function getStatusOptions(): array
-    {
-        return [
-            'draft' => 'Draft',
-            'scheduled' => 'Scheduled',
-            'published' => 'Published',
-            'deleted' => 'Deleted',
-        ];
-    }
-
     public function getStatusAttribute(): string
     {
-        if ($this->trashed()) {
-            return 'deleted';
-        }
-
-        return $this->getAttribute('publish_at')
-            ? ($this->getAttribute('publish_at')->isFuture() ?
-            'scheduled' : 'published')
-            : 'draft';
+        return $this->trashed() ? 'deleted' : 'active';
     }
 
-    public function author(): ?BelongsTo
+    public function parent(): ?BelongsTo
     {
-        $authorModel = config('builder.author_model');
-        if ($authorModel && class_exists($authorModel)) {
-            return $this->belongsTo($authorModel, 'author_id');
-        }
-
-        return null;
+        return $this->belongsTo(NestedTaxonomy::class, 'parent_id');
     }
 
-    protected static function newFactory(): mixed
+    public function nestedtaxonomyables(string $type): MorphToMany
     {
-        return ItemFactory::new();
+        return $this->morphedByMany($type, 'nestedtaxonomyable');
+    }
+
+    public function detachAllNestedtaxonomyables(): void
+    {
+        DB::table('nestedtaxonomyables')->where('nested_taxonomy_id', $this->id)->delete();
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (NestedTaxonomy $nestedTaxonomy) {
+            $nestedTaxonomy->detachAllNestedtaxonomyables();
+        });
     }
 }

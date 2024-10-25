@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
 use Moox\Core\Traits\TabsInPage;
@@ -18,27 +17,6 @@ class ListCategories extends ListRecords
     use TabsInPage;
 
     public static string $resource = CategoryResource::class;
-
-    public function mount(): void
-    {
-        parent::mount();
-        static::getResource()::setCurrentTab($this->activeTab);
-    }
-
-    // Correct method signature for Filament 3.2
-    public function updatedActiveTab(): void
-    {
-        static::getResource()::setCurrentTab($this->activeTab);
-        $this->tableFilters = null;
-        $this->tableSortColumn = null;
-        $this->tableSortDirection = null;
-        $this->resetTable();
-    }
-
-    protected function getTableQuery(): Builder
-    {
-        return static::getResource()::getTableQuery($this->activeTab);
-    }
 
     protected function getHeaderActions(): array
     {
@@ -74,11 +52,5 @@ class ListCategories extends ListRecords
     public function getTabs(): array
     {
         return $this->getDynamicTabs('category.resources.category.tabs', Category::class);
-    }
-
-    public function getHeaderWidgets(): array
-    {
-        return [
-        ];
     }
 }

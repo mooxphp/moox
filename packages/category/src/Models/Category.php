@@ -37,7 +37,7 @@ class Category extends Model
 
     public function getStatusAttribute(): string
     {
-        return $this->trashed() ? 'deleted' : 'published';
+        return $this->trashed() ? 'deleted' : 'active';
     }
 
     protected static function newFactory()

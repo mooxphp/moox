@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\TabsInPage;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
@@ -18,27 +17,6 @@ class ListTags extends ListRecords
     use TabsInPage;
 
     public static string $resource = TagResource::class;
-
-    public function mount(): void
-    {
-        parent::mount();
-        static::getResource()::setCurrentTab($this->activeTab);
-    }
-
-    // Correct method signature for Filament 3.2
-    public function updatedActiveTab(): void
-    {
-        static::getResource()::setCurrentTab($this->activeTab);
-        $this->tableFilters = null;
-        $this->tableSortColumn = null;
-        $this->tableSortDirection = null;
-        $this->resetTable();
-    }
-
-    protected function getTableQuery(): Builder
-    {
-        return static::getResource()::getTableQuery($this->activeTab);
-    }
 
     protected function getHeaderActions(): array
     {

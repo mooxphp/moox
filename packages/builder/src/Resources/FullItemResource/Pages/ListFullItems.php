@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Builder\Models\FullItem;
 use Moox\Builder\Resources\FullItemResource;
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
@@ -19,26 +18,6 @@ class ListFullItems extends ListRecords
     use TabsInPage;
 
     public static string $resource = FullItemResource::class;
-
-    public function mount(): void
-    {
-        parent::mount();
-        static::getResource()::setCurrentTab($this->activeTab);
-    }
-
-    public function updatedActiveTab(): void
-    {
-        static::getResource()::setCurrentTab($this->activeTab);
-        $this->tableFilters = null;
-        $this->tableSortColumn = null;
-        $this->tableSortDirection = null;
-        $this->resetTable();
-    }
-
-    protected function getTableQuery(): Builder
-    {
-        return static::getResource()::getTableQuery($this->activeTab);
-    }
 
     protected function getHeaderActions(): array
     {

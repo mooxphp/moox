@@ -151,6 +151,8 @@ class NestedTaxonomyResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $currentTab = static::getCurrentTab();
+
         return $table
             ->columns([
                 ImageColumn::make('featured_image_url')
@@ -199,13 +201,6 @@ class NestedTaxonomyResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
@@ -246,6 +241,15 @@ class NestedTaxonomyResource extends Resource
         return config('builder.navigation_sort') + 4;
     }
 
+    public static function getCurrentTab(): ?string
+    {
+        if (static::$currentTab === null) {
+            static::$currentTab = request()->query('tab', '');
+        }
+
+        return static::$currentTab ?: null;
+    }
+
     public static function getTableQuery(?string $currentTab = null): Builder
     {
         $query = parent::getEloquentQuery()->withoutGlobalScopes();
@@ -258,6 +262,11 @@ class NestedTaxonomyResource extends Resource
         }
 
         return $query;
+    }
+
+    public static function setCurrentTab(?string $tab): void
+    {
+        static::$currentTab = $tab;
     }
 
     public static function getResourceName(): string
