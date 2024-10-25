@@ -9,6 +9,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Builder\Resources\FullItemResource\Pages\CreateFullItem;
 
 trait StatusInResource
 {
@@ -40,7 +41,11 @@ trait StatusInResource
     {
         return [
             SelectFilter::make('status')
-                ->options(static::getModel()::getStatusOptions())
+                ->options([
+                    'draft' => __('core::core.draft'),
+                    'scheduled' => __('core::core.scheduled'),
+                    'published' => __('core::core.published'),
+                ])
                 ->label(__('core::core.status'))
                 ->query(function (Builder $query, array $data) {
                     $status = $data['value'];
@@ -74,16 +79,13 @@ trait StatusInResource
         if ($status) {
             switch ($status) {
                 case 'draft':
-                    $query->whereNull('publish_at')->whereNull('deleted_at');
+                    $query->whereNull('publish_at');
                     break;
                 case 'scheduled':
-                    $query->where('publish_at', '>', now())->whereNull('deleted_at');
+                    $query->where('publish_at', '>', now());
                     break;
                 case 'published':
-                    $query->where('publish_at', '<=', now())->whereNull('deleted_at');
-                    break;
-                case 'deleted':
-                    $query->whereNotNull('deleted_at');
+                    $query->where('publish_at', '<=', now());
                     break;
             }
         }

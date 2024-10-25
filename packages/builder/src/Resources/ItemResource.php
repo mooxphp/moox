@@ -6,7 +6,6 @@ namespace Moox\Builder\Resources;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
@@ -29,12 +28,13 @@ use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 use Moox\Core\Traits\AuthorInResource;
+use Moox\Core\Traits\StatusInResource;
 use Moox\Core\Traits\TabsInResource;
 use Moox\Core\Traits\TaxonomyInResource;
 
 class ItemResource extends Resource
 {
-    use AuthorInResource, TabsInResource, TaxonomyInResource;
+    use AuthorInResource, StatusInResource, TabsInResource, TaxonomyInResource;
 
     protected static ?string $model = Item::class;
 
@@ -137,15 +137,14 @@ class ItemResource extends Resource
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->delete())
                                             ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditItem),
+                                        static::getPublishAction(),
                                     ]),
                                     Select::make('type')
                                         ->options(static::getModel()::getTypeOptions())
                                         ->default('post')
                                         ->visible(! empty(config('builder.types')))
                                         ->required(),
-                                    DateTimePicker::make('publish_at')
-                                        ->label(__('core::core.publish_at')),
-
+                                    static::getPublishAtFormField(),
                                     static::getAuthorFormField(),
                                 ]),
 
@@ -200,20 +199,7 @@ class ItemResource extends Resource
 
                 ...static::getTaxonomyColumns(),
 
-                TextColumn::make('status')
-                    ->label(__('core::core.status'))
-                    ->alignment('center')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => strtoupper($state))
-                    ->color(fn (string $state): string => match ($state) {
-                        'draft' => 'primary',
-                        'published' => 'success',
-                        'scheduled' => 'info',
-                        'deleted' => 'danger',
-                        default => 'secondary',
-                    })
-                    ->toggleable()
-                    ->sortable(),
+                static::getStatusTableColumn(),
                 TextColumn::make('publish_at')
                     ->label(__('core::core.publish_at'))
                     ->dateTime('Y-m-d H:i:s')
@@ -246,6 +232,7 @@ class ItemResource extends Resource
                 ...static::getAuthorFilters(),
 
                 ...static::getTaxonomyFilters(),
+                ...static::getStatusFilters(),
             ]);
     }
 
