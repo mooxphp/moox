@@ -13,6 +13,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
+use Moox\Core\Traits\TabsInResource;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
@@ -20,6 +21,8 @@ use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
 
 class UserSessionResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = UserSession::class;
 
     protected static ?string $navigationIcon = 'gmdi-safety-check';

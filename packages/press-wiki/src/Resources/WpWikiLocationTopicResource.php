@@ -12,11 +12,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\PressWiki\Models\WpWikiLocationTopic;
 use Moox\PressWiki\Resources\WpWikiLocationTopicResource\Pages;
 
 class WpWikiLocationTopicResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpWikiLocationTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-location-on';

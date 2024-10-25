@@ -21,6 +21,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Services\DnsLookupService;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Resources\PlatformResource\Pages\CreatePlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\EditPlatform;
@@ -29,6 +30,8 @@ use Moox\Sync\Resources\PlatformResource\Pages\ViewPlatform;
 
 class PlatformResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Platform::class;
 
     protected static ?string $navigationIcon = 'gmdi-dns';

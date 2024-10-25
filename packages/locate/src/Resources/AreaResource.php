@@ -11,11 +11,14 @@ use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Locate\Models\Area;
 use Moox\Locate\Resources\AreaResource\Pages\ListPage;
 
 class AreaResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Area::class;
 
     protected static ?string $navigationGroup = 'System';

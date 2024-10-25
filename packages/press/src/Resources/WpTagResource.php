@@ -13,11 +13,14 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpTagResource\Pages;
 
 class WpTagResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpTerm::class;
 
     protected static ?string $navigationIcon = 'gmdi-label';

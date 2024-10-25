@@ -13,11 +13,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Resources\WpPostMetaResource\Pages;
 
 class WpPostMetaResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpPostMeta::class;
 
     protected static ?string $navigationIcon = 'gmdi-article';

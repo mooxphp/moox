@@ -12,11 +12,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\PressWiki\Models\WpWikiDepartmentTopic;
 use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages;
 
 class WpWikiDepartmentTopicResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpWikiDepartmentTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-apartment';

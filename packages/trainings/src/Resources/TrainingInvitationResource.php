@@ -15,12 +15,15 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingInvitation;
 use Moox\Training\Resources\TrainingInvitationResource\Pages;
 
 class TrainingInvitationResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = TrainingInvitation::class;
 
     protected static ?string $navigationIcon = 'gmdi-insert-invitation';

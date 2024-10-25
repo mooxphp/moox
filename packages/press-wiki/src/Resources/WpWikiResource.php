@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\PressWiki\Models\WpWiki;
 use Moox\PressWiki\Resources\WpWikiResource\Pages;
 use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpCommentRelationManager;
@@ -20,6 +21,8 @@ use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpPostMetaRelationM
 
 class WpWikiResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpWiki::class;
 
     protected static ?string $navigationIcon = 'gmdi-library-books';

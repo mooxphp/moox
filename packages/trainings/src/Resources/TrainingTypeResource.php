@@ -14,12 +14,15 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingType;
 use Moox\Training\Resources\TrainingTypeResource\Pages;
 
 class TrainingTypeResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = TrainingType::class;
 
     protected static ?string $navigationIcon = 'gmdi-assignment';

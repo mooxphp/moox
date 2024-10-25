@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource\Pages;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpCommentRelationManager;
@@ -20,6 +21,8 @@ use Moox\Press\Resources\WpPostResource\RelationManagers\WpPostMetaRelationManag
 
 class WpPostResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpPost::class;
 
     protected static ?string $navigationIcon = 'gmdi-article';

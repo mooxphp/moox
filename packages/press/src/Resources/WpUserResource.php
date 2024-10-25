@@ -17,6 +17,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Password;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
 use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
@@ -28,6 +29,8 @@ use Moox\Security\Helper\PasswordHash;
 
 class WpUserResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpUser::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';

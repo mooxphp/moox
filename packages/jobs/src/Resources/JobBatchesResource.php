@@ -6,11 +6,14 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Jobs\Models\JobBatch;
 use Moox\Jobs\Resources\JobBatchesResource\Pages\ListJobBatches;
 
 class JobBatchesResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = JobBatch::class;
 
     protected static ?string $navigationIcon = null;

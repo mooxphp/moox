@@ -25,6 +25,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
@@ -33,6 +34,8 @@ use Moox\Tag\Resources\TagResource\Pages\ViewTag;
 
 class TagResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Tag::class;
 
     protected static ?string $currentTab = null;

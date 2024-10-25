@@ -13,11 +13,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Press\Models\WpUserMeta;
 use Moox\Press\Resources\WpUserMetaResource\Pages;
 
 class WpUserMetaResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpUserMeta::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';

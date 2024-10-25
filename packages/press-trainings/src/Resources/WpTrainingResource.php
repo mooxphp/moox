@@ -13,12 +13,15 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\PressTrainings\Models\WpTraining;
 use Moox\PressTrainings\Resources\WpTrainingResource\Pages;
 use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers;
 
 class WpTrainingResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpTraining::class;
 
     protected static ?string $navigationIcon = 'gmdi-school';

@@ -12,11 +12,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\PressTrainings\Models\WpTrainingsTopic;
 use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages;
 
 class WpTrainingsTopicResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpTrainingsTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-category';

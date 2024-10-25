@@ -11,12 +11,15 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Jobs\Models\Job;
 use Moox\Jobs\Resources\JobsWaitingResource\Pages\ListJobsWaiting;
 use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
 
 class JobsWaitingResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Job::class;
 
     protected static ?string $navigationIcon = null;

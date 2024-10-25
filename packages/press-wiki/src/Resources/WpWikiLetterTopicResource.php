@@ -12,11 +12,14 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\PressWiki\Models\WpWikiLetterTopic;
 use Moox\PressWiki\Resources\WpWikiLetterTopicResource\Pages;
 
 class WpWikiLetterTopicResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpWikiLetterTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-abc';

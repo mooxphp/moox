@@ -21,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Services\PlatformRelationService;
@@ -32,6 +33,8 @@ use Moox\User\Resources\UserResource\Pages\ViewUser;
 
 class UserResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';

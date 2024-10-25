@@ -32,11 +32,14 @@ use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
 use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
 use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
+use Moox\Core\Traits\TabsInResource;
 
 //use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class CategoryResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $currentTab = null;
@@ -50,12 +53,8 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
-    protected static ?string $authorModel = null;
-
     public static function form(Form $form): Form
     {
-        static::initAuthorModel();
-
         return $form
             ->schema([
                 Grid::make(2)
@@ -169,8 +168,6 @@ class CategoryResource extends Resource
 
     public static function table(Table $table): Table
     {
-        static::initAuthorModel();
-
         $currentTab = static::getCurrentTab();
 
         return $table
@@ -402,32 +399,6 @@ class CategoryResource extends Resource
     public static function getNavigationSort(): ?int
     {
         return config('category.navigation_sort') + 3;
-    }
-
-    protected static function initAuthorModel(): void
-    {
-        if (static::$authorModel === null) {
-            static::$authorModel = config('category.author_model');
-        }
-    }
-
-    protected static function getAuthorOptions(): array
-    {
-        return static::$authorModel::query()->get()->pluck('name', 'id')->toArray();
-    }
-
-    protected static function shouldShowAuthorField(): bool
-    {
-        return static::$authorModel && class_exists(static::$authorModel);
-    }
-
-    public static function getCurrentTab(): ?string
-    {
-        if (static::$currentTab === null) {
-            static::$currentTab = request()->query('tab', '');
-        }
-
-        return static::$currentTab ?: null;
     }
 
     public static function getTableQuery(?string $currentTab = null): Builder

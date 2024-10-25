@@ -15,12 +15,15 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\TabsInResource;
 use Moox\Press\Models\WpPage;
 use Moox\Press\Resources\WpPageResource\Pages;
 use Moox\Press\Resources\WpPageResource\RelationManagers\WpPostMetaRelationManager;
 
 class WpPageResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = WpPage::class;
 
     protected static ?string $navigationIcon = 'gmdi-pages';
