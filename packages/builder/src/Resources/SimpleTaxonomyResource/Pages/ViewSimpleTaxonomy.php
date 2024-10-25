@@ -44,15 +44,6 @@ class ViewSimpleTaxonomy extends ViewRecord
         return [];
     }
 
-    protected function resolveRecord($key): Model
-    {
-        $model = static::getResource()::getModel();
-
-        $record = $model::findOrFail($key);
-
-        return $record;
-    }
-
     protected function getHeaderActions(): array
     {
         return [];

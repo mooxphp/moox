@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\TaxonomyInPages;
 
@@ -32,14 +31,5 @@ class EditSimpleTaxonomy extends EditRecord
     protected function getFormActions(): array
     {
         return [];
-    }
-
-    protected function resolveRecord($key): Model
-    {
-        $model = static::getResource()::getModel();
-
-        $record = $model::findOrFail($key);
-
-        return $record;
     }
 }
