@@ -6,11 +6,11 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Core\Traits\HandlesDynamicTaxonomies;
+use Moox\Core\Traits\TaxonomyInPages;
 
 class CreateItem extends CreateRecord
 {
-    use HandlesDynamicTaxonomies;
+    use TaxonomyInPages;
 
     protected static string $resource = ItemResource::class;
 

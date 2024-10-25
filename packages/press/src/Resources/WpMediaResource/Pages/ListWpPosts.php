@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpMediaResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource;
 
 class ListWpPosts extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     protected static string $resource = WpMediaResource::class;
 

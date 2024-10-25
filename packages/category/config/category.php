@@ -38,12 +38,12 @@ return [
             |
             */
 
-            'single' => 'trans//category::category.item',
-            'plural' => 'trans//category::category.categories',
+            'single' => 'trans//category::translations.category',
+            'plural' => 'trans//category::translations.categories',
 
             /*
             |--------------------------------------------------------------------------
-            | Tabs
+            | <Tabs></Tabs>
             |--------------------------------------------------------------------------
             |
             | Define the tabs for the Resource table. They are optional, but
@@ -57,58 +57,6 @@ return [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
                     'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
                         [
                             'field' => 'deleted_at',
                             'operator' => '=',
@@ -142,7 +90,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::core.tools',
+    'navigation_group' => 'trans//core::core.cms',
 
     /*
     |--------------------------------------------------------------------------
@@ -155,46 +103,6 @@ return [
     |
     */
 
-    'navigation_sort' => 9990,
+    'navigation_sort' => 1000,
 
-    /*
-    |--------------------------------------------------------------------------
-    | Category Types
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the types of categories entities. You can delete
-    | the types you don't need and add new ones. If you don't need
-    | types, you can empty this array like this: 'types' => [],
-    |
-    */
-
-    'types' => [
-        'post' => 'Post',
-        'page' => 'Page',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Author Model
-    |--------------------------------------------------------------------------
-    |
-    | This sets the user model that can be used as author. It should be an
-    | authenticatable model and support the morph relationship.
-    | It should have fields similar to Moox User or WpUser.
-    |
-    */
-
-    'author_model' => \App\Models\User::class,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Slug Change - WIP
-    |--------------------------------------------------------------------------
-    |
-    | // TODO: Work in progress.
-    |
-    */
-
-    'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
-    'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 ];

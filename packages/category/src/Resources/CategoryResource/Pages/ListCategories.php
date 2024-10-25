@@ -11,11 +11,11 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 
 class ListCategories extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     public static string $resource = CategoryResource::class;
 

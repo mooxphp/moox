@@ -42,7 +42,7 @@ class TagResource extends Resource
         return parent::getEloquentQuery()->withoutGlobalScopes();
     }
 
-    protected static ?string $navigationIcon = 'gmdi-engineering';
+    protected static ?string $navigationIcon = 'gmdi-label';
 
     protected static ?string $authorModel = null;
 

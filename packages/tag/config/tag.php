@@ -38,8 +38,8 @@ return [
             |
             */
 
-            'single' => 'trans//tag::tag.item',
-            'plural' => 'trans//tag::tag.tags',
+            'single' => 'trans//tag::translations.tag',
+            'plural' => 'trans//tag::translations.tags',
 
             /*
             |--------------------------------------------------------------------------
@@ -57,58 +57,6 @@ return [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
                     'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
                         [
                             'field' => 'deleted_at',
                             'operator' => '=',
@@ -142,7 +90,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::core.tools',
+    'navigation_group' => 'trans//core::core.cms',
 
     /*
     |--------------------------------------------------------------------------
@@ -155,7 +103,7 @@ return [
     |
     */
 
-    'navigation_sort' => 9990,
+    'navigation_sort' => 1000,
 
     /*
     |--------------------------------------------------------------------------

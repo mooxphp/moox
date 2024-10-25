@@ -9,13 +9,13 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 
 class ListTags extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     public static string $resource = TagResource::class;
 

@@ -48,7 +48,7 @@ class CategoryResource extends Resource
             ->orderBy('_lft');
     }
 
-    protected static ?string $navigationIcon = 'gmdi-engineering';
+    protected static ?string $navigationIcon = 'gmdi-category';
 
     protected static ?string $authorModel = null;
 

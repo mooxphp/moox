@@ -10,7 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Services\TaxonomyService;
 
-trait HandlesDynamicTaxonomies
+trait TaxonomyInPages
 {
     protected function getTaxonomyService(): TaxonomyService
     {
@@ -22,7 +22,9 @@ trait HandlesDynamicTaxonomies
 
     protected function getResourceName(): string
     {
-        return static::$resource::getResourceName();
+        $model = static::getModel();
+
+        return method_exists($model, 'getResourceName') ? $model::getResourceName() : class_basename($model);
     }
 
     protected function handleTaxonomies(): void

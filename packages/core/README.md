@@ -6,8 +6,8 @@ The Moox Core package provides common features, used by all Moox packages. If yo
 
 ## Features
 
-- Dynamic Tabs - create your own tabs just by a few lines of configuration
-- Dynamic Taxonomies - attach hierarchical or flat taxonomies to your items
+-   Dynamic Tabs - create your own tabs just by a few lines of configuration
+-   Dynamic Taxonomies - attach hierarchical or flat taxonomies to your items
 
 and some other mentioned below in Traits, Services and Forms.
 
@@ -31,31 +31,31 @@ Moox Core requires these packages:
 
 ## Traits
 
-### HasDynamicTabs
+### TabsInPage
 
 This trait provides functionality for creating dynamic tabs in Filament resources.
 
 #### Key Methods
 
-- `getDynamicTabs(string $configPath, string $modelClass)`: Returns an array of dynamic tabs based on configuration.
+-   `getDynamicTabs(string $configPath, string $modelClass)`: Returns an array of dynamic tabs based on configuration.
 
 #### Usage
 
 The DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature in your existing package:
 
-````php
-use Moox\Core\Traits\HasDynamicTabs;
+```php
+use Moox\Core\Traits\TabsInPage;
 
 class ListItems extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     public function getTabs(): array
     {
         return $this->getDynamicTabs('package.resources.item.tabs', YourModel::class);
     }
 }
-````
+```
 
 #### Configuration
 
@@ -157,11 +157,11 @@ This trait allows building complex queries from configuration arrays.
 
 #### Key Methods
 
-- `buildQueryFromConfig(array $queryConfig)`: Builds a query based on the provided configuration.
+-   `buildQueryFromConfig(array $queryConfig)`: Builds a query based on the provided configuration.
 
 #### Usage
 
-````php
+```php
 use Moox\Core\Traits\QueriesInConfig;
 
 class YourClass
@@ -176,7 +176,7 @@ class YourClass
         $query = $this->buildQueryFromConfig($queryConfig);
     }
 }
-````
+```
 
 #### Configuration
 
@@ -329,7 +329,7 @@ And finally the most-known mistake, throws "Cannot access offset of type string 
 
 So don't forget to put the query in an extra array, even if it is a single query.
 
-As mentioned, the QueriesInConfig trait is used in HasDynamicTabs, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
+As mentioned, the QueriesInConfig trait is used in TabsInPage, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
 
 ### TranslatableConfig
 
@@ -337,11 +337,11 @@ This trait provides functionality for translating configuration values.
 
 #### Key Methods
 
-- `translateConfigurations()`: Translates configuration values based on defined translation keys.
+-   `translateConfigurations()`: Translates configuration values based on defined translation keys.
 
 #### Usage
 
-````php
+```php
 use Moox\Core\Traits\TranslatableConfig;
 
 class YourServiceProvider extends ServiceProvider
@@ -353,7 +353,7 @@ class YourServiceProvider extends ServiceProvider
         $this->translateConfigurations();
     }
 }
-````
+```
 
 #### Configuration
 
@@ -371,11 +371,11 @@ This trait allows access to request data within models.
 
 #### Key Methods
 
-- `getRequestData(string $key)`: Retrieves request data for the given key.
+-   `getRequestData(string $key)`: Retrieves request data for the given key.
 
 #### Usage
 
-````php
+```php
 use Moox\Core\Traits\RequestInModel;
 
 class YourModel extends Model
@@ -387,7 +387,7 @@ class YourModel extends Model
         $data = $this->getRequestData('some_key');
     }
 }
-````
+```
 
 The RequestInModel Trait is currently used by all Moox Press packages. It allows us to use the request data in some of our models. You can code dive into Moox\Press\Models\WpTerm.php, to find more code examples. The basic implementation looks like this:
 
@@ -409,11 +409,11 @@ This trait provides methods for using Google Material Design Icons in your appli
 
 #### Key Methods
 
-- `useGoogleIcons()`: Configures the application to use Google Material Design Icons.
+-   `useGoogleIcons()`: Configures the application to use Google Material Design Icons.
 
 #### Usage
 
-````php
+```php
 use Moox\Core\Traits\GoogleIcons;
 
 class YourServiceProvider extends ServiceProvider
@@ -425,37 +425,37 @@ class YourServiceProvider extends ServiceProvider
         $this->useGoogleIcons();
     }
 }
-````
+```
 
 As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The GoogleIcons Trait changes the default Filament Icons, too. It is used in the CoreServiceProvider like this:
 
 You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
 
-### HasDynamicTaxonomies
+### TaxonomyInModel
 
 This trait provides functionality for models to work with dynamic taxonomies.
 
 #### Key Methods
 
-- `taxonomy(string $taxonomy)`: Returns a MorphToMany relationship for the given taxonomy.
-- `syncTaxonomy(string $taxonomy, array $ids)`: Syncs the given taxonomy with the provided IDs.
+-   `taxonomy(string $taxonomy)`: Returns a MorphToMany relationship for the given taxonomy.
+-   `syncTaxonomy(string $taxonomy, array $ids)`: Syncs the given taxonomy with the provided IDs.
 
 #### Usage
 
 ```php
-use Moox\Core\Traits\HasDynamicTaxonomies;
+use Moox\Core\Traits\TaxonomyInModel;
 
 class YourItem extends Model
 {
-    use HasDynamicTaxonomies;
-  
+    use TaxonomyInModel;
+
     protected function getResourceName(): string
     {
         return 'youritem'; // name your item
     }
-    
+
     // ... other model code ...
-  
+
     // Add a polymorphic relation
     public function youritemables(string $type): MorphToMany
     {
@@ -479,30 +479,30 @@ class YourItem extends Model
 ```
 
 ```
-> [!WARNING]  
+> [!WARNING]
 > We do not soft-delete the polymorphics, so if you restore a Taxonomy, these are lost.
 ```
 
-### HasDynamicTaxonomyFields
+### TaxonomyInResource
 
 This trait provides methods for generating Filament form fields, table columns, and filters for dynamic taxonomies.
 
 #### Key Methods
 
-- `getTaxonomyFields()`: Returns an array of Filament form fields for taxonomies.
-- `getTaxonomyFilters()`: Returns an array of Filament table filters for taxonomies.
-- `getTaxonomyColumns()`: Returns an array of Filament table columns for taxonomies.
-- `handleTaxonomies(Model $record, array $data)`: Handles saving taxonomy relationships.
+-   `getTaxonomyFields()`: Returns an array of Filament form fields for taxonomies.
+-   `getTaxonomyFilters()`: Returns an array of Filament table filters for taxonomies.
+-   `getTaxonomyColumns()`: Returns an array of Filament table columns for taxonomies.
+-   `handleTaxonomies(Model $record, array $data)`: Handles saving taxonomy relationships.
 
 #### Usage
 
 ```php
-use Moox\Core\Traits\HasDynamicTaxonomyFields;
+use Moox\Core\Traits\TaxonomyInResource;
 
 class YourResource extends Resource
 {
-    use HasDynamicTaxonomyFields;
-    
+    use TaxonomyInResource;
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -510,7 +510,7 @@ class YourResource extends Resource
             ...static::getTaxonomyFields(),
         ]);
     }
-    
+
     public static function table(Table $table): Table
     {
         return $table
@@ -526,25 +526,25 @@ class YourResource extends Resource
 }
 ```
 
-### HandlesDynamicTaxonomies
+### TaxonomyInPages
 
 This trait provides methods for handling dynamic taxonomies in Filament resource pages.
 
 #### Key Methods
 
-- `handleTaxonomies()`: Handles saving taxonomy relationships.
-- `mutateFormDataBeforeFill(array $data)`: Prepares taxonomy data for form filling.
-- `refreshTaxonomyFormData()`: Refreshes taxonomy form data after save.
+-   `handleTaxonomies()`: Handles saving taxonomy relationships.
+-   `mutateFormDataBeforeFill(array $data)`: Prepares taxonomy data for form filling.
+-   `refreshTaxonomyFormData()`: Refreshes taxonomy form data after save.
 
 #### Usage
 
 ```php
-use Moox\Core\Traits\HandlesDynamicTaxonomies;
+use Moox\Core\Traits\TaxonomyInPages;
 
 class EditYourModel extends EditRecord
 {
-    use HandlesDynamicTaxonomies;
-    
+    use TaxonomyInPages;
+
     // ... other page code ...
 }
 ```
@@ -570,10 +570,10 @@ This service manages taxonomy configurations and provides utility methods for wo
 
 #### Key Methods
 
-- `setCurrentResource(string $resource)`: Sets the current resource context.
-- `getTaxonomies()`: Returns all configured taxonomies for the current resource.
-- `getTaxonomyModel(string $taxonomy)`: Returns the model class for a given taxonomy.
-- `validateTaxonomy(string $taxonomy)`: Validates a taxonomy configuration.
+-   `setCurrentResource(string $resource)`: Sets the current resource context.
+-   `getTaxonomies()`: Returns all configured taxonomies for the current resource.
+-   `getTaxonomyModel(string $taxonomy)`: Returns the model class for a given taxonomy.
+-   `validateTaxonomy(string $taxonomy)`: Validates a taxonomy configuration.
 
 #### Usage
 
@@ -583,13 +583,13 @@ use Moox\Core\Services\TaxonomyService;
 class YourClass
 {
     protected TaxonomyService $taxonomyService;
-    
+
     public function __construct(TaxonomyService $taxonomyService)
     {
         $this->taxonomyService = $taxonomyService;
         $this->taxonomyService->setCurrentResource('your_resource');
     }
-    
+
     public function someMethod()
     {
         $taxonomies = $this->taxonomyService->getTaxonomies();
@@ -604,11 +604,11 @@ This service provides DNS lookup functionality.
 
 #### Key Methods
 
-- `getIpAddress(string $domain)`: Retrieves the IP address for a given domain.
+-   `getIpAddress(string $domain)`: Retrieves the IP address for a given domain.
 
 #### Usage
 
-````php
+```php
 use Moox\Core\Services\DnsLookupService;
 
 class YourClass
@@ -618,7 +618,7 @@ class YourClass
         $ipAddress = DnsLookupService::getIpAddress($domain);
     }
 }
-````
+```
 
 That Service is currently used in Moox Sync's PlatformResource like so:
 
@@ -673,7 +673,7 @@ class YourResource extends Resource
 }
 ```
 
-This form includes fields for title and slug, as these are needed for creating Taxonomies. As your taxonomy might need further fields, you can  use your own form to create your custom taxonomies.
+This form includes fields for title and slug, as these are needed for creating Taxonomies. As your taxonomy might need further fields, you can use your own form to create your custom taxonomies.
 
 ## APIs
 

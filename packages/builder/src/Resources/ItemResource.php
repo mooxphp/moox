@@ -22,28 +22,23 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
-use Moox\Core\Traits\HasDynamicTaxonomyFields;
+use Moox\Core\Traits\AuthorInResource;
+use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\TaxonomyInResource;
 
 class ItemResource extends Resource
 {
-    use HasDynamicTaxonomyFields;
+    use AuthorInResource, TabsInResource, TaxonomyInResource;
 
     protected static ?string $model = Item::class;
 
-    protected static ?string $currentTab = null;
-
-    protected static ?string $authorModel = null;
-
-    protected static ?string $navigationIcon = 'gmdi-engineering';
+    protected static ?string $navigationIcon = 'gmdi-article';
 
     public static function form(Form $form): Form
     {
@@ -151,13 +146,7 @@ class ItemResource extends Resource
                                     DateTimePicker::make('publish_at')
                                         ->label(__('core::core.publish_at')),
 
-                                    Select::make('author_id')
-                                        ->label(__('core::core.author'))
-                                        ->options(fn () => static::getAuthorOptions())
-                                        ->default(fn () => auth()->id())
-                                        ->required()
-                                        ->searchable()
-                                        ->visible(fn () => static::shouldShowAuthorField()),
+                                    static::getAuthorFormField(),
                                 ]),
 
                             Section::make()
@@ -202,13 +191,7 @@ class ItemResource extends Resource
                     ->limit(30)
                     ->searchable()
                     ->toggleable(),
-                ImageColumn::make('author.avatar_url')
-                    ->label(__('core::core.author'))
-                    ->tooltip(fn ($record) => $record->author?->name)
-                    ->alignment('center')
-                    ->circular()
-                    ->visible(fn () => static::shouldShowAuthorField())
-                    ->toggleable(),
+                static::getAuthorTableColumn(),
                 TextColumn::make('type')
                     ->label(__('core::core.type'))
                     ->visible(! empty(config('builder.types')))
@@ -260,10 +243,7 @@ class ItemResource extends Resource
                     ->options(static::getModel()::getTypeOptions())
                     ->label(__('core::core.type')),
 
-                SelectFilter::make('author_id')
-                    ->label(__('core::core.author'))
-                    ->options(fn () => static::getAuthorOptions())
-                    ->searchable(),
+                ...static::getAuthorFilters(),
 
                 ...static::getTaxonomyFilters(),
             ]);
@@ -295,22 +275,22 @@ class ItemResource extends Resource
 
     public static function getModelLabel(): string
     {
-        return config('builder.resources.builder.single');
+        return config('builder.resources.item.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('builder.resources.builder.plural');
+        return config('builder.resources.item.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('builder.resources.builder.plural');
+        return config('builder.resources.item.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('builder.resources.builder.single');
+        return config('builder.resources.item.single');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -330,76 +310,6 @@ class ItemResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return config('builder.navigation_sort') + 3;
-    }
-
-    protected static function initAuthorModel(): void
-    {
-        if (static::$authorModel === null) {
-            static::$authorModel = config('builder.author_model');
-        }
-    }
-
-    protected static function getAuthorOptions(): array
-    {
-        return static::$authorModel::query()->get()->pluck('name', 'id')->toArray();
-    }
-
-    protected static function shouldShowAuthorField(): bool
-    {
-        return static::$authorModel && class_exists(static::$authorModel);
-    }
-
-    public static function getCurrentTab(): ?string
-    {
-        if (static::$currentTab === null) {
-            static::$currentTab = request()->query('tab', '');
-        }
-
-        return static::$currentTab ?: null;
-    }
-
-    public static function getTableQuery(?string $currentTab = null): Builder
-    {
-        $query = parent::getEloquentQuery()->withoutGlobalScopes();
-
-        if ($currentTab === 'trash' || $currentTab === 'deleted') {
-            $model = static::getModel();
-            if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
-                $query->whereNotNull($model::make()->getQualifiedDeletedAtColumn());
-            }
-        }
-
-        return $query;
-    }
-
-    public static function setCurrentTab(?string $tab): void
-    {
-        static::$currentTab = $tab;
-    }
-
-    public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        return $data;
-    }
-
-    public static function mutateFormDataBeforeUpdate(Model $record, array $data): array
-    {
-        return $data;
-    }
-
-    protected static function afterCreate(Model $record, array $data): void
-    {
-        static::handleTaxonomies($record, $data);
-    }
-
-    protected static function afterUpdate(Model $record, array $data): void
-    {
-        static::handleTaxonomies($record, $data);
-    }
-
-    public static function getResourceName(): string
-    {
-        return static::getModel()::getResourceName();
+        return config('builder.navigation_sort') + 1;
     }
 }

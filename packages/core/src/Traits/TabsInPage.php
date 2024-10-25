@@ -5,7 +5,7 @@ namespace Moox\Core\Traits;
 use Filament\Resources\Components\Tab;
 use Illuminate\Support\Facades\Config;
 
-trait HasDynamicTabs
+trait TabsInPage
 {
     use QueriesInConfig;
 

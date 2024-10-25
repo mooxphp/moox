@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Moox\Core\Forms\TaxonomyCreateForm as CoreTaxonomyCreateForm;
 use Moox\Core\Services\TaxonomyService;
 
-trait HasDynamicTaxonomyFields
+trait TaxonomyInResource
 {
     protected static function getTaxonomyService(): TaxonomyService
     {

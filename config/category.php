@@ -90,7 +90,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::core.tools',
+    'navigation_group' => 'trans//core::core.cms',
 
     /*
     |--------------------------------------------------------------------------
@@ -103,6 +103,6 @@ return [
     |
     */
 
-    'navigation_sort' => 9990,
+    'navigation_sort' => 1000,
 
 ];

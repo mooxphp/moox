@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpUserResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource;
 
 class ListWpUsers extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     protected static string $resource = WpUserResource::class;
 

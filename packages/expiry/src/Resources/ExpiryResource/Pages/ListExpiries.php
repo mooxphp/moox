@@ -5,13 +5,13 @@ namespace Moox\Expiry\Resources\ExpiryResource\Pages;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource;
 
 class ListExpiries extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     protected static string $resource = ExpiryResource::class;
 

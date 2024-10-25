@@ -15,7 +15,7 @@ class ItemPlugin implements Plugin
 
     public function getId(): string
     {
-        return 'builder';
+        return 'item';
     }
 
     public function register(Panel $panel): void

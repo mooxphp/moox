@@ -6,6 +6,7 @@ return [
     'slug' => 'Slug',
     'item' => 'Item',
     'all' => 'All',
+    'cms' => 'CMS',
     'content' => 'Content',
     'documents' => 'Documents',
     'articles' => 'Articles',

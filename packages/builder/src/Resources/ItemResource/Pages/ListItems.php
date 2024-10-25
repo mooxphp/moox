@@ -11,12 +11,11 @@ use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 
 class ListItems extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     public static string $resource = ItemResource::class;
 
@@ -68,18 +67,11 @@ class ListItems extends ListRecords
 
     public function getTitle(): string
     {
-        return config('builder.resources.builder.plural');
+        return config('builder.resources.item.plural');
     }
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('builder.resources.builder.tabs', Item::class);
-    }
-
-    public function getHeaderWidgets(): array
-    {
-        return [
-            ItemWidgets::class,
-        ];
+        return $this->getDynamicTabs('builder.resources.item.tabs', Item::class);
     }
 }

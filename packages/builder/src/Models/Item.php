@@ -9,17 +9,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Builder\Database\Factories\ItemFactory;
-use Moox\Core\Traits\HasDynamicTaxonomies;
+use Moox\Core\Traits\TaxonomyInModel;
 
 class Item extends Model
 {
-    use HasDynamicTaxonomies, HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, TaxonomyInModel;
 
     protected $table = 'items';
 
     protected function getResourceName(): string
     {
-        return 'builder';
+        return 'item';
     }
 
     protected $fillable = [
@@ -55,15 +55,14 @@ class Item extends Model
 
     public function getStatusAttribute(): string
     {
-        if ($this->deleted_at) {
+        if ($this->trashed()) {
             return 'deleted';
         }
 
-        if (! $this->publish_at) {
-            return 'draft';
-        }
-
-        return $this->publish_at->isFuture() ? 'scheduled' : 'published';
+        return $this->getAttribute('publish_at')
+            ? ($this->getAttribute('publish_at')->isFuture() ?
+            'scheduled' : 'published')
+            : 'draft';
     }
 
     public function author(): ?BelongsTo

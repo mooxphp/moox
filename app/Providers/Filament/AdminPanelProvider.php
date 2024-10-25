@@ -67,20 +67,24 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
 
                 // Development
-                // GravatarPlugin::make(),
-                \Moox\Category\CategoryPlugin::make(),
-                \Moox\Tag\TagPlugin::make(),
-                \Moox\Sync\PlatformPlugin::make(),
+                GravatarPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
-
                 \Moox\Locate\AreaPlugin::make(),
                 //\Moox\Locate\CountryPlugin::make(),
                 //\Moox\Locate\LanguagePlugin::make(),
                 //\Moox\Locate\TimezonePlugin::make(),
 
-                \Moox\UserDevice\UserDevicePlugin::make(),
+                // Builder plugin
+                \Moox\Builder\SimpleTaxonomyPlugin::make(),
+                \Moox\Builder\NestedTaxonomyPlugin::make(),
+                \Moox\Builder\ItemPlugin::make(),
+                \Moox\Builder\FullItemPlugin::make(),
+                \Moox\Builder\SimpleItemPlugin::make(),
+
                 // CMS plugin
                 \Moox\Page\PagePlugin::make(),
+                \Moox\Category\CategoryPlugin::make(),
+                \Moox\Tag\TagPlugin::make(),
 
                 // Notification plugin
                 \Moox\Notification\NotificationPlugin::make(),
@@ -100,8 +104,6 @@ class AdminPanelProvider extends PanelProvider
 
                 // User plugins
                 \Moox\User\UserPlugin::make(),
-                GravatarPlugin::make(),
-
                 \Moox\UserDevice\UserDevicePlugin::make(),
                 \Moox\LoginLink\LoginLinkPlugin::make(),
                 \Moox\UserSession\UserSessionPlugin::make(),

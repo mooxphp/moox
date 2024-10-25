@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpTermRelationshipResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 use Moox\Press\Models\WpTermRelationship;
 use Moox\Press\Resources\WpTermRelationshipResource;
 
 class ListWpTermRelationships extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     protected static string $resource = WpTermRelationshipResource::class;
 

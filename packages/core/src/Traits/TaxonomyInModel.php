@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Services\TaxonomyService;
 
-trait HasDynamicTaxonomies
+trait TaxonomyInModel
 {
     protected ?TaxonomyService $taxonomyService = null;
 

@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        'builder' => [
+        'item' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -128,17 +128,139 @@ return [
                     ],
                 ],
             ],
+
             /*
             |--------------------------------------------------------------------------
-            | Relationships
+            | Taxonomies
             |--------------------------------------------------------------------------
             |
-            | This array contains the relationships that should be shown ... wip.
-            | // TODO: Implement this or remove it, if not needed anymore.
+            | This array contains the taxonomies that should be shown.
+            | This is work in progress and not yet fully documented.
             |
             */
 
-            'relationships' => [
+            'taxonomies' => [
+                'categories' => [
+                    'label' => 'Categories',
+                    'model' => \Moox\Category\Models\Category::class,
+                    'table' => 'categorizables',
+                    'relationship' => 'categorizable',
+                    'foreignKey' => 'categorizable_id',
+                    'relatedKey' => 'category_id',
+                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'hierarchical' => true,
+                ],
+                'tags' => [
+                    'label' => 'Tags',
+                    'model' => \Moox\Tag\Models\Tag::class,
+                    'table' => 'taggables',
+                    'relationship' => 'taggable',
+                    'foreignKey' => 'taggable_id',
+                    'relatedKey' => 'tag_id',
+                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+                ],
+            ],
+        ],
+        'full-item' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//builder::translations.full-item',
+            'plural' => 'trans//builder::translations.full-items',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Builder table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'published' => [
+                    'label' => 'trans//core::core.published',
+                    'icon' => 'gmdi-check-circle',
+                    'query' => [
+                        [
+                            'field' => 'publish_at',
+                            'operator' => '<=',
+                            'value' => function () {
+                                return now();
+                            },
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'scheduled' => [
+                    'label' => 'trans//core::core.scheduled',
+                    'icon' => 'gmdi-schedule',
+                    'query' => [
+                        [
+                            'field' => 'publish_at',
+                            'operator' => '>',
+                            'value' => function () {
+                                return now();
+                            },
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'draft' => [
+                    'label' => 'trans//core::core.draft',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'publish_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
             ],
 
             /*
@@ -148,7 +270,209 @@ return [
             |
             | This array contains the taxonomies that should be shown.
             | This is work in progress and not yet fully documented.
-            | // TODO: Add documentation and examples for this.
+            |
+            */
+
+            'taxonomies' => [
+                'categories' => [
+                    'label' => 'Categories',
+                    'model' => \Moox\Category\Models\Category::class,
+                    'table' => 'categorizables',
+                    'relationship' => 'categorizable',
+                    'foreignKey' => 'categorizable_id',
+                    'relatedKey' => 'category_id',
+                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'hierarchical' => true,
+                ],
+                'tags' => [
+                    'label' => 'Tags',
+                    'model' => \Moox\Tag\Models\Tag::class,
+                    'table' => 'taggables',
+                    'relationship' => 'taggable',
+                    'foreignKey' => 'taggable_id',
+                    'relatedKey' => 'tag_id',
+                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+                ],
+            ],
+        ],
+        'simple-item' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//builder::translations.simple-item',
+            'plural' => 'trans//builder::translations.simple-items',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Builder table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Taxonomies
+            |--------------------------------------------------------------------------
+            |
+            | This array contains the taxonomies that should be shown.
+            | This is work in progress and not yet fully documented.
+            |
+            */
+
+            'taxonomies' => [],
+        ],
+        'simple-taxonomy' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//builder::translations.simple-taxonomy',
+            'plural' => 'trans//builder::translations.simple-taxonomies',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Builder table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Taxonomies
+            |--------------------------------------------------------------------------
+            |
+            | This array contains the taxonomies that should be shown.
+            | This is work in progress and not yet fully documented.
+            |
+            */
+
+            'taxonomies' => [
+                'categories' => [
+                    'label' => 'Categories',
+                    'model' => \Moox\Category\Models\Category::class,
+                    'table' => 'categorizables',
+                    'relationship' => 'categorizable',
+                    'foreignKey' => 'categorizable_id',
+                    'relatedKey' => 'category_id',
+                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'hierarchical' => true,
+                ],
+                'tags' => [
+                    'label' => 'Tags',
+                    'model' => \Moox\Tag\Models\Tag::class,
+                    'table' => 'taggables',
+                    'relationship' => 'taggable',
+                    'foreignKey' => 'taggable_id',
+                    'relatedKey' => 'tag_id',
+                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+                ],
+            ],
+        ],
+        'nested-taxonomy' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Title
+            |--------------------------------------------------------------------------
+            |
+            | The translatable title of the Resource in singular and plural.
+            |
+            */
+
+            'single' => 'trans//builder::translations.nested-taxonomy',
+            'plural' => 'trans//builder::translations.nested-taxonomies',
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Builder table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+                'deleted' => [
+                    'label' => 'trans//core::core.deleted',
+                    'icon' => 'gmdi-delete',
+                    'query' => [
+                        [
+                            'field' => 'deleted_at',
+                            'operator' => '!=',
+                            'value' => null,
+                        ],
+                    ],
+                ],
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Taxonomies
+            |--------------------------------------------------------------------------
+            |
+            | This array contains the taxonomies that should be shown.
+            | This is work in progress and not yet fully documented.
             |
             */
 
@@ -187,7 +511,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//core::core.tools',
+    'navigation_group' => 'trans//builder::translations.builder',
 
     /*
     |--------------------------------------------------------------------------

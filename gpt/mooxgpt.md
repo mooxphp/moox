@@ -715,11 +715,11 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource;
 use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\TabsInPage;
 
 class ListPage extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInPage;
 
     public static string $resource = ItemResource::class;
 

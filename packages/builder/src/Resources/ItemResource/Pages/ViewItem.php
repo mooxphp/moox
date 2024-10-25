@@ -7,11 +7,11 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Core\Traits\HandlesDynamicTaxonomies;
+use Moox\Core\Traits\TaxonomyInPages;
 
 class ViewItem extends ViewRecord
 {
-    use HandlesDynamicTaxonomies;
+    use TaxonomyInPages;
 
     protected static string $resource = ItemResource::class;
 
