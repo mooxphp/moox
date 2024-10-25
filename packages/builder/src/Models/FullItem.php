@@ -15,7 +15,7 @@ class FullItem extends Model
 {
     use AuthorInModel, HasFactory, SoftDeletes, StatusInModel, TaxonomyInModel;
 
-    protected $table = 'items';
+    protected $table = 'full_items';
 
     protected function getResourceName(): string
     {

@@ -15,9 +15,7 @@ class SimpleTaxonomy extends Model
 {
     use HasFactory, SoftDeletes, TaxonomyInModel;
 
-    //protected $table = 'simple_taxonomies';
-
-    protected $table = 'items';
+    protected $table = 'simple_taxonomies';
 
     protected function getResourceName(): string
     {

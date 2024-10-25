@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Kalnoy\Nestedset\NestedSet;
 
 return new class extends Migration
 {
@@ -11,17 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('nested_taxonomies', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('featured_image_url')->nullable();
             $table->text('content')->nullable();
-            $table->string('status')->default('draft');
-            $table->string('author_id')->nullable();
-            $table->timestamp('publish_at')->nullable();
+            $table->integer('weight')->nullable();
+            $table->integer('count')->nullable();
+            $table->string('color')->nullable();
             $table->timestamp('deleted_at')->nullable()->index();
             $table->timestamps();
+            NestedSet::columns($table);
         });
     }
 
@@ -31,6 +33,6 @@ return new class extends Migration
     public function down(): void
 
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('nested_taxonomies');
     }
 };

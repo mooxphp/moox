@@ -87,13 +87,13 @@ class InstallCommand extends Command
     public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
-            if (Schema::hasTable('items')) {
-                warning('The items table already exists. The migrations will not be published.');
+            if (Schema::hasTable('simple_taxonomyables')) {
+                warning('The builder tables already exist. The migrations will not be published.');
 
                 return;
             }
             info('Publishing Items Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            $this->call('vendor:publish', ['--tag' => 'builder-migrations']);
         }
     }
 
@@ -101,7 +101,7 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Builder Migrations...');
-            $this->callSilent('migrate');
+            $this->call('migrate');
         }
     }
 
@@ -116,8 +116,8 @@ class InstallCommand extends Command
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['ItemPlugin'],
-                default: ['ItemPlugin'],
+                options: ['ItemPlugin', 'FullItemPlugin', 'SimpleItemPlugin', 'SimpleTaxonomyPlugin', 'NestedTaxonomyPlugin'],
+                default: ['ItemPlugin', 'FullItemPlugin', 'SimpleItemPlugin', 'SimpleTaxonomyPlugin', 'NestedTaxonomyPlugin'],
             );
 
             $function = '::make(),';

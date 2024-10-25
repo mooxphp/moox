@@ -15,9 +15,7 @@ class NestedTaxonomy extends Model
 {
     use HasFactory, SoftDeletes, TaxonomyInModel;
 
-    //protected $table = 'nested_taxonomies';
-
-    protected $table = 'items';
+    protected $table = 'nested_taxonomies';
 
     protected function getResourceName(): string
     {
@@ -28,16 +26,16 @@ class NestedTaxonomy extends Model
         'title',
         'slug',
         'content',
+        'color',
+        'weight',
+        'count',
         'featured_image_url',
-        'gallery_image_urls',
-        'type',
-        'author_id',
-        'publish_at',
+        'parent_id',
     ];
 
     protected $casts = [
-        'publish_at' => 'datetime',
-        'gallery_image_urls' => 'array',
+        'weight' => 'integer',
+        'count' => 'integer',
     ];
 
     public static function getTypeOptions(): array

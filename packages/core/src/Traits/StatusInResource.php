@@ -10,6 +10,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Builder\Resources\FullItemResource\Pages\CreateFullItem;
+use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
+use Moox\Builder\Resources\ItemResource\Pages\EditItem;
+use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 
 trait StatusInResource
 {
@@ -56,6 +59,23 @@ trait StatusInResource
         ];
     }
 
+    public static function applyStatusFilter(Builder $query, ?string $status): void
+    {
+        if ($status) {
+            switch ($status) {
+                case 'draft':
+                    $query->whereNull('publish_at');
+                    break;
+                case 'scheduled':
+                    $query->where('publish_at', '>', now());
+                    break;
+                case 'published':
+                    $query->where('publish_at', '<=', now());
+                    break;
+            }
+        }
+    }
+
     public static function getPublishAction(): Action
     {
         return Action::make('publish')
@@ -74,20 +94,73 @@ trait StatusInResource
             ->hidden(fn ($livewire, $record) => $record && $record->trashed());
     }
 
-    public static function applyStatusFilter(Builder $query, ?string $status): void
+    public static function getSaveAction(): Action
     {
-        if ($status) {
-            switch ($status) {
-                case 'draft':
-                    $query->whereNull('publish_at');
-                    break;
-                case 'scheduled':
-                    $query->where('publish_at', '>', now());
-                    break;
-                case 'published':
-                    $query->where('publish_at', '<=', now());
-                    break;
-            }
-        }
+        return Action::make('save')
+            ->label(__('core::core.save'))
+            ->color('primary')
+            ->button()
+            ->extraAttributes(['class' => 'w-full'])
+            ->action(function ($livewire) {
+                $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
+            })
+            ->visible(fn ($livewire) => $livewire instanceof CreateItem || $livewire instanceof EditItem);
+    }
+
+    public static function getRestoreAction(): Action
+    {
+        return Action::make('restore')
+            ->label(__('core::core.restore'))
+            ->color('success')
+            ->button()
+            ->extraAttributes(['class' => 'w-full'])
+            ->action(fn ($record) => $record->restore())
+            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewItem);
+    }
+
+    public static function getSaveAndCreateAnotherAction(): Action
+    {
+        return Action::make('saveAndCreateAnother')
+            ->label(__('core::core.save_and_create_another'))
+            ->color('secondary')
+            ->button()
+            ->extraAttributes(['class' => 'w-full'])
+            ->action(function ($livewire) {
+                $livewire->saveAndCreateAnother();
+            })
+            ->visible(fn ($livewire) => $livewire instanceof CreateItem);
+    }
+
+    public static function getCancelAction(): Action
+    {
+        return Action::make('cancel')
+            ->label(__('core::core.cancel'))
+            ->color('secondary')
+            ->outlined()
+            ->extraAttributes(['class' => 'w-full'])
+            ->url(fn () => static::getUrl('index'))
+            ->visible(fn ($livewire) => $livewire instanceof CreateItem);
+    }
+
+    public static function getEditAction(): Action
+    {
+        return Action::make('edit')
+            ->label(__('core::core.edit'))
+            ->color('primary')
+            ->button()
+            ->extraAttributes(['class' => 'w-full'])
+            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
+            ->visible(fn ($livewire, $record) => $livewire instanceof ViewItem && ! $record->trashed());
+    }
+
+    public static function getDeleteAction(): Action
+    {
+        return Action::make('delete')
+            ->label(__('core::core.delete'))
+            ->color('danger')
+            ->link()
+            ->extraAttributes(['class' => 'w-full'])
+            ->action(fn ($record) => $record->delete())
+            ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditItem);
     }
 }

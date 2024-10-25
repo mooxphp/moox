@@ -10,7 +10,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -19,14 +18,12 @@ use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
-use Moox\Builder\Resources\ItemResource\Widgets\ItemWidgets;
 use Moox\Core\Traits\AuthorInResource;
 use Moox\Core\Traits\StatusInResource;
 use Moox\Core\Traits\TabsInResource;
@@ -70,80 +67,14 @@ class ItemResource extends Resource
                             Section::make()
                                 ->schema([
                                     Actions::make([
-                                        Actions\Action::make('restore')
-                                            ->label(__('core::core.restore'))
-                                            ->color('success')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewItem),
-                                        Actions\Action::make('save')
-                                            ->label(__('core::core.save'))
-                                            ->color('primary')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
-                                                $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
-                                            })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateItem || $livewire instanceof EditItem),
-                                        Actions\Action::make('publish')
-                                            ->label(__('core::core.publish'))
-                                            ->color('success')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
-                                                $data = $livewire->form->getState();
-                                                if (! $data['published_at']) {
-                                                    $data['published_at'] = now();
-                                                }
-                                                $livewire->form->fill($data);
-                                                $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
-                                            })
-                                            ->hidden(fn ($livewire, $record) => $record && $record->trashed()),
-                                        Actions\Action::make('saveAndCreateAnother')
-                                            ->label(__('core::core.save_and_create_another'))
-                                            ->color('secondary')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
-                                                $livewire->saveAndCreateAnother();
-                                            })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateItem),
-                                        Actions\Action::make('cancel')
-                                            ->label(__('core::core.cancel'))
-                                            ->color('secondary')
-                                            ->outlined()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn () => static::getUrl('index'))
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateItem),
-                                        Actions\Action::make('edit')
-                                            ->label(__('core::core.edit'))
-                                            ->color('primary')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-                                            ->visible(fn ($livewire, $record) => $livewire instanceof ViewItem && ! $record->trashed()),
-                                        Actions\Action::make('restore')
-                                            ->label(__('core::core.restore'))
-                                            ->color('success')
-                                            ->button()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditItem),
-                                        Actions\Action::make('delete')
-                                            ->label(__('core::core.delete'))
-                                            ->color('danger')
-                                            ->link()
-                                            ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn ($record) => $record->delete())
-                                            ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditItem),
                                         static::getPublishAction(),
+                                        static::getSaveAction(),
+                                        static::getRestoreAction(),
+                                        static::getSaveAndCreateAnotherAction(),
+                                        static::getCancelAction(),
+                                        static::getEditAction(),
+                                        static::getDeleteAction(),
                                     ]),
-                                    Select::make('type')
-                                        ->options(static::getModel()::getTypeOptions())
-                                        ->default('post')
-                                        ->visible(! empty(config('builder.types')))
-                                        ->required(),
                                     static::getPublishAtFormField(),
                                     static::getAuthorFormField(),
                                 ]),
@@ -191,14 +122,7 @@ class ItemResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 static::getAuthorTableColumn(),
-                TextColumn::make('type')
-                    ->label(__('core::core.type'))
-                    ->visible(! empty(config('builder.types')))
-                    ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
-                    ->sortable(),
-
                 ...static::getTaxonomyColumns(),
-
                 static::getStatusTableColumn(),
                 TextColumn::make('publish_at')
                     ->label(__('core::core.publish_at'))
@@ -225,22 +149,10 @@ class ItemResource extends Resource
                 }),
             ])
             ->filters([
-                SelectFilter::make('type')
-                    ->options(static::getModel()::getTypeOptions())
-                    ->label(__('core::core.type')),
-
                 ...static::getAuthorFilters(),
-
                 ...static::getTaxonomyFilters(),
                 ...static::getStatusFilters(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
@@ -250,13 +162,6 @@ class ItemResource extends Resource
             'edit' => EditItem::route('/{record}/edit'),
             'create' => CreateItem::route('/create'),
             'view' => ViewItem::route('/{record}'),
-        ];
-    }
-
-    public static function getWidgets(): array
-    {
-        return [
-            ItemWidgets::class,
         ];
     }
 
@@ -278,16 +183,6 @@ class ItemResource extends Resource
     public static function getBreadcrumb(): string
     {
         return config('builder.resources.item.single');
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return true;
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return number_format(static::getModel()::count());
     }
 
     public static function getNavigationGroup(): ?string
