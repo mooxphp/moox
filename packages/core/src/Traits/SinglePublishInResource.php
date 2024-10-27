@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits;
 
+use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
@@ -14,7 +15,7 @@ use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 
-trait StatusInResource
+trait SinglePublishInResource
 {
     public static function getStatusTableColumn(): TextColumn
     {
@@ -40,7 +41,7 @@ trait StatusInResource
             ->label(__('core::core.publish_at'));
     }
 
-    public static function getStatusFilters(): array
+    public static function getTableFilters(): array
     {
         return [
             SelectFilter::make('status')
@@ -162,5 +163,18 @@ trait StatusInResource
             ->extraAttributes(['class' => 'w-full'])
             ->action(fn ($record) => $record->delete())
             ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditItem);
+    }
+
+    public static function getFormActions(): Actions
+    {
+        return Actions::make([
+            static::getPublishAction(),
+            static::getSaveAction(),
+            static::getRestoreAction(),
+            static::getSaveAndCreateAnotherAction(),
+            static::getCancelAction(),
+            static::getEditAction(),
+            static::getDeleteAction(),
+        ]);
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Resources;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
@@ -25,13 +24,13 @@ use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 use Moox\Core\Traits\AuthorInResource;
-use Moox\Core\Traits\StatusInResource;
+use Moox\Core\Traits\SinglePublishInResource;
 use Moox\Core\Traits\TabsInResource;
 use Moox\Core\Traits\TaxonomyInResource;
 
 class ItemResource extends Resource
 {
-    use AuthorInResource, StatusInResource, TabsInResource, TaxonomyInResource;
+    use AuthorInResource, SinglePublishInResource, TabsInResource, TaxonomyInResource;
 
     protected static ?string $model = Item::class;
 
@@ -66,15 +65,7 @@ class ItemResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    Actions::make([
-                                        static::getPublishAction(),
-                                        static::getSaveAction(),
-                                        static::getRestoreAction(),
-                                        static::getSaveAndCreateAnotherAction(),
-                                        static::getCancelAction(),
-                                        static::getEditAction(),
-                                        static::getDeleteAction(),
-                                    ]),
+                                    static::getFormActions(),
                                     static::getPublishAtFormField(),
                                     static::getAuthorFormField(),
                                 ]),
@@ -124,6 +115,8 @@ class ItemResource extends Resource
                 static::getAuthorTableColumn(),
                 ...static::getTaxonomyColumns(),
                 static::getStatusTableColumn(),
+
+                // SinglePublishInResource - getPublishColumn
                 TextColumn::make('publish_at')
                     ->label(__('core::core.publish_at'))
                     ->dateTime('Y-m-d H:i:s')
@@ -133,10 +126,12 @@ class ItemResource extends Resource
             ])
             ->defaultSort('slug', 'desc')
             ->actions([
+                // SinglePublishInResource - getTableActions
                 ViewAction::make(),
                 EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
+                // SinglePublishInResource - getTableBulkActions
                 DeleteBulkAction::make()->hidden(function () use ($currentTab) {
                     $isHidden = in_array($currentTab, ['trash', 'deleted']);
 
@@ -149,9 +144,9 @@ class ItemResource extends Resource
                 }),
             ])
             ->filters([
+                ...static::getTableFilters(),
                 ...static::getAuthorFilters(),
                 ...static::getTaxonomyFilters(),
-                ...static::getStatusFilters(),
             ]);
     }
 

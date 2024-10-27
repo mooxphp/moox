@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\AuthorInModel;
-use Moox\Core\Traits\StatusInModel;
+use Moox\Core\Traits\SinglePublishInModel;
 use Moox\Core\Traits\TaxonomyInModel;
 
 class FullItem extends Model
 {
-    use AuthorInModel, HasFactory, SoftDeletes, StatusInModel, TaxonomyInModel;
+    use AuthorInModel, HasFactory, SinglePublishInModel, SoftDeletes, TaxonomyInModel;
 
     protected $table = 'full_items';
 

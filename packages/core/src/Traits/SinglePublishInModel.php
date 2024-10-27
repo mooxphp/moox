@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits;
 
-trait StatusInModel
+trait SinglePublishInModel
 {
     public static function getStatusOptions(): array
     {

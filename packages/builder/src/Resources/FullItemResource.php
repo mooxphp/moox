@@ -4,40 +4,71 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
+/* ! Slug ! */
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+/* ! DateTime ! */
 use Filament\Forms\Components\DateTimePicker;
+/* ! File Upload ! */
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+/* ! Markdown ! */
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
+/* ! Select ! */
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+/* ! Delete ! */
 use Filament\Tables\Actions\DeleteBulkAction;
+/* ! Edit ! */
 use Filament\Tables\Actions\EditAction;
+/* ! Restore ! */
 use Filament\Tables\Actions\RestoreBulkAction;
+/* ! View ! */
 use Filament\Tables\Actions\ViewAction;
+/* ! ImageColumn ! */
 use Filament\Tables\Columns\ImageColumn;
+/* ! TextColumn ! */
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+/* ! FullItem ! */
 use Moox\Builder\Models\FullItem;
+/* ! Create ! */
 use Moox\Builder\Resources\FullItemResource\Pages\CreateFullItem;
+/* ! Edit ! */
 use Moox\Builder\Resources\FullItemResource\Pages\EditFullItem;
 use Moox\Builder\Resources\FullItemResource\Pages\ListFullItems;
+/* ! View ! */
 use Moox\Builder\Resources\FullItemResource\Pages\ViewFullItem;
+/* ! Widgets ! */
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
+/* ! Author ! */
 use Moox\Core\Traits\AuthorInResource;
-use Moox\Core\Traits\StatusInResource;
+/* ! Publish ! */
+use Moox\Core\Traits\SinglePublishInResource;
+/* ! Tabs ! */
 use Moox\Core\Traits\TabsInResource;
+/* ! Taxonomy ! */
 use Moox\Core\Traits\TaxonomyInResource;
 
+/* ! FullItem => Entity */
 class FullItemResource extends Resource
 {
-    use AuthorInResource, StatusInResource, TabsInResource, TaxonomyInResource;
+    /* ! Author ! */
+    use AuthorInResource;
+
+    /* ! Publish ! */
+    use SinglePublishInResource;
+
+    /* ! Tabs ! */
+    use TabsInResource;
+
+    /* ! Taxonomy ! */
+    use TaxonomyInResource;
 
     protected static ?string $model = FullItem::class;
 
@@ -45,6 +76,7 @@ class FullItemResource extends Resource
 
     public static function form(Form $form): Form
     {
+        /* ! Author ! */
         static::initAuthorModel();
 
         return $form->schema([
@@ -54,17 +86,23 @@ class FullItemResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
+                                    /* !! Form Fields */
+                                    /* ! Slug ! */
                                     TitleWithSlugInput::make(
                                         fieldTitle: 'title',
                                         fieldSlug: 'slug',
                                     ),
+                                    /* ! File Upload ! */
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
+                                    /* ! Markdown ! */
                                     MarkdownEditor::make('content')
                                         ->label(__('core::core.content')),
+                                    /* ! File Upload ! */
                                     FileUpload::make('gallery_image_urls')
                                         ->multiple()
                                         ->label(__('core::core.gallery_image_urls')),
+                                    /* !! Form Fields */
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -73,6 +111,8 @@ class FullItemResource extends Resource
                             Section::make()
                                 ->schema([
                                     Actions::make([
+                                        /* !! Form Actions */
+                                        /* ! Restore ! */
                                         Actions\Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
@@ -89,6 +129,7 @@ class FullItemResource extends Resource
                                                 $livewire instanceof CreateFullItem ? $livewire->create() : $livewire->save();
                                             })
                                             ->visible(fn ($livewire) => $livewire instanceof CreateFullItem || $livewire instanceof EditFullItem),
+                                        /* ! Publish ! */
                                         Actions\Action::make('publish')
                                             ->label(__('core::core.publish'))
                                             ->color('success')
@@ -126,6 +167,7 @@ class FullItemResource extends Resource
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
                                             ->visible(fn ($livewire, $record) => $livewire instanceof ViewFullItem && ! $record->trashed()),
+                                        /* ! Restore ! */
                                         Actions\Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
@@ -133,6 +175,7 @@ class FullItemResource extends Resource
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->restore())
                                             ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditFullItem),
+                                        /* ! Delete ! */
                                         Actions\Action::make('delete')
                                             ->label(__('core::core.delete'))
                                             ->color('danger')
@@ -140,16 +183,21 @@ class FullItemResource extends Resource
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->delete())
                                             ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditFullItem),
+                                        /* !! Form Actions */
                                     ]),
+                                    /* !! Meta Form Fields */
+                                    /* ! Select ! */
                                     Select::make('type')
                                         ->options(static::getModel()::getTypeOptions())
                                         ->default('post')
                                         ->visible(! empty(config('builder.types')))
                                         ->required(),
+                                    /* ! DateTime ! */
                                     DateTimePicker::make('publish_at')
                                         ->label(__('core::core.publish_at')),
-
+                                    /* ! Author ! */
                                     static::getAuthorFormField(),
+                                    /* !! Meta Form Fields */
                                 ]),
 
                             Section::make()
@@ -165,18 +213,23 @@ class FullItemResource extends Resource
 
     public static function table(Table $table): Table
     {
+        /* ! Author ! */
         static::initAuthorModel();
 
+        /* ! Tabs ! */
         $currentTab = static::getCurrentTab();
 
         return $table
             ->columns([
+                /* !! Table Columns */
+                /* ! ImageColumn ! */
                 ImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
                     ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
                     ->alignment('center')
                     ->square()
                     ->toggleable(),
+                /* ! TextColumn ! */
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->searchable()
@@ -194,15 +247,16 @@ class FullItemResource extends Resource
                     ->limit(30)
                     ->searchable()
                     ->toggleable(),
+                /* ! Author ! */
                 static::getAuthorTableColumn(),
                 TextColumn::make('type')
                     ->label(__('core::core.type'))
                     ->visible(! empty(config('builder.types')))
                     ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
                     ->sortable(),
-
+                /* ! Taxonomy ! */
                 ...static::getTaxonomyColumns(),
-
+                /* ! Publish ! */
                 static::getStatusTableColumn(),
                 TextColumn::make('publish_at')
                     ->label(__('core::core.publish_at'))
@@ -210,36 +264,45 @@ class FullItemResource extends Resource
                     ->toggleable()
                     ->since()
                     ->sortable(),
+                /* !! Table Columns */
             ])
             ->defaultSort('slug', 'desc')
             ->actions([
+                /* !! Table Actions */
+                /* ! View ! */
                 ViewAction::make(),
+                /* ! Edit ! */
                 EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                /* !! Table Actions */
             ])
             ->bulkActions([
+                /* !! Table Bulk Actions */
+                /* ! Delete ! */
                 DeleteBulkAction::make()->hidden(function () use ($currentTab) {
                     $isHidden = in_array($currentTab, ['trash', 'deleted']);
 
                     return $isHidden;
                 }),
+                /* ! Restore ! */
                 RestoreBulkAction::make()->visible(function () use ($currentTab) {
                     $isVisible = in_array($currentTab, ['trash', 'deleted']);
 
                     return $isVisible;
                 }),
+                /* !! Table Bulk Actions */
             ])
             ->filters([
+                /* !! Table Filters */
+                /* ! Select ! */
                 SelectFilter::make('type')
                     ->options(static::getModel()::getTypeOptions())
                     ->label(__('core::core.type')),
-
-                SelectFilter::make('author_id')
-                    ->label(__('core::core.author'))
-                    ->options(fn () => static::getAuthorOptions())
-                    ->searchable(),
-
+                ...static::getTableFilters(),
+                /* ! Taxonomy ! */
                 ...static::getTaxonomyFilters(),
-                ...static::getStatusFilters(),
+                /* ! Author ! */
+                ...static::getAuthorFilters(),
+                /* !! Table Filters */
             ]);
     }
 
