@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Text extends Base
+class Text extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\TextInput;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\TextFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\TextInput;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
+        ],
     ];
 
     protected int $length;

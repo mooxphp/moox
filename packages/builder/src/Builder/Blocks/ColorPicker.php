@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class ColorPicker extends Base
+class ColorPicker extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\ColorPicker;',
-        'use Filament\Tables\Columns\ColorColumn;',
-        'use Filament\Tables\Filters\TextFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\ColorPicker;'],
+            'columns' => ['use Filament\Tables\Columns\ColorColumn;'],
+            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
+        ],
     ];
 
     public function __construct(

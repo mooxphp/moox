@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Radio extends Base
+class Radio extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\Radio;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\SelectFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\Radio;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\SelectFilter;'],
+        ],
     ];
 
     protected array $options;
@@ -37,7 +41,6 @@ class Radio extends Base
     {
         $field = "Radio::make('{$this->name}')";
         $field .= '->options('.var_export($this->options, true).')';
-
         if ($this->inline) {
             $field .= '->inline()';
         }

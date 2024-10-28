@@ -28,11 +28,19 @@ abstract class AbstractFeature implements FeatureInterface
     protected array $traits = [
         'resource' => [],
         'model' => [],
+        'migration' => [],
+        'pages' => [
+            'create' => [],
+            'edit' => [],
+            'list' => [],
+            'view' => [],
+        ],
     ];
 
     protected array $methods = [
         'resource' => [],
         'model' => [],
+        'migration' => [],
         'pages' => [
             'create' => [],
             'edit' => [],

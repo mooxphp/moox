@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Date extends Base
+class Date extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\DatePicker;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\DateFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\DatePicker;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\DateFilter;'],
+        ],
     ];
 
     protected bool $sortable;

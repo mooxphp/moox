@@ -1,9 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class DateTime extends Base
+class DateTime extends AbstractBlock
 {
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\DateTimePicker;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\DateTimeFilter;'],
+        ],
+    ];
+
     protected bool $sortable;
 
     protected bool $withSeconds;

@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class RichText extends Base
+class RichText extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\RichEditor;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\TextFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\RichEditor;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
+        ],
     ];
 
     protected bool $searchable;

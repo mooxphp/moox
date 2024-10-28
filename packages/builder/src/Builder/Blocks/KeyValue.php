@@ -1,9 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class KeyValue extends Base
+class KeyValue extends AbstractBlock
 {
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\KeyValue;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\Filter;'],
+        ],
+    ];
+
     protected bool $keyLabel;
 
     protected bool $valueLabel;

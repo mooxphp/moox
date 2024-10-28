@@ -1,9 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class FileUpload extends Base
+class FileUpload extends AbstractBlock
 {
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\FileUpload;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\Filter;'],
+        ],
+    ];
+
     protected ?int $maxSize;
 
     protected array $allowedTypes;

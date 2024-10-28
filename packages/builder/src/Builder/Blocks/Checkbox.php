@@ -1,9 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Checkbox extends Base
+class Checkbox extends AbstractBlock
 {
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\Checkbox;'],
+            'columns' => ['use Filament\Tables\Columns\IconColumn;'],
+            'filters' => ['use Filament\Tables\Filters\BooleanFilter;'],
+        ],
+    ];
+
     public function __construct(
         string $name,
         string $label,

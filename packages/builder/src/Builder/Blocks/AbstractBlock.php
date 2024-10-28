@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Blocks;
 
-abstract class Base
+abstract class AbstractBlock
 {
     protected string $name;
 
@@ -20,7 +20,46 @@ abstract class Base
 
     protected array $extraAttributes = [];
 
-    protected static array $useStatements = [];
+    protected array $useStatements = [
+        'resource' => [
+            'actions' => [],
+            'columns' => [],
+            'filters' => [],
+            'forms' => [],
+        ],
+        'model' => [],
+        'migration' => [],
+        'pages' => [
+            'create' => [],
+            'edit' => [],
+            'list' => [],
+            'view' => [],
+        ],
+    ];
+
+    protected array $traits = [
+        'resource' => [],
+        'model' => [],
+        'migration' => [],
+        'pages' => [
+            'create' => [],
+            'edit' => [],
+            'list' => [],
+            'view' => [],
+        ],
+    ];
+
+    protected array $methods = [
+        'resource' => [],
+        'model' => [],
+        'migration' => [],
+        'pages' => [
+            'create' => [],
+            'edit' => [],
+            'list' => [],
+            'view' => [],
+        ],
+    ];
 
     public function __construct(string $name, string $label, string $description)
     {
@@ -39,9 +78,13 @@ abstract class Base
         return $this->label;
     }
 
-    public static function getUseStatements(): array
+    public function getUseStatements(string $context, ?string $subContext = null): array
     {
-        return static::$useStatements;
+        if ($subContext) {
+            return $this->useStatements[$context][$subContext] ?? [];
+        }
+
+        return $this->useStatements[$context] ?? [];
     }
 
     public function setNullable(bool $nullable): self
@@ -106,6 +149,8 @@ abstract class Base
 
     abstract public function tableColumn(): string;
 
+    abstract public function tableFilter(): string;
+
     public function modelAttribute(): string
     {
         return "'{$this->name}'";
@@ -134,5 +179,53 @@ abstract class Base
         }
 
         return $field;
+    }
+
+    public function getTraits(string $context, ?string $subContext = null): array
+    {
+        if ($subContext) {
+            return $this->traits[$context][$subContext] ?? [];
+        }
+
+        return $this->traits[$context] ?? [];
+    }
+
+    public function getMethods(string $context, ?string $subContext = null): array
+    {
+        if ($subContext) {
+            return $this->methods[$context][$subContext] ?? [];
+        }
+
+        return $this->methods[$context] ?? [];
+    }
+
+    protected function hasMultipleFields(): bool
+    {
+        return false;
+    }
+
+    protected function getAdditionalFields(): array
+    {
+        return [];
+    }
+
+    protected function getUniqueFields(): array
+    {
+        return [];
+    }
+
+    protected function getRequiredFields(): array
+    {
+        return [];
+    }
+
+    protected function getIndexedFields(): array
+    {
+        return [];
+    }
+
+    protected function getRelatedFields(): array
+    {
+        return [];
     }
 }

@@ -1,9 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class MarkdownEditor extends Base
+class MarkdownEditor extends AbstractBlock
 {
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\MarkdownEditor;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
+        ],
+    ];
+
     protected bool $searchable;
 
     public function __construct(

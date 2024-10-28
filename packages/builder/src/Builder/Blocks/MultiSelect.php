@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class MultiSelect extends Base
+class MultiSelect extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\MultiSelect;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\MultiSelectFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\MultiSelect;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\MultiSelectFilter;'],
+        ],
     ];
 
     protected array $options;

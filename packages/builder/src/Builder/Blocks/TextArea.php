@@ -1,36 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class TextArea extends Base
+class TextArea extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\Textarea;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\TextFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\Textarea;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
+        ],
     ];
-
-    protected bool $searchable;
-
-    protected bool $sortable;
-
-    protected ?int $rows;
-
-    public function __construct(
-        string $name,
-        string $label,
-        string $description,
-        bool $nullable = false,
-        bool $searchable = false,
-        bool $sortable = false,
-        ?int $rows = null
-    ) {
-        parent::__construct($name, $label, $description);
-        $this->setNullable($nullable);
-        $this->searchable = $searchable;
-        $this->sortable = $sortable;
-        $this->rows = $rows;
-    }
 
     protected function getMigrationType(): string
     {
@@ -40,24 +22,13 @@ class TextArea extends Base
     public function formField(): string
     {
         $field = "Textarea::make('{$this->name}')";
-        if ($this->rows !== null) {
-            $field .= "->rows({$this->rows})";
-        }
 
         return $this->applyCommonFormFieldAttributes($field);
     }
 
     public function tableColumn(): string
     {
-        $column = "TextColumn::make('{$this->name}')->limit(50)";
-        if ($this->sortable) {
-            $column .= '->sortable()';
-        }
-        if ($this->searchable) {
-            $column .= '->searchable()';
-        }
-
-        return $column;
+        return "TextColumn::make('{$this->name}')->searchable()->sortable()->limit(50)";
     }
 
     public function tableFilter(): string

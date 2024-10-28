@@ -1,22 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Image extends Base
+class Image extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\FileUpload;',
-        'use Filament\Tables\Columns\ImageColumn;',
-        'use Filament\Tables\Filters\Filter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\FileUpload;'],
+            'columns' => ['use Filament\Tables\Columns\ImageColumn;'],
+            'filters' => ['use Filament\Tables\Filters\Filter;'],
+        ],
     ];
-
-    public string $name;
-
-    public string $label;
-
-    public string $description;
-
-    public bool $nullable;
 
     protected ?int $maxSize;
 

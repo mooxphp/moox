@@ -1,9 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Hidden extends Base
+class Hidden extends AbstractBlock
 {
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\Hidden;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+        ],
+    ];
+
     public function __construct(
         string $name,
         string $label,

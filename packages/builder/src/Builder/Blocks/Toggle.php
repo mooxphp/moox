@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Toggle extends Base
+class Toggle extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\Toggle;',
-        'use Filament\Tables\Columns\IconColumn;',
-        'use Filament\Tables\Filters\BooleanFilter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\Toggle;'],
+            'columns' => ['use Filament\Tables\Columns\IconColumn;'],
+            'filters' => ['use Filament\Tables\Filters\BooleanFilter;'],
+        ],
     ];
 
     protected ?string $onColor;
@@ -38,11 +42,9 @@ class Toggle extends Base
     public function formField(): string
     {
         $field = "Toggle::make('{$this->name}')";
-
         if ($this->onColor) {
             $field .= "->onColor('{$this->onColor}')";
         }
-
         if ($this->offColor) {
             $field .= "->offColor('{$this->offColor}')";
         }

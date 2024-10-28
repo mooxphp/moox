@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Blocks;
 
-class Repeater extends Base
+class Repeater extends AbstractBlock
 {
-    protected static array $useStatements = [
-        'use Filament\Forms\Components\Repeater;',
-        'use Filament\Tables\Columns\TextColumn;',
-        'use Filament\Tables\Filters\Filter;',
+    protected array $useStatements = [
+        'resource' => [
+            'forms' => ['use Filament\Forms\Components\Repeater;'],
+            'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => ['use Filament\Tables\Filters\Filter;'],
+        ],
     ];
 
     protected array $schema;
