@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Features\SoftDelete;
+use Moox\Builder\Traits\HandlesDuplication;
 
 class ResourceGenerator
 {
+    use HandlesDuplication;
+
     protected string $namespace;
 
     protected string $className;
@@ -197,8 +200,15 @@ class ResourceGenerator
             'use Filament\Tables\Actions\EditAction;',
             'use Filament\Tables\Actions\ViewAction;',
             'use Illuminate\Database\Eloquent\Builder;',
-            str_replace(['App\Models\App\Models', '::class'], ['App\Models', ''], "use {$this->model};"),
         ];
+
+        // Add model use statement without ::class
+        $modelStatement = str_replace(
+            ['App\Models\App\Models', '::class'],
+            ['App\Models', ''],
+            "use {$this->model};"
+        );
+        $statements[] = $modelStatement;
 
         foreach ($this->features as $feature) {
             $statements = array_merge(
@@ -210,7 +220,7 @@ class ResourceGenerator
             );
         }
 
-        return array_values(array_unique($statements));
+        return $this->uniqueUseStatements($statements);
     }
 
     protected function getTraits(): array
@@ -220,7 +230,7 @@ class ResourceGenerator
             $traits = array_merge($traits, $feature->getTraits('resource'));
         }
 
-        return array_unique($traits);
+        return $this->uniqueTraits($traits);
     }
 
     // Add a new method to format traits for template
@@ -271,7 +281,7 @@ class ResourceGenerator
             $methods = array_merge($methods, $feature->getMethods('resource'));
         }
 
-        return array_unique($methods);
+        return $this->uniqueMethods($methods);
     }
 
     protected function hasSoftDelete(): bool

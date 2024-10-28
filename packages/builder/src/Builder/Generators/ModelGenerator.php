@@ -64,7 +64,10 @@ class ModelGenerator
         ];
 
         foreach ($this->features as $feature) {
-            $statements = array_merge($statements, $feature->getUseStatements());
+            $statements = array_merge(
+                $statements,
+                $feature->getUseStatements('model', 'base')
+            );
         }
 
         return array_values(array_unique($statements));
