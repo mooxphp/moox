@@ -62,10 +62,7 @@ class ModelGenerator
 
     protected function getUseStatements(): array
     {
-        $statements = [
-            'use Illuminate\Database\Eloquent\Model;',
-            'use Illuminate\Database\Eloquent\Builder;',
-        ];
+        $statements = [];
 
         foreach ($this->features as $feature) {
             $statements = array_merge(

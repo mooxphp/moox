@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace {{ namespace }};
 
-use Illuminate\Database\Eloquent\Model;
 {{ use_statements }}
 
 class {{ class_name }} extends Model
