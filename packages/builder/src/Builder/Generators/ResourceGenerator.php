@@ -42,9 +42,10 @@ class ResourceGenerator
         string $className,
         string $model
     ) {
-        $this->namespace = $namespace;
+        $this->namespace = 'App\\Filament\\Resources';  // Force App namespace
         $this->className = $className;
         $this->model = $model;
+        $this->navigationIcon = 'heroicon-o-rectangle-stack';
     }
 
     public function addFeature(Feature $feature): self
@@ -111,7 +112,7 @@ class ResourceGenerator
 
     public function generate(): array
     {
-        return [
+        $files = [
             'resource' => $this->generateResource(),
             'pages' => [
                 'create' => $this->generateCreatePage(),
@@ -120,6 +121,26 @@ class ResourceGenerator
                 'view' => $this->generateViewPage(),
             ],
         ];
+
+        // Add debug information
+        $resourcePath = app_path('Filament/Resources/'.$this->className.'Resource.php');
+        $pagesPath = app_path('Filament/Resources/'.$this->className.'/Pages/');
+
+        if (! file_exists(dirname($resourcePath))) {
+            mkdir(dirname($resourcePath), 0755, true);
+        }
+
+        if (! file_exists($pagesPath)) {
+            mkdir($pagesPath, 0755, true);
+        }
+
+        file_put_contents($resourcePath, $files['resource']);
+        file_put_contents($pagesPath.'Create'.$this->className.'.php', $files['pages']['create']);
+        file_put_contents($pagesPath.'Edit'.$this->className.'.php', $files['pages']['edit']);
+        file_put_contents($pagesPath.'List'.$this->className.'s.php', $files['pages']['list']);
+        file_put_contents($pagesPath.'View'.$this->className.'.php', $files['pages']['view']);
+
+        return $files;
     }
 
     protected function generateResource(): string

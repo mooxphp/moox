@@ -99,6 +99,13 @@ class PluginGenerator
         return array_unique($methods);
     }
 
+    protected function getResources(): array
+    {
+        return [
+            "\\App\\Filament\\Resources\\{$this->className}Resource::class",
+        ];
+    }
+
     public function generate(): string
     {
         $template = file_get_contents(__DIR__.'/../Templates/plugin.php.stub');
