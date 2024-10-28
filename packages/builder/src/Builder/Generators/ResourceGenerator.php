@@ -123,9 +123,8 @@ class ResourceGenerator
             ],
         ];
 
-        // Add debug information
-        $resourcePath = app_path('Filament/Resources/'.$this->className.'Resource.php');
-        $pagesPath = app_path('Filament/Resources/'.$this->className.'/Pages/');
+        $resourcePath = app_path("Filament/Resources/{$this->className}Resource.php");
+        $pagesPath = app_path("Filament/Resources/{$this->className}Resource/Pages/");
 
         if (! file_exists(dirname($resourcePath))) {
             mkdir(dirname($resourcePath), 0755, true);
@@ -136,10 +135,10 @@ class ResourceGenerator
         }
 
         file_put_contents($resourcePath, $files['resource']);
-        file_put_contents($pagesPath.'Create'.$this->className.'.php', $files['pages']['create']);
-        file_put_contents($pagesPath.'Edit'.$this->className.'.php', $files['pages']['edit']);
-        file_put_contents($pagesPath.'List'.$this->className.'s.php', $files['pages']['list']);
-        file_put_contents($pagesPath.'View'.$this->className.'.php', $files['pages']['view']);
+        file_put_contents($pagesPath."Create{$this->className}.php", $files['pages']['create']);
+        file_put_contents($pagesPath."Edit{$this->className}.php", $files['pages']['edit']);
+        file_put_contents($pagesPath."List{$this->className}s.php", $files['pages']['list']);
+        file_put_contents($pagesPath."View{$this->className}.php", $files['pages']['view']);
 
         return $files;
     }
@@ -170,7 +169,7 @@ class ResourceGenerator
             [
                 $this->namespace,
                 $this->className,
-                class_basename($this->model).'::class',  // Fix model reference
+                class_basename($this->model),  // Removed ::class
                 $this->navigationIcon,
                 implode("\n", $this->getUseStatements()),
                 $this->getTraitsString(),
@@ -197,8 +196,8 @@ class ResourceGenerator
             'use Filament\Tables\Table;',
             'use Filament\Tables\Actions\EditAction;',
             'use Filament\Tables\Actions\ViewAction;',
-            'use Illuminate\Database\Eloquent\Builder;',  // Add Builder
-            str_replace('App\Models\App\Models', 'App\Models', "use {$this->model};"), // Fix double namespace
+            'use Illuminate\Database\Eloquent\Builder;',
+            str_replace(['App\Models\App\Models', '::class'], ['App\Models', ''], "use {$this->model};"),
         ];
 
         foreach ($this->features as $feature) {
@@ -211,7 +210,7 @@ class ResourceGenerator
             );
         }
 
-        return array_unique($statements);
+        return array_values(array_unique($statements));
     }
 
     protected function getTraits(): array
@@ -247,8 +246,8 @@ class ResourceGenerator
         $actions = [];
 
         if ($this->hasSoftDelete()) {
-            $actions[] = 'DeleteBulkAction::make()';
-            $actions[] = 'RestoreBulkAction::make()';
+            $actions[] = 'DeleteBulkAction::make(),';
+            $actions[] = 'RestoreBulkAction::make(),';
         }
 
         return $actions;
@@ -289,6 +288,7 @@ class ResourceGenerator
     protected function generateCreatePage(): string
     {
         $template = file_get_contents(__DIR__.'/../Templates/pages/create.php.stub');
+        $namespace = $this->namespace.'\\'.$this->className.'Resource\\Pages';
 
         return str_replace(
             [
@@ -300,7 +300,7 @@ class ResourceGenerator
                 '{{ methods }}',
             ],
             [
-                $this->namespace.'\Pages',
+                $namespace,
                 $this->className,
                 $this->className.'Resource',
                 $this->getPageUseStatements('create'),
@@ -314,6 +314,7 @@ class ResourceGenerator
     protected function generateEditPage(): string
     {
         $template = file_get_contents(__DIR__.'/../Templates/pages/edit.php.stub');
+        $namespace = $this->namespace.'\\'.$this->className.'Resource\\Pages';
 
         return str_replace(
             [
@@ -325,7 +326,7 @@ class ResourceGenerator
                 '{{ methods }}',
             ],
             [
-                $this->namespace.'\Pages',
+                $namespace,
                 $this->className,
                 $this->className.'Resource',
                 $this->getPageUseStatements('edit'),
@@ -339,6 +340,7 @@ class ResourceGenerator
     protected function generateListPage(): string
     {
         $template = file_get_contents(__DIR__.'/../Templates/pages/list.php.stub');
+        $namespace = $this->namespace.'\\'.$this->className.'Resource\\Pages';
 
         return str_replace(
             [
@@ -351,7 +353,7 @@ class ResourceGenerator
                 '{{ methods }}',
             ],
             [
-                $this->namespace.'\Pages',
+                $namespace,
                 $this->className,
                 $this->className.'s',
                 $this->className.'Resource',
@@ -366,6 +368,7 @@ class ResourceGenerator
     protected function generateViewPage(): string
     {
         $template = file_get_contents(__DIR__.'/../Templates/pages/view.php.stub');
+        $namespace = $this->namespace.'\\'.$this->className.'Resource\\Pages';
 
         return str_replace(
             [
@@ -377,7 +380,7 @@ class ResourceGenerator
                 '{{ methods }}',
             ],
             [
-                $this->namespace.'\Pages',
+                $namespace,
                 $this->className,
                 $this->className.'Resource',
                 $this->getPageUseStatements('view'),
