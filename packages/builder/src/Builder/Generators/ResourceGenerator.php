@@ -170,7 +170,7 @@ class ResourceGenerator
             [
                 $this->namespace,
                 $this->className,
-                $this->model,
+                class_basename($this->model).'::class',  // Fix model reference
                 $this->navigationIcon,
                 implode("\n", $this->getUseStatements()),
                 $this->getTraitsString(),
@@ -192,10 +192,13 @@ class ResourceGenerator
     protected function getUseStatements(): array
     {
         $statements = [
+            'use Filament\Resources\Resource;',
             'use Filament\Forms\Form;',
             'use Filament\Tables\Table;',
             'use Filament\Tables\Actions\EditAction;',
             'use Filament\Tables\Actions\ViewAction;',
+            'use Illuminate\Database\Eloquent\Builder;',  // Add Builder
+            str_replace('App\Models\App\Models', 'App\Models', "use {$this->model};"), // Fix double namespace
         ];
 
         foreach ($this->features as $feature) {

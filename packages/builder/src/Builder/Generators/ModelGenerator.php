@@ -59,11 +59,19 @@ class ModelGenerator
     protected function getUseStatements(): array
     {
         $statements = ['use Illuminate\Database\Eloquent\Model;'];
+
         foreach ($this->features as $feature) {
-            $statements = array_merge($statements, $feature->getModelUseStatements());
+            $featureStatements = $feature->getModelUseStatements();
+            foreach ($featureStatements as $statement) {
+                if (! in_array($statement, $statements)) {
+                    $statements[] = $statement;
+                }
+            }
         }
 
-        return array_unique($statements);
+        sort($statements);
+
+        return $statements;
     }
 
     protected function getTraits(): array
