@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Features\SoftDelete;
-use Moox\Builder\Traits\HandlesDuplication;
+use Moox\Builder\Builder\Traits\HandlesDuplication;
 
 class ResourceGenerator
 {

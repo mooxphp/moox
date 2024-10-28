@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
+use Moox\Builder\Builder\Traits\HandlesDuplication;
+
 class ModelGenerator
 {
+    use HandlesDuplication;
+
     protected string $namespace;
 
     protected string $className;
@@ -70,7 +74,7 @@ class ModelGenerator
             );
         }
 
-        return array_values(array_unique($statements));
+        return $this->uniqueUseStatements($statements);
     }
 
     protected function getTraits(): array
@@ -80,7 +84,7 @@ class ModelGenerator
             $traits = array_merge($traits, $feature->getModelTraits());
         }
 
-        return array_unique($traits);
+        return $this->uniqueTraits($traits);
     }
 
     protected function getMethods(): array
@@ -90,7 +94,7 @@ class ModelGenerator
             $methods = array_merge($methods, $feature->getModelMethods());
         }
 
-        return array_merge($methods, $this->additionalMethods);
+        return $this->uniqueMethods(array_merge($methods, $this->additionalMethods));
     }
 
     protected function getFillableString(): string
