@@ -58,20 +58,16 @@ class ModelGenerator
 
     protected function getUseStatements(): array
     {
-        $statements = ['use Illuminate\Database\Eloquent\Model;'];
+        $statements = [
+            'use Illuminate\Database\Eloquent\Model;',
+            'use Illuminate\Database\Eloquent\Builder;',
+        ];
 
         foreach ($this->features as $feature) {
-            $featureStatements = $feature->getModelUseStatements();
-            foreach ($featureStatements as $statement) {
-                if (! in_array($statement, $statements)) {
-                    $statements[] = $statement;
-                }
-            }
+            $statements = array_merge($statements, $feature->getUseStatements());
         }
 
-        sort($statements);
-
-        return $statements;
+        return array_values(array_unique($statements));
     }
 
     protected function getTraits(): array
@@ -94,28 +90,50 @@ class ModelGenerator
         return array_merge($methods, $this->additionalMethods);
     }
 
+    protected function getFillableString(): string
+    {
+        return implode(",\n        ", array_map(fn ($field) => "'$field'", $this->fillable));
+    }
+
+    protected function getCastsString(): string
+    {
+        return implode(",\n        ", array_map(
+            fn ($field, $type) => "'$field' => '$type'",
+            array_keys($this->casts),
+            array_values($this->casts)
+        ));
+    }
+
+    protected function getTraitsString(): string
+    {
+        return empty($this->getTraits()) ? '' : 'use '.implode(', ', $this->getTraits()).';';
+    }
+
     public function generate(): string
     {
         $template = file_get_contents(__DIR__.'/../Templates/model.php.stub');
 
-        $replacements = [
-            '{{ namespace }}' => $this->namespace,
-            '{{ class_name }}' => $this->className,
-            '{{ table }}' => $this->table,
-            '{{ use_statements }}' => implode("\n", $this->getUseStatements()),
-            '{{ traits }}' => empty($this->getTraits()) ? '' : 'use '.implode(', ', $this->getTraits()).';',
-            '{{ fillable }}' => implode(",\n        ", array_map(fn ($field) => "'$field'", $this->fillable)),
-            '{{ casts }}' => implode(",\n        ", array_map(
-                fn ($field, $type) => "'$field' => '$type'",
-                array_keys($this->casts),
-                array_values($this->casts)
-            )),
-            '{{ methods }}' => implode("\n\n    ", $this->getMethods()),
-        ];
-
         return str_replace(
-            array_keys($replacements),
-            array_values($replacements),
+            [
+                '{{ namespace }}',
+                '{{ use_statements }}',
+                '{{ class_name }}',
+                '{{ traits }}',
+                '{{ table }}',
+                '{{ fillable }}',
+                '{{ casts }}',
+                '{{ methods }}',
+            ],
+            [
+                $this->namespace,
+                implode("\n", $this->getUseStatements()),
+                $this->className,
+                $this->getTraitsString(),
+                $this->table,
+                $this->getFillableString(),
+                $this->getCastsString(),
+                implode("\n\n    ", $this->getMethods()),
+            ],
             $template
         );
     }
