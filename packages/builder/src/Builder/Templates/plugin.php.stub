@@ -1,0 +1,39 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Filament\Contracts\Plugin;
+use Filament\Panel;
+use Filament\Support\Concerns\EvaluatesClosures;
+{{ use_statements }}
+
+class {{ class_name }}Plugin implements Plugin
+{
+    use EvaluatesClosures;
+
+    public function getId(): string
+    {
+        return '{{ id }}';
+    }
+
+    public function register(Panel $panel): void
+    {
+        $panel->resources([
+            {{ resources }}
+        ]);
+    }
+
+    public function boot(Panel $panel): void
+    {
+        {{ boot_methods }}
+    }
+
+    public static function make(): static
+    {
+        return app(static::class);
+    }
+
+    {{ methods }}
+}

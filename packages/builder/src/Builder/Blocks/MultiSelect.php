@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Blocks;
+namespace Moox\Builder\Builder\Blocks;
 
 class MultiSelect extends Base
 {

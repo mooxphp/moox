@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Filament\Resources\Resource;
+{{ use_statements }}
+
+class {{ class_name }}Resource extends Resource
+{
+    {{ traits }}
+
+    protected static ?string $model = {{ model }}::class;
+
+    protected static ?string $navigationIcon = '{{ navigation_icon }}';
+
+    public static function form(Form $form): Form
+    {
+        {{ form_setup }}
+
+        return $form->schema([
+            {{ form_schema }}
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        {{ table_setup }}
+
+        return $table
+            ->columns([
+                {{ table_columns }}
+            ])
+            ->defaultSort('{{ default_sort_column }}', '{{ default_sort_direction }}')
+            ->actions([
+                {{ table_actions }}
+            ])
+            ->bulkActions([
+                {{ table_bulk_actions }}
+            ])
+            ->filters([
+                {{ table_filters }}
+            ]);
+    }
+
+    {{ methods }}
+}

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks;
+namespace Moox\Builder\Builder\Blocks;
 
 abstract class Base
 {
