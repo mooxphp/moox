@@ -42,7 +42,8 @@ class ResourceGenerator
         string $className,
         string $model
     ) {
-        $this->namespace = 'App\\Filament\\Resources';  // Force App namespace
+        // Allow custom namespace but default to App if none provided
+        $this->namespace = $namespace ?: 'App\\Filament\\Resources';
         $this->className = $className;
         $this->model = $model;
         $this->navigationIcon = 'heroicon-o-rectangle-stack';
