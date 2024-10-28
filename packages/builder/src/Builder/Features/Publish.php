@@ -4,71 +4,74 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Features;
 
-class Publish extends Feature
+class Publish extends AbstractFeature
 {
-    protected static array $useStatements = [
-        'resource' => [
-            'actions' => [
-                'use Filament\Actions\Action;',
+    protected function initializeFeature(): void
+    {
+        $this->useStatements = [
+            'resource' => [
+                'actions' => [
+                    'use Filament\Actions\Action;',
+                ],
+                'columns' => [
+                    'use Filament\Tables\Columns\TextColumn;',
+                ],
+                'filters' => [
+                    'use Filament\Tables\Filters\Filter;',
+                ],
+                'forms' => [
+                    'use Filament\Forms\Components\DateTimePicker;',
+                ],
             ],
-            'columns' => [
-                'use Filament\Tables\Columns\TextColumn;',
-            ],
-            'filters' => [
-                'use Filament\Tables\Filters\Filter;',
-            ],
-            'forms' => [
-                'use Filament\Forms\Components\DateTimePicker;',
-            ],
-        ],
-        'model' => [
-            'use Illuminate\Database\Eloquent\Builder;',
-            'use Moox\Core\Traits\SinglePublishInModel;',
-        ],
-        'migration' => [],
-        'pages' => [
-            'create' => [],
-            'edit' => [],
-            'list' => [
+            'model' => [
                 'use Illuminate\Database\Eloquent\Builder;',
+                'use Moox\Core\Traits\SinglePublishInModel;',
             ],
-            'view' => [],
-        ],
-    ];
+            'migration' => [],
+            'pages' => [
+                'create' => [],
+                'edit' => [],
+                'list' => [
+                    'use Illuminate\Database\Eloquent\Builder;',
+                ],
+                'view' => [],
+            ],
+        ];
 
-    protected static array $traits = [
-        'resource' => ['SinglePublishInResource'],
-        'model' => ['SinglePublishInModel'],
-    ];
+        $this->traits = [
+            'resource' => ['SinglePublishInResource'],
+            'model' => ['SinglePublishInModel'],
+        ];
 
-    protected static array $methods = [
-        'resource' => [],
-        'model' => [
-            'public function scopePublished(Builder $query): Builder {
-                return $query->whereNotNull("published_at");
-            }',
-            'public function scopeScheduled(Builder $query): Builder {
-                return $query->whereNotNull("publish_at")
-                    ->whereNull("published_at");
-            }',
-            'public function scopeDraft(Builder $query): Builder {
-                return $query->whereNull("published_at")
-                    ->whereNull("publish_at");
-            }',
-        ],
-        'pages' => [
-            'list' => [
-                'protected function applyStatusFilter(Builder $query, string $status): Builder {
-                    return match ($status) {
-                        "published" => $query->published(),
-                        "scheduled" => $query->scheduled(),
-                        "draft" => $query->draft(),
-                        default => $query,
-                    };
+        $this->methods = [
+            'resource' => [],
+            'model' => [
+                'public function scopePublished(Builder $query): Builder {
+                    return $query->whereNotNull("published_at");
+                }',
+                'public function scopeScheduled(Builder $query): Builder {
+                    return $query->whereNotNull("publish_at")
+                        ->whereNull("published_at");
+                }',
+                'public function scopeDraft(Builder $query): Builder {
+                    return $query->whereNull("published_at")
+                        ->whereNull("publish_at");
                 }',
             ],
-        ],
-    ];
+            'pages' => [
+                'list' => [
+                    'protected function applyStatusFilter(Builder $query, string $status): Builder {
+                        return match ($status) {
+                            "published" => $query->published(),
+                            "scheduled" => $query->scheduled(),
+                            "draft" => $query->draft(),
+                            default => $query,
+                        };
+                    }',
+                ],
+            ],
+        ];
+    }
 
     public function getFormFields(): array
     {

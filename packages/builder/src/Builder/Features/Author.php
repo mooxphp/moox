@@ -4,77 +4,47 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Features;
 
-class Author extends Feature
+class Author extends AbstractFeature
 {
-    protected static array $useStatements = [
-        'resource' => [
-            'forms' => [
-                'use Filament\Forms\Components\Select;',
+    protected function initializeFeature(): void
+    {
+        $this->useStatements = [
+            'resource' => [
+                'forms' => [
+                    'use Filament\Forms\Components\Select;',
+                ],
+                'columns' => [
+                    'use Filament\Tables\Columns\TextColumn;',
+                ],
             ],
-            'columns' => [
-                'use Filament\Tables\Columns\TextColumn;',
+            'model' => [
+                'use Moox\Core\Traits\HasAuthor;',
             ],
-            'filters' => [
-                'use Filament\Tables\Filters\SelectFilter;',
+            'migration' => [],
+            'pages' => [
+                'create' => [],
+                'edit' => [],
+                'list' => [],
+                'view' => [],
             ],
-            'actions' => [],
-        ],
-        'model' => [
-            'use Illuminate\Database\Eloquent\Relations\BelongsTo;',
-            'use App\Models\User;',
-            'use Moox\Core\Traits\AuthorInModel;',
-        ],
-        'migration' => [],
-        'pages' => [
-            'create' => [],
-            'edit' => [],
-            'list' => [
-                'use Illuminate\Database\Eloquent\Builder;',
-            ],
-            'view' => [],
-        ],
-    ];
+        ];
 
-    protected static array $traits = [
-        'resource' => ['AuthorInResource'],
-        'model' => ['AuthorInModel'],
-    ];
+        $this->traits = [
+            'resource' => [],
+            'model' => ['HasAuthor'],
+        ];
 
-    protected static array $methods = [
-        'resource' => [
-            'protected static function initAuthorModel(): void {
-                static::$model = config("builder.models.author");
-            }',
-            'public static function getAuthorModel(): string {
-                return config("builder.models.author");
-            }',
-        ],
-        'model' => [
-            'public function author(): BelongsTo {
-                return $this->belongsTo(User::class, "author_id");
-            }',
-            'public function scopeWhereAuthor(Builder $query, $author): Builder {
-                return $query->where("author_id", $author);
-            }',
-            'public function scopeWhereAuthorIn(Builder $query, array $authors): Builder {
-                return $query->whereIn("author_id", $authors);
-            }',
-        ],
-        'pages' => [
-            'list' => [
-                'protected function applySearchToTableQuery(Builder $query): Builder {
-                    if ($this->getTableSearch()) {
-                        $query->where(function (Builder $query) {
-                            $query->orWhereHas("author", function (Builder $query) {
-                                $query->where("name", "like", "%{$this->getTableSearch()}%");
-                            });
-                        });
-                    }
-                    return $query;
-                }',
+        $this->methods = [
+            'resource' => [],
+            'model' => [],
+            'pages' => [
+                'create' => [],
+                'edit' => [],
+                'list' => [],
+                'view' => [],
             ],
-        ],
-    ];
+        ];
+    }
 
     public function getFormFields(): array
     {
@@ -93,20 +63,14 @@ class Author extends Feature
             "TextColumn::make('author.name')
                 ->label(__('core::core.author'))
                 ->sortable()
-                ->searchable()",
+                ->searchable()
+                ->toggleable()",
         ];
     }
 
     public function getTableFilters(): array
     {
-        return [
-            "SelectFilter::make('author')
-                ->relationship('author', 'name')
-                ->label(__('core::core.author'))
-                ->searchable()
-                ->preload()
-                ->multiple()",
-        ];
+        return [];
     }
 
     public function getActions(): array
@@ -117,7 +81,7 @@ class Author extends Feature
     public function getMigrations(): array
     {
         return [
-            '$table->foreignId("author_id")->constrained("users")->cascadeOnDelete()',
+            '$table->foreignId("author_id")->constrained()->cascadeOnDelete()',
         ];
     }
 }

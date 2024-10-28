@@ -4,73 +4,76 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Features;
 
-class SoftDelete extends Feature
+class SoftDelete extends AbstractFeature
 {
-    protected static array $useStatements = [
-        'resource' => [
-            'actions' => [
-                'use Filament\Tables\Actions\DeleteBulkAction;',
-                'use Filament\Tables\Actions\RestoreBulkAction;',
-                'use Filament\Actions\Action;',
+    protected function initializeFeature(): void
+    {
+        $this->useStatements = [
+            'resource' => [
+                'actions' => [
+                    'use Filament\Tables\Actions\DeleteBulkAction;',
+                    'use Filament\Tables\Actions\RestoreBulkAction;',
+                    'use Filament\Actions\Action;',
+                ],
+                'columns' => [],
+                'filters' => [],
+                'forms' => [],
             ],
-            'columns' => [],
-            'filters' => [],
-            'forms' => [],
-        ],
-        'model' => [
-            'use Illuminate\Database\Eloquent\SoftDeletes;',
-            'use Illuminate\Database\Eloquent\Builder;',
-        ],
-        'migration' => [],
-        'pages' => [
-            'create' => [],
-            'edit' => [
-                'use Filament\Actions\Action;',
-            ],
-            'list' => [
+            'model' => [
+                'use Illuminate\Database\Eloquent\SoftDeletes;',
                 'use Illuminate\Database\Eloquent\Builder;',
             ],
-            'view' => [
-                'use Filament\Actions\Action;',
+            'migration' => [],
+            'pages' => [
+                'create' => [],
+                'edit' => [
+                    'use Filament\Actions\Action;',
+                ],
+                'list' => [
+                    'use Illuminate\Database\Eloquent\Builder;',
+                ],
+                'view' => [
+                    'use Filament\Actions\Action;',
+                ],
             ],
-        ],
-    ];
+        ];
 
-    protected static array $traits = [
-        'resource' => [],
-        'model' => ['SoftDeletes'],
-    ];
+        $this->traits = [
+            'resource' => [],
+            'model' => ['SoftDeletes'],
+        ];
 
-    protected static array $methods = [
-        'resource' => [
-            'public static function getTableQuery(?string $currentTab = null): Builder {
-                $model = static::getModel();
-                $query = $model::query()->withoutGlobalScopes();
-                if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
-                    $query = $model::withTrashed();
-                }
-                if ($currentTab) {
-                    static::applyStatusFilter($query, $currentTab);
-                }
-                return $query;
-            }',
-        ],
-        'model' => [
-            'public function scopeOnlyTrashed(Builder $query): Builder {
-                return $query->whereNotNull("deleted_at");
-            }',
-        ],
-        'pages' => [
-            'list' => [
-                'protected function applyStatusFilter(Builder $query, string $status): Builder {
-                    return match ($status) {
-                        "deleted" => $query->onlyTrashed(),
-                        default => $query->whereNull("deleted_at"),
-                    };
+        $this->methods = [
+            'resource' => [
+                'public static function getTableQuery(?string $currentTab = null): Builder {
+                    $model = static::getModel();
+                    $query = $model::query()->withoutGlobalScopes();
+                    if (in_array(SoftDeletes::class, class_uses_recursive($model))) {
+                        $query = $model::withTrashed();
+                    }
+                    if ($currentTab) {
+                        static::applyStatusFilter($query, $currentTab);
+                    }
+                    return $query;
                 }',
             ],
-        ],
-    ];
+            'model' => [
+                'public function scopeOnlyTrashed(Builder $query): Builder {
+                    return $query->whereNotNull("deleted_at");
+                }',
+            ],
+            'pages' => [
+                'list' => [
+                    'protected function applyStatusFilter(Builder $query, string $status): Builder {
+                        return match ($status) {
+                            "deleted" => $query->onlyTrashed(),
+                            default => $query->whereNull("deleted_at"),
+                        };
+                    }',
+                ],
+            ],
+        ];
+    }
 
     public function getFormFields(): array
     {
