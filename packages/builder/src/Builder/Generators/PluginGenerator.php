@@ -1,16 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Generators;
 
-class PluginGenerator
+class PluginGenerator extends AbstractGenerator
 {
-    // get all needed information from the BuildTestEntityCommand
+    public function generate(): void
+    {
+        $template = $this->loadStub('plugin');
 
-    // use the plugin.php.stub file as template
+        $variables = [
+            'namespace' => $this->entityNamespace,
+            'class_name' => $this->entityName,
+            'id' => strtolower($this->entityName),
+            'use_statements' => $this->formatUseStatements(),
+            'resources' => $this->getResources(),
+            'boot_methods' => $this->getBootMethods(),
+            'methods' => $this->formatMethods(),
+        ];
 
-    // combine all features and blocks into arrays to be implemented in the migration
+        $content = $this->replaceTemplateVariables($template, $variables);
+        $this->writeFile($this->getPluginPath(), $content);
+    }
 
-    // care that the arrays do not contain duplicates, that was a problem in a previous version
+    protected function formatUseStatements(): string
+    {
+        $statements = $this->getUseStatements('plugin');
 
-    // generate the plugin file in the given entity path (app or package)
+        return implode("\n", array_unique($statements));
+    }
+
+    protected function getResources(): string
+    {
+        // Implement logic to get resources
+        return '';
+    }
+
+    protected function getBootMethods(): string
+    {
+        // Implement logic to get boot methods
+        return '';
+    }
+
+    protected function formatMethods(): string
+    {
+        $methods = $this->getMethods('plugin');
+
+        return implode("\n\n    ", array_filter($methods));
+    }
+
+    protected function getPluginPath(): string
+    {
+        return $this->entityPath.'/Plugins/'.$this->entityName.'Plugin.php';
+    }
 }

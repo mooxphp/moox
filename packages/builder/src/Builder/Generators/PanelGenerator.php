@@ -1,18 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Generators;
 
-class PanelGenerator
+class PanelGenerator extends AbstractGenerator
 {
-    // get all needed information from the BuildTestEntityCommand
+    public function generate(): void
+    {
+        $template = $this->loadStub('panel');
 
-    // use the panel.php.stub file as template
+        $variables = [
+            'class_name' => $this->entityName,
+            'id' => strtolower($this->entityName),
+            'path' => strtolower($this->entityName),
+        ];
 
-    // combine all features and blocks into arrays to be implemented in the migration
+        $content = $this->replaceTemplateVariables($template, $variables);
+        $this->writeFile($this->getPanelPath(), $content);
+    }
 
-    // care that the arrays do not contain duplicates, that was a problem in a previous version
-
-    // generate the migration file in the given entity path (app or package)
-
-    // generate the panel file in the given entity path (app or package)
+    protected function getPanelPath(): string
+    {
+        return $this->entityPath.'/Providers/'.$this->entityName.'PanelProvider.php';
+    }
 }

@@ -1,16 +1,59 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Builder\Generators;
 
-class MigrationGenerator
+class MigrationGenerator extends AbstractGenerator
 {
-    // get all needed information from the BuildTestEntityCommand
+    public function generate(): void
+    {
+        $template = $this->loadStub('migration');
 
-    // use the migration.php.stub file as template
+        $variables = [
+            'table' => $this->getTableName(),
+            'base_fields' => $this->getBaseFields(),
+            'custom_fields' => $this->getCustomFields(),
+            'feature_fields' => $this->getFeatureFields(),
+        ];
 
-    // combine all features and blocks into arrays to be implemented in the migration
+        $content = $this->replaceTemplateVariables($template, $variables);
+        $this->writeFile($this->getMigrationPath(), $content);
+    }
 
-    // care that the arrays do not contain duplicates, that was a problem in a previous version
+    protected function getTableName(): string
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $this->entityName)).'s';
+    }
 
-    // generate the migration file in the given entity path (app or package)
+    protected function getBaseFields(): string
+    {
+        // Implement logic to get base fields
+        return '';
+    }
+
+    protected function getCustomFields(): string
+    {
+        $fields = [];
+        foreach ($this->blocks as $block) {
+            $fields[] = $block->getMigrationType();
+        }
+
+        return implode("\n            ", array_filter($fields));
+    }
+
+    protected function getFeatureFields(): string
+    {
+        $fields = [];
+        foreach ($this->features as $feature) {
+            $fields = array_merge($fields, $feature->getMigrations());
+        }
+
+        return implode("\n            ", array_filter($fields));
+    }
+
+    protected function getMigrationPath(): string
+    {
+        return $this->entityPath.'/Database/Migrations/'.date('Y_m_d_His').'_create_'.$this->getTableName().'_table.php';
+    }
 }

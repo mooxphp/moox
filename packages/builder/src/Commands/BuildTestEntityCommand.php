@@ -1,28 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Moox\Builder\Commands;
 
 use Illuminate\Console\Command;
+use Moox\Builder\Builder\Actions\GenerateEntity;
+use Moox\Builder\Builder\Actions\PreviewEntity;
 
 class BuildTestEntityCommand extends Command
 {
-    protected string $entityName;
+    protected $signature = 'builder:build-test-entity {entityName} {--app} {--package}';
 
-    protected string $entityPluralName;
+    protected $description = 'Build a test entity with specified blocks and features';
 
-    protected string $entityNamespace;
+    public function handle(): void
+    {
+        $entityName = $this->argument('entityName');
+        $entityNamespace = $this->option('app') ? 'App' : 'Package';
+        $entityPath = $this->option('app') ? app_path() : base_path('packages');
 
-    protected string $entityPath;
+        $blocks = $this->getBlocks();
+        $features = $this->getFeatures();
 
-    protected string $entityId;
+        $generateEntity = new GenerateEntity($entityName, $entityNamespace, $entityPath, $blocks, $features);
+        $generateEntity->execute();
 
-    protected array $blocks;
+        $previewEntity = new PreviewEntity($entityName, $entityNamespace, $entityPath);
+        $previewEntity->execute();
 
-    protected array $features;
+        $this->info('Entity generated and previewed successfully.');
+    }
 
-    protected string $entityLocation;
+    protected function getBlocks(): array
+    {
+        // Logic to toggle and return selected blocks
+        return [];
+    }
 
-    // do a GenerateEntity
-
-    // do a PreviewEntity
+    protected function getFeatures(): array
+    {
+        // Logic to toggle and return selected features
+        return [];
+    }
 }
