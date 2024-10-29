@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Features\SoftDelete;
-use Moox\Builder\Builder\Traits\HandlesDuplication;
 
 class ResourceGenerator
 {
-    use HandlesDuplication;
-
     protected string $namespace;
 
     protected string $className;
@@ -220,7 +217,7 @@ class ResourceGenerator
             );
         }
 
-        return $this->uniqueUseStatements($statements);
+        return $statements;
     }
 
     protected function getTraits(): array
@@ -230,7 +227,7 @@ class ResourceGenerator
             $traits = array_merge($traits, $feature->getTraits('resource'));
         }
 
-        return $this->uniqueTraits($traits);
+        return $traits;
     }
 
     // Add a new method to format traits for template
@@ -281,7 +278,7 @@ class ResourceGenerator
             $methods = array_merge($methods, $feature->getMethods('resource'));
         }
 
-        return $this->uniqueMethods($methods);
+        return $methods;
     }
 
     protected function hasSoftDelete(): bool
