@@ -55,7 +55,9 @@ class ResourceGenerator extends AbstractGenerator
             $this->getUseStatements('resource', 'actions')
         );
 
-        return implode("\n", array_unique($statements));
+        return implode("\n", array_map(function ($statement) {
+            return rtrim($statement, ';').';';
+        }, array_unique($statements)));
     }
 
     protected function formatTraits(): string
@@ -154,7 +156,9 @@ class ResourceGenerator extends AbstractGenerator
             $this->getUseStatements('pages', strtolower($page))
         );
 
-        return implode("\n", array_unique($statements));
+        return implode("\n", array_map(function ($statement) {
+            return rtrim($statement, ';').';';
+        }, array_unique($statements)));
     }
 
     protected function formatPageTraits(string $page): string
