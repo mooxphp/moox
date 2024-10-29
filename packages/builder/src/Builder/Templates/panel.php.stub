@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Providers;
+namespace {{ namespace }};
 
 use Filament\Panel;
 use Filament\PanelProvider;
-use App\Filament\Plugins\\{$entityName}Plugin;
+use {{ plugin_namespace }}\{{ class_name }}Plugin;
 
 class {{ class_name }}PanelProvider extends PanelProvider
 {
-    public function panel(Panel \$panel): Panel
+    public function panel(Panel $panel): Panel
     {
-        return \$panel
+        return $panel
             ->id('{{ id }}')
             ->path('{{ path }}')
             ->plugin(new {{ class_name }}Plugin())
