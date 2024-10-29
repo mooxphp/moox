@@ -40,7 +40,7 @@ class Number extends AbstractBlock
         $this->step = $step;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return $this->isFloat ? 'float' : 'integer';
     }

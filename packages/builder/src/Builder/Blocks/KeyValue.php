@@ -32,7 +32,7 @@ class KeyValue extends AbstractBlock
         $this->valueLabel = $valueLabel;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'json';
     }

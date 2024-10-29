@@ -48,7 +48,7 @@ class Text extends AbstractBlock
         $this->index = $index;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'string';
     }

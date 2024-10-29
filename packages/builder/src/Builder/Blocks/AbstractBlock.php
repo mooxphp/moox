@@ -133,7 +133,7 @@ abstract class AbstractBlock
         return $migration.';';
     }
 
-    abstract protected function getMigrationType(): string;
+    abstract public function getMigrationType(): string;
 
     protected function getDefaultValue(): string
     {

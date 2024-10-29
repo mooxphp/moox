@@ -28,7 +28,7 @@ class Builder extends AbstractBlock
         $this->blocks = $blocks;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'json';
     }

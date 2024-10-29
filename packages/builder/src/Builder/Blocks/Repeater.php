@@ -28,7 +28,7 @@ class Repeater extends AbstractBlock
         $this->schema = $schema;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'json';
     }

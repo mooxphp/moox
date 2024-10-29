@@ -32,7 +32,7 @@ class Image extends AbstractBlock
         $this->allowedTypes = $allowedTypes;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'string';
     }

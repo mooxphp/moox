@@ -26,7 +26,7 @@ class Bool extends AbstractBlock
         $this->setDefault($default);
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'boolean';
     }

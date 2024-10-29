@@ -28,7 +28,7 @@ class MultiSelect extends AbstractBlock
         $this->options = $options;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'json';
     }

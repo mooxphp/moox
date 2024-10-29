@@ -34,7 +34,7 @@ class Toggle extends AbstractBlock
         $this->offColor = $offColor;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'boolean';
     }

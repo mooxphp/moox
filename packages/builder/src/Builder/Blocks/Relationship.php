@@ -36,7 +36,7 @@ class Relationship extends AbstractBlock
         $this->displayColumn = $displayColumn;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return $this->relationshipType === 'belongsTo' ? 'foreignId' : 'id';
     }

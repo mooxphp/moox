@@ -28,7 +28,7 @@ class RichEditor extends AbstractBlock
         $this->searchable = $searchable;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'text';
     }

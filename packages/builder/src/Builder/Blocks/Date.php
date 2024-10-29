@@ -28,7 +28,7 @@ class Date extends AbstractBlock
         $this->sortable = $sortable;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'date';
     }

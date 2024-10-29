@@ -14,7 +14,7 @@ class TextArea extends AbstractBlock
         ],
     ];
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'text';
     }

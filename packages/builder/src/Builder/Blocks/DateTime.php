@@ -32,7 +32,7 @@ class DateTime extends AbstractBlock
         $this->withSeconds = $withSeconds;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'dateTime';
     }

@@ -32,7 +32,7 @@ class Radio extends AbstractBlock
         $this->inline = $inline;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'string';
     }

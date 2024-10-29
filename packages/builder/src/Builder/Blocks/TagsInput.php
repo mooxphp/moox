@@ -28,7 +28,7 @@ class TagsInput extends AbstractBlock
         $this->suggestions = $suggestions;
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'json';
     }
