@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
+use Moox\Builder\Builder\Traits\HandlesIndentation;
+
 class ModelGenerator extends AbstractGenerator
 {
+    use HandlesIndentation;
+
     public function __construct(
         string $entityName,
         string $entityNamespace,
@@ -88,7 +92,7 @@ class ModelGenerator extends AbstractGenerator
             $fillable[] = $block->modelAttribute();
         }
 
-        return implode(",\n        ", array_filter($fillable));
+        return $this->formatWithIndentation(array_filter($fillable), 2);
     }
 
     protected function getCasts(): string

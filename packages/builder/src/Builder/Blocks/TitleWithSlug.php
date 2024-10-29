@@ -61,7 +61,7 @@ class TitleWithSlug extends AbstractBlock
     public function migration(): string
     {
         return '$table->string(\''.$this->titleFieldName.'\');
-        $table->string(\''.$this->slugFieldName.'\')->unique()';
+$table->string(\''.$this->slugFieldName.'\')->unique()';
     }
 
     public function modelAttribute(): string

@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('{{ table }}', function (Blueprint $table) {
-{{ fields }}
+            {{ fields }}
         });
     }
 
