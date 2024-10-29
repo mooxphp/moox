@@ -48,12 +48,15 @@ class MigrationGenerator extends AbstractGenerator
     {
         $fields = [];
         foreach ($this->blocks as $block) {
-            $type = $block->getMigrationType();
-            $field = '$table->'.$type.'(\''.$block->getName().'\')';
-            $fields[] = $field;
+            if (method_exists($block, 'migration')) {
+                $fields[] = $block->migration();
+            } else {
+                $type = $block->getMigrationType();
+                $fields[] = '$table->'.$type.'(\''.$block->getName().'\');';
+            }
         }
 
-        return implode(";\n            ", array_filter($fields)).';';
+        return implode("\n            ", array_filter($fields));
     }
 
     protected function getFeatureFields(): string
