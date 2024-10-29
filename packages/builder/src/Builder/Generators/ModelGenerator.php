@@ -41,10 +41,7 @@ class ModelGenerator extends AbstractGenerator
 
     protected function cleanupContent(string $content): string
     {
-        // Remove empty lines between class opening brace and first property
-        $content = preg_replace("/class (.+) extends Model\n{\n\n+/", "class $1 extends Model\n{\n", $content);
-
-        // Remove empty casts array entirely
+        // Remove empty casts
         $content = preg_replace("/\n\n    protected \\\$casts = \[\n        \n    \];\n/", '', $content);
 
         // Remove empty traits
@@ -52,6 +49,9 @@ class ModelGenerator extends AbstractGenerator
 
         // Remove multiple empty lines
         $content = preg_replace("/\n\n\n+/", "\n\n", $content);
+
+        // Remove empty line after class opening brace
+        $content = preg_replace("/class (.+) extends Model\n{(\n\n+)/", "class $1 extends Model\n{\n", $content);
 
         // Remove empty line at the end of the class
         $content = preg_replace("/\n\n}/", "\n}", $content);
