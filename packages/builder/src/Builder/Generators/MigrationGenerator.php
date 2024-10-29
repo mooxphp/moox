@@ -28,7 +28,6 @@ class MigrationGenerator extends AbstractGenerator
 
     protected function getBaseFields(): string
     {
-        // Implement logic to get base fields
         return '';
     }
 
@@ -36,20 +35,29 @@ class MigrationGenerator extends AbstractGenerator
     {
         $fields = [];
         foreach ($this->blocks as $block) {
-            $fields[] = $block->getMigrationType();
+            $type = $block->getMigrationType();
+            if ($type === 'string') {
+                $fields[] = '$table->string(\''.$block->getName().'\')';
+            } elseif ($type === 'text') {
+                $fields[] = '$table->text(\''.$block->getName().'\')';
+            }
+            // Add more field types as needed
         }
 
-        return implode("\n            ", array_filter($fields));
+        return implode(";\n            ", array_filter($fields)).';';
     }
 
     protected function getFeatureFields(): string
     {
         $fields = [];
         foreach ($this->features as $feature) {
-            $fields = array_merge($fields, $feature->getMigrations());
+            $migrations = $feature->getMigrations();
+            if (! empty($migrations)) {
+                $fields[] = '$table->'.implode(";\n            \$table->", $migrations);
+            }
         }
 
-        return implode("\n            ", array_filter($fields));
+        return implode(";\n            ", array_filter($fields)).';';
     }
 
     protected function getMigrationPath(): string
