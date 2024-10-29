@@ -7,18 +7,21 @@ namespace Moox\Builder\Commands;
 use Illuminate\Console\Command;
 use Moox\Builder\Builder\Actions\GenerateEntity;
 use Moox\Builder\Builder\Actions\PreviewEntity;
+use Moox\Builder\Builder\Blocks\MarkdownEditor;
+use Moox\Builder\Builder\Blocks\TitleWithSlug;
+use Moox\Builder\Builder\Features\SoftDelete;
 
 class BuildTestEntityCommand extends Command
 {
-    protected $signature = 'builder:build-test-entity {entityName} {--app} {--package}';
+    protected $signature = 'builder:build-test-entity';
 
     protected $description = 'Build a test entity with specified blocks and features';
 
     public function handle(): void
     {
-        $entityName = $this->argument('entityName');
-        $entityNamespace = $this->option('app') ? 'App' : 'Package';
-        $entityPath = $this->option('app') ? app_path() : base_path('packages');
+        $entityName = 'Blub';
+        $entityNamespace = 'App'; // or 'Package' if you want to test package generation
+        $entityPath = app_path(); // or base_path('packages') for package
 
         $blocks = $this->getBlocks();
         $features = $this->getFeatures();
@@ -34,13 +37,16 @@ class BuildTestEntityCommand extends Command
 
     protected function getBlocks(): array
     {
-        // Logic to toggle and return selected blocks
-        return [];
+        return [
+            new TitleWithSlug('title', 'slug', 'Title', 'The title'),
+            new MarkdownEditor('content', 'Content', 'The content'),
+        ];
     }
 
     protected function getFeatures(): array
     {
-        // Logic to toggle and return selected features
-        return [];
+        return [
+            new SoftDelete,
+        ];
     }
 }
