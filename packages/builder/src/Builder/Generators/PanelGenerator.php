@@ -11,9 +11,11 @@ class PanelGenerator extends AbstractGenerator
         $template = $this->loadStub('panel');
 
         $variables = [
+            'namespace' => 'App\\Providers',
             'class_name' => $this->entityName,
             'id' => strtolower($this->entityName),
             'path' => strtolower($this->entityName),
+            'plugin_namespace' => 'App\\Filament\\Plugins',
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);

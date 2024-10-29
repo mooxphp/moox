@@ -137,6 +137,7 @@ class ResourceGenerator extends AbstractGenerator
             'namespace' => $this->entityNamespace.'\\Resources\\Pages',
             'class_name' => $page.$this->entityName,
             'model' => $this->entityName,
+            'model_plural' => $this->getPluralModelName(),
             'resource' => $this->entityName.'Resource',
             'use_statements' => $this->formatPageUseStatements($page),
             'traits' => $this->formatPageTraits($page),
@@ -180,6 +181,10 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function getPagePath(string $page): string
     {
+        if ($page === 'List') {
+            return $this->entityPath.'/Resources/Pages/List'.$this->getPluralModelName().'.php';
+        }
+
         return $this->entityPath.'/Resources/Pages/'.$page.$this->entityName.'.php';
     }
 
@@ -206,5 +211,18 @@ class ResourceGenerator extends AbstractGenerator
         $methods = $this->getMethods('resource');
 
         return implode("\n\n    ", array_filter($methods));
+    }
+
+    protected function getPluralModelName(): string
+    {
+        $name = $this->entityName;
+        if (substr($name, -1) === 'y') {
+            return substr($name, 0, -1).'ies';
+        }
+        if (substr($name, -1) === 's') {
+            return $name.'es';
+        }
+
+        return $name.'s';
     }
 }
