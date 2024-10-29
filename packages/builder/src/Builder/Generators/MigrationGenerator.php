@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
+use Moox\Builder\Builder\Traits\HandlesIndentation;
+
 class MigrationGenerator extends AbstractGenerator
 {
+    use HandlesIndentation;
+
     public function __construct(
         string $entityName,
         string $entityNamespace,
@@ -79,12 +83,7 @@ class MigrationGenerator extends AbstractGenerator
             $this->getFeatureFields()
         );
 
-        // Add proper indentation (12 spaces) to each line
-        $indentedLines = array_map(function ($line) {
-            return str_repeat(' ', 12).trim($line);
-        }, $lines);
-
-        return implode("\n", $indentedLines);
+        return $this->formatWithIndentation($lines);
     }
 
     protected function getMigrationPath(): string
