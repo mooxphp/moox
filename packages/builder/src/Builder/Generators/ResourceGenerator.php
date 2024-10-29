@@ -117,7 +117,7 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function getResourcePath(): string
     {
-        return $this->entityPath.'/Resources/'.$this->entityName.'Resource.php';
+        return $this->entityPath.'/Filament/Resources/'.$this->entityName.'Resource.php';
     }
 
     protected function generateResourcePages(): void
@@ -182,10 +182,10 @@ class ResourceGenerator extends AbstractGenerator
     protected function getPagePath(string $page): string
     {
         if ($page === 'List') {
-            return $this->entityPath.'/Resources/Pages/List'.$this->getPluralModelName().'.php';
+            return $this->entityPath.'/Filament/Resources/Pages/List'.$this->getPluralModelName().'.php';
         }
 
-        return $this->entityPath.'/Resources/Pages/'.$page.$this->entityName.'.php';
+        return $this->entityPath.'/Filament/Resources/Pages/'.$page.$this->entityName.'.php';
     }
 
     protected function getFormSetup(): string

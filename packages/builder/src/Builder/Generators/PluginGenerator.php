@@ -62,6 +62,6 @@ class PluginGenerator extends AbstractGenerator
 
     protected function getPluginPath(): string
     {
-        return $this->entityPath.'/Plugins/'.$this->entityName.'Plugin.php';
+        return $this->entityPath.'/Filament/Plugins/'.$this->entityName.'Plugin.php';
     }
 }
