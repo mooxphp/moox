@@ -13,7 +13,7 @@ use Moox\Builder\Builder\Features\SoftDelete;
 
 class BuildTestEntityCommand extends Command
 {
-    protected $signature = 'builder:build-test-entity';
+    protected $signature = 'mooxbuilder:testrun';
 
     protected $description = 'Build a test entity with specified blocks and features';
 

@@ -17,7 +17,7 @@ trait GeneratorTrait
 
     protected function loadStub(string $name): string
     {
-        return file_get_contents(__DIR__."/../../Templates/{$name}.php.stub");
+        return file_get_contents(__DIR__."/../Templates/{$name}.php.stub");
     }
 
     protected function mergeUniqueArrays(array ...$arrays): array
