@@ -21,7 +21,7 @@ class ModelGenerator extends AbstractGenerator
         $template = $this->loadStub('model');
 
         $variables = [
-            'namespace' => $this->entityNamespace,
+            'namespace' => 'App\\Models',
             'class_name' => $this->entityName,
             'table' => $this->getTableName(),
             'use_statements' => $this->formatUseStatements(),
@@ -32,7 +32,31 @@ class ModelGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
+
+        // Post-process the content to remove unwanted empty lines
+        $content = $this->cleanupContent($content);
+
         $this->writeFile($this->getModelPath(), $content);
+    }
+
+    protected function cleanupContent(string $content): string
+    {
+        // Remove empty lines between class opening brace and first property
+        $content = preg_replace("/class (.+) extends Model\n{\n\n+/", "class $1 extends Model\n{\n", $content);
+
+        // Remove empty casts array entirely
+        $content = preg_replace("/\n\n    protected \\\$casts = \[\n        \n    \];\n/", '', $content);
+
+        // Remove empty traits
+        $content = preg_replace("/\n    \n/", "\n", $content);
+
+        // Remove multiple empty lines
+        $content = preg_replace("/\n\n\n+/", "\n\n", $content);
+
+        // Remove empty line at the end of the class
+        $content = preg_replace("/\n\n}/", "\n}", $content);
+
+        return $content;
     }
 
     protected function getTableName(): string

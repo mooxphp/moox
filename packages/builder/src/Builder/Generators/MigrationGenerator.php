@@ -22,9 +22,7 @@ class MigrationGenerator extends AbstractGenerator
 
         $variables = [
             'table' => $this->getTableName(),
-            'base_fields' => $this->getBaseFields(),
-            'custom_fields' => $this->getCustomFields(),
-            'feature_fields' => $this->getFeatureFields(),
+            'fields' => $this->formatMigrationContent(),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
@@ -36,38 +34,57 @@ class MigrationGenerator extends AbstractGenerator
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $this->entityName)).'s';
     }
 
-    protected function getBaseFields(): string
+    protected function getBaseFields(): array
     {
-        return '$table->id();
-            $table->timestamps();';
+        return [
+            '$table->id();',
+            '$table->timestamps();',
+        ];
     }
 
-    protected function getCustomFields(): string
+    protected function getCustomFields(): array
     {
         $fields = [];
         foreach ($this->blocks as $block) {
             if (method_exists($block, 'migration')) {
-                $fields[] = $block->migration();
+                $blockFields = explode("\n", $block->migration());
+                $fields = array_merge($fields, $blockFields);
             } else {
                 $type = $block->getMigrationType();
                 $fields[] = '$table->'.$type.'(\''.$block->getName().'\');';
             }
         }
 
-        return implode("\n            ", array_filter($fields)).';';
+        return $fields;
     }
 
-    protected function getFeatureFields(): string
+    protected function getFeatureFields(): array
     {
         $fields = [];
         foreach ($this->features as $feature) {
             $migrations = $feature->getMigrations();
             if (! empty($migrations)) {
-                $fields[] = '$table->'.implode(";\n            \$table->", $migrations);
+                $fields = array_merge($fields, $migrations);
             }
         }
 
-        return implode(";\n            ", array_filter($fields));
+        return $fields;
+    }
+
+    protected function formatMigrationContent(): string
+    {
+        $lines = array_merge(
+            $this->getBaseFields(),
+            $this->getCustomFields(),
+            $this->getFeatureFields()
+        );
+
+        // Add proper indentation (12 spaces) to each line
+        $indentedLines = array_map(function ($line) {
+            return str_repeat(' ', 12).trim($line);
+        }, $lines);
+
+        return implode("\n", $indentedLines);
     }
 
     protected function getMigrationPath(): string

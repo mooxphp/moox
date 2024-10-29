@@ -6,21 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('{{ table }}', function (Blueprint $table) {
-            {{ base_fields }}
-            {{ custom_fields }}
-            {{ feature_fields }}
+{{ fields }}
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('{{ table }}');
