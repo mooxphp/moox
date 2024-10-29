@@ -54,9 +54,7 @@ class MigrationGenerator extends AbstractGenerator
             }
         }
 
-        $result = implode("\n            ", array_filter($fields));
-
-        return rtrim($result, ";\n");
+        return implode("\n            ", array_filter($fields)).';';
     }
 
     protected function getFeatureFields(): string
