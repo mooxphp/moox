@@ -38,10 +38,8 @@ class MigrationGenerator extends AbstractGenerator
 
     protected function getBaseFields(): string
     {
-        return '
-            $table->id();
-            $table->timestamps();
-        ';
+        return '$table->id();
+            $table->timestamps();';
     }
 
     protected function getCustomFields(): string
@@ -69,7 +67,7 @@ class MigrationGenerator extends AbstractGenerator
             }
         }
 
-        return implode(";\n            ", array_filter($fields)).';';
+        return implode(";\n            ", array_filter($fields));
     }
 
     protected function getMigrationPath(): string
