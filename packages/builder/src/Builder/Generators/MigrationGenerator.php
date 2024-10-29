@@ -41,7 +41,6 @@ class MigrationGenerator extends AbstractGenerator
             } elseif ($type === 'text') {
                 $fields[] = '$table->text(\''.$block->getName().'\')';
             }
-            // Add more field types as needed
         }
 
         return implode(";\n            ", array_filter($fields)).';';
