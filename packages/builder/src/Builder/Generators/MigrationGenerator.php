@@ -61,6 +61,6 @@ class MigrationGenerator extends AbstractGenerator
 
     protected function getMigrationPath(): string
     {
-        return $this->entityPath.'/Database/Migrations/'.date('Y_m_d_His').'_create_'.$this->getTableName().'_table.php';
+        return base_path('database/migrations/').date('Y_m_d_His').'_create_'.$this->getTableName().'_table.php';
     }
 }

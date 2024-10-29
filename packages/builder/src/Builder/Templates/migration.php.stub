@@ -13,13 +13,9 @@ return new class extends Migration
     {
         Schema::create('{{ table }}', function (Blueprint $table) {
             $table->id();
-
             {{ base_fields }}
-
             {{ custom_fields }}
-
             {{ feature_fields }}
-
             $table->timestamps();
         });
     }
