@@ -39,14 +39,14 @@ class BuildTestEntityCommand extends Command
     {
         return [
             new TitleWithSlug('title', 'slug', 'Title', 'The title'),
-            new MarkdownEditor('content', 'Content', 'The content'),
+            //new MarkdownEditor('content', 'Content', 'The content'),
         ];
     }
 
     protected function getFeatures(): array
     {
         return [
-            new SoftDelete,
+            //new SoftDelete,
         ];
     }
 }
