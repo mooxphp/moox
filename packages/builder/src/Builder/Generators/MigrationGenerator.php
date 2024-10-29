@@ -28,7 +28,10 @@ class MigrationGenerator extends AbstractGenerator
 
     protected function getBaseFields(): string
     {
-        return '';
+        return '
+            $table->id();
+            $table->timestamps();
+        ';
     }
 
     protected function getCustomFields(): string
@@ -36,11 +39,8 @@ class MigrationGenerator extends AbstractGenerator
         $fields = [];
         foreach ($this->blocks as $block) {
             $type = $block->getMigrationType();
-            if ($type === 'string') {
-                $fields[] = '$table->string(\''.$block->getName().'\')';
-            } elseif ($type === 'text') {
-                $fields[] = '$table->text(\''.$block->getName().'\')';
-            }
+            $field = '$table->'.$type.'(\''.$block->getName().'\')';
+            $fields[] = $field;
         }
 
         return implode(";\n            ", array_filter($fields)).';';
