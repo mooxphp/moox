@@ -31,7 +31,7 @@ class TitleWithSlug extends AbstractBlock
         $this->setNullable($nullable);
     }
 
-    protected function getMigrationType(): string
+    public function getMigrationType(): string
     {
         return 'string';
     }
