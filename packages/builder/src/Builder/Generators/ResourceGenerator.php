@@ -134,13 +134,27 @@ class ResourceGenerator extends AbstractGenerator
         $variables = [
             'namespace' => $this->entityNamespace.'\\Resources\\Pages',
             'class_name' => $page.$this->entityName,
+            'model' => $this->entityName,
             'resource' => $this->entityName.'Resource',
+            'use_statements' => $this->formatPageUseStatements($page),
             'traits' => $this->formatPageTraits($page),
             'methods' => $this->formatPageMethods($page),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
         $this->writeFile($this->getPagePath($page), $content);
+    }
+
+    protected function formatPageUseStatements(string $page): string
+    {
+        $statements = array_merge(
+            [
+                'use '.$this->entityNamespace.'\\Resources\\'.$this->entityName.'Resource',
+            ],
+            $this->getUseStatements('pages', strtolower($page))
+        );
+
+        return implode("\n", array_unique($statements));
     }
 
     protected function formatPageTraits(string $page): string
