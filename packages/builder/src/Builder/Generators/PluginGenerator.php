@@ -6,6 +6,16 @@ namespace Moox\Builder\Builder\Generators;
 
 class PluginGenerator extends AbstractGenerator
 {
+    public function __construct(
+        string $entityName,
+        string $entityNamespace,
+        string $entityPath,
+        array $blocks,
+        array $features
+    ) {
+        parent::__construct($entityName, $entityNamespace, $entityPath, $blocks, $features);
+    }
+
     public function generate(): void
     {
         $template = $this->loadStub('plugin');
