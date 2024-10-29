@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Providers;
+
+use Filament\Panel;
+use Filament\PanelProvider;
+use App\Filament\Plugins\\{$entityName}Plugin;
+
+class {{ class_name }}PanelProvider extends PanelProvider
+{
+    public function panel(Panel \$panel): Panel
+    {
+        return \$panel
+            ->id('{{ id }}')
+            ->path('{{ path }}')
+            ->plugin(new {{ class_name }}Plugin())
+            ->login();
+    }
+}

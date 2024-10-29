@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Features;
 
-use Moox\Builder\Builder\Generators\Feature as FeatureInterface;
-
-abstract class AbstractFeature implements FeatureInterface
+abstract class AbstractFeature
 {
     protected array $useStatements = [
         'resource' => [

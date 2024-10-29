@@ -2,15 +2,17 @@
 
 namespace Moox\Builder\Builder\Generators;
 
-class ResourceGenerator
+class PanelGenerator
 {
     // get all needed information from the BuildTestEntityCommand
 
-    // use the resource.php.stub file as template
+    // use the panel.php.stub file as template
 
     // combine all features and blocks into arrays to be implemented in the migration
 
     // care that the arrays do not contain duplicates, that was a problem in a previous version
 
-    // generate the resource file in the given entity path (app or package)
+    // generate the migration file in the given entity path (app or package)
+
+    // generate the panel file in the given entity path (app or package)
 }
