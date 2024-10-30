@@ -185,7 +185,6 @@ return [
         /*
          * Package Service Providers...
          */
-        App\Providers\BlubPanelProvider::class,
 
         /*
          * Application Service Providers...

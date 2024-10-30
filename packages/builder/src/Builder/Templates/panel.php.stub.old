@@ -1,3 +1,5 @@
+Not used anymore, now handled by PreviewPanelProvider
+
 <?php
 
 namespace {{ namespace }};

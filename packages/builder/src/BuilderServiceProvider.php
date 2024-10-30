@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder;
 
-use Moox\Builder\Builder\Support\PanelRegistrar;
 use Moox\Builder\Commands\InstallCommand;
+use Moox\Builder\Providers\PreviewPanelProvider;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -32,7 +32,7 @@ class BuilderServiceProvider extends PackageServiceProvider
 
     public function register(): void
     {
-        // $this->app->singleton(PanelRegistrar::class);
+        $this->app->register(PreviewPanelProvider::class);
     }
 
     public function boot(): void

@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Actions;
 
 use Illuminate\Support\Facades\Artisan;
-use Moox\Builder\Builder\Generators\PanelGenerator;
-use Moox\Builder\Builder\Support\PanelRegistrar;
+use Moox\Builder\Builder\Generators\ResourceGenerator;
 
 class PreviewEntity
 {
@@ -28,16 +27,20 @@ class PreviewEntity
 
     public function execute(): void
     {
-        (new PanelGenerator($this->entityName, $this->entityNamespace, $this->entityPath))->generate();
+        // Generate resource in Preview namespace
+        (new ResourceGenerator(
+            $this->entityName,
+            'App\\Preview',
+            app_path('Preview'),
+            [],
+            []
+        ))->generate();
 
         if ($this->isPackageContext()) {
             $this->publishMigrations();
         }
 
         $this->runMigrations();
-
-        $panelClass = $this->entityNamespace.'\\Providers\\'.$this->entityName.'PanelProvider';
-        PanelRegistrar::register($panelClass);
     }
 
     protected function isPackageContext(): bool

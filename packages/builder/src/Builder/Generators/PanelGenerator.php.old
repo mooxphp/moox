@@ -1,4 +1,5 @@
-<?php
+Not used anymore, now handled by PreviewPanelProvider
+<//?php
 
 declare(strict_types=1);
 
