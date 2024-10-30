@@ -54,8 +54,9 @@ class TitleWithSlug extends AbstractBlock
 
     public function tableFilter(): string
     {
-        return "TextFilter::make('{$this->titleFieldName}'),
-                TextFilter::make('{$this->slugFieldName}')";
+        // return "TextFilter::make('{$this->titleFieldName}'),
+        //         TextFilter::make('{$this->slugFieldName}')";
+        return '';
     }
 
     public function migration(): array

@@ -19,7 +19,6 @@ class {{ class_name }}Resource extends Resource
     public static function form(Form $form): Form
     {
         {{ form_setup }}
-
         return $form->schema([
             {{ form_schema }}
         ]);
@@ -28,7 +27,6 @@ class {{ class_name }}Resource extends Resource
     public static function table(Table $table): Table
     {
         {{ table_setup }}
-
         return $table
             ->columns([
                 {{ table_columns }}

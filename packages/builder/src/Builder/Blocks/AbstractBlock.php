@@ -153,7 +153,7 @@ abstract class AbstractBlock
     protected function applyCommonFormFieldAttributes(string $field): string
     {
         $field .= "->label('{$this->label}')";
-        $field .= "->helperText('{$this->description}')";
+        //$field .= "->helperText('{$this->description}')";
 
         if ($this->nullable) {
             $field .= '->nullable()';

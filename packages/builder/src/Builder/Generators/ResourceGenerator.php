@@ -226,28 +226,8 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function formatMethods(): string
     {
-        $methods = array_merge(
-            [
-                $this->getResourcePagesMethod(),
-            ],
-            $this->getMethods('resource')
-        );
+        $methods = $this->getMethods('resource');
 
         return implode("\n\n    ", array_filter($methods));
-    }
-
-    protected function getResourcePagesMethod(): string
-    {
-        return <<<PHP
-public static function getPages(): array
-{
-    return [
-        'index' => Pages\\List{$this->getPluralModelName()}::route('/'),
-        'create' => Pages\\Create{$this->entityName}::route('/create'),
-        'edit' => Pages\\Edit{$this->entityName}::route('/{record}/edit'),
-        'view' => Pages\\View{$this->entityName}::route('/{record}'),
-    ];
-}
-PHP;
     }
 }
