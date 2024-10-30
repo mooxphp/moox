@@ -6,12 +6,14 @@ namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Traits\HandlesContentCleanup;
 use Moox\Builder\Builder\Traits\HandlesIndentation;
+use Moox\Builder\Builder\Traits\HandlesNamespacing;
 use Moox\Builder\Builder\Traits\HandlesPluralization;
 
 class ResourceGenerator extends AbstractGenerator
 {
     use HandlesContentCleanup;
     use HandlesIndentation;
+    use HandlesNamespacing;
     use HandlesPluralization;
 
     public function __construct(
@@ -29,9 +31,10 @@ class ResourceGenerator extends AbstractGenerator
         $template = $this->loadStub('resource');
 
         $variables = [
-            'namespace' => $this->entityNamespace.'\\Resources',
+            'namespace' => $this->getFilamentNamespace('Resources'),
             'class_name' => $this->entityName,
             'model' => $this->entityName,
+            'model_plural' => $this->getPluralModelName(),
             'navigation_icon' => $this->getNavigationIcon(),
             'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),
@@ -126,7 +129,7 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function getResourcePath(): string
     {
-        return $this->entityPath.'/Filament/Resources/'.$this->entityName.'Resource.php';
+        return $this->getFilamentPath('Resources').'/'.$this->entityName.'Resource.php';
     }
 
     protected function generateResourcePages(): void
@@ -142,8 +145,16 @@ class ResourceGenerator extends AbstractGenerator
     {
         $template = $this->loadStub('pages/'.strtolower($page));
 
+        $parentClass = match ($page) {
+            'List' => 'ListRecords',
+            'Create' => 'CreateRecord',
+            'Edit' => 'EditRecord',
+            'View' => 'ViewRecord',
+            default => 'Record'
+        };
+
         $variables = [
-            'namespace' => $this->entityNamespace.'\\Resources\\Pages',
+            'namespace' => str_replace('/', '\\', $this->getFilamentNamespace('Resources\\Pages')),
             'class_name' => $page.$this->entityName,
             'model' => $this->entityName,
             'model_plural' => $this->getPluralModelName(),
@@ -154,7 +165,7 @@ class ResourceGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $content = $this->cleanupContent($content, $page.'Record');
+        $content = $this->cleanupContent($content, $parentClass);
         $this->writeFile($this->getPagePath($page), $content);
     }
 
@@ -162,7 +173,7 @@ class ResourceGenerator extends AbstractGenerator
     {
         $statements = array_merge(
             [
-                'use '.$this->entityNamespace.'\\Resources\\'.$this->entityName.'Resource',
+                'use '.$this->getFilamentNamespace('Resources').'\\'.$this->entityName.'Resource',
             ],
             $this->getUseStatements('pages', strtolower($page))
         );
@@ -192,10 +203,10 @@ class ResourceGenerator extends AbstractGenerator
     protected function getPagePath(string $page): string
     {
         if ($page === 'List') {
-            return $this->entityPath.'/Filament/Resources/Pages/List'.$this->getPluralModelName().'.php';
+            return $this->getFilamentPath('Resources/Pages').'/List'.$this->getPluralModelName().'.php';
         }
 
-        return $this->entityPath.'/Filament/Resources/Pages/'.$page.$this->entityName.'.php';
+        return $this->getFilamentPath('Resources/Pages').'/'.$page.$this->entityName.'.php';
     }
 
     protected function getFormSetup(): string
@@ -215,8 +226,28 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function formatMethods(): string
     {
-        $methods = $this->getMethods('resource');
+        $methods = array_merge(
+            [
+                $this->getResourcePagesMethod(),
+            ],
+            $this->getMethods('resource')
+        );
 
         return implode("\n\n    ", array_filter($methods));
+    }
+
+    protected function getResourcePagesMethod(): string
+    {
+        return <<<PHP
+public static function getPages(): array
+{
+    return [
+        'index' => Pages\\List{$this->getPluralModelName()}::route('/'),
+        'create' => Pages\\Create{$this->entityName}::route('/create'),
+        'edit' => Pages\\Edit{$this->entityName}::route('/{record}/edit'),
+        'view' => Pages\\View{$this->entityName}::route('/{record}'),
+    ];
+}
+PHP;
     }
 }

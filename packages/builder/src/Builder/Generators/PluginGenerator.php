@@ -4,24 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
+use Moox\Builder\Builder\Traits\HandlesNamespacing;
+
 class PluginGenerator extends AbstractGenerator
 {
-    public function __construct(
-        string $entityName,
-        string $entityNamespace,
-        string $entityPath,
-        array $blocks,
-        array $features
-    ) {
-        parent::__construct($entityName, $entityNamespace, $entityPath, $blocks, $features);
-    }
+    use HandlesNamespacing;
 
     public function generate(): void
     {
         $template = $this->loadStub('plugin');
 
         $variables = [
-            'namespace' => $this->entityNamespace,
+            'namespace' => $this->getFilamentNamespace('Plugins'),
             'class_name' => $this->entityName,
             'id' => strtolower($this->entityName),
             'use_statements' => $this->formatUseStatements(),
@@ -65,6 +59,6 @@ class PluginGenerator extends AbstractGenerator
 
     protected function getPluginPath(): string
     {
-        return $this->entityPath.'/Filament/Plugins/'.$this->entityName.'Plugin.php';
+        return $this->getFilamentPath('Plugins').'/'.$this->entityName.'Plugin.php';
     }
 }

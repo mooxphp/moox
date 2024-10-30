@@ -6,11 +6,13 @@ namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Traits\HandlesContentCleanup;
 use Moox\Builder\Builder\Traits\HandlesIndentation;
+use Moox\Builder\Builder\Traits\HandlesNamespacing;
 
 class ModelGenerator extends AbstractGenerator
 {
     use HandlesContentCleanup;
     use HandlesIndentation;
+    use HandlesNamespacing;
 
     public function __construct(
         string $entityName,
@@ -27,7 +29,7 @@ class ModelGenerator extends AbstractGenerator
         $template = $this->loadStub('model');
 
         $variables = [
-            'namespace' => 'App\\Models',
+            'namespace' => $this->getModelNamespace(),
             'class_name' => $this->entityName,
             'table' => $this->getTableName(),
             'use_statements' => $this->formatUseStatements(),
@@ -97,8 +99,21 @@ class ModelGenerator extends AbstractGenerator
         return implode("\n\n    ", array_filter($methods));
     }
 
+    protected function getModelNamespace(): string
+    {
+        if ($this->isPackageContext()) {
+            return $this->entityNamespace;
+        }
+
+        return 'App\\Models';
+    }
+
     protected function getModelPath(): string
     {
+        if ($this->isPackageContext()) {
+            return $this->entityPath.'/'.$this->entityName.'.php';
+        }
+
         return $this->entityPath.'/Models/'.$this->entityName.'.php';
     }
 }

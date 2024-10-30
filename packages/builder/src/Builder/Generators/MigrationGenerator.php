@@ -5,20 +5,12 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Traits\HandlesIndentation;
+use Moox\Builder\Builder\Traits\HandlesNamespacing;
 
 class MigrationGenerator extends AbstractGenerator
 {
     use HandlesIndentation;
-
-    public function __construct(
-        string $entityName,
-        string $entityNamespace,
-        string $entityPath,
-        array $blocks,
-        array $features
-    ) {
-        parent::__construct($entityName, $entityNamespace, $entityPath, $blocks, $features);
-    }
+    use HandlesNamespacing;
 
     public function generate(): void
     {
@@ -31,6 +23,15 @@ class MigrationGenerator extends AbstractGenerator
 
         $content = $this->replaceTemplateVariables($template, $variables);
         $this->writeFile($this->getMigrationPath(), $content);
+    }
+
+    protected function getMigrationPath(): string
+    {
+        if ($this->isPackageContext()) {
+            return $this->entityPath.'/database/migrations/create_'.$this->getTableName().'_table.php.stub';
+        }
+
+        return base_path('database/migrations/').date('Y_m_d_His').'_create_'.$this->getTableName().'_table.php';
     }
 
     protected function getTableName(): string
@@ -88,10 +89,5 @@ class MigrationGenerator extends AbstractGenerator
         );
 
         return $this->formatWithIndentation($lines);
-    }
-
-    protected function getMigrationPath(): string
-    {
-        return base_path('database/migrations/').date('Y_m_d_His').'_create_'.$this->getTableName().'_table.php';
     }
 }

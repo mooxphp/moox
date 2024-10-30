@@ -20,8 +20,8 @@ trait HandlesContentCleanup
         // Remove multiple empty lines
         $content = preg_replace("/\n\n\n+/", "\n\n", $content);
 
-        // Remove empty line after class opening brace
-        $content = preg_replace("/class (.+) extends {$classType}\n{(\n\n+)/", "class $1 extends {$classType}\n{\n", $content);
+        // Remove empty line after class opening brace for all class types
+        $content = preg_replace("/class (.+) extends .*\n{(\n+)/", "class $1 extends $classType\n{\n", $content);
 
         // Remove empty line at the end of the class
         $content = preg_replace("/\n\n}/", "\n}", $content);
