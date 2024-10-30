@@ -6,7 +6,6 @@ namespace Moox\Builder\Builder\Actions;
 
 use Moox\Builder\Builder\Generators\MigrationGenerator;
 use Moox\Builder\Builder\Generators\ModelGenerator;
-use Moox\Builder\Builder\Generators\PanelGenerator;
 use Moox\Builder\Builder\Generators\PluginGenerator;
 use Moox\Builder\Builder\Generators\ResourceGenerator;
 
@@ -38,10 +37,9 @@ class GenerateEntity
 
     public function execute(): void
     {
+        (new MigrationGenerator($this->entityName))->generate();
         (new ModelGenerator($this->entityName, $this->entityNamespace, $this->entityPath, $this->blocks, $this->features))->generate();
         (new ResourceGenerator($this->entityName, $this->entityNamespace, $this->entityPath, $this->blocks, $this->features))->generate();
-        (new MigrationGenerator($this->entityName, $this->entityNamespace, $this->entityPath, $this->blocks, $this->features))->generate();
-        (new PluginGenerator($this->entityName, $this->entityNamespace, $this->entityPath, $this->blocks, $this->features))->generate();
-        (new PanelGenerator($this->entityName, $this->entityNamespace, $this->entityPath, $this->blocks, $this->features))->generate();
+        (new PluginGenerator($this->entityName, $this->entityNamespace, $this->entityPath))->generate();
     }
 }

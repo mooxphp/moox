@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder;
 
+use Moox\Builder\Builder\Support\PanelRegistrar;
 use Moox\Builder\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -27,6 +28,11 @@ class BuilderServiceProvider extends PackageServiceProvider
                 'create_nested_taxonomyables_table',
             ])
             ->hasCommand(InstallCommand::class);
+    }
+
+    public function register(): void
+    {
+        // $this->app->singleton(PanelRegistrar::class);
     }
 
     public function boot(): void

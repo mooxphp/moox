@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Actions;
 
+use Illuminate\Support\Facades\Artisan;
+use Moox\Builder\Builder\Generators\PanelGenerator;
+use Moox\Builder\Builder\Support\PanelRegistrar;
+
 class PreviewEntity
 {
     protected string $entityName;
@@ -24,9 +28,34 @@ class PreviewEntity
 
     public function execute(): void
     {
-        // Logic to create a panel for the entity
-        // Logic to publish the migration of the entity
-        // Logic to run the migration of the entity
-        // Logic to enable the panel
+        (new PanelGenerator($this->entityName, $this->entityNamespace, $this->entityPath))->generate();
+
+        if ($this->isPackageContext()) {
+            $this->publishMigrations();
+        }
+
+        $this->runMigrations();
+
+        $panelClass = $this->entityNamespace.'\\Providers\\'.$this->entityName.'PanelProvider';
+        PanelRegistrar::register($panelClass);
+    }
+
+    protected function isPackageContext(): bool
+    {
+        return str_contains($this->entityNamespace, '\\');
+    }
+
+    protected function publishMigrations(): void
+    {
+        $packageName = explode('\\', $this->entityNamespace)[0];
+        Artisan::call('vendor:publish', [
+            '--provider' => $this->entityNamespace.'\\Providers\\'.$packageName.'ServiceProvider',
+            '--tag' => 'migrations',
+        ]);
+    }
+
+    protected function runMigrations(): void
+    {
+        Artisan::call('migrate');
     }
 }

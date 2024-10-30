@@ -4,7 +4,18 @@ namespace {{ namespace }};
 
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Http\Middleware\Authenticate;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\AuthenticateSession;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 use {{ plugin_namespace }}\{{ class_name }}Plugin;
+{{ auth_imports }}
 
 class {{ class_name }}PanelProvider extends PanelProvider
 {
@@ -12,8 +23,22 @@ class {{ class_name }}PanelProvider extends PanelProvider
     {
         return $panel
             ->id('{{ id }}')
-            ->path('{{ path }}')
+            ->path('{{ id }}')
+            {{ auth_config }}
             ->plugin(new {{ class_name }}Plugin())
-            ->login();
+            ->middleware([
+                EncryptCookies::class,
+                AddQueuedCookiesToResponse::class,
+                StartSession::class,
+                AuthenticateSession::class,
+                ShareErrorsFromSession::class,
+                VerifyCsrfToken::class,
+                SubstituteBindings::class,
+                DisableBladeIconComponents::class,
+                DispatchServingFilamentEvent::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ]);
     }
 }

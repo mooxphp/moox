@@ -22,10 +22,10 @@ abstract class AbstractGenerator
 
     public function __construct(
         string $entityName,
-        string $entityNamespace,
-        string $entityPath,
-        array $blocks,
-        array $features
+        string $entityNamespace = '',
+        string $entityPath = '',
+        array $blocks = [],
+        array $features = []
     ) {
         $this->entityName = $entityName;
         $this->entityNamespace = $entityNamespace;
