@@ -115,22 +115,11 @@ abstract class AbstractBlock
         return $this;
     }
 
-    public function migration(): string
+    public function migration(): array|string
     {
         $type = $this->getMigrationType();
-        $migration = "\$table->{$type}('{$this->name}')";
 
-        if ($this->nullable) {
-            $migration .= '->nullable()';
-        }
-
-        if ($this->default !== null) {
-            $migration .= "->default({$this->getDefaultValue()})";
-        }
-
-        $migration .= $this->getExtraMigrationAttributes();
-
-        return $migration.';';
+        return '$table->'.$type.'(\''.$this->getName().'\');';
     }
 
     abstract public function getMigrationType(): string;

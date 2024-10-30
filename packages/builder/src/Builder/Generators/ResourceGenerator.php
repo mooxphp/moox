@@ -4,8 +4,16 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
+use Moox\Builder\Builder\Traits\HandlesContentCleanup;
+use Moox\Builder\Builder\Traits\HandlesIndentation;
+use Moox\Builder\Builder\Traits\HandlesPluralization;
+
 class ResourceGenerator extends AbstractGenerator
 {
+    use HandlesContentCleanup;
+    use HandlesIndentation;
+    use HandlesPluralization;
+
     public function __construct(
         string $entityName,
         string $entityNamespace,
@@ -40,8 +48,9 @@ class ResourceGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->getResourcePath(), $content);
+        $content = $this->cleanupContent($content, 'Resource');
 
+        $this->writeFile($this->getResourcePath(), $content);
         $this->generateResourcePages();
     }
 
@@ -77,7 +86,7 @@ class ResourceGenerator extends AbstractGenerator
             $fields[] = $block->formField();
         }
 
-        return implode(",\n                ", array_filter($fields));
+        return $this->formatWithIndentation(array_filter($fields), 3);
     }
 
     protected function getTableColumns(): string
@@ -87,7 +96,7 @@ class ResourceGenerator extends AbstractGenerator
             $columns[] = $block->tableColumn();
         }
 
-        return implode(",\n                ", array_filter($columns));
+        return $this->formatWithIndentation(array_filter($columns), 3);
     }
 
     protected function getTableActions(): string
@@ -97,7 +106,7 @@ class ResourceGenerator extends AbstractGenerator
             $actions = array_merge($actions, $feature->getActions());
         }
 
-        return implode(",\n                ", array_filter($actions));
+        return $this->formatWithIndentation(array_filter($actions), 3);
     }
 
     protected function getTableFilters(): string
@@ -107,7 +116,7 @@ class ResourceGenerator extends AbstractGenerator
             $filters[] = $block->tableFilter();
         }
 
-        return implode(",\n                ", array_filter($filters));
+        return $this->formatWithIndentation(array_filter($filters), 3);
     }
 
     protected function getNavigationIcon(): string
@@ -145,6 +154,7 @@ class ResourceGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
+        $content = $this->cleanupContent($content, $page.'Record');
         $this->writeFile($this->getPagePath($page), $content);
     }
 
@@ -190,19 +200,16 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function getFormSetup(): string
     {
-        // Implement logic to set up the form, if needed
         return '';
     }
 
     protected function getTableSetup(): string
     {
-        // Implement logic to set up the table, if needed
         return '';
     }
 
     protected function getTableBulkActions(): string
     {
-        // Implement logic to get table bulk actions, if needed
         return '';
     }
 
@@ -211,18 +218,5 @@ class ResourceGenerator extends AbstractGenerator
         $methods = $this->getMethods('resource');
 
         return implode("\n\n    ", array_filter($methods));
-    }
-
-    protected function getPluralModelName(): string
-    {
-        $name = $this->entityName;
-        if (substr($name, -1) === 'y') {
-            return substr($name, 0, -1).'ies';
-        }
-        if (substr($name, -1) === 's') {
-            return $name.'es';
-        }
-
-        return $name.'s';
     }
 }

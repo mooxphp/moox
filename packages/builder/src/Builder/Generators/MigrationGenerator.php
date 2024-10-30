@@ -51,8 +51,12 @@ class MigrationGenerator extends AbstractGenerator
         $fields = [];
         foreach ($this->blocks as $block) {
             if (method_exists($block, 'migration')) {
-                $blockFields = explode("\n", $block->migration());
-                $fields = array_merge($fields, $blockFields);
+                $blockFields = $block->migration();
+                if (is_array($blockFields)) {
+                    $fields = array_merge($fields, $blockFields);
+                } else {
+                    $fields[] = $blockFields;
+                }
             } else {
                 $type = $block->getMigrationType();
                 $fields[] = '$table->'.$type.'(\''.$block->getName().'\');';

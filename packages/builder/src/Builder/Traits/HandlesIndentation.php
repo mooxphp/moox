@@ -10,6 +10,6 @@ trait HandlesIndentation
     {
         $indent = str_repeat(' ', $level * 4);
 
-        return $indent.implode("\n".$indent, array_filter($lines));
+        return implode("\n".$indent, array_filter($lines));
     }
 }

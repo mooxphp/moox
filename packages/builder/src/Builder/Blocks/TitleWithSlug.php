@@ -58,10 +58,12 @@ class TitleWithSlug extends AbstractBlock
                 TextFilter::make('{$this->slugFieldName}')";
     }
 
-    public function migration(): string
+    public function migration(): array
     {
-        return '$table->string(\''.$this->titleFieldName.'\');
-$table->string(\''.$this->slugFieldName.'\')->unique()';
+        return [
+            '$table->string(\''.$this->titleFieldName.'\');',
+            '$table->string(\''.$this->slugFieldName.'\')->unique();',
+        ];
     }
 
     public function modelAttribute(): string

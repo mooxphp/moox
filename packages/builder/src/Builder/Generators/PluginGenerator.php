@@ -36,21 +36,24 @@ class PluginGenerator extends AbstractGenerator
 
     protected function formatUseStatements(): string
     {
-        $statements = $this->getUseStatements('plugin');
+        $statements = array_merge(
+            $this->getUseStatements('plugin'),
+            [
+                'use '.$this->entityNamespace.'\\Filament\\Resources\\'.$this->entityName.'Resource;',
+            ]
+        );
 
         return implode("\n", array_unique($statements));
     }
 
     protected function getResources(): string
     {
-        // Implement logic to get resources
-        return '';
+        return $this->entityName.'Resource::class';
     }
 
     protected function getBootMethods(): string
     {
-        // Implement logic to get boot methods
-        return '';
+        return '//';
     }
 
     protected function formatMethods(): string
