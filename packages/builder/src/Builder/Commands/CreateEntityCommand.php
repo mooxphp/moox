@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Commands;
 
+use Moox\Builder\Builder\PresetRegistry;
 use Moox\Builder\Builder\Services\EntityGenerator;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
-    protected $signature = 'builder:create-entity {name} {--package=} {--preview} {--app}';
+    protected $signature = 'builder:create-entity {name} {--package=} {--preview} {--app} {--preset=}';
 
     protected $description = 'Create a new entity with model, resource and plugin';
 
@@ -18,6 +19,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $package = $this->option('package');
         $preview = $this->option('preview');
         $app = $this->option('app');
+        $presetName = $this->option('preset');
 
         if ($app && $package) {
             $this->error('Cannot specify both --app and --package options');
@@ -25,10 +27,24 @@ class CreateEntityCommand extends AbstractBuilderCommand
             return;
         }
 
+        if (! $presetName) {
+            $presetName = $this->choice(
+                'Which preset would you like to use?',
+                PresetRegistry::getAvailablePresets(),
+                'simple-item'
+            );
+        }
+
+        $preset = PresetRegistry::getPreset($presetName);
+        if (! $preset) {
+            $this->error("Preset '{$presetName}' not found. Available presets: ".implode(', ', PresetRegistry::getAvailablePresets()));
+
+            return;
+        }
+
         $context = $this->createContext($name, $package, $preview);
+        (new EntityGenerator($context, $preset->getBlocks(), $preset->getFeatures()))->execute();
 
-        (new EntityGenerator($context, [], []))->execute();
-
-        $this->info("Entity {$name} created successfully!");
+        $this->info("Entity {$name} created successfully using preset '{$presetName}'!");
     }
 }
