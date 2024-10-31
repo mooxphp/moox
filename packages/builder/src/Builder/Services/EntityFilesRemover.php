@@ -25,9 +25,25 @@ class EntityFilesRemover extends AbstractService
             $this->context->getPluginPath(),
         ];
 
+        $migrationPattern = database_path('migrations/*_create_'.$this->context->getTableName().'_table.php');
+        $migrationFiles = glob($migrationPattern);
+        $paths = array_merge($paths, $migrationFiles);
+
+        $resourceBasePath = dirname($this->context->getResourcePath()).'/Pages';
+        if (File::exists($resourceBasePath)) {
+            $paths[] = $resourceBasePath.'/List'.$this->context->getPluralModelName().'.php';
+            $paths[] = $resourceBasePath.'/Create'.$this->context->getEntityName().'.php';
+            $paths[] = $resourceBasePath.'/Edit'.$this->context->getEntityName().'.php';
+            $paths[] = $resourceBasePath.'/View'.$this->context->getEntityName().'.php';
+        }
+
         foreach ($paths as $path) {
             if (File::exists($path)) {
-                File::delete($path);
+                if (is_dir($path)) {
+                    File::deleteDirectory($path);
+                } else {
+                    File::delete($path);
+                }
             }
         }
     }
