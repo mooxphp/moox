@@ -55,11 +55,11 @@ class PreviewBuildContext extends AbstractBuildContext
 
     public function getModelNamespace(): string
     {
-        return 'App\\Builder\\Models';
+        return 'App\\Models';
     }
 
-    public function getResourceNamespace(): string
+    public function getModelPath(): string
     {
-        return 'App\\Builder\\Resources';
+        return app_path('Models/'.$this->getEntityName().'.php');
     }
 }

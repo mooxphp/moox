@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Commands;
 
 use Moox\Builder\Builder\Services\EntityGenerator;
-use Moox\Builder\Builder\Services\EntityMigrator;
+use Moox\Builder\Builder\Services\PreviewMigrator;
 
 class CreatePreviewCommand extends AbstractBuilderCommand
 {
@@ -19,7 +19,7 @@ class CreatePreviewCommand extends AbstractBuilderCommand
         $context = $this->createContext($name, preview: true);
 
         (new EntityGenerator($context, [], []))->execute();
-        (new EntityMigrator($context))->execute();
+        (new PreviewMigrator($context))->execute();
 
         $this->info("Preview entity {$name} created successfully!");
     }

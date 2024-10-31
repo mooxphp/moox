@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Commands;
 
 use Moox\Builder\Builder\Services\EntityFilesRemover;
+use Moox\Builder\Builder\Services\EntityTablesRemover;
 
 class DeletePreviewCommand extends AbstractBuilderCommand
 {
@@ -18,6 +19,7 @@ class DeletePreviewCommand extends AbstractBuilderCommand
         $context = $this->createContext($name, preview: true);
 
         (new EntityFilesRemover($context))->execute();
+        (new EntityTablesRemover($context))->execute();
 
         $this->info("Preview entity {$name} deleted successfully!");
     }

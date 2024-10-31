@@ -5,19 +5,10 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Services;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Schema;
 
 class EntityFilesRemover extends AbstractService
 {
     public function execute(): void
-    {
-        $this->removeFiles();
-        if ($this->context->isPreview()) {
-            $this->dropTable();
-        }
-    }
-
-    private function removeFiles(): void
     {
         $paths = [
             $this->context->getModelPath(),
@@ -46,10 +37,5 @@ class EntityFilesRemover extends AbstractService
                 }
             }
         }
-    }
-
-    private function dropTable(): void
-    {
-        Schema::dropIfExists($this->context->getTableName());
     }
 }
