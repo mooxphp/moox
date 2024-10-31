@@ -4,7 +4,7 @@
 
 <!--shortdesc-->
 
-This template is used for generating Moox packages. Press the Template-Button in GitHub, create your own Laravel and Filament package.
+This template is used for generating Moox packages. It was previously a GitHub Template, but not moved to an installable package.
 
 <!--/shortdesc-->
 
@@ -23,31 +23,62 @@ Curious what the install command does? See manual installation below.
 
 <!--whatdoes-->
 
-This Laravel Package Template can be used to create a package including a powerful Filament resource called Item.
+This Laravel Package Template can be used to create Filament Resources including migration, model, resource and pages.
 
 ![Moox Builder Item](https://github.com/mooxphp/moox/raw/main/art/screenshot/builder-item.jpg)
 
 Name and table for the Resource can be changed while building your package.
 
-### Using the Template
+### Using the Artisan Commands
+
+```bash
+php artisan builder:create-entity <ClassName> --app
+php artisan builder:create-entity <ClassName> --package=<package>
+```
+
+or to generate a preview
+
+```bash
+php artisan builder:create-preview
+```
+
+migrated and published under https://your-project.test/builder
+
+or reverse
+
+```bash
+php artisan builder:delete-entity <ClassName>
+```
+
+or cleanup inlcuding the db-tables
+
+```bash
+php artisan builder:delete-preview <ClassName>
+```
+
+### Using the UI
+
+Sorry, not implemented yet.
+
+### Using the Template (old)
 
 1. Go to https://github.com/mooxphp/builder
 2. Press the `Use this template` button
 3. Create a new repository based on the template
 4. Clone the repository locally
 5. Run `php build.php`in the repo's directory and follow the steps
-   - Author Name (Default: Moox Developer): Your Name
-   - Author Email (Default: dev@moox.org): your@mail.com
-   - Package Name (Default: Blog Package): Your Package
-   - Package Description (Default: This is my package Blog Package)
-   - Package Entity (Default: Item): e.g. Post
-   - Tablename (Default: items): e.g. posts
+    - Author Name (Default: Moox Developer): Your Name
+    - Author Email (Default: dev@moox.org): your@mail.com
+    - Package Name (Default: Blog Package): Your Package
+    - Package Description (Default: This is my package Blog Package)
+    - Package Entity (Default: Item): e.g. Post
+    - Tablename (Default: items): e.g. posts
 
 After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
 
 ### Config
 
-After that the Resource is highly configurable. 
+After that the Resource is highly configurable.
 
 #### Tabs and Translation
 

@@ -126,7 +126,13 @@ class ResourceGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $content = $this->cleanupContent($content, $page.'Records');
+
+        // Special handling for List page to preserve "Records" plural
+        if ($page === 'List') {
+            $content = $this->cleanupContent($content, 'ListRecords');
+        } else {
+            $content = $this->cleanupContent($content, $page.'Record');
+        }
 
         $this->writeFile($this->getPagePath($page), $content);
     }

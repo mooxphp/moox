@@ -17,42 +17,44 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 /* ! Select ! */
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
 /* ! Delete ! */
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Resources\Resource;
 /* ! Edit ! */
-use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 /* ! Restore ! */
-use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\EditAction;
 /* ! View ! */
-use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Actions\RestoreBulkAction;
 /* ! ImageColumn ! */
-use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Actions\ViewAction;
 /* ! TextColumn ! */
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
 /* ! FullItem ! */
-use Moox\Builder\Models\FullItem;
+use Illuminate\Database\Eloquent\SoftDeletes;
 /* ! Create ! */
-use Moox\Builder\Resources\FullItemResource\Pages\CreateFullItem;
+use Moox\Builder\Models\FullItem;
 /* ! Edit ! */
+use Moox\Builder\Resources\FullItemResource\Pages\CreateFullItem;
 use Moox\Builder\Resources\FullItemResource\Pages\EditFullItem;
-use Moox\Builder\Resources\FullItemResource\Pages\ListFullItems;
 /* ! View ! */
-use Moox\Builder\Resources\FullItemResource\Pages\ViewFullItem;
+use Moox\Builder\Resources\FullItemResource\Pages\ListFullItems;
 /* ! Widgets ! */
-use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
+use Moox\Builder\Resources\FullItemResource\Pages\ViewFullItem;
 /* ! Author ! */
-use Moox\Core\Traits\AuthorInResource;
+use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
 /* ! Publish ! */
-use Moox\Core\Traits\SinglePublishInResource;
+use Moox\Core\Traits\AuthorInResource;
 /* ! Tabs ! */
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\SinglePublishInResource;
 /* ! Taxonomy ! */
+use Moox\Core\Traits\TabsInResource;
 use Moox\Core\Traits\TaxonomyInResource;
 
 /* ! FullItem => Entity */
@@ -292,6 +294,28 @@ class FullItemResource extends Resource
                 /* !! Table Bulk Actions */
             ])
             ->filters([
+                Filter::make('title')
+                    ->form([
+                        TextInput::make('title')
+                            ->label(__('core::core.title')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['title'],
+                            fn (Builder $query, $title): Builder => $query->where('title', 'like', "%{$title}%"),
+                        );
+                    }),
+                Filter::make('slug')
+                    ->form([
+                        TextInput::make('slug')
+                            ->label(__('core::core.slug')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query->when(
+                            $data['slug'],
+                            fn (Builder $query, $slug): Builder => $query->where('slug', 'like', "%{$slug}%"),
+                        );
+                    }),
                 /* !! Table Filters */
                 /* ! Select ! */
                 SelectFilter::make('type')

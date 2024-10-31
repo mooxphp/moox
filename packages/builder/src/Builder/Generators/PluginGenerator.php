@@ -42,4 +42,15 @@ class PluginGenerator extends AbstractGenerator
     {
         return 'plugin';
     }
+
+    protected function formatUseStatements(): string
+    {
+        $statements = [
+            'use '.$this->context->getResourceNamespace().'\\'.$this->context->getEntityName().'Resource;',
+        ];
+
+        return implode("\n", array_map(function ($statement) {
+            return rtrim($statement, ';').';';
+        }, array_unique($statements)));
+    }
 }

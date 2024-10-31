@@ -14,7 +14,7 @@ class TitleWithSlug extends AbstractBlock
         'resource' => [
             'forms' => ['use Camya\Filament\Forms\Components\TitleWithSlugInput;'],
             'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
+            'filters' => ['use Filament\Tables\Filters\Filter;', 'use Filament\Forms\Components\TextInput;', 'use Illuminate\Database\Eloquent\Builder;'],
         ],
     ];
 
@@ -49,14 +49,33 @@ class TitleWithSlug extends AbstractBlock
     public function tableColumn(): string
     {
         return "TextColumn::make('{$this->titleFieldName}')->searchable()->sortable(),
-                TextColumn::make('{$this->slugFieldName}')->searchable()->sortable()";
+                TextColumn::make('{$this->slugFieldName}')->searchable()->sortable(),";
     }
 
     public function tableFilter(): string
     {
-        // return "TextFilter::make('{$this->titleFieldName}'),
-        //         TextFilter::make('{$this->slugFieldName}')";
-        return '';
+        return "Filter::make('{$this->titleFieldName}')
+                    ->form([
+                        TextInput::make('{$this->titleFieldName}')
+                            ->label(__('core::core.title')),
+                    ])
+                    ->query(function (Builder \$query, array \$data): Builder {
+                        return \$query->when(
+                            \$data['{$this->titleFieldName}'],
+                            fn (Builder \$query, \$title): Builder => \$query->where('{$this->titleFieldName}', 'like', \"%{\$title}%\"),
+                        );
+                    }),
+                Filter::make('{$this->slugFieldName}')
+                    ->form([
+                        TextInput::make('{$this->slugFieldName}')
+                            ->label(__('core::core.slug')),
+                    ])
+                    ->query(function (Builder \$query, array \$data): Builder {
+                        return \$query->when(
+                            \$data['{$this->slugFieldName}'],
+                            fn (Builder \$query, \$slug): Builder => \$query->where('{$this->slugFieldName}', 'like', \"%{\$slug}%\"),
+                        );
+                    }),";
     }
 
     public function migration(): array
@@ -69,7 +88,7 @@ class TitleWithSlug extends AbstractBlock
 
     public function modelAttribute(): string
     {
-        return "'{$this->titleFieldName}', '{$this->slugFieldName}'";
+        return "'{$this->titleFieldName}', '{$this->slugFieldName}',";
     }
 
     public function modelCast(): string
