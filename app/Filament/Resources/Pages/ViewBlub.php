@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Pages;
 
-use Filament\Resources\Pages\ViewRecord;
 use App\Filament\Resources\BlubResource;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewBlub extends ViewRecord
 {

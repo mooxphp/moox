@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Plugins;
 
+use App\Filament\Resources\BlubResource;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
-use App\Filament\Resources\BlubResource;
 
 class BlubPlugin implements Plugin
 {
@@ -21,7 +21,7 @@ class BlubPlugin implements Plugin
     public function register(Panel $panel): void
     {
         $panel->resources([
-            BlubResource::class
+            BlubResource::class,
         ]);
     }
 
@@ -34,6 +34,4 @@ class BlubPlugin implements Plugin
     {
         return app(static::class);
     }
-
-    
 }

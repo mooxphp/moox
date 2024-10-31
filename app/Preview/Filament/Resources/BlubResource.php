@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Preview\Filament\Resources;
 
-use Filament\Resources\Resource;
 use App\Models\Blub;
 use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables\Table;
 
 class BlubResource extends Resource
@@ -17,15 +17,13 @@ class BlubResource extends Resource
 
     public static function form(Form $form): Form
     {
-        
         return $form->schema([
-            
+
         ]);
     }
 
     public static function table(Table $table): Table
     {
-        
         return $table
             ->columns([])
             ->defaultSort('created_at', 'desc')

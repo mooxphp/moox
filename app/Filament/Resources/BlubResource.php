@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use Filament\Resources\Resource;
 use App\Models\Blub;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TextFilter;
+use Filament\Tables\Table;
 
 class BlubResource extends Resource
 {
@@ -20,22 +19,20 @@ class BlubResource extends Resource
 
     public static function form(Form $form): Form
     {
-        
         return $form->schema([
             TitleWithSlugInput::make(
-            fieldTitle: 'title',
-            fieldSlug: 'slug'
-        )->label('Title')
+                fieldTitle: 'title',
+                fieldSlug: 'slug'
+            )->label('Title'),
         ]);
     }
 
     public static function table(Table $table): Table
     {
-        
         return $table
             ->columns([
                 TextColumn::make('title')->searchable()->sortable(),
-                TextColumn::make('slug')->searchable()->sortable()
+                TextColumn::make('slug')->searchable()->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([])
