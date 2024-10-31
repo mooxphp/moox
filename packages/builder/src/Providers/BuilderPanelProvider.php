@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Providers;
 
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -14,25 +13,25 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Moox\Builder\Pages\BuilderDashboard;
 
-class PreviewPanelProvider extends PanelProvider
+class BuilderPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('preview')
-            ->path('preview')
-            ->brandName('Moox Builder Preview')
+            ->id('builder')
+            ->path('builder')
+            ->brandName('MooxBuilder')
             ->brandLogo(asset('img/logo.png'))
             ->brandLogoHeight('1.6rem')
             ->colors([
                 'primary' => Color::Indigo,
                 'secondary' => Color::Neutral,
             ])
-            //->discoverResources(in: app_path('Preview/Resources'), for: 'App\\Preview\\Resources')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->pages([
-                Dashboard::class,
+                BuilderDashboard::class,
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder;
 
 use Moox\Builder\Commands\InstallCommand;
-use Moox\Builder\Providers\PreviewPanelProvider;
+use Moox\Builder\Providers\BuilderPanelProvider;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -32,7 +32,7 @@ class BuilderServiceProvider extends PackageServiceProvider
 
     public function register(): void
     {
-        $this->app->register(PreviewPanelProvider::class);
+        $this->app->register(BuilderPanelProvider::class);
     }
 
     public function boot(): void
@@ -40,6 +40,7 @@ class BuilderServiceProvider extends PackageServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 Commands\BuildTestEntityCommand::class,
+                Commands\DeleteTestEntityCommand::class,
             ]);
         }
     }
