@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Builder;
 
+use Moox\Builder\Builder\Commands\CreateEntityCommand;
+use Moox\Builder\Builder\Commands\CreatePreviewCommand;
+use Moox\Builder\Builder\Commands\DeleteEntityCommand;
+use Moox\Builder\Builder\Commands\DeletePreviewCommand;
 use Moox\Builder\Commands\InstallCommand;
 use Moox\Builder\Providers\BuilderPanelProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -27,7 +31,9 @@ class BuilderServiceProvider extends PackageServiceProvider
                 'create_simple_taxonomyables_table',
                 'create_nested_taxonomyables_table',
             ])
-            ->hasCommand(InstallCommand::class);
+            ->hasCommands([
+                InstallCommand::class,
+            ]);
     }
 
     public function register(): void
@@ -39,8 +45,10 @@ class BuilderServiceProvider extends PackageServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                Commands\BuildTestEntityCommand::class,
-                Commands\DeleteTestEntityCommand::class,
+                CreateEntityCommand::class,
+                CreatePreviewCommand::class,
+                DeleteEntityCommand::class,
+                DeletePreviewCommand::class,
             ]);
         }
     }

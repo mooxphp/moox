@@ -5,38 +5,22 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Traits\HandlesContentCleanup;
-use Moox\Builder\Builder\Traits\HandlesIndentation;
-use Moox\Builder\Builder\Traits\HandlesNamespacing;
-use Moox\Builder\Builder\Traits\HandlesPluralization;
 
 class ResourceGenerator extends AbstractGenerator
 {
     use HandlesContentCleanup;
-    use HandlesIndentation;
-    use HandlesNamespacing;
-    use HandlesPluralization;
-
-    public function __construct(
-        string $entityName,
-        string $entityNamespace,
-        string $entityPath,
-        array $blocks,
-        array $features
-    ) {
-        parent::__construct($entityName, $entityNamespace, $entityPath, $blocks, $features);
-    }
 
     public function generate(): void
     {
         $template = $this->loadStub('resource');
 
         $variables = [
-            'namespace' => $this->getFilamentNamespace('Resources'),
-            'class_name' => $this->entityName,
-            'model' => $this->entityName,
-            'model_plural' => $this->getPluralModelName(),
+            'namespace' => $this->context->getResourceNamespace(),
+            'class_name' => $this->context->getEntityName(),
+            'model' => $this->context->getEntityName(),
+            'model_plural' => $this->context->getPluralModelName(),
             'navigation_icon' => $this->getNavigationIcon(),
-            'use_statements' => $this->formatUseStatements(),
+            'use_statements' => $this->formatResourceUseStatements(),
             'traits' => $this->formatTraits(),
             'form_setup' => $this->getFormSetup(),
             'form_schema' => $this->getFormSchema(),
@@ -53,11 +37,11 @@ class ResourceGenerator extends AbstractGenerator
         $content = $this->replaceTemplateVariables($template, $variables);
         $content = $this->cleanupContent($content, 'Resource');
 
-        $this->writeFile($this->getResourcePath(), $content);
+        $this->writeFile($this->context->getResourcePath(), $content);
         $this->generateResourcePages();
     }
 
-    protected function formatUseStatements(): string
+    protected function formatResourceUseStatements(): string
     {
         $statements = array_merge(
             ['use Filament\Forms\Form;', 'use Filament\Tables\Table;'],
@@ -70,16 +54,6 @@ class ResourceGenerator extends AbstractGenerator
         return implode("\n", array_map(function ($statement) {
             return rtrim($statement, ';').';';
         }, array_unique($statements)));
-    }
-
-    protected function formatTraits(): string
-    {
-        $traits = $this->getTraits('resource');
-        if (empty($traits)) {
-            return '';
-        }
-
-        return 'use '.implode(', ', $traits).';';
     }
 
     protected function getFormSchema(): string
@@ -127,11 +101,6 @@ class ResourceGenerator extends AbstractGenerator
         return 'heroicon-o-rectangle-stack';
     }
 
-    protected function getResourcePath(): string
-    {
-        return $this->getFilamentPath('Resources').'/'.$this->entityName.'Resource.php';
-    }
-
     protected function generateResourcePages(): void
     {
         $pages = ['List', 'Create', 'Edit', 'View'];
@@ -145,27 +114,20 @@ class ResourceGenerator extends AbstractGenerator
     {
         $template = $this->loadStub('pages/'.strtolower($page));
 
-        $parentClass = match ($page) {
-            'List' => 'ListRecords',
-            'Create' => 'CreateRecord',
-            'Edit' => 'EditRecord',
-            'View' => 'ViewRecord',
-            default => 'Record'
-        };
-
         $variables = [
-            'namespace' => str_replace('/', '\\', $this->getFilamentNamespace('Resources\\Pages')),
-            'class_name' => $page.$this->entityName,
-            'model' => $this->entityName,
-            'model_plural' => $this->getPluralModelName(),
-            'resource' => $this->entityName.'Resource',
+            'namespace' => $this->context->getResourceNamespace().'\\Pages',
+            'class_name' => $page.$this->context->getEntityName(),
+            'model' => $this->context->getEntityName(),
+            'model_plural' => $this->context->getPluralModelName(),
+            'resource' => $this->context->getEntityName().'Resource',
             'use_statements' => $this->formatPageUseStatements($page),
-            'traits' => $this->formatPageTraits($page),
-            'methods' => $this->formatPageMethods($page),
+            'traits' => $this->formatTraits('pages', strtolower($page)),
+            'methods' => $this->formatMethods('pages', strtolower($page)),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $content = $this->cleanupContent($content, $parentClass);
+        $content = $this->cleanupContent($content, $page.'Records');
+
         $this->writeFile($this->getPagePath($page), $content);
     }
 
@@ -173,7 +135,7 @@ class ResourceGenerator extends AbstractGenerator
     {
         $statements = array_merge(
             [
-                'use '.$this->getFilamentNamespace('Resources').'\\'.$this->entityName.'Resource',
+                'use '.$this->context->getResourceNamespace().'\\'.$this->context->getEntityName().'Resource;',
             ],
             $this->getUseStatements('pages', strtolower($page))
         );
@@ -183,30 +145,15 @@ class ResourceGenerator extends AbstractGenerator
         }, array_unique($statements)));
     }
 
-    protected function formatPageTraits(string $page): string
-    {
-        $traits = $this->getTraits('pages', strtolower($page));
-        if (empty($traits)) {
-            return '';
-        }
-
-        return 'use '.implode(', ', $traits).';';
-    }
-
-    protected function formatPageMethods(string $page): string
-    {
-        $methods = $this->getMethods('pages', strtolower($page));
-
-        return implode("\n\n    ", array_filter($methods));
-    }
-
     protected function getPagePath(string $page): string
     {
+        $basePath = dirname($this->context->getResourcePath()).'/Pages';
+
         if ($page === 'List') {
-            return $this->getFilamentPath('Resources/Pages').'/List'.$this->getPluralModelName().'.php';
+            return $basePath.'/List'.$this->context->getPluralModelName().'.php';
         }
 
-        return $this->getFilamentPath('Resources/Pages').'/'.$page.$this->entityName.'.php';
+        return $basePath.'/'.$page.$this->context->getEntityName().'.php';
     }
 
     protected function getFormSetup(): string
@@ -224,10 +171,8 @@ class ResourceGenerator extends AbstractGenerator
         return '';
     }
 
-    protected function formatMethods(): string
+    protected function getGeneratorType(): string
     {
-        $methods = $this->getMethods('resource');
-
-        return implode("\n\n    ", array_filter($methods));
+        return 'resource';
     }
 }

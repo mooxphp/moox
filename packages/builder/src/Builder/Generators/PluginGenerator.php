@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
-use Moox\Builder\Builder\Traits\HandlesNamespacing;
+use Moox\Builder\Builder\Traits\HandlesContentCleanup;
 
 class PluginGenerator extends AbstractGenerator
 {
-    use HandlesNamespacing;
+    use HandlesContentCleanup;
 
     public function generate(): void
     {
         $template = $this->loadStub('plugin');
 
         $variables = [
-            'namespace' => $this->getFilamentNamespace('Plugins'),
-            'class_name' => $this->entityName,
-            'id' => strtolower($this->entityName),
+            'namespace' => $this->context->getPluginNamespace(),
+            'class_name' => $this->context->getEntityName(),
+            'id' => strtolower($this->context->getEntityName()),
             'use_statements' => $this->formatUseStatements(),
             'resources' => $this->getResources(),
             'boot_methods' => $this->getBootMethods(),
@@ -25,24 +25,12 @@ class PluginGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->getPluginPath(), $content);
-    }
-
-    protected function formatUseStatements(): string
-    {
-        $statements = array_merge(
-            $this->getUseStatements('plugin'),
-            [
-                'use '.$this->entityNamespace.'\\Filament\\Resources\\'.$this->entityName.'Resource;',
-            ]
-        );
-
-        return implode("\n", array_unique($statements));
+        $this->writeFile($this->context->getPluginPath(), $content);
     }
 
     protected function getResources(): string
     {
-        return $this->entityName.'Resource::class';
+        return $this->context->getEntityName().'Resource::class';
     }
 
     protected function getBootMethods(): string
@@ -50,15 +38,8 @@ class PluginGenerator extends AbstractGenerator
         return '//';
     }
 
-    protected function formatMethods(): string
+    protected function getGeneratorType(): string
     {
-        $methods = $this->getMethods('plugin');
-
-        return implode("\n\n    ", array_filter($methods));
-    }
-
-    protected function getPluginPath(): string
-    {
-        return $this->getFilamentPath('Plugins').'/'.$this->entityName.'Plugin.php';
+        return 'plugin';
     }
 }

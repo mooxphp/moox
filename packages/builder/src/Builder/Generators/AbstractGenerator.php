@@ -4,37 +4,24 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Builder\Generators;
 
+use Moox\Builder\Builder\Contexts\BuildContext;
 use Moox\Builder\Builder\Traits\GeneratorTrait;
+use Moox\Builder\Builder\Traits\HandlesIndentation;
 
 abstract class AbstractGenerator
 {
     use GeneratorTrait;
-
-    protected string $entityName;
-
-    protected string $entityNamespace;
-
-    protected string $entityPath;
-
-    protected array $blocks;
-
-    protected array $features;
+    use HandlesIndentation;
 
     public function __construct(
-        string $entityName,
-        string $entityNamespace = '',
-        string $entityPath = '',
-        array $blocks = [],
-        array $features = []
-    ) {
-        $this->entityName = $entityName;
-        $this->entityNamespace = $entityNamespace;
-        $this->entityPath = $entityPath;
-        $this->blocks = $blocks;
-        $this->features = $features;
-    }
+        protected readonly BuildContext $context,
+        protected readonly array $blocks = [],
+        protected readonly array $features = []
+    ) {}
 
     abstract public function generate(): void;
+
+    abstract protected function getGeneratorType(): string;
 
     protected function getUseStatements(string $context, ?string $subContext = null): array
     {
@@ -79,5 +66,29 @@ abstract class AbstractGenerator
         }
 
         return array_unique($methods);
+    }
+
+    protected function formatUseStatements(): string
+    {
+        $statements = $this->getUseStatements($this->getGeneratorType());
+
+        return implode("\n", array_unique($statements));
+    }
+
+    protected function formatTraits(?string $context = null, ?string $subContext = null): string
+    {
+        $traits = $this->getTraits($context ?? $this->getGeneratorType(), $subContext);
+        if (empty($traits)) {
+            return '';
+        }
+
+        return 'use '.implode(', ', $traits).';';
+    }
+
+    protected function formatMethods(?string $context = null, ?string $subContext = null): string
+    {
+        $methods = $this->getMethods($context ?? $this->getGeneratorType(), $subContext);
+
+        return implode("\n\n    ", array_filter($methods));
     }
 }
