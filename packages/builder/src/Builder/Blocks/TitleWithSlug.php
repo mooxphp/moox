@@ -78,12 +78,10 @@ class TitleWithSlug extends AbstractBlock
                     }),";
     }
 
-    public function migration(): array
+    public function migration(): string
     {
-        return [
-            '$table->string(\''.$this->titleFieldName.'\');',
-            '$table->string(\''.$this->slugFieldName.'\')->unique();',
-        ];
+        return '$table->string(\''.$this->titleFieldName.'\');'.PHP_EOL.
+               '$table->string(\''.$this->slugFieldName.'\')->unique();';
     }
 
     public function modelAttribute(): string

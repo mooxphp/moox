@@ -60,7 +60,8 @@ class ResourceGenerator extends AbstractGenerator
     {
         $fields = [];
         foreach ($this->blocks as $block) {
-            $fields[] = $block->formField();
+            $field = rtrim($block->formField(), ',');
+            $fields[] = $field;
         }
 
         return $this->formatWithIndentation(array_filter($fields), 3);

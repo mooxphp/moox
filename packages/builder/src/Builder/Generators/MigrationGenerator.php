@@ -26,8 +26,8 @@ class MigrationGenerator extends AbstractGenerator
     protected function getBaseFields(): array
     {
         return [
-            '$table->id();',
-            '$table->timestamps();',
+            '$table->id()',
+            '$table->timestamps()',
         ];
     }
 
@@ -37,14 +37,19 @@ class MigrationGenerator extends AbstractGenerator
         foreach ($this->blocks as $block) {
             if (method_exists($block, 'migration')) {
                 $blockFields = $block->migration();
-                if (is_array($blockFields)) {
-                    $fields = array_merge($fields, $blockFields);
-                } else {
-                    $fields[] = $blockFields;
+                if (is_string($blockFields)) {
+                    $blockFields = explode(PHP_EOL, $blockFields);
                 }
+                $fields = array_merge(
+                    $fields,
+                    array_map(
+                        fn ($field) => rtrim($field, ';').';',
+                        is_array($blockFields) ? $blockFields : [$blockFields]
+                    )
+                );
             } else {
                 $type = $block->getMigrationType();
-                $fields[] = '$table->'.$type.'(\''.$block->getName().'\');';
+                $fields[] = '$table->'.$type.'(\''.$block->getName().'\').';
             }
         }
 

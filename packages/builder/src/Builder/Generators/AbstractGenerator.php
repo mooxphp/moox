@@ -7,6 +7,7 @@ namespace Moox\Builder\Builder\Generators;
 use Moox\Builder\Builder\Contexts\BuildContext;
 use Moox\Builder\Builder\Traits\GeneratorTrait;
 use Moox\Builder\Builder\Traits\HandlesIndentation;
+use RuntimeException;
 
 abstract class AbstractGenerator
 {
@@ -90,5 +91,25 @@ abstract class AbstractGenerator
         $methods = $this->getMethods($context ?? $this->getGeneratorType(), $subContext);
 
         return implode("\n\n    ", array_filter($methods));
+    }
+
+    protected function writeFile(string $path, string $content): void
+    {
+        $this->ensureDirectoryExists($path);
+        file_put_contents($path, $content);
+
+        $this->formatWithPint($path);
+    }
+
+    protected function formatWithPint(string $path): void
+    {
+        $vendorPath = base_path('vendor/bin/pint');
+        $command = sprintf('%s %s', $vendorPath, $path);
+
+        exec($command, $output, $returnCode);
+
+        if ($returnCode !== 0) {
+            throw new RuntimeException('Pint formatting failed: '.implode("\n", $output));
+        }
     }
 }

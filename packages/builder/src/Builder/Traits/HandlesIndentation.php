@@ -6,10 +6,28 @@ namespace Moox\Builder\Builder\Traits;
 
 trait HandlesIndentation
 {
-    protected function formatWithIndentation(array $lines, int $level = 3): string
+    protected function indent(string $content, int $level = 1): string
     {
-        $indent = str_repeat(' ', $level * 4);
+        $indentation = str_repeat('    ', $level);
 
-        return implode("\n".$indent, array_filter($lines));
+        return implode("\n", array_map(
+            fn ($line) => $line !== '' ? $indentation.$line : $line,
+            explode("\n", $content)
+        ));
+    }
+
+    protected function formatWithIndentation(array $items, int $level = 1): string
+    {
+        if (empty($items)) {
+            return '';
+        }
+
+        $indentation = str_repeat('    ', $level);
+        $formattedItems = array_map(
+            fn ($item) => $indentation.trim($item, "'"),
+            $items
+        );
+
+        return implode(",\n", $formattedItems);
     }
 }

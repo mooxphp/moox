@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Moox\Builder\Builder\Generators;
 
 use Moox\Builder\Builder\Traits\HandlesContentCleanup;
+use Moox\Builder\Builder\Traits\HandlesIndentation;
 
 class ModelGenerator extends AbstractGenerator
 {
     use HandlesContentCleanup;
+    use HandlesIndentation;
 
     public function generate(): void
     {
@@ -35,10 +37,18 @@ class ModelGenerator extends AbstractGenerator
     {
         $fillable = [];
         foreach ($this->blocks as $block) {
-            $fillable[] = $block->modelAttribute();
+            $attributes = array_map('trim', explode(',', trim($block->modelAttribute(), ',')));
+            foreach ($attributes as $attribute) {
+                if (! empty($attribute)) {
+                    $fillable[] = trim($attribute, "'");
+                }
+            }
         }
 
-        return $this->formatWithIndentation(array_filter($fillable), 2);
+        return $this->formatWithIndentation(
+            array_map(fn ($field) => "'{$field}'", array_filter($fillable)),
+            2
+        );
     }
 
     protected function getCasts(): string
@@ -47,6 +57,7 @@ class ModelGenerator extends AbstractGenerator
         foreach ($this->blocks as $block) {
             $cast = $block->modelCast();
             if (! empty($cast)) {
+                $cast = preg_replace("/['\"](.*?)['\"]\s*=>\s*['\"](.*?)['\"]/", '\'$1\' => \'$2\'', $cast);
                 $casts[] = $cast;
             }
         }

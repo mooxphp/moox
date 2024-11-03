@@ -115,7 +115,7 @@ abstract class AbstractBlock
         return $this;
     }
 
-    public function migration(): array|string
+    public function migration(): string
     {
         $type = $this->getMigrationType();
 
