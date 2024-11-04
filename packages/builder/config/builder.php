@@ -766,4 +766,140 @@ return [
     'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
     'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Contexts
+    |--------------------------------------------------------------------------
+    |
+    | Define the available build contexts and their configurations.
+    | Each context can have its own path and namespace settings.
+    |
+    */
+    'contexts' => [
+        'app' => [
+            'class' => \Moox\Builder\Contexts\AppContext::class,
+            'base_path' => app_path(),
+            'base_namespace' => 'App',
+            'paths' => [
+                'model' => 'Models',
+                'resource' => 'Filament\Resources',
+                'migration' => 'database\migrations',
+            ],
+        ],
+        'package' => [
+            'class' => \Moox\Builder\Contexts\PackageContext::class,
+            'paths' => [
+                'model' => 'src\Models',
+                'resource' => 'src\Resources',
+                'migration' => 'database\migrations',
+            ],
+        ],
+        'preview' => [
+            'class' => \Moox\Builder\Contexts\PreviewContext::class,
+            'base_path' => app_path('Builder'),
+            'base_namespace' => 'App\\Builder',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Templates
+    |--------------------------------------------------------------------------
+    |
+    | Define the templates used by generators. You can override these
+    | with your own templates by specifying the full path.
+    |
+    */
+    'templates' => [
+        'model' => [
+            'path' => 'builder::templates.model',
+            'generators' => ['model'],
+        ],
+        'resource' => [
+            'path' => __DIR__.'/../stubs/resource.stub',
+        ],
+        'resource-List' => [
+            'path' => __DIR__.'/../stubs/resource-list.stub',
+        ],
+        'resource-Create' => [
+            'path' => __DIR__.'/../stubs/resource-create.stub',
+        ],
+        'resource-Edit' => [
+            'path' => __DIR__.'/../stubs/resource-edit.stub',
+        ],
+        'migration' => [
+            'path' => 'builder::templates.migration',
+            'generators' => ['migration'],
+        ],
+        'plugin' => [
+            'path' => 'builder::templates.plugin',
+            'generators' => ['plugin'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generators
+    |--------------------------------------------------------------------------
+    |
+    | Configure the generators and their specific settings.
+    | Each generator can have its own configuration.
+    |
+    */
+    'generators' => [
+        'model' => [
+            'class' => \Moox\Builder\Generators\ModelGenerator::class,
+            'template' => 'model',
+        ],
+        'migration' => [
+            'class' => \Moox\Builder\Generators\MigrationGenerator::class,
+            'template' => 'migration',
+        ],
+        'resource' => [
+            'class' => \Moox\Builder\Generators\ResourceGenerator::class,
+            'template' => 'resource',
+        ],
+        'plugin' => [
+            'class' => \Moox\Builder\Generators\PluginGenerator::class,
+            'template' => 'plugin',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Presets
+    |--------------------------------------------------------------------------
+    |
+    | Register available presets that can be used to quickly scaffold resources.
+    | Each preset key must match the class name in lowercase without 'Preset'.
+    |
+    */
+
+    'presets' => [
+        'simple-item' => [
+            'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+            'features' => [],
+        ],
+        'publishable-item' => [
+            'class' => \Moox\Builder\Presets\PublishableItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+            'features' => ['publish', 'softdelete'],
+        ],
+        'full-item' => [
+            'class' => \Moox\Builder\Presets\FullItemPreset::class,
+            'generators' => ['model', 'migration', 'resource', 'factory'],
+            'features' => ['publish', 'softdelete', 'author'],
+        ],
+        'simple-taxonomy' => [
+            'class' => \Moox\Builder\Presets\SimpleTaxonomyPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+            'features' => ['taxonomy'],
+        ],
+        'nested-taxonomy' => [
+            'class' => \Moox\Builder\Presets\NestedTaxonomyPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+            'features' => ['nested-taxonomy'],
+        ],
+    ],
 ];

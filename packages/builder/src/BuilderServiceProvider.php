@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Builder;
 
-use Moox\Builder\Builder\Commands\CreateEntityCommand;
-use Moox\Builder\Builder\Commands\CreatePreviewCommand;
-use Moox\Builder\Builder\Commands\DeleteEntityCommand;
-use Moox\Builder\Builder\Commands\DeletePreviewCommand;
+use Moox\Builder\Commands\CreateEntityCommand;
+use Moox\Builder\Commands\CreatePreviewCommand;
+use Moox\Builder\Commands\DeleteEntityCommand;
+use Moox\Builder\Commands\DeletePreviewCommand;
 use Moox\Builder\Commands\InstallCommand;
 use Moox\Builder\Providers\BuilderPanelProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -33,23 +33,15 @@ class BuilderServiceProvider extends PackageServiceProvider
             ])
             ->hasCommands([
                 InstallCommand::class,
+                DeletePreviewCommand::class,
+                DeleteEntityCommand::class,
+                CreatePreviewCommand::class,
+                CreateEntityCommand::class,
             ]);
     }
 
     public function register(): void
     {
         $this->app->register(BuilderPanelProvider::class);
-    }
-
-    public function boot(): void
-    {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                CreateEntityCommand::class,
-                CreatePreviewCommand::class,
-                DeleteEntityCommand::class,
-                DeletePreviewCommand::class,
-            ]);
-        }
     }
 }
