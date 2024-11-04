@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Contexts;
 
+use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 abstract class AbstractBuildContext implements BuildContext
 {
     protected string $presetName = 'simple-item';
+
+    protected ?Command $command = null;
 
     public function __construct(
         private readonly string $entityName,
@@ -36,9 +40,11 @@ abstract class AbstractBuildContext implements BuildContext
 
     public function getPath(string $type): string
     {
-        $path = $this->paths[$type] ?? '';
+        $contextConfig = config('builder.contexts.'.$this->getContextType());
+        $paths = $contextConfig['paths'] ?? [];
+        $path = $paths[$type] ?? '';
 
-        return $this->getBasePath().'/'.$path.'/'.$this->getFileName($type);
+        return $this->getBasePath().'/'.str_replace('\\', '/', $path).'/'.$this->getFileName($type);
     }
 
     protected function getFileName(string $type): string
@@ -85,5 +91,25 @@ abstract class AbstractBuildContext implements BuildContext
     public function setPresetName(string $name): void
     {
         $this->presetName = $name;
+    }
+
+    public function getCommand(): ?Command
+    {
+        return $this->command;
+    }
+
+    public function setCommand(Command $command): void
+    {
+        $this->command = $command;
+    }
+
+    protected function getContextType(): string
+    {
+        return match (true) {
+            $this instanceof AppContext => 'app',
+            $this instanceof PackageContext => 'package',
+            $this instanceof PreviewContext => 'preview',
+            default => throw new RuntimeException('Unknown context type'),
+        };
     }
 }

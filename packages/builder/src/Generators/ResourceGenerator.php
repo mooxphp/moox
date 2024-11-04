@@ -46,7 +46,8 @@ class ResourceGenerator extends AbstractGenerator
     protected function generateResourcePages(): void
     {
         $pages = ['List', 'Create', 'Edit', 'View'];
-        $basePath = dirname($this->context->getPath('resource')).'/Pages';
+        $resourceName = $this->context->getEntityName().'Resource';
+        $basePath = dirname($this->context->getPath('resource')).'/'.$resourceName.'/Pages';
 
         foreach ($pages as $page) {
             $template = $this->loadStub("resource-{$page}");
@@ -56,36 +57,39 @@ class ResourceGenerator extends AbstractGenerator
                 : $page.$this->context->getEntityName();
 
             $variables = [
-                'namespace' => $this->context->getNamespace('resource').'\Pages',
+                'namespace' => $this->context->getNamespace('resource').'\\'.$resourceName.'\Pages',
                 'resource_namespace' => $this->context->getNamespace('resource'),
-                'resource_class' => $this->context->getEntityName().'Resource',
+                'resource_class' => $resourceName,
                 'class_name' => $className,
                 'model' => $this->context->getEntityName(),
                 'model_plural' => $this->context->getPluralModelName(),
                 'use_statements' => $this->formatPageUseStatements($page),
                 'traits' => $this->formatPageTraits($page),
                 'methods' => $this->formatPageMethods($page),
-                'resource' => $this->context->getEntityName().'Resource',
+                'resource' => $resourceName,
             ];
 
             $content = $this->replaceTemplateVariables($template, $variables);
+            $this->ensureDirectoryExists($basePath);
             $this->writeFile($basePath.'/'.$className.'.php', $content);
         }
     }
 
     protected function formatPageUseStatements(string $page): string
     {
-        $statements = array_merge(
-            $this->getUseStatements('resource', "pages.{$page}"),
-            [
-                'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource',
-                'use Filament\Resources\Pages\\'.($page === 'List' ? 'ListRecords' : $page.'Record'),
-            ]
-        );
+        $statements = $this->getUseStatements('resource', "pages.{$page}");
+
+        $statements[] = $this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource';
+
+        $statements = array_unique($statements);
+
+        $statements = array_filter($statements, function ($statement) {
+            return ! str_contains($statement, 'Filament\Resources\Pages');
+        });
 
         return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+            return 'use '.trim($statement, '\\; ').';';
+        }, $statements));
     }
 
     protected function formatPageTraits(string $page): string

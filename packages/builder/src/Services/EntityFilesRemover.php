@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Services;
 
 use Illuminate\Support\Facades\File;
+use RuntimeException;
 
 class EntityFilesRemover extends AbstractService
 {
@@ -12,50 +13,79 @@ class EntityFilesRemover extends AbstractService
     {
         $paths = $this->getFilePaths();
 
+        if (empty($paths)) {
+            throw new RuntimeException('No files found to remove');
+        }
+
         foreach ($paths as $path) {
             if (File::exists($path)) {
-                if (is_dir($path)) {
-                    File::deleteDirectory($path);
-                } else {
-                    File::delete($path);
+                File::delete($path);
+                if ($command = $this->context->getCommand()) {
+                    $command->info("Deleted: {$path}");
                 }
+
+                $dir = dirname($path);
+                if (File::isDirectory($dir) && count(File::files($dir)) === 0) {
+                    File::deleteDirectory($dir);
+                    if ($command = $this->context->getCommand()) {
+                        $command->info("Removed empty directory: {$dir}");
+                    }
+                }
+            }
+        }
+
+        $this->removeMigrationFiles();
+    }
+
+    protected function removeMigrationFiles(): void
+    {
+        $pattern = $this->getMigrationPattern();
+        $files = glob($pattern) ?: [];
+
+        foreach ($files as $file) {
+            File::delete($file);
+            if ($command = $this->context->getCommand()) {
+                $command->info("Deleted migration: {$file}");
             }
         }
     }
 
-    protected function getFilePaths(): array
-    {
-        $paths = [
-            $this->context->getPath('model'),
-            $this->context->getPath('resource'),
-            $this->context->getPath('plugin'),
-        ];
-
-        // Add migration files
-        $migrationPattern = $this->getMigrationPattern();
-        $migrationFiles = glob($migrationPattern);
-        $paths = array_merge($paths, $migrationFiles);
-
-        // Add resource pages
-        $resourceBasePath = dirname($this->context->getPath('resource')).'/Pages';
-        if (File::exists($resourceBasePath)) {
-            $paths = array_merge($paths, [
-                $resourceBasePath.'/List'.$this->context->getPluralModelName().'.php',
-                $resourceBasePath.'/Create'.$this->context->getEntityName().'.php',
-                $resourceBasePath.'/Edit'.$this->context->getEntityName().'.php',
-                $resourceBasePath.'/View'.$this->context->getEntityName().'.php',
-            ]);
-        }
-
-        return $paths;
-    }
-
     protected function getMigrationPattern(): string
     {
-        if ($this->context->isPackage()) {
-            return dirname($this->context->getPath('migration')).'/*_create_'.$this->context->getTableName().'_table.php.stub';
+        $basePath = $this->context->isPackage()
+            ? $this->context->getBasePath().'/database/migrations'
+            : database_path('migrations');
+
+        return $basePath.'/*_create_'.$this->context->getTableName().'_table.php*';
+    }
+
+    protected function getFilePaths(): array
+    {
+        $paths = [];
+
+        // Model
+        $modelPath = $this->context->getPath('model');
+        $paths['model'] = $modelPath;
+
+        // Resource
+        $resourcePath = $this->context->getPath('resource');
+        $paths['resource'] = $resourcePath;
+
+        // Plugin
+        $pluginPath = $this->context->getPath('plugin');
+        $paths['plugin'] = $pluginPath;
+
+        // Resource pages
+        $resourceName = $this->context->getEntityName().'Resource';
+        $resourcePagesPath = dirname($resourcePath).'/'.$resourceName.'/Pages';
+
+        if (File::exists($resourcePagesPath)) {
+            $paths['list_page'] = $resourcePagesPath.'/List'.$this->context->getPluralModelName().'.php';
+            $paths['create_page'] = $resourcePagesPath.'/Create'.$this->context->getEntityName().'.php';
+            $paths['edit_page'] = $resourcePagesPath.'/Edit'.$this->context->getEntityName().'.php';
+            $paths['view_page'] = $resourcePagesPath.'/View'.$this->context->getEntityName().'.php';
         }
 
-        return database_path('migrations/*_create_'.$this->context->getTableName().'_table.php');
+        return array_filter($paths);
     }
 }

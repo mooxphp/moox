@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Contexts;
 
+use Illuminate\Console\Command;
+
 interface BuildContext
 {
     public function getEntityName(): string;
@@ -31,4 +33,8 @@ interface BuildContext
     public function getPresetName(): string;
 
     public function setPresetName(string $name): void;
+
+    public function getCommand(): ?Command;
+
+    public function setCommand(Command $command): void;
 }

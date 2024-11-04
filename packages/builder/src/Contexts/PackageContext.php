@@ -8,6 +8,27 @@ use InvalidArgumentException;
 
 class PackageContext extends AbstractBuildContext
 {
+    public function __construct(
+        string $entityName,
+        string $basePath,
+        string $baseNamespace,
+        array $paths = []
+    ) {
+        $defaultPaths = [
+            'model' => 'src/Models',
+            'resource' => 'src/Resources',
+            'plugin' => 'src/Resources',
+            'migration' => 'database/migrations',
+        ];
+
+        parent::__construct(
+            entityName: $entityName,
+            basePath: $basePath,
+            baseNamespace: $baseNamespace,
+            paths: array_merge($defaultPaths, $paths)
+        );
+    }
+
     public function isPreview(): bool
     {
         return false;
