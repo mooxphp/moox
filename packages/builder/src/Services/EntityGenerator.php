@@ -13,9 +13,9 @@ class EntityGenerator extends AbstractService
     /** @var AbstractGenerator[] */
     protected array $generators = [];
 
-    public function __construct(BuildContext $context, array $blocks = [], array $features = [])
+    public function __construct(BuildContext $context, array $blocks = [])
     {
-        parent::__construct($context, $blocks, $features);
+        parent::__construct($context, $blocks);
     }
 
     protected function initializeGenerators(): void
@@ -24,7 +24,6 @@ class EntityGenerator extends AbstractService
             return;
         }
 
-        // Always include these generators
         $baseGenerators = ['model', 'migration', 'resource', 'plugin'];
 
         $this->generators = array_map(function ($type) {

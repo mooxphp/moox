@@ -46,9 +46,6 @@ class FullItemPreset extends AbstractPreset
                 acceptedFileTypes: ['image/jpeg', 'image/png', 'image/webp'],
                 directory: 'images'
             ),
-        ];
-
-        $this->features = [
             new Author,
             new Publish,
             new SoftDelete,

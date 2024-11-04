@@ -768,6 +768,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Blocks
+    |--------------------------------------------------------------------------
+    |
+    | Define the available blocks that can be used to build resources
+    | and presets, that can be used to build resources from cli.
+    |
+    */
+    'blocks' => [
+        'author' => \Moox\Builder\Blocks\Author::class,
+        'bool' => \Moox\Builder\Blocks\Bool::class,
+        'builder' => \Moox\Builder\Blocks\Builder::class,
+        'checkbox-list' => \Moox\Builder\Blocks\CheckboxList::class,
+        'color-picker' => \Moox\Builder\Blocks\ColorPicker::class,
+        'date' => \Moox\Builder\Blocks\Date::class,
+        'date-time' => \Moox\Builder\Blocks\DateTime::class,
+        'file-upload' => \Moox\Builder\Blocks\FileUpload::class,
+        'hidden' => \Moox\Builder\Blocks\Hidden::class,
+        'image' => \Moox\Builder\Blocks\Image::class,
+        'key-value' => \Moox\Builder\Blocks\KeyValue::class,
+        'markdown-editor' => \Moox\Builder\Blocks\MarkdownEditor::class,
+        'multi-select' => \Moox\Builder\Blocks\MultiSelect::class,
+        'number' => \Moox\Builder\Blocks\Number::class,
+        'publish' => \Moox\Builder\Blocks\Publish::class,
+        'radio' => \Moox\Builder\Blocks\Radio::class,
+        'relationship' => \Moox\Builder\Blocks\Relationship::class,
+        'repeater' => \Moox\Builder\Blocks\Repeater::class,
+        'rich-editor' => \Moox\Builder\Blocks\RichEditor::class,
+        'select' => \Moox\Builder\Blocks\Select::class,
+        'soft-delete' => \Moox\Builder\Blocks\SoftDelete::class,
+        'tags-input' => \Moox\Builder\Blocks\TagsInput::class,
+        'text' => \Moox\Builder\Blocks\Text::class,
+        'textarea' => \Moox\Builder\Blocks\TextArea::class,
+        'title-with-slug' => \Moox\Builder\Blocks\TitleWithSlug::class,
+        'toggle' => \Moox\Builder\Blocks\Toggle::class,
+        'toggle-buttons' => \Moox\Builder\Blocks\ToggleButtons::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Contexts
     |--------------------------------------------------------------------------
     |
@@ -880,27 +919,22 @@ return [
         'simple-item' => [
             'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
-            'features' => [],
         ],
         'publishable-item' => [
             'class' => \Moox\Builder\Presets\PublishableItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
-            'features' => ['publish', 'softdelete'],
         ],
         'full-item' => [
             'class' => \Moox\Builder\Presets\FullItemPreset::class,
             'generators' => ['model', 'migration', 'resource', 'factory'],
-            'features' => ['publish', 'softdelete', 'author'],
         ],
         'simple-taxonomy' => [
             'class' => \Moox\Builder\Presets\SimpleTaxonomyPreset::class,
             'generators' => ['model', 'migration', 'resource'],
-            'features' => ['taxonomy'],
         ],
         'nested-taxonomy' => [
             'class' => \Moox\Builder\Presets\NestedTaxonomyPreset::class,
             'generators' => ['model', 'migration', 'resource'],
-            'features' => ['nested-taxonomy'],
         ],
     ],
 ];

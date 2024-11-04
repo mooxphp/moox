@@ -78,8 +78,15 @@ class ResourceGenerator extends AbstractGenerator
     protected function formatPageUseStatements(string $page): string
     {
         $statements = $this->getUseStatements('resource', "pages.{$page}");
-
         $statements[] = $this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource';
+
+        // Add page-specific use statements from blocks
+        foreach ($this->getBlocks() as $block) {
+            $pageStatements = $block->getPageUseStatements(strtolower($page));
+            if (! empty($pageStatements)) {
+                $statements = array_merge($statements, $pageStatements);
+            }
+        }
 
         $statements = array_unique($statements);
 
@@ -88,7 +95,10 @@ class ResourceGenerator extends AbstractGenerator
         });
 
         return implode("\n", array_map(function ($statement) {
-            return 'use '.trim($statement, '\\; ').';';
+            $statement = trim($statement, '\\; ');
+            $statement = str_replace('use ', '', $statement);
+
+            return 'use '.$statement.';';
         }, $statements));
     }
 
@@ -96,9 +106,8 @@ class ResourceGenerator extends AbstractGenerator
     {
         $traits = [];
         foreach ($this->getBlocks() as $block) {
-            $blockTraits = $block->getTraits($this->getGeneratorType());
-            if (! empty($blockTraits)) {
-                $traits = array_merge($traits, $blockTraits);
+            if (! empty($block->traits['pages'][strtolower($page)])) {
+                $traits = array_merge($traits, $block->traits['pages'][strtolower($page)]);
             }
         }
 
@@ -147,8 +156,18 @@ class ResourceGenerator extends AbstractGenerator
             $this->getUseStatements('resource', 'forms'),
             $this->getUseStatements('resource', 'columns'),
             $this->getUseStatements('resource', 'filters'),
-            $this->getUseStatements('resource', 'actions')
+            $this->getUseStatements('resource', 'actions'),
+            $this->getUseStatements('resource', 'traits')
         );
+
+        // Add trait use statements from blocks
+        foreach ($this->getBlocks() as $block) {
+            if (! empty($block->traits['resource'])) {
+                foreach ($block->traits['resource'] as $trait) {
+                    $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
+                }
+            }
+        }
 
         return implode("\n", array_map(function ($statement) {
             return rtrim($statement, ';').';';

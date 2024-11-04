@@ -10,8 +10,7 @@ abstract class AbstractService
 {
     public function __construct(
         protected readonly BuildContext $context,
-        protected readonly array $blocks = [],
-        protected readonly array $features = []
+        protected readonly array $blocks = []
     ) {}
 
     abstract public function execute(): void;

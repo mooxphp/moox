@@ -20,9 +20,6 @@ class PublishableItemPreset extends AbstractPreset
                 description: 'The title of the item',
                 nullable: false
             ),
-        ];
-
-        $this->features = [
             new Publish,
             new SoftDelete,
         ];

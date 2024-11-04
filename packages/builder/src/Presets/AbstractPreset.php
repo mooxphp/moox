@@ -8,8 +8,6 @@ abstract class AbstractPreset
 {
     protected array $blocks = [];
 
-    protected array $features = [];
-
     abstract protected function initializePreset(): void;
 
     public function __construct()
@@ -20,11 +18,6 @@ abstract class AbstractPreset
     public function getBlocks(): array
     {
         return $this->blocks;
-    }
-
-    public function getFeatures(): array
-    {
-        return $this->features;
     }
 
     public static function getName(): string
