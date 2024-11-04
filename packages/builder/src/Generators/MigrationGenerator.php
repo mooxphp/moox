@@ -8,32 +8,43 @@ class MigrationGenerator extends AbstractGenerator
 {
     public function generate(): void
     {
-        $template = $this->loadStub($this->getTemplate());
-
+        $template = $this->loadStub($this->getStubName());
         $variables = [
+            'namespace' => $this->context->getNamespace('migration'),
+            'class' => $this->getMigrationClassName(),
             'table' => $this->context->getTableName(),
-            'fields' => $this->formatMigrationContent(),
+            'fields' => $this->formatFields(),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->context->getPath('migration'), $content);
+
+        $path = $this->context->isPackage()
+            ? $this->context->getPath('migration')
+            : base_path('database/migrations/'.date('Y_m_d_His').'_create_'.$this->context->getTableName().'_table.php');
+
+        $this->writeFile($path, $content);
     }
 
-    protected function formatMigrationContent(): string
+    protected function getMigrationClassName(): string
+    {
+        return 'Create'.$this->context->getPluralModelName().'Table';
+    }
+
+    protected function formatFields(): string
     {
         $lines = array_merge(
             $this->getBaseFields(),
             $this->getCustomFields()
         );
 
-        return $this->formatWithIndentation($lines);
+        return $this->formatWithIndentation($lines, 3, "\n");
     }
 
     protected function getBaseFields(): array
     {
         return [
-            '$table->id()',
-            '$table->timestamps()',
+            '$table->id();',
+            '$table->timestamps();',
         ];
     }
 
@@ -44,9 +55,11 @@ class MigrationGenerator extends AbstractGenerator
             $migration = $block->migration();
             if (! empty($migration)) {
                 if (is_array($migration)) {
-                    $fields = array_merge($fields, $migration);
+                    $fields = array_merge($fields, array_map(function ($field) {
+                        return rtrim(trim($field), ';').';';
+                    }, $migration));
                 } else {
-                    $fields[] = $migration;
+                    $fields[] = rtrim(trim($migration), ';').';';
                 }
             }
         }
@@ -55,6 +68,11 @@ class MigrationGenerator extends AbstractGenerator
     }
 
     protected function getGeneratorType(): string
+    {
+        return 'migration';
+    }
+
+    protected function getStubName(): string
     {
         return 'migration';
     }

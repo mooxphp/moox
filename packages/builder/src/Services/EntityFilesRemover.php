@@ -40,23 +40,79 @@ class EntityFilesRemover extends AbstractService
     protected function removeMigrationFiles(): void
     {
         $pattern = $this->getMigrationPattern();
-        $files = glob($pattern) ?: [];
+
+        // Always output, even without command
+        $this->log("Searching for migrations with pattern: {$pattern}");
+
+        if (! File::exists(dirname($pattern))) {
+            $this->log('Migration directory does not exist: '.dirname($pattern));
+
+            return;
+        }
+
+        $files = glob($pattern);
+        if ($files === false) {
+            $this->log('Error while searching for migration files');
+
+            return;
+        }
+
+        if (empty($files)) {
+            $this->log('No migration files found. Table name: '.$this->context->getTableName());
+
+            return;
+        }
 
         foreach ($files as $file) {
-            File::delete($file);
-            if ($command = $this->context->getCommand()) {
-                $command->info("Deleted migration: {$file}");
+            if (File::exists($file)) {
+                try {
+                    File::delete($file);
+                    $this->log("Successfully deleted migration: {$file}");
+                } catch (\Exception $e) {
+                    $this->log("Failed to delete migration {$file}: ".$e->getMessage());
+                }
+            } else {
+                $this->log("Migration file not found: {$file}");
             }
         }
     }
 
+    private function log(string $message): void
+    {
+        if ($command = $this->context->getCommand()) {
+            $command->info($message);
+        }
+        \Log::info('[EntityFilesRemover] '.$message);
+    }
+
     protected function getMigrationPattern(): string
     {
-        $basePath = $this->context->isPackage()
-            ? $this->context->getBasePath().'/database/migrations'
-            : database_path('migrations');
+        $tableName = $this->context->getTableName();
+        $this->log("Table name for migration search: {$tableName}");
 
-        return $basePath.'/*_create_'.$this->context->getTableName().'_table.php*';
+        if ($this->context->isPackage()) {
+            $pattern = $this->context->getBasePath().'/database/migrations/[0-9]*_create_'.$tableName.'_table.php';
+        } elseif ($this->context->isPreview()) {
+            $pattern = app_path('Builder/database/migrations/[0-9]*_create_'.$tableName.'_table.php');
+        } else {
+            // App context
+            $pattern = base_path('database/migrations/[0-9]*_create_'.$tableName.'_table.php');
+        }
+
+        $this->log("Using migration pattern: {$pattern}");
+
+        // Debug: List all files in migrations directory
+        $allFiles = glob(dirname($pattern).'/*');
+        $this->log('All files in migration directory:');
+        foreach ($allFiles as $file) {
+            $this->log('- '.basename($file));
+        }
+
+        // Debug: Test if specific file exists
+        $specificFile = base_path('database/migrations/2024_11_04_194725_create_publishable_items_table.php');
+        $this->log('Testing specific file exists: '.$specificFile.' - '.(File::exists($specificFile) ? 'YES' : 'NO'));
+
+        return $pattern;
     }
 
     protected function getFilePaths(): array

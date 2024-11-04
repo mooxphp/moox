@@ -24,25 +24,19 @@ class EntityGenerator extends AbstractService
             return;
         }
 
-        $presetName = $this->context->getPresetName();
-        if (empty($presetName)) {
-            throw new RuntimeException('No preset name set in context');
-        }
+        // Always include these generators
+        $baseGenerators = ['model', 'migration', 'resource', 'plugin'];
 
-        $presetConfig = config('builder.presets.'.$presetName);
-        if (! $presetConfig || ! isset($presetConfig['generators'])) {
-            throw new RuntimeException("Invalid preset configuration for: {$presetName}");
-        }
-
-        foreach ($presetConfig['generators'] as $type) {
+        $this->generators = array_map(function ($type) {
             $generatorConfig = config("builder.generators.{$type}");
             if (! $generatorConfig || ! isset($generatorConfig['class'])) {
                 throw new RuntimeException("Invalid generator configuration for: {$type}");
             }
 
             $generatorClass = $generatorConfig['class'];
-            $this->generators[] = new $generatorClass($this->context, $this->blocks);
-        }
+
+            return new $generatorClass($this->context, $this->blocks);
+        }, $baseGenerators);
     }
 
     public function execute(): void

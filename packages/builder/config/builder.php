@@ -784,6 +784,7 @@ return [
                 'model' => 'Models',
                 'resource' => 'Filament\Resources',
                 'migration' => 'database\migrations',
+                'plugin' => 'Filament\Plugins',
             ],
         ],
         'package' => [
