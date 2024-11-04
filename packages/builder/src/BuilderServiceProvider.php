@@ -15,6 +15,17 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class BuilderServiceProvider extends PackageServiceProvider
 {
+    public function boot(): void
+    {
+        parent::boot();
+    }
+
+    public function register(): void
+    {
+        parent::register();
+        $this->app->register(BuilderPanelProvider::class);
+    }
+
     public function configurePackage(Package $package): void
     {
         $package
@@ -38,10 +49,5 @@ class BuilderServiceProvider extends PackageServiceProvider
                 CreatePreviewCommand::class,
                 CreateEntityCommand::class,
             ]);
-    }
-
-    public function register(): void
-    {
-        $this->app->register(BuilderPanelProvider::class);
     }
 }
