@@ -812,28 +812,28 @@ return [
     */
     'templates' => [
         'model' => [
-            'path' => 'builder::templates.model',
-            'generators' => ['model'],
-        ],
-        'resource' => [
-            'path' => __DIR__.'/../stubs/resource.stub',
-        ],
-        'resource-List' => [
-            'path' => __DIR__.'/../stubs/resource-list.stub',
-        ],
-        'resource-Create' => [
-            'path' => __DIR__.'/../stubs/resource-create.stub',
-        ],
-        'resource-Edit' => [
-            'path' => __DIR__.'/../stubs/resource-edit.stub',
+            'path' => __DIR__.'/../src/Templates/model.php.stub',
         ],
         'migration' => [
-            'path' => 'builder::templates.migration',
-            'generators' => ['migration'],
+            'path' => __DIR__.'/../src/Templates/migration.php.stub',
+        ],
+        'resource' => [
+            'path' => __DIR__.'/../src/Templates/resource.php.stub',
         ],
         'plugin' => [
-            'path' => 'builder::templates.plugin',
-            'generators' => ['plugin'],
+            'path' => __DIR__.'/../src/Templates/plugin.php.stub',
+        ],
+        'resource-List' => [
+            'path' => __DIR__.'/../src/Templates/pages/list.php.stub',
+        ],
+        'resource-Create' => [
+            'path' => __DIR__.'/../src/Templates/pages/create.php.stub',
+        ],
+        'resource-Edit' => [
+            'path' => __DIR__.'/../src/Templates/pages/edit.php.stub',
+        ],
+        'resource-View' => [
+            'path' => __DIR__.'/../src/Templates/pages/view.php.stub',
         ],
     ],
 

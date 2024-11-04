@@ -23,8 +23,7 @@ class MigrationGenerator extends AbstractGenerator
     {
         $lines = array_merge(
             $this->getBaseFields(),
-            $this->getCustomFields(),
-            $this->getFeatureFields()
+            $this->getCustomFields()
         );
 
         return $this->formatWithIndentation($lines);
@@ -40,16 +39,19 @@ class MigrationGenerator extends AbstractGenerator
 
     protected function getCustomFields(): array
     {
-        return array_filter(array_map(function ($block) {
-            return $block->migration();
-        }, $this->blocks));
-    }
+        $fields = [];
+        foreach ($this->getBlocks() as $block) {
+            $migration = $block->migration();
+            if (! empty($migration)) {
+                if (is_array($migration)) {
+                    $fields = array_merge($fields, $migration);
+                } else {
+                    $fields[] = $migration;
+                }
+            }
+        }
 
-    protected function getFeatureFields(): array
-    {
-        return array_filter(array_merge(...array_map(function ($feature) {
-            return $feature->getMigrations();
-        }, $this->features)));
+        return array_filter($fields);
     }
 
     protected function getGeneratorType(): string

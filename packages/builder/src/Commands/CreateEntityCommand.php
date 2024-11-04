@@ -43,6 +43,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
         }
 
         $context = $this->createContext($name, $package, $preview);
+        $context->setPresetName($presetName);
         (new EntityGenerator($context, $preset->getBlocks(), $preset->getFeatures()))->execute();
 
         $this->info("Entity {$name} created successfully using preset '{$presetName}'!");

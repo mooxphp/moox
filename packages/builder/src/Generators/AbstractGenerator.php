@@ -14,11 +14,20 @@ abstract class AbstractGenerator
     use HandlesContentCleanup;
     use HandlesIndentation;
 
+    protected array $processedBlocks;
+
+    protected array $generatedFiles = [];
+
     public function __construct(
         protected readonly BuildContext $context,
-        protected readonly array $blocks = [],
-        protected readonly array $features = []
-    ) {}
+        array $blocks = []
+    ) {
+        $resolvedBlocks = $this->resolveBlocks($blocks);
+        $this->processedBlocks = array_map(
+            fn ($block) => $block->setContext($this->context),
+            $resolvedBlocks
+        );
+    }
 
     abstract public function generate(): void;
 
@@ -48,11 +57,10 @@ abstract class AbstractGenerator
     protected function formatTraits(): string
     {
         $traits = [];
-
-        foreach ($this->features as $feature) {
-            $featureTraits = $feature->getTraits($this->getGeneratorType());
-            if (! empty($featureTraits)) {
-                $traits = array_merge($traits, $featureTraits);
+        foreach ($this->getBlocks() as $block) {
+            $blockTraits = $block->getTraits($this->getGeneratorType());
+            if (! empty($blockTraits)) {
+                $traits = array_merge($traits, $blockTraits);
             }
         }
 
@@ -67,17 +75,20 @@ abstract class AbstractGenerator
     {
         $methods = [];
 
-        foreach ($this->blocks as $block) {
+        foreach ($this->processedBlocks as $block) {
             $blockMethods = $block->getMethods($this->getGeneratorType());
             if (! empty($blockMethods)) {
-                $methods = array_merge($methods, $blockMethods);
-            }
-        }
-
-        foreach ($this->features as $feature) {
-            $featureMethods = $feature->getMethods($this->getGeneratorType());
-            if (! empty($featureMethods)) {
-                $methods = array_merge($methods, $featureMethods);
+                if (is_array($blockMethods)) {
+                    foreach ($blockMethods as $method) {
+                        if (is_array($method)) {
+                            $methods = array_merge($methods, array_map('strval', $method));
+                        } else {
+                            $methods[] = (string) $method;
+                        }
+                    }
+                } else {
+                    $methods[] = (string) $blockMethods;
+                }
             }
         }
 
@@ -85,22 +96,20 @@ abstract class AbstractGenerator
             return '';
         }
 
-        return implode("\n\n", array_unique($methods));
+        return implode("\n\n", array_unique(array_filter($methods)));
     }
 
     protected function getUseStatements(string $context, ?string $subContext = null): array
     {
         $statements = [];
-
-        foreach ($this->blocks as $block) {
-            $statements = array_merge($statements, $block->getUseStatements($context, $subContext));
+        foreach ($this->getBlocks() as $block) {
+            $blockStatements = $block->getUseStatements($context, $subContext);
+            if (! empty($blockStatements)) {
+                $statements = array_merge($statements, (array) $blockStatements);
+            }
         }
 
-        foreach ($this->features as $feature) {
-            $statements = array_merge($statements, $feature->getUseStatements($context, $subContext));
-        }
-
-        return array_unique($statements);
+        return array_unique(array_filter($statements));
     }
 
     protected function loadStub(string $name): string
@@ -129,31 +138,39 @@ abstract class AbstractGenerator
     protected function replaceTemplateVariables(string $template, array $variables): string
     {
         foreach ($variables as $key => $value) {
-            $template = str_replace('{{'.$key.'}}', $value, $template);
+            $template = str_replace('{{ '.$key.' }}', $value, $template);
         }
+
+        // Clean up any remaining template variables
+        $template = preg_replace('/\{\{\s*[a-zA-Z_]+\s*\}\}/', '', $template);
+
+        // Clean up empty lines
+        $template = preg_replace('/^\h*\v+/m', '', $template);
+        $template = preg_replace('/\n\s*\n\s*\n/', "\n\n", $template);
 
         return $template;
     }
 
     protected function writeFile(string $path, string $content): void
     {
-        $directory = dirname($path);
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        file_put_contents($path, $content);
-
-        if (config('builder.format_with_pint', true)) {
-            $this->formatWithPint($path);
-        }
+        $normalizedPath = $this->normalizePath($path);
+        $this->ensureDirectoryExists($normalizedPath);
+        file_put_contents($normalizedPath, $content);
+        $this->generatedFiles[] = $normalizedPath;
     }
 
-    protected function formatWithPint(string $path): void
+    public function formatGeneratedFiles(): void
     {
-        $vendorPath = base_path('vendor/bin/pint');
-        $command = sprintf('%s %s', $vendorPath, $path);
+        if (empty($this->generatedFiles)) {
+            return;
+        }
 
+        $files = implode(' ', array_map(
+            fn ($file) => escapeshellarg($this->normalizePath($file)),
+            $this->generatedFiles
+        ));
+
+        $command = "vendor/bin/pint {$files}";
         exec($command, $output, $returnCode);
 
         if ($returnCode !== 0) {
@@ -161,10 +178,43 @@ abstract class AbstractGenerator
         }
     }
 
+    protected function ensureDirectoryExists(string $path): void
+    {
+        $directory = dirname($path);
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+    }
+
+    protected function normalizePath(string $path): string
+    {
+        // Convert Windows backslashes to forward slashes
+        $normalized = str_replace('\\', '/', $path);
+
+        // Remove any double slashes
+        return preg_replace('#/+#', '/', $normalized);
+    }
+
     protected function getGeneratorConfig(): array
     {
         $generators = config('builder.generators', []);
 
         return $generators[$this->getGeneratorType()] ?? [];
+    }
+
+    protected function getBlocks(): array
+    {
+        return $this->processedBlocks;
+    }
+
+    protected function resolveBlocks(array $blocks): array
+    {
+        if (! empty($blocks)) {
+            $firstBlock = reset($blocks);
+
+            return $firstBlock->resolveBlockDependencies($blocks);
+        }
+
+        return [];
     }
 }

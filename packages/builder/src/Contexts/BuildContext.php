@@ -27,4 +27,8 @@ interface BuildContext
     public function shouldPublishMigrations(): bool;
 
     public function validate(): void;
+
+    public function getPresetName(): string;
+
+    public function setPresetName(string $name): void;
 }

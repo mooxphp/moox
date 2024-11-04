@@ -6,24 +6,21 @@ namespace Moox\Builder\Blocks;
 
 class TitleWithSlug extends AbstractBlock
 {
-    protected string $slugFieldName;
-
-    protected string $titleFieldName;
-
     public function __construct(
-        string $titleFieldName,
-        string $slugFieldName,
-        string $label,
-        string $description,
+        protected readonly string $titleFieldName = 'title',
+        protected readonly string $slugFieldName = 'slug',
+        string $label = 'Title',
+        string $description = 'The title of the item',
         bool $nullable = false,
     ) {
         parent::__construct($titleFieldName, $label, $description, $nullable);
-        $this->titleFieldName = $titleFieldName;
-        $this->slugFieldName = $slugFieldName;
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ['use Camya\Filament\Forms\Components\TitleWithSlugInput;'],
+                'forms' => [
+                    'use Camya\Filament\Forms\Components\TitleWithSlugInput;',
+                    'use Filament\Forms\Components\Hidden;',
+                ],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => [
                     'use Filament\Tables\Filters\Filter;',
@@ -34,10 +31,10 @@ class TitleWithSlug extends AbstractBlock
         ];
 
         $this->formFields['resource'] = [
-            "TitleWithSlugInput::make(
-                fieldTitle: '{$this->titleFieldName}',
-                fieldSlug: '{$this->slugFieldName}'
-            )",
+            "TextInput::make('{$this->titleFieldName}')
+                ->required()
+                ->maxLength(255)",
+            "Hidden::make('{$this->slugFieldName}')",
         ];
 
         $this->tableColumns['resource'] = [
@@ -97,6 +94,9 @@ class TitleWithSlug extends AbstractBlock
                 \$response->assertSessionHasErrors('{$this->slugFieldName}');
             ",
         ];
+
+        $this->addCast("'{$this->slugFieldName}' => 'string'")
+            ->addCast("'{$this->titleFieldName}' => 'string'");
     }
 
     protected function hasMultipleFields(): bool

@@ -16,7 +16,7 @@ trait HandlesIndentation
         ));
     }
 
-    protected function formatWithIndentation(array $items, int $level = 1): string
+    protected function formatWithIndentation(array $items, int $level = 1, string $separator = ';'): string
     {
         if (empty($items)) {
             return '';
@@ -28,6 +28,6 @@ trait HandlesIndentation
             $items
         );
 
-        return implode(",\n", $formattedItems);
+        return implode($separator."\n", $formattedItems).$separator;
     }
 }

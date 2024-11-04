@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators;
 
+use Moox\Builder\Contexts\BuildContext;
+
 class ResourceGenerator extends AbstractGenerator
 {
+    public function __construct(BuildContext $context, array $blocks = [])
+    {
+        parent::__construct($context, $blocks);
+    }
+
     public function generate(): void
     {
         $template = $this->loadStub($this->getTemplate());
@@ -18,9 +25,14 @@ class ResourceGenerator extends AbstractGenerator
             'navigation_icon' => $this->getNavigationIcon(),
             'use_statements' => $this->formatResourceUseStatements(),
             'traits' => $this->formatTraits(),
+            'form_setup' => $this->getFormSetup(),
             'form_schema' => $this->getFormSchema(),
+            'table_setup' => $this->getTableSetup(),
             'table_columns' => $this->getTableColumns(),
+            'default_sort_column' => $this->getDefaultSortColumn(),
+            'default_sort_direction' => $this->getDefaultSortDirection(),
             'table_actions' => $this->getTableActions(),
+            'table_bulk_actions' => $this->getTableBulkActions(),
             'table_filters' => $this->getTableFilters(),
             'methods' => $this->formatMethods(),
         ];
@@ -28,30 +40,36 @@ class ResourceGenerator extends AbstractGenerator
         $content = $this->replaceTemplateVariables($template, $variables);
         $this->writeFile($this->context->getPath('resource'), $content);
         $this->generateResourcePages();
+        $this->formatGeneratedFiles();
     }
 
     protected function generateResourcePages(): void
     {
-        $pages = ['List', 'Create', 'Edit'];
+        $pages = ['List', 'Create', 'Edit', 'View'];
         $basePath = dirname($this->context->getPath('resource')).'/Pages';
 
         foreach ($pages as $page) {
             $template = $this->loadStub("resource-{$page}");
 
+            $className = $page === 'List'
+                ? $page.$this->context->getPluralModelName()
+                : $page.$this->context->getEntityName();
+
             $variables = [
                 'namespace' => $this->context->getNamespace('resource').'\Pages',
                 'resource_namespace' => $this->context->getNamespace('resource'),
                 'resource_class' => $this->context->getEntityName().'Resource',
-                'class_name' => $page.$this->context->getEntityName(),
+                'class_name' => $className,
                 'model' => $this->context->getEntityName(),
                 'model_plural' => $this->context->getPluralModelName(),
                 'use_statements' => $this->formatPageUseStatements($page),
                 'traits' => $this->formatPageTraits($page),
                 'methods' => $this->formatPageMethods($page),
+                'resource' => $this->context->getEntityName().'Resource',
             ];
 
             $content = $this->replaceTemplateVariables($template, $variables);
-            $this->writeFile($basePath.'/'.$page.$this->context->getEntityName().'.php', $content);
+            $this->writeFile($basePath.'/'.$className.'.php', $content);
         }
     }
 
@@ -73,10 +91,10 @@ class ResourceGenerator extends AbstractGenerator
     protected function formatPageTraits(string $page): string
     {
         $traits = [];
-        foreach ($this->features as $feature) {
-            $featureTraits = $feature->getTraits("resource.pages.{$page}");
-            if (! empty($featureTraits)) {
-                $traits = array_merge($traits, $featureTraits);
+        foreach ($this->getBlocks() as $block) {
+            $blockTraits = $block->getTraits($this->getGeneratorType());
+            if (! empty($blockTraits)) {
+                $traits = array_merge($traits, $blockTraits);
             }
         }
 
@@ -90,10 +108,10 @@ class ResourceGenerator extends AbstractGenerator
     protected function formatPageMethods(string $page): string
     {
         $methods = [];
-        foreach ($this->features as $feature) {
-            $featureMethods = $feature->getMethods("resource.pages.{$page}");
-            if (! empty($featureMethods)) {
-                $methods = array_merge($methods, $featureMethods);
+        foreach ($this->getBlocks() as $block) {
+            $blockMethods = $block->getMethods($this->getGeneratorType());
+            if (! empty($blockMethods)) {
+                $methods = array_merge($methods, $blockMethods);
             }
         }
 
@@ -117,7 +135,11 @@ class ResourceGenerator extends AbstractGenerator
     protected function formatResourceUseStatements(): string
     {
         $statements = array_merge(
-            ['use Filament\Forms\Form;', 'use Filament\Tables\Table;'],
+            [
+                'use Filament\Forms\Form;',
+                'use Filament\Tables\Table;',
+                'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource\Pages;',
+            ],
             $this->getUseStatements('resource', 'forms'),
             $this->getUseStatements('resource', 'columns'),
             $this->getUseStatements('resource', 'filters'),
@@ -132,7 +154,7 @@ class ResourceGenerator extends AbstractGenerator
     protected function getFormSchema(): string
     {
         $fields = [];
-        foreach ($this->blocks as $block) {
+        foreach ($this->getBlocks() as $block) {
             $field = rtrim($block->formField(), ',');
             $fields[] = $field;
         }
@@ -143,7 +165,7 @@ class ResourceGenerator extends AbstractGenerator
     protected function getTableColumns(): string
     {
         $columns = [];
-        foreach ($this->blocks as $block) {
+        foreach ($this->getBlocks() as $block) {
             $column = rtrim($block->tableColumn(), ',');
             $columns[] = $column;
         }
@@ -154,10 +176,10 @@ class ResourceGenerator extends AbstractGenerator
     protected function getTableActions(): string
     {
         $actions = [];
-        foreach ($this->features as $feature) {
-            $featureActions = $feature->getTableActions();
-            if (! empty($featureActions)) {
-                $actions = array_merge($actions, $featureActions);
+        foreach ($this->getBlocks() as $block) {
+            $blockActions = $block->getTableActions();
+            if (! empty($blockActions)) {
+                $actions = array_merge($actions, $blockActions);
             }
         }
 
@@ -167,13 +189,86 @@ class ResourceGenerator extends AbstractGenerator
     protected function getTableFilters(): string
     {
         $filters = [];
-        foreach ($this->features as $feature) {
-            $featureFilters = $feature->getTableFilters();
-            if (! empty($featureFilters)) {
-                $filters = array_merge($filters, $featureFilters);
+        foreach ($this->getBlocks() as $block) {
+            $blockFilters = $block->getTableFilters();
+            if (! empty($blockFilters)) {
+                $filters = array_merge($filters, $blockFilters);
             }
         }
 
         return implode(",\n            ", $filters);
+    }
+
+    protected function getFormSetup(): string
+    {
+        $setup = [];
+        foreach ($this->getBlocks() as $block) {
+            if (method_exists($block, 'getFormSetup')) {
+                $blockSetup = $block->getFormSetup();
+                if (! empty($blockSetup)) {
+                    $setup[] = $blockSetup;
+                }
+            }
+        }
+
+        return implode("\n        ", $setup);
+    }
+
+    protected function getTableSetup(): string
+    {
+        $setup = [];
+        foreach ($this->getBlocks() as $block) {
+            if (method_exists($block, 'getTableSetup')) {
+                $blockSetup = $block->getTableSetup();
+                if (! empty($blockSetup)) {
+                    $setup[] = $blockSetup;
+                }
+            }
+        }
+
+        return implode("\n        ", $setup);
+    }
+
+    protected function getDefaultSortColumn(): string
+    {
+        foreach ($this->getBlocks() as $block) {
+            if (method_exists($block, 'getDefaultSortColumn')) {
+                $column = $block->getDefaultSortColumn();
+                if (! empty($column)) {
+                    return $column;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    protected function getDefaultSortDirection(): string
+    {
+        foreach ($this->getBlocks() as $block) {
+            if (method_exists($block, 'getDefaultSortDirection')) {
+                $direction = $block->getDefaultSortDirection();
+                if (! empty($direction)) {
+                    return $direction;
+                }
+            }
+        }
+
+        return '';
+    }
+
+    protected function getTableBulkActions(): string
+    {
+        $actions = [];
+        foreach ($this->getBlocks() as $block) {
+            if (method_exists($block, 'getTableBulkActions')) {
+                $blockActions = $block->getTableBulkActions();
+                if (! empty($blockActions)) {
+                    $actions = array_merge($actions, $blockActions);
+                }
+            }
+        }
+
+        return implode(",\n            ", $actions);
     }
 }

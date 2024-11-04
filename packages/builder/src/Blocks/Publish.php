@@ -32,6 +32,10 @@ class Publish extends AbstractBlock
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => ['use Filament\Tables\Filters\Filter;'],
                 'actions' => ['use Filament\Actions\Action;'],
+                'traits' => ['use Moox\Core\Traits\SinglePublishInResource;'],
+                'pages' => [
+                    'use App\Filament\Resources\PublishableItemResource\Pages;',
+                ],
             ],
             'pages' => [
                 'list' => ['use Illuminate\Database\Eloquent\Builder;'],

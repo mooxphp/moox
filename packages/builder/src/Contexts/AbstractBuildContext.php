@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 
 abstract class AbstractBuildContext implements BuildContext
 {
+    protected string $presetName = 'simple-item';
+
     public function __construct(
         private readonly string $entityName,
         private readonly string $basePath,
@@ -73,5 +75,15 @@ abstract class AbstractBuildContext implements BuildContext
         $suffix = $this->isPackage() ? '.stub' : '.php';
 
         return $prefix.'create_'.$this->getTableName().'_table'.$suffix;
+    }
+
+    public function getPresetName(): string
+    {
+        return $this->presetName;
+    }
+
+    public function setPresetName(string $name): void
+    {
+        $this->presetName = $name;
     }
 }

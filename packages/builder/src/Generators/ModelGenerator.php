@@ -28,7 +28,7 @@ class ModelGenerator extends AbstractGenerator
     protected function getFillable(): string
     {
         $fillable = [];
-        foreach ($this->blocks as $block) {
+        foreach ($this->getBlocks() as $block) {
             if ($block->isFillable()) {
                 $fillable[] = "'".$block->getName()."'";
             }
@@ -40,7 +40,7 @@ class ModelGenerator extends AbstractGenerator
     protected function getCasts(): string
     {
         $casts = [];
-        foreach ($this->blocks as $block) {
+        foreach ($this->getBlocks() as $block) {
             $cast = $block->modelCast();
             if (! empty($cast)) {
                 $cast = preg_replace("/['\"](.*?)['\"]\s*=>\s*['\"](.*?)['\"]/", "'$1' => '$2'", $cast);
