@@ -151,7 +151,8 @@ class ResourceGenerator extends AbstractGenerator
             [
                 'use Filament\Forms\Form;',
                 'use Filament\Tables\Table;',
-                'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource\Pages;',
+                'use '.$this->context->getNamespace('model').'\\'.$this->context->getEntityName().';',
+                'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource\\Pages;',
             ],
             $this->getUseStatements('resource', 'forms'),
             $this->getUseStatements('resource', 'columns'),
