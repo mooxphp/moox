@@ -147,11 +147,13 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function formatResourceUseStatements(): string
     {
+        $modelNamespace = $this->context->getNamespace('model').'\\'.$this->context->getEntityName();
+
         $statements = array_merge(
             [
                 'use Filament\Forms\Form;',
                 'use Filament\Tables\Table;',
-                'use '.$this->context->getNamespace('model').'\\'.$this->context->getEntityName().';',
+                'use '.$modelNamespace.';',
                 'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource\\Pages;',
             ],
             $this->getUseStatements('resource', 'forms'),
@@ -169,6 +171,11 @@ class ResourceGenerator extends AbstractGenerator
                 }
             }
         }
+
+        // Remove any duplicate use statements and ensure no App\Models namespace is included
+        $statements = array_filter($statements, function ($statement) {
+            return ! str_contains($statement, 'use App\Models\\');
+        });
 
         return implode("\n", array_map(function ($statement) {
             return rtrim($statement, ';').';';
