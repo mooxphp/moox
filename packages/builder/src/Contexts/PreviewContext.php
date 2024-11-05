@@ -15,9 +15,9 @@ class PreviewContext extends AbstractBuildContext
         array $paths = []
     ) {
         $defaultPaths = [
-            'model' => 'Models',
-            'resource' => 'Resources',
-            'plugin' => 'Resources',
+            'model' => 'Builder/Models',
+            'resource' => 'Builder/Resources',
+            'plugin' => 'Builder/Plugins',
             'migration' => 'database/migrations',
         ];
 
@@ -57,21 +57,23 @@ class PreviewContext extends AbstractBuildContext
 
     public function getPath(string $type): string
     {
-        // Override for model in preview context
-        if ($type === 'model') {
-            return app_path('Models/'.$this->getEntityName().'.php');
+        $path = parent::getPath($type);
+
+        // Ensure resource files are in the Resources directory
+        if ($type === 'resource') {
+            return str_replace('/Resources/Resources/', '/Resources/', $path);
         }
 
-        return parent::getPath($type);
+        return $path;
     }
 
     public function getNamespace(string $type): string
     {
-        // Override for model in preview context
-        if ($type === 'model') {
-            return 'App\\Models';
-        }
-
-        return parent::getNamespace($type);
+        return match ($type) {
+            'model' => 'App\\Builder\\Models',
+            'resource' => 'App\\Builder\\Resources',
+            'plugin' => 'App\\Builder\\Plugins',
+            default => parent::getNamespace($type)
+        };
     }
 }

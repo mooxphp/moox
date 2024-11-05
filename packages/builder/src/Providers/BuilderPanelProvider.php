@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Providers;
 
+use App\Builder\SimpleItemPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -30,6 +31,7 @@ class BuilderPanelProvider extends PanelProvider
                 'secondary' => Color::Neutral,
             ])
             ->discoverResources(in: app_path('Builder/Resources'), for: 'App\\Builder\\Resources')
+            //->plugin(SimpleItemPlugin::make())
             ->pages([
                 BuilderDashboard::class,
             ])

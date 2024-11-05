@@ -28,7 +28,5 @@ class SimpleItemPreset extends AbstractPreset
                 description: 'The content of the item'
             ),
         ];
-
-        $this->features = [];
     }
 }

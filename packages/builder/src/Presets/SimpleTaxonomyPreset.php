@@ -6,7 +6,6 @@ namespace Moox\Builder\Presets;
 
 use Moox\Builder\Blocks\Text;
 use Moox\Builder\Blocks\TextArea;
-use Moox\Builder\Features\SingleTaxonomy;
 
 class SimpleTaxonomyPreset extends AbstractPreset
 {
@@ -36,11 +35,6 @@ class SimpleTaxonomyPreset extends AbstractPreset
                 label: 'Description',
                 description: 'The description of the taxonomy'
             ),
-        ];
-
-        $this->features = [
-            // TODO: Implement SingleTaxonomy feature
-            //new SingleTaxonomy,
         ];
     }
 }

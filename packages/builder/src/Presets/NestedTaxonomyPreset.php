@@ -6,7 +6,6 @@ namespace Moox\Builder\Presets;
 
 use Moox\Builder\Blocks\Text;
 use Moox\Builder\Blocks\TextArea;
-use Moox\Builder\Features\NestedTaxonomy;
 
 class NestedTaxonomyPreset extends AbstractPreset
 {
@@ -36,11 +35,6 @@ class NestedTaxonomyPreset extends AbstractPreset
                 label: 'Description',
                 description: 'The description of the taxonomy'
             ),
-        ];
-
-        $this->features = [
-            // TODO: Implement NestedTaxonomy feature
-            //new NestedTaxonomy,
         ];
     }
 }

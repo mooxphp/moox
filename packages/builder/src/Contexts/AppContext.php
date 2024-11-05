@@ -17,7 +17,7 @@ class AppContext extends AbstractBuildContext
         $defaultPaths = [
             'model' => 'Models',
             'resource' => 'Filament/Resources',
-            'plugin' => 'Filament/Resources',
+            'plugin' => 'Filament',
             'migration' => 'database/migrations',
         ];
 

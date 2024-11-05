@@ -35,7 +35,8 @@ class CreatePreviewCommand extends AbstractBuilderCommand
         }
 
         $context = $this->createContext($name, preview: true);
-        (new EntityGenerator($context, $preset->getBlocks(), $preset->getFeatures()))->execute();
+        $context->setPresetName($presetName);
+        (new EntityGenerator($context, $preset->getBlocks()))->execute();
         (new PreviewMigrator($context))->execute();
 
         $this->info("Preview entity {$name} created successfully using preset '{$presetName}'!");

@@ -40,11 +40,14 @@ abstract class AbstractBuildContext implements BuildContext
 
     public function getPath(string $type): string
     {
-        $contextConfig = config('builder.contexts.'.$this->getContextType());
-        $paths = $contextConfig['paths'] ?? [];
-        $path = $paths[$type] ?? '';
+        if (! isset($this->paths[$type])) {
+            throw new \InvalidArgumentException("Unknown path type: {$type}");
+        }
 
-        return $this->getBasePath().'/'.str_replace('\\', '/', $path).'/'.$this->getFileName($type);
+        $path = $this->paths[$type];
+        $fileName = $this->getFileName($type);
+
+        return $this->getBasePath().'/'.str_replace('\\', '/', $path).'/'.$fileName;
     }
 
     protected function getFileName(string $type): string

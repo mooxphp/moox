@@ -17,7 +17,7 @@ class PackageContext extends AbstractBuildContext
         $defaultPaths = [
             'model' => 'src/Models',
             'resource' => 'src/Resources',
-            'plugin' => 'src/Resources',
+            'plugin' => 'src',
             'migration' => 'database/migrations',
         ];
 
