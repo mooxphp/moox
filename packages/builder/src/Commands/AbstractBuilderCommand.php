@@ -24,18 +24,4 @@ abstract class AbstractBuilderCommand extends Command
             packageNamespace: $package
         );
     }
-
-    private function parsePackageName(string $package): array
-    {
-        if (str_contains($package, '/')) {
-            return explode('/', $package);
-        }
-
-        return [$package, $this->guessPackageName($package)];
-    }
-
-    private function guessPackageName(string $vendor): string
-    {
-        return $vendor.'Package';
-    }
 }

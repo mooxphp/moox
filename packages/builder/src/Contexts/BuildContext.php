@@ -143,7 +143,29 @@ class BuildContext
         $this->command = $command;
     }
 
-    protected function getPageTemplate(string $type, string $page): string
+    public function getTableName(): string
+    {
+        return strtolower($this->getPluralModelName());
+    }
+
+    public function getPluralModelName(): string
+    {
+        return str_ends_with($this->entityName, 'y')
+            ? substr($this->entityName, 0, -1).'ies'
+            : $this->entityName.'s';
+    }
+
+    public function isPackage(): bool
+    {
+        return $this->contextType === 'package';
+    }
+
+    public function isPreview(): bool
+    {
+        return $this->contextType === 'preview';
+    }
+
+    public function getPageTemplate(string $type, string $page): string
     {
         $config = $this->getConfig()['classes'][$type] ?? null;
         if (! $config || ! isset($config['page_templates'][$page])) {
