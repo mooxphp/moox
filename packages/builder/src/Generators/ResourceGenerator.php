@@ -50,7 +50,7 @@ class ResourceGenerator extends AbstractGenerator
         $basePath = dirname($this->context->getPath('resource')).'/'.$resourceName.'/Pages';
 
         foreach ($pages as $page) {
-            $template = $this->loadStub($this->context->getTemplate("resource-{$page}"));
+            $template = $this->loadStub($this->context->getPageTemplate($this->getGeneratorType(), $page));
 
             $className = $page === 'List'
                 ? $page.$this->context->getPluralModelName()

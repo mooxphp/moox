@@ -830,9 +830,15 @@ return [
                     'generator' => \Moox\Builder\Generators\ModelGenerator::class,
                 ],
                 'resource' => [
-                    'path' => '%BasePath%\%ClassPath%\Filament\Resources',
-                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Filament\\Resources',
+                    'path' => '%BasePath%\%ClassPath%\Resources',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Resources',
                     'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/resource-list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/resource-create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/resource-edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/resource-view.php.stub',
+                    ],
                     'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
                 ],
                 'migration' => [
@@ -849,9 +855,9 @@ return [
             ],
         ],
         'package' => [
-            'base_path' => $packagePath,
-            'class_path' => $packageClassPath,
-            'base_namespace' => $packageNamespace,
+            'base_path' => '$PackagePath',
+            'class_path' => '$PackageClassPath',
+            'base_namespace' => '$PackageNamespace',
             'classes' => [
                 'model' => [
                     'path' => '%BasePath%\%ClassPath%\src\Models',
@@ -863,6 +869,12 @@ return [
                     'path' => '%BasePath%\%ClassPath%\src\Resources',
                     'namespace' => '%BaseNamespace%\\%ClassPath%\\Resources',
                     'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/resource-list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/resource-create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/resource-edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/resource-view.php.stub',
+                    ],
                     'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
                 ],
                 'migration_stub' => [
@@ -893,6 +905,12 @@ return [
                     'path' => '%BasePath%\%ClassPath%\Resources',
                     'namespace' => '%BaseNamespace%\\%ClassPath%\\Resources',
                     'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/resource-list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/resource-create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/resource-edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/resource-view.php.stub',
+                    ],
                     'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
                 ],
                 'migration' => [

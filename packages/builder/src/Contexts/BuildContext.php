@@ -7,6 +7,7 @@ namespace Moox\Builder\Contexts;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use RuntimeException;
 
 class BuildContext
 {
@@ -140,5 +141,15 @@ class BuildContext
     public function setCommand(Command $command): void
     {
         $this->command = $command;
+    }
+
+    protected function getPageTemplate(string $type, string $page): string
+    {
+        $config = $this->getConfig()['classes'][$type] ?? null;
+        if (! $config || ! isset($config['page_templates'][$page])) {
+            throw new RuntimeException("No template configured for {$type} page: {$page}");
+        }
+
+        return $config['page_templates'][$page];
     }
 }
