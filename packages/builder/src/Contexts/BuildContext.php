@@ -5,36 +5,140 @@ declare(strict_types=1);
 namespace Moox\Builder\Contexts;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
 
-interface BuildContext
+class BuildContext
 {
-    public function getEntityName(): string;
+    protected string $presetName = 'simple-item';
 
-    public function getBasePath(): string;
+    protected ?Command $command = null;
 
-    public function getBaseNamespace(): string;
+    public function __construct(
+        protected readonly string $contextType,
+        protected readonly string $entityName,
+        protected ?string $packageNamespace = null
+    ) {
+        $this->validate();
+    }
 
-    public function getPath(string $type): string;
+    public function getConfig(): array
+    {
+        return config("builder.contexts.{$this->contextType}");
+    }
 
-    public function getNamespace(string $type): string;
+    public function getEntityName(): string
+    {
+        return $this->entityName;
+    }
 
-    public function getTableName(): string;
+    public function getBasePath(): string
+    {
+        return $this->getConfig()['base_path'];
+    }
 
-    public function getPluralModelName(): string;
+    public function getClassPath(): string
+    {
+        return $this->getConfig()['class_path'];
+    }
 
-    public function isPreview(): bool;
+    public function getBaseNamespace(): string
+    {
+        return $this->getConfig()['base_namespace'];
+    }
 
-    public function isPackage(): bool;
+    public function getPath(string $type): string
+    {
+        $config = $this->getConfig()['classes'][$type] ?? null;
+        if (! $config) {
+            throw new InvalidArgumentException("Unknown class type: {$type}");
+        }
 
-    public function shouldPublishMigrations(): bool;
+        return $this->resolvePath($config['path']).'/'.$this->getFileName($type);
+    }
 
-    public function validate(): void;
+    public function getNamespace(string $type): string
+    {
+        $config = $this->getConfig()['classes'][$type] ?? null;
+        if (! $config) {
+            throw new InvalidArgumentException("Unknown class type: {$type}");
+        }
 
-    public function getPresetName(): string;
+        return $this->resolveNamespace($config['namespace']);
+    }
 
-    public function setPresetName(string $name): void;
+    public function getTemplate(string $type): string
+    {
+        $config = $this->getConfig()['classes'][$type] ?? null;
+        if (! $config || ! isset($config['template'])) {
+            throw new InvalidArgumentException("No template found for type: {$type}");
+        }
 
-    public function getCommand(): ?Command;
+        return $config['template'];
+    }
 
-    public function setCommand(Command $command): void;
+    public function getGenerator(string $type): string
+    {
+        $config = $this->getConfig()['classes'][$type] ?? null;
+        if (! $config || ! isset($config['generator'])) {
+            throw new InvalidArgumentException("No generator found for type: {$type}");
+        }
+
+        return $config['generator'];
+    }
+
+    protected function resolvePath(string $path): string
+    {
+        return str_replace(
+            ['%BasePath%', '%ClassPath%'],
+            [$this->getBasePath(), $this->getClassPath()],
+            $path
+        );
+    }
+
+    protected function resolveNamespace(string $namespace): string
+    {
+        return str_replace(
+            ['%BaseNamespace%', '%ClassPath%'],
+            [$this->getBaseNamespace(), str_replace('/', '\\', $this->getClassPath())],
+            $namespace
+        );
+    }
+
+    protected function getFileName(string $type): string
+    {
+        return match ($type) {
+            'migration' => date('Y_m_d_His').'_create_'.Str::snake(Str::plural($this->entityName)).'_table.php',
+            'migration_stub' => 'create_'.Str::snake(Str::plural($this->entityName)).'_table.php.stub',
+            default => $this->entityName.Str::studly($type).'.php'
+        };
+    }
+
+    public function validate(): void
+    {
+        if (! config("builder.contexts.{$this->contextType}")) {
+            throw new InvalidArgumentException("Invalid context type: {$this->contextType}");
+        }
+    }
+
+    // Preset and Command methods
+    public function getPresetName(): string
+    {
+        return $this->presetName;
+    }
+
+    public function setPresetName(string $name): void
+    {
+        $this->presetName = $name;
+    }
+
+    public function getCommand(): ?Command
+    {
+        return $this->command;
+    }
+
+    public function setCommand(Command $command): void
+    {
+        $this->command = $command;
+    }
 }

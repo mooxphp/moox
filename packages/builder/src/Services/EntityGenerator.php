@@ -24,18 +24,20 @@ class EntityGenerator extends AbstractService
             return;
         }
 
-        $baseGenerators = ['model', 'migration', 'resource', 'plugin'];
+        $contextConfig = $this->context->getConfig();
+        $classes = $contextConfig['classes'] ?? [];
 
-        $this->generators = array_map(function ($type) {
-            $generatorConfig = config("builder.generators.{$type}");
-            if (! $generatorConfig || ! isset($generatorConfig['class'])) {
-                throw new RuntimeException("Invalid generator configuration for: {$type}");
-            }
+        $this->generators = array_map(
+            function ($type) use ($classes) {
+                $generatorClass = $classes[$type]['generator'] ?? null;
+                if (! $generatorClass) {
+                    throw new RuntimeException("No generator configured for type: {$type}");
+                }
 
-            $generatorClass = $generatorConfig['class'];
-
-            return new $generatorClass($this->context, $this->blocks);
-        }, $baseGenerators);
+                return new $generatorClass($this->context, $this->blocks);
+            },
+            array_keys($classes)
+        );
     }
 
     public function execute(): void

@@ -8,7 +8,7 @@ class MigrationGenerator extends AbstractGenerator
 {
     public function generate(): void
     {
-        $template = $this->loadStub($this->getStubName());
+        $template = $this->loadStub($this->getTemplate());
         $variables = [
             'namespace' => $this->context->getNamespace('migration'),
             'class' => $this->getMigrationClassName(),
@@ -17,12 +17,12 @@ class MigrationGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
+        $this->writeFile($this->context->getPath('migration'), $content);
+    }
 
-        $path = $this->context->isPackage()
-            ? $this->context->getPath('migration')
-            : base_path('database/migrations/'.date('Y_m_d_His').'_create_'.$this->context->getTableName().'_table.php');
-
-        $this->writeFile($path, $content);
+    protected function getGeneratorType(): string
+    {
+        return 'migration';
     }
 
     protected function getMigrationClassName(): string
@@ -65,15 +65,5 @@ class MigrationGenerator extends AbstractGenerator
         }
 
         return array_filter($fields);
-    }
-
-    protected function getGeneratorType(): string
-    {
-        return 'migration';
-    }
-
-    protected function getStubName(): string
-    {
-        return 'migration';
     }
 }

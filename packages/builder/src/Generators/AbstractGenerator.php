@@ -35,14 +35,7 @@ abstract class AbstractGenerator
 
     protected function getTemplate(): string
     {
-        $generators = config('builder.generators', []);
-        $generatorConfig = $generators[$this->getGeneratorType()] ?? null;
-
-        if (! $generatorConfig || ! isset($generatorConfig['template'])) {
-            throw new RuntimeException("No template configured for generator {$this->getGeneratorType()}");
-        }
-
-        return $generatorConfig['template'];
+        return $this->context->getTemplate($this->getGeneratorType());
     }
 
     protected function formatUseStatements(): string
@@ -112,27 +105,13 @@ abstract class AbstractGenerator
         return array_unique(array_filter($statements));
     }
 
-    protected function loadStub(string $name): string
+    protected function loadStub(string $path): string
     {
-        $path = $this->getStubPath($name);
-
         if (! file_exists($path)) {
-            throw new RuntimeException("Stub file not found: {$path}");
+            throw new RuntimeException("Template not found: {$path}");
         }
 
         return file_get_contents($path);
-    }
-
-    protected function getStubPath(string $name): string
-    {
-        $templates = config('builder.templates', []);
-        $template = $templates[$name] ?? null;
-
-        if (! $template || ! isset($template['path'])) {
-            throw new RuntimeException("Template not found: {$name}");
-        }
-
-        return $template['path'];
     }
 
     protected function replaceTemplateVariables(string $template, array $variables): string
@@ -141,10 +120,7 @@ abstract class AbstractGenerator
             $template = str_replace('{{ '.$key.' }}', $value, $template);
         }
 
-        // Clean up any remaining template variables
         $template = preg_replace('/\{\{\s*[a-zA-Z_]+\s*\}\}/', '', $template);
-
-        // Clean up empty lines
         $template = preg_replace('/^\h*\v+/m', '', $template);
         $template = preg_replace('/\n\s*\n\s*\n/', "\n\n", $template);
 
@@ -188,18 +164,9 @@ abstract class AbstractGenerator
 
     protected function normalizePath(string $path): string
     {
-        // Convert Windows backslashes to forward slashes
         $normalized = str_replace('\\', '/', $path);
 
-        // Remove any double slashes
         return preg_replace('#/+#', '/', $normalized);
-    }
-
-    protected function getGeneratorConfig(): array
-    {
-        $generators = config('builder.generators', []);
-
-        return $generators[$this->getGeneratorType()] ?? [];
     }
 
     protected function getBlocks(): array

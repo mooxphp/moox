@@ -8,26 +8,21 @@ use InvalidArgumentException;
 
 class ContextFactory
 {
-    public static function create(string $contextType, string $entityName): BuildContext
-    {
+    public static function create(
+        string $contextType,
+        string $entityName,
+        ?string $packageNamespace = null
+    ): BuildContext {
         $contexts = config('builder.contexts', []);
-        $contextConfig = $contexts[$contextType] ?? null;
 
-        if (! $contextConfig || ! isset($contextConfig['class'])) {
+        if (! isset($contexts[$contextType])) {
             throw new InvalidArgumentException("Invalid context type: {$contextType}");
         }
 
-        $contextClass = $contextConfig['class'];
-
-        if (! class_exists($contextClass) || ! is_subclass_of($contextClass, BuildContext::class)) {
-            throw new InvalidArgumentException("Invalid context class: {$contextClass}");
-        }
-
-        return new $contextClass(
+        return new BuildContext(
+            contextType: $contextType,
             entityName: $entityName,
-            basePath: $contextConfig['base_path'] ?? '',
-            baseNamespace: $contextConfig['base_namespace'] ?? '',
-            paths: $contextConfig['paths'] ?? []
+            packageNamespace: $packageNamespace
         );
     }
 }

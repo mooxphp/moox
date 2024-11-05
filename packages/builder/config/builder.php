@@ -771,10 +771,11 @@ return [
     | Blocks
     |--------------------------------------------------------------------------
     |
-    | Define the available blocks that can be used to build resources
-    | and presets, that can be used to build resources from cli.
+    | Define the available blocks that can be used to build resources.
+    | Mute existing blocks or add your own blocks as you like.
     |
     */
+
     'blocks' => [
         'author' => \Moox\Builder\Blocks\Author::class,
         'bool' => \Moox\Builder\Blocks\Bool::class,
@@ -807,101 +808,100 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Contexts
+    | Build Contexts
     |--------------------------------------------------------------------------
     |
     | Define the available build contexts and their configurations.
-    | Each context can have its own path and namespace settings.
+    | Each context can have its own path and namespace settings,
+    | template and generator, and also can do migrations.
     |
     */
+
     'contexts' => [
         'app' => [
-            'class' => \Moox\Builder\Contexts\AppContext::class,
             'base_path' => app_path(),
+            'class_path' => 'app',
             'base_namespace' => 'App',
-            'paths' => [
-                'model' => 'Models',
-                'resource' => 'Filament\Resources',
-                'migration' => 'database\migrations',
-                'plugin' => 'Filament\Plugins',
+            'classes' => [
+                'model' => [
+                    'path' => '%BasePath%\%ClassPath%\Models',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Models',
+                    'template' => __DIR__.'/../src/Templates/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\%ClassPath%\Filament\Resources',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Filament\\Resources',
+                    'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
+                ],
+                'migration' => [
+                    'path' => 'database\migrations',
+                    'template' => __DIR__.'/../src/Templates/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\%ClassPath%\Filament\Plugins',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Filament\\Plugins',
+                    'template' => __DIR__.'/../src/Templates/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\PluginGenerator::class,
+                ],
             ],
         ],
         'package' => [
-            'class' => \Moox\Builder\Contexts\PackageContext::class,
-            'paths' => [
-                'model' => 'src\Models',
-                'resource' => 'src\Resources',
-                'migration' => 'database\migrations',
+            'base_path' => $packagePath,
+            'class_path' => $packageClassPath,
+            'base_namespace' => $packageNamespace,
+            'classes' => [
+                'model' => [
+                    'path' => '%BasePath%\%ClassPath%\src\Models',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Models',
+                    'template' => __DIR__.'/../src/Templates/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\%ClassPath%\src\Resources',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
+                ],
+                'migration_stub' => [
+                    'path' => '%BasePath%\database\migrations',
+                    'template' => __DIR__.'/../src/Templates/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\%ClassPath%\src',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%',
+                    'template' => __DIR__.'/../src/Templates/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\PluginGenerator::class,
+                ],
             ],
         ],
         'preview' => [
-            'class' => \Moox\Builder\Contexts\PreviewContext::class,
-            'base_path' => app_path('Builder'),
+            'base_path' => app_path(),
+            'class_path' => 'Builder',
             'base_namespace' => 'App\\Builder',
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Templates
-    |--------------------------------------------------------------------------
-    |
-    | Define the templates used by generators. You can override these
-    | with your own templates by specifying the full path.
-    |
-    */
-    'templates' => [
-        'model' => [
-            'path' => __DIR__.'/../src/Templates/model.php.stub',
-        ],
-        'migration' => [
-            'path' => __DIR__.'/../src/Templates/migration.php.stub',
-        ],
-        'resource' => [
-            'path' => __DIR__.'/../src/Templates/resource.php.stub',
-        ],
-        'plugin' => [
-            'path' => __DIR__.'/../src/Templates/plugin.php.stub',
-        ],
-        'resource-List' => [
-            'path' => __DIR__.'/../src/Templates/pages/list.php.stub',
-        ],
-        'resource-Create' => [
-            'path' => __DIR__.'/../src/Templates/pages/create.php.stub',
-        ],
-        'resource-Edit' => [
-            'path' => __DIR__.'/../src/Templates/pages/edit.php.stub',
-        ],
-        'resource-View' => [
-            'path' => __DIR__.'/../src/Templates/pages/view.php.stub',
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Generators
-    |--------------------------------------------------------------------------
-    |
-    | Configure the generators and their specific settings.
-    | Each generator can have its own configuration.
-    |
-    */
-    'generators' => [
-        'model' => [
-            'class' => \Moox\Builder\Generators\ModelGenerator::class,
-            'template' => 'model',
-        ],
-        'migration' => [
-            'class' => \Moox\Builder\Generators\MigrationGenerator::class,
-            'template' => 'migration',
-        ],
-        'resource' => [
-            'class' => \Moox\Builder\Generators\ResourceGenerator::class,
-            'template' => 'resource',
-        ],
-        'plugin' => [
-            'class' => \Moox\Builder\Generators\PluginGenerator::class,
-            'template' => 'plugin',
+            'classes' => [
+                'model' => [
+                    'path' => '%BasePath%\%ClassPath%\Models',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Models',
+                    'template' => __DIR__.'/../src/Templates/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\%ClassPath%\Resources',
+                    'namespace' => '%BaseNamespace%\\%ClassPath%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
+                ],
+                'migration' => [
+                    'path' => 'database\migrations',
+                    'template' => __DIR__.'/../src/Templates/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
+                ],
+            ],
+            'should_migrate' => true,
         ],
     ],
 
