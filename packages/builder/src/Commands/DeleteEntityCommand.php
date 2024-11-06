@@ -18,10 +18,16 @@ class DeleteEntityCommand extends AbstractBuilderCommand
         $name = $this->argument('name');
         $force = $this->option('force');
 
-        $previewPath = config('builder.contexts.preview.base_path').'/Resources/'.$name.'Resource.php';
-        $appPath = config('builder.contexts.app.base_path').'/'.
-                   str_replace('\\', '/', config('builder.contexts.app.paths.resource')).'/'.
-                   $name.'Resource.php';
+        $previewContext = $this->createContext($name, preview: true);
+        $appContext = $this->createContext($name);
+
+        $previewPath = $this->normalizePath($previewContext->getPath('resource').'/'.$name.'Resource.php');
+        $appPath = $this->normalizePath($appContext->getPath('resource').'/'.$name.'Resource.php');
+
+        $this->info('Checking paths:');
+        $this->info("Preview path: $previewPath");
+        $this->info("App path: $appPath");
+        $this->info('App path exists: '.(File::exists($appPath) ? 'YES' : 'NO'));
 
         $previewExists = File::exists($previewPath);
         $appExists = File::exists($appPath);
@@ -29,8 +35,10 @@ class DeleteEntityCommand extends AbstractBuilderCommand
         $packagePath = '';
 
         if ($package = $this->option('package')) {
-            $packagePath = base_path("packages/{$package}");
-            $packageExists = File::exists($packagePath.'/src/Resources/'.$name.'Resource.php');
+            $packageContext = $this->createContext($name, package: $package);
+            $packagePath = $this->normalizePath($packageContext->getPath('resource').'/'.$name.'Resource.php');
+            $packageExists = File::exists($packagePath);
+            $this->info("Package path: $packagePath");
         }
 
         if (! $previewExists && ! $appExists && ! $packageExists) {
@@ -91,5 +99,10 @@ class DeleteEntityCommand extends AbstractBuilderCommand
         $context = $this->createContext($name, package: $package);
         (new EntityFilesRemover($context))->execute();
         $this->info("Package entity '{$name}' deleted successfully!");
+    }
+
+    private function normalizePath(string $path): string
+    {
+        return str_replace('\\', '/', $path);
     }
 }

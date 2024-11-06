@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Filament\Resources\Resource;
-use App\Models\{{ model }};
 {{ use_statements }}
 
 class {{ class_name }}Resource extends Resource

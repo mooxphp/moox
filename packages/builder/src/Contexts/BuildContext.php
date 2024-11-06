@@ -38,11 +38,6 @@ class BuildContext
         return $this->getConfig()['base_path'];
     }
 
-    public function getClassPath(): string
-    {
-        return $this->getConfig()['class_path'];
-    }
-
     public function getBaseNamespace(): string
     {
         return $this->getConfig()['base_namespace'];
@@ -51,21 +46,29 @@ class BuildContext
     public function getPath(string $type): string
     {
         $config = $this->getConfig()['classes'][$type] ?? null;
-        if (! $config) {
-            throw new InvalidArgumentException("Unknown class type: {$type}");
+        if (! $config || ! isset($config['path'])) {
+            throw new RuntimeException("No path configured for type: {$type}");
         }
 
-        return $this->resolvePath($config['path']).'/'.$this->getFileName($type);
+        return str_replace(
+            '%BasePath%',
+            rtrim($this->getBasePath(), '/'),
+            $config['path']
+        );
     }
 
     public function getNamespace(string $type): string
     {
         $config = $this->getConfig()['classes'][$type] ?? null;
-        if (! $config) {
-            throw new InvalidArgumentException("Unknown class type: {$type}");
+        if (! $config || ! isset($config['namespace'])) {
+            throw new RuntimeException("No namespace configured for type: {$type}");
         }
 
-        return $this->resolveNamespace($config['namespace']);
+        return str_replace(
+            '%BaseNamespace%',
+            rtrim($this->getBaseNamespace(), '\\'),
+            $config['namespace']
+        );
     }
 
     public function getTemplate(string $type): string
@@ -88,25 +91,7 @@ class BuildContext
         return $config['generator'];
     }
 
-    protected function resolvePath(string $path): string
-    {
-        return str_replace(
-            ['%BasePath%', '%ClassPath%'],
-            [$this->getBasePath(), $this->getClassPath()],
-            $path
-        );
-    }
-
-    protected function resolveNamespace(string $namespace): string
-    {
-        return str_replace(
-            ['%BaseNamespace%', '%ClassPath%'],
-            [$this->getBaseNamespace(), str_replace('/', '\\', $this->getClassPath())],
-            $namespace
-        );
-    }
-
-    protected function getFileName(string $type): string
+    public function getFileName(string $type): string
     {
         return match ($type) {
             'migration' => date('Y_m_d_His').'_create_'.Str::snake(Str::plural($this->entityName)).'_table.php',
@@ -122,7 +107,6 @@ class BuildContext
         }
     }
 
-    // Preset and Command methods
     public function getPresetName(): string
     {
         return $this->presetName;

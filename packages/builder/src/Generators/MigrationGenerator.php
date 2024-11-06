@@ -10,14 +10,16 @@ class MigrationGenerator extends AbstractGenerator
     {
         $template = $this->loadStub($this->getTemplate());
         $variables = [
-            'namespace' => $this->context->getNamespace('migration'),
             'class' => $this->getMigrationClassName(),
             'table' => $this->context->getTableName(),
             'fields' => $this->formatFields(),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->context->getPath('migration'), $content);
+        $this->writeFile(
+            $this->context->getPath('migration').'/create_'.$this->context->getTableName().'_table.php',
+            $content
+        );
     }
 
     protected function getGeneratorType(): string

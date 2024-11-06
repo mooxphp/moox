@@ -16,14 +16,17 @@ class ResourceGenerator extends AbstractGenerator
     public function generate(): void
     {
         $template = $this->loadStub($this->getTemplate());
+        $modelNamespace = $this->context->getNamespace('model');
+        $modelClass = $this->context->getEntityName();
 
         $variables = [
             'namespace' => $this->context->getNamespace('resource'),
-            'class_name' => $this->context->getEntityName(),
-            'model' => $this->context->getEntityName(),
+            'class_name' => $modelClass,
+            'model' => $modelClass,
+            'model_namespace' => $modelNamespace,
             'model_plural' => $this->context->getPluralModelName(),
             'navigation_icon' => $this->getNavigationIcon(),
-            'use_statements' => $this->formatResourceUseStatements(),
+            'use_statements' => "use {$modelNamespace}\\{$modelClass};\n".$this->formatResourceUseStatements(),
             'traits' => $this->formatTraits(),
             'form_setup' => $this->getFormSetup(),
             'form_schema' => $this->getFormSchema(),
@@ -38,7 +41,10 @@ class ResourceGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->context->getPath('resource'), $content);
+        $this->writeFile(
+            $this->context->getPath('resource').'/'.$this->context->getEntityName().'Resource.php',
+            $content
+        );
         $this->generateResourcePages();
         $this->formatGeneratedFiles();
     }
@@ -47,17 +53,17 @@ class ResourceGenerator extends AbstractGenerator
     {
         $pages = ['List', 'Create', 'Edit', 'View'];
         $resourceName = $this->context->getEntityName().'Resource';
-        $basePath = dirname($this->context->getPath('resource')).'/'.$resourceName.'/Pages';
+        $basePath = $this->context->getPath('resource').'/'.$resourceName.'/Pages';
 
         foreach ($pages as $page) {
-            $template = $this->loadStub($this->context->getPageTemplate($this->getGeneratorType(), $page));
+            $template = $this->loadStub($this->context->getPageTemplate('resource', $page));
 
             $className = $page === 'List'
                 ? $page.$this->context->getPluralModelName()
                 : $page.$this->context->getEntityName();
 
             $variables = [
-                'namespace' => $this->context->getNamespace('resource').'\\'.$resourceName.'\Pages',
+                'namespace' => $this->context->getNamespace('resource').'\\'.$resourceName.'\\Pages',
                 'resource_namespace' => $this->context->getNamespace('resource'),
                 'resource_class' => $resourceName,
                 'class_name' => $className,
@@ -70,7 +76,6 @@ class ResourceGenerator extends AbstractGenerator
             ];
 
             $content = $this->replaceTemplateVariables($template, $variables);
-            $this->ensureDirectoryExists($basePath);
             $this->writeFile($basePath.'/'.$className.'.php', $content);
         }
     }
@@ -147,13 +152,10 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function formatResourceUseStatements(): string
     {
-        $modelNamespace = $this->context->getNamespace('model').'\\'.$this->context->getEntityName();
-
         $statements = array_merge(
             [
                 'use Filament\Forms\Form;',
                 'use Filament\Tables\Table;',
-                'use '.$modelNamespace.';',
                 'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource\\Pages;',
             ],
             $this->getUseStatements('resource', 'forms'),
@@ -163,7 +165,6 @@ class ResourceGenerator extends AbstractGenerator
             $this->getUseStatements('resource', 'traits')
         );
 
-        // Add trait use statements from blocks
         foreach ($this->getBlocks() as $block) {
             if (! empty($block->traits['resource'])) {
                 foreach ($block->traits['resource'] as $trait) {
@@ -171,11 +172,6 @@ class ResourceGenerator extends AbstractGenerator
                 }
             }
         }
-
-        // Remove any duplicate use statements and ensure no App\Models namespace is included
-        $statements = array_filter($statements, function ($statement) {
-            return ! str_contains($statement, 'use App\Models\\');
-        });
 
         return implode("\n", array_map(function ($statement) {
             return rtrim($statement, ';').';';
