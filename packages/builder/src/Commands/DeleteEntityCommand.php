@@ -6,6 +6,7 @@ namespace Moox\Builder\Commands;
 
 use Illuminate\Support\Facades\File;
 use Moox\Builder\Services\EntityFilesRemover;
+use Moox\Builder\Services\EntityTablesRemover;
 
 class DeleteEntityCommand extends AbstractBuilderCommand
 {
@@ -84,6 +85,8 @@ class DeleteEntityCommand extends AbstractBuilderCommand
     {
         $context = $this->createContext($name, preview: true);
         (new EntityFilesRemover($context))->execute();
+        (new EntityTablesRemover($context))->execute();
+
         $this->info("Preview entity '{$name}' deleted successfully!");
     }
 

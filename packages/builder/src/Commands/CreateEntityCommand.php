@@ -6,10 +6,11 @@ namespace Moox\Builder\Commands;
 
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\EntityGenerator;
+use Moox\Builder\Services\PreviewMigrator;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
-    protected $signature = 'builder:create-entity {name} {--package=} {--preview} {--app} {--preset=}';
+    protected $signature = 'builder:create {name} {--package=} {--preview} {--app} {--preset=}';
 
     protected $description = 'Create a new entity with model, resource and plugin';
 
@@ -45,6 +46,10 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
         (new EntityGenerator($context, $preset->getBlocks()))->execute();
+
+        if ($preview) {
+            (new PreviewMigrator($context))->execute();
+        }
 
         $this->info("Entity {$name} created successfully using preset '{$presetName}'!");
     }

@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder;
 
 use Moox\Builder\Commands\CreateEntityCommand;
-use Moox\Builder\Commands\CreatePreviewCommand;
 use Moox\Builder\Commands\DeleteEntityCommand;
-use Moox\Builder\Commands\DeletePreviewCommand;
 use Moox\Builder\Commands\InstallCommand;
 use Moox\Builder\Providers\BuilderPanelProvider;
 use Spatie\LaravelPackageTools\Package;
@@ -44,9 +42,7 @@ class BuilderServiceProvider extends PackageServiceProvider
             ])
             ->hasCommands([
                 InstallCommand::class,
-                DeletePreviewCommand::class,
                 DeleteEntityCommand::class,
-                CreatePreviewCommand::class,
                 CreateEntityCommand::class,
             ]);
     }
