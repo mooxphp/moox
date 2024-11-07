@@ -87,30 +87,30 @@ Just make your changes in the published builder.php config file to create your o
                 'model' => [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/model.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
                     'generator' => \Moox\Builder\Generators\ModelGenerator::class,
                 ],
                 'resource' => [
                     'path' => '%BasePath%\Resources',
                     'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
                     'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/pages/view.php.stub',
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
                     ],
                     'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
                 ],
                 'migration' => [
                     'path' => 'database\migrations',
-                    'template' => __DIR__.'/../src/Templates/migration.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
                     'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
                 ],
                 'plugin' => [
                     'path' => '%BasePath%\Filament\Plugins',
                     'namespace' => '%BaseNamespace%\\Filament\\Plugins',
-                    'template' => __DIR__.'/../src/Templates/plugin.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
                     'generator' => \Moox\Builder\Generators\PluginGenerator::class,
                 ],
             ],
@@ -122,30 +122,30 @@ Just make your changes in the published builder.php config file to create your o
                 'model' => [
                     'path' => '%BasePath%\src\Models',
                     'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/model.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
                     'generator' => \Moox\Builder\Generators\ModelGenerator::class,
                 ],
                 'resource' => [
                     'path' => '%BasePath%\src\Resources',
                     'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
                     'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/pages/view.php.stub',
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
                     ],
                     'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
                 ],
                 'migration_stub' => [
                     'path' => '%BasePath%\database\migrations',
-                    'template' => __DIR__.'/../src/Templates/migration.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
                     'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
                 ],
                 'plugin' => [
                     'path' => '%BasePath%\src',
                     'namespace' => '%BaseNamespace%',
-                    'template' => __DIR__.'/../src/Templates/plugin.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
                     'generator' => \Moox\Builder\Generators\PluginGenerator::class,
                 ],
             ],
@@ -157,24 +157,24 @@ Just make your changes in the published builder.php config file to create your o
                 'model' => [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/model.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
                     'generator' => \Moox\Builder\Generators\ModelGenerator::class,
                 ],
                 'resource' => [
                     'path' => '%BasePath%\Resources',
                     'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/resource.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
                     'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/pages/view.php.stub',
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
                     ],
                     'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
                 ],
                 'migration' => [
                     'path' => 'database\migrations',
-                    'template' => __DIR__.'/../src/Templates/migration.php.stub',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
                     'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
                 ],
             ],
@@ -368,6 +368,23 @@ Services allow to directly access builder functions
 	- EntityGenerator
 	- EntityTablesRemover
 
+### Templates
+
+These stub files are used for the generation. You can implement own Generators and Templates in the `contexts` config array
+
+- Entity
+  - pages
+    - create.php.stub
+    - edit.php.stub
+    - list.php.stub
+    - view.php.stub
+  - migration.php.stub
+  - model.php.stub
+  - plugin.php.stub
+  - resource.php.stub
+- Package
+  - Work-in-Progress, see DEVLOG.md
+
 ### Traits
 
 These Traits are used by Builder
@@ -392,20 +409,6 @@ Types allow to select compatible Fields by a given Type.
 	- StringType
 	- TextType
 	- UrlType
-
-### Templates
-
-These stub files are used for the generation. You can implement own Generators and Templates in the `contexts` config array
-
-- pages
-	- create.php.stub
-	- edit.php.stub
-	- list.php.stub
-	- view.php.stub
-- migration.php.stub
-- model.php.stub
-- plugin.php.stub
-- resource.php.stub
 
 
 

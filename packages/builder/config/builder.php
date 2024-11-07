@@ -952,4 +952,133 @@ return [
             'generators' => ['model', 'migration', 'resource'],
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package Generator
+    |--------------------------------------------------------------------------
+    |
+    | Define the available generators for the package builder and their
+    | templates. You can also add your own generators and templates.
+    |
+    */
+
+    'package_generator' => [
+        'archtest' => [
+            'template' => __DIR__.'/../src/Templates/package/archtest.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\ArchTestGenerator::class,
+        ],
+        'changelog' => [
+            'template' => __DIR__.'/../src/Templates/package/changelog.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\ChangelogGenerator::class,
+        ],
+        'composer' => [
+            'template' => __DIR__.'/../src/Templates/package/composer.json.stub',
+            'generator' => \Moox\Builder\Generators\Package\ComposerJsonGenerator::class,
+        ],
+        'config' => [
+            'template' => __DIR__.'/../src/Templates/package/config.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\ConfigFileGenerator::class,
+        ],
+        'funding' => [
+            'template' => __DIR__.'/../src/Templates/package/funding.yml.stub',
+            'generator' => \Moox\Builder\Generators\Package\FundingGenerator::class,
+        ],
+        'gitignore' => [
+            'template' => __DIR__.'/../src/Templates/package/gitignore.stub',
+            'generator' => \Moox\Builder\Generators\Package\GitignoreGenerator::class,
+        ],
+        'install' => [
+            'template' => __DIR__.'/../src/Templates/package/install.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\InstallGenerator::class,
+        ],
+        'license' => [
+            'template' => __DIR__.'/../src/Templates/package/license.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\LicenceGenerator::class,
+        ],
+        'panelprovider' => [
+            'template' => __DIR__.'/../src/Templates/package/panelprovider.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\PanelProviderGenerator::class,
+        ],
+        'pest' => [
+            'template' => __DIR__.'/../src/Templates/package/pest.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\PestGenerator::class,
+        ],
+        'readme' => [
+            'template' => __DIR__.'/../src/Templates/package/readme.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\ReadmeGenerator::class,
+        ],
+        'security' => [
+            'template' => __DIR__.'/../src/Templates/package/security.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\SecurityGenerator::class,
+        ],
+        'serviceprovider' => [
+            'template' => __DIR__.'/../src/Templates/package/serviceprovider.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\ServiceProviderGenerator::class,
+        ],
+        'testcase' => [
+            'template' => __DIR__.'/../src/Templates/package/testcase.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\TestCaseGenerator::class,
+        ],
+        'translation' => [
+            'template' => __DIR__.'/../src/Templates/package/translation.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\TranslationGenerator::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package Entity Enabler
+    |--------------------------------------------------------------------------
+    |
+    | Define the available generators and templates that are used, when the
+    | an Entity is enabled in a Package. You can mute and add your own.
+    |
+    */
+
+    'package_entity_enabler' => [
+        'config' => [
+            'template' => __DIR__.'/../src/Templates/PackageEntity/config.part.stub',
+            'generator' => \Moox\Builder\Generators\PackageEntity\ConfigPartGenerator::class,
+        ],
+        'install' => [
+            'template' => __DIR__.'/../src/Templates/PackageEntity/install.part.stub',
+            'generator' => \Moox\Builder\Generators\PackageEntity\InstallPartGenerator::class,
+        ],
+        'readme' => [
+            'template' => __DIR__.'/../src/Templates/PackageEntity/readme.part.stub',
+            'generator' => \Moox\Builder\Generators\PackageEntity\ReadmePartGenerator::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package Activator
+    |--------------------------------------------------------------------------
+    |
+    | To activate a package, we need to require it and run the install
+    | command. You can define your own activator if you like.
+    |
+    */
+
+    'package_entity_activator' => \Moox\Builder\Services\PackageActivator::class,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Package Publisher
+    |--------------------------------------------------------------------------
+    |
+    | Publishing a package is a multi step process. You can define your own.
+    |
+    */
+
+    'package_entity_publisher' => [
+        'git' => \Moox\Builder\Services\PackageGitPublisher::class,
+        'github' => \Moox\Builder\Services\PackageGitHubPublisher::class,
+        'packagist' => \Moox\Builder\Services\PackagePackagistPublisher::class,
+        // Custom, not implemented yet
+        //'monorepo' => \App\Services\Publisher\MonorepoPublisher::class,
+        // Custom, not implemented yet
+        //'panel' => \App\Services\Publisher\PanelPublisher::class,
+    ],
 ];

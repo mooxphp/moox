@@ -120,6 +120,33 @@ This is the current state of the Builder:
 	- Orderable
 - Inline-Help, Config dafür
 
+## Packages
+
+I want to generate Packages using Moox Builder, it should work like this:
+
+- We need Preparation to be able to install packages locally, `PrepareAppForPackagesCommand`
+  - Create a /packages directory
+  - Paste `composerrepos.stub` into composer.json
+- Generate an empty package, where we are able to generate Entities in package context with the `CreatePackageCommand`, it uses the `PackageGenerator` Service that iterates over the new `package_generator` config key, that conntects the Generators and the Templates.
+
+- Now we can `Generate Entities` into that package
+  - Generate the Entity in Package context
+  - Generate the Resource part in the config, like wired in the `package_entity_enabler`config key
+  - Generate the parts into the installer, like wired in the `package_entity_enabler`config key
+  - Generate the part into the README, like wired in the `package_entity_enabler`config key
+- For activation of packages, I also created a config key `package_entity_activator`, that just wires the `PackageActivator`Service used by the `ActivatePackageCommand`
+  - We need to require the package using composer
+  - We need to run php artisan package:install
+- Finally the `PackagePublisher` service used by the `PublishPackageCommand`
+  - Create a Git repo
+  - Publish to GitHub
+  - Add the package to Moox Monorepo
+  - Publish to Packagist - https://packagist.org/apidoc#create-package
+- Later we'll need a `RemovePackageCommand` that uses the `PackageRemover`service
+- I am not sure, if we should extend a new `AbstractPackageService`or use the existing
+
+
+
 ## The UI
 
 Some early thoughts:
