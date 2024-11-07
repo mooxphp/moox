@@ -8,10 +8,12 @@ use Illuminate\Console\Command;
 
 class PrepareAppForPackagesCommand extends Command
 {
-    protected $signature = 'builder:preparepackages';
+    protected $signature = 'builder:prepare';
 
     public function handle(): void
     {
         $this->info('Preparing app for packages...');
+        // create packages directory
+        // paste composerrepos.stub into composer.json
     }
 }

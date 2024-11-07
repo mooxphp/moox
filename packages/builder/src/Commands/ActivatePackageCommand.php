@@ -11,5 +11,6 @@ class ActivatePackageCommand extends AbstractPackageBuilderCommand
     public function handle(): void
     {
         $this->info('Activating package...');
+        // activate the package by using the PackageActivator service
     }
 }

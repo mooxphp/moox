@@ -122,6 +122,17 @@ This is the current state of the Builder:
 
 ## Packages
 
+Current Status:
+
+- Files are prepared: Service, Generators, Templates and Commands
+- Config is prepared
+- Install Template and Readme are not finished, as well as their partials
+- All templates could be completely prepared
+- Then we could go for the Generators
+- Then the Services
+- Finally the Commands
+- Test and bring it live ... needs to install in a new Laravel to completely polish
+
 I want to generate Packages using Moox Builder, it should work like this:
 
 - We need Preparation to be able to install packages locally, `PrepareAppForPackagesCommand`

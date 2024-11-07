@@ -11,5 +11,6 @@ class PublishPackageCommand extends AbstractPackageBuilderCommand
     public function handle(): void
     {
         $this->info('Publishing package...');
+        // use the services from the config array package_entity_publisher to publish the package
     }
 }

@@ -1061,7 +1061,7 @@ return [
     |
     */
 
-    'package_entity_activator' => \Moox\Builder\Services\PackageActivator::class,
+    'package_activator' => \Moox\Builder\Services\PackageActivator::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -1072,13 +1072,16 @@ return [
     |
     */
 
-    'package_entity_publisher' => [
+    'package_publisher' => [
         'git' => \Moox\Builder\Services\PackageGitPublisher::class,
         'github' => \Moox\Builder\Services\PackageGitHubPublisher::class,
         'packagist' => \Moox\Builder\Services\PackagePackagistPublisher::class,
-        // Custom, not implemented yet
-        //'monorepo' => \App\Services\Publisher\MonorepoPublisher::class,
-        // Custom, not implemented yet
-        //'panel' => \App\Services\Publisher\PanelPublisher::class,
     ],
+
+    // GitHub API Token
+    'github_api_token' => env('BUILDER_GITHUB_API_TOKEN'),
+
+    // Packagist API Token
+    'packagist_username' => env('BUILDER_PACKAGIST_USERNAME'),
+    'packagist_api_token' => env('BUILDER_PACKAGIST_API_TOKEN'),
 ];
