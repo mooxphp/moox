@@ -17,7 +17,7 @@ This is the current state of the Builder:
 ## Todo
 
 - [ ] The create command is not 100% as described in README
-- [ ] The delete command is just partly working (not deleteing the plugin and migration) and not as described in README
+- [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README
 - [ ] The migration created does not have a timestamp, should it be prefixed?
 - [ ] The create command does not migrate, throws an error
 - [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
@@ -43,7 +43,7 @@ This is the current state of the Builder:
 - [ ] Just an idea: https://docs.larallama.io/
 - [ ] Just an idea: https://github.com/nikic/PHP-Parser
 
-## Todo in Core
+## Todo in Core and Taxonomies
 
 - Publish
 	- Publish Button is shown on already published items
@@ -82,43 +82,12 @@ This is the current state of the Builder:
 -  If plugin data-language -> migration create_languages_table -> 
 	  SP: ->hasMigration('create_data_languages_table') (correct the -)
 	- Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
-	- Model BuilderItem -> table builder_items (plural!)
-		- Must not be THE plural, ie. Blog -> posts
-	- Crazy - Multiple Items - Fields
-		- Migration, Model, Resource, Frontend
-		- Set Config
-		- Create Fields
 	- Livewire Frontend
-	- Ship Permissions - NEXT! - https://laracasts.com/discuss/channels/laravel/policies-in-packages
-	- Ship Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
-	- Ship Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import 
-	- Ship PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
-	- Ship Config - Pages
-		- Global
-			- Admin-Only
-			- Widgets
-			- Activate Resources
-			- Features (Like IP-Lock in Users)
-		- Resource(s)
-			- Widgets
-			- Categories
-			- Taggable
-			- Revisionable
-			- Syncable
-			- Import
-			- Export
-			- Pruning
-			- Printing
-			- Verbable - crazy - https://verbs.thunk.dev/
-	  		Builder, next Iteration:
-- Item
-	- Translatable
-	- Syncable
-	- Authorable - isses, aber noch nicht abschaltbar
-	- Seoable
-	- Revisionable
-	- Orderable
-- Inline-Help, Config dafür
+	- Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
+	- Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
+	- Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import 
+	- PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+- Inline-Help
 
 ## Packages
 
