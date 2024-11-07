@@ -36,6 +36,7 @@ This is the current state of the Builder:
   - [ ] Remove build.php
   - [ ] Remove GH Template
 - [ ] We need to generate factories from blocks to entities
+- [ ] What about translations?
 - [ ] We need to generate tests
 - [ ] Generate the Builder UI, let Builder build itself
 - [ ] Generate a Frontend
@@ -124,60 +125,71 @@ This is the current state of the Builder:
 Some early thoughts:
 
 - Package
-      - Fields
-          - Name
-          - Description
-          - Version
-          - License
-          - Author
-          - Website
-          - Status
-              - Draft
-              - Built
-              - Installed
-              - Active
-          - Actions
-          - Create
+  
+  - Fields
+  
+    - Name
+    - Description
+    - Version
+    - License
+    - Author
+    - Website
+    - E-Mail
+    - E-Mail Security related
+    - Status
+      - Draft
+      - Built - finalize (SP, pp)
+      - Installed
+      - Active
+    - Actions
+         - Create
+             - View
+             - Edit
+             - Delete
+             - Build
+             - Install
+             - Activate - per entity per panel
+  
+    
+  
+    
+  
+    - Entity
+    - Fields
+  
+  - Template - Select, preset preselects features
+      - Simple
+      - Item
+      - Taxonomy
+  
+      - Name
+      - Description
+      - Package (or App) - Select
+      - Features - https://filamentphp.com/docs/3.x/forms/fields/checkbox-list
           - View
+          - Create
           - Edit
           - Delete
-          - Build
-          - Install
-          - Activate - per entity per panel
-          - Entity
-          - Fields
-              - Template - Select, preset preselects features
-                  - Simple
-                  - Item
-                  - Taxonomy
-              - Name
-              - Description
-              - Package (or App) - Select
-              - Features - https://filamentphp.com/docs/3.x/forms/fields/checkbox-list
-                  - View
-                  - Create
-                  - Edit
-                  - Delete
-                  - Soft Delete
-                  - Publish
-                  - Author
-                  - Widgets
-              - Taxonomies - https://github.com/lucasgiovanny/filament-multiselect-two-sides
-                  - Categories
-                  - Tags
-                  - ...
-              - Tabs - https://github.com/lucasgiovanny/filament-multiselect-two-sides
-              - Fields - https://filamentphp.com/docs/3.x/forms/fields/repeater or https://filamentphp.com/docs/3.x/forms/fields/builder
-                  - Title
-                  - Type - Select
-                      - String
-                      - Text
-                      - Image
-                      - ...
-                  - Features - https://filamentphp.com/docs/3.x/forms/fields/checkbox-list
-                      - View
-                      - Create
-                      - Edit
-                      - Delete
-                      - Soft Delete
-                      - Publish
+          - Soft Delete
+          - Publish
+          - Author
+          - Widgets
+      - Taxonomies - https://github.com/lucasgiovanny/filament-multiselect-two-sides
+          - Categories
+          - Tags
+          - ...
+      - Tabs - https://github.com/lucasgiovanny/filament-multiselect-two-sides
+      - Fields - https://filamentphp.com/docs/3.x/forms/fields/repeater or https://filamentphp.com/docs/3.x/forms/fields/builder
+          - Title
+          - Type - Select
+              - String
+              - Text
+              - Image
+              - ...
+          - Features - https://filamentphp.com/docs/3.x/forms/fields/checkbox-list
+              - View
+              - Create
+              - Edit
+              - Delete
+              - Soft Delete
+              - Publish
