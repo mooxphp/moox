@@ -45,9 +45,11 @@ class ConfigGenerator extends AbstractGenerator
         $template = $this->loadStub($this->getTemplate());
 
         $variables = [
-            'namespace' => $this->context->getNamespace('config'),
-            'entity' => $this->context->getEntityName(),
-            'entity_plural' => $this->context->getPluralModelName(),
+            'Package' => $this->context->isPackage() ? explode('\\', $this->context->getBaseNamespace())[0] : 'app',
+            'Entity' => $this->context->getEntityName(),
+            'Entities' => $this->context->getPluralModelName(),
+            'LowercaseEntity' => strtolower($this->context->getEntityName()),
+            'LowercaseEntities' => strtolower($this->context->getPluralModelName()),
             'tabs' => $this->generateTabsConfig(),
             'taxonomies' => $this->generateTaxonomiesConfig(),
             'relations' => $this->generateRelationsConfig(),
