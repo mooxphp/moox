@@ -45,9 +45,12 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
-        (new EntityGenerator($context, $preset->getBlocks()))->execute();
+
+        $generator = new EntityGenerator($context, $preset->getBlocks());
+        $generator->execute();
 
         if ($preview) {
+            $this->info('Running preview migration...');
             (new PreviewMigrator($context))->execute();
         }
 
