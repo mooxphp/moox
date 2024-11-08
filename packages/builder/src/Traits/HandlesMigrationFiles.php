@@ -9,11 +9,12 @@ trait HandlesMigrationFiles
     protected function getMigrationPattern(): string
     {
         $tableName = $this->context->getTableName();
+        $migrationPath = $this->context->getPath('migration');
 
         return match ($this->context->getContextType()) {
-            'app' => base_path('database/migrations/[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php'),
-            'package' => $this->context->getBasePath().'/database/migrations/create_'.$tableName.'_table.php.stub',
-            'preview' => app_path('Builder/database/migrations/preview_[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php'),
+            'app' => $migrationPath.'/[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php',
+            'package' => $migrationPath.'/create_'.$tableName.'_table.php.stub',
+            'preview' => $migrationPath.'/preview_[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php',
             default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
         };
     }
@@ -23,6 +24,15 @@ trait HandlesMigrationFiles
         $pattern = $this->getMigrationPattern();
         $files = glob($pattern);
 
-        return $files ? $files[0] : null;
+        if (empty($files)) {
+            // Debug info
+            if ($this->context->getCommand()) {
+                $this->context->getCommand()->info('Looking for migration in: '.$pattern);
+            }
+
+            return null;
+        }
+
+        return $files[0];
     }
 }

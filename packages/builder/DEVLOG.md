@@ -16,11 +16,11 @@ This is the current state of the Builder:
 
 ## Todo
 
-- [ ] Need to generate config and translations for Entities depending on the Context, Templates and Generators and Config are prepared
+- [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
+
+- [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
 
 - [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
-
-- [ ] Need to generate Tabs, Taxonomy and Relations ... stubs prepared
 
 - [ ] The create command is not as described in README
 
