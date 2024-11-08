@@ -9,7 +9,7 @@ trait HandlesMigrationFiles
     protected function getMigrationPattern(): string
     {
         $tableName = $this->context->getTableName();
-        $migrationPath = $this->context->getPath('migration');
+        $migrationPath = database_path('migrations');
 
         return match ($this->context->getContextType()) {
             'app' => $migrationPath.'/[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php',
@@ -25,9 +25,9 @@ trait HandlesMigrationFiles
         $files = glob($pattern);
 
         if (empty($files)) {
-            // Debug info
             if ($this->context->getCommand()) {
                 $this->context->getCommand()->info('Looking for migration in: '.$pattern);
+                $this->context->getCommand()->info('Available files in directory: '.implode(', ', glob(dirname($pattern).'/*')));
             }
 
             return null;
