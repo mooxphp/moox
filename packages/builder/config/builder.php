@@ -931,7 +931,7 @@ return [
                     'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
                 ],
                 'migration' => [
-                    'path' => 'database\migrations',
+                    'path' => database_path('migrations'),
                     'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
                 ],
