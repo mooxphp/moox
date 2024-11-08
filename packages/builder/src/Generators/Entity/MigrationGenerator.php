@@ -6,8 +6,11 @@ namespace Moox\Builder\Generators\Entity;
 
 class MigrationGenerator extends AbstractGenerator
 {
+    protected string $migrationFileName;
+
     public function generate(): void
     {
+        $this->migrationFileName = $this->generateMigrationFileName();
         $template = $this->loadStub($this->getTemplate());
         $variables = [
             'class' => $this->getMigrationClassName(),
@@ -16,10 +19,20 @@ class MigrationGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile(
-            $this->context->getPath('migration').'/create_'.$this->context->getTableName().'_table.php',
-            $content
-        );
+        $path = $this->context->getPath('migration').'/'.$this->migrationFileName;
+        $this->writeFile($path, $content);
+    }
+
+    protected function generateMigrationFileName(): string
+    {
+        $tableName = $this->context->getTableName();
+
+        return match ($this->context->getContextType()) {
+            'app' => date('Y_m_d_His').'_create_'.$tableName.'_table.php',
+            'package' => 'create_'.$tableName.'_table.php.stub',
+            'preview' => 'preview_'.date('Y_m_d_His').'_create_'.$tableName.'_table.php',
+            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+        };
     }
 
     protected function getGeneratorType(): string
