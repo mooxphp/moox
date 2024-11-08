@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Services;
 
 use Moox\Builder\Contexts\BuildContext;
-use Moox\Builder\Generators\AbstractGenerator;
+use Moox\Builder\Generators\Entity\AbstractGenerator;
 use RuntimeException;
 
 class EntityGenerator extends AbstractService

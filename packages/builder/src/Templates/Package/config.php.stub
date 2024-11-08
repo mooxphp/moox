@@ -27,7 +27,7 @@ return [
     */
 
     'resources' => [
-        // Generate the entities here
+        // Add your entities here
     ],
 
     /*
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'navigation_group' => 'trans//builder::translations.builder',
+    'navigation_group' => 'trans//{{ LowercasePackage }}::translations.{{ LowercasePackage }}',
 
     /*
     |--------------------------------------------------------------------------
@@ -54,47 +54,6 @@ return [
     |
     */
 
-    'navigation_sort' => 9990,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Item Types
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the types of items entities. You can delete
-    | the types you don't need and add new ones. If you don't need
-    | types, you can empty this array like this: 'types' => [],
-    |
-    */
-
-    'types' => [
-        'post' => 'Post',
-        'page' => 'Page',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Author Model
-    |--------------------------------------------------------------------------
-    |
-    | This sets the user model that can be used as author. It should be an
-    | authenticatable model and support the morph relationship.
-    | It should have fields similar to Moox User or WpUser.
-    |
-    */
-
-    'author_model' => \Moox\User\Models\User::class,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Slug Change - WIP
-    |--------------------------------------------------------------------------
-    |
-    | // TODO: Work in progress.
-    |
-    */
-
-    'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
-    'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
+    'navigation_sort' => 8500,
 
 ];

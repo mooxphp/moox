@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Generators;
+namespace Moox\Builder\Generators\Entity;
 
 class ModelGenerator extends AbstractGenerator
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Generators;
+namespace Moox\Builder\Generators\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Traits\HandlesContentCleanup;

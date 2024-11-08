@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder;
+namespace {{ Namespace }}\{{ Package }};
 
-use Moox\Builder\Commands\InstallCommand;
+use {{ Namespace }}\{{ Package }}\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -13,7 +13,7 @@ class BuilderServiceProvider extends PackageServiceProvider
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('builder')
+            ->name('{{ LowercasePackage }}')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()

@@ -1,4 +1,4 @@
-        'entity' => [
+        '{{ Entity }}' => [
 
             /*
             |--------------------------------------------------------------------------
@@ -9,8 +9,8 @@
             |
             */
 
-            'single' => 'trans//builder::translations.entity',
-            'plural' => 'trans//builder::translations.entities',
+            'single' => 'trans//{{ Package }}::translations.{{ LowercaseEntity }}',
+            'plural' => 'trans//{{ Package }}::translations.{{ LowercaseEntities }}',
 
             /*
             |--------------------------------------------------------------------------
@@ -24,7 +24,7 @@
             */
 
             'tabs' => [
-                // Generate tabs here
+                {{ Tabs }}
             ],
 
             /*
@@ -37,7 +37,7 @@
             */
 
             'relations' => [
-                // Generate relations here
+                {{ Relations }}
             ],
 
             /*
@@ -50,6 +50,6 @@
             */
 
             'taxonomies' => [
-                // Generate taxonomies here
+                {{ Taxonomies }}
             ],
         ],

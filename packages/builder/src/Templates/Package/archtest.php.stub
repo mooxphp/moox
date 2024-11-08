@@ -1,15 +1,15 @@
 <?php
 
 arch()
-    ->expect('Moox\Builder')
+    ->expect('{{ Namespace }}\{{ Package }}')
     ->toUseStrictTypes()
     ->not->toUse(['die', 'dd', 'dump']);
 
 arch()
-    ->expect('Moox\Builder\Models')
+    ->expect('{{ Namespace }}\{{ Package }}\Models')
     ->toBeClasses()
     ->toExtend('Illuminate\Database\Eloquent\Model')
-    ->toOnlyBeUsedIn('Moox\Builder');
+    ->toOnlyBeUsedIn('{{ Namespace }}\{{ Package }}');
 
 arch()->preset()->php();
 arch()->preset()->security()->ignoring('md5');

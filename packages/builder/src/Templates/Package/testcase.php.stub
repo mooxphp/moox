@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Builder\Tests;
+namespace {{ Namespace }}\{{ Package }}\Tests;
 
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;

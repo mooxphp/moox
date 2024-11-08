@@ -12,15 +12,18 @@ This is the current state of the Builder:
   - https://moox.test/moox/full-items
   - https://moox.test/moox/simple-taxonomies
   - https://moox.test/moox/nested-taxonomies
-- The current Task is finishing these as Presets for Builder, and ...
 
 ## Todo
 
+- [ ] Need to generate config and translations for Entities, translations is easy, same in app as package, but config would be one file to generate the partial for package, how to solve for app and preview
+- [ ] 
 - [ ] The create command is not 100% as described in README
 - [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README
 - [ ] The migration created does not have a timestamp, should it be prefixed?
 - [ ] The create command does not migrate, throws an error
 - [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
+- [ ] Maybe simple Moox Blocks like ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
+- [ ] Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
 - [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
   - [ ] getResourceName should be auto detected
   - [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
@@ -46,25 +49,30 @@ This is the current state of the Builder:
 ## Todo in Core and Taxonomies
 
 - Publish
-	- Publish Button is shown on already published items
-	- Should then be save only
-	- There could be a create new draft for published?
+  - Publish Button is shown on already published items
+  - Should then be save only
+  - There could be a create new draft for published?
+- Move to Core
+     - Moox Builder Packages should be cleaned up as much as possible
+     - Installer: use Abstract, Service or Traits ...
+     - ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
+
 - Core Docs
-	- Naming convention InModel InResource InPages and Single for single-use traits
-	- TabsInResource - contains TODO
-	- TabsInPage - just getTabs needs to be defined
-	- TaxonomyInPages - needs that mount method in ViewPage
-	- AuthorInModel
-	- AuthorInResource
-	- StatusInModel
-	- StatusInResource - WIP
-	- Links to builder or builder doc inside
+  - Naming convention InModel InResource InPages and Single for single-use traits
+  - TabsInResource - contains TODO
+  - TabsInPage - just getTabs needs to be defined
+  - TaxonomyInPages - needs that mount method in ViewPage
+  - AuthorInModel
+  - AuthorInResource
+  - StatusInModel
+  - StatusInResource - WIP
+  - Links to builder or builder doc inside
 - Category / Tag Docs
-	- Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
-	- https://github.com/lazychaser/laravel-nestedset
-	- https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets 
-	- Screens
-	- Usage / Config
+  - Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
+  - https://github.com/lazychaser/laravel-nestedset
+  - https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets 
+  - Screens
+  - Usage / Config
 - Remove commented code in build.php
 - $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
 - Relationships - in builder but like taxonomies
@@ -79,17 +87,60 @@ This is the current state of the Builder:
 - Bulk restore does not work
 - Set indices for slug etc, or not?
 - not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
--  If plugin data-language -> migration create_languages_table -> 
-	  SP: ->hasMigration('create_data_languages_table') (correct the -)
-	- Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
-	- Livewire Frontend
-	- Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
-	- Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
-	- Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import 
-	- PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+- If plugin data-language -> migration create_languages_table -> 
+     SP: ->hasMigration('create_data_languages_table') (correct the -)
+     - Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
+     - Livewire Frontend
+     - Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
+     - Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
+     - Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import 
+     - PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
 - Inline-Help
 
 ## Packages
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Item Types
+    |--------------------------------------------------------------------------
+    |
+    | This array contains the types of items entities. You can delete
+    | the types you don't need and add new ones. If you don't need
+    | types, you can empty this array like this: 'types' => [],
+    |
+    */
+    
+    'types' => [
+        'post' => 'Post',
+        'page' => 'Page',
+    ],
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Author Model
+    |--------------------------------------------------------------------------
+    |
+    | This sets the user model that can be used as author. It should be an
+    | authenticatable model and support the morph relationship.
+    | It should have fields similar to Moox User or WpUser.
+    |
+    */
+    
+    'author_model' => \Moox\User\Models\User::class,
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Allow Slug Change - WIP
+    |--------------------------------------------------------------------------
+    |
+    | // TODO: Work in progress.
+    |
+    */
+    
+    'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
+    'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 
 Current Status:
 

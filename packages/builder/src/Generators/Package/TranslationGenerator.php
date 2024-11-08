@@ -6,5 +6,5 @@ namespace Moox\Builder\Generators\Package;
 
 class TranslationGenerator extends AbstractPackageGenerator
 {
-    //
+    // Generate the translation file for the package
 }
