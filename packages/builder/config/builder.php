@@ -851,6 +851,16 @@ return [
                     'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
                 ],
+                'translation' => [
+                    'path' => 'lang\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
             ],
         ],
         'package' => [
@@ -886,6 +896,16 @@ return [
                     'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
                 ],
+                'translation' => [
+                    'path' => '%BasePath%\resources\lang\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => '%BasePath%\config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
             ],
         ],
         'preview' => [
@@ -914,6 +934,16 @@ return [
                     'path' => 'database\migrations',
                     'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\previews',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\previews',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
                 ],
             ],
             'should_migrate' => true,

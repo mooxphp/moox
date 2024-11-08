@@ -16,19 +16,15 @@ This is the current state of the Builder:
 
 ## Todo
 
-- [ ] Need to generate config and translations for Entities depending on the Context, Templates are prepared
-
-- [ ] So our config should be:
-
-  - [ ] config
-    - [ ] entities
-    - [ ] previews
+- [ ] Need to generate config and translations for Entities depending on the Context, Templates and Generators and Config are prepared
 
 - [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
 
+- [ ] Need to generate Tabs, Taxonomy and Relations ... stubs prepared
+
 - [ ] The create command is not as described in README
 
-- [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README
+- [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README, it should delete all empty folders to stay clean
 
 - [ ] The migration created does not have a timestamp, should it be prefixed?
 
@@ -38,7 +34,11 @@ This is the current state of the Builder:
 
 - [ ] Now do the packages part, it is well prepared, see below
 
-- [ ] Add more Moox Blocks like ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs and the most wanted like Phone, Address etc.
+- [ ] Add more Moox Blocks 
+
+  - [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
+  - [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs 
+  - [ ] Most wanted like Phone, Address etc.
 
 - [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
   - [ ] getResourceName should be auto detected
@@ -49,7 +49,7 @@ This is the current state of the Builder:
     - Should then be save only
     - There could be a create new draft for published?
     - Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
-  - [ ] Relations like Taxonomies
+  - [ ] Relations like Taxonomies, and what about Relationsmanagers?
   - [ ] Move to Core
     - Moox Builder Packages should be cleaned up as much as possible
     - Installer: use Abstract, Service or Traits ...
@@ -67,6 +67,8 @@ This is the current state of the Builder:
 
 - [ ] Versions need a concept, needs a table (and UI)
 
+- [ ] Versions vs. Updates (means Maintenance ... if we could update code using PHP Parser, we also could update code in terms of keeping the generated code of builder plugins auto-maintained)
+
 - [ ] Generate the Builder UI, let Builder build itself
 
 - [ ] Generate a Frontend
@@ -75,7 +77,7 @@ This is the current state of the Builder:
 
 - [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
 
-- [ ] Idea: Generate a Laravel with Builder Instance, use Tenancy or just create user-based panels for SaaS
+- [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
 
 - [ ] Core Docs
 
@@ -227,23 +229,16 @@ Some early thoughts:
     - Website (config)
     - E-Mail (config)
     - Status
-      - Development - not generated yet, can not be previewed
-      - Installable - built
-      - Installed - composered
-    - Actions
-         - Create
-             - View
-             - Edit
-             - Delete
-             - Build
-             - Install
+      - Development (no Entities, no Preview), Installable (built), Installed (Composer)
+    - Actions (Create, View, Edit, Delete, Build, Install)
 
 - Entity
   - Singular
   - Plural
   - Description
   - Add to Package (Relation)
-  - Preset (Simple Item, Publishable Item, Full Item, Simple Taxonomy, Nested Taxonomy), prefills Blocks 
+  - Preset (Simple Item, Publishable Item, Full Item, Simple Taxonomy, Nested Taxonomy), prefills Blocks
+  - Relations (like Taxonomies, not implemented yet)
   - Taxonomies (Categories, Tags, Custom)
   - Tabs
   - Blocks
@@ -254,6 +249,48 @@ Some early thoughts:
 
 
 
-- https://github.com/lucasgiovanny/filament-multiselect-two-sides
+## New Builder
 
-  
+This is a first idea of the future description for Moox Builder:
+
+What do you want to ~~build~~ ship today?
+
+From idea to a working App in Minutes. No coding.
+
+Moox Builder is a Laravel Package and Filament UI to build
+
+- Filament Resources, complete Entities including
+  - Migration
+  - Model
+  - Filament Resource
+  - Filament Resource Pages
+  - Configuration
+  - Translations
+  - Factory
+  - Pest Test
+  - Features like Softdelete, Publish, Author
+  - Relations can be simply configured, no coding in Model
+  - Support for simple, nested and custom Taxonomies
+  - Extremely simple to  extend using Metadata (JSON)
+  - Or with an Entity-Attribute-Value (EAV, like WP does)
+  - Or with an direct Extender (adding fields to the table)
+- Laravel Packages, that can hold these Entities, including
+  - ServiceProvider
+  - README, LICENSE, SECURITY MD-files
+  - Composer.json
+  - Publishable Config
+  - Installer
+  - Gitignore
+  - TestCase, ArchTest, Package Test
+  - Translations
+
+You can preview Entities instantly and then build them in a Package or directly in the App.
+
+All generated code is
+
+- Typesave?
+- PHP Stan Level?
+- Pint Fixed
+- Pest Tested
+
+So pushing this code into a Repository with highest Quality Gates will work without tears.

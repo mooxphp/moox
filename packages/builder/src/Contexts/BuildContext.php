@@ -149,6 +149,11 @@ class BuildContext
         return $this->contextType === 'preview';
     }
 
+    public function getContextType(): string
+    {
+        return $this->contextType;
+    }
+
     public function getPageTemplate(string $type, string $page): string
     {
         $config = $this->getConfig()['classes'][$type] ?? null;

@@ -1,0 +1,18 @@
+'scheduled' => [
+    'label' => 'trans//core::core.scheduled',
+    'icon' => 'gmdi-schedule',
+    'query' => [
+        [
+            'field' => 'publish_at',
+            'operator' => '>',
+            'value' => function () {
+                return now();
+            },
+        ],
+        [
+            'field' => 'deleted_at',
+            'operator' => '=',
+            'value' => null,
+        ],
+    ],
+],

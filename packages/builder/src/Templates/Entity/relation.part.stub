@@ -1,0 +1,10 @@
+'{{ RelationName }}' => [
+    'label' => '{{ RelationLabel }}',
+    'model' => \{{ Namespace }}\{{ Package }}\Models\{{ RelationModel }}::class,
+    'table' => '{{ RelationTable }}',
+    'relationship' => '{{ RelationRelationship }}',
+    'foreignKey' => '{{ RelationForeignKey }}',
+    'relatedKey' => '{{ RelationRelatedKey }}',
+    'createForm' => \{{ Namespace }}\{{ Package }}\Forms\RelationCreateForm::class,
+    'hierarchical' => {{ RelationHierarchical }},
+],

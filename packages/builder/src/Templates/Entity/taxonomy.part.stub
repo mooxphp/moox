@@ -1,0 +1,10 @@
+'{{ TaxonomyName }}' => [
+    'label' => '{{ TaxonomyLabel }}',
+    'model' => \{{ Namespace }}\{{ Package }}\Models\{{ TaxonomyModel }}::class,
+    'table' => '{{ TaxonomyTable }}',
+    'relationship' => '{{ TaxonomyRelationship }}',
+    'foreignKey' => '{{ TaxonomyForeignKey }}',
+    'relatedKey' => '{{ TaxonomyRelatedKey }}',
+    'createForm' => \{{ Namespace }}\{{ Package }}\Forms\TaxonomyCreateForm::class,
+    'hierarchical' => {{ TaxonomyHierarchical }},
+],

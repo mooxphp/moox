@@ -1,0 +1,18 @@
+'published' => [
+    'label' => 'trans//core::core.published',
+    'icon' => 'gmdi-check-circle',
+    'query' => [
+        [
+            'field' => 'publish_at',
+            'operator' => '<=',
+            'value' => function () {
+                return now();
+            },
+        ],
+        [
+            'field' => 'deleted_at',
+            'operator' => '=',
+            'value' => null,
+        ],
+    ],
+],
