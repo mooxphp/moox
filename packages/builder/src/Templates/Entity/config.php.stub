@@ -1,0 +1,57 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Title
+    |--------------------------------------------------------------------------
+    |
+    | The translatable title of the Resource in singular and plural.
+    |
+    */
+
+    'single' => 'trans//{{ Package }}::translations.{{ LowercaseEntity }}',
+    'plural' => 'trans//{{ Package }}::translations.{{ LowercaseEntities }}',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tabs
+    |--------------------------------------------------------------------------
+    |
+    | Define the tabs for the Builder table. They are optional, but
+    | pretty awesome to filter the table by certain values.
+    | You may simply do a 'tabs' => [], to disable them.
+    |
+    */
+
+    'tabs' => [
+        {{ Tabs }}
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relations
+    |--------------------------------------------------------------------------
+    |
+    | This array contains the relations that should be shown.
+    |
+    */
+
+    'relations' => [
+        {{ Relations }}
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Taxonomies
+    |--------------------------------------------------------------------------
+    |
+    | This array contains the taxonomies that should be shown.
+    |
+    */
+
+    'taxonomies' => [
+        {{ Taxonomies }}
+    ],
+];

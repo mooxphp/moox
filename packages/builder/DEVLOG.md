@@ -12,75 +12,103 @@ This is the current state of the Builder:
   - https://moox.test/moox/full-items
   - https://moox.test/moox/simple-taxonomies
   - https://moox.test/moox/nested-taxonomies
+- The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
 
 ## Todo
 
-- [ ] Need to generate config and translations for Entities, translations is easy, same in app as package, but config would be one file to generate the partial for package, how to solve for app and preview
-- [ ] 
-- [ ] The create command is not 100% as described in README
+- [ ] Need to generate config and translations for Entities depending on the Context, Templates are prepared
+
+- [ ] So our config should be:
+
+  - [ ] config
+    - [ ] entities
+    - [ ] previews
+
+- [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
+
+- [ ] The create command is not as described in README
+
 - [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README
+
 - [ ] The migration created does not have a timestamp, should it be prefixed?
+
 - [ ] The create command does not migrate, throws an error
+
 - [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
-- [ ] Maybe simple Moox Blocks like ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
-- [ ] Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
+
+- [ ] Now do the packages part, it is well prepared, see below
+
+- [ ] Add more Moox Blocks like ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs and the most wanted like Phone, Address etc.
+
 - [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
   - [ ] getResourceName should be auto detected
   - [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
-- [ ] We need to generate packages
-  - [ ] Skeleton files
-  - [ ] Generators
-  - [ ] Commands
-  - [ ] Package Manager first iteration using Composer commands
-- [ ] We need to generate the config for entities and packages to get everything working, also set Taxonomies and Relations (not implemented yet)
+  - [ ] Relations, like Taxonomies, but "on the left"
+  - [ ] Publish
+    - Publish Button is shown on already published items
+    - Should then be save only
+    - There could be a create new draft for published?
+    - Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
+  - [ ] Relations like Taxonomies
+  - [ ] Move to Core
+    - Moox Builder Packages should be cleaned up as much as possible
+    - Installer: use Abstract, Service or Traits ...
+    - ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
+
 - [ ] Builder needs to be cleaned up after able to generate packages
   - [ ] Cleanup config
   - [ ] Remove old entities
   - [ ] Remove build.php
   - [ ] Remove GH Template
+
 - [ ] We need to generate factories from blocks to entities
-- [ ] What about translations?
+
 - [ ] We need to generate tests
+
+- [ ] Versions need a concept, needs a table (and UI)
+
 - [ ] Generate the Builder UI, let Builder build itself
+
 - [ ] Generate a Frontend
-- [ ] Just an idea: https://docs.larallama.io/
-- [ ] Just an idea: https://github.com/nikic/PHP-Parser
 
-## Todo in Core and Taxonomies
+- [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
 
-- Publish
-  - Publish Button is shown on already published items
-  - Should then be save only
-  - There could be a create new draft for published?
-- Move to Core
-     - Moox Builder Packages should be cleaned up as much as possible
-     - Installer: use Abstract, Service or Traits ...
-     - ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
+- [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
 
-- Core Docs
+- [ ] Idea: Generate a Laravel with Builder Instance, use Tenancy or just create user-based panels for SaaS
+
+- [ ] Core Docs
+
   - Naming convention InModel InResource InPages and Single for single-use traits
+
   - TabsInResource - contains TODO
+
   - TabsInPage - just getTabs needs to be defined
+
   - TaxonomyInPages - needs that mount method in ViewPage
+
   - AuthorInModel
+
   - AuthorInResource
+
   - StatusInModel
+
   - StatusInResource - WIP
+
   - Links to builder or builder doc inside
-- Category / Tag Docs
+
+- [ ] Category / Tag Docs
+
   - Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
   - https://github.com/lazychaser/laravel-nestedset
   - https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets 
   - Screens
   - Usage / Config
-- Remove commented code in build.php
+
 - $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
 - Relationships - in builder but like taxonomies
 - Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
 - Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
-- Eloquent/Builder becomes Eloquent/Tag ... Resource and Edit
-- "moox/core": "*" ... version in builder should not be set?
-- workbench as build?
 - HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
 - Item could show last changed etc. on the left ...
 - Gallery images should be sortable
@@ -99,8 +127,10 @@ This is the current state of the Builder:
 
 ## Packages
 
+This config was in the Package and is currently missing: I depends to Blocks means to Entities, Blocks need to be able to generate config for entities.
 
-
+    // New Block: Simple Item Types
+    
     /*
     |--------------------------------------------------------------------------
     | Item Types
@@ -117,6 +147,8 @@ This is the current state of the Builder:
         'page' => 'Page',
     ],
     
+    // Existing Author Block
+    
     /*
     |--------------------------------------------------------------------------
     | Author Model
@@ -129,6 +161,8 @@ This is the current state of the Builder:
     */
     
     'author_model' => \Moox\User\Models\User::class,
+    
+    // Slug Block - not implemented yet
     
     /*
     |--------------------------------------------------------------------------
@@ -174,7 +208,7 @@ I want to generate Packages using Moox Builder, it should work like this:
   - Add the package to Moox Monorepo
   - Publish to Packagist - https://packagist.org/apidoc#create-package
 - Later we'll need a `RemovePackageCommand` that uses the `PackageRemover`service
-- I am not sure, if we should extend a new `AbstractPackageService`or use the existing
+- Last the `AbstractPackageService`
 
 
 
@@ -183,22 +217,19 @@ I want to generate Packages using Moox Builder, it should work like this:
 Some early thoughts:
 
 - Package
-  
+
   - Fields
-  
+
     - Name
+    - Namespace (config, default to moox)
     - Description
-    - Version
-    - License
-    - Author
-    - Website
-    - E-Mail
-    - E-Mail Security related
+    - Author (config, default to moox dev)
+    - Website (config)
+    - E-Mail (config)
     - Status
-      - Draft
-      - Built - finalize (SP, pp)
-      - Installed
-      - Active
+      - Development - not generated yet, can not be previewed
+      - Installable - built
+      - Installed - composered
     - Actions
          - Create
              - View
@@ -206,48 +237,23 @@ Some early thoughts:
              - Delete
              - Build
              - Install
-             - Activate - per entity per panel
-  
-    
-  
-    
-  
-    - Entity
-    - Fields
-  
-  - Template - Select, preset preselects features
-      - Simple
-      - Item
-      - Taxonomy
-  
-      - Name
+
+- Entity
+  - Singular
+  - Plural
+  - Description
+  - Add to Package (Relation)
+  - Preset (Simple Item, Publishable Item, Full Item, Simple Taxonomy, Nested Taxonomy), prefills Blocks 
+  - Taxonomies (Categories, Tags, Custom)
+  - Tabs
+  - Blocks
+      - Title
       - Description
-      - Package (or App) - Select
-      - Features - https://filamentphp.com/docs/3.x/forms/fields/checkbox-list
-          - View
-          - Create
-          - Edit
-          - Delete
-          - Soft Delete
-          - Publish
-          - Author
-          - Widgets
-      - Taxonomies - https://github.com/lucasgiovanny/filament-multiselect-two-sides
-          - Categories
-          - Tags
-          - ...
-      - Tabs - https://github.com/lucasgiovanny/filament-multiselect-two-sides
-      - Fields - https://filamentphp.com/docs/3.x/forms/fields/repeater or https://filamentphp.com/docs/3.x/forms/fields/builder
-          - Title
-          - Type - Select
-              - String
-              - Text
-              - Image
-              - ...
-          - Features - https://filamentphp.com/docs/3.x/forms/fields/checkbox-list
-              - View
-              - Create
-              - Edit
-              - Delete
-              - Soft Delete
-              - Publish
+      - Options (Required, Toggleable, more?)
+      - Type - Select Block Type
+
+
+
+- https://github.com/lucasgiovanny/filament-multiselect-two-sides
+
+  

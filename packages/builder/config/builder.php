@@ -1028,31 +1028,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Package Entity Enabler
-    |--------------------------------------------------------------------------
-    |
-    | Define the available generators and templates that are used, when the
-    | an Entity is enabled in a Package. You can mute and add your own.
-    |
-    */
-
-    'package_entity_enabler' => [
-        'config' => [
-            'template' => __DIR__.'/../src/Templates/PackageEntity/config.entity.stub',
-            'generator' => \Moox\Builder\Generators\PackageEntity\ConfigPartGenerator::class,
-        ],
-        'install' => [
-            'template' => __DIR__.'/../src/Templates/PackageEntity/install.entity.stub',
-            'generator' => \Moox\Builder\Generators\PackageEntity\InstallPartGenerator::class,
-        ],
-        'readme' => [
-            'template' => __DIR__.'/../src/Templates/PackageEntity/readme.entity.stub',
-            'generator' => \Moox\Builder\Generators\PackageEntity\ReadmePartGenerator::class,
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Package Activator
     |--------------------------------------------------------------------------
     |
