@@ -20,6 +20,9 @@ class MigrationGenerator extends AbstractGenerator
 
         $content = $this->replaceTemplateVariables($template, $variables);
         $path = $this->context->getPath('migration').'/'.$this->migrationFileName;
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->info('Generating migration at: '.$path);
+        }
         $this->writeFile($path, $content);
     }
 
