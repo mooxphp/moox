@@ -214,38 +214,132 @@ I want to generate Packages using Moox Builder, it should work like this:
 
 
 
+## The DB
+
+
+
+```php
+    $table->string('namespace')->default('moox');
+    $table->text('description')->default('This is my Laravel package XXX YYY made with Moox Builder.');
+    $table->string('author')->default('Moox Devs');
+    $table->string('website')->default('https://www.moox.org');
+    $table->string('email')->default('devs@moox.org');
+
+
+Schema::create('builder_packages', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('namespace');
+    $table->text('description');
+    $table->string('author');
+    $table->string('website');
+    $table->string('email');
+    $table->enum('status', ['development', 'installable', 'installed']);
+  	$table->json('publish_status')->nullable();
+  	$table->json('meta')->nullable();
+    $table->timestamps();
+});
+
+Schema::create('builder_entities', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('package_id')->nullable()->constrained()->nullOnDelete();
+    $table->string('singular');
+    $table->string('plural');
+    $table->text('description')->nullable();
+    $table->string('preset');
+    $table->json('relations')->nullable();
+    $table->json('taxonomies')->nullable();
+    $table->timestamps();
+});
+
+Schema::create('builder_entity_tabs', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
+    $table->string('name');
+    $table->integer('sort_order');
+    $table->timestamps();
+});
+
+Schema::create('builder_entity_blocks', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
+    $table->string('title');
+    $table->text('description')->nullable();
+    $table->string('block_class');
+    $table->json('options');
+    $table->integer('sort_order');
+    $table->timestamps();
+});
+
+Schema::create('builder_package_versions', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('package_id')->constrained()->cascadeOnDelete();
+    $table->string('version');
+    $table->json('data');
+    $table->timestamps();
+});
+
+Schema::create('builder_entity_builds', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
+    $table->string('version');
+    $table->json('data');
+    $table->json('files');
+    $table->timestamps();
+});
+```
+
+
+
+
+
 ## The UI
+
+
 
 Some early thoughts:
 
 - Package
 
-  - Fields
-
-    - Name
-    - Namespace (config, default to moox)
-    - Description
-    - Author (config, default to moox dev)
-    - Website (config)
-    - E-Mail (config)
-    - Status
-      - Development (no Entities, no Preview), Installable (built), Installed (Composer)
-    - Actions (Create, View, Edit, Delete, Build, Install)
-
+  - Name
+  - Namespace (config, default to moox)
+  - Description (config, default to This is my Laravel package XXX YYY made with Moox Builder.)
+  - Author (config, default to Moox Devs)
+  - Website (config, default to https://www.moox.org)
+  - E-Mail (config, default to devs@moox.org)
+  - Status Development (no Entities, no Preview), Installable (built), Installed (Composer)
+  - HasMany Entities
+  - HasMany Versions
 - Entity
   - Singular
   - Plural
   - Description
-  - Add to Package (Relation)
+  - BelongsTo Package
   - Preset (Simple Item, Publishable Item, Full Item, Simple Taxonomy, Nested Taxonomy), prefills Blocks
   - Relations (like Taxonomies, not implemented yet)
   - Taxonomies (Categories, Tags, Custom)
-  - Tabs
-  - Blocks
-      - Title
-      - Description
-      - Options (Required, Toggleable, more?)
-      - Type - Select Block Type
+  - HasMany Tabs
+  - HasMany Blocks
+  - BelongsTo Package (nullable, can be App Context)
+  - HasMany Builds
+- Blocks
+    - Title
+    - Description
+    - Options (Required, Toggleable, more?)
+    - Type - Select Block Class
+    - BelongsTo Entity
+- Versions
+    - BelongsTo Package
+    - Data (could be a all fields JSON)
+- Builds
+    - BelongsTo Entity
+    - Version (probably stored, no relation)
+    - Data (could be a all fields JSON)
+    - Files (JSON)
+
+
+
+
 
 
 

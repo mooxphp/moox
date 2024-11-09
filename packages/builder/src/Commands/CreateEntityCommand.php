@@ -16,11 +16,17 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
     public function handle(): void
     {
+        $this->error('COMMAND START - If you see this, output works');
+
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
         $app = $this->option('app');
         $presetName = $this->option('preset');
+
+        $this->info('Starting entity creation...');
+        $this->info('Context type: '.($preview ? 'preview' : ($package ? 'package' : 'app')));
+        $this->info("Entity name: $name");
 
         if ($app && $package) {
             $this->error('Cannot specify both --app and --package options');
@@ -46,8 +52,11 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
 
+        $this->error('Before generator execution');
         $generator = new EntityGenerator($context, $preset->getBlocks());
+        $this->error('Generator instantiated');
         $generator->execute();
+        $this->error('After generator execution');
 
         if ($preview) {
             $this->info('Running preview migration...');

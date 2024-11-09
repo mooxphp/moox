@@ -42,18 +42,36 @@ class EntityGenerator extends AbstractService
 
     public function execute(): void
     {
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->error('EntityGenerator: Starting execution');
+        }
+
         $this->initializeGenerators();
 
         if (empty($this->generators)) {
             throw new RuntimeException('No generators were initialized');
         }
 
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->error('EntityGenerator: Generators initialized: '.count($this->generators));
+            foreach ($this->generators as $generator) {
+                $this->context->getCommand()->error('Generator found: '.get_class($generator));
+            }
+        }
+
         foreach ($this->generators as $generator) {
+            if ($this->context->getCommand()) {
+                $this->context->getCommand()->error('Running generator: '.get_class($generator));
+            }
             $generator->generate();
         }
 
         foreach ($this->generators as $generator) {
             $generator->formatGeneratedFiles();
+        }
+
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->error('EntityGenerator: Execution complete');
         }
     }
 }

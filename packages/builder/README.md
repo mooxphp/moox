@@ -342,11 +342,13 @@ Contexts make the switch between App, Package or Preview. You can add own Contex
 
 Generators combine Blocks and Templates to generate the files. You can implement own Generators and Templates in the `contexts` config array
 
-- AbstractGenerator
-	- MigrationGenerator
-	- ModelGenerator
-	- PluginGenerator
-	- ResourceGenerator
+- Entity
+	- AbstractGenerator
+	  - MigrationGenerator
+	  - ModelGenerator
+	  - PluginGenerator
+	  - ResourceGenerator
+	
 
 ### Presets
 

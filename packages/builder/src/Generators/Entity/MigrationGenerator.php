@@ -10,6 +10,10 @@ class MigrationGenerator extends AbstractGenerator
 
     public function generate(): void
     {
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->info('Starting migration generation...');
+        }
+
         $this->migrationFileName = $this->generateMigrationFileName();
         $template = $this->loadStub($this->getTemplate());
         $variables = [
@@ -20,10 +24,19 @@ class MigrationGenerator extends AbstractGenerator
 
         $content = $this->replaceTemplateVariables($template, $variables);
         $path = $this->context->getPath('migration').'/'.$this->migrationFileName;
+
         if ($this->context->getCommand()) {
-            $this->context->getCommand()->info('Generating migration at: '.$path);
+            $this->context->getCommand()->info('Migration details:');
+            $this->context->getCommand()->info('- File name: '.$this->migrationFileName);
+            $this->context->getCommand()->info('- Full path: '.$path);
+            $this->context->getCommand()->info('- Table name: '.$this->context->getTableName());
         }
+
         $this->writeFile($path, $content);
+
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->info('Migration file written successfully');
+        }
     }
 
     protected function generateMigrationFileName(): string

@@ -22,15 +22,23 @@ trait HandlesMigrationFiles
     protected function findMigrationFile(): ?string
     {
         $pattern = $this->getMigrationPattern();
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->info('Looking for migration with pattern: '.$pattern);
+            $this->context->getCommand()->info('Files in migrations directory: '.implode(', ', glob(dirname($pattern).'/*')));
+        }
+
         $files = glob($pattern);
 
         if (empty($files)) {
             if ($this->context->getCommand()) {
-                $this->context->getCommand()->info('Looking for migration in: '.$pattern);
-                $this->context->getCommand()->info('Available files in directory: '.implode(', ', glob(dirname($pattern).'/*')));
+                $this->context->getCommand()->error('No migration files found matching pattern');
             }
 
             return null;
+        }
+
+        if ($this->context->getCommand()) {
+            $this->context->getCommand()->info('Found migration file: '.$files[0]);
         }
 
         return $files[0];

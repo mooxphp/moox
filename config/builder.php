@@ -497,6 +497,40 @@ return [
                     'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
                 ],
             ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Relations
+            |--------------------------------------------------------------------------
+            |
+            | This array contains the relations that should be shown.
+            | This is work in progress and not yet fully documented.
+            |
+            */
+
+            'relations' => [
+                'rooms' => [
+                    'label' => 'Rooms',
+                    'model' => \Moox\Room\Models\Room::class,
+                    'table' => 'roomables',
+                    'type' => 'has-many',
+                    'relationship' => 'roomable',
+                    'foreignKey' => 'roomable_id',
+                    'relatedKey' => 'room_id',
+                    'createForm' => \Moox\Brand\Forms\RelationCreateForm::class,
+                    'hierarchical' => true,
+                ],
+                'bookings' => [
+                    'label' => 'Bookings',
+                    'model' => \Moox\Booking\Models\Booking::class,
+                    'table' => 'bookings',
+                    'type' => 'has-many',
+                    'relationship' => 'bookable',
+                    'foreignKey' => 'bookable_id',
+                    'relatedKey' => 'booking_id',
+                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
+                ],
+            ],
         ],
     ],
 
