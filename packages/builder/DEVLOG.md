@@ -16,7 +16,9 @@ This is the current state of the Builder:
 
 ## Todo
 
-- [ ] Have a DB but works not flawlessly. Should not allow to generate multiple entities with same name, these are just builds of the same entity, also generate multiple migrations, ough, to make it correct we would make update migrations, mmh, any other idea?
+- [ ] Have a DB but works, but should not generate multiple entities with same name, these are builds of the same entity, 
+
+- [ ] It generates multiple migrations, ough, to make it correct we would make update migrations, mmh, any other idea?
 
 - [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
 
@@ -24,7 +26,7 @@ This is the current state of the Builder:
 
 - [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
 
-- [ ] The create command is not as described in README
+- [ ] The create command is not as described in README, but nearby now
 
 - [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README, it should delete all empty folders to stay clean
 
