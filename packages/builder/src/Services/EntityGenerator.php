@@ -13,6 +13,9 @@ class EntityGenerator extends AbstractService
     /** @var AbstractGenerator[] */
     protected array $generators = [];
 
+    /** @var array<string, string> */
+    protected array $generatedFiles = [];
+
     public function __construct(BuildContext $context, array $blocks = [])
     {
         parent::__construct($context, $blocks);
@@ -64,6 +67,13 @@ class EntityGenerator extends AbstractService
                 $this->context->getCommand()->error('Running generator: '.get_class($generator));
             }
             $generator->generate();
+            // Track files from each generator
+            if (method_exists($generator, 'getGeneratedFiles')) {
+                $this->generatedFiles = array_merge(
+                    $this->generatedFiles,
+                    $generator->getGeneratedFiles()
+                );
+            }
         }
 
         foreach ($this->generators as $generator) {
@@ -73,5 +83,13 @@ class EntityGenerator extends AbstractService
         if ($this->context->getCommand()) {
             $this->context->getCommand()->error('EntityGenerator: Execution complete');
         }
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getGeneratedFiles(): array
+    {
+        return $this->generatedFiles;
     }
 }

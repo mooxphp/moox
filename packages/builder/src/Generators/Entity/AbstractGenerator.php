@@ -16,6 +16,7 @@ abstract class AbstractGenerator
 
     protected array $processedBlocks;
 
+    /** @var array<string, string> */
     protected array $generatedFiles = [];
 
     public function __construct(
@@ -132,7 +133,7 @@ abstract class AbstractGenerator
         $normalizedPath = $this->normalizePath($path);
         $this->ensureDirectoryExists($normalizedPath);
         file_put_contents($normalizedPath, $content);
-        $this->generatedFiles[] = $normalizedPath;
+        $this->generatedFiles[$this->getGeneratorType()] = $normalizedPath;
     }
 
     public function formatGeneratedFiles(): void
@@ -183,5 +184,13 @@ abstract class AbstractGenerator
         }
 
         return [];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getGeneratedFiles(): array
+    {
+        return $this->generatedFiles;
     }
 }

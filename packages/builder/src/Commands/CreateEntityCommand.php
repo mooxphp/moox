@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Commands;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\EntityGenerator;
-use Moox\Builder\Services\PreviewMigrator;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -16,53 +17,48 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
     public function handle(): void
     {
-        $this->error('COMMAND START - If you see this, output works');
-
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
-        $app = $this->option('app');
         $presetName = $this->option('preset');
 
-        $this->info('Starting entity creation...');
-        $this->info('Context type: '.($preview ? 'preview' : ($package ? 'package' : 'app')));
-        $this->info("Entity name: $name");
-
-        if ($app && $package) {
-            $this->error('Cannot specify both --app and --package options');
-
-            return;
-        }
-
-        if (! $presetName) {
-            $presetName = $this->choice(
-                'Which preset would you like to use?',
-                PresetRegistry::getAvailablePresets(),
-                'simple-item'
-            );
-        }
+        $entityId = DB::table('builder_entities')->insertGetId([
+            'singular' => $name,
+            'plural' => Str::plural($name),
+            'preset' => $presetName,
+            'build_context' => $preview ? 'preview' : ($package ? 'package' : 'app'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $preset = PresetRegistry::getPreset($presetName);
-        if (! $preset) {
-            $this->error("Preset '{$presetName}' not found. Available presets: ".implode(', ', PresetRegistry::getAvailablePresets()));
-
-            return;
+        foreach ($preset->getBlocks() as $index => $block) {
+            DB::table('builder_entity_blocks')->insert([
+                'entity_id' => $entityId,
+                'title' => $block->getTitle(),
+                'description' => $block->getDescription(),
+                'block_class' => get_class($block),
+                'options' => json_encode($block->getOptions()),
+                'sort_order' => $index,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
 
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
 
-        $this->error('Before generator execution');
         $generator = new EntityGenerator($context, $preset->getBlocks());
-        $this->error('Generator instantiated');
         $generator->execute();
-        $this->error('After generator execution');
 
-        if ($preview) {
-            $this->info('Running preview migration...');
-            (new PreviewMigrator($context))->execute();
-        }
-
-        $this->info("Entity {$name} created successfully using preset '{$presetName}'!");
+        DB::table('builder_entity_builds')->insert([
+            'entity_id' => $entityId,
+            'build_context' => $preview ? 'preview' : ($package ? 'package' : 'app'),
+            'data' => json_encode($preset->getBlocks()),
+            'files' => json_encode($generator->getGeneratedFiles()),
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }
