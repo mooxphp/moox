@@ -20,13 +20,26 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
-        $presetName = $this->option('preset');
+
+        $presetName = $this->choice(
+            'Which preset would you like to use?',
+            [
+                'simple-item',
+                'publishable-item',
+                'full-item',
+                'simple-taxonomy',
+                'nested-taxonomy',
+            ],
+            'simple-item'
+        );
+
+        $buildContext = $preview ? 'preview' : ($package ? 'package' : 'app');
 
         $entityId = DB::table('builder_entities')->insertGetId([
             'singular' => $name,
             'plural' => Str::plural($name),
             'preset' => $presetName,
-            'build_context' => $preview ? 'preview' : ($package ? 'package' : 'app'),
+            'build_context' => $buildContext,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -53,12 +66,14 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
         DB::table('builder_entity_builds')->insert([
             'entity_id' => $entityId,
-            'build_context' => $preview ? 'preview' : ($package ? 'package' : 'app'),
+            'build_context' => $buildContext,
             'data' => json_encode($preset->getBlocks()),
             'files' => json_encode($generator->getGeneratedFiles()),
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        $this->info('Entity '.$name.' created successfully in '.$buildContext);
     }
 }

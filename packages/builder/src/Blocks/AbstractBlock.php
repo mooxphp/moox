@@ -391,4 +391,19 @@ abstract class AbstractBlock
     {
         return [];
     }
+
+    public function getTitle(): string
+    {
+        return class_basename($this);
+    }
+
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    public function getOptions(): array
+    {
+        return [];
+    }
 }

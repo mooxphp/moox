@@ -16,6 +16,8 @@ This is the current state of the Builder:
 
 ## Todo
 
+- [ ] Have a DB but works not flawlessly. Should not allow to generate multiple entities with same name, these are just builds of the same entity, also generate multiple migrations, ough, to make it correct we would make update migrations, mmh, any other idea?
+
 - [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
 
 - [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
@@ -78,6 +80,11 @@ This is the current state of the Builder:
 - [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
 
 - [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
+
+- [ ] Builder Docs
+     - [ ] One Trait is missing or to much?
+
+     - [ ] Packages
 
 - [ ] Core Docs
 

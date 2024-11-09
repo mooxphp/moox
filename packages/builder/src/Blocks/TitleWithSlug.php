@@ -123,4 +123,25 @@ class TitleWithSlug extends AbstractBlock
     {
         return [$this->titleFieldName, $this->slugFieldName];
     }
+
+    public function getTitle(): string
+    {
+        return 'Title with Slug';
+    }
+
+    public function getDescription(): string
+    {
+        return 'Adds a title field with an automatically generated slug';
+    }
+
+    public function getOptions(): array
+    {
+        return [
+            'titleFieldName' => $this->titleFieldName,
+            'slugFieldName' => $this->slugFieldName,
+            'label' => $this->label,
+            'description' => $this->description,
+            'nullable' => $this->nullable,
+        ];
+    }
 }
