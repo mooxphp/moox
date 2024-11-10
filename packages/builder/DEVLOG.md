@@ -16,9 +16,18 @@ This is the current state of the Builder:
 
 ## Todo
 
-- [ ] DeleteCommand is not tested, may refactor db operations into services.
+- [ ] DeleteCommand has flaws, leaves files, and the db?
 
-- [ ] Sections
+- [ ] builder_entities table has a build_context field that contains preview, app or package ... but we need to handle that a bit different, as an entity can be generated in a package or in app, then developed, means versioned, and previewed. That means we can have the entity built in only one context plus preview. I would add a new field to entities named `previewed`that states a preview is currently active, while the `build_context`field should only reflext app or package.
+
+     When an entity is built in preview context, the previewed field should be true, when we delete the preview false
+
+     For builds in app or package context: when created, fill build context, when deleted, empty build context. Do not allow an entity to be built in app and package at a time.
+
+
+     Delete a preview vs. delete a  build vs. delete an entity!
+
+     
 
 - [ ] If already a migration, a migration and model exists ...?
 
@@ -88,9 +97,15 @@ This is the current state of the Builder:
 - [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
 
 - [ ] Builder Docs
-     - [ ] HandlesMigrationFiles Trait
 
-     - [ ] EntityService 
+     - [ ] HandlesMigrationFiles Trait
+     - [ ] EntityService
+     - [ ] EntitiyImporter Service
+     - [ ] MigrationAnalyzer Service
+     - [ ] MigrationFinder Service
+     - [ ] php artisan builder:create-from-migration packages/blog/database/migrations/create_posts_table.php --package
+     - [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php
+     - [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php --preview
 
 - [ ] Core Docs
 
@@ -121,15 +136,25 @@ This is the current state of the Builder:
   - Usage / Config
 
 - $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
+
 - Relationships - in builder but like taxonomies
+
 - Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
+
 - Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
+
 - HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
+
 - Item could show last changed etc. on the left ...
+
 - Gallery images should be sortable
+
 - Bulk restore does not work
+
 - Set indices for slug etc, or not?
+
 - not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
+
 - If plugin data-language -> migration create_languages_table -> 
      SP: ->hasMigration('create_data_languages_table') (correct the -)
      - Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
@@ -138,6 +163,7 @@ This is the current state of the Builder:
      - Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
      - Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import 
      - PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+
 - Inline-Help
 
 ## Packages
