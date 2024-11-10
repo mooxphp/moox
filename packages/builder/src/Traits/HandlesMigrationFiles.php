@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Traits;
 
+use Illuminate\Support\Facades\DB;
+
 trait HandlesMigrationFiles
 {
     protected function getMigrationPattern(): string
@@ -21,26 +23,30 @@ trait HandlesMigrationFiles
 
     protected function findMigrationFile(): ?string
     {
-        $pattern = $this->getMigrationPattern();
-        if ($this->context->getCommand()) {
-            $this->context->getCommand()->info('Looking for migration with pattern: '.$pattern);
-            $this->context->getCommand()->info('Files in migrations directory: '.implode(', ', glob(dirname($pattern).'/*')));
+        $entity = DB::table('builder_entities')
+            ->where('singular', $this->context->getEntityName())
+            ->where('build_context', $this->context->getContextType())
+            ->whereNull('deleted_at')
+            ->first();
+
+        if ($entity) {
+            $latestBuild = DB::table('builder_entity_builds')
+                ->where('entity_id', $entity->id)
+                ->where('is_active', true)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($latestBuild) {
+                $files = json_decode($latestBuild->files, true);
+                if (isset($files['migration']) && file_exists($files['migration'])) {
+                    return $files['migration'];
+                }
+            }
         }
 
+        $pattern = $this->getMigrationPattern();
         $files = glob($pattern);
 
-        if (empty($files)) {
-            if ($this->context->getCommand()) {
-                $this->context->getCommand()->error('No migration files found matching pattern');
-            }
-
-            return null;
-        }
-
-        if ($this->context->getCommand()) {
-            $this->context->getCommand()->info('Found migration file: '.$files[0]);
-        }
-
-        return $files[0];
+        return ! empty($files) ? $files[0] : null;
     }
 }

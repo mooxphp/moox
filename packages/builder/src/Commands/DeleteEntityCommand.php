@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Commands;
 
-use Illuminate\Support\Facades\File;
-use Moox\Builder\Services\EntityFilesRemover;
-use Moox\Builder\Services\EntityTablesRemover;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class DeleteEntityCommand extends AbstractBuilderCommand
 {
@@ -18,94 +18,63 @@ class DeleteEntityCommand extends AbstractBuilderCommand
     {
         $name = $this->argument('name');
         $force = $this->option('force');
+        $package = $this->option('package');
+        $buildContext = $package ? 'package' : ($this->option('app') ? 'app' : 'preview');
 
-        $previewContext = $this->createContext($name, preview: true);
-        $appContext = $this->createContext($name);
+        $entity = DB::table('builder_entities')
+            ->where('singular', $name)
+            ->where('build_context', $buildContext)
+            ->whereNull('deleted_at')
+            ->first();
 
-        $previewPath = $this->normalizePath($previewContext->getPath('resource').'/'.$name.'Resource.php');
-        $appPath = $this->normalizePath($appContext->getPath('resource').'/'.$name.'Resource.php');
-
-        $this->info('Checking paths:');
-        $this->info("Preview path: $previewPath");
-        $this->info("App path: $appPath");
-        $this->info('App path exists: '.(File::exists($appPath) ? 'YES' : 'NO'));
-
-        $previewExists = File::exists($previewPath);
-        $appExists = File::exists($appPath);
-        $packageExists = false;
-        $packagePath = '';
-
-        if ($package = $this->option('package')) {
-            $packageContext = $this->createContext($name, package: $package);
-            $packagePath = $this->normalizePath($packageContext->getPath('resource').'/'.$name.'Resource.php');
-            $packageExists = File::exists($packagePath);
-            $this->info("Package path: $packagePath");
-        }
-
-        if (! $previewExists && ! $appExists && ! $packageExists) {
-            $this->error("No entity named '{$name}' found in any scope.");
+        if (! $entity) {
+            $this->error("No entity named '{$name}' found in {$buildContext} context.");
 
             return;
         }
 
-        if ($previewExists) {
-            $this->deletePreview($name);
+        $latestBuild = DB::table('builder_entity_builds')
+            ->where('entity_id', $entity->id)
+            ->where('is_active', true)
+            ->orderBy('created_at', 'desc')
+            ->first();
 
-            return;
-        }
-
-        if ($force) {
-            if ($appExists) {
-                $this->deleteApp($name);
+        if (! $force && $buildContext !== 'preview') {
+            if (! $this->confirm("Are you sure you want to delete the {$buildContext} entity '{$name}'?")) {
+                return;
             }
-            if ($packageExists) {
-                $this->deletePackage($name, $package);
+        }
+
+        if ($latestBuild) {
+            $files = json_decode($latestBuild->files, true);
+            foreach ($files as $file) {
+                if (file_exists($file)) {
+                    unlink($file);
+                    $this->info("Deleted file: {$file}");
+                }
             }
 
-            return;
+            $tableName = Str::plural(Str::snake($name));
+            if (Schema::hasTable($tableName)) {
+                if ($buildContext === 'preview') {
+                    Schema::dropIfExists($tableName);
+                    $this->info("Dropped preview table: {$tableName}");
+                } else {
+                    $this->warn("Table {$tableName} was not dropped as it might contain production data.");
+                }
+            }
+
+            DB::table('builder_entity_builds')
+                ->where('id', $latestBuild->id)
+                ->update(['is_active' => false]);
         }
 
-        if ($appExists && ! $this->confirm("Are you sure you want to delete the app entity '{$name}'?")) {
-            return;
-        }
+        DB::table('builder_entities')
+            ->where('id', $entity->id)
+            ->update([
+                'deleted_at' => now(),
+            ]);
 
-        if ($packageExists && ! $this->confirm("Are you sure you want to delete the package entity '{$name}'?")) {
-            return;
-        }
-
-        if ($appExists) {
-            $this->deleteApp($name);
-        }
-        if ($packageExists) {
-            $this->deletePackage($name, $package);
-        }
-    }
-
-    private function deletePreview(string $name): void
-    {
-        $context = $this->createContext($name, preview: true);
-        (new EntityFilesRemover($context))->execute();
-        (new EntityTablesRemover($context))->execute();
-
-        $this->info("Preview entity '{$name}' deleted successfully!");
-    }
-
-    private function deleteApp(string $name): void
-    {
-        $context = $this->createContext($name, preview: false);
-        (new EntityFilesRemover($context))->execute();
-        $this->info("App entity '{$name}' deleted successfully!");
-    }
-
-    private function deletePackage(string $name, string $package): void
-    {
-        $context = $this->createContext($name, package: $package);
-        (new EntityFilesRemover($context))->execute();
-        $this->info("Package entity '{$name}' deleted successfully!");
-    }
-
-    private function normalizePath(string $path): string
-    {
-        return str_replace('\\', '/', $path);
+        $this->info("Entity '{$name}' deleted successfully from {$buildContext} context!");
     }
 }

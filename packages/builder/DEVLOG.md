@@ -16,9 +16,11 @@ This is the current state of the Builder:
 
 ## Todo
 
-- [ ] Have a DB but works, but should not generate multiple entities with same name, these are builds of the same entity, 
+- [ ] DeleteCommand is not tested, may refactor db operations into services.
 
-- [ ] It generates multiple migrations, ough, to make it correct we would make update migrations, mmh, any other idea?
+- [ ] Sections
+
+- [ ] If already a migration, a migration and model exists ...?
 
 - [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
 
@@ -37,6 +39,8 @@ This is the current state of the Builder:
 - [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
 
 - [ ] Now do the packages part, it is well prepared, see below
+
+- [ ] Require Pint, what about Larastan?
 
 - [ ] Add more Moox Blocks 
 
