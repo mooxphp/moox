@@ -16,17 +16,20 @@ class EntityGenerator extends AbstractService
     /** @var array<string, string> */
     protected array $generatedFiles = [];
 
-    public function __construct(BuildContext $context, array $blocks = [])
+    public function setContext(BuildContext $context): void
     {
-        parent::__construct($context, $blocks);
+        parent::setContext($context);
+        $this->generators = [];
+    }
+
+    public function setBlocks(array $blocks): void
+    {
+        parent::setBlocks($blocks);
+        $this->generators = [];
     }
 
     protected function initializeGenerators(): void
     {
-        if (! empty($this->generators)) {
-            return;
-        }
-
         $contextConfig = $this->context->getConfig();
         $classes = $contextConfig['classes'] ?? [];
 

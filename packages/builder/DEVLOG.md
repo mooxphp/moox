@@ -88,9 +88,9 @@ This is the current state of the Builder:
 - [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
 
 - [ ] Builder Docs
-     - [ ] One Trait is missing or to much?
+     - [ ] HandlesMigrationFiles Trait
 
-     - [ ] Packages
+     - [ ] EntityService 
 
 - [ ] Core Docs
 

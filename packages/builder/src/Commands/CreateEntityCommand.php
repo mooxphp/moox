@@ -4,17 +4,22 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Commands;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\EntityGenerator;
+use Moox\Builder\Services\EntityService;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
     protected $signature = 'builder:create {name} {--package=} {--preview} {--app} {--preset=}';
 
     protected $description = 'Create a new entity with model, resource and plugin';
+
+    public function __construct(
+        private readonly EntityService $entityService,
+        private readonly EntityGenerator $entityGenerator
+    ) {
+        parent::__construct();
+    }
 
     public function handle(): void
     {
@@ -38,34 +43,19 @@ class CreateEntityCommand extends AbstractBuilderCommand
             );
         }
 
-        $existingEntity = DB::table('builder_entities')
-            ->where('singular', $name)
-            ->where('build_context', $buildContext)
-            ->first();
+        $result = $this->entityService->create($name, $buildContext, $presetName);
+        $entity = $result['entity'];
 
-        if ($existingEntity) {
+        if ($result['status'] === 'exists') {
             if (! $this->confirm("Entity '{$name}' already exists in {$buildContext} context. Do you want to rebuild it?")) {
                 return;
             }
 
-            $latestBuild = DB::table('builder_entity_builds')
-                ->where('entity_id', $existingEntity->id)
-                ->where('is_active', true)
-                ->orderBy('created_at', 'desc')
-                ->first();
-
+            $latestBuild = $this->entityService->getLatestBuild($entity->id);
             if ($latestBuild) {
                 if ($buildContext === 'preview') {
-                    $files = json_decode($latestBuild->files, true);
-                    foreach ($files as $file) {
-                        if (file_exists($file)) {
-                            unlink($file);
-                        }
-                    }
-                    $tableName = Str::plural(Str::snake($name));
-                    if (Schema::hasTable($tableName)) {
-                        Schema::dropIfExists($tableName);
-                    }
+                    $this->entityService->cleanupPreviewFiles($latestBuild);
+                    $this->entityService->dropPreviewTable($name);
                 } else {
                     $this->warn('Warning: This entity might have production data.');
                     if (! $this->confirm('Are you sure you want to regenerate files? This might require manual migration handling.')) {
@@ -73,57 +63,24 @@ class CreateEntityCommand extends AbstractBuilderCommand
                     }
                 }
             }
-
-            $entityId = $existingEntity->id;
-        } else {
-            $entityId = DB::table('builder_entities')->insertGetId([
-                'singular' => $name,
-                'plural' => Str::plural($name),
-                'preset' => $presetName,
-                'build_context' => $buildContext,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
         }
 
-        DB::table('builder_entity_blocks')
-            ->where('entity_id', $entityId)
-            ->delete();
-
-        $preset = PresetRegistry::getPreset($presetName);
-        foreach ($preset->getBlocks() as $index => $block) {
-            DB::table('builder_entity_blocks')->insert([
-                'entity_id' => $entityId,
-                'title' => $block->getTitle(),
-                'description' => $block->getDescription(),
-                'block_class' => get_class($block),
-                'options' => json_encode($block->getOptions()),
-                'sort_order' => $index,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        $this->entityService->rebuild($entity->id, $presetName);
 
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
 
-        $generator = new EntityGenerator($context, $preset->getBlocks());
-        $generator->execute();
+        $preset = PresetRegistry::getPreset($presetName);
+        $this->entityGenerator->setContext($context);
+        $this->entityGenerator->execute();
 
-        DB::table('builder_entity_builds')
-            ->where('entity_id', $entityId)
-            ->update(['is_active' => false]);
+        $this->entityService->recordBuild(
+            $entity->id,
+            $buildContext,
+            $preset->getBlocks(),
+            $this->entityGenerator->getGeneratedFiles()
+        );
 
-        DB::table('builder_entity_builds')->insert([
-            'entity_id' => $entityId,
-            'build_context' => $buildContext,
-            'data' => json_encode($preset->getBlocks()),
-            'files' => json_encode($generator->getGeneratedFiles()),
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $this->info('Entity '.$name.' '.($existingEntity ? 're' : '').'built successfully in '.$buildContext);
+        $this->info('Entity '.$name.' '.($result['status'] === 'exists' ? 're' : '').'built successfully in '.$buildContext);
     }
 }
