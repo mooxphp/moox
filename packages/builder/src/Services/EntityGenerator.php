@@ -70,7 +70,6 @@ class EntityGenerator extends AbstractService
                 $this->context->getCommand()->error('Running generator: '.get_class($generator));
             }
             $generator->generate();
-            // Track files from each generator
             if (method_exists($generator, 'getGeneratedFiles')) {
                 $this->generatedFiles = array_merge(
                     $this->generatedFiles,

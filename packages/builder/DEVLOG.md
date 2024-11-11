@@ -12,11 +12,12 @@ This is the current state of the Builder:
   - https://moox.test/moox/full-items
   - https://moox.test/moox/simple-taxonomies
   - https://moox.test/moox/nested-taxonomies
-- The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
 
 ## Todo
 
 - [ ] DeleteCommand has flaws, leaves files, and the db?
+
+- [ ] The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
 
 - [ ] builder_entities table has a build_context field that contains preview, app or package ... but we need to handle that a bit different, as an entity can be generated in a package or in app, then developed, means versioned, and previewed. That means we can have the entity built in only one context plus preview. I would add a new field to entities named `previewed`that states a preview is currently active, while the `build_context`field should only reflext app or package.
 
@@ -27,9 +28,7 @@ This is the current state of the Builder:
 
      Delete a preview vs. delete a  build vs. delete an entity!
 
-     
-
-- [ ] If already a migration, a migration and model exists ...?
+- [ ] If already a migration, a migration and model exists ...? Command implemented but not yet tested, see builder docs below
 
 - [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
 

@@ -59,7 +59,9 @@ class MigrationAnalyzer
         $relationships = [];
 
         foreach ($blueprint->getColumns() as $column) {
-            if (in_array($column->getName(), self::SYSTEM_COLUMNS)) {
+            $name = $column->get('name');
+
+            if (in_array($name, self::SYSTEM_COLUMNS)) {
                 continue;
             }
 
@@ -69,7 +71,7 @@ class MigrationAnalyzer
                 continue;
             }
 
-            $columns[$column->getName()] = $this->analyzeColumn($column);
+            $columns[$name] = $this->analyzeColumn($column);
         }
 
         return [
@@ -80,17 +82,20 @@ class MigrationAnalyzer
 
     private function analyzeColumn(ColumnDefinition $column): AbstractType
     {
+        $name = $column->get('name');
+
         foreach ($this->specialNamePatterns as $pattern => $typeClass) {
-            if (str_contains($column->getName(), $pattern)) {
+            if (str_contains($name, $pattern)) {
                 return new $typeClass;
             }
         }
 
-        if (! empty($column->getAttributes()['allowed'] ?? [])) {
+        $attributes = $column->getAttributes();
+        if (! empty($attributes['allowed'] ?? [])) {
             return new EnumType;
         }
 
-        $baseType = $column->getType();
+        $baseType = $column->get('type');
         $typeClass = $this->columnTypeMap[$baseType] ?? StringType::class;
 
         return new $typeClass;
@@ -98,20 +103,24 @@ class MigrationAnalyzer
 
     private function isRelationship(ColumnDefinition $column): bool
     {
-        return str_ends_with($column->getName(), '_id')
-            || ($column->getAttributes()['foreign'] ?? false);
+        $name = $column->get('name');
+        $attributes = $column->getAttributes();
+
+        return str_ends_with($name, '_id')
+            || ($attributes['foreign'] ?? false);
     }
 
     private function analyzeRelationship(ColumnDefinition $column): array
     {
-        $name = str_replace('_id', '', $column->getName());
+        $name = str_replace('_id', '', $column->get('name'));
+        $attributes = $column->getAttributes();
 
         return [
             'name' => $name,
             'type' => new RelationType,
-            'nullable' => $column->getNullable(),
+            'nullable' => $attributes['nullable'] ?? false,
             'multiple' => false,
-            'related_table' => $column->getAttributes()['on'] ?? $name.'s',
+            'related_table' => $attributes['on'] ?? $name.'s',
         ];
     }
 }
