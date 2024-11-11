@@ -15,47 +15,42 @@ This is the current state of the Builder:
 
 ## Todo
 
-- [ ] DeleteCommand has flaws, leaves files, and the db?
+- [ ] The create command is not as described in README, but nearby now, yet not all parameters are tested
 
-- [ ] The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
+- [ ] The create command does not migrate, throws an error. Should be fixed, just test it...
+
+- [ ] DeleteCommand has flaws, leaves files, and the db? Not as described in README, it should delete all empty folders to stay clean
+
+- [ ] If already a migration, a migration and model exists ...? Command implemented but not yet tested, see builder docs below
+
+- [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
 
 - [ ] builder_entities table has a build_context field that contains preview, app or package ... but we need to handle that a bit different, as an entity can be generated in a package or in app, then developed, means versioned, and previewed. That means we can have the entity built in only one context plus preview. I would add a new field to entities named `previewed`that states a preview is currently active, while the `build_context`field should only reflext app or package.
 
      When an entity is built in preview context, the previewed field should be true, when we delete the preview false
 
-     For builds in app or package context: when created, fill build context, when deleted, empty build context. Do not allow an entity to be built in app and package at a time.
+     For builds in app or package context: when created, fill build context, when deleted, empty build context. Do not allow an entity to be built in app and package at a time. 
+
+     There's a big difference between really deleting the entity and removing a built!
 
 
-     Delete a preview vs. delete a  build vs. delete an entity!
-
-- [ ] If already a migration, a migration and model exists ...? Command implemented but not yet tested, see builder docs below
-
-- [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
-
-- [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
-
-- [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
-
-- [ ] The create command is not as described in README, but nearby now
-
-- [ ] The delete command is just partly working (not deleting the plugin and migration) and not as described in README, it should delete all empty folders to stay clean
-
-- [ ] The migration created does not have a timestamp, should it be prefixed?
-
-- [ ] The create command does not migrate, throws an error
 
 - [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
+- [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
+- [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
 
-- [ ] Now do the packages part, it is well prepared, see below
+
+
+- [ ] The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
+
+     
 
 - [ ] Require Pint, what about Larastan?
-
 - [ ] Add more Moox Blocks 
 
   - [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
   - [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs 
   - [ ] Most wanted like Phone, Address etc.
-
 - [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
   - [ ] getResourceName should be auto detected
   - [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
@@ -70,31 +65,20 @@ This is the current state of the Builder:
     - Moox Builder Packages should be cleaned up as much as possible
     - Installer: use Abstract, Service or Traits ...
     - ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
-
 - [ ] Builder needs to be cleaned up after able to generate packages
   - [ ] Cleanup config
   - [ ] Remove old entities
   - [ ] Remove build.php
   - [ ] Remove GH Template
-
 - [ ] We need to generate factories from blocks to entities
-
 - [ ] We need to generate tests
-
 - [ ] Versions need a concept, needs a table (and UI)
-
 - [ ] Versions vs. Updates (means Maintenance ... if we could update code using PHP Parser, we also could update code in terms of keeping the generated code of builder plugins auto-maintained)
-
 - [ ] Generate the Builder UI, let Builder build itself
-
 - [ ] Generate a Frontend
-
 - [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
-
 - [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
-
 - [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
-
 - [ ] Builder Docs
 
      - [ ] HandlesMigrationFiles Trait
@@ -105,7 +89,6 @@ This is the current state of the Builder:
      - [ ] php artisan builder:create-from-migration packages/blog/database/migrations/create_posts_table.php --package
      - [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php
      - [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php --preview
-
 - [ ] Core Docs
 
   - Naming convention InModel InResource InPages and Single for single-use traits
@@ -125,7 +108,6 @@ This is the current state of the Builder:
   - StatusInResource - WIP
 
   - Links to builder or builder doc inside
-
 - [ ] Category / Tag Docs
 
   - Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
@@ -133,27 +115,16 @@ This is the current state of the Builder:
   - https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets 
   - Screens
   - Usage / Config
-
 - $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
-
 - Relationships - in builder but like taxonomies
-
 - Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
-
 - Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
-
 - HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
-
 - Item could show last changed etc. on the left ...
-
 - Gallery images should be sortable
-
 - Bulk restore does not work
-
 - Set indices for slug etc, or not?
-
 - not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
-
 - If plugin data-language -> migration create_languages_table -> 
      SP: ->hasMigration('create_data_languages_table') (correct the -)
      - Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
@@ -162,7 +133,6 @@ This is the current state of the Builder:
      - Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
      - Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import 
      - PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
-
 - Inline-Help
 
 ## Packages
@@ -388,6 +358,8 @@ This is a first idea of the future description for Moox Builder:
 What do you want to ~~build~~ ship today?
 
 From idea to a working App in Minutes. No coding.
+
+Start from scratch, use a Preset or an existing migration.
 
 Moox Builder is a Laravel Package and Filament UI to build
 
