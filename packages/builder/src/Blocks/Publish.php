@@ -6,12 +6,7 @@ namespace Moox\Builder\Blocks;
 
 class Publish extends AbstractBlock
 {
-    protected bool $isFeature = true;
-
-    protected bool $isSingleFeature = true;
-
-    protected array $includes = [
-        Author::class,
+    protected array $includedBlocks = [
         SoftDelete::class,
     ];
 

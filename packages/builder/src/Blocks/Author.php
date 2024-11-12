@@ -6,14 +6,6 @@ namespace Moox\Builder\Blocks;
 
 class Author extends AbstractBlock
 {
-    protected bool $isFeature = true;
-
-    protected bool $isSingleFeature = false;
-
-    protected array $incompatibleWith = [
-        Publish::class,
-    ];
-
     public function __construct(
         string $name = 'author',
         string $label = 'Author',

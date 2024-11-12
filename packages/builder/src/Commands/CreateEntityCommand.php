@@ -53,31 +53,31 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
             $latestBuild = $this->entityService->getLatestBuild($entity->id);
             if ($latestBuild) {
-                if ($buildContext === 'preview') {
-                    $this->entityService->cleanupPreviewFiles($latestBuild);
-                    $this->entityService->dropPreviewTable($name);
-                } else {
-                    $this->warn('Warning: This entity might have production data.');
-                    if (! $this->confirm('Are you sure you want to regenerate files? This might require manual migration handling.')) {
-                        return;
-                    }
-                }
+                $blocks = $this->entityService->reconstructBlocksFromBuild($latestBuild);
+            } else {
+                $preset = PresetRegistry::getPreset($presetName);
+                $blocks = $preset->getBlocks();
             }
+        } else {
+            $preset = PresetRegistry::getPreset($presetName);
+            $blocks = $preset->getBlocks();
         }
-
-        $this->entityService->rebuild($entity->id, $presetName);
 
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
 
-        $preset = PresetRegistry::getPreset($presetName);
         $this->entityGenerator->setContext($context);
+        $this->entityGenerator->setBlocks($blocks);
         $this->entityGenerator->execute();
+
+        if ($preview) {
+            $this->entityService->createPreviewTable($name, $blocks);
+        }
 
         $this->entityService->recordBuild(
             $entity->id,
             $buildContext,
-            $preset->getBlocks(),
+            $blocks,
             $this->entityGenerator->getGeneratedFiles()
         );
 

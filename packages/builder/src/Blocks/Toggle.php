@@ -6,10 +6,6 @@ namespace Moox\Builder\Blocks;
 
 class Toggle extends AbstractBlock
 {
-    protected bool $isFeature = false;
-
-    protected bool $isSingleFeature = false;
-
     public function __construct(
         string $name,
         string $label,

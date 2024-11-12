@@ -6,11 +6,7 @@ namespace Moox\Builder\Blocks;
 
 class SoftDelete extends AbstractBlock
 {
-    protected bool $isFeature = true;
-
-    protected bool $isSingleFeature = false;
-
-    protected array $incompatibleWith = [
+    protected array $incompatibleBlocks = [
         Publish::class,
     ];
 

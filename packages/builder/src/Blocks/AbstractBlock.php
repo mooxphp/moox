@@ -109,38 +109,58 @@ abstract class AbstractBlock
 
     protected ?object $context = null;
 
-    protected array $includes = [];
+    /**
+     * @var array<class-string>
+     *
+     * for example: TitleWithSlug replaces (field named) Title and (field named) Slug?
+     */
+    protected array $replacesBlocks = [];
 
-    protected array $incompatibleWith = [];
+    /**
+     * @var array<class-string>
+     *
+     * for example: Publish includes SoftDelete
+     */
+    protected array $includedBlocks = [];
 
-    public function resolveBlockDependencies(array $selectedBlocks): array
-    {
-        $resolvedBlocks = $selectedBlocks;
-
-        foreach ($selectedBlocks as $block) {
-            if (isset($block->includes)) {
-                foreach ($block->includes as $includedBlock) {
-                    $resolvedBlocks = array_filter(
-                        $resolvedBlocks,
-                        fn ($b) => ! ($b instanceof $includedBlock)
-                    );
-                }
-            }
-        }
-
-        return $resolvedBlocks;
-    }
+    /**
+     * @var array<class-string>
+     *
+     * for example: SoftDelete is incompatible with Publish
+     */
+    protected array $incompatibleBlocks = [];
 
     public function __construct(
-        protected readonly string $name,
-        protected readonly string $label,
-        protected readonly string $description,
-        protected readonly bool $nullable = false,
-    ) {}
+        protected string $name,
+        protected string $label,
+        protected string $description,
+        protected bool $nullable = false,
+        // Additional parameters will be handled by child classes
+    ) {
+        $this->name = $name;
+        $this->label = $label;
+        $this->description = $description;
+        $this->nullable = $nullable;
+    }
 
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function isNullable(): bool
+    {
+        return $this->nullable;
     }
 
     public function isFillable(): bool
@@ -148,85 +168,82 @@ abstract class AbstractBlock
         return $this->fillable;
     }
 
-    public function getMigrations(): array
+    public function getCasts(string $type): array
     {
-        return $this->migration();
+        return $this->casts[$type] ?? [];
     }
 
-    public function migration(): array
+    public function getMigrations(string $type = 'fields'): array
     {
-        return $this->migrations['fields'] ?? [];
+        return $this->migrations[$type] ?? [];
     }
 
-    public function modelCast(): ?string
+    public function getUseStatements(string $path, ?string $subPath = null): array
     {
-        if (empty($this->casts['model'])) {
-            return null;
+        $parts = explode('.', $path);
+        if ($subPath) {
+            $parts[] = $subPath;
         }
 
-        if (is_array($this->casts['model'])) {
-            return implode(",\n        ", $this->casts['model']);
+        $current = $this->useStatements;
+        foreach ($parts as $part) {
+            if (! isset($current[$part])) {
+                return [];
+            }
+            $current = $current[$part];
         }
 
-        return $this->casts['model'];
+        if (is_array($current)) {
+            return $this->flattenArray($current);
+        }
+
+        return is_string($current) ? [$current] : [];
     }
 
-    public function getMethods(string $context): array
+    public function getFlattenedUseStatements(string $path): array
     {
+        $statements = $this->getUseStatements($path);
+
+        return $this->flattenArray($statements);
+    }
+
+    public function getTraits(string $path): array
+    {
+        $parts = explode('.', $path);
+        $current = $this->traits;
+
+        foreach ($parts as $part) {
+            if (! isset($current[$part])) {
+                return [];
+            }
+            $current = $current[$part];
+        }
+
+        return $current;
+    }
+
+    public function getMethods(string $context, ?string $type = null): array
+    {
+        if ($type) {
+            return $this->methods[$context][$type] ?? [];
+        }
+
         return $this->methods[$context] ?? [];
     }
 
-    public function getUseStatements(string $context, ?string $subContext = null): array
+    public function getFormFields(): array
     {
-        if ($subContext) {
-            return $this->useStatements[$context][$subContext] ?? [];
-        }
-
-        return $this->useStatements[$context] ?? [];
+        return $this->formFields['resource'] ?? [];
     }
 
-    public function getTraits(string $context): array
+    public function getTableColumns(): array
     {
-        return $this->traits[$context] ?? [];
+        return $this->tableColumns['resource'] ?? [];
     }
 
-    public function formField(): string
+    public function getFactories(string $type = 'definitions'): array
     {
-        return implode(",\n            ", $this->formFields['resource'] ?? []);
-    }
-
-    public function tableColumn(): string
-    {
-        return implode(",\n            ", $this->tableColumns['resource'] ?? []);
-    }
-
-    public function getTableActions(): array
-    {
-        return $this->actions['resource'] ?? [];
-    }
-
-    public function getPageActions(string $page, string $position = ''): array
-    {
-        if ($position) {
-            return $this->actions['pages'][$page][$position] ?? [];
-        }
-
-        return $this->actions['pages'][$page] ?? [];
-    }
-
-    public function getFilters(): array
-    {
-        return $this->filters['resource'] ?? [];
-    }
-
-    public function getFactoryDefinitions(): array
-    {
-        return $this->factories['model']['definitions'] ?? [];
-    }
-
-    public function getFactoryStates(): array
-    {
-        return $this->factories['model']['states'] ?? [];
+        return $this->factories['model'][$type] ?? [];
     }
 
     public function getTests(string $type, string $context): array
@@ -234,53 +251,19 @@ abstract class AbstractBlock
         return $this->tests[$type][$context] ?? [];
     }
 
-    public function getTableFilters(): array
+    public function getFilters(): array
     {
         return $this->filters['resource'] ?? [];
     }
 
-    public function getResourceUseStatements(): array
+    public function getIncludedBlocks(): array
     {
-        if (! $this->context) {
-            return [];
-        }
-
-        $baseStatements = [
-            'use Filament\Forms\Form;',
-            'use Filament\Resources\Resource;',
-            'use Filament\Tables\Table;',
-            'use Illuminate\Database\Eloquent\Builder;',
-        ];
-
-        $statements = array_merge(
-            $baseStatements,
-            $this->useStatements['model'] ?? [],
-            $this->useStatements['resource']['forms'] ?? [],
-            $this->useStatements['resource']['columns'] ?? [],
-            $this->useStatements['resource']['filters'] ?? [],
-            $this->useStatements['resource']['actions'] ?? [],
-            $this->useStatements['resource']['traits'] ?? [],
-            $this->useStatements['pages'] ?? []
-        );
-
-        if ($this->traits['resource']) {
-            foreach ($this->traits['resource'] as $trait) {
-                $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
-            }
-        }
-
-        return array_unique($statements);
+        return $this->includedBlocks;
     }
 
-    public function getPageUseStatements(string $page): array
+    public function getIncompatibleBlocks(): array
     {
-        $statements = [];
-
-        if (isset($this->useStatements['pages'][$page])) {
-            $statements = array_merge($statements, $this->useStatements['pages'][$page]);
-        }
-
-        return array_unique($statements);
+        return $this->incompatibleBlocks;
     }
 
     protected function setFillable(bool $fillable): self
@@ -290,9 +273,29 @@ abstract class AbstractBlock
         return $this;
     }
 
-    protected function addMigration(string $field): self
+    protected function addCast(string $cast): self
     {
-        $this->migrations['fields'][] = $field;
+        if (! isset($this->casts['model'])) {
+            $this->casts['model'] = [];
+        }
+        if (! is_array($this->casts['model'])) {
+            $this->casts['model'] = [$this->casts['model']];
+        }
+        $this->casts['model'][] = $cast;
+
+        return $this;
+    }
+
+    protected function setCast(string $cast): self
+    {
+        $this->casts['model'] = $cast;
+
+        return $this;
+    }
+
+    protected function addMigration(string $field, string $type = 'fields'): self
+    {
+        $this->migrations[$type][] = $field;
 
         return $this;
     }
@@ -326,26 +329,6 @@ abstract class AbstractBlock
         return $this;
     }
 
-    protected function addCast(string $cast): self
-    {
-        if (! isset($this->casts['model'])) {
-            $this->casts['model'] = [];
-        }
-        if (! is_array($this->casts['model'])) {
-            $this->casts['model'] = [$this->casts['model']];
-        }
-        $this->casts['model'][] = $cast;
-
-        return $this;
-    }
-
-    protected function setCast(string $cast): self
-    {
-        $this->casts['model'] = $cast;
-
-        return $this;
-    }
-
     protected function addFormField(string $field): self
     {
         $this->formFields['resource'][] = $field;
@@ -358,6 +341,121 @@ abstract class AbstractBlock
         $this->tableColumns['resource'][] = $column;
 
         return $this;
+    }
+
+    protected function addFactory(string $definition, string $type = 'definitions'): self
+    {
+        $this->factories['model'][$type][] = $definition;
+
+        return $this;
+    }
+
+    protected function addTest(string $type, string $context, string $test): self
+    {
+        $this->tests[$type][$context][] = $test;
+
+        return $this;
+    }
+
+    protected function addFilter(string $filter): self
+    {
+        $this->filters['resource'][] = $filter;
+
+        return $this;
+    }
+
+    protected function addAction(string $context, string $action): self
+    {
+        $this->actions[$context][] = $action;
+
+        return $this;
+    }
+
+    protected function addPageAction(string $page, string $action, string $position = ''): self
+    {
+        if ($position) {
+            $this->actions['pages'][$page][$position][] = $action;
+        } else {
+            $this->actions['pages'][$page][] = $action;
+        }
+
+        return $this;
+    }
+
+    public function formField(): string
+    {
+        return implode(",\n            ", $this->formFields['resource'] ?? []);
+    }
+
+    public function tableColumn(): string
+    {
+        return implode(",\n            ", $this->tableColumns['resource'] ?? []);
+    }
+
+    public function migration(): array
+    {
+        return $this->migrations['fields'] ?? [];
+    }
+
+    public function modelCast(): ?string
+    {
+        if (empty($this->casts['model'])) {
+            return null;
+        }
+
+        if (is_array($this->casts['model'])) {
+            return implode(",\n        ", $this->casts['model']);
+        }
+
+        return $this->casts['model'];
+    }
+
+    public function getResourceUseStatements(): array
+    {
+        $baseStatements = [
+            'use Filament\Forms\Form;',
+            'use Filament\Resources\Resource;',
+            'use Filament\Tables\Table;',
+            'use Illuminate\Database\Eloquent\Builder;',
+        ];
+
+        $statements = array_merge(
+            $baseStatements,
+            $this->getFlattenedUseStatements('model'),
+            $this->getFlattenedUseStatements('resource'),
+            $this->getFlattenedUseStatements('pages')
+        );
+
+        if ($this->traits['resource']) {
+            foreach ($this->traits['resource'] as $trait) {
+                $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
+            }
+        }
+
+        return array_unique($statements);
+    }
+
+    public function getPageUseStatements(string $page): array
+    {
+        return array_unique($this->useStatements['pages'][$page] ?? []);
+    }
+
+    public function resolveBlockDependencies(array $blocks): array
+    {
+        $resolvedBlocks = $blocks;
+
+        foreach ($blocks as $block) {
+            if (isset($block->includedBlocks)) {
+                foreach ($block->includedBlocks as $includedBlock) {
+                    $resolvedBlocks = array_filter(
+                        $resolvedBlocks,
+                        fn ($b) => ! ($b instanceof $includedBlock)
+                    );
+                }
+            }
+        }
+
+        return $resolvedBlocks;
     }
 
     public function setContext(object $context): self
@@ -397,13 +495,157 @@ abstract class AbstractBlock
         return class_basename($this);
     }
 
-    public function getDescription(): string
-    {
-        return '';
-    }
-
     public function getOptions(): array
     {
+        return [
+            'name' => $this->name,
+            'label' => $this->label,
+            'description' => $this->description,
+            'nullable' => $this->nullable,
+            'replacesBlocks' => $this->replacesBlocks,
+            'includedBlocks' => $this->includedBlocks,
+            'incompatibleBlocks' => $this->incompatibleBlocks,
+        ];
+    }
+
+    protected function flattenArray(array $array): array
+    {
+        $result = [];
+        array_walk_recursive($array, function ($value) use (&$result) {
+            if (is_string($value)) {
+                $result[] = $value;
+            }
+        });
+
+        return $result;
+    }
+
+    public function getTableActions(): array
+    {
+        return $this->getActions('resource');
+    }
+
+    public function getPageActions(string $page): array
+    {
+        return $this->getActions("pages.{$page}");
+    }
+
+    public function getHeaderActions(string $page): array
+    {
+        return $this->getActions("pages.{$page}.header");
+    }
+
+    public function getFooterActions(string $page): array
+    {
+        return $this->getActions("pages.{$page}.footer");
+    }
+
+    public function getActions(string $path): array
+    {
+        $parts = explode('.', $path);
+        $current = $this->actions;
+
+        foreach ($parts as $part) {
+            if (! isset($current[$part])) {
+                return [];
+            }
+            $current = $current[$part];
+        }
+
+        return is_array($current) ? $current : [$current];
+    }
+
+    public function getTableFilters(): array
+    {
+        return $this->getFilters();
+    }
+
+    public function getTableHeaderActions(): array
+    {
+        return $this->getActions('header');
+    }
+
+    public function getTableEmptyStateActions(): array
+    {
+        return $this->getActions('empty_state');
+    }
+
+    public function getTableRecordActions(): array
+    {
+        return $this->getActions('record');
+    }
+
+    public function getTableRecordCheckboxes(): array
+    {
+        return $this->getActions('checkboxes');
+    }
+
+    public function getTableRecordUrl(): ?string
+    {
+        return null;
+    }
+
+    public function getTableReorderColumn(): ?string
+    {
+        return null;
+    }
+
+    public function getTablePollInterval(): ?string
+    {
+        return null;
+    }
+
+    public function getTableQueryString(): array
+    {
         return [];
+    }
+
+    public function getTableRecordClasses(): ?string
+    {
+        return null;
+    }
+
+    public function setFeatureFlags(array $data): void
+    {
+        $this->includedBlocks = $data['includedBlocks'] ?? [];
+        $this->incompatibleBlocks = $data['incompatibleBlocks'] ?? [];
+    }
+
+    public function setArrayData(array $data): void
+    {
+        $this->casts = ['model' => $data['casts'] ?? []];
+        $this->migrations = [
+            'fields' => $data['migrations'] ?? [],
+            'indexes' => [],
+            'foreign_keys' => [],
+        ];
+        $this->formFields = ['resource' => $data['formFields'] ?? []];
+        $this->tableColumns = ['resource' => $data['tableColumns'] ?? []];
+        $this->factories = [
+            'model' => [
+                'definitions' => $data['factories'] ?? [],
+                'states' => [],
+            ],
+        ];
+        $this->tests = [
+            'unit' => [
+                'model' => $data['tests'] ?? [],
+                'resource' => [],
+            ],
+            'feature' => [
+                'model' => [],
+                'resource' => [],
+            ],
+        ];
+        $this->filters = ['resource' => $data['filters'] ?? []];
+
+        foreach (['useStatements', 'traits', 'methods', 'actions'] as $property) {
+            if (isset($data[$property])) {
+                $this->$property = array_merge_recursive(
+                    $this->$property,
+                    ['model' => $data[$property] ?? []]
+                );
+            }
+        }
     }
 }
