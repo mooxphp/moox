@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Moox\Builder\Generators\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
+use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
+use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
+use Moox\Builder\Generators\Entity\Pages\ListPageGenerator;
+use Moox\Builder\Generators\Entity\Pages\ViewPageGenerator;
 
 class ResourceGenerator extends AbstractGenerator
 {
@@ -51,92 +55,16 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function generateResourcePages(): void
     {
-        $pages = ['List', 'Create', 'Edit', 'View'];
-        $resourceName = $this->context->getEntityName().'Resource';
-        $basePath = $this->context->getPath('resource').'/'.$resourceName.'/Pages';
+        $generators = [
+            new ListPageGenerator($this->context, $this->getBlocks()),
+            new CreatePageGenerator($this->context, $this->getBlocks()),
+            new EditPageGenerator($this->context, $this->getBlocks()),
+            new ViewPageGenerator($this->context, $this->getBlocks()),
+        ];
 
-        foreach ($pages as $page) {
-            $template = $this->loadStub($this->context->getPageTemplate('resource', $page));
-
-            $className = $page === 'List'
-                ? $page.$this->context->getPluralModelName()
-                : $page.$this->context->getEntityName();
-
-            $variables = [
-                'namespace' => $this->context->getNamespace('resource').'\\'.$resourceName.'\\Pages',
-                'resource_namespace' => $this->context->getNamespace('resource'),
-                'resource_class' => $resourceName,
-                'class_name' => $className,
-                'model' => $this->context->getEntityName(),
-                'model_plural' => $this->context->getPluralModelName(),
-                'use_statements' => $this->formatPageUseStatements($page),
-                'traits' => $this->formatPageTraits($page),
-                'methods' => $this->formatPageMethods($page),
-                'resource' => $resourceName,
-            ];
-
-            $content = $this->replaceTemplateVariables($template, $variables);
-            $this->writeFile($basePath.'/'.$className.'.php', $content);
+        foreach ($generators as $generator) {
+            $generator->generate();
         }
-    }
-
-    protected function formatPageUseStatements(string $page): string
-    {
-        $statements = $this->getUseStatements('resource', "pages.{$page}");
-        $statements[] = $this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource';
-
-        // Add page-specific use statements from blocks
-        foreach ($this->getBlocks() as $block) {
-            $pageStatements = $block->getPageUseStatements(strtolower($page));
-            if (! empty($pageStatements)) {
-                $statements = array_merge($statements, $pageStatements);
-            }
-        }
-
-        $statements = array_unique($statements);
-
-        $statements = array_filter($statements, function ($statement) {
-            return ! str_contains($statement, 'Filament\Resources\Pages');
-        });
-
-        return implode("\n", array_map(function ($statement) {
-            $statement = trim($statement, '\\; ');
-            $statement = str_replace('use ', '', $statement);
-
-            return 'use '.$statement.';';
-        }, $statements));
-    }
-
-    protected function formatPageTraits(string $page): string
-    {
-        $traits = [];
-        foreach ($this->getBlocks() as $block) {
-            if (! empty($block->traits['pages'][strtolower($page)])) {
-                $traits = array_merge($traits, $block->traits['pages'][strtolower($page)]);
-            }
-        }
-
-        if (empty($traits)) {
-            return '';
-        }
-
-        return 'use '.implode(', ', array_unique($traits)).';';
-    }
-
-    protected function formatPageMethods(string $page): string
-    {
-        $methods = [];
-        foreach ($this->getBlocks() as $block) {
-            if (! empty($block->methods['pages'][strtolower($page)])) {
-                $methods = array_merge($methods, (array) $block->methods['pages'][strtolower($page)]);
-            }
-        }
-
-        if (empty($methods)) {
-            return '';
-        }
-
-        return implode("\n\n", array_unique($methods));
     }
 
     protected function getNavigationIcon(): string
