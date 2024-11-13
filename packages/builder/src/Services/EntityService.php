@@ -77,7 +77,8 @@ class EntityService
                 'description' => $block->getDescription(),
                 'nullable' => $block->isNullable(),
                 'fillable' => $block->isFillable(),
-                'includedBlocks' => $block->getIncludedBlocks(),
+                'requiredBlocks' => $block->getRequiredBlocks(),
+                'containsBlocks' => $block->getContainsBlocks(),
                 'incompatibleBlocks' => $block->getIncompatibleBlocks(),
             ];
 

@@ -31,7 +31,10 @@ class SoftDelete extends AbstractBlock
             ],
             'pages' => [
                 'edit' => ['use Filament\Actions\Action;'],
-                'list' => ['use Illuminate\Database\Eloquent\Builder;'],
+                'list' => [
+                    'use Illuminate\Database\Eloquent\Builder;',
+                    'use Illuminate\Database\Eloquent\SoftDeletes;',
+                ],
                 'view' => ['use Filament\Actions\Action;'],
             ],
         ];

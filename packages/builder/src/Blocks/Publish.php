@@ -33,7 +33,10 @@ class Publish extends AbstractBlock
                 ],
             ],
             'pages' => [
-                'list' => ['use Illuminate\Database\Eloquent\Builder;'],
+                'list' => [
+                    'use Illuminate\Database\Eloquent\Builder;',
+                    'use Illuminate\Database\Eloquent\SoftDeletes;',
+                ],
             ],
         ];
 

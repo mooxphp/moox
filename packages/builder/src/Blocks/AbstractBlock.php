@@ -109,25 +109,13 @@ abstract class AbstractBlock
 
     protected ?object $context = null;
 
-    /**
-     * @var array<class-string>
-     *
-     * for example: TitleWithSlug replaces (field named) Title and (field named) Slug?
-     */
-    protected array $replacesBlocks = [];
+    /** @var array<class-string> */
+    protected array $requiredBlocks = [];
 
-    /**
-     * @var array<class-string>
-     *
-     * for example: Publish includes SoftDelete
-     */
-    protected array $includedBlocks = [];
+    /** @var array<class-string> */
+    protected array $containsBlocks = [];
 
-    /**
-     * @var array<class-string>
-     *
-     * for example: SoftDelete is incompatible with Publish
-     */
+    /** @var array<class-string> */
     protected array $incompatibleBlocks = [];
 
     public function __construct(
@@ -256,9 +244,14 @@ abstract class AbstractBlock
         return $this->filters['resource'] ?? [];
     }
 
-    public function getIncludedBlocks(): array
+    public function getRequiredBlocks(): array
     {
-        return $this->includedBlocks;
+        return $this->requiredBlocks;
+    }
+
+    public function getContainsBlocks(): array
+    {
+        return $this->containsBlocks;
     }
 
     public function getIncompatibleBlocks(): array
@@ -445,8 +438,8 @@ abstract class AbstractBlock
         $resolvedBlocks = $blocks;
 
         foreach ($blocks as $block) {
-            if (isset($block->includedBlocks)) {
-                foreach ($block->includedBlocks as $includedBlock) {
+            if (isset($block->containsBlocks)) {
+                foreach ($block->containsBlocks as $includedBlock) {
                     $resolvedBlocks = array_filter(
                         $resolvedBlocks,
                         fn ($b) => ! ($b instanceof $includedBlock)
@@ -502,8 +495,8 @@ abstract class AbstractBlock
             'label' => $this->label,
             'description' => $this->description,
             'nullable' => $this->nullable,
-            'replacesBlocks' => $this->replacesBlocks,
-            'includedBlocks' => $this->includedBlocks,
+            'requiredBlocks' => $this->requiredBlocks,
+            'containsBlocks' => $this->containsBlocks,
             'incompatibleBlocks' => $this->incompatibleBlocks,
         ];
     }
@@ -607,7 +600,8 @@ abstract class AbstractBlock
 
     public function setFeatureFlags(array $data): void
     {
-        $this->includedBlocks = $data['includedBlocks'] ?? [];
+        $this->requiredBlocks = $data['requiredBlocks'] ?? [];
+        $this->containsBlocks = $data['containsBlocks'] ?? [];
         $this->incompatibleBlocks = $data['incompatibleBlocks'] ?? [];
     }
 

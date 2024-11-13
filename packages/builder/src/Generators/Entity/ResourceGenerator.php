@@ -127,9 +127,8 @@ class ResourceGenerator extends AbstractGenerator
     {
         $methods = [];
         foreach ($this->getBlocks() as $block) {
-            $blockMethods = $block->getMethods($this->getGeneratorType());
-            if (! empty($blockMethods)) {
-                $methods = array_merge($methods, $blockMethods);
+            if (! empty($block->methods['pages'][strtolower($page)])) {
+                $methods = array_merge($methods, (array) $block->methods['pages'][strtolower($page)]);
             }
         }
 
