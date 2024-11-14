@@ -17,6 +17,8 @@ class EntityService
         $existingEntity = $this->findEntity($name, $buildContext);
 
         if ($existingEntity) {
+            $this->rebuild($existingEntity->id, $presetName);
+
             return ['entity' => $existingEntity, 'status' => 'exists'];
         }
 
@@ -28,6 +30,8 @@ class EntityService
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        $this->rebuild($entityId, $presetName);
 
         return [
             'entity' => DB::table('builder_entities')->find($entityId),
@@ -42,23 +46,20 @@ class EntityService
             ->delete();
 
         $preset = PresetRegistry::getPreset($presetName);
-        foreach ($preset->getBlocks() as $index => $block) {
-            DB::table('builder_entity_blocks')->insert([
-                'entity_id' => $entityId,
-                'title' => $block->getTitle(),
-                'description' => $block->getDescription(),
-                'block_class' => get_class($block),
-                'options' => json_encode($block->getOptions()),
-                'sort_order' => $index,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        $blocks = $preset->getBlocks();
+
+        $entity = DB::table('builder_entities')->find($entityId);
+
+        $this->recordBuild(
+            $entityId,
+            $entity->build_context,
+            $blocks,
+            []
+        );
     }
 
     public function recordBuild(int $entityId, string $buildContext, array $blocks, array $files): void
     {
-        // Format resource and page files with Pint before recording
         foreach ($files as $path => $content) {
             if (str_contains($path, 'Resource.php') || str_contains($path, '/Pages/')) {
                 $files[$path] = $this->formatWithPint($content);
@@ -70,7 +71,7 @@ class EntityService
             ->update(['is_active' => false]);
 
         $blockData = array_map(function ($block) {
-            $data = [
+            return [
                 'type' => get_class($block),
                 'name' => $block->getName(),
                 'label' => $block->getLabel(),
@@ -80,44 +81,18 @@ class EntityService
                 'requiredBlocks' => $block->getRequiredBlocks(),
                 'containsBlocks' => $block->getContainsBlocks(),
                 'incompatibleBlocks' => $block->getIncompatibleBlocks(),
+                'casts' => $block->getCasts('model'),
+                'migrations' => $block->getMigrations(),
+                'useStatements' => $block->getUseStatements('model'),
+                'traits' => $block->getTraits('model'),
+                'methods' => $block->getMethods('model'),
+                'formFields' => $block->getFormFields(),
+                'tableColumns' => $block->getTableColumns(),
+                'factories' => $block->getFactories(),
+                'tests' => $block->getTests('unit', 'model'),
+                'filters' => $block->getFilters(),
+                'actions' => $block->getActions('resource'),
             ];
-
-            // Only store non-empty arrays
-            if ($casts = $block->getCasts('model')) {
-                $data['casts'] = $casts;
-            }
-            if ($migrations = $block->getMigrations()) {
-                $data['migrations'] = $migrations;
-            }
-            if ($useStatements = $block->getUseStatements('model')) {
-                $data['useStatements'] = $useStatements;
-            }
-            if ($traits = $block->getTraits('model')) {
-                $data['traits'] = $traits;
-            }
-            if ($methods = $block->getMethods('model')) {
-                $data['methods'] = $methods;
-            }
-            if ($formFields = $block->getFormFields()) {
-                $data['formFields'] = $formFields;
-            }
-            if ($tableColumns = $block->getTableColumns()) {
-                $data['tableColumns'] = $tableColumns;
-            }
-            if ($factories = $block->getFactories()) {
-                $data['factories'] = $factories;
-            }
-            if ($tests = $block->getTests('unit', 'model')) {
-                $data['tests'] = $tests;
-            }
-            if ($filters = $block->getFilters()) {
-                $data['filters'] = $filters;
-            }
-            if ($actions = $block->getActions('resource')) {
-                $data['actions'] = $actions;
-            }
-
-            return $data;
         }, $blocks);
 
         DB::table('builder_entity_builds')->insert([
@@ -195,11 +170,9 @@ class EntityService
         }
 
         Schema::create($tableName, function (Blueprint $table) use ($blocks) {
-            // Default columns
             $table->id();
             $table->timestamps();
 
-            // Add columns from blocks
             foreach ($blocks as $block) {
                 $migrations = $block->getMigrations();
                 foreach ($migrations as $migration) {
@@ -211,24 +184,19 @@ class EntityService
 
     protected function addColumn(Blueprint $table, string $migration): void
     {
-        // Parse migration string to extract column type and name
-        // Example: "string('title')->nullable()"
         if (preg_match('/^(\w+)\([\'"](\w+)[\'"]\)(.*)$/', $migration, $matches)) {
-            $type = $matches[1];    // string
-            $name = $matches[2];    // title
-            $modifiers = $matches[3]; // ->nullable()
+            $type = $matches[1];
+            $name = $matches[2];
+            $modifiers = $matches[3];
 
-            // Create column
             $column = $table->{$type}($name);
 
-            // Apply modifiers
             if (str_contains($modifiers, '->nullable()')) {
                 $column->nullable();
             }
             if (str_contains($modifiers, '->unique()')) {
                 $column->unique();
             }
-            // Add other modifiers as needed
         }
     }
 
@@ -248,15 +216,22 @@ class EntityService
 
         foreach ($blockData as $data) {
             $blockClass = $data['type'];
-            $block = new $blockClass(
-                $data['name'],
-                $data['label'],
-                $data['description']
-            );
+
+            $blockOptions = DB::table('builder_entity_blocks')
+                ->where('entity_id', $build->entity_id)
+                ->where('block_class', $blockClass)
+                ->first();
+
+            if (! $blockOptions) {
+                continue;
+            }
+
+            $options = json_decode($blockOptions->options, true);
+
+            $block = new $blockClass(...array_values($options));
 
             $block->setFeatureFlags($data);
-            $block->setArrayData($data);
-
+            $block->initialize();
             $blocks[] = $block;
         }
 

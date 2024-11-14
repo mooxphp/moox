@@ -15,7 +15,9 @@ This is the current state of the Builder:
 
 ## Todo
 
--   [ ] Second generation fails. List should use a Trait, previously generated, but should be a Core trait
+-   [ ] 
+
+-   [ ] 
 
 -   [ ] Configurable FeatureSet:
 

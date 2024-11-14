@@ -118,17 +118,15 @@ abstract class AbstractBlock
     /** @var array<class-string> */
     protected array $incompatibleBlocks = [];
 
+    protected array $constructorParameters = [];
+
     public function __construct(
         protected string $name,
         protected string $label,
         protected string $description,
         protected bool $nullable = false,
-        // Additional parameters will be handled by child classes
     ) {
-        $this->name = $name;
-        $this->label = $label;
-        $this->description = $description;
-        $this->nullable = $nullable;
+        $this->constructorParameters = func_get_args();
     }
 
     public function getName(): string
@@ -641,5 +639,53 @@ abstract class AbstractBlock
                 );
             }
         }
+    }
+
+    protected function setup(): void
+    {
+        // Default implementation - can be overridden by blocks if needed
+        // Most blocks won't need to override this as they set their properties in constructor
+    }
+
+    public function initialize(): void
+    {
+        // Reset all properties to defaults
+        $this->fillable = true;
+        $this->casts = ['model' => []];
+        $this->migrations = [
+            'fields' => [],
+            'indexes' => [],
+            'foreign_keys' => [],
+        ];
+        $this->useStatements = [
+            'model' => [],
+            'migration' => [],
+            'resource' => [
+                'forms' => [],
+                'columns' => [],
+                'filters' => [],
+                'actions' => [],
+                'traits' => [],
+                'pages' => [],
+            ],
+            'pages' => [
+                'list' => [],
+                'create' => [],
+                'edit' => [],
+                'view' => [],
+            ],
+        ];
+        $this->traits = [
+            'model' => [],
+            'resource' => [],
+            'pages' => [
+                'list' => [],
+                'create' => [],
+                'edit' => [],
+                'view' => [],
+            ],
+        ];
+
+        $this->setup();
     }
 }

@@ -65,7 +65,7 @@ abstract class AbstractPageGenerator
     protected function formatUseStatements(): string
     {
         $statements = [
-            $this->context->getNamespace('resource').'\\'.$this->resourceName,
+            'use '.$this->context->getNamespace('resource').'\\'.$this->resourceName.';',
         ];
 
         foreach ($this->blocks as $block) {
@@ -123,5 +123,7 @@ abstract class AbstractPageGenerator
 
         $filePath = $path.'/'.$className.'.php';
         file_put_contents($filePath, $content);
+
+        shell_exec('vendor/bin/pint "'.$filePath.'"');
     }
 }

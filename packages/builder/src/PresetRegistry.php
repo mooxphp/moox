@@ -10,17 +10,28 @@ class PresetRegistry
 {
     public static function getPreset(string $name): ?AbstractPreset
     {
-        $presetConfig = config("builder.presets.{$name}");
-        if (! $presetConfig || ! isset($presetConfig['class'])) {
+        $presetClass = config('builder.presets')[$name]['class'] ?? null;
+
+        if (! $presetClass) {
+            \Log::error('Preset not found:', ['name' => $name]);
+
             return null;
         }
 
-        $presetClass = $presetConfig['class'];
-        if (! class_exists($presetClass)) {
+        try {
+            $preset = new $presetClass;
+
+            return $preset;
+        } catch (\Throwable $e) {
+            \Log::error('Error creating preset:', [
+                'name' => $name,
+                'class' => $presetClass,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return null;
         }
-
-        return new $presetClass;
     }
 
     public static function getAvailablePresets(): array

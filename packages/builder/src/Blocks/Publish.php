@@ -27,16 +27,16 @@ class Publish extends AbstractBlock
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => ['use Filament\Tables\Filters\Filter;'],
                 'actions' => ['use Filament\Actions\Action;'],
-                'traits' => ['use Moox\Core\Traits\SinglePublishInResource;'],
+                'traits' => [
+                    'use Moox\Core\Traits\SinglePublishInResource;',
+                    'use Illuminate\Database\Eloquent\SoftDeletes;',
+                ],
                 'pages' => [
                     'use App\Filament\Resources\PublishableItemResource\Pages;',
                 ],
             ],
             'pages' => [
-                'list' => [
-                    'use Illuminate\Database\Eloquent\Builder;',
-                    'use Illuminate\Database\Eloquent\SoftDeletes;',
-                ],
+                'list' => ['use Illuminate\Database\Eloquent\Builder;'],
             ],
         ];
 
@@ -89,6 +89,8 @@ class Publish extends AbstractBlock
                 ->toggleable()",
         ];
 
+        $this->filters = [];
+        /* TODO: Fix this
         $this->filters['resource'] = [
             "Filter::make('published')
                 ->label(__('core::core.published'))
@@ -100,6 +102,7 @@ class Publish extends AbstractBlock
                 ->label(__('core::core.draft'))
                 ->query(fn (Builder \$query): Builder => \$query->draft())",
         ];
+        */
 
         $this->actions['pages']['edit']['header'] = [
             "Action::make('publish')
