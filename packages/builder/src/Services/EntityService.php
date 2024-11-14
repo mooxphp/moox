@@ -42,6 +42,14 @@ class EntityService
 
     public function rebuild(int $entityId, string $presetName): array
     {
+        $existingBlocks = DB::table('builder_entity_blocks')
+            ->where('entity_id', $entityId)
+            ->get()
+            ->keyBy('block_class')
+            ->map(function ($block) {
+                return json_decode($block->options, true);
+            });
+
         DB::table('builder_entity_blocks')
             ->where('entity_id', $entityId)
             ->delete();
@@ -49,12 +57,23 @@ class EntityService
         $preset = PresetRegistry::getPreset($presetName);
         $blocks = $preset->getBlocks();
 
-        collect($blocks)->each(function ($block, $index) use ($entityId) {
+        collect($blocks)->each(function ($block, $index) use ($entityId, $existingBlocks) {
+            $blockClass = get_class($block);
+            $existingOptions = $existingBlocks[$blockClass] ?? null;
+
+            if ($existingOptions) {
+                foreach ($existingOptions as $key => $value) {
+                    if (method_exists($block, 'set'.ucfirst($key))) {
+                        $block->{'set'.ucfirst($key)}($value);
+                    }
+                }
+            }
+
             DB::table('builder_entity_blocks')->insert([
                 'entity_id' => $entityId,
                 'title' => $block->getTitle(),
                 'description' => $block->getDescription(),
-                'block_class' => get_class($block),
+                'block_class' => $blockClass,
                 'options' => json_encode($block->getOptions()),
                 'sort_order' => $index,
                 'created_at' => now(),
