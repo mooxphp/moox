@@ -15,29 +15,13 @@ This is the current state of the Builder:
 
 ## Todo
 
--   [ ] 
+-   [ ] The create command
 
--   [ ] 
-
--   [ ] Configurable FeatureSet:
-
-    -   [ ] Filament Core Features
-
-    -   [ ] Moox Core Features
-
-    -   [ ] Community Features (not yet implemented
-
--   [ ] Configurable Presets
-
-    -   [ ] Add Shop, Blog etc.
-
--   [ ] The create command is not as described in README, but nearby now, yet not all parameters are tested
-
--   [ ] The create command does not migrate, throws an error. Should be fixed, just test it...
+    -   [ ] Should work as in README, that is not fully tested right now
+    -   [ ] Should do preview "migrations" using DB directly, maybe not create migrations
+    -   [ ] Should have a new option --migration= instead of the second command (or another way to not maintain two commands?)
 
 -   [ ] DeleteCommand has flaws, leaves files, and the db? Not as described in README, it should delete all empty folders to stay clean
-
--   [ ] If already a migration, a migration and model exists ...? Command implemented but not yet tested, see builder docs below
 
 -   [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
 
@@ -49,13 +33,28 @@ This is the current state of the Builder:
 
     There's a big difference between really deleting the entity and removing a built!
 
+-   [ ] Configurable FeatureSet
+
+    -   [ ] Filament Core Features
+
+    -   [ ] Moox Core Features
+
+    -   [ ] Community Features (not yet implemented
+
+-   [ ] Configurable Presets
+
+    -   [ ] Add Shop, Blog etc.
+
 -   [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
+
 -   [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
+
 -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
 
 -   [ ] The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
 
 -   [ ] Require Pint, what about Larastan?
+
 -   [ ] Add more Moox Blocks
 
     -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
@@ -76,20 +75,31 @@ This is the current state of the Builder:
         -   Moox Builder Packages should be cleaned up as much as possible
         -   Installer: use Abstract, Service or Traits ...
         -   ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
+
 -   [ ] Builder needs to be cleaned up after able to generate packages
     -   [ ] Cleanup config
     -   [ ] Remove old entities
     -   [ ] Remove build.php
     -   [ ] Remove GH Template
+
 -   [ ] We need to generate factories from blocks to entities
+
 -   [ ] We need to generate tests
+
 -   [ ] Versions need a concept, needs a table (and UI)
+
 -   [ ] Versions vs. Updates (means Maintenance ... if we could update code using PHP Parser, we also could update code in terms of keeping the generated code of builder plugins auto-maintained)
+
 -   [ ] Generate the Builder UI, let Builder build itself
+
 -   [ ] Generate a Frontend
+
 -   [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
+
 -   [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
+
 -   [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
+
 -   [ ] Builder Docs
 
     -   [ ] HandlesMigrationFiles Trait
@@ -130,15 +140,25 @@ This is the current state of the Builder:
     -   Usage / Config
 
 -   $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
+
 -   Relationships - in builder but like taxonomies
+
 -   Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
+
 -   Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
+
 -   HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
+
 -   Item could show last changed etc. on the left ...
+
 -   Gallery images should be sortable
+
 -   Bulk restore does not work
+
 -   Set indices for slug etc, or not?
+
 -   not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
+
 -   If plugin data-language -> migration create_languages_table ->
     SP: ->hasMigration('create_data_languages_table') (correct the -)
     -   Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
@@ -147,6 +167,7 @@ This is the current state of the Builder:
     -   Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
     -   Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
     -   PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+
 -   Inline-Help
 
 ## Packages
@@ -392,10 +413,13 @@ You can preview Entities instantly and then build them in a Package or directly 
 All generated code is
 
 -   Typesave?
+-   Strict?
 -   PHP Stan Level?
 -   Pint Fixed
--   Pest Tested
+-   Pest Tested?
 
 So pushing this code into a Repository with highest Quality Gates will work without tears.
 
-Oh, one last thing. Remove Builder, stay with working Code. Moox Builder is not a dependency.
+Remove Builder, stay with working Code. No dependency.
+
+Create your own Builder: add own Templates, Generators, Presets, Blocks and modifiy the Builder config to your needs.

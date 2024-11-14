@@ -17,9 +17,9 @@ class EntityService
         $existingEntity = $this->findEntity($name, $buildContext);
 
         if ($existingEntity) {
-            $this->rebuild($existingEntity->id, $presetName);
+            $blocks = $this->rebuild($existingEntity->id, $presetName);
 
-            return ['entity' => $existingEntity, 'status' => 'exists'];
+            return ['entity' => $existingEntity, 'status' => 'exists', 'blocks' => $blocks];
         }
 
         $entityId = DB::table('builder_entities')->insertGetId([
@@ -31,15 +31,16 @@ class EntityService
             'updated_at' => now(),
         ]);
 
-        $this->rebuild($entityId, $presetName);
+        $blocks = $this->rebuild($entityId, $presetName);
 
         return [
             'entity' => DB::table('builder_entities')->find($entityId),
             'status' => 'created',
+            'blocks' => $blocks,
         ];
     }
 
-    public function rebuild(int $entityId, string $presetName): void
+    public function rebuild(int $entityId, string $presetName): array
     {
         DB::table('builder_entity_blocks')
             ->where('entity_id', $entityId)
@@ -48,14 +49,20 @@ class EntityService
         $preset = PresetRegistry::getPreset($presetName);
         $blocks = $preset->getBlocks();
 
-        $entity = DB::table('builder_entities')->find($entityId);
+        collect($blocks)->each(function ($block, $index) use ($entityId) {
+            DB::table('builder_entity_blocks')->insert([
+                'entity_id' => $entityId,
+                'title' => $block->getTitle(),
+                'description' => $block->getDescription(),
+                'block_class' => get_class($block),
+                'options' => json_encode($block->getOptions()),
+                'sort_order' => $index,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
 
-        $this->recordBuild(
-            $entityId,
-            $entity->build_context,
-            $blocks,
-            []
-        );
+        return $blocks;
     }
 
     public function recordBuild(int $entityId, string $buildContext, array $blocks, array $files): void
@@ -216,7 +223,6 @@ class EntityService
 
         foreach ($blockData as $data) {
             $blockClass = $data['type'];
-
             $blockOptions = DB::table('builder_entity_blocks')
                 ->where('entity_id', $build->entity_id)
                 ->where('block_class', $blockClass)
@@ -227,9 +233,36 @@ class EntityService
             }
 
             $options = json_decode($blockOptions->options, true);
+            $reflection = new \ReflectionClass($blockClass);
+            $constructor = $reflection->getConstructor();
+            $params = $constructor->getParameters();
 
-            $block = new $blockClass(...array_values($options));
+            $constructorParams = [];
+            foreach ($params as $param) {
+                $name = $param->getName();
+                $type = $param->getType();
+                $default = $param->isDefaultValueAvailable() ? $param->getDefaultValue() : null;
 
+                $value = $options[$name] ?? $default;
+
+                if ($type instanceof \ReflectionNamedType) {
+                    $typeName = $type->getName();
+
+                    if ($typeName === 'bool') {
+                        $value = (bool) $value;
+                    } elseif ($typeName === 'int') {
+                        $value = (int) $value;
+                    } elseif ($typeName === 'string' && ! is_string($value)) {
+                        $value = (string) $value;
+                    } elseif ($typeName === 'array' && ! is_array($value)) {
+                        $value = (array) $value;
+                    }
+                }
+
+                $constructorParams[] = $value;
+            }
+
+            $block = new $blockClass(...$constructorParams);
             $block->setFeatureFlags($data);
             $block->initialize();
             $blocks[] = $block;
