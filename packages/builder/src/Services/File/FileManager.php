@@ -23,18 +23,27 @@ class FileManager
 
     protected function formatFiles(array $files): array
     {
-        return $this->format($files);
-    }
-
-    protected function format(array $files): array
-    {
-        $formatted = [];
-
-        foreach ($files as $path => $content) {
-            $formatted[$this->normalizePath($path)] = $content;
+        if (empty($files)) {
+            return [];
         }
 
-        return $formatted;
+        // Handle preview context (array of paths)
+        if (is_numeric(array_key_first($files))) {
+            return array_map(
+                fn ($path) => ['path' => $this->normalizePath((string) $path)],
+                $files
+            );
+        }
+
+        // Handle production context (path => content pairs)
+        return array_map(
+            fn ($path, $content) => [
+                'path' => $this->normalizePath((string) $path),
+                'content' => $content,
+            ],
+            array_keys($files),
+            $files
+        );
     }
 
     protected function normalizePath(string $path): string

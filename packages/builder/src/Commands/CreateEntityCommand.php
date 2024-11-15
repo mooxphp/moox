@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Commands;
 
 use Moox\Builder\PresetRegistry;
-use Moox\Builder\Services\Build\BuildManager;
 use Moox\Builder\Services\Entity\EntityCreator;
-use Moox\Builder\Services\Entity\EntityGenerator;
 use Moox\Builder\Services\Preview\PreviewManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
@@ -23,8 +21,6 @@ class CreateEntityCommand extends AbstractBuilderCommand
     public function __construct(
         private readonly EntityCreator $entityCreator,
         private readonly PreviewManager $previewManager,
-        private readonly BuildManager $buildManager,
-        private readonly EntityGenerator $entityGenerator
     ) {
         parent::__construct();
     }
@@ -34,36 +30,30 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
-        $presetName = $this->option('preset') ?? $this->choice('Choose a preset', PresetRegistry::getPresetNames());
-        $buildContext = $this->getBuildContext($preview, $package);
+        $buildContext = $preview ? 'preview' : ($package ? 'package' : 'app');
 
-        $result = $this->entityCreator->create($name, $buildContext, $presetName);
+        if ($presetName = $this->option('preset') ?? $this->choice('Choose a preset', PresetRegistry::getPresetNames())) {
+            $context = $this->createContext($name, $package, $preview);
+            $context->setPresetName($presetName);
+
+            $this->entityCreator->setContext($context);
+            $result = $this->entityCreator->createFromPreset($name, $buildContext, $presetName);
+        } else {
+            $this->error('A preset is required for entity creation');
+
+            return self::FAILURE;
+        }
+
         $entity = $result['entity'];
-
         if (! $entity) {
             $this->error("Failed to create entity {$name}");
 
             return self::FAILURE;
         }
 
-        $blocks = $result['blocks'];
-        $context = $this->createContext($name, $package, $preview);
-        $context->setPresetName($presetName);
-
-        $this->entityGenerator->setContext($context);
-        $this->entityGenerator->setBlocks($blocks);
-        $this->entityGenerator->execute();
-
         if ($preview) {
-            $this->previewManager->createPreviewTable($name, $blocks);
+            $this->previewManager->createPreviewTable($name, $result['blocks']);
         }
-
-        $this->buildManager->recordBuild(
-            $entity->id,
-            $buildContext,
-            $blocks,
-            $preview ? [] : $this->entityGenerator->getGeneratedFiles()
-        );
 
         $this->info('Entity '.$name.' '.($result['status'] === 'exists' ? 're' : '').'built successfully in '.$buildContext);
 

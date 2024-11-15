@@ -70,15 +70,19 @@ class EntityGenerator extends ContextAwareService
                 $this->context->getCommand()->error('Running generator: '.get_class($generator));
             }
             $generator->generate();
+
             if (method_exists($generator, 'getGeneratedFiles')) {
-                $this->generatedFiles = array_merge(
-                    $this->generatedFiles,
-                    $generator->getGeneratedFiles()
-                );
+                $files = $generator->getGeneratedFiles();
+                foreach ($files as $path => $content) {
+                    if (! empty($path) && ! empty($content)) {
+                        $this->generatedFiles[$path] = $content;
+                    }
+                }
             }
         }
 
         foreach ($this->generators as $generator) {
+            // Should this not be done by the file services?
             $generator->formatGeneratedFiles();
         }
 
@@ -92,6 +96,6 @@ class EntityGenerator extends ContextAwareService
      */
     public function getGeneratedFiles(): array
     {
-        return $this->generatedFiles;
+        return array_filter($this->generatedFiles);
     }
 }

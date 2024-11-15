@@ -5,22 +5,24 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Support\Facades\DB;
-use Moox\Builder\PresetRegistry;
-use Moox\Builder\Services\Block\BlockFactory;
+use Moox\Builder\Services\Build\BuildManager;
 
 class EntityRebuilder
 {
     public function __construct(
-        private readonly BlockFactory $blockFactory
+        private readonly BuildManager $buildManager
     ) {}
 
-    public function rebuild(int $entityId, string $presetName): array
+    public function rebuild(int $entityId, ?string $buildContext = null): array
     {
         $existingBlocks = $this->getExistingBlocks($entityId);
         $this->clearBlocks($entityId);
 
-        $preset = PresetRegistry::getPreset($presetName);
-        $blocks = $preset->getBlocks();
+        $blocks = $this->buildManager->reconstructFromLatest($entityId, $buildContext);
+
+        if (empty($blocks)) {
+            throw new \RuntimeException("No build found for entity {$entityId}");
+        }
 
         return $this->restoreBlocks($entityId, $blocks, $existingBlocks);
     }
@@ -43,21 +45,23 @@ class EntityRebuilder
 
     protected function restoreBlocks(int $entityId, array $blocks, \Illuminate\Support\Collection $existingBlocks): array
     {
-        return collect($blocks)
-            ->map(function ($block, $index) use ($entityId, $existingBlocks) {
-                $blockClass = get_class($block);
-                if ($existingOptions = $existingBlocks[$blockClass] ?? null) {
-                    $this->restoreBlockOptions($block, $existingOptions);
-                }
+        foreach ($blocks as $index => $block) {
+            $this->restoreBlock($entityId, $block, $existingBlocks, $index);
+        }
 
-                $this->saveBlock($entityId, $block, $index);
-
-                return $block;
-            })
-            ->all();
+        return $blocks;
     }
 
-    protected function restoreBlockOptions(object $block, array $options): void
+    protected function restoreBlock(int $entityId, object $block, \Illuminate\Support\Collection $existingBlocks, int $index): void
+    {
+        if ($existingBlocks->has(get_class($block))) {
+            $this->applyExistingOptions($block, $existingBlocks->get(get_class($block)));
+        }
+
+        $this->saveBlock($entityId, $block, $index);
+    }
+
+    protected function applyExistingOptions(object $block, array $options): void
     {
         foreach ($options as $key => $value) {
             $setter = 'set'.ucfirst($key);

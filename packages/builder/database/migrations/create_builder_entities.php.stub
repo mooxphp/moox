@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('preset');
             $table->json('relations')->nullable();
             $table->json('taxonomies')->nullable();
-            $table->string('build_context')->nullable();
             $table->timestamp('last_built_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -937,11 +937,16 @@ return [
                     ],
                     'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
                 ],
+                // preview should not do migrations
+                // instead it should directly write to the database
+                // and bypass the migration system
+                /*
                 'migration' => [
                     'path' => database_path('migrations'),
                     'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
                 ],
+                */
                 'translation' => [
                     'path' => 'lang\previews',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',

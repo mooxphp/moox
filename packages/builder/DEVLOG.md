@@ -15,11 +15,22 @@ This is the current state of the Builder:
 
 ## Todo
 
--   [ ] The create command
+-   [ ] The create command has (most probably in the Service Layer) flaws:
 
-    -   [ ] Should work as in README, that is not fully tested right now
-    -   [ ] Should do preview "migrations" using DB directly, maybe not create migrations
-    -   [ ] Should have a new option --migration= to make use of the migration generator
+    -   [ ] First creation works, but the files array in the build table is empty. We should use the files array to be aware, which files have been generated before. It would probably be a good idea, to delete the files before creating the new ones, using this array. The same service and config array should be used by the delete entity command and UI delete actions later.
+
+    -   [ ] The generated Resource has no use statements and causes the platform to 500
+
+    -   [ ] After manually deleting the generated files, regeneration fails not finding a build for the entity (but it is there and active)
+
+-   [ ] Refactoring seems not to be finished now
+
+    -   [ ] In EntityGenerator we use a file formatter from the AbstractGenerator, what about the file service(s)
+    -   [ ] I would then add a FileFormatter Service that does just Pint formatting
+
+-   [ ] The create command should do preview "migrations" using DB directly, I commented out migrations in the contexts config array
+
+-   [ ] The create command should have a new option --migration= to make use of the migration generator
 
 -   [ ] DeleteCommand has flaws, leaves files, and the db? Not as described in README, it should delete all empty folders to stay clean
 

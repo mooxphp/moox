@@ -6,7 +6,7 @@ Generate high-quality Laravel Packages and Filament Resources with zero coding.
 
 ## Work-in-Progress
 
-Moox Builder is under heavy development. While building Filament Resources is already working, generating Laravel Packages is not implemented yet. Builder lacks an UI, but the Artisan build command is fully functional using Presets.
+Moox Builder is under heavy development. While building Filament Resources is already working, generating Laravel Packages is not implemented yet. Builder lacks an UI, but the Artisan build command is fully functional using Presets. There are five demo resources provided with Builder that will be removed, when Builder is able to generate them without issues. That might need a couple of days ...
 
 ## Features
 
@@ -63,11 +63,11 @@ Blocks provide:
 
 Presets are pre-configured collections of blocks for common use cases:
 
--   Simple Item: Basic CRUD resource
--   Publishable Item: With publishing workflow
--   Full Item: All available features
--   Simple Taxonomy: For tag-like structures
--   Nested Taxonomy: For category-like structures
+-   `Simple Item`: Basic CRUD resource
+-   `Publishable Item`: With publishing workflow
+-   `Full Item`: All available features
+-   `Simple Taxonomy`: For tag-like structures
+-   `Nested Taxonomy`: For category-like structures
 -   You can create your own Presets, see [Configuration](#configuration)
 
 ### Generators
@@ -84,39 +84,39 @@ The service layer manages the generation workflow:
 
 **Block Services**
 
-    - BlockFactory: Creates block instances from configuration
-    - BlockReconstructor: Reconstructs blocks from database records
+-   `BlockFactory`: Creates block instances from configuration
+-   `BlockReconstructor`: Reconstructs blocks from database records
 
 **Build Services**
 
-    - BuildManager: Orchestrates the build lifecycle and state transitions
-    - BuildRecorder: Persists build data and manages build history
+-   `BuildManager`: Orchestrates the build lifecycle and state transitions
+-   `BuildRecorder`: Persists build data and manages build history
 
 **Entity Services**
 
-    - ContextAwareService: Base class for entity services to handle context
-    - EntityCreator: Creates new entities with initial configuration
-    - EntityRebuilder: Updates existing entities with new blocks/settings
-    - EntityGenerator: Generates all entity-related files
-    - EntityImporter: Imports entities from existing migrations
-    - EntityTablesRemover: Manages database table cleanup
+-   `ContextAwareService`: Base class for entity services to handle context
+-   `EntityCreator`: Creates new entities with initial configuration
+-   `EntityRebuilder`: Updates existing entities with new blocks/settings
+-   `EntityGenerator`: Generates all entity-related files
+-   `EntityImporter`: Imports entities from existing migrations
+-   `EntityTablesRemover`: Manages database table cleanup
 
 **File Services**
 
-    - FileManager: Handles file operations, path normalization, and content formatting
+-   `FileManager`: Handles file operations, path normalization, and content formatting
 
 **Migration Services**
 
-    - MigrationAnalyzer: Analyzes existing migrations to extract structure
-    - MigrationCreator: Generates new migrations from entity configuration
+-   `MigrationAnalyzer`: Analyzes existing migrations to extract structure
+-   `MigrationCreator`: Generates new migrations from entity configuration
 
 **Package Services**
 
-    - This part is not implemented yet
+-   This part is not implemented yet
 
 **Preview Services**
 
-    - PreviewManager: Manages the preview context
+-   `PreviewManager`: Manages the preview context
 
 ### Types
 
@@ -128,104 +128,88 @@ Types are currently only partly implemented and only used for the EntityImporter
 
 1. **Entity Creation**
 
-    - User creates entity via command or UI
-    - EntityCreator sets up database records
-    - Blocks are configured based on preset or user input
-    - Build context (app/package/preview) is determined
+-   User creates entity via command or UI
+-   EntityCreator sets up database records
+-   Blocks are configured based on preset or user input
+-   Build context (app/package/preview) is determined
 
 2. **Build Process**
 
-    - BuildManager initiates build process
-    - EntityGenerator coordinates file generation
-    - Each block contributes its code parts
-    - Files are generated from templates
-    - BuildRecorder persists the build state
+-   BuildManager initiates build process
+-   EntityGenerator coordinates file generation
+-   Each block contributes its code parts
+-   Files are generated from templates
+-   BuildRecorder persists the build state
 
 3. **Preview & Testing**
 
-    - PreviewManager creates temporary build
-    - Tables are created directly (no migrations)
-    - Resource is available at /builder endpoint
-    - Changes can be tested in isolation
+-   PreviewManager creates temporary build
+-   Preview builds can exist alongside production builds
+-   Tables are created directly (no migrations)
+-   Resource is available at /builder endpoint
+-   Changes can be tested in isolation
 
-4. **Final Deployment**
-    - Entity can be built in app or package context
-    - Migration files are generated
-    - All required files are placed in correct locations
-    - Previous builds are deactivated
+4. **Production Deployment**
 
-### Data Flow
-
-1. **Configuration Layer**
-
-    - Blocks define available fields/features
-    - Presets combine blocks into templates
-    - Config files control behavior
-
-2. **Service Layer**
-
-    - Services coordinate operations
-    - Each service has single responsibility
-    - ContextAwareService provides context management
-
-3. **Storage Layer**
-
-    - Entity configuration in database
-    - Block settings in separate table
-    - Build history and files tracked
-
-4. **File Layer**
-    - Templates define file structure
-    - Generators create actual files
-    - FileManager handles operations
+-   Entity can be built in app or package context
+-   Only one production context (app/package) active at a time
+-   Migration files are generated
+-   All required files are placed in correct locations
+-   Previous builds in same context are deactivated
 
 ### State Management
 
 1. **Build States**
 
-    - Active: Current production build
-    - Preview: Temporary test build
-    - Inactive: Previous builds
+-   Each context can have one active build
+-   Preview builds can coexist with production builds
+-   Previous builds are preserved but inactive
+-   Build history tracked per context
 
-2. **Context Management**
+2. **Context Types**
 
-    - App: Direct application integration
-    - Package: Standalone package generation
-    - Preview: Temporary testing environment
+-   `App`: Direct application integration
+-   `Package`: Standalone package generation
+-   `Preview`: Temporary testing environment
+-   Custom contexts can be added
 
 3. **Version Control**
-    - Each build is versioned
-    - Files are tracked
-    - States are preserved
+
+-   Each build is versioned within its context
+-   Files are tracked per build
+-   States are preserved for rollback
+-   Context-specific build history
 
 ## Database Structure
 
 ### builder_entities
 
-    - Core entity configuration
-    - Package association
-    - Build context tracking
-    - Preset information
-
-### builder_entity_blocks
-
-    - Block configurations
-    - Entity associations
-    - Options and ordering
+-   Core entity configuration
+-   Package association
+-   No context tracking (moved to builds)
 
 ### builder_entity_builds
 
-    - Build state management
-    - Generated files tracking
-    - Version control
+-   Build state management per context
+-   One active build per context
+-   Generated files tracking
+-   Version control
+-   Context and state tracking
+
+### builder_entity_blocks
+
+-   Block configurations
+-   Entity associations
+-   Options and ordering
+-   Shared across contexts
 
 ### builder_packages
 
-    - Work-in-progress package configuration
+-   Work-in-progress package configuration
 
 ### builder_package_versions
 
-    - Version control for packages, also w-i-p
+-   Version control for packages, also w-i-p
 
 ## Usage
 
