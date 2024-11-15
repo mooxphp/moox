@@ -688,4 +688,17 @@ abstract class AbstractBlock
 
         $this->setup();
     }
+
+    public function setUseStatements(array $statements): void
+    {
+        foreach ($statements as $context => $contextStatements) {
+            if ($context === 'resource') {
+                foreach ($contextStatements as $subContext => $subStatements) {
+                    $this->useStatements[$context][$subContext] = $subStatements;
+                }
+            } else {
+                $this->useStatements[$context] = $contextStatements;
+            }
+        }
+    }
 }

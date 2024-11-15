@@ -8,6 +8,14 @@ use Moox\Builder\Commands\CreateEntityCommand;
 use Moox\Builder\Commands\DeleteEntityCommand;
 use Moox\Builder\Commands\InstallCommand;
 use Moox\Builder\Providers\BuilderPanelProvider;
+use Moox\Builder\Services\Block\BlockReconstructor;
+use Moox\Builder\Services\Build\BuildManager;
+use Moox\Builder\Services\Build\BuildRecorder;
+use Moox\Builder\Services\Entity\EntityCreator;
+use Moox\Builder\Services\Entity\EntityGenerator;
+use Moox\Builder\Services\Entity\EntityRebuilder;
+use Moox\Builder\Services\File\FileManager;
+use Moox\Builder\Services\Preview\PreviewManager;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -21,7 +29,17 @@ class BuilderServiceProvider extends PackageServiceProvider
     public function register(): void
     {
         parent::register();
+
         $this->app->register(BuilderPanelProvider::class);
+
+        $this->app->singleton(EntityCreator::class);
+        $this->app->singleton(EntityRebuilder::class);
+        $this->app->singleton(PreviewManager::class);
+        $this->app->singleton(EntityGenerator::class);
+        $this->app->singleton(BuildManager::class);
+        $this->app->singleton(BuildRecorder::class);
+        $this->app->singleton(BlockReconstructor::class);
+        $this->app->singleton(FileManager::class);
     }
 
     public function configurePackage(Package $package): void

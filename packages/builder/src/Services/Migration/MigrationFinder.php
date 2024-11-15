@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Services;
+namespace Moox\Builder\Services\Migration;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\File;

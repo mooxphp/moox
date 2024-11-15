@@ -30,7 +30,7 @@ class ResourceGenerator extends AbstractGenerator
             'model_namespace' => $modelNamespace,
             'model_plural' => $this->context->getPluralModelName(),
             'navigation_icon' => $this->getNavigationIcon(),
-            'use_statements' => "use {$modelNamespace}\\{$modelClass};\n".$this->formatResourceUseStatements(),
+            'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),
             'form_setup' => $this->getFormSetup(),
             'form_schema' => $this->getFormSchema(),

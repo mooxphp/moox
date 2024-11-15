@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Services;
+namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Database\Schema\Blueprint;
 use Moox\Builder\Blocks\AbstractBlock;
@@ -13,6 +13,8 @@ use Moox\Builder\Blocks\MultiSelect;
 use Moox\Builder\Blocks\Radio;
 use Moox\Builder\Blocks\Relationship;
 use Moox\Builder\Blocks\Text;
+use Moox\Builder\Services\Migration\MigrationAnalyzer;
+use Moox\Builder\Services\Migration\MigrationFinder;
 use Moox\Builder\Types\AbstractType;
 use Moox\Builder\Types\ArrayType;
 use Moox\Builder\Types\EnumType;

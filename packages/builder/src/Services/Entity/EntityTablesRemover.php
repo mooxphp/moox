@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Services;
+namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Support\Facades\Schema;
 
-class EntityTablesRemover extends AbstractService
+class EntityTablesRemover extends ContextAwareService
 {
     public function execute(): void
     {

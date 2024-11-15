@@ -24,4 +24,13 @@ abstract class AbstractBuilderCommand extends Command
             packageNamespace: $package
         );
     }
+
+    protected function getBuildContext(bool $preview, ?string $package = null): string
+    {
+        return match (true) {
+            $preview => 'preview',
+            $package !== null => 'package',
+            default => 'app'
+        };
+    }
 }

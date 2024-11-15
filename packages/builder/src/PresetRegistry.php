@@ -4,37 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Builder;
 
-use Moox\Builder\Presets\AbstractPreset;
-
 class PresetRegistry
 {
-    public static function getPreset(string $name): ?AbstractPreset
+    public static function register(string $name, string $presetClass): void
     {
-        $presetClass = config('builder.presets')[$name]['class'] ?? null;
-
-        if (! $presetClass) {
-            \Log::error('Preset not found:', ['name' => $name]);
-
-            return null;
-        }
-
-        try {
-            $preset = new $presetClass;
-
-            return $preset;
-        } catch (\Throwable $e) {
-            \Log::error('Error creating preset:', [
-                'name' => $name,
-                'class' => $presetClass,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return null;
-        }
+        config(['builder.presets.'.$name.'.class' => $presetClass]);
     }
 
-    public static function getAvailablePresets(): array
+    public static function getPreset(string $name): object
+    {
+        $presetConfig = config('builder.presets.'.$name);
+
+        if (! $presetConfig || ! isset($presetConfig['class'])) {
+            throw new \RuntimeException("Preset {$name} not found in configuration");
+        }
+
+        $presetClass = $presetConfig['class'];
+
+        return new $presetClass;
+    }
+
+    public static function getPresetNames(): array
     {
         return array_keys(config('builder.presets', []));
     }

@@ -15,6 +15,20 @@ This is the current state of the Builder:
 
 ## Todo
 
+
+
+Codebase chat is falling back to BM25, which is slower and less accurate than embeddings.
+
+Global Context
+
+
+
+### Computed Search Queries
+
+-   [ ] We are currently refactoring the builder into services, currently missing in readme, see builder docs below for the missing services. The current state. The services are all created, but the create command fails. I will leave the information about refactoring in this file, even if the refactor might already been done 98% ... 
+
+-   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
+
 -   [ ] The create command
 
     -   [ ] Should work as in README, that is not fully tested right now
@@ -103,10 +117,20 @@ This is the current state of the Builder:
 -   [ ] Builder Docs
 
     -   [ ] HandlesMigrationFiles Trait
-    -   [ ] EntityService
+    -   [ ] EntityService - removed, replaced by a bunch of new services
     -   [ ] EntitiyImporter Service
     -   [ ] MigrationAnalyzer Service
     -   [ ] MigrationFinder Service
+    -   [ ] BuildRecorder Service
+    -   [ ] BlockReconstructor Service
+    -   [ ] BlockFactory Service
+    -   [ ] BuildManager Service
+    -   [ ] EntityCreator Service
+    -   [ ] PreviewManager Service
+    -   [ ] EntityDeleter Service
+    -   [ ] FileFormatter Service
+    -   [ ] FileManager Service
+    -   [ ] PreviewManager Service
     -   [ ] php artisan builder:create-from-migration packages/blog/database/migrations/create_posts_table.php --package
     -   [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php
     -   [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php --preview
@@ -169,6 +193,64 @@ This is the current state of the Builder:
     -   PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
 
 -   Inline-Help
+
+
+
+## Refactor
+
+There are two parts of the codebase that need to be refactored:
+
+The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
+
+Looking at the entire codebase, particularly `EntityService.php` (lines 1-287), I see several signs that indicate it's time for a refactor:
+
+1. **Single Responsibility Principle Violations**
+- The service handles entity creation, rebuilding, preview tables, block reconstruction, and file formatting
+- Each of these could be its own service
+
+2. **Complex State Management**
+- The flow between `create`, `rebuild`, and `recordBuild` is complex and prone to bugs
+- State transitions between preview/app/package contexts are unclear
+
+3. **Tight Coupling**
+- Direct database operations scattered throughout
+- Direct file system operations mixed with business logic
+- Hard dependencies on block implementations
+
+Here's how I would suggest refactoring this:
+
+```plaintext
+Services/
+  Entity/
+    EntityCreator.php
+    EntityRebuilder.php
+    EntityDeleter.php
+    PreviewManager.php
+  Block/
+    BlockRepository.php <- what is this, use config?
+    BlockReconstructor.php
+    BlockOptionsManager.php
+  Build/
+    BuildRecorder.php
+    BuildManager.php
+  File/
+    FileFormatter.php
+    FileManager.php
+```
+
+Key improvements:
+1. Separate services for different responsibilities
+2. Clear state transitions through dedicated managers
+3. Repository pattern for data access
+4. Separate preview management
+5. Isolated file operations
+
+This would make the system:
+- More testable
+- More maintainable
+- More resilient to changes
+- Clearer API boundaries
+- Better separation of concerns
 
 ## Packages
 

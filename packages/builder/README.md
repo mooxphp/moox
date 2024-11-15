@@ -2,264 +2,240 @@
 
 # Moox Builder
 
-<!--shortdesc-->
+Generate high-quality Laravel Packages and Filament Resources with zero coding.
 
-This template is used for generating Moox packages. 
+## Work-in-Progress
 
-## Work in Progress
+Moox Builder is under heavy development. While building Filament Resources is already working, generating Laravel Packages is not implemented yet. Builder lacks an UI, but the Artisan build command is fully functional using Presets.
 
-Moox Builder was previously a GitHub Template, but currently moves to an installable package that will be able to create Packages and Entities. Entities are Filament resources (migration, model, resource including pages).
+## Features
 
-Moox Builder has Generators that use Blocks (Filament fields and features that provide actions and other methods) and Templates (PHP stub files with simple markers) to create a file in the correct Namespace, managed by Contexts. 
+-   Generate and Publish Laravel Packages
+-   Generate Filament Resource with Migration and Model
+-   Generate a Migration or generate from Migration
+-   Create your own Blocks, Generators, Presets and Templates
+-   Dependency free, you can de-install Moox Builder anytime
+-   Generate production-ready code, type-safe, Pint-formatted and checked by PHPStan
 
-Moox Builder is prepared for it's next iteration: having an UI. But until then, we can make use of Presets, a combination of Blocks, to simply generate an Entity using CLI: `php artisan builder:create`
+## Quick Installation
 
-Dive into the current state of Builder:
+These two commmands are all you need to install the package:
 
-## Configuration
-
-You can change nearly everything, Blocks, Generators, Templates, Presets and Contexts in the Moox Builder configuration.
-
-- Own template files? Just paths in config.
-- Don't want Moox Feature Blocks? Mute them.
-- Have a nice feature to generate? Create your own Block.
-- Want to build into a predefined Path and Namespace? Create your Context.
-
-Just make your changes in the published builder.php config file to create your own Builder:
-
-```php
-    /*
-    |--------------------------------------------------------------------------
-    | Blocks
-    |--------------------------------------------------------------------------
-    |
-    | Define the available blocks that can be used to build resources.
-    | Mute existing blocks or add your own blocks as you like.
-    |
-    */
-
-    'blocks' => [
-        'author' => \Moox\Builder\Blocks\Author::class,
-        'bool' => \Moox\Builder\Blocks\Bool::class,
-        'builder' => \Moox\Builder\Blocks\Builder::class,
-        'checkbox-list' => \Moox\Builder\Blocks\CheckboxList::class,
-        'color-picker' => \Moox\Builder\Blocks\ColorPicker::class,
-        'date' => \Moox\Builder\Blocks\Date::class,
-        'date-time' => \Moox\Builder\Blocks\DateTime::class,
-        'file-upload' => \Moox\Builder\Blocks\FileUpload::class,
-        'hidden' => \Moox\Builder\Blocks\Hidden::class,
-        'image' => \Moox\Builder\Blocks\Image::class,
-        'key-value' => \Moox\Builder\Blocks\KeyValue::class,
-        'markdown-editor' => \Moox\Builder\Blocks\MarkdownEditor::class,
-        'multi-select' => \Moox\Builder\Blocks\MultiSelect::class,
-        'number' => \Moox\Builder\Blocks\Number::class,
-        'publish' => \Moox\Builder\Blocks\Publish::class,
-        'radio' => \Moox\Builder\Blocks\Radio::class,
-        'relationship' => \Moox\Builder\Blocks\Relationship::class,
-        'repeater' => \Moox\Builder\Blocks\Repeater::class,
-        'rich-editor' => \Moox\Builder\Blocks\RichEditor::class,
-        'select' => \Moox\Builder\Blocks\Select::class,
-        'soft-delete' => \Moox\Builder\Blocks\SoftDelete::class,
-        'tags-input' => \Moox\Builder\Blocks\TagsInput::class,
-        'text' => \Moox\Builder\Blocks\Text::class,
-        'textarea' => \Moox\Builder\Blocks\TextArea::class,
-        'title-with-slug' => \Moox\Builder\Blocks\TitleWithSlug::class,
-        'toggle' => \Moox\Builder\Blocks\Toggle::class,
-        'toggle-buttons' => \Moox\Builder\Blocks\ToggleButtons::class,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Build Contexts
-    |--------------------------------------------------------------------------
-    |
-    | Define the available build contexts and their configurations.
-    | Each context can have its own path and namespace settings,
-    | template and generator, and also can do migrations.
-    |
-    */
-
-    'contexts' => [
-        'app' => [
-            'base_path' => app_path(),
-            'base_namespace' => 'App',
-            'classes' => [
-                'model' => [
-                    'path' => '%BasePath%\Models',
-                    'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\ModelGenerator::class,
-                ],
-                'resource' => [
-                    'path' => '%BasePath%\Resources',
-                    'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
-                    'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
-                    ],
-                    'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
-                ],
-                'migration' => [
-                    'path' => 'database\migrations',
-                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
-                ],
-                'plugin' => [
-                    'path' => '%BasePath%\Filament\Plugins',
-                    'namespace' => '%BaseNamespace%\\Filament\\Plugins',
-                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
-                    'generator' => \Moox\Builder\Generators\PluginGenerator::class,
-                ],
-            ],
-        ],
-        'package' => [
-            'base_path' => '$PackagePath',
-            'base_namespace' => '$PackageNamespace',
-            'classes' => [
-                'model' => [
-                    'path' => '%BasePath%\src\Models',
-                    'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\ModelGenerator::class,
-                ],
-                'resource' => [
-                    'path' => '%BasePath%\src\Resources',
-                    'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
-                    'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
-                    ],
-                    'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
-                ],
-                'migration_stub' => [
-                    'path' => '%BasePath%\database\migrations',
-                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
-                ],
-                'plugin' => [
-                    'path' => '%BasePath%\src',
-                    'namespace' => '%BaseNamespace%',
-                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
-                    'generator' => \Moox\Builder\Generators\PluginGenerator::class,
-                ],
-            ],
-        ],
-        'preview' => [
-            'base_path' => app_path('Builder'),
-            'base_namespace' => 'App\\Builder',
-            'classes' => [
-                'model' => [
-                    'path' => '%BasePath%\Models',
-                    'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\ModelGenerator::class,
-                ],
-                'resource' => [
-                    'path' => '%BasePath%\Resources',
-                    'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
-                    'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
-                    ],
-                    'generator' => \Moox\Builder\Generators\ResourceGenerator::class,
-                ],
-                'migration' => [
-                    'path' => 'database\migrations',
-                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\MigrationGenerator::class,
-                ],
-            ],
-            'should_migrate' => true,
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Presets
-    |--------------------------------------------------------------------------
-    |
-    | Register available presets that can be used to quickly scaffold resources.
-    | Each preset key must match the class name in lowercase without 'Preset'.
-    |
-    */
-
-    'presets' => [
-        'simple-item' => [
-            'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
-            'generators' => ['model', 'migration', 'resource'],
-        ],
-        'publishable-item' => [
-            'class' => \Moox\Builder\Presets\PublishableItemPreset::class,
-            'generators' => ['model', 'migration', 'resource'],
-        ],
-        'full-item' => [
-            'class' => \Moox\Builder\Presets\FullItemPreset::class,
-            'generators' => ['model', 'migration', 'resource', 'factory'],
-        ],
-        'simple-taxonomy' => [
-            'class' => \Moox\Builder\Presets\SimpleTaxonomyPreset::class,
-            'generators' => ['model', 'migration', 'resource'],
-        ],
-        'nested-taxonomy' => [
-            'class' => \Moox\Builder\Presets\NestedTaxonomyPreset::class,
-            'generators' => ['model', 'migration', 'resource'],
-        ],
-    ],
-];
-
+```bash
+composer require moox/builder
+php artisan mooxbuilder:install
 ```
 
+Curious what the install command does? See manual installation below.
 
+## Core Concepts
+
+Moox Builder is a Laravel package that generates fully functional Filament resources and complete Laravel packages. It uses a modular architecture with blocks, presets, and services to generate type-safe, tested, and production-ready code.
+
+### Builds & Contexts
+
+A build represents a generated entity in a specific context:
+
+-   **App Context**: Generates directly in your application
+-   **Package Context**: Generates in a Laravel package
+-   **Preview Context**: Creates a temporary build for testing
+-   You can create your own Contexts, see [Configuration](#configuration)
+
+The BuildManager and BuildRecorder services handle the persistence and state management of builds, storing both the entity configuration and generated files.
 
 ### Blocks
 
-Blocks are Blueprints for Filament Core fields and Moox Features. They can easily be muted and extended in the config array `blocks`
+Blocks are the fundamental building blocks of entities. Each block represents a Filament field or feature:
 
- - AbstractBlock
-	- Autor - Moox Feature
-	- Bool
-	- Builder
-	- CheckboxList
-	- ColorPicker
-	- Date
-	- DateTime
-	- FileUpload
-	- Hidden
-	- Image
-	- KeyValue
-	- MarkdownEditor
-	- MultiSelect
-	- Number
-	- Publish - Moox Feature
-	- Radio
-	- Relationship
-	- Repeater
-	- RichEditor
-	- Select
-	- SoftDelete - Moox Feature
-	- TagsInput
-	- Text
-	- TextArea
-	- TitleWithSlug - Moox Feature
-	- Toggle
-	- ToggleButtons
+-   Field Blocks: Text, Number, Date, Select, etc.
+-   Feature Blocks: SoftDelete, Publish, Author, etc.
+-   Section Blocks: Combines fields to a section
+
+Blocks provide:
+
+-   Migration definitions
+-   Model attributes and methods
+-   Filament form/table configurations
+-   Required traits and interfaces
+-   Factories and Tests
+
+### Presets
+
+Presets are pre-configured collections of blocks for common use cases:
+
+-   Simple Item: Basic CRUD resource
+-   Publishable Item: With publishing workflow
+-   Full Item: All available features
+-   Simple Taxonomy: For tag-like structures
+-   Nested Taxonomy: For category-like structures
+-   You can create your own Presets, see [Configuration](#configuration)
+
+### Generators
+
+Generators combine Blocks and Templates to generate the files. They are located in the `src/Generators` directory. They are divided into `Entity` and `Package` generators. You can implement own Generators and Templates in the `contexts` config array, see [Configuration](#configuration).
+
+### Templates
+
+Templates are PHP stub files with simple markers to be replaced by the Generator. You can implement own Templates in the `contexts` config array, see [Configuration](#configuration). They are organized in the `src/Templates` directory into `App`, `Entity` and `Package` folders.
+
+### Services
+
+The service layer manages the generation workflow:
+
+**Block Services**
+
+    - BlockFactory: Creates block instances from configuration
+    - BlockReconstructor: Reconstructs blocks from database records
+
+**Build Services**
+
+    - BuildManager: Orchestrates the build lifecycle and state transitions
+    - BuildRecorder: Persists build data and manages build history
+
+**Entity Services**
+
+    - ContextAwareService: Base class for entity services to handle context
+    - EntityCreator: Creates new entities with initial configuration
+    - EntityRebuilder: Updates existing entities with new blocks/settings
+    - EntityGenerator: Generates all entity-related files
+    - EntityImporter: Imports entities from existing migrations
+    - EntityTablesRemover: Manages database table cleanup
+
+**File Services**
+
+    - FileManager: Handles file operations, path normalization, and content formatting
+
+**Migration Services**
+
+    - MigrationAnalyzer: Analyzes existing migrations to extract structure
+    - MigrationCreator: Generates new migrations from entity configuration
+
+**Package Services**
+
+    - This part is not implemented yet
+
+**Preview Services**
+
+    - PreviewManager: Manages the preview context
+
+### Types
+
+Types are currently only partly implemented and only used for the EntityImporter.
+
+## Architecture
+
+### Build Lifecycle
+
+1. **Entity Creation**
+
+    - User creates entity via command or UI
+    - EntityCreator sets up database records
+    - Blocks are configured based on preset or user input
+    - Build context (app/package/preview) is determined
+
+2. **Build Process**
+
+    - BuildManager initiates build process
+    - EntityGenerator coordinates file generation
+    - Each block contributes its code parts
+    - Files are generated from templates
+    - BuildRecorder persists the build state
+
+3. **Preview & Testing**
+
+    - PreviewManager creates temporary build
+    - Tables are created directly (no migrations)
+    - Resource is available at /builder endpoint
+    - Changes can be tested in isolation
+
+4. **Final Deployment**
+    - Entity can be built in app or package context
+    - Migration files are generated
+    - All required files are placed in correct locations
+    - Previous builds are deactivated
+
+### Data Flow
+
+1. **Configuration Layer**
+
+    - Blocks define available fields/features
+    - Presets combine blocks into templates
+    - Config files control behavior
+
+2. **Service Layer**
+
+    - Services coordinate operations
+    - Each service has single responsibility
+    - ContextAwareService provides context management
+
+3. **Storage Layer**
+
+    - Entity configuration in database
+    - Block settings in separate table
+    - Build history and files tracked
+
+4. **File Layer**
+    - Templates define file structure
+    - Generators create actual files
+    - FileManager handles operations
+
+### State Management
+
+1. **Build States**
+
+    - Active: Current production build
+    - Preview: Temporary test build
+    - Inactive: Previous builds
+
+2. **Context Management**
+
+    - App: Direct application integration
+    - Package: Standalone package generation
+    - Preview: Temporary testing environment
+
+3. **Version Control**
+    - Each build is versioned
+    - Files are tracked
+    - States are preserved
+
+## Database Structure
+
+### builder_entities
+
+    - Core entity configuration
+    - Package association
+    - Build context tracking
+    - Preset information
+
+### builder_entity_blocks
+
+    - Block configurations
+    - Entity associations
+    - Options and ordering
+
+### builder_entity_builds
+
+    - Build state management
+    - Generated files tracking
+    - Version control
+
+### builder_packages
+
+    - Work-in-progress package configuration
+
+### builder_package_versions
+
+    - Version control for packages, also w-i-p
+
+## Usage
 
 ### Commands
 
 Commands allow to create a quick Entity using a Preset.
 
-- AbstractBuilderCommand
-	- CreateEntityCommand
-	- DeleteEntityCommand 
+-   AbstractBuilderCommand
+    -   CreateEntityCommand
+    -   DeleteEntityCommand
 
 #### Create Entity
 
@@ -331,133 +307,353 @@ And you can specify a namespace to also remove the entity from there:
 php artisan builder:delete --package=My/Blog
 # will also work --package=My\Blog
 ```
-### Contexts
 
-Contexts make the switch between App, Package or Preview. You can add own Contexts in the config array `contexts`
+## Configuration
 
- - BuildContext
-- ContextFactory
+You can change nearly everything, Blocks, Generators, Templates, Presets and Contexts in the Moox Builder configuration.
 
-### Generators
+This is the default configuration:
 
-Generators combine Blocks and Templates to generate the files. You can implement own Generators and Templates in the `contexts` config array
+```php
+    /*
+    |--------------------------------------------------------------------------
+    | Blocks
+    |--------------------------------------------------------------------------
+    |
+    | Define the available blocks that can be used to build resources.
+    | Mute existing blocks or add your own blocks as you like.
+    |
+    */
 
-- Entity
-	- AbstractGenerator
-	  - MigrationGenerator
-	  - ModelGenerator
-	  - PluginGenerator
-	  - ResourceGenerator
-	
+    'blocks' => [
+        'fields' => [
+            'bool' => \Moox\Builder\Blocks\Bool::class,
+            'builder' => \Moox\Builder\Blocks\Builder::class,
+            'checkbox-list' => \Moox\Builder\Blocks\CheckboxList::class,
+            'color-picker' => \Moox\Builder\Blocks\ColorPicker::class,
+            'date' => \Moox\Builder\Blocks\Date::class,
+            'date-time' => \Moox\Builder\Blocks\DateTime::class,
+            'file-upload' => \Moox\Builder\Blocks\FileUpload::class,
+            'hidden' => \Moox\Builder\Blocks\Hidden::class,
+            'image' => \Moox\Builder\Blocks\Image::class,
+            'key-value' => \Moox\Builder\Blocks\KeyValue::class,
+            'markdown-editor' => \Moox\Builder\Blocks\MarkdownEditor::class,
+            'multi-select' => \Moox\Builder\Blocks\MultiSelect::class,
+            'number' => \Moox\Builder\Blocks\Number::class,
+            'radio' => \Moox\Builder\Blocks\Radio::class,
+            'relationship' => \Moox\Builder\Blocks\Relationship::class,
+            'repeater' => \Moox\Builder\Blocks\Repeater::class,
+            'rich-editor' => \Moox\Builder\Blocks\RichEditor::class,
+            'select' => \Moox\Builder\Blocks\Select::class,
+            'tags-input' => \Moox\Builder\Blocks\TagsInput::class,
+            'text' => \Moox\Builder\Blocks\Text::class,
+            'textarea' => \Moox\Builder\Blocks\TextArea::class,
+            'toggle' => \Moox\Builder\Blocks\Toggle::class,
+            'toggle-buttons' => \Moox\Builder\Blocks\ToggleButtons::class,
+        ],
+        'features' => [
+            'author' => \Moox\Builder\Blocks\Author::class,
+            'publish' => \Moox\Builder\Blocks\Publish::class,
+            'soft-delete' => \Moox\Builder\Blocks\SoftDelete::class,
+            'title-with-slug' => \Moox\Builder\Blocks\TitleWithSlug::class,
+        ],
+        'sections' => [
+            // TODO: Not implemented yet.
+        ],
+    ],
 
-### Presets
+    /*
+    |--------------------------------------------------------------------------
+    | Build Contexts
+    |--------------------------------------------------------------------------
+    |
+    | Define the available build contexts and their configurations.
+    | Each context can have its own path and namespace settings,
+    | template and generator, and also can do migrations.
+    |
+    */
 
-Presets are packages of Blocks that can be used in the Build commands to quickly scaffold useful Entities. You can mute and add own Presets in the config array `presets`
+    'contexts' => [
+        'app' => [
+            'base_path' => app_path(),
+            'base_namespace' => 'App',
+            'classes' => [
+                'model' => [
+                    'path' => '%BasePath%\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'migration' => [
+                    'path' => 'database\migrations',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\Filament\Plugins',
+                    'namespace' => '%BaseNamespace%\\Filament\\Plugins',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+        ],
+        'package' => [
+            'base_path' => '$PackagePath',
+            'base_namespace' => '$PackageNamespace',
+            'classes' => [
+                'model' => [
+                    'path' => '%BasePath%\src\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\src\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'migration_stub' => [
+                    'path' => '%BasePath%\database\migrations',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\src',
+                    'namespace' => '%BaseNamespace%',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => '%BasePath%\resources\lang\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => '%BasePath%\config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+        ],
+        'preview' => [
+            'base_path' => app_path('Builder'),
+            'base_namespace' => 'App\\Builder',
+            'classes' => [
+                'model' => [
+                    'path' => '%BasePath%\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'migration' => [
+                    'path' => database_path('migrations'),
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\previews',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\previews',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+            'should_migrate' => true,
+        ],
+    ],
 
-- AbstractPreset
-	- FullItemPreset
-	- NestedTaxonomyPreset
-	- PublishableItemPreset
-	- SimpleItemPreset
-	- SimpleTaxonomyPreset
+    /*
+    |--------------------------------------------------------------------------
+    | Presets
+    |--------------------------------------------------------------------------
+    |
+    | Register available presets that can be used to quickly scaffold resources.
+    | Each preset key must match the class name in lowercase without 'Preset'.
+    |
+    */
 
-### Services
+    'presets' => [
+        'simple-item' => [
+            'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'publishable-item' => [
+            'class' => \Moox\Builder\Presets\PublishableItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'full-item' => [
+            'class' => \Moox\Builder\Presets\FullItemPreset::class,
+            'generators' => ['model', 'migration', 'resource', 'factory'],
+        ],
+        'simple-taxonomy' => [
+            'class' => \Moox\Builder\Presets\SimpleTaxonomyPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'nested-taxonomy' => [
+            'class' => \Moox\Builder\Presets\NestedTaxonomyPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+    ],
 
-Services allow to directly access builder functions
+    /*
+    |--------------------------------------------------------------------------
+    | Package Generator
+    |--------------------------------------------------------------------------
+    |
+    | Define the available generators for the package builder and their
+    | templates. You can also add your own generators and templates.
+    |
+    */
 
-- AbstractService
-	- EntityFilesRemover
-	- EntityGenerator
-	- EntityTablesRemover
+    'package_generator' => [
+        'archtest' => [
+            'template' => __DIR__.'/../src/Templates/package/archtest.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\ArchTestGenerator::class,
+        ],
+        'changelog' => [
+            'template' => __DIR__.'/../src/Templates/package/changelog.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\ChangelogGenerator::class,
+        ],
+        'composer' => [
+            'template' => __DIR__.'/../src/Templates/package/composer.json.stub',
+            'generator' => \Moox\Builder\Generators\Package\ComposerJsonGenerator::class,
+        ],
+        'config' => [
+            'template' => __DIR__.'/../src/Templates/package/config.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\ConfigFileGenerator::class,
+        ],
+        'funding' => [
+            'template' => __DIR__.'/../src/Templates/package/funding.yml.stub',
+            'generator' => \Moox\Builder\Generators\Package\FundingGenerator::class,
+        ],
+        'gitignore' => [
+            'template' => __DIR__.'/../src/Templates/package/gitignore.stub',
+            'generator' => \Moox\Builder\Generators\Package\GitignoreGenerator::class,
+        ],
+        'install' => [
+            'template' => __DIR__.'/../src/Templates/package/install.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\InstallGenerator::class,
+        ],
+        'license' => [
+            'template' => __DIR__.'/../src/Templates/package/license.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\LicenceGenerator::class,
+        ],
+        'panelprovider' => [
+            'template' => __DIR__.'/../src/Templates/package/panelprovider.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\PanelProviderGenerator::class,
+        ],
+        'pest' => [
+            'template' => __DIR__.'/../src/Templates/package/pest.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\PestGenerator::class,
+        ],
+        'readme' => [
+            'template' => __DIR__.'/../src/Templates/package/readme.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\ReadmeGenerator::class,
+        ],
+        'security' => [
+            'template' => __DIR__.'/../src/Templates/package/security.md.stub',
+            'generator' => \Moox\Builder\Generators\Package\SecurityGenerator::class,
+        ],
+        'serviceprovider' => [
+            'template' => __DIR__.'/../src/Templates/package/serviceprovider.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\ServiceProviderGenerator::class,
+        ],
+        'testcase' => [
+            'template' => __DIR__.'/../src/Templates/package/testcase.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\TestCaseGenerator::class,
+        ],
+        'translation' => [
+            'template' => __DIR__.'/../src/Templates/package/translation.php.stub',
+            'generator' => \Moox\Builder\Generators\Package\TranslationGenerator::class,
+        ],
+    ],
 
-### Templates
+    /*
+    |--------------------------------------------------------------------------
+    | Package Activator
+    |--------------------------------------------------------------------------
+    |
+    | To activate a package, we need to require it and run the install
+    | command. You can define your own activator if you like.
+    |
+    */
 
-These stub files are used for the generation. You can implement own Generators and Templates in the `contexts` config array
+    'package_activator' => \Moox\Builder\Services\PackageActivator::class,
 
-- Entity
-  - pages
-    - create.php.stub
-    - edit.php.stub
-    - list.php.stub
-    - view.php.stub
-  - migration.php.stub
-  - model.php.stub
-  - plugin.php.stub
-  - resource.php.stub
-- Package
-  - Work-in-Progress, see DEVLOG.md
+    /*
+    |--------------------------------------------------------------------------
+    | Package Publisher
+    |--------------------------------------------------------------------------
+    |
+    | Publishing a package is a multi step process. You can define your own.
+    |
+    */
 
-### Traits
+    'package_publisher' => [
+        'git' => \Moox\Builder\Services\PackageGitPublisher::class,
+        'github' => \Moox\Builder\Services\PackageGitHubPublisher::class,
+        'packagist' => \Moox\Builder\Services\PackagePackagistPublisher::class,
+    ],
 
-These Traits are used by Builder
+    // GitHub API Token
+    'github_api_token' => env('BUILDER_GITHUB_API_TOKEN'),
 
-- HandlesContentCleanup
-- HandlesIndentation
-
-### Types
-
-Types allow to select compatible Fields by a given Type.
-
-- AbstractType
-	- ArrayType
-	- BooleanType
-	- DAteTimeType
-	- EnumType
-	- FileType
-	- ImageType
-	- NumericType
-	- PasswordType
-	- RelationType
-	- StringType
-	- TextType
-	- UrlType
-
-
-
-<!--/shortdesc-->
-
-## Quick Installation
-
-These two commmands are all you need to install the package:
-
-```bash
-composer require moox/builder
-php artisan mooxbuilder:install
+    // Packagist API Token
+    'packagist_username' => env('BUILDER_PACKAGIST_USERNAME'),
+    'packagist_api_token' => env('BUILDER_PACKAGIST_API_TOKEN'),
 ```
 
-Curious what the install command does? See manual installation below.
+## Moox Core Features
 
-## What it does
-
-<!--whatdoes-->
-
-This Laravel Package Template can be used to create Filament Resources including migration, model, resource and pages.
-
-![Moox Builder Item](https://github.com/mooxphp/moox/raw/main/art/screenshot/builder-item.jpg)
-
-### Using the Template (old Builder Template, deprecated)
-
-1. Go to https://github.com/mooxphp/builder
-2. Press the `Use this template` button
-3. Create a new repository based on the template
-4. Clone the repository locally
-5. Run `php build.php`in the repo's directory and follow the steps
-    - Author Name (Default: Moox Developer): Your Name
-    - Author Email (Default: dev@moox.org): your@mail.com
-    - Package Name (Default: Blog Package): Your Package
-    - Package Description (Default: This is my package Blog Package)
-    - Package Entity (Default: Item): e.g. Post
-    - Tablename (Default: items): e.g. posts
-
-After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
-
-### Config
-
-After that the Resource is highly configurable.
+You can opt-out of any Moox dependency, but these niceties you'll miss then:
 
 #### Tabs and Translation
 
-Moox Core features like Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
+Moox Core provides Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
 
 ```php
             /*
@@ -605,8 +801,6 @@ or Moox Press User instead:
     'author_model' => \Moox\Press\Models\WpUser::class,
 ```
 
-<!--/whatdoes-->
-
 ## Manual Installation
 
 Instead of using the install-command `php artisan mooxbuilder:install` you are able to install this package manually step by step:
@@ -630,6 +824,7 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 
 ## Credits
 
+-   [Alf Drollinger](https://github.com/adrolli)
 -   [All Contributors](../../contributors)
 
 ## License

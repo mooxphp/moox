@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Services;
+namespace Moox\Builder\Services\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\AbstractGenerator;
 use RuntimeException;
 
-class EntityGenerator extends AbstractService
+class EntityGenerator extends ContextAwareService
 {
     /** @var AbstractGenerator[] */
     protected array $generators = [];

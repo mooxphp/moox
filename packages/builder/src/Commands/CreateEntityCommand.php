@@ -5,64 +5,48 @@ declare(strict_types=1);
 namespace Moox\Builder\Commands;
 
 use Moox\Builder\PresetRegistry;
-use Moox\Builder\Services\EntityGenerator;
-use Moox\Builder\Services\EntityService;
+use Moox\Builder\Services\Build\BuildManager;
+use Moox\Builder\Services\Entity\EntityCreator;
+use Moox\Builder\Services\Entity\EntityGenerator;
+use Moox\Builder\Services\Preview\PreviewManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
-    protected $signature = 'builder:create {name} {--package=} {--preview} {--app} {--preset=}';
+    protected $signature = 'builder:create-entity
+        {name : The name of the entity}
+        {--package= : Package namespace}
+        {--preview : Generate in preview mode}
+        {--preset= : Preset to use}';
 
-    protected $description = 'Create a new entity with model, resource and plugin';
+    protected $description = 'Create a new entity';
 
     public function __construct(
-        private readonly EntityService $entityService,
+        private readonly EntityCreator $entityCreator,
+        private readonly PreviewManager $previewManager,
+        private readonly BuildManager $buildManager,
         private readonly EntityGenerator $entityGenerator
     ) {
         parent::__construct();
     }
 
-    public function handle(): void
+    public function handle(): int
     {
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
-        $buildContext = $preview ? 'preview' : ($package ? 'package' : 'app');
+        $presetName = $this->option('preset') ?? $this->choice('Choose a preset', PresetRegistry::getPresetNames());
+        $buildContext = $this->getBuildContext($preview, $package);
 
-        $presetName = $this->option('preset');
-        if (! $presetName) {
-            $presetName = $this->choice(
-                'Which preset would you like to use?',
-                [
-                    'simple-item',
-                    'publishable-item',
-                    'full-item',
-                    'simple-taxonomy',
-                    'nested-taxonomy',
-                ],
-                'simple-item'
-            );
-        }
-
-        $result = $this->entityService->create($name, $buildContext, $presetName);
+        $result = $this->entityCreator->create($name, $buildContext, $presetName);
         $entity = $result['entity'];
 
-        if ($result['status'] === 'exists') {
-            if (! $this->confirm("Entity '{$name}' already exists in {$buildContext} context. Do you want to rebuild it?")) {
-                return;
-            }
+        if (! $entity) {
+            $this->error("Failed to create entity {$name}");
 
-            $latestBuild = $this->entityService->getLatestBuild($entity->id);
-            if ($latestBuild) {
-                $blocks = $this->entityService->reconstructBlocksFromBuild($latestBuild);
-            } else {
-                $preset = PresetRegistry::getPreset($presetName);
-                $blocks = $preset->getBlocks();
-            }
-        } else {
-            $preset = PresetRegistry::getPreset($presetName);
-            $blocks = $preset->getBlocks();
+            return self::FAILURE;
         }
 
+        $blocks = $result['blocks'];
         $context = $this->createContext($name, $package, $preview);
         $context->setPresetName($presetName);
 
@@ -71,16 +55,18 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $this->entityGenerator->execute();
 
         if ($preview) {
-            $this->entityService->createPreviewTable($name, $blocks);
+            $this->previewManager->createPreviewTable($name, $blocks);
         }
 
-        $this->entityService->recordBuild(
+        $this->buildManager->recordBuild(
             $entity->id,
             $buildContext,
             $blocks,
-            $this->entityGenerator->getGeneratedFiles()
+            $preview ? [] : $this->entityGenerator->getGeneratedFiles()
         );
 
         $this->info('Entity '.$name.' '.($result['status'] === 'exists' ? 're' : '').'built successfully in '.$buildContext);
+
+        return self::SUCCESS;
     }
 }

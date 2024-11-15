@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Services;
+namespace Moox\Builder\Services\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
 
-abstract class AbstractService
+abstract class ContextAwareService
 {
     protected BuildContext $context;
 
