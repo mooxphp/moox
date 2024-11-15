@@ -2,11 +2,11 @@
 
 This is the current state of the Builder:
 
--   Moox Builder is currently a GitHub Template Repository (will be removed) and partly working as an installed package (will be the future)
+-   Moox Builder is currently a GitHub Template Repository (will be removed) and now working as an installed package (will be the future)
 -   The current state is in this branch: https://github.com/mooxphp/moox/tree/feature/tag
 -   The `php artisan builder:create`command is working, tested with simple and published item yet
 -   A Panel is available to Preview: https://moox.test/builder
--   There are 5 test entities in the package
+-   There are 5 test entities in the package, that will be deleted including their config, when builder is able to generate them without errors
     -   https://moox.test/moox/simple-items
     -   https://moox.test/moox/publishable-items
     -   https://moox.test/moox/full-items
@@ -15,27 +15,17 @@ This is the current state of the Builder:
 
 ## Todo
 
-
-
-Codebase chat is falling back to BM25, which is slower and less accurate than embeddings.
-
-Global Context
-
-
-
-### Computed Search Queries
-
--   [ ] We are currently refactoring the builder into services, currently missing in readme, see builder docs below for the missing services. The current state. The services are all created, but the create command fails. I will leave the information about refactoring in this file, even if the refactor might already been done 98% ... 
-
--   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
-
 -   [ ] The create command
 
     -   [ ] Should work as in README, that is not fully tested right now
     -   [ ] Should do preview "migrations" using DB directly, maybe not create migrations
-    -   [ ] Should have a new option --migration= instead of the second command (or another way to not maintain two commands?)
+    -   [ ] Should have a new option --migration= to make use of the migration generator
 
 -   [ ] DeleteCommand has flaws, leaves files, and the db? Not as described in README, it should delete all empty folders to stay clean
+
+-   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
+
+-   [ ] The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
 
 -   [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
 
@@ -114,27 +104,6 @@ Global Context
 
 -   [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
 
--   [ ] Builder Docs
-
-    -   [ ] HandlesMigrationFiles Trait
-    -   [ ] EntityService - removed, replaced by a bunch of new services
-    -   [ ] EntitiyImporter Service
-    -   [ ] MigrationAnalyzer Service
-    -   [ ] MigrationFinder Service
-    -   [ ] BuildRecorder Service
-    -   [ ] BlockReconstructor Service
-    -   [ ] BlockFactory Service
-    -   [ ] BuildManager Service
-    -   [ ] EntityCreator Service
-    -   [ ] PreviewManager Service
-    -   [ ] EntityDeleter Service
-    -   [ ] FileFormatter Service
-    -   [ ] FileManager Service
-    -   [ ] PreviewManager Service
-    -   [ ] php artisan builder:create-from-migration packages/blog/database/migrations/create_posts_table.php --package
-    -   [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php
-    -   [ ] php artisan builder:create-from-migration database/migrations/2024_03_20_create_posts_table.php --preview
-
 -   [ ] Core Docs
 
     -   Naming convention InModel InResource InPages and Single for single-use traits
@@ -195,62 +164,6 @@ Global Context
 -   Inline-Help
 
 
-
-## Refactor
-
-There are two parts of the codebase that need to be refactored:
-
-The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
-
-Looking at the entire codebase, particularly `EntityService.php` (lines 1-287), I see several signs that indicate it's time for a refactor:
-
-1. **Single Responsibility Principle Violations**
-- The service handles entity creation, rebuilding, preview tables, block reconstruction, and file formatting
-- Each of these could be its own service
-
-2. **Complex State Management**
-- The flow between `create`, `rebuild`, and `recordBuild` is complex and prone to bugs
-- State transitions between preview/app/package contexts are unclear
-
-3. **Tight Coupling**
-- Direct database operations scattered throughout
-- Direct file system operations mixed with business logic
-- Hard dependencies on block implementations
-
-Here's how I would suggest refactoring this:
-
-```plaintext
-Services/
-  Entity/
-    EntityCreator.php
-    EntityRebuilder.php
-    EntityDeleter.php
-    PreviewManager.php
-  Block/
-    BlockRepository.php <- what is this, use config?
-    BlockReconstructor.php
-    BlockOptionsManager.php
-  Build/
-    BuildRecorder.php
-    BuildManager.php
-  File/
-    FileFormatter.php
-    FileManager.php
-```
-
-Key improvements:
-1. Separate services for different responsibilities
-2. Clear state transitions through dedicated managers
-3. Repository pattern for data access
-4. Separate preview management
-5. Isolated file operations
-
-This would make the system:
-- More testable
-- More maintainable
-- More resilient to changes
-- Clearer API boundaries
-- Better separation of concerns
 
 ## Packages
 
@@ -337,78 +250,7 @@ I want to generate Packages using Moox Builder, it should work like this:
 -   Later we'll need a `RemovePackageCommand` that uses the `PackageRemover`service
 -   Last the `AbstractPackageService`
 
-## The DB
 
-```php
-    $table->string('namespace')->default('moox');
-    $table->text('description')->default('This is my Laravel package XXX YYY made with Moox Builder.');
-    $table->string('author')->default('Moox Devs');
-    $table->string('website')->default('https://www.moox.org');
-    $table->string('email')->default('devs@moox.org');
-
-
-Schema::create('builder_packages', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->string('namespace');
-    $table->text('description');
-    $table->string('author');
-    $table->string('website');
-    $table->string('email');
-    $table->enum('status', ['development', 'installable', 'installed']);
-  	$table->json('publish_status')->nullable();
-  	$table->json('meta')->nullable();
-    $table->timestamps();
-});
-
-Schema::create('builder_entities', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('package_id')->nullable()->constrained()->nullOnDelete();
-    $table->string('singular');
-    $table->string('plural');
-    $table->text('description')->nullable();
-    $table->string('preset');
-    $table->json('relations')->nullable();
-    $table->json('taxonomies')->nullable();
-    $table->timestamps();
-});
-
-Schema::create('builder_entity_tabs', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
-    $table->string('name');
-    $table->integer('sort_order');
-    $table->timestamps();
-});
-
-Schema::create('builder_entity_blocks', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
-    $table->string('title');
-    $table->text('description')->nullable();
-    $table->string('block_class');
-    $table->json('options');
-    $table->integer('sort_order');
-    $table->timestamps();
-});
-
-Schema::create('builder_package_versions', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('package_id')->constrained()->cascadeOnDelete();
-    $table->string('version');
-    $table->json('data');
-    $table->timestamps();
-});
-
-Schema::create('builder_entity_builds', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('entity_id')->constrained()->cascadeOnDelete();
-    $table->string('version');
-    $table->json('data');
-    $table->json('files');
-    $table->timestamps();
-});
-```
 
 ## The UI
 
