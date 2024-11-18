@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
-class EntityDeleter
+class EntityDeleter extends AbstractEntityService
 {
-    public function delete(string $name, string $buildContext, bool $force = false): array
+    public function execute(): void
     {
-        $entity = $this->findEntity($name, $buildContext);
+        $entity = $this->findEntity($this->context->getEntityName());
 
         if (! $entity) {
-            return ['status' => 'not_found'];
+            throw new RuntimeException('Entity not found');
         }
 
         $latestBuild = $this->getLatestBuild($entity->id);
@@ -22,20 +23,22 @@ class EntityDeleter
             $this->deactivateBuild($latestBuild->id);
         }
 
-        $this->softDeleteEntity($entity->id);
-
-        return [
-            'entity' => $entity,
-            'build' => $latestBuild,
-            'status' => 'deleted',
-        ];
+        if ($this->context->getContext() === 'preview') {
+            DB::table('builder_entities')
+                ->where('id', $entity->id)
+                ->update(['previewed' => false]);
+        } else {
+            DB::table('builder_entities')
+                ->where('id', $entity->id)
+                ->update(['build_context' => null]);
+        }
     }
 
-    protected function findEntity(string $name, string $buildContext): ?object
+    protected function findEntity(string $name): ?object
     {
         return DB::table('builder_entities')
             ->where('singular', $name)
-            ->where('build_context', $buildContext)
+            ->where('build_context', $this->context->getContext())
             ->whereNull('deleted_at')
             ->first();
     }

@@ -8,46 +8,41 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
-class PreviewManager
+class PreviewTableManager
 {
-    public function createPreviewTable(string $entityName, array $blocks): void
+    public function createTable(string $entityName, array $blocks): void
     {
         $tableName = Str::plural(Str::snake($entityName));
-
-        if (Schema::hasTable($tableName)) {
-            Schema::drop($tableName);
-        }
+        $this->dropTableIfExists($tableName);
 
         Schema::create($tableName, function (Blueprint $table) use ($blocks) {
             $table->id();
 
             foreach ($blocks as $block) {
-                $migrations = $block->getMigrations()['fields'] ?? [];
-                foreach ($migrations as $field) {
-                    $this->addField($table, $field);
-                }
+                $this->addBlockFields($table, $block);
             }
 
             $table->timestamps();
         });
     }
 
-    public function dropPreviewTable(string $entityName): void
+    public function dropTable(string $entityName): void
     {
-        $tableName = Str::plural(Str::snake($entityName));
+        $this->dropTableIfExists(Str::plural(Str::snake($entityName)));
+    }
 
+    protected function dropTableIfExists(string $tableName): void
+    {
         if (Schema::hasTable($tableName)) {
             Schema::drop($tableName);
         }
     }
 
-    public function cleanupPreviewFiles(object $build): void
+    protected function addBlockFields(Blueprint $table, object $block): void
     {
-        $files = json_decode($build->files ?? '[]', true);
-        foreach ($files as $file) {
-            if (file_exists($file)) {
-                unlink($file);
-            }
+        $migrations = $block->getMigrations()['fields'] ?? [];
+        foreach ($migrations as $field) {
+            $this->addField($table, $field);
         }
     }
 

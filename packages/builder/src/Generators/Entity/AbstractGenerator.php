@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Generators\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
+use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Traits\HandlesContentCleanup;
 use Moox\Builder\Traits\HandlesIndentation;
 use RuntimeException;
@@ -16,11 +17,11 @@ abstract class AbstractGenerator
 
     protected array $processedBlocks;
 
-    /** @var array<string, string> */
     protected array $generatedFiles = [];
 
     public function __construct(
         protected readonly BuildContext $context,
+        protected readonly FileManager $fileManager,
         array $blocks = []
     ) {
         $resolvedBlocks = $this->resolveBlocks($blocks);
@@ -130,44 +131,10 @@ abstract class AbstractGenerator
 
     protected function writeFile(string $path, string $content): void
     {
-        $normalizedPath = $this->normalizePath($path);
-        $this->ensureDirectoryExists($normalizedPath);
-        file_put_contents($normalizedPath, $content);
-        $this->generatedFiles[$this->getGeneratorType()] = $normalizedPath;
-    }
-
-    public function formatGeneratedFiles(): void
-    {
-        if (empty($this->generatedFiles)) {
-            return;
-        }
-
-        $files = implode(' ', array_map(
-            fn ($file) => escapeshellarg($this->normalizePath($file)),
-            $this->generatedFiles
-        ));
-
-        $command = "vendor/bin/pint {$files}";
-        exec($command, $output, $returnCode);
-
-        if ($returnCode !== 0) {
-            throw new RuntimeException('Pint formatting failed: '.implode("\n", $output));
-        }
-    }
-
-    protected function ensureDirectoryExists(string $path): void
-    {
-        $directory = dirname($path);
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-    }
-
-    protected function normalizePath(string $path): string
-    {
-        $normalized = str_replace('\\', '/', $path);
-
-        return preg_replace('#/+#', '/', $normalized);
+        $this->generatedFiles[$this->getGeneratorType()] = [
+            'path' => $path,
+            'content' => $content,
+        ];
     }
 
     protected function getBlocks(): array
@@ -186,9 +153,6 @@ abstract class AbstractGenerator
         return [];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function getGeneratedFiles(): array
     {
         return $this->generatedFiles;

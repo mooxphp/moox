@@ -15,164 +15,170 @@ This is the current state of the Builder:
 
 ## Todo
 
--   [ ] The create command has (most probably in the Service Layer) flaws:
+- [ ] The create command has (most probably in the Service Layer) flaws:
 
-    -   [ ] First creation works, but the files array in the build table was empty, we just fixed that. We should use the files array to be aware, which files have been generated before. It would probably be a good idea, to delete the files before creating the new ones, using this array. The same service and config array should be used by the delete entity command and UI delete actions later.
+  -   [ ] First creation works, but the files array in the build table was empty, we just fixed that. We should use the files array to be aware, which files have been generated before. It would probably be a good idea, to delete the files before creating the new ones, using this array. The same service and config array should be used by the delete entity command and UI delete actions later.
 
-    -   [ ] The generated Resource has no use statements and causes the platform to 500
+  -   [ ] The generated Resource has no use statements and causes the platform to 500
 
-    -   [ ] After manually deleting the generated files, regeneration fails not finding a build for the entity (but it is there and active)
+  -   [ ] After manually deleting the generated files, regeneration fails not finding a build for the entity (but it is there and active)
 
--   [ ] Refactoring seems not to be finished now
+  -   [ ] We refactored PreviewManager Service (deprecated) to PreviewTableService. The command should use the new service for creating previews
 
-    -   [ ] In EntityGenerator we use a file formatter from the AbstractGenerator, what about the file service(s)
-    -   [ ] I would then add a FileFormatter Service that does just Pint formatting
+- [ ] We need to refactor the service layer until all services have a clear single responsibility
 
--   [ ] The create command should do preview "migrations" using DB directly, I commented out migrations in the contexts config array
+  -   [ ] MigrationFinder has direct file operations: These should be delegated to FileManager.
+  -   [ ] EntityDeleter and FileCleanup overlap, we need to discuss this first, as deletion is a bit more complex ...
+  -   [ ] EntityRebuilder isn't extending AbstractEntityService or ContextAwareService, which seems inconsistent with our architecture
+  -   [ ] We need to document the new services (like fileformatter, previewtablemanager) and their (single) responsibilty, and remove deleted service classes (like previewmanager, ...)
 
--   [ ] The create command should have a new option --migration= to make use of the migration generator
+- [ ] The create command should do preview "migrations" using DB directly, I commented out migrations in the contexts config array
 
--   [ ] DeleteCommand has flaws, leaves files, and the db? Not as described in README, it should delete all empty folders to stay clean
+- [ ] The create command should have a new option --migration= to make use of the migration generator
 
--   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
+- [ ] We need to implement Sections ... see Chat on that
 
--   [ ] The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
+- [ ] DeleteCommand has flaws, leaves files, and the db? Not as described in README, it should delete all empty folders to stay clean
 
--   [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
+- [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
 
--   [ ] builder_entities table has a build_context field that contains preview, app or package ... but we need to handle that a bit different, as an entity can be generated in a package or in app, then developed, means versioned, and previewed. That means we can have the entity built in only one context plus preview. I would add a new field to entities named `previewed`that states a preview is currently active, while the `build_context`field should only reflext app or package.
+- [ ] The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
 
-    When an entity is built in preview context, the previewed field should be true, when we delete the preview false
+- [ ] Need to change the installer to scan for installable plugins, done in builder itself and the template, not tested yet
 
-    For builds in app or package context: when created, fill build context, when deleted, empty build context. Do not allow an entity to be built in app and package at a time.
+- [ ] builder_entities table has a build_context field that contains preview, app or package ... but we need to handle that a bit different, as an entity can be generated in a package or in app, then developed, means versioned, and previewed. That means we can have the entity built in only one context plus preview. I would add a new field to entities named `previewed`that states a preview is currently active, while the `build_context`field should only reflext app or package.
 
-    There's a big difference between really deleting the entity and removing a built!
+  When an entity is built in preview context, the previewed field should be true, when we delete the preview false
 
--   [ ] Configurable FeatureSet
+  For builds in app or package context: when created, fill build context, when deleted, empty build context. Do not allow an entity to be built in app and package at a time.
 
-    -   [ ] Filament Core Features
+  There's a big difference between really deleting the entity and removing a built!
 
-    -   [ ] Moox Core Features
+- [ ] Configurable FeatureSet
 
-    -   [ ] Community Features (not yet implemented
+  -   [ ] Filament Core Features
 
--   [ ] Configurable Presets
+  -   [ ] Moox Core Features
 
-    -   [ ] Add Shop, Blog etc.
+  -   [ ] Community Features (not yet implemented
 
--   [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
+- [ ] Configurable Presets
 
--   [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
+  -   [ ] Add Shop, Blog etc.
 
--   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
+- [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
 
--   [ ] The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
+- [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
 
--   [ ] Require Pint, what about Larastan?
+- [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
 
--   [ ] Add more Moox Blocks
+- [ ] The Package Builder is completely prepared (Templates, Config, Generators, Services and Commands), but the last three are mostly empty files. Needs to be implemented.
 
-    -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
-    -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
-    -   [ ] Most wanted like Phone, Address etc.
+- [ ] Require Pint, what about Larastan?
 
--   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
-    -   [ ] getResourceName should be auto detected
-    -   [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
-    -   [ ] Relations, like Taxonomies, but "on the left"
-    -   [ ] Publish
-        -   Publish Button is shown on already published items
-        -   Should then be save only
-        -   There could be a create new draft for published?
-        -   Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
-    -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
-    -   [ ] Move to Core
-        -   Moox Builder Packages should be cleaned up as much as possible
-        -   Installer: use Abstract, Service or Traits ...
-        -   ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
+- [ ] Add more Moox Blocks
 
--   [ ] Builder needs to be cleaned up after able to generate packages
-    -   [ ] Cleanup config
-    -   [ ] Remove old entities
-    -   [ ] Remove build.php
-    -   [ ] Remove GH Template
+  -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
+  -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
+  -   [ ] Most wanted like Phone, Address etc.
 
--   [ ] We need to generate factories from blocks to entities
+- [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
+  -   [ ] getResourceName should be auto detected
+  -   [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
+  -   [ ] Relations, like Taxonomies, but "on the left"
+  -   [ ] Publish
+      -   Publish Button is shown on already published items
+      -   Should then be save only
+      -   There could be a create new draft for published?
+      -   Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
+  -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
+  -   [ ] Move to Core
+      -   Moox Builder Packages should be cleaned up as much as possible
+      -   Installer: use Abstract, Service or Traits ...
+      -   ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
 
--   [ ] We need to generate tests
+- [ ] Builder needs to be cleaned up after able to generate packages
+  -   [ ] Cleanup config
+  -   [ ] Remove old entities
+  -   [ ] Remove build.php
+  -   [ ] Remove GH Template
 
--   [ ] Versions need a concept, needs a table (and UI)
+- [ ] We need to generate factories from blocks to entities
 
--   [ ] Versions vs. Updates (means Maintenance ... if we could update code using PHP Parser, we also could update code in terms of keeping the generated code of builder plugins auto-maintained)
+- [ ] We need to generate tests
 
--   [ ] Generate the Builder UI, let Builder build itself
+- [ ] Versions need a concept, needs a table (and UI)
 
--   [ ] Generate a Frontend
+- [ ] Versions vs. Updates (means Maintenance ... if we could update code using PHP Parser, we also could update code in terms of keeping the generated code of builder plugins auto-maintained)
 
--   [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
+- [ ] Generate the Builder UI, let Builder build itself
 
--   [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
+- [ ] Generate a Frontend
 
--   [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
+- [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
 
--   [ ] Core Docs
+- [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
 
-    -   Naming convention InModel InResource InPages and Single for single-use traits
+- [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
 
-    -   TabsInResource - contains TODO
+- [ ] Core Docs
 
-    -   TabsInPage - just getTabs needs to be defined
+  -   Naming convention InModel InResource InPages and Single for single-use traits
 
-    -   TaxonomyInPages - needs that mount method in ViewPage
+  -   TabsInResource - contains TODO
 
-    -   AuthorInModel
+  -   TabsInPage - just getTabs needs to be defined
 
-    -   AuthorInResource
+  -   TaxonomyInPages - needs that mount method in ViewPage
 
-    -   StatusInModel
+  -   AuthorInModel
 
-    -   StatusInResource - WIP
+  -   AuthorInResource
 
-    -   Links to builder or builder doc inside
+  -   StatusInModel
 
--   [ ] Category / Tag Docs
+  -   StatusInResource - WIP
 
-    -   Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
-    -   https://github.com/lazychaser/laravel-nestedset
-    -   https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets
-    -   Screens
-    -   Usage / Config
+  -   Links to builder or builder doc inside
 
--   $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
+- [ ] Category / Tag Docs
 
--   Relationships - in builder but like taxonomies
+  -   Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
+  -   https://github.com/lazychaser/laravel-nestedset
+  -   https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets
+  -   Screens
+  -   Usage / Config
 
--   Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
+- $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
 
--   Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
+- Relationships - in builder but like taxonomies
 
--   HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
+- Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
 
--   Item could show last changed etc. on the left ...
+- Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
 
--   Gallery images should be sortable
+- HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
 
--   Bulk restore does not work
+- Item could show last changed etc. on the left ...
 
--   Set indices for slug etc, or not?
+- Gallery images should be sortable
 
--   not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
+- Bulk restore does not work
 
--   If plugin data-language -> migration create_languages_table ->
-    SP: ->hasMigration('create_data_languages_table') (correct the -)
-    -   Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
-    -   Livewire Frontend
-    -   Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
-    -   Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
-    -   Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
-    -   PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+- Set indices for slug etc, or not?
 
--   Inline-Help
+- not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
+
+- If plugin data-language -> migration create_languages_table ->
+  SP: ->hasMigration('create_data_languages_table') (correct the -)
+  -   Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
+  -   Livewire Frontend
+  -   Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
+  -   Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
+  -   Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
+  -   PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+
+- Inline-Help
 
 
 

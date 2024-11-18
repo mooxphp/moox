@@ -18,10 +18,15 @@ abstract class AbstractBuilderCommand extends Command
             default => 'app'
         };
 
+        $config = [];
+        if ($package !== null) {
+            $config['package_namespace'] = $package;
+        }
+
         return ContextFactory::create(
-            contextType: $contextType,
-            entityName: $entityName,
-            packageNamespace: $package
+            $contextType,
+            $entityName,
+            $config
         );
     }
 

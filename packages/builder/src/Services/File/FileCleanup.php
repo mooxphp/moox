@@ -6,22 +6,13 @@ namespace Moox\Builder\Services\File;
 
 use Illuminate\Support\Facades\DB;
 
-class FileManager
+class FileCleanup
 {
     public function __construct(
-        private readonly FileOperations $fileOperations,
-        private readonly FileFormatter $fileFormatter
+        private readonly FileOperations $fileOperations
     ) {}
 
-    public function writeAndFormatFiles(array $files): void
-    {
-        foreach ($files as $path => $content) {
-            $this->fileOperations->writeFile($path, $content);
-        }
-        $this->fileFormatter->formatFiles(array_keys($files));
-    }
-
-    public function deleteFiles(int $entityId, string $buildContext): void
+    public function cleanupEntityFiles(int $entityId, string $buildContext): void
     {
         $build = DB::table('builder_entity_builds')
             ->where('entity_id', $entityId)
@@ -34,23 +25,24 @@ class FileManager
         }
 
         $files = json_decode($build->files, true);
+
         foreach ($files as $file) {
             $path = $file['path'] ?? null;
             if ($path) {
                 $this->fileOperations->deleteFile($path);
-                $this->removeEmptyParentDirectories(dirname($path));
+                $this->removeEmptyDirectories(dirname($path));
             }
         }
     }
 
-    protected function removeEmptyParentDirectories(string $path): void
+    protected function removeEmptyDirectories(string $path): void
     {
         if (empty($path) || $path === '.' || $path === '/') {
             return;
         }
 
         while (! empty($path)) {
-            if (is_dir($path) && count(scandir($path)) === 2) {
+            if (is_dir($path) && count(scandir($path)) === 2) { // Only . and .. entries
                 rmdir($path);
                 $path = dirname($path);
             } else {

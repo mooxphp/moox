@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
-use Moox\Builder\Generators\Entity\AbstractGenerator;
+use Moox\Builder\Services\File\FileManager;
 use RuntimeException;
 
-class EntityGenerator extends ContextAwareService
+class EntityGenerator extends AbstractEntityService
 {
-    /** @var AbstractGenerator[] */
     protected array $generators = [];
 
-    /** @var array<string, string> */
     protected array $generatedFiles = [];
+
+    public function __construct(
+        private readonly FileManager $fileManager
+    ) {}
 
     public function setContext(BuildContext $context): void
     {
@@ -28,74 +30,60 @@ class EntityGenerator extends ContextAwareService
         $this->generators = [];
     }
 
+    public function execute(): void
+    {
+        $this->initializeGenerators();
+        $this->runGenerators();
+        $this->handleGeneratedFiles();
+    }
+
     protected function initializeGenerators(): void
     {
         $contextConfig = $this->context->getConfig();
         $classes = $contextConfig['classes'] ?? [];
 
-        $this->generators = array_map(
-            function ($type) use ($classes) {
-                $generatorClass = $classes[$type]['generator'] ?? null;
-                if (! $generatorClass) {
-                    throw new RuntimeException("No generator configured for type: {$type}");
-                }
+        foreach ($classes as $type => $config) {
+            $generatorClass = $config['generator'] ?? null;
+            if (! $generatorClass || ! class_exists($generatorClass)) {
+                throw new RuntimeException("Invalid generator for type: {$type}");
+            }
 
-                return new $generatorClass($this->context, $this->blocks);
-            },
-            array_keys($classes)
-        );
-    }
-
-    public function execute(): void
-    {
-        if ($this->context->getCommand()) {
-            $this->context->getCommand()->error('EntityGenerator: Starting execution');
+            $this->generators[$type] = new $generatorClass(
+                $this->context,
+                $this->fileManager,
+                $this->blocks
+            );
         }
-
-        $this->initializeGenerators();
 
         if (empty($this->generators)) {
             throw new RuntimeException('No generators were initialized');
         }
+    }
 
-        if ($this->context->getCommand()) {
-            $this->context->getCommand()->error('EntityGenerator: Generators initialized: '.count($this->generators));
-            foreach ($this->generators as $generator) {
-                $this->context->getCommand()->error('Generator found: '.get_class($generator));
-            }
-        }
-
-        foreach ($this->generators as $generator) {
-            if ($this->context->getCommand()) {
-                $this->context->getCommand()->error('Running generator: '.get_class($generator));
-            }
+    protected function runGenerators(): void
+    {
+        foreach ($this->generators as $type => $generator) {
             $generator->generate();
-
-            if (method_exists($generator, 'getGeneratedFiles')) {
-                $files = $generator->getGeneratedFiles();
-                foreach ($files as $path => $content) {
-                    if (! empty($path) && ! empty($content)) {
-                        $this->generatedFiles[$path] = $content;
-                    }
-                }
-            }
-        }
-
-        foreach ($this->generators as $generator) {
-            // Should this not be done by the file services?
-            $generator->formatGeneratedFiles();
-        }
-
-        if ($this->context->getCommand()) {
-            $this->context->getCommand()->error('EntityGenerator: Execution complete');
+            $this->mergeGeneratedFiles($type, $generator->getGeneratedFiles());
         }
     }
 
-    /**
-     * @return array<string, string>
-     */
+    protected function mergeGeneratedFiles(string $type, array $files): void
+    {
+        foreach ($files as $path => $content) {
+            $this->generatedFiles[$path] = $content;
+        }
+    }
+
+    protected function handleGeneratedFiles(): void
+    {
+        if (! empty($this->generatedFiles)) {
+            $this->fileManager->writeAndFormatFiles($this->generatedFiles);
+        }
+    }
+
     public function getGeneratedFiles(): array
     {
-        return array_filter($this->generatedFiles);
+        return $this->generatedFiles;
     }
 }
