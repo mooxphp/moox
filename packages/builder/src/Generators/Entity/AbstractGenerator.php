@@ -157,4 +157,12 @@ abstract class AbstractGenerator
     {
         return $this->generatedFiles;
     }
+
+    // TODO: There is a service for this
+    protected function formatGeneratedFiles(): void
+    {
+        if (! empty($this->generatedFiles)) {
+            $this->fileManager->formatFiles($this->generatedFiles);
+        }
+    }
 }

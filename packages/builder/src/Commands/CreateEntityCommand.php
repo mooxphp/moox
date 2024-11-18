@@ -6,7 +6,6 @@ namespace Moox\Builder\Commands;
 
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Entity\EntityCreator;
-use Moox\Builder\Services\Preview\PreviewTableManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -19,8 +18,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
     protected $description = 'Create a new entity';
 
     public function __construct(
-        private readonly EntityCreator $entityCreator,
-        private readonly PreviewTableManager $previewTableManager,
+        private readonly EntityCreator $entityCreator
     ) {
         parent::__construct();
     }

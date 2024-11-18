@@ -28,4 +28,14 @@ class PresetRegistry
     {
         return array_keys(config('builder.presets', []));
     }
+
+    public static function getPresetBlocks(string $presetName): array
+    {
+        $presets = config('builder.presets', []);
+        if (! isset($presets[$presetName])) {
+            throw new \RuntimeException("Preset {$presetName} not found");
+        }
+
+        return $presets[$presetName]['blocks'] ?? [];
+    }
 }

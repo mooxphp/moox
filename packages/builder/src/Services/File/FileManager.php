@@ -10,8 +10,14 @@ class FileManager
 {
     public function __construct(
         private readonly FileOperations $fileOperations,
-        private readonly FileFormatter $fileFormatter
+        private readonly FileFormatter $fileFormatter,
+        private readonly FileCleanup $fileCleanup
     ) {}
+
+    public function cleanupBeforeRegeneration(int $entityId, string $buildContext): void
+    {
+        $this->fileCleanup->cleanupEntityFiles($entityId, $buildContext);
+    }
 
     public function writeAndFormatFiles(array $files): void
     {
