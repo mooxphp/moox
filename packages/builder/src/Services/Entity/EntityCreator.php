@@ -50,7 +50,7 @@ class EntityCreator extends AbstractEntityService
     {
         $name = $this->context->getEntityName();
         $existingEntity = DB::table('builder_entities')
-            ->where('name', $name)
+            ->where('singular', $name)
             ->first();
 
         if ($existingEntity) {
@@ -58,7 +58,7 @@ class EntityCreator extends AbstractEntityService
         }
 
         return DB::table('builder_entities')->insertGetId([
-            'name' => $name,
+            'singular' => $name,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

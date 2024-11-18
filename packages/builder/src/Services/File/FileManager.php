@@ -27,6 +27,20 @@ class FileManager
         $this->fileFormatter->formatFiles(array_keys($files));
     }
 
+    public function formatFiles(array $files): void
+    {
+        if (empty($files)) {
+            return;
+        }
+
+        $paths = array_map(
+            fn ($file) => $file['path'],
+            $files
+        );
+
+        $this->fileFormatter->formatFiles($paths);
+    }
+
     public function deleteFiles(int $entityId, string $buildContext): void
     {
         $build = DB::table('builder_entity_builds')

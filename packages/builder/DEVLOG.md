@@ -15,6 +15,8 @@ This is the current state of the Builder:
 
 ## Todo
 
+- [ ] Current state, refactoring mostly done. Service level not stable. Test the command and iterate first ...
+
 - [ ] The create command has (most probably in the Service Layer) flaws:
 
   -   [ ] First creation works, but the files array in the build table was empty, we just fixed that. We should use the files array to be aware, which files have been generated before. It would probably be a good idea, to delete the files before creating the new ones, using this array. The same service and config array should be used by the delete entity command and UI delete actions later.
@@ -25,7 +27,7 @@ This is the current state of the Builder:
 
   -   [ ] We refactored PreviewManager Service (deprecated) to PreviewTableService. The command should use the new service for creating previews
 
-- [ ] We need to refactor the service layer until all services have a clear single responsibility
+- [ ] We need to refactor the service layer until all services have a clear single responsibility - MOSTLY DONE, not documented
 
   -   [ ] MigrationFinder has direct file operations: These should be delegated to FileManager.
   -   [ ] EntityDeleter and FileCleanup overlap, we need to discuss this first, as deletion is a bit more complex ...

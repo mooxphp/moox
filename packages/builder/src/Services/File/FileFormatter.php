@@ -8,18 +8,22 @@ use RuntimeException;
 
 class FileFormatter
 {
-    public function formatFiles(array $files): void
+    public function formatFiles(array $paths): void
     {
-        if (empty($files)) {
+        if (empty($paths)) {
             return;
         }
 
         $fileList = implode(' ', array_map(
-            fn ($file) => escapeshellarg($file),
-            $files
+            fn ($path) => escapeshellarg($path),
+            array_filter($paths)
         ));
 
-        $command = "vendor/bin/pint {$fileList}";
+        if (empty($fileList)) {
+            return;
+        }
+
+        $command = "vendor/bin/pint {$fileList} --quiet";
         exec($command, $output, $returnCode);
 
         if ($returnCode !== 0) {
