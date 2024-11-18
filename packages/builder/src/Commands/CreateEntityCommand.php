@@ -6,7 +6,7 @@ namespace Moox\Builder\Commands;
 
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Entity\EntityCreator;
-use Moox\Builder\Services\Preview\PreviewManager;
+use Moox\Builder\Services\Preview\PreviewTableManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -20,7 +20,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
     public function __construct(
         private readonly EntityCreator $entityCreator,
-        private readonly PreviewManager $previewManager,
+        private readonly PreviewTableManager $previewTableManager,
     ) {
         parent::__construct();
     }
@@ -30,33 +30,20 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
-        $buildContext = $preview ? 'preview' : ($package ? 'package' : 'app');
 
         if ($presetName = $this->option('preset') ?? $this->choice('Choose a preset', PresetRegistry::getPresetNames())) {
             $context = $this->createContext($name, $package, $preview);
-            $context->setPresetName($presetName);
-
             $this->entityCreator->setContext($context);
-            $result = $this->entityCreator->createFromPreset($name, $buildContext, $presetName);
-        } else {
-            $this->error('A preset is required for entity creation');
+            $this->entityCreator->setBlocks(PresetRegistry::getPresetBlocks($presetName));
+            $this->entityCreator->execute();
 
-            return self::FAILURE;
+            $this->info("Entity {$name} created successfully in {$context->getContext()} context");
+
+            return self::SUCCESS;
         }
 
-        $entity = $result['entity'];
-        if (! $entity) {
-            $this->error("Failed to create entity {$name}");
+        $this->error('A preset is required for entity creation');
 
-            return self::FAILURE;
-        }
-
-        if ($preview) {
-            $this->previewManager->createPreviewTable($name, $result['blocks']);
-        }
-
-        $this->info('Entity '.$name.' '.($result['status'] === 'exists' ? 're' : '').'built successfully in '.$buildContext);
-
-        return self::SUCCESS;
+        return self::FAILURE;
     }
 }
