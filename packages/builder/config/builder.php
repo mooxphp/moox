@@ -828,7 +828,7 @@ return [
         'app' => [
             'base_path' => app_path(),
             'base_namespace' => 'App',
-            'classes' => [
+            'generators' => [
                 'model' => [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
@@ -873,7 +873,7 @@ return [
         'package' => [
             'base_path' => '$PackagePath',
             'base_namespace' => '$PackageNamespace',
-            'classes' => [
+            'generators' => [
                 'model' => [
                     'path' => '%BasePath%\src\Models',
                     'namespace' => '%BaseNamespace%\\Models',
@@ -918,7 +918,7 @@ return [
         'preview' => [
             'base_path' => app_path('Builder'),
             'base_namespace' => 'App\\Builder',
-            'classes' => [
+            'generators' => [
                 'model' => [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
@@ -937,16 +937,6 @@ return [
                     ],
                     'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
                 ],
-                // preview should not do migrations
-                // instead it should directly write to the database
-                // and bypass the migration system
-                /*
-                'migration' => [
-                    'path' => database_path('migrations'),
-                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
-                ],
-                */
                 'translation' => [
                     'path' => 'lang\previews',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',

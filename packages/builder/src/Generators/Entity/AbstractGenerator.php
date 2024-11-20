@@ -43,16 +43,13 @@ abstract class AbstractGenerator
 
     protected function getTemplate(): string
     {
-        $templates = $this->context->getTemplate($this->getGeneratorType());
-        $templatePath = $templates['path'] ?? null;
+        $template = $this->context->getConfig()['generators'][$this->getGeneratorType()]['template'] ?? null;
 
-        if (! $templatePath || ! file_exists($templatePath)) {
-            throw new RuntimeException(
-                "Template file for {$this->getGeneratorType()} not found at {$templatePath}"
-            );
+        if (! $template) {
+            throw new RuntimeException("Template configuration for {$this->getGeneratorType()} not found");
         }
 
-        return file_get_contents($templatePath);
+        return $template;
     }
 
     protected function formatUseStatements(): string

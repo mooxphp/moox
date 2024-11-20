@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Entity;
 
 use Moox\Builder\Services\File\FileManager;
+use RuntimeException;
 
 class EntityGenerator extends AbstractEntityService
 {
@@ -34,10 +35,24 @@ class EntityGenerator extends AbstractEntityService
     protected function initializeGenerators(): void
     {
         $contextConfig = $this->context->getConfig();
-        $classes = $contextConfig['classes'] ?? [];
+        $generators = $contextConfig['generators'] ?? [];
 
-        foreach ($classes as $class) {
-            $generator = new $class(
+        if (empty($generators)) {
+            throw new RuntimeException('No generators configured for context: '.$this->context->getContextType());
+        }
+
+        foreach ($generators as $generatorConfig) {
+            $generatorClass = $generatorConfig['generator'] ?? null;
+
+            if (! $generatorClass || ! is_string($generatorClass)) {
+                throw new RuntimeException('Generator class not specified in config');
+            }
+
+            if (! class_exists($generatorClass)) {
+                throw new RuntimeException("Generator class not found: {$generatorClass}");
+            }
+
+            $generator = new $generatorClass(
                 $this->context,
                 $this->fileManager,
                 $this->blocks

@@ -20,6 +20,9 @@ class ModelGenerator extends AbstractGenerator
     public function generate(): void
     {
         $template = $this->loadStub($this->getTemplate());
+        if (! $template) {
+            throw new \Exception('Failed to load template: '.$this->getTemplate());
+        }
 
         $variables = [
             'namespace' => $this->context->getNamespace('model'),

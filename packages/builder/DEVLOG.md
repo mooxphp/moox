@@ -1,29 +1,10 @@
-# Moox Builder Devlog
-
-This is the current state of the Builder:
-
--   Moox Builder is currently a GitHub Template Repository (will be removed) and now working as an installed package (will be the future)
--   The current state is in this branch: https://github.com/mooxphp/moox/tree/feature/tag
--   The `php artisan builder:create`command is working, tested with simple and published item yet
--   A Panel is available to Preview: https://moox.test/builder
--   There are 5 test entities in the package, that will be deleted including their config, when builder is able to generate them without errors
-    -   https://moox.test/moox/simple-items
-    -   https://moox.test/moox/publishable-items
-    -   https://moox.test/moox/full-items
-    -   https://moox.test/moox/simple-taxonomies
-    -   https://moox.test/moox/nested-taxonomies
-
-## Tasks
+# DEVLOG
 
 We work on these tasks in order from top to bottom:
 
-### Service Layer Refactoring
+## Command Refactoring
 
--   Finished, all services are 'green', as the command is not working yet, not tested
-
-### Command Refactoring
-
--   [ ] Refactor CreateCommand to use new services
+-   [ ] Iterate over errors until the command is working
 -   [ ] Fix empty files array in build table for first creation
 -   [ ] Fix generated Resource missing use statements (500 error)
 -   [ ] Fix regeneration after manual file deletion
@@ -31,7 +12,7 @@ We work on these tasks in order from top to bottom:
 -   [ ] Add --migration option to create command
 -   [ ] Refactor DeleteCommand to use new services
 
-### Abstract Block Refactoring
+## Abstract Block Refactoring
 
 The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
 
@@ -42,14 +23,14 @@ When refactoring the block system, we need also discuss the following points:
 -   [ ] We need to implement Sections ... see Chat on that
 -   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
 
-### Package Generation (ignore!)
+## Package Generation
 
 -   [ ] Implement PackageGenerator service
 -   [ ] Create PrepareAppForPackagesCommand
 -   [ ] Implement package entity activation system
 -   [ ] Add package publishing workflow
 
-### Other (ignore!)
+## Other
 
 -   [ ] Generate tests for all services
 -   [ ] Configurable FeatureSet

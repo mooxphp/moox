@@ -7,6 +7,7 @@ namespace Moox\Builder\Generators\Entity\Pages;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\AbstractGenerator;
 use Moox\Builder\Services\File\FileManager;
+use RuntimeException;
 
 abstract class AbstractPageGenerator extends AbstractGenerator
 {
@@ -66,5 +67,17 @@ abstract class AbstractPageGenerator extends AbstractGenerator
     protected function getGeneratorType(): string
     {
         return 'page_'.$this->getPageType();
+    }
+
+    protected function getTemplate(): string
+    {
+        $pageType = $this->getPageType();
+        $template = $this->context->getConfig()['generators']['resource']['page_templates'][$pageType] ?? null;
+
+        if (! $template) {
+            throw new RuntimeException("Template configuration for page_{$pageType} not found");
+        }
+
+        return $template;
     }
 }

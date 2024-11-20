@@ -63,7 +63,7 @@ class BuildContext
     public function getPath(string $type): string
     {
         $basePath = $this->getBasePath();
-        $path = $this->config['classes'][$type]['path'] ?? '';
+        $path = $this->config['generators'][$type]['path'] ?? '';
 
         if (empty($path)) {
             throw new RuntimeException("Path configuration for {$type} not found");
@@ -79,7 +79,7 @@ class BuildContext
     public function getNamespace(string $type): string
     {
         $baseNamespace = $this->getBaseNamespace();
-        $namespace = $this->config['classes'][$type]['namespace'] ?? '';
+        $namespace = $this->config['generators'][$type]['namespace'] ?? '';
 
         if (empty($namespace)) {
             throw new RuntimeException("Namespace configuration for {$type} not found");
@@ -92,15 +92,15 @@ class BuildContext
         );
     }
 
-    public function getTemplate(string $type): array
+    public function getTemplate(string $type): string
     {
-        $templates = $this->config['classes'][$type]['templates'] ?? null;
+        $template = $this->config['generators'][$type]['template'] ?? null;
 
-        if (! $templates) {
-            throw new RuntimeException("Template configuration for {$type} not found");
+        if (! $template) {
+            throw new RuntimeException("Template configuration for {$type} not found in config");
         }
 
-        return $templates;
+        return $template;
     }
 
     protected function getBasePath(): string
