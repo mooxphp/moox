@@ -22,5 +22,5 @@ abstract class ContextAwareService
         }
     }
 
-    abstract public function execute(): mixed;
+    abstract public function execute(): void;
 }
