@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Commands;
 
+use Illuminate\Support\Str;
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Build\BuildStateManager;
 use Moox\Builder\Services\Entity\EntityCreator;
@@ -15,7 +16,8 @@ class CreateEntityCommand extends AbstractBuilderCommand
         {name : The name of the entity}
         {--package= : Package namespace}
         {--preview : Generate in preview mode}
-        {--preset= : Preset to use}';
+        {--preset= : Preset to use}
+        {--plural= : Plural form of the entity name}';
 
     protected $description = 'Create a new entity';
 
@@ -31,6 +33,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $name = $this->argument('name');
         $package = $this->option('package');
         $preview = $this->option('preview');
+        $plural = $this->option('plural') ?? Str::plural($name);
 
         if (! $presetName = $this->option('preset')) {
             $presetName = $this->choice('Choose a preset', PresetRegistry::getPresetNames());
@@ -49,6 +52,11 @@ class CreateEntityCommand extends AbstractBuilderCommand
             $this->buildStateManager->setContext($context);
             $this->entityCreator->setContext($context);
             $this->entityCreator->setBlocks($blocks);
+            $this->entityCreator->setEntityData([
+                'singular' => $name,
+                'plural' => $plural,
+                'description' => "A {$name} entity generated with Moox Builder",
+            ]);
 
             if ($preview) {
                 // Let EntityCreator handle preview table creation

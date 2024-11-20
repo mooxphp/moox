@@ -11,6 +11,8 @@ use Moox\Builder\Services\Preview\PreviewTableManager;
 
 class EntityCreator extends AbstractEntityService
 {
+    protected array $entityData = [];
+
     public function __construct(
         private readonly EntityGenerator $entityGenerator,
         private readonly BuildManager $buildManager,
@@ -18,6 +20,11 @@ class EntityCreator extends AbstractEntityService
         private readonly PreviewTableManager $previewTableManager
     ) {
         parent::__construct();
+    }
+
+    public function setEntityData(array $data): void
+    {
+        $this->entityData = $data;
     }
 
     public function execute(): void
@@ -58,6 +65,9 @@ class EntityCreator extends AbstractEntityService
 
         return DB::table('builder_entities')->insertGetId([
             'singular' => $name,
+            'plural' => $this->entityData['plural'] ?? $name,
+            'description' => $this->entityData['description'] ?? null,
+            'preset' => $this->entityData['preset'] ?? 'simple-item',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

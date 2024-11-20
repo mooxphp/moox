@@ -19,6 +19,7 @@ We work on these tasks in order from top to bottom:
 -   [ ] Implement preview "migrations" using DB directly
 -   [ ] Add --migration option to create command
 -   [ ] Refactor DeleteCommand to use new services
+-   [x] Fix entity creation database error for missing plural field
 
 ## Abstract Block Refactoring
 
