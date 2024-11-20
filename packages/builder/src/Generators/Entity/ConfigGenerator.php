@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Moox\Builder\Contexts\BuildContext;
+use Moox\Builder\Services\File\FileManager;
+
 class ConfigGenerator extends AbstractGenerator
 {
     protected array $tabs = [];
@@ -11,6 +14,14 @@ class ConfigGenerator extends AbstractGenerator
     protected array $taxonomies = [];
 
     protected array $relations = [];
+
+    public function __construct(
+        BuildContext $context,
+        FileManager $fileManager,
+        array $blocks = []
+    ) {
+        parent::__construct($context, $fileManager, $blocks);
+    }
 
     public function generate(): void
     {
@@ -47,9 +58,9 @@ class ConfigGenerator extends AbstractGenerator
         $variables = [
             'Package' => $this->context->isPackage() ? explode('\\', $this->context->getBaseNamespace())[0] : 'app',
             'Entity' => $this->context->getEntityName(),
-            'Entities' => $this->context->getPluralModelName(),
+            'Entities' => $this->context->getPluralName(),
             'LowercaseEntity' => strtolower($this->context->getEntityName()),
-            'LowercaseEntities' => strtolower($this->context->getPluralModelName()),
+            'LowercaseEntities' => strtolower($this->context->getPluralName()),
             'tabs' => $this->generateTabsConfig(),
             'taxonomies' => $this->generateTaxonomiesConfig(),
             'relations' => $this->generateRelationsConfig(),

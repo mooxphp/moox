@@ -91,6 +91,8 @@ The service layer manages the generation workflow:
 
 -   `BuildManager`: Orchestrates the build lifecycle and state transitions
 -   `BuildRecorder`: Persists build data and manages build history
+-   `BuildStateManager`: Tracks and manages build states across contexts
+-   `VersionManager`: Handles version control for packages and builds
 
 **Entity Services**
 
@@ -810,6 +812,17 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 
 -   [Alf Drollinger](https://github.com/adrolli)
 -   [All Contributors](../../contributors)
+
+## Contributing
+
+We value every contribution. Moox is developed in the [Moox Monorepo](https://github.com/mooxphp/moox), that uses [All Contributors](https://allcontributors.org/) for managing contributions. Please refer to the Monorepo docs for more information.
+
+For Moox Builder, we have two dedicated files:
+
+-   [Guidelines](GUIDELINES.md), special coding guidelines for Moox Builder
+-   [Devlog](DEVLOG.md), the actual development log for Moox Builder
+
+See these files for details.
 
 ## License
 

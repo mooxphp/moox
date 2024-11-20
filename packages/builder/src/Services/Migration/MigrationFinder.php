@@ -5,47 +5,67 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Migration;
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\File;
+use Moox\Builder\Services\ContextAwareService;
+use Moox\Builder\Services\File\FileManager;
+use Moox\Builder\Traits\HandlesMigrationFiles;
 
-class MigrationFinder
+class MigrationFinder extends ContextAwareService
 {
+    use HandlesMigrationFiles;
+
+    protected array $migrations = [];
+
+    public function __construct(
+        private readonly FileManager $fileManager
+    ) {
+        parent::__construct();
+    }
+
+    public function execute(): void
+    {
+        $this->ensureContextIsSet();
+        $this->migrations = $this->fileManager->findMigrationFiles(
+            $this->context->getPath('migrations')
+        );
+    }
+
+    public function getMigrations(): array
+    {
+        return $this->migrations;
+    }
+
     public function findMigrationForTable(string $tableName): ?string
     {
-        $possiblePaths = [
-            database_path('migrations'),
-            base_path('packages/builder/database/migrations'),
-        ];
+        $pattern = str_replace(
+            $this->context->getTableName(),
+            $tableName,
+            $this->getMigrationPattern()
+        );
 
-        foreach ($possiblePaths as $path) {
-            $files = File::glob($path.'/*_create_'.$tableName.'_table.php');
-            if (! empty($files)) {
-                return $files[0];
-            }
+        $files = glob($pattern);
+
+        return $files ? end($files) : null;
+    }
+
+    public function extractBlueprintFromFile(string $path): ?Blueprint
+    {
+        if (! file_exists($path)) {
+            return null;
+        }
+
+        $content = file_get_contents($path);
+        if (preg_match('/Schema::create\([\'"](.+?)[\'"]\s*,\s*function\s*\(Blueprint\s+\$table\)\s*{(.+?)}\);/s', $content, $matches)) {
+            return $this->createBlueprintFromContent($matches[1], $matches[2]);
         }
 
         return null;
     }
 
-    public function extractBlueprintFromFile(string $filePath): ?Blueprint
+    protected function createBlueprintFromContent(string $table, string $content): Blueprint
     {
-        $content = File::get($filePath);
+        $blueprint = new Blueprint($table);
+        eval('$blueprint->'.trim($content).';');
 
-        if (preg_match('/Schema::create\([\'"](.+?)[\'"]\s*,\s*function\s*\(Blueprint\s+\$table\)\s*{(.+?)}\);/s', $content, $matches)) {
-            $blueprint = new Blueprint($matches[1]);
-
-            $tempFile = tempnam(sys_get_temp_dir(), 'migration_');
-            file_put_contents($tempFile, '<?php
-                $table = new \Illuminate\Database\Schema\Blueprint("'.$matches[1].'");
-                '.$matches[2].'
-                return $table;
-            ');
-
-            $blueprint = require $tempFile;
-            unlink($tempFile);
-
-            return $blueprint;
-        }
-
-        return null;
+        return $blueprint;
     }
 }

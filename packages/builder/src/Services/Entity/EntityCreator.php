@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Moox\Builder\Services\Build\BuildManager;
 use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Services\Preview\PreviewTableManager;
-use RuntimeException;
 
 class EntityCreator extends AbstractEntityService
 {
@@ -17,18 +16,18 @@ class EntityCreator extends AbstractEntityService
         private readonly BuildManager $buildManager,
         private readonly FileManager $fileManager,
         private readonly PreviewTableManager $previewTableManager
-    ) {}
+    ) {
+        parent::__construct();
+    }
 
     public function execute(): void
     {
-        if (! isset($this->context)) {
-            throw new RuntimeException('Context not set');
-        }
-
+        $this->ensureContextIsSet();
         $entityId = $this->createOrUpdateEntity();
-        $this->fileManager->cleanupBeforeRegeneration($entityId, $this->context->getContext());
+        $contextType = $this->context->getContextType();
+        $this->fileManager->cleanupBeforeRegeneration($entityId, $contextType);
 
-        if ($this->context->getContext() === 'preview') {
+        if ($contextType === 'preview') {
             $this->previewTableManager->createTable($this->context->getEntityName(), $this->blocks);
         }
 
@@ -36,13 +35,11 @@ class EntityCreator extends AbstractEntityService
         $this->entityGenerator->setBlocks($this->blocks);
         $this->entityGenerator->execute();
 
-        $generatedFiles = $this->entityGenerator->getGeneratedFiles();
-
         $this->buildManager->recordBuild(
             $entityId,
-            $this->context->getContext(),
+            $contextType,
             $this->blocks,
-            $generatedFiles
+            $this->entityGenerator->getGeneratedFiles()
         );
     }
 

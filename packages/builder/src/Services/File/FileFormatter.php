@@ -15,7 +15,7 @@ class FileFormatter
         }
 
         $fileList = implode(' ', array_map(
-            fn ($path) => escapeshellarg($path),
+            fn ($path) => escapeshellarg(str_replace('\\', '/', $path)),
             array_filter($paths)
         ));
 

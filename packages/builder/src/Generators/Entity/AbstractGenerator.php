@@ -19,11 +19,17 @@ abstract class AbstractGenerator
 
     protected array $generatedFiles = [];
 
+    protected string $entityName;
+
+    protected string $pluralName;
+
     public function __construct(
         protected readonly BuildContext $context,
         protected readonly FileManager $fileManager,
         array $blocks = []
     ) {
+        $this->entityName = $this->context->getEntityName();
+        $this->pluralName = $this->context->getPluralName();
         $resolvedBlocks = $this->resolveBlocks($blocks);
         $this->processedBlocks = array_map(
             fn ($block) => $block->setContext($this->context),
@@ -37,7 +43,16 @@ abstract class AbstractGenerator
 
     protected function getTemplate(): string
     {
-        return $this->context->getTemplate($this->getGeneratorType());
+        $templates = $this->context->getTemplate($this->getGeneratorType());
+        $templatePath = $templates['path'] ?? null;
+
+        if (! $templatePath || ! file_exists($templatePath)) {
+            throw new RuntimeException(
+                "Template file for {$this->getGeneratorType()} not found at {$templatePath}"
+            );
+        }
+
+        return file_get_contents($templatePath);
     }
 
     protected function formatUseStatements(): string
@@ -131,6 +146,7 @@ abstract class AbstractGenerator
 
     protected function writeFile(string $path, string $content): void
     {
+        $path = str_replace('\\', '/', $path);
         $this->generatedFiles[$this->getGeneratorType()] = [
             'path' => $path,
             'content' => $content,

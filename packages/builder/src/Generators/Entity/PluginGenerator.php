@@ -4,8 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Moox\Builder\Contexts\BuildContext;
+use Moox\Builder\Services\File\FileManager;
+
 class PluginGenerator extends AbstractGenerator
 {
+    public function __construct(
+        BuildContext $context,
+        FileManager $fileManager,
+        array $blocks = []
+    ) {
+        parent::__construct($context, $fileManager, $blocks);
+    }
+
     public function generate(): void
     {
         $template = $this->loadStub($this->getTemplate());

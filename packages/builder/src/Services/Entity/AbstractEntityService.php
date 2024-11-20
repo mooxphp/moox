@@ -5,32 +5,11 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Support\Facades\DB;
-use Moox\Builder\Contexts\BuildContext;
+use Moox\Builder\Services\ContextAwareService;
 use RuntimeException;
 
-abstract class AbstractEntityService
+abstract class AbstractEntityService extends ContextAwareService
 {
-    protected BuildContext $context;
-
-    protected array $blocks = [];
-
-    public function setContext(BuildContext $context): void
-    {
-        $this->context = $context;
-    }
-
-    public function setBlocks(array $blocks): void
-    {
-        $this->blocks = $blocks;
-    }
-
-    protected function validateContext(string $context): void
-    {
-        if (! in_array($context, ['preview', 'app', 'package'])) {
-            throw new RuntimeException('Invalid build context');
-        }
-    }
-
     protected function validateEntityExists(int $entityId): void
     {
         if (! DB::table('builder_entities')->where('id', $entityId)->exists()) {
@@ -49,6 +28,4 @@ abstract class AbstractEntityService
             throw new RuntimeException("No active build found for entity {$entityId} in context {$buildContext}");
         }
     }
-
-    abstract public function execute(): void;
 }

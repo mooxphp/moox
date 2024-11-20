@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Moox\Builder\Commands;
 
 use Moox\Builder\PresetRegistry;
+use Moox\Builder\Services\Build\BuildStateManager;
 use Moox\Builder\Services\Entity\EntityCreator;
+use Moox\Builder\Services\Preview\PreviewTableManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -18,7 +20,8 @@ class CreateEntityCommand extends AbstractBuilderCommand
     protected $description = 'Create a new entity';
 
     public function __construct(
-        private readonly EntityCreator $entityCreator
+        private readonly EntityCreator $entityCreator,
+        private readonly BuildStateManager $buildStateManager,
     ) {
         parent::__construct();
     }
@@ -29,19 +32,38 @@ class CreateEntityCommand extends AbstractBuilderCommand
         $package = $this->option('package');
         $preview = $this->option('preview');
 
-        if ($presetName = $this->option('preset') ?? $this->choice('Choose a preset', PresetRegistry::getPresetNames())) {
-            $context = $this->createContext($name, $package, $preview);
-            $this->entityCreator->setContext($context);
-            $this->entityCreator->setBlocks(PresetRegistry::getPresetBlocks($presetName));
-            $this->entityCreator->execute();
-
-            $this->info("Entity {$name} created successfully in {$context->getContext()} context");
-
-            return self::SUCCESS;
+        if (! $presetName = $this->option('preset')) {
+            $presetName = $this->choice('Choose a preset', PresetRegistry::getPresetNames());
         }
 
-        $this->error('A preset is required for entity creation');
+        if (! $presetName) {
+            $this->error('A preset is required for entity creation');
 
-        return self::FAILURE;
+            return self::FAILURE;
+        }
+
+        try {
+            $context = $this->createContext($name, $package, $preview);
+            $blocks = PresetRegistry::getPresetBlocks($presetName);
+
+            $this->buildStateManager->setContext($context);
+            $this->entityCreator->setContext($context);
+            $this->entityCreator->setBlocks($blocks);
+
+            if ($preview) {
+                // Let EntityCreator handle preview table creation
+                // It already has PreviewTableManager injected
+            }
+
+            $this->entityCreator->execute();
+
+            $this->info("Entity {$name} created successfully in {$context->getContextType()} context");
+
+            return self::SUCCESS;
+        } catch (\Exception $e) {
+            $this->error("Failed to create entity: {$e->getMessage()}");
+
+            return self::FAILURE;
+        }
     }
 }

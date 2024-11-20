@@ -4,40 +4,40 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Contexts;
 
-use Illuminate\Support\Str;
+use Illuminate\Console\Command;
 use RuntimeException;
 
 class BuildContext
 {
-    public function __construct(
-        private readonly string $context,
-        private readonly string $entityName,
-        private readonly array $config = []
-    ) {}
+    protected string $contextType;
 
-    public function getContext(): string
-    {
-        return $this->context;
+    protected array $config;
+
+    protected array $blocks;
+
+    protected string $entityName;
+
+    protected string $pluralName;
+
+    protected ?Command $command = null;
+
+    public function __construct(
+        string $contextType,
+        array $config,
+        array $blocks = [],
+        string $entityName = '',
+        ?string $pluralName = null
+    ) {
+        $this->contextType = $contextType;
+        $this->config = $config;
+        $this->blocks = $blocks;
+        $this->entityName = $entityName;
+        $this->pluralName = $pluralName ?? str($entityName)->plural()->toString();
     }
 
     public function getContextType(): string
     {
-        return $this->context;
-    }
-
-    public function getEntityName(): string
-    {
-        return $this->entityName;
-    }
-
-    public function getPluralModelName(): string
-    {
-        return Str::plural($this->entityName);
-    }
-
-    public function getTableName(): string
-    {
-        return Str::snake(Str::plural($this->entityName));
+        return $this->contextType;
     }
 
     public function getConfig(): array
@@ -45,28 +45,101 @@ class BuildContext
         return $this->config;
     }
 
-    public function getTemplate(string $type): string
+    public function getBlocks(): array
     {
-        return $this->config['classes'][$type]['template'] ?? throw new RuntimeException("Template not found for type: {$type}");
+        return $this->blocks;
+    }
+
+    public function getEntityName(): string
+    {
+        return $this->entityName;
+    }
+
+    public function getPluralName(): string
+    {
+        return $this->pluralName;
     }
 
     public function getPath(string $type): string
     {
-        return $this->config['classes'][$type]['path'] ?? throw new RuntimeException("Path not found for type: {$type}");
+        $basePath = $this->getBasePath();
+        $path = $this->config['classes'][$type]['path'] ?? '';
+
+        if (empty($path)) {
+            throw new RuntimeException("Path configuration for {$type} not found");
+        }
+
+        return str_replace(
+            ['%BasePath%', '\\'],
+            [$basePath, '/'],
+            $path
+        );
     }
 
     public function getNamespace(string $type): string
     {
-        return $this->config['classes'][$type]['namespace'] ?? throw new RuntimeException("Namespace not found for type: {$type}");
+        $baseNamespace = $this->getBaseNamespace();
+        $namespace = $this->config['classes'][$type]['namespace'] ?? '';
+
+        if (empty($namespace)) {
+            throw new RuntimeException("Namespace configuration for {$type} not found");
+        }
+
+        return str_replace(
+            '%BaseNamespace%',
+            $baseNamespace,
+            $namespace
+        );
     }
 
-    public function getPageTemplate(string $type, string $pageType): string
+    public function getTemplate(string $type): array
     {
-        return $this->config['classes'][$type]['page_templates'][$pageType] ?? throw new RuntimeException("Page template not found for type: {$type} and page: {$pageType}");
+        $templates = $this->config['classes'][$type]['templates'] ?? null;
+
+        if (! $templates) {
+            throw new RuntimeException("Template configuration for {$type} not found");
+        }
+
+        return $templates;
     }
 
-    public function getCommand(): ?object
+    protected function getBasePath(): string
     {
-        return $this->config['command'] ?? null;
+        return match ($this->contextType) {
+            'preview' => app_path('Builder'),
+            'package' => $this->config['package']['path'] ?? '',
+            default => base_path()
+        };
+    }
+
+    public function getBaseNamespace(): string
+    {
+        return match ($this->contextType) {
+            'preview' => 'App\\Builder',
+            'package' => $this->config['package']['namespace'] ?? '',
+            default => 'App'
+        };
+    }
+
+    public function setCommand(Command $command): self
+    {
+        $this->command = $command;
+
+        return $this;
+    }
+
+    public function getCommand(): ?Command
+    {
+        return $this->command;
+    }
+
+    public function getTableName(): string
+    {
+        return str($this->pluralName)->snake()->toString();
+    }
+
+    public function isPackage(): bool
+    {
+        return $this->contextType === 'package';
     }
 }

@@ -9,17 +9,21 @@ use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
 use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ListPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ViewPageGenerator;
+use Moox\Builder\Services\File\FileManager;
 
 class ResourceGenerator extends AbstractGenerator
 {
-    public function __construct(BuildContext $context, array $blocks = [])
-    {
-        parent::__construct($context, $blocks);
+    public function __construct(
+        BuildContext $context,
+        FileManager $fileManager,
+        array $blocks = []
+    ) {
+        parent::__construct($context, $fileManager, $blocks);
     }
 
     public function generate(): void
     {
-        $template = $this->loadStub($this->getTemplate());
+        $template = $this->getTemplate();
         $modelNamespace = $this->context->getNamespace('model');
         $modelClass = $this->context->getEntityName();
 
@@ -28,7 +32,7 @@ class ResourceGenerator extends AbstractGenerator
             'class_name' => $modelClass,
             'model' => $modelClass,
             'model_namespace' => $modelNamespace,
-            'model_plural' => $this->context->getPluralModelName(),
+            'model_plural' => $this->context->getPluralName(),
             'navigation_icon' => $this->getNavigationIcon(),
             'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),
@@ -55,14 +59,19 @@ class ResourceGenerator extends AbstractGenerator
 
     protected function generateResourcePages(): void
     {
-        $generators = [
-            new ListPageGenerator($this->context, $this->getBlocks()),
-            new CreatePageGenerator($this->context, $this->getBlocks()),
-            new EditPageGenerator($this->context, $this->getBlocks()),
-            new ViewPageGenerator($this->context, $this->getBlocks()),
+        $pageGenerators = [
+            ListPageGenerator::class,
+            CreatePageGenerator::class,
+            EditPageGenerator::class,
+            ViewPageGenerator::class,
         ];
 
-        foreach ($generators as $generator) {
+        foreach ($pageGenerators as $generatorClass) {
+            $generator = new $generatorClass(
+                $this->context,
+                $this->fileManager,
+                $this->getBlocks()
+            );
             $generator->generate();
         }
     }

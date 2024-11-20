@@ -9,22 +9,23 @@ use InvalidArgumentException;
 class ContextFactory
 {
     public static function create(
-        string $context,
+        string $contextType,
         string $entityName,
         array $config = []
     ): BuildContext {
         $contexts = config('builder.contexts', []);
 
-        if (! isset($contexts[$context])) {
-            throw new InvalidArgumentException("Invalid context type: {$context}");
+        if (! isset($contexts[$contextType])) {
+            throw new InvalidArgumentException("Invalid context type: {$contextType}");
         }
 
-        $contextConfig = array_merge($contexts[$context], $config);
+        $contextConfig = array_merge($contexts[$contextType], $config);
 
         return new BuildContext(
-            $context,
-            $entityName,
-            $contextConfig
+            $contextType,
+            $contextConfig,
+            [],
+            $entityName
         );
     }
 }

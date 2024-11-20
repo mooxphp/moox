@@ -14,7 +14,6 @@ use Moox\Builder\Services\Build\BuildRecorder;
 use Moox\Builder\Services\Entity\EntityCreator;
 use Moox\Builder\Services\Entity\EntityGenerator;
 use Moox\Builder\Services\Entity\EntityRebuilder;
-use Moox\Builder\Services\File\FileCleanup;
 use Moox\Builder\Services\File\FileFormatter;
 use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Services\File\FileOperations;
@@ -43,19 +42,19 @@ class BuilderServiceProvider extends PackageServiceProvider
         $this->app->singleton(BlockReconstructor::class);
         $this->app->singleton(FileOperations::class);
         $this->app->singleton(FileFormatter::class);
-        $this->app->singleton(FileCleanup::class);
 
         $this->app->singleton(EntityRebuilder::class, function ($app) {
             return new EntityRebuilder(
-                $app->make(BuildManager::class)
+                $app->make(EntityCreator::class),
+                $app->make(BuildManager::class),
+                $app->make(FileManager::class)
             );
         });
 
         $this->app->singleton(FileManager::class, function ($app) {
             return new FileManager(
                 $app->make(FileOperations::class),
-                $app->make(FileFormatter::class),
-                $app->make(FileCleanup::class)
+                $app->make(FileFormatter::class)
             );
         });
     }
@@ -68,6 +67,8 @@ class BuilderServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
+
+                // TODO: delete when builder is able to generate
                 'create_items_table',
                 'create_full_items_table',
                 'create_simple_items_table',
@@ -75,6 +76,13 @@ class BuilderServiceProvider extends PackageServiceProvider
                 'create_nested_taxonomies_table',
                 'create_simple_taxonomyables_table',
                 'create_nested_taxonomyables_table',
+
+                'create_builder_entities_table',
+                'create_builder_entity_blocks_table',
+                'create_builder_entity_builds_table',
+                'create_builder_entity_tabs_table',
+                'create_builder_package_versions_table',
+                'create_builder_packages_table',
             ])
             ->hasCommands([
                 InstallCommand::class,
