@@ -25,6 +25,7 @@ class EntityCreator extends AbstractEntityService
     public function setBlocks(array $blocks): void
     {
         $this->blocks = $blocks;
+        $this->entityGenerator->setBlocks($blocks);
     }
 
     public function setEntityData(array $data): void
@@ -49,17 +50,15 @@ class EntityCreator extends AbstractEntityService
             $this->previewTableManager->createTable($this->context->getEntityName(), $this->blocks);
         }
 
-        $entityGenerator = new EntityGenerator($this->fileManager, $this->blocks);
-        $entityGenerator->setContext($this->context);
-        $generatedData = $entityGenerator->execute();
+        $this->entityGenerator->setContext($this->context);
+        $generatedData = $this->entityGenerator->execute();
 
         $this->buildManager->setContext($this->context);
         $this->buildManager->recordBuild(
             $entityId,
             $contextType,
             $this->blocks,
-            $generatedData['files'] ?? [],
-            $generatedData['data'] ?? []
+            $generatedData['files'] ?? []
         );
     }
 

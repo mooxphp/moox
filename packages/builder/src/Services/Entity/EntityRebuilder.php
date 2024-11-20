@@ -29,6 +29,7 @@ class EntityRebuilder extends AbstractEntityService
     public function setBlocks(array $blocks): void
     {
         $this->blocks = $blocks;
+        $this->entityGenerator->setBlocks($blocks);
     }
 
     public function execute(): void
@@ -39,12 +40,11 @@ class EntityRebuilder extends AbstractEntityService
         }
 
         $contextType = $this->context->getContextType();
-        $this->buildManager->validateContext($contextType);
+        $this->buildManager->setContext($this->context);
         $this->fileManager->deleteFiles($this->entityId, $contextType);
 
-        $entityGenerator = new EntityGenerator($this->fileManager, $this->blocks);
-        $entityGenerator->setContext($this->context);
-        $generatedData = $entityGenerator->execute();
+        $this->entityGenerator->setContext($this->context);
+        $generatedData = $this->entityGenerator->execute();
 
         $this->buildManager->recordBuild(
             $this->entityId,
