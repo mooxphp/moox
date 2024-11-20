@@ -6,18 +6,27 @@ namespace Moox\Builder\Services\Build;
 
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Services\Block\BlockReconstructor;
+use Moox\Builder\Services\ContextAwareService;
 use RuntimeException;
 
-class BuildManager
+class BuildManager extends ContextAwareService
 {
     public function __construct(
         private readonly BuildRecorder $buildRecorder,
         private readonly BlockReconstructor $blockReconstructor,
         private readonly BuildStateManager $buildStateManager
-    ) {}
+    ) {
+        parent::__construct();
+    }
+
+    public function execute(): void
+    {
+        $this->ensureContextIsSet();
+    }
 
     public function recordBuild(int $entityId, string $buildContext, array $blocks, array $files): void
     {
+        $this->ensureContextIsSet();
         $this->validateContext($buildContext);
         $this->validateEntityExists($entityId);
         $this->validateFiles($files);
@@ -28,6 +37,9 @@ class BuildManager
 
         $this->deactivateBuildsForContext($entityId, $buildContext);
         $this->buildRecorder->record($entityId, $buildContext, $blocks, $files);
+
+        $this->buildStateManager->setContext($this->context);
+        $this->buildStateManager->execute();
         $this->buildStateManager->updateState($files, $blocks);
     }
 

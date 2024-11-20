@@ -35,6 +35,8 @@ class EntityCreator extends AbstractEntityService
         $this->entityGenerator->setBlocks($this->blocks);
         $this->entityGenerator->execute();
 
+        $this->buildManager->setContext($this->context);
+        $this->buildManager->execute();
         $this->buildManager->recordBuild(
             $entityId,
             $contextType,
