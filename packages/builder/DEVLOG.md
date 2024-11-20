@@ -2,6 +2,44 @@
 
 We work on these tasks in order from top to bottom:
 
+## Service Refactoring
+
+EntityGenerator Refactoring
+
+-   [x] Remove formatGeneratedFiles from AbstractGenerator
+-   [x] Fix file data structure in AbstractGenerator
+-   [x] Fix handleGeneratedFiles in EntityGenerator
+-   [x] Fix broken generators
+    -   [x] ResourceGenerator: Add proper type handling
+    -   [x] ModelGenerator: Ensure file structure compliance
+    -   [x] MigrationGenerator: Add type validation
+-   [x] Standardize file data structure across services
+    -   [x] Define consistent structure between Generator and BuildManager
+    -   [x] Update BuildRecorder to handle typed file structure
+    -   [x] Add file structure validation in BuildManager
+    -   [x] Ensure FileManager validates structure
+
+FileManager Standardization
+
+-   [x] Define consistent file data structure (array with path => content)
+-   [x] Update FileManager methods to handle single data structure
+-   [x] Add validation for file paths and content
+-   [x] Implement proper error handling
+
+Build Manager Integration
+
+-   [x] Add file structure validation
+-   [x] Implement proper state transitions
+-   [x] Connect BuildRecorder for persistence
+-   [x] Add BuildStateManager integration
+
+Data Structure Standardization
+
+-   [x] Define standard file collection format
+-   [x] Update all generators to use this format
+-   [x] Update FileManager to expect this format
+-   [x] Add type validation
+
 ## Command Refactoring
 
 -   [ ] Iterate over errors until the command is working

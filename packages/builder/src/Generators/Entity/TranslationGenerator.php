@@ -32,7 +32,6 @@ class TranslationGenerator extends AbstractGenerator
         $path = $this->getTranslationPath();
 
         $this->writeFile($path, $content);
-        $this->formatGeneratedFiles();
     }
 
     protected function getTranslationPath(): string

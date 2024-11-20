@@ -54,7 +54,6 @@ class ResourceGenerator extends AbstractGenerator
             $content
         );
         $this->generateResourcePages();
-        $this->formatGeneratedFiles();
     }
 
     protected function generateResourcePages(): void

@@ -144,10 +144,10 @@ abstract class AbstractGenerator
     protected function writeFile(string $path, string $content): void
     {
         $path = str_replace('\\', '/', $path);
-        $this->generatedFiles[$this->getGeneratorType()] = [
-            'path' => $path,
-            'content' => $content,
-        ];
+        if (! isset($this->generatedFiles[$this->getGeneratorType()])) {
+            $this->generatedFiles[$this->getGeneratorType()] = [];
+        }
+        $this->generatedFiles[$this->getGeneratorType()][$path] = $content;
     }
 
     protected function getBlocks(): array
@@ -169,12 +169,5 @@ abstract class AbstractGenerator
     public function getGeneratedFiles(): array
     {
         return $this->generatedFiles;
-    }
-
-    protected function formatGeneratedFiles(): void
-    {
-        if (! empty($this->generatedFiles)) {
-            $this->fileManager->formatFiles($this->generatedFiles);
-        }
     }
 }

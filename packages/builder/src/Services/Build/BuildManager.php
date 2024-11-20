@@ -12,13 +12,15 @@ class BuildManager
 {
     public function __construct(
         private readonly BuildRecorder $buildRecorder,
-        private readonly BlockReconstructor $blockReconstructor
+        private readonly BlockReconstructor $blockReconstructor,
+        private readonly BuildStateManager $buildStateManager
     ) {}
 
     public function recordBuild(int $entityId, string $buildContext, array $blocks, array $files): void
     {
         $this->validateContext($buildContext);
         $this->validateEntityExists($entityId);
+        $this->validateFiles($files);
 
         if ($buildContext !== 'preview' && $this->hasConflictingProductionBuild($entityId, $buildContext)) {
             throw new RuntimeException('Entity already has an active build in a different production context');
@@ -26,6 +28,7 @@ class BuildManager
 
         $this->deactivateBuildsForContext($entityId, $buildContext);
         $this->buildRecorder->record($entityId, $buildContext, $blocks, $files);
+        $this->buildStateManager->updateState($files, $blocks);
     }
 
     public function reconstructFromLatest(int $entityId, ?string $buildContext = null): array
@@ -77,5 +80,26 @@ class BuildManager
             ->where('entity_id', $entityId)
             ->where('build_context', $buildContext)
             ->update(['is_active' => false]);
+    }
+
+    protected function validateFiles(array $files): void
+    {
+        if (empty($files)) {
+            throw new RuntimeException('No files provided for build recording');
+        }
+
+        foreach ($files as $type => $typeFiles) {
+            if (! is_array($typeFiles)) {
+                throw new RuntimeException("Invalid file structure for type: {$type}");
+            }
+            foreach ($typeFiles as $path => $content) {
+                if (! is_string($path)) {
+                    throw new RuntimeException("Invalid path in type {$type}");
+                }
+                if (! is_string($content)) {
+                    throw new RuntimeException("Invalid content for path {$path} in type {$type}");
+                }
+            }
+        }
     }
 }

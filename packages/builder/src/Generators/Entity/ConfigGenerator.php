@@ -31,7 +31,6 @@ class ConfigGenerator extends AbstractGenerator
         $configPath = $this->getConfigPath();
 
         $this->writeFile($configPath, $configContent);
-        $this->formatGeneratedFiles();
     }
 
     protected function collectFeatures(): void

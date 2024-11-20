@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Build;
 
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class BuildRecorder
 {
@@ -14,6 +15,7 @@ class BuildRecorder
             throw new \InvalidArgumentException('buildContext must be a string, got: '.gettype($buildContext));
         }
 
+        $this->validateFileStructure($files);
         $blockData = $this->serializeBlocks($blocks);
 
         DB::table('builder_entity_builds')
@@ -38,10 +40,24 @@ class BuildRecorder
                 'type' => get_class($block),
                 'options' => $block->getOptions(),
                 'migrations' => $block->getMigrations(),
-                // TODO: could be removed, but not sure if we need it again
-                // 'useStatements' => $block->getUseStatements(),
-                // ... other block data?
             ];
         }, $blocks);
+    }
+
+    protected function validateFileStructure(array $files): void
+    {
+        foreach ($files as $type => $typeFiles) {
+            if (! is_array($typeFiles)) {
+                throw new RuntimeException("Invalid file structure for type: {$type}");
+            }
+            foreach ($typeFiles as $path => $content) {
+                if (! is_string($path)) {
+                    throw new RuntimeException("Invalid path in type {$type}");
+                }
+                if (! is_string($content)) {
+                    throw new RuntimeException("Invalid content for path {$path} in type {$type}");
+                }
+            }
+        }
     }
 }

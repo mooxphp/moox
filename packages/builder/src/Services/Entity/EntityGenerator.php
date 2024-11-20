@@ -71,13 +71,29 @@ class EntityGenerator extends AbstractEntityService
 
     protected function handleGeneratedFiles(): void
     {
-        if (! empty($this->generatedFiles)) {
-            $this->fileManager->writeAndFormatFiles($this->generatedFiles);
+        if (empty($this->generatedFiles)) {
+            return;
+        }
+
+        $files = [];
+        foreach ($this->generatedFiles as $type => $typeFiles) {
+            foreach ($typeFiles as $path => $content) {
+                $files[$path] = $content;
+            }
+        }
+
+        if (! empty($files)) {
+            $this->fileManager->writeAndFormatFiles($files);
         }
     }
 
     protected function mergeGeneratedFiles(array $files): void
     {
-        $this->generatedFiles = array_merge($this->generatedFiles, $files);
+        foreach ($files as $type => $typeFiles) {
+            if (! isset($this->generatedFiles[$type])) {
+                $this->generatedFiles[$type] = [];
+            }
+            $this->generatedFiles[$type] = array_merge($this->generatedFiles[$type], $typeFiles);
+        }
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\File;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
 
@@ -44,10 +45,15 @@ class FileManager
 
     public function writeAndFormatFiles(array $files): void
     {
-        foreach ($files as $path => $content) {
-            $this->fileOperations->writeFile($path, $content);
+        try {
+            $this->validateFiles($files);
+            foreach ($files as $path => $content) {
+                $this->ensureDirectoryExists(dirname($path));
+                $this->writeFile($path, $content);
+            }
+        } catch (\Exception $e) {
+            throw new RuntimeException("File operation failed: {$e->getMessage()}", 0, $e);
         }
-        $this->fileFormatter->formatFiles(array_keys($files));
     }
 
     public function formatFiles(array $files): void
@@ -55,7 +61,13 @@ class FileManager
         if (empty($files)) {
             return;
         }
-        $paths = array_map(fn ($file) => $file['path'], $files);
+
+        if (isset($files[0])) {
+            $paths = $files;
+        } else {
+            $paths = array_keys($files);
+        }
+
         $this->fileFormatter->formatFiles($paths);
     }
 
@@ -89,6 +101,44 @@ class FileManager
         if (is_dir($path) && count(scandir($path)) === 2) {
             rmdir($path);
             $this->removeEmptyDirectories(dirname($path));
+        }
+    }
+
+    protected function ensureDirectoryExists(string $directory): void
+    {
+        if (! File::exists($directory)) {
+            if (! File::makeDirectory($directory, 0755, true)) {
+                throw new RuntimeException("Failed to create directory: {$directory}");
+            }
+        }
+    }
+
+    protected function writeFile(string $path, string $content): void
+    {
+        if (! File::put($path, $content)) {
+            throw new RuntimeException("Failed to write file: {$path}");
+        }
+    }
+
+    protected function validateFiles(array $files): void
+    {
+        if (empty($files)) {
+            throw new RuntimeException('No files provided for operation');
+        }
+
+        foreach ($files as $path => $content) {
+            if (! is_string($path)) {
+                throw new RuntimeException('File path must be a string');
+            }
+            if (! is_string($content)) {
+                throw new RuntimeException('File content must be a string');
+            }
+            if (empty(trim($path))) {
+                throw new RuntimeException('File path cannot be empty');
+            }
+            if (File::exists($path) && ! is_writable($path)) {
+                throw new RuntimeException("File not writable: {$path}");
+            }
         }
     }
 }
