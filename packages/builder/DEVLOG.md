@@ -6,11 +6,14 @@ We work on these tasks in order from top to bottom:
 
 -   [x] Fix BuildStateManager context initialization
 -   [x] Make BuildManager context-aware
--   [ ] Iterate over errors until the command is working
+-   [x] Standardize build recording process
+-   [x] Implement proper error handling
+-   [x] Align database schema with service layer
+-   [x] Complete service architecture documentation
 
 ## Command Refactoring
 
--   [ ] Fix empty files array in build table for first creation
+-   [ ] Fix the command, that fails to generate all files properly
 -   [ ] Fix generated Resource missing use statements (500 error)
 -   [ ] Fix regeneration after manual file deletion
 -   [ ] Implement preview "migrations" using DB directly

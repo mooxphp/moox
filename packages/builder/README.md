@@ -68,6 +68,13 @@ Moox Builder follows strict development guidelines to ensure high-quality, maint
 -   No assumed signatures
 -   Validated inputs
 
+5. All services follow these principles:
+
+-   Type-safe implementations
+-   Context awareness where needed
+-   Clear responsibility boundaries
+-   Proper error handling
+
 ### Compatibility
 
 -   Laravel 11
@@ -190,6 +197,33 @@ Types are currently only partly implemented and only used for the EntityImporter
 -   Single active context
 -   Migration generation
 -   Clean file placement
+
+### Build Process Architecture
+
+The build process follows a strict service hierarchy:
+
+-   **BuildManager**: Orchestrates the build lifecycle
+
+    -   Validates context and entity existence
+    -   Manages build state transitions
+    -   Coordinates between services
+
+-   **BuildRecorder**: Handles build persistence
+
+    -   Records build data and files
+    -   Manages build history
+    -   Ensures data integrity
+
+-   **BuildStateManager**: Manages build state
+
+    -   Tracks current build state
+    -   Handles context-specific state
+    -   Provides state validation
+
+-   **EntityGenerator**: Generates entity files
+    -   Coordinates file generation
+    -   Manages generator pipeline
+    -   Ensures type safety
 
 ## Usage
 
