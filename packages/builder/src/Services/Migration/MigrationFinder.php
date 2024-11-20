@@ -17,9 +17,7 @@ class MigrationFinder extends ContextAwareService
 
     public function __construct(
         private readonly FileManager $fileManager
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     public function execute(): void
     {

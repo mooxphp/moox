@@ -12,18 +12,23 @@ class EntityRebuilder extends AbstractEntityService
 {
     protected int $entityId;
 
+    protected array $blocks = [];
+
     public function __construct(
         private readonly FileManager $fileManager,
         private readonly BuildManager $buildManager,
         private readonly EntityGenerator $entityGenerator
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     public function setEntityId(int $entityId): void
     {
         $this->entityId = $entityId;
         $this->validateEntityExists($entityId);
+    }
+
+    public function setBlocks(array $blocks): void
+    {
+        $this->blocks = $blocks;
     }
 
     public function execute(): void
@@ -34,18 +39,18 @@ class EntityRebuilder extends AbstractEntityService
         }
 
         $contextType = $this->context->getContextType();
-        $this->validateContext($contextType);
+        $this->buildManager->validateContext($contextType);
         $this->fileManager->deleteFiles($this->entityId, $contextType);
 
-        $this->entityGenerator->setContext($this->context);
-        $this->entityGenerator->setBlocks($this->blocks);
-        $this->entityGenerator->execute();
+        $entityGenerator = new EntityGenerator($this->fileManager, $this->blocks);
+        $entityGenerator->setContext($this->context);
+        $generatedData = $entityGenerator->execute();
 
         $this->buildManager->recordBuild(
             $this->entityId,
             $contextType,
             $this->blocks,
-            $this->entityGenerator->getGeneratedFiles()
+            $generatedData['files'] ?? []
         );
     }
 }

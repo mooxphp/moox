@@ -13,13 +13,19 @@ class EntityCreator extends AbstractEntityService
 {
     protected array $entityData = [];
 
+    protected array $blocks = [];
+
     public function __construct(
         private readonly EntityGenerator $entityGenerator,
         private readonly BuildManager $buildManager,
         private readonly FileManager $fileManager,
-        private readonly PreviewTableManager $previewTableManager,
-        protected readonly array $blocks = []
+        private readonly PreviewTableManager $previewTableManager
     ) {}
+
+    public function setBlocks(array $blocks): void
+    {
+        $this->blocks = $blocks;
+    }
 
     public function setEntityData(array $data): void
     {
