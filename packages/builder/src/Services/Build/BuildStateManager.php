@@ -27,19 +27,21 @@ class BuildStateManager extends ContextAwareService
         $entityId = $this->getEntityId();
         $contextType = $this->context->getContextType();
 
-        DB::table('builder_builds')->insert([
+        DB::table('builder_entity_builds')->insert([
             'entity_id' => $entityId,
             'build_context' => $contextType,
+            'data' => json_encode($blocks),
             'files' => json_encode($files),
-            'blocks' => json_encode($blocks),
+            'is_active' => true,
             'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         $this->currentState = [
             'entity_id' => $entityId,
             'build_context' => $contextType,
+            'data' => $blocks,
             'files' => $files,
-            'blocks' => $blocks,
         ];
     }
 
@@ -48,7 +50,7 @@ class BuildStateManager extends ContextAwareService
         $entityId = $this->getEntityId();
         $contextType = $this->context->getContextType();
 
-        $build = DB::table('builder_builds')
+        $build = DB::table('builder_entity_builds')
             ->where('entity_id', $entityId)
             ->where('build_context', $contextType)
             ->orderBy('created_at', 'desc')
@@ -58,8 +60,8 @@ class BuildStateManager extends ContextAwareService
             $this->currentState = [
                 'entity_id' => $build->entity_id,
                 'build_context' => $build->build_context,
+                'data' => json_decode($build->data, true),
                 'files' => json_decode($build->files, true),
-                'blocks' => json_decode($build->blocks, true),
             ];
         }
     }
