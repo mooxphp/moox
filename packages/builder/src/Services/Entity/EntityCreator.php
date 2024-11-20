@@ -17,10 +17,9 @@ class EntityCreator extends AbstractEntityService
         private readonly EntityGenerator $entityGenerator,
         private readonly BuildManager $buildManager,
         private readonly FileManager $fileManager,
-        private readonly PreviewTableManager $previewTableManager
-    ) {
-        parent::__construct();
-    }
+        private readonly PreviewTableManager $previewTableManager,
+        protected readonly array $blocks = []
+    ) {}
 
     public function setEntityData(array $data): void
     {
@@ -32,23 +31,29 @@ class EntityCreator extends AbstractEntityService
         $this->ensureContextIsSet();
         $entityId = $this->createOrUpdateEntity();
         $contextType = $this->context->getContextType();
+
+        DB::table('builder_entity_builds')
+            ->where('entity_id', $entityId)
+            ->where('build_context', $contextType)
+            ->update(['is_active' => false]);
+
         $this->fileManager->cleanupBeforeRegeneration($entityId, $contextType);
 
         if ($contextType === 'preview') {
             $this->previewTableManager->createTable($this->context->getEntityName(), $this->blocks);
         }
 
-        $this->entityGenerator->setContext($this->context);
-        $this->entityGenerator->setBlocks($this->blocks);
-        $this->entityGenerator->execute();
+        $entityGenerator = new EntityGenerator($this->fileManager, $this->blocks);
+        $entityGenerator->setContext($this->context);
+        $generatedData = $entityGenerator->execute();
 
         $this->buildManager->setContext($this->context);
-        $this->buildManager->execute();
         $this->buildManager->recordBuild(
             $entityId,
             $contextType,
             $this->blocks,
-            $this->entityGenerator->getGeneratedFiles()
+            $generatedData['files'] ?? [],
+            $generatedData['data'] ?? []
         );
     }
 

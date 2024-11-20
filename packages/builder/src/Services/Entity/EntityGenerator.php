@@ -13,23 +13,57 @@ class EntityGenerator extends AbstractEntityService
 
     protected array $generatedFiles = [];
 
+    protected array $generatedData = [];
+
+    protected array $blocks = [];
+
     public function __construct(
-        private readonly FileManager $fileManager
+        private readonly FileManager $fileManager,
+        array $blocks = []
     ) {
-        parent::__construct();
+        $this->blocks = $blocks;
     }
 
-    public function execute(): void
+    public function execute(): array
     {
         $this->ensureContextIsSet();
         $this->initializeGenerators();
         $this->runGenerators();
         $this->handleGeneratedFiles();
+
+        return [
+            'files' => $this->generatedFiles,
+            'data' => $this->generatedData,
+        ];
     }
 
-    public function getGeneratedFiles(): array
+    protected function handleGeneratedFiles(): void
     {
-        return $this->generatedFiles;
+        if (empty($this->generatedFiles)) {
+            $this->generatedFiles = [];
+            $this->generatedData = [];
+
+            return;
+        }
+
+        $files = [];
+        $data = [];
+        foreach ($this->generatedFiles as $type => $typeFiles) {
+            foreach ($typeFiles as $path => $content) {
+                $files[$path] = $content;
+                $data[$path] = [
+                    'type' => $type,
+                    'content' => $content,
+                ];
+            }
+        }
+
+        $this->generatedFiles = $files;
+        $this->generatedData = $data;
+
+        if (! empty($files)) {
+            $this->fileManager->writeAndFormatFiles($files);
+        }
     }
 
     protected function initializeGenerators(): void
@@ -66,24 +100,6 @@ class EntityGenerator extends AbstractEntityService
         foreach ($this->generators as $generator) {
             $generator->generate();
             $this->mergeGeneratedFiles($generator->getGeneratedFiles());
-        }
-    }
-
-    protected function handleGeneratedFiles(): void
-    {
-        if (empty($this->generatedFiles)) {
-            return;
-        }
-
-        $files = [];
-        foreach ($this->generatedFiles as $type => $typeFiles) {
-            foreach ($typeFiles as $path => $content) {
-                $files[$path] = $content;
-            }
-        }
-
-        if (! empty($files)) {
-            $this->fileManager->writeAndFormatFiles($files);
         }
     }
 

@@ -15,9 +15,7 @@ class BuildManager extends ContextAwareService
         private readonly BuildRecorder $buildRecorder,
         private readonly BlockReconstructor $blockReconstructor,
         private readonly BuildStateManager $buildStateManager
-    ) {
-        parent::__construct();
-    }
+    ) {}
 
     public function execute(): void
     {
