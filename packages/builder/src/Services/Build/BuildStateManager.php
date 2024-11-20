@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Build;
 
-use Illuminate\Support\Facades\DB;
 use Moox\Builder\Services\ContextAwareService;
 
 class BuildStateManager extends ContextAwareService
 {
+    public function __construct(
+        private readonly BuildRecorder $buildRecorder
+    ) {}
+
     protected array $currentState = [];
 
     public function execute(): void
@@ -27,16 +30,6 @@ class BuildStateManager extends ContextAwareService
         $entityId = $this->getEntityId();
         $contextType = $this->context->getContextType();
 
-        DB::table('builder_entity_builds')->insert([
-            'entity_id' => $entityId,
-            'build_context' => $contextType,
-            'data' => json_encode($blocks),
-            'files' => json_encode($files),
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $this->currentState = [
             'entity_id' => $entityId,
             'build_context' => $contextType,
@@ -50,29 +43,11 @@ class BuildStateManager extends ContextAwareService
         $entityId = $this->getEntityId();
         $contextType = $this->context->getContextType();
 
-        $build = DB::table('builder_entity_builds')
-            ->where('entity_id', $entityId)
-            ->where('build_context', $contextType)
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        if ($build) {
-            $this->currentState = [
-                'entity_id' => $build->entity_id,
-                'build_context' => $build->build_context,
-                'data' => json_decode($build->data, true),
-                'files' => json_decode($build->files, true),
-            ];
-        }
+        $this->currentState = $this->buildRecorder->loadCurrentState($entityId, $contextType);
     }
 
     protected function getEntityId(): int
     {
-        $entity = DB::table('builder_entities')
-            ->where('singular', $this->context->getEntityName())
-            ->whereNull('deleted_at')
-            ->first();
-
-        return $entity ? $entity->id : 0;
+        return $this->buildRecorder->getEntityIdFromName($this->context->getEntityName());
     }
 }

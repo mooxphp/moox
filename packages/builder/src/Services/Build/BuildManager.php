@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Build;
 
-use Illuminate\Support\Facades\DB;
 use Moox\Builder\Services\Block\BlockReconstructor;
 use Moox\Builder\Services\ContextAwareService;
 use RuntimeException;
@@ -26,16 +25,14 @@ class BuildManager extends ContextAwareService
     {
         $this->ensureContextIsSet();
         $this->validateContext($buildContext);
-        $this->validateEntityExists($entityId);
         $this->validateFiles($files);
+        $this->validateEntityExists($entityId);
 
-        if ($buildContext !== 'preview' && $this->hasConflictingProductionBuild($entityId, $buildContext)) {
+        if ($this->hasConflictingProductionBuild($entityId, $buildContext)) {
             throw new RuntimeException('Entity already has an active build in a different production context');
         }
 
-        $this->deactivateBuildsForContext($entityId, $buildContext);
         $this->buildRecorder->record($entityId, $buildContext, $blocks, $files);
-
         $this->buildStateManager->setContext($this->context);
         $this->buildStateManager->execute();
         $this->buildStateManager->updateState($files, $blocks);
@@ -43,19 +40,7 @@ class BuildManager extends ContextAwareService
 
     public function reconstructFromLatest(int $entityId, ?string $buildContext = null): array
     {
-        $query = DB::table('builder_entity_builds')
-            ->where('entity_id', $entityId)
-            ->where('is_active', true);
-
-        if ($buildContext) {
-            $query->where('build_context', $buildContext);
-        }
-
-        $latestBuild = $query->orderBy('created_at', 'desc')->first();
-
-        if (! $latestBuild) {
-            throw new RuntimeException("No active build found for entity {$entityId}");
-        }
+        $latestBuild = $this->buildRecorder->getLatestBuild($entityId, $buildContext);
 
         return $this->blockReconstructor->reconstruct($latestBuild);
     }
@@ -69,27 +54,14 @@ class BuildManager extends ContextAwareService
 
     protected function validateEntityExists(int $entityId): void
     {
-        if (! DB::table('builder_entities')->where('id', $entityId)->exists()) {
+        if (! $this->buildRecorder->validateEntityExists($entityId)) {
             throw new RuntimeException("Entity {$entityId} not found");
         }
     }
 
     protected function hasConflictingProductionBuild(int $entityId, string $newContext): bool
     {
-        return DB::table('builder_entity_builds')
-            ->where('entity_id', $entityId)
-            ->where('is_active', true)
-            ->where('build_context', '!=', $newContext)
-            ->where('build_context', '!=', 'preview')
-            ->exists();
-    }
-
-    protected function deactivateBuildsForContext(int $entityId, string $buildContext): void
-    {
-        DB::table('builder_entity_builds')
-            ->where('entity_id', $entityId)
-            ->where('build_context', $buildContext)
-            ->update(['is_active' => false]);
+        return $this->buildRecorder->hasConflictingProductionBuild($entityId, $newContext);
     }
 
     protected function validateFiles(array $files): void

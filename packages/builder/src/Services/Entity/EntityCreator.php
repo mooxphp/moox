@@ -6,8 +6,8 @@ namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Services\Build\BuildManager;
-use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Services\Preview\PreviewTableManager;
+use RuntimeException;
 
 class EntityCreator extends AbstractEntityService
 {
@@ -18,7 +18,6 @@ class EntityCreator extends AbstractEntityService
     public function __construct(
         private readonly EntityGenerator $entityGenerator,
         private readonly BuildManager $buildManager,
-        private readonly FileManager $fileManager,
         private readonly PreviewTableManager $previewTableManager
     ) {}
 
@@ -35,31 +34,28 @@ class EntityCreator extends AbstractEntityService
 
     public function execute(): void
     {
-        $this->ensureContextIsSet();
-        $entityId = $this->createOrUpdateEntity();
-        $contextType = $this->context->getContextType();
+        try {
+            $this->ensureContextIsSet();
+            $entityId = $this->createOrUpdateEntity();
+            $contextType = $this->context->getContextType();
 
-        DB::table('builder_entity_builds')
-            ->where('entity_id', $entityId)
-            ->where('build_context', $contextType)
-            ->update(['is_active' => false]);
+            if ($contextType === 'preview') {
+                $this->previewTableManager->createTable($this->context->getEntityName(), $this->blocks);
+            }
 
-        $this->fileManager->cleanupBeforeRegeneration($entityId, $contextType);
+            $this->entityGenerator->setContext($this->context);
+            $generatedData = $this->entityGenerator->execute();
 
-        if ($contextType === 'preview') {
-            $this->previewTableManager->createTable($this->context->getEntityName(), $this->blocks);
+            $this->buildManager->setContext($this->context);
+            $this->buildManager->recordBuild(
+                $entityId,
+                $contextType,
+                $this->blocks,
+                $generatedData['files'] ?? []
+            );
+        } catch (RuntimeException $e) {
+            throw new RuntimeException('Failed to create entity: '.$e->getMessage());
         }
-
-        $this->entityGenerator->setContext($this->context);
-        $generatedData = $this->entityGenerator->execute();
-
-        $this->buildManager->setContext($this->context);
-        $this->buildManager->recordBuild(
-            $entityId,
-            $contextType,
-            $this->blocks,
-            $generatedData['files'] ?? []
-        );
     }
 
     protected function createOrUpdateEntity(): int

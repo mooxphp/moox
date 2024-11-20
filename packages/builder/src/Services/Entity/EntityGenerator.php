@@ -5,10 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
-use Moox\Builder\Generators\Entity\MigrationGenerator;
-use Moox\Builder\Generators\Entity\ModelGenerator;
-use Moox\Builder\Generators\Entity\PluginGenerator;
-use Moox\Builder\Generators\Entity\ResourceGenerator;
 use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Traits\ValidatesEntity;
 use RuntimeException;
@@ -48,19 +44,48 @@ class EntityGenerator
 
     protected function initializeGenerators(): void
     {
-        $this->generators = [
-            new ModelGenerator($this->context, $this->fileManager, $this->blocks),
-            new ResourceGenerator($this->context, $this->fileManager, $this->blocks),
-            new MigrationGenerator($this->context, $this->fileManager, $this->blocks),
-            new PluginGenerator($this->context, $this->fileManager, $this->blocks),
-        ];
+        $this->ensureContextIsSet();
+        $contextType = $this->context->getContextType();
+        $contextConfig = config("builder.contexts.{$contextType}");
+
+        if (! isset($contextConfig['generators'])) {
+            throw new RuntimeException("No generators configured for context {$contextType}");
+        }
+
+        $this->generators = [];
+        foreach ($contextConfig['generators'] as $type => $config) {
+            if (! isset($config['generator'])) {
+                continue;
+            }
+
+            $generatorClass = $config['generator'];
+            $this->generators[] = new $generatorClass(
+                $this->context,
+                $this->fileManager,
+                $this->blocks
+            );
+        }
+
+        if (empty($this->generators)) {
+            throw new RuntimeException("No valid generators found for context {$contextType}");
+        }
     }
 
     protected function runGenerators(): void
     {
         foreach ($this->generators as $generator) {
-            $generator->generate();
-            $this->generatedFiles = array_merge($this->generatedFiles, $generator->getGeneratedFiles());
+            try {
+                $generator->generate();
+                $this->generatedFiles = array_merge($this->generatedFiles, $generator->getGeneratedFiles());
+            } catch (RuntimeException $e) {
+                throw new RuntimeException(
+                    sprintf(
+                        'Failed to run generator %s: %s',
+                        get_class($generator),
+                        $e->getMessage()
+                    )
+                );
+            }
         }
     }
 

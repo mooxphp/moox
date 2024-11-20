@@ -10,6 +10,9 @@ We work on these tasks in order from top to bottom:
 -   [x] Implement proper error handling
 -   [x] Align database schema with service layer
 -   [x] Complete service architecture documentation
+-   [x] Move all DB operations into BuildRecorder and make it transaction-aware
+-   [x] Remove duplicate deactivation calls
+-   [x] Ensure blocks are properly persisted
 
 ## Command Refactoring
 
