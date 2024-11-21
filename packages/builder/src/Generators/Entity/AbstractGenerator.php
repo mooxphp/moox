@@ -143,10 +143,7 @@ abstract class AbstractGenerator
 
     protected function writeFile(string $path, string $content): void
     {
-        $path = str_replace('\\', '/', $path);
-        if (! isset($this->generatedFiles[$this->getGeneratorType()])) {
-            $this->generatedFiles[$this->getGeneratorType()] = [];
-        }
+        $this->fileManager->writeAndFormatFiles([$path => $content]);
         $this->generatedFiles[$this->getGeneratorType()][$path] = $content;
     }
 

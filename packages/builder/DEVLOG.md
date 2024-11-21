@@ -1,30 +1,45 @@
-# DEVLOG
-
 We work on these tasks in order from top to bottom:
 
-## Service Refactoring
-
--   [x] Fix BuildStateManager context initialization
--   [x] Make BuildManager context-aware
--   [x] Standardize build recording process
--   [x] Implement proper error handling
--   [x] Align database schema with service layer
--   [x] Complete service architecture documentation
--   [x] Move all DB operations into BuildRecorder and make it transaction-aware
--   [x] Remove duplicate deactivation calls
--   [x] Ensure blocks are properly persisted
-
-## Command Refactoring
-
--   [ ] Fix the command, that fails to generate all files properly
+-   [WIP] Fix the command, that fails to generate all files properly, currently generates no files at all, but the DB part seems to work
+    -   Added detailed logging to trace file generation issues
+    -   Fixed access to protected BuildContext methods
+    -   Fixed generator initialization with correct constructor argument order
+    -   Improved block handling in generators
+    -   Simplified file writing using existing FileManager methods
+    -   Next step: Test file generation with improved implementation
 -   [ ] Fix generated Resource missing use statements (500 error)
 -   [ ] Fix regeneration after manual file deletion
 -   [ ] Implement preview "migrations" using DB directly
 -   [ ] Add --migration option to create command
 -   [ ] Refactor DeleteCommand to use new services
--   [x] Fix entity creation database error for missing plural field
+-   [ ] Refactor AbstractBlock (see below)
+-   [ ] Implement Package Generation (see below)
+    -   [ ] Implement PackageGenerator service
+    -   [ ] Create PrepareAppForPackagesCommand
+    -   [ ] Implement package entity activation system
+    -   [ ] Add package publishing workflow
+-   [ ] Generate tests for all services
+-   [ ] Option to generate from blueprint
+-   [ ] Configurable FeatureSet (dependency free, also for Moox Core)
+    -   [ ] Filament Core Features only
+    -   [ ] Moox Core Features
+    -   [ ] Community Features
+-   [ ] Configurable Presets
+    -   [ ] Add Shop, Blog etc.
+-   [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
+-   [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
+-   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
+-   [ ] Require Pint, what about Larastan?
+-   [ ] Add more Blocks
+    -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
+    -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
+    -   [ ] Most wanted like Phone, Address etc.
+-   [ ] Add more Presets
+    -   [ ] Shop
+    -   [ ] Blog
+    -   [ ] Comments?
 
-## Abstract Block Refactoring
+## Abstract Block Refactoring (ignore for now)
 
 The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
 
@@ -35,32 +50,9 @@ When refactoring the block system, we need also discuss the following points:
 -   [ ] We need to implement Sections ... see Chat on that
 -   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
 
-## Package Generation
+## Unsorted Tasks (ignore for now)
 
--   [ ] Implement PackageGenerator service
--   [ ] Create PrepareAppForPackagesCommand
--   [ ] Implement package entity activation system
--   [ ] Add package publishing workflow
-
-## Other
-
--   [ ] Generate tests for all services
--   [ ] Configurable FeatureSet
-    -   [ ] Filament Core Features
-    -   [ ] Moox Core Features
-    -   [ ] Community Features (not yet implemented
--   [ ] Configurable Presets
-    -   [ ] Add Shop, Blog etc.
--   [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
--   [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
--   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
--   [ ] Require Pint, what about Larastan?
--   [ ] Add more Moox Blocks
-    -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
-    -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
-    -   [ ] Most wanted like Phone, Address etc.
 -   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
-
     -   [ ] getResourceName should be auto detected
     -   [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
     -   [ ] Relations, like Taxonomies, but "on the left"
@@ -74,80 +66,45 @@ When refactoring the block system, we need also discuss the following points:
         -   Moox Builder Packages should be cleaned up as much as possible
         -   Installer: use Abstract, Service or Traits ...
         -   ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
-
 -   [ ] Builder needs to be cleaned up after able to generate packages
-
     -   [ ] Cleanup config
     -   [ ] Remove old entities
     -   [ ] Remove build.php
     -   [ ] Remove GH Template
-
 -   [ ] We need to generate factories from blocks to entities
-
 -   [ ] We need to generate tests
-
 -   [ ] Versions need a concept, needs a table (and UI)
-
--   [ ] Versions vs. Updates (means Maintenance ... if we could update code using PHP Parser, we also could update code in terms of keeping the generated code of builder plugins auto-maintained)
-
 -   [ ] Generate the Builder UI, let Builder build itself
-
 -   [ ] Generate a Frontend
-
 -   [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
-
--   [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code?
-
+-   [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code or auto-maintain packages?
 -   [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
-
 -   [ ] Core Docs
-
     -   Naming convention InModel InResource InPages and Single for single-use traits
-
     -   TabsInResource - contains TODO
-
     -   TabsInPage - just getTabs needs to be defined
-
     -   TaxonomyInPages - needs that mount method in ViewPage
-
     -   AuthorInModel
-
     -   AuthorInResource
-
     -   StatusInModel
-
     -   StatusInResource - WIP
-
     -   Links to builder or builder doc inside
-
 -   [ ] Category / Tag Docs
-
     -   Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
     -   https://github.com/lazychaser/laravel-nestedset
     -   https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets
     -   Screens
     -   Usage / Config
-
 -   $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
-
 -   Relationships - in builder but like taxonomies
-
 -   Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
-
 -   Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
-
 -   HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
-
 -   Item could show last changed etc. on the left ...
-
 -   Gallery images should be sortable
-
 -   Bulk restore does not work
-
 -   Set indices for slug etc, or not?
-
 -   not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
-
 -   If plugin data-language -> migration create_languages_table ->
     SP: ->hasMigration('create_data_languages_table') (correct the -)
 
@@ -160,7 +117,7 @@ When refactoring the block system, we need also discuss the following points:
 
 -   Inline-Help
 
-## Packages
+## Packages (ignore for now)
 
 This config was in the Package and is currently missing: I depends to Blocks means to Entities, Blocks need to be able to generate config for entities.
 
@@ -245,12 +202,11 @@ I want to generate Packages using Moox Builder, it should work like this:
 -   Later we'll need a `RemovePackageCommand` that uses the `PackageRemover`service
 -   Last the `AbstractPackageService`
 
-## The UI
+## The UI (ignore for now)
 
 Some early thoughts:
 
 -   Package
-
     -   Name
     -   Namespace (config, default to moox)
     -   Description (config, default to This is my Laravel package XXX YYY made with Moox Builder.)
@@ -260,7 +216,6 @@ Some early thoughts:
     -   Status Development (no Entities, no Preview), Installable (built), Installed (Composer)
     -   HasMany Entities
     -   HasMany Versions
-
 -   Entity
     -   Singular
     -   Plural
@@ -287,56 +242,3 @@ Some early thoughts:
     -   Version (probably stored, no relation)
     -   Data (could be a all fields JSON)
     -   Files (JSON)
-
-## New Builder
-
-This is a first idea of the future description for Moox Builder:
-
-What do you want to ~~build~~ ship today?
-
-From idea to a working App in Minutes. No coding.
-
-Start from scratch, use a Preset or an existing migration.
-
-Moox Builder is a Laravel Package and Filament UI to build
-
--   Filament Resources, complete Entities including
-    -   Migration
-    -   Model
-    -   Filament Resource
-    -   Filament Resource Pages
-    -   Configuration
-    -   Translations
-    -   Factory
-    -   Pest Test
-    -   Features like Softdelete, Publish, Author
-    -   Relations can be simply configured, no coding in Model
-    -   Support for simple, nested and custom Taxonomies
-    -   Extremely simple to extend using Metadata (JSON)
-    -   Or with an Entity-Attribute-Value (EAV, like WP does)
-    -   Or with an direct Extender (adding fields to the table)
--   Laravel Packages, that can hold these Entities, including
-    -   ServiceProvider
-    -   README, LICENSE, SECURITY MD-files
-    -   Composer.json
-    -   Publishable Config
-    -   Installer
-    -   Gitignore
-    -   TestCase, ArchTest, Package Test
-    -   Translations
-
-You can preview Entities instantly and then build them in a Package or directly in the App.
-
-All generated code is
-
--   Typesave?
--   Strict?
--   PHP Stan Level?
--   Pint Fixed
--   Pest Tested?
-
-So pushing this code into a Repository with highest Quality Gates will work without tears.
-
-Remove Builder, stay with working Code. No dependency.
-
-Create your own Builder: add own Templates, Generators, Presets, Blocks and modifiy the Builder config to your needs.

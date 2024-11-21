@@ -36,10 +36,8 @@ class ModelGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile(
-            $this->context->getPath('model').'/'.$this->context->getEntityName().'.php',
-            $content
-        );
+        $path = $this->context->getPath('model').'/'.$this->context->getEntityName().'.php';
+        $this->writeFile($path, $content);
     }
 
     protected function getFillable(): string

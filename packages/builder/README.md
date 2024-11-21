@@ -2,26 +2,30 @@
 
 # Moox Builder
 
-Generate high-quality Laravel Packages and Filament Resources with zero coding.
+🚀 What do you want to ~~build~~ **ship** today?
+
+From idea to a working LaravelApp in minutes. No coding required.
 
 ## Work-in-Progress
 
-This is the current state of the Builder:
+-   ✅ Working Service Layer and Configuration
+-   🟡 Entity generation with `builder:create`
+-   🟡 Entity deletion with `builder:delete`
+-   🟡 Basic Presets (Item, Taxonomy)
+-   🚧 Package generation with `builder:package`
+-   🚧 UI for creating entities with custom blocks
+-   🚧 UI for creating packages
 
--   Moox Builder is currently a GitHub Template Repository (will be removed) and now working as an installed package (will be the future)
--   The current state is in this branch: https://github.com/mooxphp/moox/tree/feature/tag
--   The `php artisan builder:create`command is working, tested with simple and published item yet
--   A Panel is available to Preview: https://moox.test/builder
--   There are 5 test entities, that will be deleted including config, when builder is able to generate them
+## Overview
 
-## Features
+Moox Builder is a Laravel Package and Filament UI to build complete applications and packages with zero coding:
 
--   Generate and Publish Laravel Packages (not implemented yet)
--   Generate Filament Resource with Migration and Model
--   Generate a Migration or generate from Migration
--   Create your own Blocks, Generators, Presets and Templates
--   Dependency free, you can de-install Moox Builder anytime
--   Generate production-ready code, type-safe, Pint-formatted and checked by PHPStan
+-   🚀 Generate complete Filament Resources in App or Package context
+-   🚀 Generate and Publish Laravel Packages
+-   🚀 Preview and test everything instantly
+-   🔧 Production-ready code
+-   🔧 Dependency free, remove anytime
+-   🔧 Fully extensible
 
 ## Quick Installation
 
@@ -34,48 +38,7 @@ php artisan mooxbuilder:install
 
 Curious what the install command does? See manual installation below.
 
-## Core Concepts
-
-Moox Builder follows strict development guidelines to ensure high-quality, maintainable code:
-
-### Core Rules
-
-1. Single Responsibility
-
--   Services have ONE responsibility
--   Generators collect files
--   FileManager handles operations
--   BuildContext manages paths
-
-2. Never
-
--   Use direct file operations
--   Handle paths manually
--   Format files directly
--   Assume types or interfaces
-
-3. Always
-
--   Use FileManager for files
--   Use BuildContext for paths
--   Validate inputs
--   Document changes
-
-4. Type Safety
-
--   Full type declarations
--   PHPStan level 8
--   No assumed signatures
--   Validated inputs
-
-5. All services follow these principles:
-
--   Type-safe implementations
--   Context awareness where needed
--   Clear responsibility boundaries
--   Proper error handling
-
-### Compatibility
+## Compatibility
 
 -   Laravel 11
 -   PHP 8.3
@@ -85,43 +48,43 @@ Moox Builder follows strict development guidelines to ensure high-quality, maint
 -   PHPStan 2
 -   Pest 3
 
-### Builds & Contexts
+## Quality Assurance
 
-A build represents a generated entity in a specific context:
+All generated code is:
 
--   **App Context**: Generates directly in your application
--   **Package Context**: Generates in a Laravel package
--   **Preview Context**: Creates a temporary build for testing
--   You can create your own Contexts, see [Configuration](#configuration)
+-   Type-safe with full type declarations
+-   PSR-12 compliant via Pint
+-   PHPStan Level 8 validated
+-   Pest tested
+-   Ready for production
 
-The BuildManager and BuildRecorder services handle the persistence and state management of builds, storing both the entity configuration and generated files.
+## Core Concepts
+
+### Contexts
+
+-   **App**: Direct application integration
+-   **Package**: Laravel package generation
+-   **Preview**: Instant testing environment
+-   Custom contexts via configuration
 
 ### Blocks
 
-Blocks are the fundamental building blocks of entities. Each block represents a Filament field or feature:
+Building blocks for your entities:
 
--   Field Blocks: Text, Number, Date, Select, etc.
--   Feature Blocks: SoftDelete, Publish, Author, etc.
--   Section Blocks: Combines fields to a section
-
-Blocks provide:
-
--   Migration definitions
--   Model attributes and methods
--   Filament form/table configurations
--   Required traits and interfaces
--   Factories and Tests
+-   **Fields**: Text, Number, Date, Select, etc.
+-   **Features**: SoftDelete, Publish, Author
+-   **Sections**: Logical field groupings
 
 ### Presets
 
-Presets are pre-configured collections of blocks for common use cases:
+Presets are pre-configured collections of blocks:
 
 -   `Simple Item`: Basic CRUD resource
 -   `Publishable Item`: With publishing workflow
 -   `Full Item`: All available features
 -   `Simple Taxonomy`: For tag-like structures
--   `Nested Taxonomy`: For category-like structures
--   You can create your own Presets, see [Configuration](#configuration)
+-   `Nested Taxonomy`: For category-like structures, using nested set
+-   Custom presets via configuration
 
 ### Generators
 
@@ -173,57 +136,29 @@ The service layer manages the generation workflow:
 
 -   `PreviewManager`: Manages the preview context
 
+### Build Process
+
+1. **Entity Definition**
+
+    - Command/UI initiates build
+    - Option to generate from migration
+    - Block configuration (or Preset)
+    - Context selection
+
+2. **Generation**
+
+    - Creates DB entries for entity and build
+    - Generates files from templates and blocks
+
+3. **Integration**
+
+    - Preview functionality
+    - Production deployment
+    - Package publishing
+
 ### Types
 
 Types are currently only partly implemented and only used for the EntityImporter.
-
-## Architecture
-
-1. **Build Process**
-
--   Command/UI creates entity
--   BuildManager orchestrates generation
--   FileManager handles files
--   BuildRecorder persists state
-
-2. **Preview & Testing**
-
--   Isolated preview environment
--   Direct table creation
--   Parallel to production builds
-
-3. **Production**
-
--   Single active context
--   Migration generation
--   Clean file placement
-
-### Build Process Architecture
-
-The build process follows a strict service hierarchy:
-
--   **BuildManager**: Orchestrates the build lifecycle
-
-    -   Validates context and entity existence
-    -   Manages build state transitions
-    -   Coordinates between services
-
--   **BuildRecorder**: Handles build persistence
-
-    -   Records build data and files
-    -   Manages build history
-    -   Ensures data integrity
-
--   **BuildStateManager**: Manages build state
-
-    -   Tracks current build state
-    -   Handles context-specific state
-    -   Provides state validation
-
--   **EntityGenerator**: Generates entity files
-    -   Coordinates file generation
-    -   Manages generator pipeline
-    -   Ensures type safety
 
 ## Usage
 
@@ -310,7 +245,7 @@ php artisan builder:delete --package=My/Blog
 
 You can change nearly everything, Blocks, Generators, Templates, Presets and Contexts in the Moox Builder configuration.
 
-[See Configuration](CONFIGURATION.md)
+Take a look at the [Configuration](config/builder.php) for more information.
 
 ## Moox Core Features
 
@@ -386,14 +321,6 @@ php artisan migrate
 php artisan vendor:publish --tag="builder-config"
 ```
 
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Roadmap
-
-See [DEVLOG.md](DEVLOG.md) for the current tasks and ideas for the future.
-
 ## Security Vulnerabilities
 
 Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
@@ -406,6 +333,51 @@ Please review [our security policy](https://github.com/mooxphp/moox/security/pol
 ## Contributing
 
 We value every contribution. Moox is developed in the [Moox Monorepo](https://github.com/mooxphp/moox), that uses [All Contributors](https://allcontributors.org/) for managing contributions. Please refer to the Monorepo docs for more information.
+
+## Coding Rules
+
+1. Single Responsibility
+
+-   Services have ONE responsibility
+-   Generators collect files
+-   FileManager handles operations
+-   BuildContext manages paths
+
+2. Never
+
+-   Use direct file operations
+-   Handle paths manually
+-   Format files directly
+-   Assume types or interfaces
+
+3. Always
+
+-   Use FileManager for files
+-   Use BuildContext for paths
+-   Validate inputs
+-   Document changes
+
+4. Type Safety
+
+-   Full type declarations
+-   PHPStan level 8
+-   No assumed signatures
+-   Validated inputs
+
+5. All services follow these principles:
+
+-   Type-safe implementations
+-   Context awareness where needed
+-   Clear responsibility boundaries
+-   Proper error handling
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Roadmap
+
+See [DEVLOG.md](DEVLOG.md) for the current tasks and ideas for the future.
 
 ## License
 

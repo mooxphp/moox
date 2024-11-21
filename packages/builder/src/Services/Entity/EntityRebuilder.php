@@ -44,7 +44,8 @@ class EntityRebuilder extends AbstractEntityService
         $this->fileManager->deleteFiles($this->entityId, $contextType);
 
         $this->entityGenerator->setContext($this->context);
-        $generatedData = $this->entityGenerator->execute();
+        $this->entityGenerator->execute();
+        $generatedData = $this->entityGenerator->getGenerationResult();
 
         $this->buildManager->recordBuild(
             $this->entityId,

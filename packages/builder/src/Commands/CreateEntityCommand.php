@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Commands;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Moox\Builder\Contexts\BuildContext;
+use Moox\Builder\Contexts\ContextFactory;
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Build\BuildStateManager;
 use Moox\Builder\Services\Entity\EntityCreator;
-use Moox\Builder\Services\Preview\PreviewTableManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -46,8 +48,25 @@ class CreateEntityCommand extends AbstractBuilderCommand
         }
 
         try {
+            Log::info('Starting entity creation', [
+                'name' => $name,
+                'package' => $package,
+                'preview' => $preview,
+                'preset' => $presetName,
+            ]);
+
             $context = $this->createContext($name, $package, $preview);
             $blocks = PresetRegistry::getPresetBlocks($presetName);
+
+            if (empty($blocks)) {
+                $this->error("Preset '{$presetName}' returned no blocks");
+
+                return self::FAILURE;
+            }
+
+            Log::info('Context created', [
+                'contextType' => $context->getContextType(),
+            ]);
 
             $this->buildStateManager->setContext($context);
             $this->entityCreator->setContext($context);
@@ -58,20 +77,33 @@ class CreateEntityCommand extends AbstractBuilderCommand
                 'description' => "A {$name} entity generated with Moox Builder",
             ]);
 
-            if ($preview) {
-                // Let EntityCreator handle preview table creation
-                // It already has PreviewTableManager injected
-            }
-
+            Log::info('Executing entity creation');
             $this->entityCreator->execute();
 
             $this->info("Entity {$name} created successfully in {$context->getContextType()} context");
 
             return self::SUCCESS;
         } catch (\Exception $e) {
+            Log::error('Entity creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             $this->error("Failed to create entity: {$e->getMessage()}");
 
             return self::FAILURE;
         }
+    }
+
+    protected function createContext(
+        string $entityName,
+        ?string $package = null,
+        bool $preview = false
+    ): BuildContext {
+        return ContextFactory::create(
+            $this->getBuildContext($preview, $package),
+            $entityName,
+            $package ? ['package' => ['name' => $package]] : [],
+            $this->option('preset')
+        );
     }
 }

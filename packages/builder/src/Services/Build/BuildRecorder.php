@@ -5,20 +5,37 @@ declare(strict_types=1);
 namespace Moox\Builder\Services\Build;
 
 use Illuminate\Support\Facades\DB;
+use Moox\Builder\Blocks\AbstractBlock;
 use RuntimeException;
 
 class BuildRecorder
 {
     public function record(int $entityId, string $buildContext, array $blocks, array $files): void
     {
-        if (! is_string($buildContext)) {
-            throw new \InvalidArgumentException('buildContext must be a string, got: '.gettype($buildContext));
+        if (empty($blocks)) {
+            throw new RuntimeException(
+                'Blocks array empty in BuildRecorder. Debug trace: '.
+                json_encode([
+                    'entityId' => $entityId,
+                    'context' => $buildContext,
+                    'blockCount' => count($blocks),
+                    'blockTypes' => array_map(fn ($block) => get_class($block), $blocks),
+                    'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5),
+                ])
+            );
         }
 
         DB::beginTransaction();
         try {
             $this->validateFileStructure($files);
             $blockData = $this->serializeBlocks($blocks);
+
+            if (empty($blockData)) {
+                throw new RuntimeException(
+                    'Serialized block data empty. Original blocks: '.
+                    json_encode(array_map(fn ($block) => get_class($block), $blocks))
+                );
+            }
 
             $this->deactivateBuilds($entityId, $buildContext);
             $this->recordBuild($entityId, $buildContext, $blockData, $files);
@@ -27,7 +44,11 @@ class BuildRecorder
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new RuntimeException('Failed to record build: '.$e->getMessage());
+            throw new RuntimeException(
+                'Build recording failed: '.$e->getMessage().
+                "\nBlock count: ".count($blocks).
+                "\nBlock types: ".json_encode(array_map(fn ($block) => get_class($block), $blocks))
+            );
         }
     }
 
@@ -76,11 +97,18 @@ class BuildRecorder
 
     protected function recordBuild(int $entityId, string $buildContext, array $blockData, array $files): void
     {
+        $encodedData = json_encode($blockData);
+        $encodedFiles = json_encode($files);
+
+        if ($encodedData === false || $encodedData === '[]' || $encodedData === 'null') {
+            throw new RuntimeException('Failed to encode block data or data is empty');
+        }
+
         DB::table('builder_entity_builds')->insert([
             'entity_id' => $entityId,
             'build_context' => $buildContext,
-            'data' => json_encode($blockData),
-            'files' => json_encode($files),
+            'data' => $encodedData,
+            'files' => $encodedFiles,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -109,13 +137,43 @@ class BuildRecorder
 
     protected function serializeBlocks(array $blocks): array
     {
-        return array_map(function ($block) {
-            return [
+        $serialized = array_map(function ($block) {
+            if (! $block instanceof AbstractBlock) {
+                throw new RuntimeException('Invalid block: must be instance of AbstractBlock');
+            }
+
+            $data = [
                 'type' => get_class($block),
+                'title' => $block->getTitle(),
+                'description' => $block->getDescription(),
                 'options' => $block->getOptions(),
                 'migrations' => $block->getMigrations(),
             ];
+
+            if (method_exists($block, 'getUseStatements')) {
+                $data['useStatements'] = $block->getUseStatements('model');
+            }
+            if (method_exists($block, 'getTraits')) {
+                $data['traits'] = $block->getTraits('model');
+            }
+            if (method_exists($block, 'getMethods')) {
+                $data['methods'] = $block->getMethods('model');
+            }
+            if (method_exists($block, 'getFormFields')) {
+                $data['formFields'] = $block->getFormFields();
+            }
+            if (method_exists($block, 'getTableColumns')) {
+                $data['tableColumns'] = $block->getTableColumns();
+            }
+
+            return $data;
         }, $blocks);
+
+        if (empty($serialized)) {
+            throw new RuntimeException('Failed to serialize blocks');
+        }
+
+        return $serialized;
     }
 
     protected function validateFileStructure(array $files): void

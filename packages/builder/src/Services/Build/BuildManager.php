@@ -23,10 +23,10 @@ class BuildManager extends ContextAwareService
 
     public function recordBuild(int $entityId, string $buildContext, array $blocks, array $files): void
     {
-        $this->ensureContextIsSet();
-        $this->validateContext($buildContext);
-        $this->validateFiles($files);
+        $this->validateBuildContext($buildContext);
         $this->validateEntityExists($entityId);
+        $this->validateBlocks($blocks);
+        $this->validateFiles($files);
 
         if ($this->hasConflictingProductionBuild($entityId, $buildContext)) {
             throw new RuntimeException('Entity already has an active build in a different production context');
@@ -45,7 +45,7 @@ class BuildManager extends ContextAwareService
         return $this->blockReconstructor->reconstruct($latestBuild);
     }
 
-    protected function validateContext(string $context): void
+    protected function validateBuildContext(string $context): void
     {
         if (! in_array($context, ['preview', 'app', 'package'])) {
             throw new RuntimeException('Invalid build context');
@@ -82,6 +82,46 @@ class BuildManager extends ContextAwareService
                     throw new RuntimeException("Invalid content for path {$path} in type {$type}");
                 }
             }
+        }
+    }
+
+    protected function validateBlocks(array $blocks): void
+    {
+        if (empty($blocks)) {
+            throw new RuntimeException('Blocks array cannot be empty');
+        }
+
+        foreach ($blocks as $block) {
+            if (! method_exists($block, 'getOptions') || ! method_exists($block, 'getMigrations')) {
+                throw new RuntimeException('Invalid block object: missing required methods');
+            }
+            if (! method_exists($block, 'getTitle') || ! method_exists($block, 'getDescription')) {
+                throw new RuntimeException('Invalid block object: missing title or description methods');
+            }
+        }
+    }
+
+    protected function validateContextConfig(): void
+    {
+        $config = $this->context->getConfig();
+        $contextType = $this->context->getContextType();
+
+        if (! isset($config['base_path'], $config['base_namespace'], $config['generators'])) {
+            throw new RuntimeException(
+                "Missing required configuration for context {$contextType}"
+            );
+        }
+
+        foreach ($config['generators'] as $type => $genConfig) {
+            if (! isset($genConfig['path'], $genConfig['namespace'])) {
+                throw new RuntimeException(
+                    "Invalid generator configuration for {$type} in context {$contextType}"
+                );
+            }
+        }
+
+        if ($contextType === 'package') {
+            $this->validatePackageConfig($config);
         }
     }
 }

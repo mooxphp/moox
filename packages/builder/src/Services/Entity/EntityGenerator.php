@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Entity;
 
-use Moox\Builder\Contexts\BuildContext;
+use Illuminate\Support\Facades\Log;
+use Moox\Builder\Services\ContextAwareService;
 use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Traits\ValidatesEntity;
 use RuntimeException;
 
-class EntityGenerator
+class EntityGenerator extends ContextAwareService
 {
     use ValidatesEntity;
-
-    protected ?BuildContext $context = null;
 
     protected array $generators = [];
 
@@ -23,6 +22,10 @@ class EntityGenerator
 
     protected array $blocks = [];
 
+    protected array $originalBlocks = [];
+
+    protected array $generationResult = [];
+
     public function __construct(
         private readonly FileManager $fileManager,
         array $blocks = []
@@ -30,79 +33,99 @@ class EntityGenerator
         $this->blocks = $blocks;
     }
 
-    public function setContext(BuildContext $context): void
+    public function setBlocks(array $blocks): void
     {
-        $this->context = $context;
+        $this->blocks = $blocks;
+        $this->originalBlocks = $blocks;
+        $this->reinitializeGenerators();
     }
 
-    protected function ensureContextIsSet(): void
+    public function execute(): void
     {
-        if (! $this->context) {
-            throw new RuntimeException('Context must be set before execution');
-        }
+        Log::info('EntityGenerator: Starting execution');
+        $this->initializeGenerators();
+        $this->generateFiles();
+        $this->prepareGenerationResult();
+        Log::info('EntityGenerator: Execution completed', [
+            'generatedFiles' => $this->generatedFiles,
+            'generatorCount' => count($this->generators),
+        ]);
     }
 
     protected function initializeGenerators(): void
     {
-        $this->ensureContextIsSet();
+        $this->validateContext();
         $contextType = $this->context->getContextType();
         $contextConfig = config("builder.contexts.{$contextType}");
+
+        Log::info('EntityGenerator: Initializing generators', [
+            'contextType' => $contextType,
+            'hasGeneratorConfig' => isset($contextConfig['generators']),
+        ]);
 
         if (! isset($contextConfig['generators'])) {
             throw new RuntimeException("No generators configured for context {$contextType}");
         }
 
-        $this->generators = [];
-        foreach ($contextConfig['generators'] as $type => $config) {
+        foreach ($contextConfig['generators'] as $name => $config) {
             if (! isset($config['generator'])) {
-                continue;
+                throw new RuntimeException("Generator class not specified for {$name}");
             }
 
             $generatorClass = $config['generator'];
-            $this->generators[] = new $generatorClass(
+            Log::info('EntityGenerator: Creating generator', [
+                'name' => $name,
+                'class' => $generatorClass,
+            ]);
+
+            $this->generators[$name] = new $generatorClass(
                 $this->context,
                 $this->fileManager,
                 $this->blocks
             );
         }
+    }
 
-        if (empty($this->generators)) {
-            throw new RuntimeException("No valid generators found for context {$contextType}");
+    protected function reinitializeGenerators(): void
+    {
+        if (! empty($this->generators)) {
+            $this->initializeGenerators();
         }
     }
 
-    protected function runGenerators(): void
+    protected function generateFiles(): void
     {
-        foreach ($this->generators as $generator) {
-            try {
-                $generator->generate();
-                $this->generatedFiles = array_merge($this->generatedFiles, $generator->getGeneratedFiles());
-            } catch (RuntimeException $e) {
-                throw new RuntimeException(
-                    sprintf(
-                        'Failed to run generator %s: %s',
-                        get_class($generator),
-                        $e->getMessage()
-                    )
-                );
-            }
+        Log::info('EntityGenerator: Starting file generation', [
+            'generatorCount' => count($this->generators),
+        ]);
+
+        foreach ($this->generators as $name => $generator) {
+            Log::info('EntityGenerator: Generating files with generator', [
+                'generator' => get_class($generator),
+            ]);
+
+            $generator->generate();
+            $this->generatedFiles = array_merge(
+                $this->generatedFiles,
+                $generator->getGeneratedFiles()
+            );
         }
+
+        Log::info('EntityGenerator: File generation completed', [
+            'totalFiles' => count($this->generatedFiles),
+        ]);
     }
 
-    public function execute(): array
+    protected function prepareGenerationResult(): void
     {
-        $this->ensureContextIsSet();
-        $this->initializeGenerators();
-        $this->runGenerators();
-
-        return [
+        $this->generationResult = [
             'files' => $this->generatedFiles,
-            'data' => $this->generatedData,
+            'blocks' => $this->blocks,
         ];
     }
 
-    public function setBlocks(array $blocks): void
+    public function getGenerationResult(): array
     {
-        $this->blocks = $blocks;
+        return $this->generationResult;
     }
 }

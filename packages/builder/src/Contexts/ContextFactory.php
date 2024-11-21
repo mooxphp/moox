@@ -11,7 +11,8 @@ class ContextFactory
     public static function create(
         string $contextType,
         string $entityName,
-        array $config = []
+        array $config = [],
+        ?string $preset = null
     ): BuildContext {
         $contexts = config('builder.contexts', []);
 
@@ -25,7 +26,9 @@ class ContextFactory
             $contextType,
             $contextConfig,
             [],
-            $entityName
+            $entityName,
+            null,
+            $preset
         );
     }
 }

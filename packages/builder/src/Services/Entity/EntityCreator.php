@@ -6,7 +6,6 @@ namespace Moox\Builder\Services\Entity;
 
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Services\Build\BuildManager;
-use Moox\Builder\Services\Preview\PreviewTableManager;
 use RuntimeException;
 
 class EntityCreator extends AbstractEntityService
@@ -18,11 +17,20 @@ class EntityCreator extends AbstractEntityService
     public function __construct(
         private readonly EntityGenerator $entityGenerator,
         private readonly BuildManager $buildManager,
-        private readonly PreviewTableManager $previewTableManager
     ) {}
 
     public function setBlocks(array $blocks): void
     {
+        if (empty($blocks)) {
+            throw new RuntimeException('Blocks array cannot be empty');
+        }
+
+        foreach ($blocks as $block) {
+            if (! method_exists($block, 'getOptions') || ! method_exists($block, 'getMigrations')) {
+                throw new RuntimeException('Invalid block object: missing required methods');
+            }
+        }
+
         $this->blocks = $blocks;
         $this->entityGenerator->setBlocks($blocks);
     }
@@ -34,28 +42,32 @@ class EntityCreator extends AbstractEntityService
 
     public function execute(): void
     {
-        try {
-            $this->ensureContextIsSet();
-            $entityId = $this->createOrUpdateEntity();
-            $contextType = $this->context->getContextType();
+        $this->ensureContextIsSet();
 
-            if ($contextType === 'preview') {
-                $this->previewTableManager->createTable($this->context->getEntityName(), $this->blocks);
-            }
+        $entityId = $this->createOrUpdateEntity();
+        $contextType = $this->context->getContextType();
 
-            $this->entityGenerator->setContext($this->context);
-            $generatedData = $this->entityGenerator->execute();
+        $this->entityGenerator->setContext($this->context);
+        $this->entityGenerator->execute();
+        $generatedData = $this->entityGenerator->getGenerationResult();
 
-            $this->buildManager->setContext($this->context);
-            $this->buildManager->recordBuild(
-                $entityId,
-                $contextType,
-                $this->blocks,
-                $generatedData['files'] ?? []
-            );
-        } catch (RuntimeException $e) {
-            throw new RuntimeException('Failed to create entity: '.$e->getMessage());
+        if (! isset($generatedData['blocks'])) {
+            throw new RuntimeException('Generator did not return blocks. Debug: '.print_r($generatedData, true));
         }
+
+        $this->blocks = $generatedData['blocks'];
+
+        if (empty($this->blocks)) {
+            throw new RuntimeException('Blocks array empty after generation. Debug: '.print_r($this->blocks, true));
+        }
+
+        $this->buildManager->setContext($this->context);
+        $this->buildManager->recordBuild(
+            $entityId,
+            $contextType,
+            $this->blocks,
+            $generatedData['files'] ?? []
+        );
     }
 
     protected function createOrUpdateEntity(): int

@@ -21,18 +21,22 @@ class BuildContext
 
     protected ?Command $command = null;
 
+    protected ?string $preset = null;
+
     public function __construct(
         string $contextType,
         array $config,
         array $blocks = [],
         string $entityName = '',
-        ?string $pluralName = null
+        ?string $pluralName = null,
+        ?string $preset = null
     ) {
         $this->contextType = $contextType;
         $this->config = $config;
         $this->blocks = $blocks;
         $this->entityName = $entityName;
         $this->pluralName = $pluralName ?? str($entityName)->plural()->toString();
+        $this->preset = $preset;
     }
 
     public function getContextType(): string
@@ -141,5 +145,22 @@ class BuildContext
     public function isPackage(): bool
     {
         return $this->contextType === 'package';
+    }
+
+    public function getPreset(): ?string
+    {
+        return $this->preset;
+    }
+
+    public function setPreset(string $preset): self
+    {
+        $this->preset = $preset;
+
+        return $this;
+    }
+
+    public function setConfig(array $config): void
+    {
+        $this->config = $config;
     }
 }
