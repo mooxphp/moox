@@ -45,7 +45,7 @@ class {{ class_name }}Resource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\List{{ class_name }}::route('/'),
+            'index' => Pages\List{{ model_plural }}::route('/'),
             'create' => Pages\Create{{ class_name }}::route('/create'),
             'edit' => Pages\Edit{{ class_name }}::route('/{record}/edit'),
             'view' => Pages\View{{ class_name }}::route('/{record}'),

@@ -37,9 +37,11 @@ abstract class AbstractPageGenerator extends AbstractGenerator
 
         $variables = [
             'namespace' => $this->getNamespace(),
-            'class_name' => $className,
-            'resource_name' => $this->resourceName,
+            'model' => $this->context->getEntityName(),
+            'model_plural' => $this->context->getPluralName(),
+            'resource' => $this->context->getNamespace('resource').'\\'.$this->resourceName,
             'use_statements' => $this->formatUseStatements(),
+            'traits' => $this->formatTraits(),
             'methods' => $this->formatMethods(),
         ];
 
@@ -71,22 +73,21 @@ abstract class AbstractPageGenerator extends AbstractGenerator
 
     protected function getTemplate(): string
     {
-        $template = $this->loadStub($this->getTemplate());
+        $template = $this->loadStub($this->getTemplateFile());
         if (! $template) {
-            throw new RuntimeException('Failed to load template: '.$this->getTemplate());
+            throw new RuntimeException('Failed to load template: '.$this->getTemplateFile());
         }
 
-        $variables = [
-            'namespace' => $this->getNamespace(),
-            'class_name' => $this->getClassName(),
-            'resource_name' => $this->resourceName,
-            'resource_namespace' => $this->context->getNamespace('resource'),
-            'model_class' => $this->context->getEntityName(),
-            'use_statements' => $this->formatUseStatements(),
-            'traits' => $this->formatTraits(),
-            'methods' => $this->formatMethods(),
-        ];
+        return $template;
+    }
 
-        return $this->replaceTemplateVariables($template, $variables);
+    protected function getTemplateFile(): string
+    {
+        $templatePath = $this->context->getConfig()['generators']['resource']['page_templates'][$this->getPageType()] ?? null;
+        if (! $templatePath) {
+            throw new RuntimeException('Template not found for page type: '.$this->getPageType());
+        }
+
+        return $templatePath;
     }
 }

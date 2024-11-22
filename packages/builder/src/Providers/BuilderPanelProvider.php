@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Providers;
 
-use App\Builder\SimpleItemPlugin;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -15,6 +14,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Builder\Pages\BuilderDashboard;
+use Moox\Expiry\ExpiryPlugin;
 
 class BuilderPanelProvider extends PanelProvider
 {
@@ -30,8 +30,10 @@ class BuilderPanelProvider extends PanelProvider
                 'primary' => Color::Indigo,
                 'secondary' => Color::Neutral,
             ])
-            ->discoverResources(in: app_path('Builder/Resources'), for: 'App\\Builder\\Resources')
-            //->plugin(SimpleItemPlugin::make())
+            //->discoverResources(in: app_path('Builder/Resources'), for: 'App\\Builder\\Resources')
+            ->plugins([
+                ExpiryPlugin::make(),
+            ])
             ->pages([
                 BuilderDashboard::class,
             ])

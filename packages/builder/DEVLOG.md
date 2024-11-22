@@ -1,14 +1,11 @@
 We work on these tasks in order from top to bottom:
 
--   [WIP] The command is working, but the generated files are a mess
-    -   Fixed resource class name and model reference
-    -   Fixed resource page generation from stubs
-    -   Added Pint formatting via FileFormatter
-    -   Fixed page generation order and namespacing
-    -   Next steps:
-    -   Test page content and functionality
--   [ ] Fix generated Resource missing use statements (500 error)
--   [ ] Fix regeneration after manual file deletion
+-   [WIP] Fix the BuilderPanelProvider, that is currently just black
+    -   Tested with different plugins, just black
+    -   Tested with discoverResources, just black
+-   [ ] Test fresh generation with empty DB
+-   [ ] The filename of the generated List page is missing the plural s
+-   [ ] Fix regeneration after manual file deletion - maybe fixed
 -   [ ] Implement preview "migrations" using DB directly
 -   [ ] Add --migration option to create command
 -   [ ] Refactor DeleteCommand to use new services
