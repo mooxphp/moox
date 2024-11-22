@@ -24,6 +24,8 @@ class ResourceGenerator extends AbstractGenerator
 
     public function generate(): void
     {
+        $this->generateResourcePages();
+
         $template = $this->loadStub($this->getTemplate());
         if (! $template) {
             throw new RuntimeException('Failed to load template: '.$this->getTemplate());
@@ -33,6 +35,7 @@ class ResourceGenerator extends AbstractGenerator
             'namespace' => $this->context->getNamespace('resource'),
             'class_name' => $this->context->getEntityName(),
             'model' => $this->context->getNamespace('model').'\\'.$this->context->getEntityName(),
+            'model_plural' => $this->context->getPluralName(),
             'navigation_group' => $this->getNavigationGroup(),
             'navigation_icon' => $this->getNavigationIcon(),
             'use_statements' => $this->formatResourceUseStatements(),
@@ -48,7 +51,6 @@ class ResourceGenerator extends AbstractGenerator
             $this->context->getEntityName().'Resource.php';
 
         $this->writeFile($path, $content);
-        $this->generateResourcePages();
     }
 
     protected function generateResourcePages(): void

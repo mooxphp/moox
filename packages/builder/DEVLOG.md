@@ -4,9 +4,8 @@ We work on these tasks in order from top to bottom:
     -   Fixed resource class name and model reference
     -   Fixed resource page generation from stubs
     -   Added Pint formatting via FileFormatter
+    -   Fixed page generation order and namespacing
     -   Next steps:
-    -   Fix Pint formatting error
-    -   Generate all resource pages
     -   Test page content and functionality
 -   [ ] Fix generated Resource missing use statements (500 error)
 -   [ ] Fix regeneration after manual file deletion
