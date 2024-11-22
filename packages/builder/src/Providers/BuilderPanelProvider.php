@@ -30,9 +30,9 @@ class BuilderPanelProvider extends PanelProvider
                 'primary' => Color::Indigo,
                 'secondary' => Color::Neutral,
             ])
-            //->discoverResources(in: app_path('Builder/Resources'), for: 'App\\Builder\\Resources')
+            ->discoverResources(in: app_path('Builder/Resources'), for: 'App\\Builder\\Resources')
             ->plugins([
-                ExpiryPlugin::make(),
+                //ExpiryPlugin::make(),
             ])
             ->pages([
                 BuilderDashboard::class,

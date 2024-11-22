@@ -99,8 +99,8 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Jobs\JobsBatchesPlugin::make(),
 
                 // Sync Plugins
-                \Moox\Sync\SyncPlugin::make(),
-                \Moox\Sync\PlatformPlugin::make(),
+                //\Moox\Sync\SyncPlugin::make(),
+                //\Moox\Sync\PlatformPlugin::make(),
 
                 // User plugins
                 \Moox\User\UserPlugin::make(),
