@@ -1,12 +1,13 @@
 We work on these tasks in order from top to bottom:
 
--   [WIP] Fix the command, that fails to generate all files properly, currently generates no files at all, but the DB part seems to work
-    -   Added detailed logging to trace file generation issues
-    -   Fixed access to protected BuildContext methods
-    -   Fixed generator initialization with correct constructor argument order
-    -   Improved block handling in generators
-    -   Simplified file writing using existing FileManager methods
-    -   Next step: Test file generation with improved implementation
+-   [WIP] The command is working, but the generated files are a mess
+    -   Fixed resource class name and model reference
+    -   Fixed resource page generation from stubs
+    -   Added Pint formatting via FileFormatter
+    -   Next steps:
+    -   Fix Pint formatting error
+    -   Generate all resource pages
+    -   Test page content and functionality
 -   [ ] Fix generated Resource missing use statements (500 error)
 -   [ ] Fix regeneration after manual file deletion
 -   [ ] Implement preview "migrations" using DB directly
@@ -38,6 +39,8 @@ We work on these tasks in order from top to bottom:
     -   [ ] Shop
     -   [ ] Blog
     -   [ ] Comments?
+-   [ ] Implement panel generator, incl table(s)
+-   [ ] Implement frontend generator?
 
 ## Abstract Block Refactoring (ignore for now)
 

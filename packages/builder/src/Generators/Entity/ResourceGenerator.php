@@ -10,6 +10,7 @@ use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ListPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ViewPageGenerator;
 use Moox\Builder\Services\File\FileManager;
+use RuntimeException;
 
 class ResourceGenerator extends AbstractGenerator
 {
@@ -23,36 +24,30 @@ class ResourceGenerator extends AbstractGenerator
 
     public function generate(): void
     {
-        $template = $this->getTemplate();
-        $modelNamespace = $this->context->getNamespace('model');
-        $modelClass = $this->context->getEntityName();
+        $template = $this->loadStub($this->getTemplate());
+        if (! $template) {
+            throw new RuntimeException('Failed to load template: '.$this->getTemplate());
+        }
 
         $variables = [
             'namespace' => $this->context->getNamespace('resource'),
-            'class_name' => $modelClass,
-            'model' => $modelClass,
-            'model_namespace' => $modelNamespace,
-            'model_plural' => $this->context->getPluralName(),
+            'class_name' => $this->context->getEntityName(),
+            'model' => $this->context->getNamespace('model').'\\'.$this->context->getEntityName(),
+            'navigation_group' => $this->getNavigationGroup(),
             'navigation_icon' => $this->getNavigationIcon(),
-            'use_statements' => $this->formatUseStatements(),
-            'traits' => $this->formatTraits(),
-            'form_setup' => $this->getFormSetup(),
+            'use_statements' => $this->formatResourceUseStatements(),
             'form_schema' => $this->getFormSchema(),
-            'table_setup' => $this->getTableSetup(),
             'table_columns' => $this->getTableColumns(),
-            'default_sort_column' => $this->getDefaultSortColumn(),
-            'default_sort_direction' => $this->getDefaultSortDirection(),
+            'table_filters' => $this->getTableFilters(),
             'table_actions' => $this->getTableActions(),
             'table_bulk_actions' => $this->getTableBulkActions(),
-            'table_filters' => $this->getTableFilters(),
-            'methods' => $this->formatMethods(),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile(
-            $this->context->getPath('resource').'/'.$this->context->getEntityName().'Resource.php',
-            $content
-        );
+        $path = $this->context->getPath('resource').'/'.
+            $this->context->getEntityName().'Resource.php';
+
+        $this->writeFile($path, $content);
         $this->generateResourcePages();
     }
 
@@ -161,64 +156,6 @@ class ResourceGenerator extends AbstractGenerator
         return implode(",\n            ", $filters);
     }
 
-    protected function getFormSetup(): string
-    {
-        $setup = [];
-        foreach ($this->getBlocks() as $block) {
-            if (method_exists($block, 'getFormSetup')) {
-                $blockSetup = $block->getFormSetup();
-                if (! empty($blockSetup)) {
-                    $setup[] = $blockSetup;
-                }
-            }
-        }
-
-        return implode("\n        ", $setup);
-    }
-
-    protected function getTableSetup(): string
-    {
-        $setup = [];
-        foreach ($this->getBlocks() as $block) {
-            if (method_exists($block, 'getTableSetup')) {
-                $blockSetup = $block->getTableSetup();
-                if (! empty($blockSetup)) {
-                    $setup[] = $blockSetup;
-                }
-            }
-        }
-
-        return implode("\n        ", $setup);
-    }
-
-    protected function getDefaultSortColumn(): string
-    {
-        foreach ($this->getBlocks() as $block) {
-            if (method_exists($block, 'getDefaultSortColumn')) {
-                $column = $block->getDefaultSortColumn();
-                if (! empty($column)) {
-                    return $column;
-                }
-            }
-        }
-
-        return '';
-    }
-
-    protected function getDefaultSortDirection(): string
-    {
-        foreach ($this->getBlocks() as $block) {
-            if (method_exists($block, 'getDefaultSortDirection')) {
-                $direction = $block->getDefaultSortDirection();
-                if (! empty($direction)) {
-                    return $direction;
-                }
-            }
-        }
-
-        return '';
-    }
-
     protected function getTableBulkActions(): string
     {
         $actions = [];
@@ -232,5 +169,14 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         return implode(",\n            ", $actions);
+    }
+
+    protected function getNavigationGroup(): string
+    {
+        return match ($this->context->getContextType()) {
+            'preview' => 'Previews',
+            'package' => $this->context->getEntityName(),
+            default => 'Content'
+        };
     }
 }

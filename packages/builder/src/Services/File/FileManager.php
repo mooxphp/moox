@@ -45,15 +45,21 @@ class FileManager
 
     public function writeAndFormatFiles(array $files): void
     {
-        try {
-            $this->validateFiles($files);
-            foreach ($files as $path => $content) {
-                $this->ensureDirectoryExists(dirname($path));
-                $this->writeFile($path, $content);
+        $paths = [];
+        foreach ($files as $path => $content) {
+            $directory = dirname($path);
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
             }
-        } catch (\Exception $e) {
-            throw new RuntimeException("File operation failed: {$e->getMessage()}", 0, $e);
+
+            if (file_put_contents($path, $content) === false) {
+                throw new RuntimeException("Failed to write file: {$path}");
+            }
+            $paths[] = $path;
         }
+
+        $formatter = new FileFormatter;
+        $formatter->formatFiles($paths);
     }
 
     public function formatFiles(array $files): void

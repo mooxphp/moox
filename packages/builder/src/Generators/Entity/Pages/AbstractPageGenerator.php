@@ -71,13 +71,22 @@ abstract class AbstractPageGenerator extends AbstractGenerator
 
     protected function getTemplate(): string
     {
-        $pageType = $this->getPageType();
-        $template = $this->context->getConfig()['generators']['resource']['page_templates'][$pageType] ?? null;
-
+        $template = $this->loadStub($this->getTemplate());
         if (! $template) {
-            throw new RuntimeException("Template configuration for page_{$pageType} not found");
+            throw new RuntimeException('Failed to load template: '.$this->getTemplate());
         }
 
-        return $template;
+        $variables = [
+            'namespace' => $this->getNamespace(),
+            'class_name' => $this->getClassName(),
+            'resource_name' => $this->resourceName,
+            'resource_namespace' => $this->context->getNamespace('resource'),
+            'model_class' => $this->context->getEntityName(),
+            'use_statements' => $this->formatUseStatements(),
+            'traits' => $this->formatTraits(),
+            'methods' => $this->formatMethods(),
+        ];
+
+        return $this->replaceTemplateVariables($template, $variables);
     }
 }
