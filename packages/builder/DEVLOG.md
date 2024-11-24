@@ -1,15 +1,24 @@
+# Moox Builder DEVLOG
+
 We work on these tasks in order from top to bottom:
 
--   [WIP] Fix the BuilderPanelProvider, that is currently just black
-    -   Tested with different plugins, just black
-    -   Tested with discoverResources, just black
--   [ ] Test fresh generation with empty DB
--   [ ] The filename of the generated List page is missing the plural s
+-   [WIP] The preview table is generated but without fields (id, created_at, updated_at are the only fields)
+-   [ ] If a production table exists, the preview table generation will overwrite it.We could probably prefix all preview tables with `preview_` when generating the table and in the generated model of course
+-   [ ] Tests
+    -   [ ] Test fresh generation with empty DB
+    -   [ ] Test regeneration after manual file deletion
+    -   [ ] Test generation of Preview, App and Package
+    -   [ ] Test generation of Simple Item, Publishable Item, Full Item, Simple Taxonomy, Nested Taxonomy
 -   [ ] Fix regeneration after manual file deletion - maybe fixed
 -   [ ] Implement preview "migrations" using DB directly
 -   [ ] Add --migration option to create command
 -   [ ] Refactor DeleteCommand to use new services
 -   [ ] Refactor AbstractBlock (see below)
+-   [ ] Refactor Services, will be a pain
+    -   Most probably there are duplicated methods
+        means methods that do the same or very similar things
+        before we refactor, I want to know how bad it is
+        if we find multiple methods across classes, we can probably refactor them to a trait
 -   [ ] Implement Package Generation (see below)
     -   [ ] Implement PackageGenerator service
     -   [ ] Create PrepareAppForPackagesCommand

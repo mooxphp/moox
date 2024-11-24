@@ -163,4 +163,16 @@ class BuildContext
     {
         $this->config = $config;
     }
+
+    public function formatNamespace(string $type, bool $leadingSlash = true): string
+    {
+        $namespace = $this->getNamespace($type);
+
+        return $leadingSlash ? '\\'.$namespace : $namespace;
+    }
+
+    public function getFullyQualifiedName(string $type, string $className): string
+    {
+        return $this->formatNamespace($type).$className;
+    }
 }

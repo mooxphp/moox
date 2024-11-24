@@ -11,6 +11,7 @@ use Moox\Builder\Contexts\ContextFactory;
 use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Build\BuildStateManager;
 use Moox\Builder\Services\Entity\EntityCreator;
+use Moox\Builder\Services\Preview\PreviewTableManager;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -26,6 +27,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
     public function __construct(
         private readonly EntityCreator $entityCreator,
         private readonly BuildStateManager $buildStateManager,
+        private readonly PreviewTableManager $previewTableManager,
     ) {
         parent::__construct();
     }
@@ -78,6 +80,16 @@ class CreateEntityCommand extends AbstractBuilderCommand
             ]);
 
             Log::info('Executing entity creation');
+
+            if ($preview) {
+                $this->previewTableManager
+                    ->withContext($context)
+                    ->setBlocks($blocks)
+                    ->execute();
+
+                Log::info('Preview table created');
+            }
+
             $this->entityCreator->execute();
 
             $this->info("Entity {$name} created successfully in {$context->getContextType()} context");

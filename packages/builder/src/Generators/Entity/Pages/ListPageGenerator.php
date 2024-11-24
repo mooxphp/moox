@@ -10,4 +10,9 @@ class ListPageGenerator extends AbstractPageGenerator
     {
         return 'List';
     }
+
+    protected function getClassName(): string
+    {
+        return $this->getPageType().$this->context->getPluralName();
+    }
 }

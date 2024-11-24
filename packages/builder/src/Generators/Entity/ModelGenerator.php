@@ -25,7 +25,7 @@ class ModelGenerator extends AbstractGenerator
         }
 
         $variables = [
-            'namespace' => $this->context->getNamespace('model'),
+            'namespace' => $this->context->formatNamespace('model', false),
             'class_name' => $this->context->getEntityName(),
             'table' => $this->context->getTableName(),
             'use_statements' => $this->formatUseStatements(),

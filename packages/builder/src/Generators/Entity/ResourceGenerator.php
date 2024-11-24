@@ -32,9 +32,9 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         $variables = [
-            'namespace' => $this->context->getNamespace('resource'),
+            'namespace' => $this->context->formatNamespace('resource', false),
             'class_name' => $this->context->getEntityName(),
-            'model' => $this->context->getNamespace('model').'\\'.$this->context->getEntityName(),
+            'model' => $this->getModelReference(),
             'model_plural' => $this->context->getPluralName(),
             'navigation_group' => $this->getNavigationGroup(),
             'navigation_icon' => $this->getNavigationIcon(),
@@ -88,7 +88,7 @@ class ResourceGenerator extends AbstractGenerator
             [
                 'use Filament\Forms\Form;',
                 'use Filament\Tables\Table;',
-                'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource\\Pages;',
+                'use '.$this->context->formatNamespace('resource', false).'\\'.$this->context->getEntityName().'Resource\\Pages;',
             ],
             $this->getUseStatements('resource', 'forms'),
             $this->getUseStatements('resource', 'columns'),
@@ -180,5 +180,10 @@ class ResourceGenerator extends AbstractGenerator
             'package' => $this->context->getEntityName(),
             default => 'Content'
         };
+    }
+
+    protected function getModelReference(): string
+    {
+        return $this->context->formatNamespace('model', true).'\\'.$this->context->getEntityName();
     }
 }

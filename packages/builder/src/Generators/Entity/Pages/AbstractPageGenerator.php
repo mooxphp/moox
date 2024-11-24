@@ -39,7 +39,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
             'namespace' => $this->getNamespace(),
             'model' => $this->context->getEntityName(),
             'model_plural' => $this->context->getPluralName(),
-            'resource' => $this->context->getNamespace('resource').'\\'.$this->resourceName,
+            'resource' => $this->context->formatNamespace('resource', true).'\\'.$this->resourceName,
             'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),
             'methods' => $this->formatMethods(),
@@ -56,7 +56,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
 
     protected function getNamespace(): string
     {
-        return $this->context->getNamespace('resource').'\\'.$this->resourceName.'\\Pages';
+        return $this->context->formatNamespace('resource', false).'\\'.$this->resourceName.'\\Pages';
     }
 
     protected function getFilePath(string $className): string
