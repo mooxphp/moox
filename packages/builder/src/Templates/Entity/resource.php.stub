@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 {{ use_statements }}
 
 class {{ class_name }}Resource extends Resource
@@ -19,7 +21,30 @@ class {{ class_name }}Resource extends Resource
     {
         {{ form_setup }}
         return $form->schema([
-            {{ form_schema }}
+            Grid::make(2)
+                ->schema([
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    {{ form_schema }}
+                                ]),
+
+                                {{ form_sections }}
+                        ])
+                        ->columnSpan(['lg' => 2]),
+                    Grid::make()
+                        ->schema([
+                            Section::make()
+                                ->schema([
+                                    {{ meta_fields }}
+                                ]),
+
+                                {{ meta_sections }}
+                        ])
+                        ->columnSpan(['lg' => 1]),
+                ])
+                ->columns(['lg' => 3]),
         ]);
     }
 

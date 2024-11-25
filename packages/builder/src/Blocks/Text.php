@@ -21,7 +21,6 @@ class Text extends AbstractBlock
         $this->useStatements['resource'] = [
             'forms' => ['use Filament\Forms\Components\TextInput;'],
             'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-            'filters' => ['use Filament\Tables\Filters\TextFilter;'],
         ];
 
         $this->formFields['resource'] = [
@@ -35,10 +34,6 @@ class Text extends AbstractBlock
             "TextColumn::make('{$this->name}')"
                 .($this->sortable ? '->sortable()' : '')
                 .($this->searchable ? '->searchable()' : ''),
-        ];
-
-        $this->filters['resource'] = [
-            "TextFilter::make('{$this->name}')",
         ];
 
         $this->migrations['fields'] = [

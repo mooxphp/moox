@@ -68,6 +68,18 @@ abstract class AbstractBlock
         'resource' => [],
     ];
 
+    protected array $formSections = [
+        'resource' => [],
+    ];
+
+    protected array $metaFields = [
+        'resource' => [],
+    ];
+
+    protected array $metaSections = [
+        'resource' => [],
+    ];
+
     protected array $tableColumns = [
         'resource' => [],
     ];

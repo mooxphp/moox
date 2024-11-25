@@ -36,12 +36,16 @@ class Publish extends AbstractBlock
                 ],
             ],
             'pages' => [
-                'list' => ['use Illuminate\Database\Eloquent\Builder;'],
+                'list' => [
+                    'use Moox\Core\Traits\SinglePublishInListPage;',
+                    'use Illuminate\Database\Eloquent\Builder;',
+                ],
             ],
         ];
 
         $this->traits['model'] = ['SinglePublishInModel'];
         $this->traits['resource'] = ['SinglePublishInResource'];
+        $this->traits['pages']['list'] = ['SinglePublishInListPage'];
 
         $this->methods['model'] = [
             'scopes' => [
@@ -71,9 +75,18 @@ class Publish extends AbstractBlock
         ];
 
         $this->formFields['resource'] = [
+        ];
+
+        $this->formSections['resource'] = [
+        ];
+
+        $this->metaFields['resource'] = [
             "DateTimePicker::make('publish_at')
-                ->label(__('core::core.publish_at'))
-                ->nullable()",
+            ->label(__('core::core.publish_at'))
+            ->nullable()",
+        ];
+
+        $this->metaSections['resource'] = [
         ];
 
         $this->tableColumns['resource'] = [

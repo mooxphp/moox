@@ -6,13 +6,18 @@ We work on these tasks in order from top to bottom:
 
 ### Entity
 
--   [ ] Config and translations have wrong filenames and must be wired correctly
--   [ ] Do we use the entity_blocks and entity_tabs tables anymore?
--   [ ] Iterate over all blocks, presets and contexts to find out if they are working as expected
--   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
--   [ ] Add --migration option to create command
+-   [WIP] Iterate over all blocks, presets and contexts to find out if they are working as expected
+
+    -   [ ] The Resource needs a more complex layout introducing regions
+    -   [ ] Presets need to be able to define where blocks should be placed
+
+    -   [ ] Add default actions or try to add the Publish Traits first, then use actions to test the entities
+
+    -   [ ] Config and translations have wrong filenames and must be wired correctly
+    -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
+
 -   [ ] Refactor DeleteCommand to use new services
--   [ ] Polish Entity Builder
+-   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself?
 
 ### Extras

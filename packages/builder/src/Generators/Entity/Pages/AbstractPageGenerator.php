@@ -90,4 +90,46 @@ abstract class AbstractPageGenerator extends AbstractGenerator
 
         return $templatePath;
     }
+
+    protected function formatUseStatements(): string
+    {
+        $statements = [];
+        foreach ($this->getBlocks() as $block) {
+            $pageType = strtolower($this->getPageType());
+
+            $blockStatements = $block->getUseStatements('pages');
+            if (isset($blockStatements[$pageType])) {
+                $statements = array_merge($statements, $blockStatements[$pageType]);
+            }
+
+            $blockTraits = $block->getTraits('pages');
+            if (isset($blockTraits[$pageType])) {
+                foreach ($blockTraits[$pageType] as $trait) {
+                    $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
+                }
+            }
+        }
+
+        return implode("\n", array_map(function ($statement) {
+            return rtrim($statement, ';').';';
+        }, array_unique($statements)));
+    }
+
+    protected function formatTraits(): string
+    {
+        $traits = [];
+        foreach ($this->getBlocks() as $block) {
+            $pageType = strtolower($this->getPageType());
+            $blockTraits = $block->getTraits('pages');
+            if (isset($blockTraits[$pageType])) {
+                $traits = array_merge($traits, $blockTraits[$pageType]);
+            }
+        }
+
+        if (empty($traits)) {
+            return '';
+        }
+
+        return 'use '.implode(', ', array_unique($traits)).';';
+    }
 }

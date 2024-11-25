@@ -22,7 +22,6 @@ class TextArea extends AbstractBlock
             'resource' => [
                 'forms' => ['use Filament\Forms\Components\Textarea;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ['use Filament\Tables\Filters\TextFilter;'],
             ],
         ];
 
@@ -39,10 +38,6 @@ class TextArea extends AbstractBlock
                 ->limit(50)"
                 .($this->searchable ? '->searchable()' : '')
                 .($this->sortable ? '->sortable()' : ''),
-        ];
-
-        $this->filters['resource'] = [
-            "TextFilter::make('{$this->name}')",
         ];
 
         $this->migrations['fields'] = [
