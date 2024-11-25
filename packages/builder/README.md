@@ -8,13 +8,18 @@ From idea to a working LaravelApp in minutes. No coding required.
 
 ## Work-in-Progress
 
--   ✅ Working Service Layer and Configuration
--   🟡 Entity generation with `builder:create`
+-   ✅ Entity generation with `builder:create`
+-   🟡 Generate all available contexts and presets
 -   🟡 Entity deletion with `builder:delete`
--   🟡 Basic Presets (Item, Taxonomy)
 -   🚧 Package generation with `builder:package`
+-   🚧 App (Panel) generation with `builder:app`
+-   🚧 Frontend generation with `builder:frontend`
 -   🚧 UI for creating entities with custom blocks
 -   🚧 UI for creating packages
+-   🚧 UI for managing apps (panels)
+-   🚧 UI for managing frontend (themes)
+-   🚧 UI for managing versions
+-   🚧 Generate complete packages or apps as zip
 
 ## Overview
 
