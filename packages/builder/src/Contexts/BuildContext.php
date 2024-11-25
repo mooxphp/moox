@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Moox\Builder\Contexts;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 class BuildContext
 {
+    public const PREVIEW_PREFIX = 'preview_';
+
     protected string $contextType;
 
     protected array $config;
@@ -56,7 +59,13 @@ class BuildContext
 
     public function getEntityName(): string
     {
-        return $this->entityName;
+        if ($this->contextType !== 'preview') {
+            return $this->entityName;
+        }
+
+        return str_starts_with($this->entityName, 'Preview')
+            ? $this->entityName
+            : 'Preview'.$this->entityName;
     }
 
     public function getPluralName(): string
@@ -139,7 +148,14 @@ class BuildContext
 
     public function getTableName(): string
     {
-        return str($this->pluralName)->snake()->toString();
+        $tableName = Str::snake($this->entityName);
+        $tableName = Str::plural($tableName);
+
+        if ($this->contextType === 'preview') {
+            return self::PREVIEW_PREFIX.$tableName;
+        }
+
+        return $tableName;
     }
 
     public function isPackage(): bool

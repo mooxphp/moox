@@ -2,63 +2,36 @@
 
 We work on these tasks in order from top to bottom:
 
--   [WIP] The preview table is generated but without fields (id, created_at, updated_at are the only fields)
--   [ ] If a production table exists, the preview table generation will overwrite it.We could probably prefix all preview tables with `preview_` when generating the table and in the generated model of course
--   [ ] Tests
-    -   [ ] Test fresh generation with empty DB
-    -   [ ] Test regeneration after manual file deletion
-    -   [ ] Test generation of Preview, App and Package
-    -   [ ] Test generation of Simple Item, Publishable Item, Full Item, Simple Taxonomy, Nested Taxonomy
--   [ ] Fix regeneration after manual file deletion - maybe fixed
--   [ ] Implement preview "migrations" using DB directly
+## Tasks
+
+### Entity
+
+-   [ ] Config and translations have wrong filenames and must be wired correctly
+-   [ ] Do we use the entity_blocks and entity_tabs tables anymore?
+-   [ ] Iterate over all blocks, presets and contexts to find out if they are working as expected
+-   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
 -   [ ] Add --migration option to create command
 -   [ ] Refactor DeleteCommand to use new services
--   [ ] Refactor AbstractBlock (see below)
--   [ ] Refactor Services, will be a pain
-    -   Most probably there are duplicated methods
-        means methods that do the same or very similar things
-        before we refactor, I want to know how bad it is
-        if we find multiple methods across classes, we can probably refactor them to a trait
--   [ ] Implement Package Generation (see below)
-    -   [ ] Implement PackageGenerator service
-    -   [ ] Create PrepareAppForPackagesCommand
-    -   [ ] Implement package entity activation system
-    -   [ ] Add package publishing workflow
--   [ ] Generate tests for all services
--   [ ] Option to generate from blueprint
--   [ ] Configurable FeatureSet (dependency free, also for Moox Core)
-    -   [ ] Filament Core Features only
-    -   [ ] Moox Core Features
-    -   [ ] Community Features
--   [ ] Configurable Presets
-    -   [ ] Add Shop, Blog etc.
--   [ ] Some of the Blocks are not working as they miss traits, methods ... need to iterate
--   [ ] Config (Tabs etc.) and translations are generated, not tested (may be not wired correctly)
--   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
--   [ ] Require Pint, what about Larastan?
--   [ ] Add more Blocks
-    -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
-    -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
-    -   [ ] Most wanted like Phone, Address etc.
--   [ ] Add more Presets
-    -   [ ] Shop
-    -   [ ] Blog
-    -   [ ] Comments?
--   [ ] Implement panel generator, incl table(s)
--   [ ] Implement frontend generator?
+-   [ ] Polish Entity Builder
+-   [ ] Would Builder now be able to generate itself?
 
-## Abstract Block Refactoring (ignore for now)
+### Extras
 
-The `AbstractBlock`is a pure mess. As it is used as blueprint for developers, it is a pain to find out how to implement blocks. But simply reordering the class does not work because of inheritance chains in methods.
-
-We need to create tasks for that, review the complete block system and refactor it.
-
-When refactoring the block system, we need also discuss the following points:
-
+-   [ ] Implement App Generator command
+    -   [ ] Add (Moox) Packages to composer.json
+    -   [ ] Create PanelProvider
+    -   [ ] Create Installer
+    -   [ ] Create Readme
+-   [ ] Implement Frontend generator command
 -   [ ] We need to implement Sections ... see Chat on that
 -   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
+-   [ ] Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
+-   [ ] Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
+-   [ ] Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
+-   [ ] Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
+-   [ ] PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
 
-## Unsorted Tasks (ignore for now)
+### Core
 
 -   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
     -   [ ] getResourceName should be auto detected
@@ -74,19 +47,6 @@ When refactoring the block system, we need also discuss the following points:
         -   Moox Builder Packages should be cleaned up as much as possible
         -   Installer: use Abstract, Service or Traits ...
         -   ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
--   [ ] Builder needs to be cleaned up after able to generate packages
-    -   [ ] Cleanup config
-    -   [ ] Remove old entities
-    -   [ ] Remove build.php
-    -   [ ] Remove GH Template
--   [ ] We need to generate factories from blocks to entities
--   [ ] We need to generate tests
--   [ ] Versions need a concept, needs a table (and UI)
--   [ ] Generate the Builder UI, let Builder build itself
--   [ ] Generate a Frontend
--   [ ] Idea: https://docs.larallama.io/, would be able to generate based on a prompt or add complex features?
--   [ ] Idea: https://github.com/nikic/PHP-Parser, would be able to update even custom code or auto-maintain packages?
--   [ ] Idea: Install a Builder Platform with lot's packages and Builder. For each user, create a full-fledged PanelProvider as Preview (for Demo, for SaaS?)
 -   [ ] Core Docs
     -   Naming convention InModel InResource InPages and Single for single-use traits
     -   TabsInResource - contains TODO
@@ -116,16 +76,42 @@ When refactoring the block system, we need also discuss the following points:
 -   If plugin data-language -> migration create_languages_table ->
     SP: ->hasMigration('create_data_languages_table') (correct the -)
 
-    -   Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
-    -   Livewire Frontend
-    -   Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
-    -   Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
-    -   Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
-    -   PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+### Tests
 
--   Inline-Help
+-   [ ] Write tests for all services
+-   [ ] Write tests for all generators
+-   [ ] Write tests for all commands
+-   [ ] Write build tests using presets, blocks and contexts
+-   [ ] Generate Factories from Blocks
+-   [ ] Generate Tests from Blocks
 
-## Packages (ignore for now)
+### Package
+
+-   [ ] Implement Package Generation (see below)
+    -   [ ] Implement PackageGenerator service
+    -   [ ] Create PrepareAppForPackagesCommand
+    -   [ ] Implement package entity activation system
+    -   [ ] Add package publishing workflow
+
+### Ideas
+
+-   [ ] Option to generate from Blueprint
+    -   [ ] Create BlueprintValidator service
+    -   [ ] --blueprint option for CreateCommand
+    -   [ ] Document how to use Blueprints
+-   [ ] Configurable FeatureSet (dependency free, also for Moox Core)?
+-   [ ] Generate Blueprint from Prompt
+-   [ ] Add presets for Comments, Media, Users, Roles, Permissions
+-   [ ] Add blueprints for Blog, Shop, CRM, PM, Forum, Wiki, CMS, etc.
+-   [ ] Extend with AI, use https://docs.larallama.io/
+    -   [ ] Use Nikic PHP Parser to update code
+    -   [ ] Use Larastan to check the code
+-   [ ] Add more Blocks
+    -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
+    -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
+    -   [ ] Most wanted like Phone, Address etc.
+
+## Packages
 
 This config was in the Package and is currently missing: I depends to Blocks means to Entities, Blocks need to be able to generate config for entities.
 
@@ -210,7 +196,7 @@ I want to generate Packages using Moox Builder, it should work like this:
 -   Later we'll need a `RemovePackageCommand` that uses the `PackageRemover`service
 -   Last the `AbstractPackageService`
 
-## The UI (ignore for now)
+## Builder UI
 
 Some early thoughts:
 

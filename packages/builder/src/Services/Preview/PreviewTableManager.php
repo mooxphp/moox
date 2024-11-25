@@ -45,16 +45,8 @@ class PreviewTableManager extends ContextAwareService
                 if (method_exists($block, 'migration')) {
                     $migration = $block->migration();
                     if (is_array($migration)) {
-                        foreach ($migration as $key => $definition) {
-                            if ($key === 'fields') {
-                                foreach ($definition as $field) {
-                                    $this->addField($table, $field);
-                                }
-                            } elseif ($key === 'model') {
-                                foreach ($definition as $field => $type) {
-                                    $this->addModelField($table, $field, $type);
-                                }
-                            }
+                        foreach ($migration as $field) {
+                            $this->addField($table, $field);
                         }
                     }
                 }
@@ -68,34 +60,8 @@ class PreviewTableManager extends ContextAwareService
     {
         $field = trim(rtrim($field, ';'));
         if (! empty($field)) {
-            $code = sprintf('return function($table) { $table->%s; };', $field);
-            $fieldCallback = eval($code);
-            $fieldCallback($table);
-        }
-    }
-
-    protected function addModelField(Blueprint $table, string $field, string $type): void
-    {
-        if (str_contains($type, '|')) {
-            [$type, $modifiers] = explode('|', $type, 2);
-            $modifiers = explode('|', $modifiers);
-        } else {
-            $modifiers = [];
-        }
-
-        $method = match ($type) {
-            'datetime' => 'dateTime',
-            'text' => 'text',
-            'string' => 'string',
-            default => $type
-        };
-
-        $column = $table->$method($field);
-
-        foreach ($modifiers as $modifier) {
-            if (method_exists($column, $modifier)) {
-                $column->$modifier();
-            }
+            $field = str_replace('$table->', '', $field);
+            eval('$table->'.$field.';');
         }
     }
 
