@@ -105,7 +105,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
             $blockTraits = $block->getTraits('pages');
             if (isset($blockTraits[$pageType])) {
                 foreach ($blockTraits[$pageType] as $trait) {
-                    $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
+                    $statements[] = "use $trait;";
                 }
             }
         }
@@ -122,7 +122,12 @@ abstract class AbstractPageGenerator extends AbstractGenerator
             $pageType = strtolower($this->getPageType());
             $blockTraits = $block->getTraits('pages');
             if (isset($blockTraits[$pageType])) {
-                $traits = array_merge($traits, $blockTraits[$pageType]);
+                $shortTraits = array_map(function ($trait) {
+                    $parts = explode('\\', $trait);
+
+                    return end($parts);
+                }, $blockTraits[$pageType]);
+                $traits = array_merge($traits, $shortTraits);
             }
         }
 

@@ -151,10 +151,18 @@ class BuildRecorder
             ];
 
             if (method_exists($block, 'getUseStatements')) {
-                $data['useStatements'] = $block->getUseStatements('model');
+                $data['useStatements'] = [
+                    'model' => $block->getUseStatements('model'),
+                    'resource' => $block->getUseStatements('resource'),
+                    'pages' => $block->getUseStatements('pages'),
+                ];
             }
             if (method_exists($block, 'getTraits')) {
-                $data['traits'] = $block->getTraits('model');
+                $data['traits'] = [
+                    'model' => $block->getTraits('model'),
+                    'resource' => $block->getTraits('resource'),
+                    'pages' => $block->getTraits('pages'),
+                ];
             }
             if (method_exists($block, 'getMethods')) {
                 $data['methods'] = $block->getMethods('model');

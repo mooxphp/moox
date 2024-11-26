@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Illuminate\Support\Facades\Log;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
 use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
@@ -38,8 +39,12 @@ class ResourceGenerator extends AbstractGenerator
             'model_plural' => $this->context->getPluralName(),
             'navigation_group' => $this->getNavigationGroup(),
             'navigation_icon' => $this->getNavigationIcon(),
-            'use_statements' => $this->formatResourceUseStatements(),
+            'use_statements' => $this->formatUseStatements(),
+            'traits' => $this->formatTraits(),
             'form_schema' => $this->getFormSchema(),
+            'form_sections' => $this->getFormSections(),
+            'meta_schema' => $this->getMetaSchema(),
+            'meta_sections' => $this->getMetaSections(),
             'table_columns' => $this->getTableColumns(),
             'table_filters' => $this->getTableFilters(),
             'table_actions' => $this->getTableActions(),
@@ -82,43 +87,86 @@ class ResourceGenerator extends AbstractGenerator
         return 'resource';
     }
 
-    protected function formatResourceUseStatements(): string
+    protected function formatUseStatements(): string
     {
-        $statements = array_merge(
-            [
-                'use Filament\Forms\Form;',
-                'use Filament\Tables\Table;',
-                'use '.$this->context->formatNamespace('resource', false).'\\'.$this->context->getEntityName().'Resource\\Pages;',
-            ],
-            $this->getUseStatements('resource', 'forms'),
-            $this->getUseStatements('resource', 'columns'),
-            $this->getUseStatements('resource', 'filters'),
-            $this->getUseStatements('resource', 'actions'),
-            $this->getUseStatements('resource', 'traits')
-        );
+        $statements = [
+            'use Filament\Forms\Form;',
+            'use Filament\Forms\Components\Grid;',
+            'use Filament\Forms\Components\Section;',
+            'use Filament\Resources\Resource;',
+            'use Filament\Tables\Table;',
+            'use Illuminate\Database\Eloquent\Builder;',
+            'use '.$this->context->formatNamespace('resource', false).'\\'.$this->context->getEntityName().'Resource\\Pages;',
+        ];
 
-        foreach ($this->getBlocks() as $block) {
-            if (! empty($block->traits['resource'])) {
-                foreach ($block->traits['resource'] as $trait) {
-                    $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
-                }
-            }
+        Log::debug('ResourceGenerator getting use statements', [
+            'blocks' => array_map(fn ($block) => get_class($block), $this->getBlocks()),
+            'statements_before' => $statements,
+        ]);
+
+        $resourceStatements = $this->getUseStatements('resource');
+        Log::debug('ResourceGenerator got use statements', [
+            'resource_statements' => $resourceStatements,
+        ]);
+
+        if (! empty($resourceStatements)) {
+            $statements = array_merge($statements, $resourceStatements);
         }
+
+        Log::debug('ResourceGenerator final statements', [
+            'final_statements' => $statements,
+        ]);
 
         return implode("\n", array_map(function ($statement) {
             return rtrim($statement, ';').';';
         }, array_unique($statements)));
     }
 
+    protected function formatTraits(): string
+    {
+        $traits = [];
+        Log::debug('ResourceGenerator getting traits', [
+            'blocks' => array_map(fn ($block) => get_class($block), $this->getBlocks()),
+        ]);
+
+        $resourceTraits = $this->getUseStatements('resource');
+        Log::debug('ResourceGenerator processing traits', [
+            'resource_traits' => $resourceTraits,
+        ]);
+
+        foreach ($resourceTraits as $trait) {
+            if (str_contains($trait, 'Trait')) {
+                $parts = explode('\\', $trait);
+                $traits[] = end($parts);
+            }
+        }
+
+        Log::debug('ResourceGenerator final traits', [
+            'final_traits' => $traits,
+        ]);
+
+        if (empty($traits)) {
+            return '';
+        }
+
+        return 'use '.implode(', ', array_unique($traits)).';';
+    }
+
     protected function getFormSchema(): string
     {
         $fields = [];
         foreach ($this->getBlocks() as $block) {
-            $field = rtrim($block->formField(), ',');
-            $fields[] = $field;
+            $formField = $block->formField();
+            if (! empty($formField)) {
+                $fields[] = rtrim($formField, ',');
+            }
         }
 
-        return implode(",\n            ", $fields);
+        if (empty($fields)) {
+            return '';
+        }
+
+        return implode(",\n            ", array_filter($fields));
     }
 
     protected function getTableColumns(): string
@@ -185,5 +233,66 @@ class ResourceGenerator extends AbstractGenerator
     protected function getModelReference(): string
     {
         return $this->context->formatNamespace('model', true).'\\'.$this->context->getEntityName();
+    }
+
+    protected function getFormSections(): string
+    {
+        $sections = [];
+        foreach ($this->getBlocks() as $block) {
+            $formSections = $block->getFormSections();
+            if (! empty($formSections)) {
+                $sections = array_merge($sections, $formSections);
+            }
+        }
+
+        return implode(",\n            ", $sections);
+    }
+
+    protected function getMetaSchema(): string
+    {
+        $fields = [];
+        foreach ($this->getBlocks() as $block) {
+            $metaFields = $block->getMetaFields();
+            if (! empty($metaFields)) {
+                $fields = array_merge($fields, $metaFields);
+            }
+        }
+
+        return implode(",\n            ", $fields);
+    }
+
+    protected function getMetaSections(): string
+    {
+        $sections = [];
+        foreach ($this->getBlocks() as $block) {
+            $metaSections = $block->getMetaSections();
+            if (! empty($metaSections)) {
+                $sections = array_merge($sections, $metaSections);
+            }
+        }
+
+        return implode(",\n            ", $sections);
+    }
+
+    protected function getUseStatements(string $context, ?string $subContext = null): array
+    {
+        $statements = [];
+        foreach ($this->getBlocks() as $block) {
+            if (isset($block->useStatements[$context])) {
+                if ($subContext && isset($block->useStatements[$context][$subContext])) {
+                    $statements = array_merge($statements, $block->useStatements[$context][$subContext]);
+                } elseif (! $subContext) {
+                    foreach ($block->useStatements[$context] as $key => $value) {
+                        if (is_array($value)) {
+                            $statements = array_merge($statements, $value);
+                        } else {
+                            $statements[] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return array_unique($statements);
     }
 }

@@ -6,6 +6,10 @@ namespace Moox\Builder\Blocks;
 
 class SoftDelete extends AbstractBlock
 {
+    protected array $requiredBlocks = [];
+
+    protected array $containsBlocks = [];
+
     protected array $incompatibleBlocks = [
         Publish::class,
     ];
@@ -39,7 +43,7 @@ class SoftDelete extends AbstractBlock
             ],
         ];
 
-        $this->traits['model'] = ['SoftDeletes'];
+        $this->traits['model'] = ['Illuminate\Database\Eloquent\SoftDeletes'];
 
         $this->methods['resource'] = [
             'public static function getTableQuery(?string $currentTab = null): Builder {

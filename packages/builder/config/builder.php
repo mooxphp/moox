@@ -825,6 +825,10 @@ return [
     */
 
     'contexts' => [
+        'moox' => [
+            'base_path' => app_path('Moox'),
+            'base_namespace' => 'App\\Moox',
+        ],
         'app' => [
             'base_path' => app_path(),
             'base_namespace' => 'App',

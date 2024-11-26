@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Presets;
 
 use Moox\Builder\Blocks\Publish;
-use Moox\Builder\Blocks\SoftDelete;
 use Moox\Builder\Blocks\TitleWithSlug;
 
 class PublishableItemPreset extends AbstractPreset
@@ -21,7 +20,6 @@ class PublishableItemPreset extends AbstractPreset
                 nullable: false
             ),
             new Publish,
-            new SoftDelete,
         ];
     }
 }

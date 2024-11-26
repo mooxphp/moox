@@ -6,9 +6,13 @@ namespace Moox\Builder\Blocks;
 
 class Publish extends AbstractBlock
 {
-    protected array $includedBlocks = [
+    protected array $requiredBlocks = [];
+
+    protected array $containsBlocks = [
         SoftDelete::class,
     ];
+
+    protected array $incompatibleBlocks = [];
 
     public function __construct(
         string $name = 'publish',
@@ -27,10 +31,6 @@ class Publish extends AbstractBlock
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => ['use Filament\Tables\Filters\Filter;'],
                 'actions' => ['use Filament\Actions\Action;'],
-                'traits' => [
-                    'use Moox\Core\Traits\SinglePublishInResource;',
-                    'use Illuminate\Database\Eloquent\SoftDeletes;',
-                ],
                 'pages' => [
                     'use App\Filament\Resources\PublishableItemResource\Pages;',
                 ],
@@ -43,9 +43,9 @@ class Publish extends AbstractBlock
             ],
         ];
 
-        $this->traits['model'] = ['SinglePublishInModel'];
-        $this->traits['resource'] = ['SinglePublishInResource'];
-        $this->traits['pages']['list'] = ['SinglePublishInListPage'];
+        $this->traits['model'] = ['Moox\Core\Traits\SinglePublishInModel'];
+        $this->traits['resource'] = ['Moox\Core\Traits\SinglePublishInResource'];
+        $this->traits['pages']['list'] = ['Moox\Core\Traits\SinglePublishInListPage'];
 
         $this->methods['model'] = [
             'scopes' => [
@@ -81,6 +81,9 @@ class Publish extends AbstractBlock
         ];
 
         $this->metaFields['resource'] = [
+            'static::getFormActions()',
+            'static::getPublishAtFormField()',
+            'static::getAuthorFormField()',
             "DateTimePicker::make('publish_at')
             ->label(__('core::core.publish_at'))
             ->nullable()",
@@ -133,6 +136,7 @@ class Publish extends AbstractBlock
         $this->migrations['fields'] = [
             '$table->timestamp("published_at")->nullable()',
             '$table->timestamp("publish_at")->nullable()',
+            '$table->softDeletes()',
         ];
 
         $this->factories['model']['states'] = [

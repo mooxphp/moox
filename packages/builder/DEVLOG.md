@@ -7,15 +7,14 @@ We work on these tasks in order from top to bottom:
 ### Entity
 
 -   [WIP] Iterate over all blocks, presets and contexts to find out if they are working as expected
-
-    -   [ ] The Resource needs a more complex layout introducing regions
-    -   [ ] Presets need to be able to define where blocks should be placed
-
+    -   [ ] ResourceGenerator: Currently all block and pages use statements as well as traits are missing, need to fix this
+        -   [ ] AbstractGenerator (and AbstractPageGenerator) use direct access to get use statements and traits. But we need to use the data array
+        -   [ ] All generators need to use the implementation from AbstractGenerator then
+        -   [ ] We can flatten the nested array that is special for the resource use statements, as we do not need the information
+        -   [ ] Finally all use statements, traits as well as all other data should come from the data array, to be able to rebuild from an older build for example. Please verify this.
     -   [ ] Add default actions or try to add the Publish Traits first, then use actions to test the entities
-
     -   [ ] Config and translations have wrong filenames and must be wired correctly
     -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
-
 -   [ ] Refactor DeleteCommand to use new services
 -   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself?

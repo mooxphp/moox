@@ -75,7 +75,13 @@ abstract class AbstractGenerator
             return '';
         }
 
-        return 'use '.implode(', ', array_unique($traits)).';';
+        $shortTraits = array_map(function ($trait) {
+            $parts = explode('\\', $trait);
+
+            return end($parts);
+        }, $traits);
+
+        return 'use '.implode(', ', array_unique($shortTraits)).';';
     }
 
     protected function formatMethods(): string

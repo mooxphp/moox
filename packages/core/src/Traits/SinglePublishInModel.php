@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 trait SinglePublishInModel
 {
+    use SoftDeletes;
+
     public static function getStatusOptions(): array
     {
         return [

@@ -26,7 +26,6 @@ abstract class AbstractBlock
             'columns' => [],
             'filters' => [],
             'actions' => [],
-            'traits' => [],
             'pages' => [],
         ],
         'pages' => [
@@ -229,9 +228,24 @@ abstract class AbstractBlock
         return $this->methods[$context] ?? [];
     }
 
-    public function getFormFields(): array
+    public function getFormFields(string $context = 'resource'): array
     {
-        return $this->formFields['resource'] ?? [];
+        return $this->formFields[$context] ?? [];
+    }
+
+    public function getFormSections(string $context = 'resource'): array
+    {
+        return $this->formSections[$context] ?? [];
+    }
+
+    public function getMetaFields(string $context = 'resource'): array
+    {
+        return $this->metaFields[$context] ?? [];
+    }
+
+    public function getMetaSections(string $context = 'resource'): array
+    {
+        return $this->metaSections[$context] ?? [];
     }
 
     public function getTableColumns(): array
@@ -422,20 +436,12 @@ abstract class AbstractBlock
             'use Illuminate\Database\Eloquent\Builder;',
         ];
 
-        $statements = array_merge(
+        return array_unique(array_merge(
             $baseStatements,
             $this->getFlattenedUseStatements('model'),
             $this->getFlattenedUseStatements('resource'),
             $this->getFlattenedUseStatements('pages')
-        );
-
-        if ($this->traits['resource']) {
-            foreach ($this->traits['resource'] as $trait) {
-                $statements[] = 'use Moox\Core\Traits\\'.$trait.';';
-            }
-        }
-
-        return array_unique($statements);
+        ));
     }
 
     public function getPageUseStatements(string $page): array
@@ -448,8 +454,8 @@ abstract class AbstractBlock
         $resolvedBlocks = $blocks;
 
         foreach ($blocks as $block) {
-            if (isset($block->containsBlocks)) {
-                foreach ($block->containsBlocks as $includedBlock) {
+            if (isset($block->includedBlocks)) {
+                foreach ($block->includedBlocks as $includedBlock) {
                     $resolvedBlocks = array_filter(
                         $resolvedBlocks,
                         fn ($b) => ! ($b instanceof $includedBlock)

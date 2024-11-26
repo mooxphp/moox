@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace {{ namespace }};
 
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 {{ use_statements }}
 
 class {{ class_name }}Resource extends Resource
@@ -19,7 +16,6 @@ class {{ class_name }}Resource extends Resource
 
     public static function form(Form $form): Form
     {
-        {{ form_setup }}
         return $form->schema([
             Grid::make(2)
                 ->schema([
@@ -37,7 +33,7 @@ class {{ class_name }}Resource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    {{ meta_fields }}
+                                    {{ meta_schema }}
                                 ]),
 
                                 {{ meta_sections }}
@@ -50,7 +46,6 @@ class {{ class_name }}Resource extends Resource
 
     public static function table(Table $table): Table
     {
-        {{ table_setup }}
         return $table
             ->columns([
                 {{ table_columns }}

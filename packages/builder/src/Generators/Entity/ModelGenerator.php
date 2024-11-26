@@ -70,4 +70,24 @@ class ModelGenerator extends AbstractGenerator
     {
         return 'model';
     }
+
+    protected function formatUseStatements(): string
+    {
+        $statements = $this->getUseStatements('model');
+
+        foreach ($this->getBlocks() as $block) {
+            $blockTraits = $block->getTraits('model');
+            if (! empty($blockTraits)) {
+                foreach ($blockTraits as $trait) {
+                    if (! in_array("use $trait;", $statements)) {
+                        $statements[] = "use $trait;";
+                    }
+                }
+            }
+        }
+
+        return implode("\n", array_map(function ($statement) {
+            return rtrim($statement, ';').';';
+        }, array_unique($statements)));
+    }
 }
