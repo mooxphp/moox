@@ -115,4 +115,6 @@ return [
     'drop' => 'Soltar',
     'autoload' => 'Carga automática',
     'items_permanently_deleted' => '{0} No se eliminaron elementos de forma permanente.|{1} Se eliminó un elemento de forma permanente.|[2,*] :count elementos se eliminaron de forma permanente.',
+    'wp_term_meta' => 'Término Meta en WP',
+    'wp_term_metas' => 'Término Meta WP',
 ];
