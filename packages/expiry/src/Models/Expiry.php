@@ -24,6 +24,7 @@ class Expiry extends Model
         'category',
         'status',
         'expired_at',
+        'processing_deadline',
         'cycle',
         'notified_at',
         'notified_to',

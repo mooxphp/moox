@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('category')->nullable();
             $table->string('status')->nullable();
             $table->dateTime('expired_at');
+            $table->dateTime('processing_deadline')->nullable();
             $table->string('cycle')->nullable();
             $table->dateTime('notified_at')->nullable();
             $table->unsignedBigInteger('notified_to')->nullable();

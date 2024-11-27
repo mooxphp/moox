@@ -36,7 +36,7 @@ class CollectExpiries implements ShouldQueue
     {
         $this->setProgress(1);
 
-        // Beispiel-Daten (du kannst beliebige Demo-Daten hinzufügen)
+        // Example data (you can add any demo data)
         $demoData = [
             [
                 'title' => 'Demo Document 1',
@@ -45,6 +45,7 @@ class CollectExpiries implements ShouldQueue
                 'category' => 'Documents',
                 'status' => 'active',
                 'expired_at' => Carbon::now()->addDays(30),
+                'processing_deadline' => Carbon::now()->addDays(20),
                 'notified_to' => 1,
                 'escalated_to' => 2,
                 'handled_by' => 3,
@@ -57,6 +58,7 @@ class CollectExpiries implements ShouldQueue
                 'category' => 'Articles',
                 'status' => 'inactive',
                 'expired_at' => Carbon::now()->addDays(60),
+                'processing_deadline' => Carbon::now()->addDays(30),
                 'notified_to' => 2,
                 'escalated_to' => 3,
                 'handled_by' => 1,
@@ -69,6 +71,7 @@ class CollectExpiries implements ShouldQueue
                 'category' => 'Tasks',
                 'status' => 'active',
                 'expired_at' => Carbon::now()->addDays(90),
+                'processing_deadline' => Carbon::now()->addDays(50),
                 'notified_to' => 3,
                 'escalated_to' => 1,
                 'handled_by' => 2,
@@ -91,11 +94,12 @@ class CollectExpiries implements ShouldQueue
                     'category' => $data['category'],
                     'status' => $data['status'],
                     'expired_at' => $data['expired_at'],
+                    'processing_deadline' => $data['processing_deadline'],
                     'notified_to' => $data['notified_to'],
                     'escalated_to' => $data['escalated_to'],
                     'handled_by' => $data['handled_by'],
                     'done_at' => $data['done_at'],
-                    'cycle' => array_rand($cycleOptions), // Zufälliger Turnus
+                    'cycle' => array_rand($cycleOptions), // Random cycle
                     'meta_id' => null,
                     'notified_at' => Carbon::now(),
                     'escalated_at' => Carbon::now()->addDays(2),
