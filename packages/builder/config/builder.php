@@ -805,6 +805,7 @@ return [
         'features' => [
             'author' => \Moox\Builder\Blocks\Author::class,
             'publish' => \Moox\Builder\Blocks\Publish::class,
+            'simple' => \Moox\Builder\Blocks\Simple::class,
             'soft-delete' => \Moox\Builder\Blocks\SoftDelete::class,
             'title-with-slug' => \Moox\Builder\Blocks\TitleWithSlug::class,
         ],

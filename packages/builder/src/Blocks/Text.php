@@ -15,6 +15,7 @@ class Text extends AbstractBlock
         protected bool $unique = false,
         protected bool $searchable = false,
         protected bool $sortable = false,
+        protected bool $toggleable = false,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
@@ -33,7 +34,8 @@ class Text extends AbstractBlock
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')"
                 .($this->sortable ? '->sortable()' : '')
-                .($this->searchable ? '->searchable()' : ''),
+                .($this->searchable ? '->searchable()' : '')
+                .($this->toggleable ? '->toggleable()' : ''),
         ];
 
         $this->migrations['fields'] = [

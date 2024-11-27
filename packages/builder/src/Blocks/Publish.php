@@ -24,7 +24,6 @@ class Publish extends AbstractBlock
         $this->useStatements = [
             'model' => [
                 'use Illuminate\Database\Eloquent\Builder;',
-                'use Moox\Core\Traits\SinglePublishInModel;',
             ],
             'resource' => [
                 'forms' => ['use Filament\Forms\Components\DateTimePicker;'],

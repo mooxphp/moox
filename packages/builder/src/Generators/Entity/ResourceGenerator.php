@@ -48,6 +48,8 @@ class ResourceGenerator extends AbstractGenerator
             'table_filters' => $this->getTableFilters(),
             'table_actions' => $this->getTableActions(),
             'table_bulk_actions' => $this->getTableBulkActions(),
+            'default_sort_column' => $this->getDefaultSortColumn(),
+            'default_sort_direction' => $this->getDefaultSortDirection(),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
@@ -295,5 +297,25 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         return array_unique($statements);
+    }
+
+    protected function getDefaultSortColumn(): string
+    {
+        $sortableFields = ['order', 'sort', 'sorting', 'name', 'title', 'slug', 'id'];
+
+        foreach ($sortableFields as $field) {
+            foreach ($this->getBlocks() as $block) {
+                if ($block->getName() === $field && str_contains($block->tableColumn(), '->sortable()')) {
+                    return $field;
+                }
+            }
+        }
+
+        return 'id';
+    }
+
+    protected function getDefaultSortDirection(): string
+    {
+        return 'desc';
     }
 }

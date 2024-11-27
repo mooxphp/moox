@@ -6,6 +6,28 @@ We work on these tasks in order from top to bottom:
 
 ### Entity
 
+-   [WIP] We currently work on generating two Presets in Preview Context and optimize the generated resources
+    -   [WIP] PreviewSimItem is working like a charm but
+        -   [ ] Bulk actions are missing, check AbstractBlock implementation and Generator usage
+        -   [ ] Then test-implement in Simple by adding a DeleteBulkAction
+        -   [ ] Filters are missing...
+        -   [ ] Then test-implement in Simple by adding a simple TextFilter
+        -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
+    -   [ ] PreviewSoftItem
+        -   [ ] We need to bring this on the Simple Item level first
+        -   [ ] Then we need to implement the soft delete feature
+    -   [ ] PreviewPubItem
+        -   [ ] We need to bring this on the Simple Item level first
+        -   [ ] We need to work on the publish feature with custom actions
+    -   [ ] PreviewFullItem
+        -   [ ] We need to bring this on the Publish Item level first
+        -   [ ] We need to work on all existing blocks and generate theme here
+    -   [ ] PreviewSimTax
+        -   [ ] We need to bring this on the Simple Item level first
+        -   [ ] Then it need Tag specific implementation
+    -   [ ] PreviewPubTax
+        -   [ ] We need to bring this on the Publish Item level first
+        -   [ ] Then it need Category specific implementation with nested set
 -   [WIP] Iterate over all blocks, presets and contexts to find out if they are working as expected
     -   [ ] Config and translations have wrong filenames and must be wired correctly
     -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
@@ -14,6 +36,9 @@ We work on these tasks in order from top to bottom:
 -   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself?
 -   [ ] How would we generate a complete different type of resource, like a Media Manager? The only thing we need is a different table, switching to a grid.
+
+-   All Blocks need to be updated:
+    -   [ ] Toggleable option like in Text
 
 ### Core
 
@@ -28,10 +53,6 @@ We work on these tasks in order from top to bottom:
         -   There could be a create new draft for published?
         -   Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
     -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
-    -   [ ] Move to Core
-        -   Moox Builder Packages should be cleaned up as much as possible
-        -   Installer: use Abstract, Service or Traits ...
-        -   ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
 -   [ ] Core Docs
     -   Naming convention InModel InResource InPages and Single for single-use traits
     -   TabsInResource - contains TODO
@@ -123,6 +144,9 @@ After adding the missing data, we need to implement the RestoreService and use i
     -   [ ] Create PrepareAppForPackagesCommand
     -   [ ] Implement package entity activation system
     -   [ ] Add package publishing workflow
+-   [ ] Move code to Core
+    -   [ ] Installer: use Abstract, Service or Traits ...
+    -   [ ] ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
 
 ### Ideas
 
