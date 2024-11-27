@@ -10,15 +10,15 @@ We work on these tasks in order from top to bottom:
     -   [WIP] PreviewSimItem is working like a charm but
         -   [ ] Bulk actions are missing, check AbstractBlock implementation and Generator usage
         -   [ ] Then test-implement in Simple by adding a DeleteBulkAction
-        -   [ ] Filters are missing...
+        -   [ ] Filters are missing, check AbstractBlock implementation and Generator usage
         -   [ ] Then test-implement in Simple by adding a simple TextFilter
         -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
     -   [ ] PreviewSoftItem
         -   [ ] We need to bring this on the Simple Item level first
-        -   [ ] Then we need to implement the soft delete feature
+        -   [ ] Then we need to implement the soft delete feature, and bulk restore
     -   [ ] PreviewPubItem
         -   [ ] We need to bring this on the Simple Item level first
-        -   [ ] We need to work on the publish feature with custom actions
+        -   [ ] We need to work on the publish feature with custom actions, see https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167
     -   [ ] PreviewFullItem
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] We need to work on all existing blocks and generate theme here
@@ -47,30 +47,17 @@ We work on these tasks in order from top to bottom:
     -   [ ] getResourceName should be auto detected
     -   [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
     -   [ ] Relations, like Taxonomies, but "on the left"
-    -   [ ] Publish
-        -   Publish Button is shown on already published items
-        -   Should then be save only
-        -   There could be a create new draft for published?
-        -   Preview URL feature ... https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167 ... by Spatie
     -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
--   [ ] Core Docs
-    -   Naming convention InModel InResource InPages and Single for single-use traits
-    -   TabsInResource - contains TODO
-    -   TabsInPage - just getTabs needs to be defined
-    -   TaxonomyInPages - needs that mount method in ViewPage
-    -   AuthorInModel
-    -   AuthorInResource
-    -   StatusInModel
-    -   StatusInResource - WIP
-    -   Links to builder or builder doc inside
+    -   [ ] Naming convention InModel InResource InPages and Single for single-use traits
+    -   [ ] TabsInResource - contains TODO
+    -   [ ] TabsInPage - just getTabs needs to be defined
+    -   [ ] TaxonomyInPages - needs that mount method in ViewPage
 -   [ ] Category / Tag Docs
     -   Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
     -   https://github.com/lazychaser/laravel-nestedset
     -   https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets
     -   Screens
     -   Usage / Config
--   $livewire->saveAndCreateAnother(); error, auch in Tags und Builder?
--   Relationships - in builder but like taxonomies
 -   Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
 -   Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
 -   HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
