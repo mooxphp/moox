@@ -313,6 +313,16 @@ or Moox Press User instead:
     'author_model' => \Moox\Press\Models\WpUser::class,
 ```
 
+## Do not track Previews
+
+If you want to use the Preview feature, you may add the following to your `.gitignore`:
+
+```
+/app/Builder/*
+/config/previews/*
+/lang/previews/*
+```
+
 ## Manual Installation
 
 Instead of using the install-command `php artisan mooxbuilder:install` you are able to install this package manually step by step:

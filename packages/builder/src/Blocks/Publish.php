@@ -31,9 +31,6 @@ class Publish extends AbstractBlock
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => ['use Filament\Tables\Filters\Filter;'],
                 'actions' => ['use Filament\Actions\Action;'],
-                'pages' => [
-                    'use App\Filament\Resources\PublishableItemResource\Pages;',
-                ],
             ],
             'pages' => [
                 'list' => [
@@ -83,10 +80,6 @@ class Publish extends AbstractBlock
         $this->metaFields['resource'] = [
             'static::getFormActions()',
             'static::getPublishAtFormField()',
-            'static::getAuthorFormField()',
-            "DateTimePicker::make('publish_at')
-            ->label(__('core::core.publish_at'))
-            ->nullable()",
         ];
 
         $this->metaSections['resource'] = [

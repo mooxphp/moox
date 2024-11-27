@@ -31,10 +31,10 @@ class TitleWithSlug extends AbstractBlock
         ];
 
         $this->formFields['resource'] = [
-            "TextInput::make('{$this->titleFieldName}')
-                ->required()
-                ->maxLength(255)",
-            "Hidden::make('{$this->slugFieldName}')",
+            "TitleWithSlugInput::make(
+                fieldTitle: '{$this->titleFieldName}',
+                fieldSlug: '{$this->slugFieldName}',
+            ),",
         ];
 
         $this->tableColumns['resource'] = [

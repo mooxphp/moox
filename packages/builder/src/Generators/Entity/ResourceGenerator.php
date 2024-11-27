@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
-use Illuminate\Support\Facades\Log;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
 use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
@@ -96,54 +95,58 @@ class ResourceGenerator extends AbstractGenerator
             'use Filament\Resources\Resource;',
             'use Filament\Tables\Table;',
             'use Illuminate\Database\Eloquent\Builder;',
-            'use '.$this->context->formatNamespace('resource', false).'\\'.$this->context->getEntityName().'Resource\\Pages;',
         ];
 
-        Log::debug('ResourceGenerator getting use statements', [
-            'blocks' => array_map(fn ($block) => get_class($block), $this->getBlocks()),
-            'statements_before' => $statements,
-        ]);
+        $resourcePagesNamespace = 'use '.$this->context->formatNamespace('resource', false).'\\'.$this->context->getEntityName().'Resource\\Pages;';
+        $statements[] = $resourcePagesNamespace;
 
-        $resourceStatements = $this->getUseStatements('resource');
-        Log::debug('ResourceGenerator got use statements', [
-            'resource_statements' => $resourceStatements,
-        ]);
+        foreach ($this->getBlocks() as $block) {
+            if ($resourceTraits = $block->getTraits('resource')) {
+                foreach ($resourceTraits as $trait) {
+                    $statements[] = 'use '.$trait.';';
+                }
+            }
 
-        if (! empty($resourceStatements)) {
-            $statements = array_merge($statements, $resourceStatements);
+            if ($resourceStatements = $block->getUseStatements('resource')) {
+                foreach ($resourceStatements as $context => $contextStatements) {
+                    if ($context === 'pages') {
+                        continue;
+                    }
+                    if (is_array($contextStatements)) {
+                        foreach ($contextStatements as $statement) {
+                            if ($statement !== $resourcePagesNamespace) {
+                                $statements[] = $statement;
+                            }
+                        }
+                    } else {
+                        if ($contextStatements !== $resourcePagesNamespace) {
+                            $statements[] = $contextStatements;
+                        }
+                    }
+                }
+            }
         }
 
-        Log::debug('ResourceGenerator final statements', [
-            'final_statements' => $statements,
-        ]);
+        $statements = array_unique($statements);
+        sort($statements);
 
         return implode("\n", array_map(function ($statement) {
             return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+        }, $statements));
     }
 
     protected function formatTraits(): string
     {
         $traits = [];
-        Log::debug('ResourceGenerator getting traits', [
-            'blocks' => array_map(fn ($block) => get_class($block), $this->getBlocks()),
-        ]);
 
-        $resourceTraits = $this->getUseStatements('resource');
-        Log::debug('ResourceGenerator processing traits', [
-            'resource_traits' => $resourceTraits,
-        ]);
-
-        foreach ($resourceTraits as $trait) {
-            if (str_contains($trait, 'Trait')) {
-                $parts = explode('\\', $trait);
-                $traits[] = end($parts);
+        foreach ($this->getBlocks() as $block) {
+            if ($resourceTraits = $block->getTraits('resource')) {
+                foreach ($resourceTraits as $trait) {
+                    $parts = explode('\\', $trait);
+                    $traits[] = end($parts);
+                }
             }
         }
-
-        Log::debug('ResourceGenerator final traits', [
-            'final_traits' => $traits,
-        ]);
 
         if (empty($traits)) {
             return '';
@@ -156,25 +159,23 @@ class ResourceGenerator extends AbstractGenerator
     {
         $fields = [];
         foreach ($this->getBlocks() as $block) {
-            $formField = $block->formField();
-            if (! empty($formField)) {
-                $fields[] = rtrim($formField, ',');
+            $formFields = $block->getFormFields('resource');
+            if (! empty($formFields)) {
+                $fields = array_merge($fields, $formFields);
             }
         }
 
-        if (empty($fields)) {
-            return '';
-        }
-
-        return implode(",\n            ", array_filter($fields));
+        return implode(",\n            ", $fields);
     }
 
     protected function getTableColumns(): string
     {
         $columns = [];
         foreach ($this->getBlocks() as $block) {
-            $column = rtrim($block->tableColumn(), ',');
-            $columns[] = $column;
+            $tableColumns = $block->getTableColumns();
+            if (! empty($tableColumns)) {
+                $columns = array_merge($columns, $tableColumns);
+            }
         }
 
         return implode(",\n            ", $columns);

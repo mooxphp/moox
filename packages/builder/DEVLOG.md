@@ -7,37 +7,18 @@ We work on these tasks in order from top to bottom:
 ### Entity
 
 -   [WIP] Iterate over all blocks, presets and contexts to find out if they are working as expected
-    -   [ ] ResourceGenerator: Currently all block and pages use statements as well as traits are missing, need to fix this
-        -   [ ] AbstractGenerator (and AbstractPageGenerator) use direct access to get use statements and traits. But we need to use the data array
-        -   [ ] All generators need to use the implementation from AbstractGenerator then
-        -   [ ] We can flatten the nested array that is special for the resource use statements, as we do not need the information
-        -   [ ] Finally all use statements, traits as well as all other data should come from the data array, to be able to rebuild from an older build for example. Please verify this.
-    -   [ ] Add default actions or try to add the Publish Traits first, then use actions to test the entities
     -   [ ] Config and translations have wrong filenames and must be wired correctly
     -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
+    -   [ ] Generate sections etc.
 -   [ ] Refactor DeleteCommand to use new services
 -   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself?
-
-### Extras
-
--   [ ] Implement App Generator command
-    -   [ ] Add (Moox) Packages to composer.json
-    -   [ ] Create PanelProvider
-    -   [ ] Create Installer
-    -   [ ] Create Readme
--   [ ] Implement Frontend generator command
--   [ ] We need to implement Sections ... see Chat on that
--   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
--   [ ] Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
--   [ ] Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
--   [ ] Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
--   [ ] Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
--   [ ] PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
+-   [ ] How would we generate a complete different type of resource, like a Media Manager? The only thing we need is a different table, switching to a grid.
 
 ### Core
 
 -   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
+    -   [ ] Publish feature seems to miss the save method
     -   [ ] getResourceName should be auto detected
     -   [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
     -   [ ] Relations, like Taxonomies, but "on the left"
@@ -79,6 +60,52 @@ We work on these tasks in order from top to bottom:
 -   not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
 -   If plugin data-language -> migration create_languages_table ->
     SP: ->hasMigration('create_data_languages_table') (correct the -)
+
+### Restoring entities
+
+Generation of entities is currently done by directly accessing the classes. If we want to restore entities from a build, we need to use the data array.
+
+The current state of the data array is:
+
+✓ useStatements (model, resource, pages)
+✓ traits (model, resource, pages)
+✓ methods
+✓ formFields
+✓ tableColumns
+✓ block type and options
+✓ migrations
+
+Missing:
+
+-   Form sections and meta sections (see Publish block lines 77-89)
+-   Page-specific methods (see Publish block lines 63-72)
+-   Form actions
+-   Table filters
+-   Table actions
+-   Navigation settings
+-   Resource configuration (icons, labels, etc.)
+-   Context information (namespace, paths)
+-   Relations configuration
+-   Validation rules
+-   Config entries
+
+After adding the missing data, we need to implement the RestoreService and use it in the UI.
+
+### Extras
+
+-   [ ] Implement App Generator command
+    -   [ ] Add (Moox) Packages to composer.json
+    -   [ ] Create PanelProvider
+    -   [ ] Create Installer
+    -   [ ] Create Readme
+-   [ ] Implement Frontend generator command
+-   [ ] We need to implement Sections ... see Chat on that
+-   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
+-   [ ] Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
+-   [ ] Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
+-   [ ] Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
+-   [ ] Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
+-   [ ] PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
 
 ### Tests
 
