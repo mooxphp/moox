@@ -14,7 +14,7 @@ return [
     'updating_started' => 'Aktualisieren gestartet',
 
     'expired_at' => 'Abgelaufen',
-    'processing_deadline' => 'Bearbeitungsfrist'
+    'processing_deadline' => 'Bearbeitungsfrist',
     'cycle' => 'Turnus',
     'notifyUser' => 'Verantwortlicher',
     'expiry_job' => 'Typ',
