@@ -6,27 +6,30 @@ We work on these tasks in order from top to bottom:
 
 ### Entity
 
--   [WIP] We currently work on generating two Presets in Preview Context and optimize the generated resources
+-   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
     -   [WIP] PreviewSimItem is working like a charm but
         -   [ ] Bulk actions are missing, check AbstractBlock implementation and Generator usage
         -   [ ] Then test-implement in Simple by adding a DeleteBulkAction
         -   [ ] Filters are missing, check AbstractBlock implementation and Generator usage
         -   [ ] Then test-implement in Simple by adding a simple TextFilter
         -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
-    -   [ ] PreviewSoftItem
-        -   [ ] We need to bring this on the Simple Item level first
-        -   [ ] Then we need to implement the soft delete feature, and bulk restore
     -   [ ] PreviewPubItem
         -   [ ] We need to bring this on the Simple Item level first
+        -   [ ] We need to add Tabs and Taxonomies here
         -   [ ] We need to work on the publish feature with custom actions, see https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167
+        -   [ ] Then we need to implement the relation feature
     -   [ ] PreviewFullItem
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] We need to work on all existing blocks and generate theme here
+        -   [ ] Maybe add the three widgets here, needs wiget-generator and template?
+        -   [ ] Then we need to implement the relation feature
     -   [ ] PreviewSimTax
         -   [ ] We need to bring this on the Simple Item level first
+        -   [ ] Then we need to implement the soft delete feature
         -   [ ] Then it need Tag specific implementation
     -   [ ] PreviewPubTax
         -   [ ] We need to bring this on the Publish Item level first
+        -   [ ] Then we need to implement the soft delete feature
         -   [ ] Then it need Category specific implementation with nested set
 -   [WIP] Iterate over all blocks, presets and contexts to find out if they are working as expected
     -   [ ] Config and translations have wrong filenames and must be wired correctly
@@ -58,16 +61,14 @@ We work on these tasks in order from top to bottom:
     -   https://github.com/CodeWithDennis/filament-select-tree, does need `php artisan filament:assets
     -   Screens
     -   Usage / Config
--   Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
--   Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
--   HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
--   Item could show last changed etc. on the left ...
--   Gallery images should be sortable
--   Bulk restore does not work
--   Set indices for slug etc, or not?
--   not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
--   If plugin data-language -> migration create_languages_table ->
-    SP: ->hasMigration('create_data_languages_table') (correct the -)
+-   [ ] Add fields and features: https://chatgpt.com/c/67180a73-d4e8-800c-b37a-0fa822555a11
+-   [ ] Meta, see "add fields and features Chat" for JSON, EAV, Polymorphic or [Spatie](https://github.com/spatie/laravel-schemaless-attributes) , currently tending to JSON + Polymorphic
+-   [ ] HasSlug has been removed from the model, as long as Moox Slug is not ready, dependency to Spatie slug is where to do?
+-   [ ] Item could show last changed etc. on the left ...
+-   [ ] Gallery images should be sortable
+-   [ ] Bulk restore does not work
+-   [ ] Set indices for slug etc, or not?
+-   [ ] not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
 
 ### Restoring entities
 
@@ -124,17 +125,6 @@ After adding the missing data, we need to implement the RestoreService and use i
 -   [ ] Generate Factories from Blocks
 -   [ ] Generate Tests from Blocks
 
-### Package
-
--   [ ] Implement Package Generation (see below)
-    -   [ ] Implement PackageGenerator service
-    -   [ ] Create PrepareAppForPackagesCommand
-    -   [ ] Implement package entity activation system
-    -   [ ] Add package publishing workflow
--   [ ] Move code to Core
-    -   [ ] Installer: use Abstract, Service or Traits ...
-    -   [ ] ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
-
 ### Ideas
 
 -   [ ] Option to generate from Blueprint
@@ -154,6 +144,15 @@ After adding the missing data, we need to implement the RestoreService and use i
     -   [ ] Most wanted like Phone, Address etc.
 
 ## Packages
+
+-   [ ] Implement Package Generation
+    -   [ ] Implement PackageGenerator service
+    -   [ ] Create PrepareAppForPackagesCommand
+    -   [ ] Implement package entity activation system
+    -   [ ] Add package publishing workflow
+-   [ ] Move code to Core
+    -   [ ] Installer: use Abstract, Service or Traits ...
+    -   [ ] ServiceProvider: Abstract PackageTools to be able to add PanelProvider etc. to main function
 
 This config was in the Package and is currently missing: I depends to Blocks means to Entities, Blocks need to be able to generate config for entities.
 
