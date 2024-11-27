@@ -50,6 +50,11 @@ class ExpiryResource extends Resource
                     ->toggleable()
                     ->sortable()
                     ->since(),
+                Tables\Columns\TextColumn::make('processing_deadline')
+                    ->label(__('core::expiry.processing_deadline'))
+                    ->toggleable()
+                    ->sortable()
+                    ->since(),
                 Tables\Columns\TextColumn::make('cycle')
                     ->label(__('core::expiry.cycle'))
                     ->toggleable()

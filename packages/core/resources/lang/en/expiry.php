@@ -18,6 +18,7 @@ return [
     'updating_started' => 'Updating started',
 
     'expired_at' => 'Expired',
+    'processing_deadline' => 'Processing deadline',
     'cycle' => 'Cycle',
     'notifyUser' => 'Verantwortlicher',
     'expiry_job' => 'Type',
