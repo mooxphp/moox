@@ -1,4 +1,5 @@
 <?php
+
 /*
 Plugin Name: Moox Press
 Description: Plugin for integrating WordPress with Laravel
