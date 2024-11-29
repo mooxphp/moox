@@ -103,6 +103,7 @@ class ExpiryResource extends Resource
                     ->searchable()
                     ->limit(50),
             ])
+            ->defaultSort('escalated_at', 'desc')
             ->filters([
                 SelectFilter::make('expiry_job')
                     ->label(__('core::expiry.expiry_job'))
