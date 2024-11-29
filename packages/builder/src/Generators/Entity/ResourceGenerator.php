@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
 use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
@@ -36,7 +37,12 @@ class ResourceGenerator extends AbstractGenerator
             'class_name' => $this->context->getEntityName(),
             'model' => $this->getModelReference(),
             'model_plural' => $this->context->getPluralName(),
-            'navigation_group' => $this->getNavigationGroup(),
+            'Package' => match ($this->context->getContextType()) {
+                'preview' => 'previews',
+                'package' => explode('\\', $this->context->getBaseNamespace())[0],
+                default => 'app'
+            },
+            'LowercaseEntity' => Str::kebab($this->context->getEntityName()),
             'navigation_icon' => $this->getNavigationIcon(),
             'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),

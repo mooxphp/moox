@@ -496,7 +496,7 @@ abstract class AbstractBlock
 
     public function getTableBulkActions(): array
     {
-        return [];
+        return $this->actions['bulk'] ?? [];
     }
 
     public function getTitle(): string

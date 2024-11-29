@@ -143,7 +143,7 @@ class ConfigGenerator extends AbstractGenerator
             default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
         };
 
-        return $basePath.'/'.$this->context->getEntityName().'.php';
+        return $basePath.'/'.$this->formatFilename($this->context->getEntityName()).'.php';
     }
 
     protected function getGeneratorType(): string

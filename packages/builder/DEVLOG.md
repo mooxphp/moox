@@ -6,12 +6,14 @@ We work on these tasks in order from top to bottom:
 
 ### Entity
 
+Translatable config is not working yet.
+See last chat on this.
+
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
-    -   [WIP] PreviewSimItem is working like a charm but
-        -   [ ] Bulk actions are missing, check AbstractBlock implementation and Generator usage
-        -   [ ] Then test-implement in Simple by adding a DeleteBulkAction
-        -   [ ] Filters are missing, check AbstractBlock implementation and Generator usage
-        -   [ ] Then test-implement in Simple by adding a simple TextFilter
+    -   [WIP] PreviewSimItem is working like a charm including filters and bulk actions
+        -   [x] Config and translations have wrong filenames and must be wired correctly
+        -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
+        -   [ ] Generate two sections, one for the main form and one for the meta
         -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
     -   [ ] PreviewPubItem
         -   [ ] We need to bring this on the Simple Item level first
@@ -31,10 +33,17 @@ We work on these tasks in order from top to bottom:
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] Then we need to implement the soft delete feature
         -   [ ] Then it need Category specific implementation with nested set
--   [WIP] Iterate over all blocks, presets and contexts to find out if they are working as expected
-    -   [ ] Config and translations have wrong filenames and must be wired correctly
-    -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
-    -   [ ] Generate sections etc.
+-   [ ] Iterate over all blocks, presets and contexts to find out if they are working as expected
+-   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
+    -   [ ] Publish feature seems to miss the save method
+    -   [ ] getResourceName should be auto detected
+    -   [x] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
+    -   [ ] Relations, like Taxonomies, but "on the left"
+    -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
+    -   [ ] Naming convention InModel InResource InPages and Single for single-use traits
+    -   [ ] TabsInResource - contains TODO
+    -   [ ] TabsInPage - just getTabs needs to be defined
+    -   [ ] TaxonomyInPages - needs that mount method in ViewPage
 -   [ ] Refactor DeleteCommand to use new services
 -   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself?
@@ -43,18 +52,16 @@ We work on these tasks in order from top to bottom:
 -   All Blocks need to be updated:
     -   [ ] Toggleable option like in Text
 
-### Core
+### Merge and Release
 
--   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
-    -   [ ] Publish feature seems to miss the save method
-    -   [ ] getResourceName should be auto detected
-    -   [ ] Currently new Packages need to register in core to use TranslatableConfig, that was not my best idea
-    -   [ ] Relations, like Taxonomies, but "on the left"
-    -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
-    -   [ ] Naming convention InModel InResource InPages and Single for single-use traits
-    -   [ ] TabsInResource - contains TODO
-    -   [ ] TabsInPage - just getTabs needs to be defined
-    -   [ ] TaxonomyInPages - needs that mount method in ViewPage
+-   [ ] Fix custom package config and translations (see /press)
+-   [ ] Merge into main
+-   [ ] Test locally and on moox.org
+-   [ ] Release core
+-   [ ] Release builder and all packages
+
+### Docs and Core Extras
+
 -   [ ] Category / Tag Docs
     -   Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
     -   https://github.com/lazychaser/laravel-nestedset

@@ -2,8 +2,6 @@
 
 namespace Moox\Core\Traits;
 
-use Illuminate\Support\Facades\Lang;
-
 trait TranslatableConfig
 {
     /**
@@ -11,13 +9,23 @@ trait TranslatableConfig
      */
     protected function translateConfig(array $config): array
     {
-        array_walk_recursive($config, function (&$value) {
-            if (is_string($value) && str_starts_with($value, 'trans//')) {
-                $key = str_replace('trans//', '', $value);
-                $translation = Lang::get($key);
-                $value = $translation !== $key ? $translation : $key;
+        foreach ($config as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->translateConfig($value);
+
+                continue;
             }
-        });
+
+            if (is_string($value) && str_starts_with($value, 'trans//')) {
+                $translationKey = substr($value, 7);
+                $translated = trans($translationKey);
+                if ($translated !== $translationKey) {
+                    $value = $translated;
+                }
+            }
+        }
+
+        var_dump($config);
 
         return $config;
     }

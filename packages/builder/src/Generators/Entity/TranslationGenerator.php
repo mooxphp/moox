@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 
@@ -24,8 +25,8 @@ class TranslationGenerator extends AbstractGenerator
         $variables = [
             'Entity' => $this->context->getEntityName(),
             'Entities' => $this->context->getPluralName(),
-            'LowercaseEntity' => strtolower($this->context->getEntityName()),
-            'LowercaseEntities' => strtolower($this->context->getPluralName()),
+            'LowercaseEntity' => Str::kebab($this->context->getEntityName()),
+            'LowercaseEntities' => Str::kebab($this->context->getPluralName()),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
@@ -43,7 +44,7 @@ class TranslationGenerator extends AbstractGenerator
             default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
         };
 
-        return $basePath.'/'.$this->context->getEntityName().'.php';
+        return $basePath.'/'.$this->formatFilename($this->context->getEntityName()).'.php';
     }
 
     protected function getGeneratorType(): string

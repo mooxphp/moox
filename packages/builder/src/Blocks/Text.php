@@ -22,6 +22,10 @@ class Text extends AbstractBlock
         $this->useStatements['resource'] = [
             'forms' => ['use Filament\Forms\Components\TextInput;'],
             'columns' => ['use Filament\Tables\Columns\TextColumn;'],
+            'filters' => [
+                'use Filament\Tables\Filters\Filter;',
+                'use Illuminate\Database\Eloquent\Builder;',
+            ],
         ];
 
         $this->formFields['resource'] = [
@@ -49,6 +53,21 @@ class Text extends AbstractBlock
 
         $this->factories['model']['definitions'] = [
             "{$this->name}" => "fake()->text({$this->length})",
+        ];
+
+        $this->filters['resource'] = [
+            "Filter::make('{$this->name}')
+                ->form([
+                    TextInput::make('{$this->name}')
+                        ->label('{$this->label}')
+                        ->placeholder(__('core::core.search')),
+                ])
+                ->query(function (Builder \$query, array \$data): Builder {
+                    return \$query->when(
+                        \$data['{$this->name}'],
+                        fn (Builder \$query, \$value): Builder => \$query->where('{$this->name}', 'like', \"%{\$value}%\"),
+                    );
+                })",
         ];
     }
 }

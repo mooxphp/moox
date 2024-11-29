@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Traits\HandlesContentCleanup;
@@ -125,6 +126,52 @@ abstract class AbstractGenerator
         return array_unique(array_filter($statements));
     }
 
+    protected function mergeAndDeduplicate(array $items): array
+    {
+        return array_unique(array_filter($items));
+    }
+
+    protected function getTableActions(): string
+    {
+        $actions = [];
+        foreach ($this->getBlocks() as $block) {
+            $blockActions = $block->getTableActions();
+            if (! empty($blockActions)) {
+                $actions = array_merge($actions, $blockActions);
+            }
+        }
+
+        return implode(",\n            ", $this->mergeAndDeduplicate($actions));
+    }
+
+    protected function getTableFilters(): string
+    {
+        $filters = [];
+        foreach ($this->getBlocks() as $block) {
+            $blockFilters = $block->getTableFilters();
+            if (! empty($blockFilters)) {
+                $filters = array_merge($filters, $blockFilters);
+            }
+        }
+
+        return implode(",\n            ", $this->mergeAndDeduplicate($filters));
+    }
+
+    protected function getTableBulkActions(): string
+    {
+        $actions = [];
+        foreach ($this->getBlocks() as $block) {
+            if (method_exists($block, 'getTableBulkActions')) {
+                $blockActions = $block->getTableBulkActions();
+                if (! empty($blockActions)) {
+                    $actions = array_merge($actions, $blockActions);
+                }
+            }
+        }
+
+        return implode(",\n            ", $this->mergeAndDeduplicate($actions));
+    }
+
     protected function loadStub(string $path): string
     {
         if (! file_exists($path)) {
@@ -172,5 +219,10 @@ abstract class AbstractGenerator
     public function getGeneratedFiles(): array
     {
         return $this->generatedFiles;
+    }
+
+    protected function formatFilename(string $name): string
+    {
+        return Str::kebab($name);
     }
 }

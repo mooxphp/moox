@@ -16,6 +16,14 @@ class Simple extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
+        $this->useStatements['resource'] = [
+            'actions' => [
+                'use Filament\Tables\Actions\ViewAction;',
+                'use Filament\Tables\Actions\EditAction;',
+                'use Filament\Tables\Actions\DeleteBulkAction;',
+            ],
+        ];
+
         $this->traits['resource'] = ['Moox\Core\Traits\SingleSimpleInResource'];
         $this->traits['pages']['list'] = ['Moox\Core\Traits\SingleSimpleInListPage'];
         $this->traits['pages']['view'] = ['Moox\Core\Traits\SingleSimpleInViewPage'];
@@ -47,8 +55,8 @@ class Simple extends AbstractBlock
             '\Filament\Tables\Actions\EditAction::make()',
         ];
 
-        $this->filters['resource'] = [
-            '\Filament\Tables\Filters\SelectFilter::make()',
+        $this->actions['bulk'] = [
+            '\Filament\Tables\Actions\DeleteBulkAction::make()',
         ];
     }
 }
