@@ -15,6 +15,8 @@ return [
 
     'expired_at' => 'Abgelaufen',
     'processing_deadline' => 'Bearbeitungsfrist',
+    'escalated_at' => 'Eskaliert am',
+    'escalated_to' => 'Eskaliert an',
     'cycle' => 'Turnus',
     'notifyUser' => 'Verantwortlicher',
     'expiry_job' => 'Typ',

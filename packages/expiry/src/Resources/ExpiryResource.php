@@ -54,7 +54,16 @@ class ExpiryResource extends Resource
                     ->label(__('core::expiry.processing_deadline'))
                     ->toggleable()
                     ->sortable()
-                    ->since(),
+                    ->since()
+                    ->visible(fn () => Expiry::query()->whereNotNull('processing_deadline')->exists()),
+                Tables\Columns\TextColumn::make('escalated_at')
+                    ->label(__('core::expiry.escalated_at'))
+                    ->toggleable()
+                    ->sortable()
+                    ->date()
+                    ->icon('gmdi-warning')
+                    ->color('warning')
+                    ->visible(fn () => Expiry::query()->whereNotNull('escalated_at')->exists()),
                 Tables\Columns\TextColumn::make('cycle')
                     ->label(__('core::expiry.cycle'))
                     ->toggleable()

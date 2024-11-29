@@ -19,6 +19,8 @@ return [
 
     'expired_at' => 'Expired',
     'processing_deadline' => 'Processing deadline',
+    'escalated_at' => 'Escalated at',
+    'escalated_to' => 'Escalated to',
     'cycle' => 'Cycle',
     'notifyUser' => 'Verantwortlicher',
     'expiry_job' => 'Type',
