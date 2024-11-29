@@ -24,6 +24,7 @@ class SimpleItemPreset extends AbstractPreset
                 searchable: true,
                 sortable: true,
                 toggleable: true,
+                filterable: true,
             ),
             new TextArea(
                 name: 'content',

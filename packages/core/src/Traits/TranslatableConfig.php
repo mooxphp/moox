@@ -25,8 +25,6 @@ trait TranslatableConfig
             }
         }
 
-        var_dump($config);
-
         return $config;
     }
 }

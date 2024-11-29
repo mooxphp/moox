@@ -55,12 +55,13 @@ class CoreServiceProvider extends PackageServiceProvider
     protected function translateConfigurations()
     {
         $configs = config()->all();
+        $translatedConfigs = $this->translateConfig($configs);
 
-        foreach ($configs as $key => $value) {
-            if (is_array($value)) {
-                $translatedConfig = $this->translateConfig($value);
-                config([$key => $translatedConfig]);
+        foreach ($translatedConfigs as $key => $value) {
+            if ($key === 'app') {
+                continue;
             }
+            config([$key => $value]);
         }
     }
 
