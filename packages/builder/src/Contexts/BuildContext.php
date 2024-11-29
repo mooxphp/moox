@@ -82,11 +82,13 @@ class BuildContext
             throw new RuntimeException("Path configuration for {$type} not found");
         }
 
-        return str_replace(
-            ['%BasePath%', '\\'],
-            [$basePath, '/'],
+        $path = str_replace(
+            ['%BasePath%', '%locale%', '\\'],
+            [$basePath, config('app.locale', 'en'), '/'],
             $path
         );
+
+        return $path;
     }
 
     public function getNamespace(string $type): string

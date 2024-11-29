@@ -69,4 +69,4 @@ Thumbs.db
 # Moox Builder
 /app/Builder/*/*
 /config/previews/*
-/lang/previews/*
+/lang/*/previews/*

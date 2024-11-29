@@ -11,8 +11,8 @@ return [
     |
     */
 
-    'single' => 'trans//{{ Package }}::translations.{{ LowercaseEntity }}',
-    'plural' => 'trans//{{ Package }}::translations.{{ LowercaseEntities }}',
+    'single' => '{{ Single }}',
+    'plural' => '{{ Plural }}',
 
     /*
     |--------------------------------------------------------------------------

@@ -320,7 +320,7 @@ If you want to use the Preview feature, you may add the following to your `.giti
 ```
 /app/Builder/*
 /config/previews/*
-/lang/previews/*
+/lang/*/previews/*
 ```
 
 ## Manual Installation

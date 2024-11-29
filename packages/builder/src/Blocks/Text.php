@@ -40,8 +40,7 @@ class Text extends AbstractBlock
             "TextColumn::make('{$this->name}')"
                 .($this->sortable ? '->sortable()' : '')
                 .($this->searchable ? '->searchable()' : '')
-                .($this->toggleable ? '->toggleable()' : '')
-                .($this->filterable ? '->filterable()' : ''),
+                .($this->toggleable ? '->toggleable()' : ''),
         ];
 
         $this->migrations['fields'] = [

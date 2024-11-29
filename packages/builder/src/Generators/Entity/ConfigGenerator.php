@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 
@@ -54,18 +55,46 @@ class ConfigGenerator extends AbstractGenerator
     {
         $template = $this->loadStub($this->getTemplate());
 
+        $translationPath = $this->getTranslationPath();
+        $entityFile = $this->formatFilename($this->context->getEntityName());
+        $entityKey = Str::kebab($this->context->getEntityName());
+        $entitiesKey = Str::kebab($this->context->getPluralName());
+
         $variables = [
             'Package' => $this->context->isPackage() ? explode('\\', $this->context->getBaseNamespace())[0] : 'app',
             'Entity' => $this->context->getEntityName(),
             'Entities' => $this->context->getPluralName(),
             'LowercaseEntity' => strtolower($this->context->getEntityName()),
             'LowercaseEntities' => strtolower($this->context->getPluralName()),
-            'tabs' => $this->generateTabsConfig(),
-            'taxonomies' => $this->generateTaxonomiesConfig(),
-            'relations' => $this->generateRelationsConfig(),
+            'Single' => "trans//{$translationPath}/{$entityFile}.{$entityKey}",
+            'Plural' => "trans//{$translationPath}/{$entityFile}.{$entitiesKey}",
+            'Tabs' => $this->generateTabsConfig(),
+            'Relations' => $this->generateRelationsConfig(),
+            'Taxonomies' => $this->generateTaxonomiesConfig(),
         ];
 
         return $this->replaceTemplateVariables($template, $variables);
+    }
+
+    protected function getTranslationPath(): string
+    {
+        return match ($this->context->getContextType()) {
+            'app' => 'entities',
+            'preview' => 'previews',
+            'package' => $this->getPackageName(),
+            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+        };
+    }
+
+    protected function getPackageName(): string
+    {
+        if (! $this->context->isPackage()) {
+            return '';
+        }
+
+        $config = $this->context->getConfig();
+
+        return $config['package']['name'] ?? '';
     }
 
     protected function generateTabsConfig(): string

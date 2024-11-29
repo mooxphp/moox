@@ -864,7 +864,7 @@ return [
                     'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
                 ],
                 'translation' => [
-                    'path' => 'lang\entities',
+                    'path' => 'lang\%locale%\entities',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
                 ],
@@ -943,7 +943,7 @@ return [
                     'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
                 ],
                 'translation' => [
-                    'path' => 'lang\previews',
+                    'path' => 'lang\%locale%\previews',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
                 ],
