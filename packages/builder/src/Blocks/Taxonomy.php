@@ -2,7 +2,7 @@
 
 namespace Moox\Builder\Blocks;
 
-class Taxonomies extends AbstractBlock
+class Taxonomy extends AbstractBlock
 {
     // Section
 }

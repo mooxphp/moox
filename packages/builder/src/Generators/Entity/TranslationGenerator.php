@@ -18,13 +18,28 @@ class TranslationGenerator extends AbstractGenerator
         parent::__construct($context, $fileManager, $blocks);
     }
 
+    protected function getGeneratorType(): string
+    {
+        return 'translation';
+    }
+
+    protected function formatEntityName(): string
+    {
+        return implode(' ', preg_split('/(?=[A-Z])/', $this->context->getEntityName(), -1, PREG_SPLIT_NO_EMPTY));
+    }
+
+    protected function formatPluralName(): string
+    {
+        return implode(' ', preg_split('/(?=[A-Z])/', $this->context->getPluralName(), -1, PREG_SPLIT_NO_EMPTY));
+    }
+
     public function generate(): void
     {
         $template = $this->loadStub($this->getTemplate());
 
         $variables = [
-            'Entity' => $this->context->getEntityName(),
-            'Entities' => $this->context->getPluralName(),
+            'Entity' => $this->formatEntityName(),
+            'Entities' => $this->formatPluralName(),
             'LowercaseEntity' => Str::kebab($this->context->getEntityName()),
             'LowercaseEntities' => Str::kebab($this->context->getPluralName()),
             'Package' => $this->getPackageName(),
@@ -67,10 +82,5 @@ class TranslationGenerator extends AbstractGenerator
         $config = $this->context->getConfig();
 
         return $config['package']['name'] ?? '';
-    }
-
-    protected function getGeneratorType(): string
-    {
-        return 'translation';
     }
 }

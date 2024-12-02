@@ -8,18 +8,19 @@ We work on these tasks in order from top to bottom:
 
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
     -   [WIP] PreviewSimItem is working like a charm including filters and bulk actions
-        -   [WIP] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
-            -   [WIP] Tabs needs
-                -   [ ] the TabsInResource trait in the Resource
-                -   [ ] to be generated in the Resource Pages, most probably
-                -   [ ] to be generated in the Config
-            -   [ ] Taxonomy needs
+        -   [WIP] Need to generate Taxonomy and Relations partials, may already work partially
+            -   [WIP] Taxonomy needs
+                -   [WIP] sections, so we need to implement sections first
                 -   [ ] to be generated in the Resource
                 -   [ ] to be generated in the Config
-            -   [ ] Relations needs
+            -   [ ] Relations needs - not implemented yet, skip for now
                 -   [ ] to be generated in the Resource
                 -   [ ] to be generated in the Config
-        -   [ ] Generate two sections, one for the main form and one for the meta
+        -   [WIP] Generate two sections, one for the main form and one for the meta, needs an idea on how to implement sections first
+            -   [WIP] Sections are wrapped around fields
+            -   [WIP] Sections are predefined sets of fields, like an address section
+            -   [WIP] Sections can be used by features like Taxonomies or Relations, so we need to find a way to make them flexible
+            -   [WIP] Idea: Blocks can implement sections, we can also use named sections, like taxonomies or relations, what means multiple blocks can be grouped together in a section, then there could be an order options for the blocks inside a section
         -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
     -   [ ] PreviewPubItem
         -   [ ] We need to bring this on the Simple Item level first

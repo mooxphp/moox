@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity\Pages;
 
+use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\AbstractGenerator;
 use Moox\Builder\Services\File\FileManager;
@@ -94,9 +95,9 @@ abstract class AbstractPageGenerator extends AbstractGenerator
     protected function formatUseStatements(): string
     {
         $statements = [];
-        foreach ($this->getBlocks() as $block) {
-            $pageType = strtolower($this->getPageType());
+        $pageType = strtolower($this->getPageType());
 
+        foreach ($this->getBlocks() as $block) {
             $blockStatements = $block->getUseStatements('pages');
             if (isset($blockStatements[$pageType])) {
                 $statements = array_merge($statements, $blockStatements[$pageType]);
@@ -118,8 +119,9 @@ abstract class AbstractPageGenerator extends AbstractGenerator
     protected function formatTraits(): string
     {
         $traits = [];
+        $pageType = strtolower($this->getPageType());
+
         foreach ($this->getBlocks() as $block) {
-            $pageType = strtolower($this->getPageType());
             $blockTraits = $block->getTraits('pages');
             if (isset($blockTraits[$pageType])) {
                 $shortTraits = array_map(function ($trait) {
@@ -136,5 +138,64 @@ abstract class AbstractPageGenerator extends AbstractGenerator
         }
 
         return 'use '.implode(', ', array_unique($traits)).';';
+    }
+
+    protected function formatMethods(): string
+    {
+        $methods = [];
+        $pageType = strtolower($this->getPageType());
+
+        foreach ($this->getBlocks() as $block) {
+            $blockMethods = $block->getMethods('pages');
+            if (! empty($blockMethods[$pageType])) {
+                foreach ($blockMethods[$pageType] as $methodName => $methodBody) {
+                    $methodBody = str_replace(
+                        ['{{ entityKey }}', '{{ entity }}', '{{ namespace }}'],
+                        [
+                            $this->getEntityConfigKey(),
+                            $this->context->getEntityName(),
+                            $this->context->getNamespace('model'),
+                        ],
+                        $methodBody
+                    );
+
+                    if ($methodName === 'mount') {
+                        if (! isset($methods['mount'])) {
+                            $methods['mount'] = [];
+                        }
+                        $methods['mount'][] = (string) $methodBody;
+                    } else {
+                        $methods[$methodName] = (string) $methodBody;
+                    }
+                }
+            }
+        }
+
+        $formattedMethods = [];
+
+        if (isset($methods['mount'])) {
+            $mountBody = implode("\n        ", array_map('strval', array_unique($methods['mount'])));
+            $formattedMethods[] = "public function mount(): void\n    {\n        parent::mount();\n        {$mountBody}\n    }";
+            unset($methods['mount']);
+        }
+
+        foreach ($methods as $methodBody) {
+            $formattedMethods[] = (string) $methodBody;
+        }
+
+        return implode("\n\n    ", array_map('strval', $formattedMethods));
+    }
+
+    protected function getEntityConfigKey(): string
+    {
+        $contextType = $this->context->getContextType();
+        $entityName = Str::kebab($this->context->getEntityName());
+
+        return match ($contextType) {
+            'app' => "entities.{$entityName}",
+            'preview' => "previews.{$entityName}",
+            'package' => $this->context->getConfig()['package']['name'].".entities.{$entityName}",
+            default => throw new \InvalidArgumentException('Invalid context type: '.$contextType),
+        };
     }
 }

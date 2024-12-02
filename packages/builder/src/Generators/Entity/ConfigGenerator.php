@@ -51,62 +51,65 @@ class ConfigGenerator extends AbstractGenerator
         }
     }
 
+    protected function formatTabs(): string
+    {
+        if (empty($this->tabs)) {
+            return '[]';
+        }
+
+        $output = "[\n";
+        foreach ($this->tabs as $key => $tab) {
+            $output .= "        '$key' => [\n";
+            foreach ($tab as $property => $value) {
+                if (is_array($value)) {
+                    $output .= "            '$property' => [\n";
+                    foreach ($value as $queryItem) {
+                        $output .= "                [\n";
+                        foreach ($queryItem as $field => $fieldValue) {
+                            $formattedValue = is_null($fieldValue) ? 'null' : "'$fieldValue'";
+                            $output .= "                    '$field' => $formattedValue,\n";
+                        }
+                        $output .= "                ],\n";
+                    }
+                    $output .= "            ],\n";
+                } else {
+                    $output .= "            '$property' => '$value',\n";
+                }
+            }
+            $output .= "        ],\n";
+        }
+        $output .= '    ]';
+
+        return $output;
+    }
+
     protected function generateConfigContent(): string
     {
-        $template = $this->loadStub($this->getTemplate());
-
-        $translationPath = $this->getTranslationPath();
-        $entityFile = $this->formatFilename($this->context->getEntityName());
-        $entityKey = Str::kebab($this->context->getEntityName());
-        $entitiesKey = Str::kebab($this->context->getPluralName());
-
-        $variables = [
-            'Package' => $this->context->isPackage() ? explode('\\', $this->context->getBaseNamespace())[0] : 'app',
-            'Entity' => $this->context->getEntityName(),
-            'Entities' => $this->context->getPluralName(),
-            'LowercaseEntity' => strtolower($this->context->getEntityName()),
-            'LowercaseEntities' => strtolower($this->context->getPluralName()),
-            'Single' => "trans//{$translationPath}/{$entityFile}.{$entityKey}",
-            'Plural' => "trans//{$translationPath}/{$entityFile}.{$entitiesKey}",
-            'Tabs' => $this->generateTabsConfig(),
-            'Relations' => $this->generateRelationsConfig(),
-            'Taxonomies' => $this->generateTaxonomiesConfig(),
-        ];
-
-        return $this->replaceTemplateVariables($template, $variables);
-    }
-
-    protected function getTranslationPath(): string
-    {
-        return match ($this->context->getContextType()) {
-            'app' => 'entities',
-            'preview' => 'previews',
-            'package' => $this->getPackageName(),
-            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+        $entityName = Str::kebab($this->context->getEntityName());
+        $contextType = $this->context->getContextType();
+        $translationKey = match ($contextType) {
+            'app' => "entities/{$entityName}",
+            'preview' => "previews/{$entityName}",
+            'package' => $this->context->getConfig()['package']['name']."/{$entityName}",
+            default => throw new \InvalidArgumentException('Invalid context type: '.$contextType),
         };
+
+        return "<?php\n\nreturn [\n    'single' => 'trans//{$translationKey}.{$this->getSingularKey()}',\n    'plural' => 'trans//{$translationKey}.{$this->getPluralKey()}',\n    'tabs' => {$this->formatTabs()},\n    'relations' => [],\n    'taxonomies' => [],\n];\n";
     }
 
-    protected function getPackageName(): string
+    protected function getConfigPath(): string
     {
-        if (! $this->context->isPackage()) {
-            return '';
-        }
-
-        $config = $this->context->getConfig();
-
-        return $config['package']['name'] ?? '';
+        return $this->context->getPath('config').'/'.$this->context->getEntityName().'.php';
     }
 
-    protected function generateTabsConfig(): string
+    protected function getSingularKey(): string
     {
-        $tabsConfig = [];
+        return Str::kebab($this->context->getEntityName());
+    }
 
-        foreach ($this->tabs as $tabName) {
-            $tabStub = $this->loadStub(__DIR__."/../../Templates/Entity/tabs/{$tabName}.tab.stub");
-            $tabsConfig[] = $tabStub;
-        }
-
-        return implode("\n", $tabsConfig);
+    protected function getPluralKey(): string
+    {
+        return Str::kebab($this->context->getPluralName());
     }
 
     protected function generateTaxonomiesConfig(): string
@@ -161,18 +164,6 @@ class ConfigGenerator extends AbstractGenerator
         }
 
         return implode("\n", $relationsConfig);
-    }
-
-    protected function getConfigPath(): string
-    {
-        $basePath = match ($this->context->getContextType()) {
-            'app' => config_path('entities'),
-            'preview' => config_path('previews'),
-            'package' => $this->context->getPath('config').'/entities',
-            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
-        };
-
-        return $basePath.'/'.$this->formatFilename($this->context->getEntityName()).'.php';
     }
 
     protected function getGeneratorType(): string
