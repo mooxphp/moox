@@ -10,21 +10,28 @@ use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
 use Moox\Builder\Generators\Entity\Pages\EditPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ListPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ViewPageGenerator;
+use Moox\Builder\Services\Entity\SectionManager;
 use Moox\Builder\Services\File\FileManager;
 use RuntimeException;
 
 class ResourceGenerator extends AbstractGenerator
 {
+    private SectionManager $sectionManager;
+
     public function __construct(
         BuildContext $context,
         FileManager $fileManager,
         array $blocks = []
     ) {
         parent::__construct($context, $fileManager, $blocks);
+        $this->sectionManager = new SectionManager;
     }
 
     public function generate(): void
     {
+        $this->processBlocks();
+        $sections = $this->getSections();
+
         $this->generateResourcePages();
 
         $template = $this->loadStub($this->getTemplate());
@@ -47,9 +54,9 @@ class ResourceGenerator extends AbstractGenerator
             'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),
             'form_schema' => $this->getFormSchema(),
-            'form_sections' => $this->getFormSections(),
+            'form_sections' => $sections['form_sections'],
             'meta_schema' => $this->getMetaSchema(),
-            'meta_sections' => $this->getMetaSections(),
+            'meta_sections' => $sections['meta_sections'],
             'table_columns' => $this->getTableColumns(),
             'table_filters' => $this->getTableFilters(),
             'table_actions' => $this->getTableActions(),
@@ -63,6 +70,18 @@ class ResourceGenerator extends AbstractGenerator
             $this->context->getEntityName().'Resource.php';
 
         $this->writeFile($path, $content);
+    }
+
+    protected function processBlocks(): void
+    {
+        foreach ($this->getBlocks() as $block) {
+            $this->sectionManager->addBlock($block);
+        }
+    }
+
+    protected function getSections(): array
+    {
+        return $this->sectionManager->getFormattedSections();
     }
 
     protected function generateResourcePages(): void
@@ -244,19 +263,6 @@ class ResourceGenerator extends AbstractGenerator
         return $this->context->formatNamespace('model', true).'\\'.$this->context->getEntityName();
     }
 
-    protected function getFormSections(): string
-    {
-        $sections = [];
-        foreach ($this->getBlocks() as $block) {
-            $formSections = $block->getFormSections();
-            if (! empty($formSections)) {
-                $sections = array_merge($sections, $formSections);
-            }
-        }
-
-        return implode(",\n            ", $sections);
-    }
-
     protected function getMetaSchema(): string
     {
         $fields = [];
@@ -268,19 +274,6 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         return implode(",\n            ", $fields);
-    }
-
-    protected function getMetaSections(): string
-    {
-        $sections = [];
-        foreach ($this->getBlocks() as $block) {
-            $metaSections = $block->getMetaSections();
-            if (! empty($metaSections)) {
-                $sections = array_merge($sections, $metaSections);
-            }
-        }
-
-        return implode(",\n            ", $sections);
     }
 
     protected function getUseStatements(string $context, ?string $subContext = null): array

@@ -8,6 +8,12 @@ abstract class AbstractBlock
 {
     protected bool $fillable = true;
 
+    protected array $sectionConfig = [
+        'name' => null,
+        'order' => 0,
+        'is_meta' => false,
+    ];
+
     protected array $casts = [
         'model' => [],
     ];
@@ -725,5 +731,32 @@ abstract class AbstractBlock
     public function getConfig(): array
     {
         return $this->config;
+    }
+
+    public function setSection(string $name, int $order = 0, bool $isMeta = false): void
+    {
+        $this->sectionConfig['name'] = $name;
+        $this->sectionConfig['order'] = $order;
+        $this->sectionConfig['is_meta'] = $isMeta;
+    }
+
+    public function getSectionName(): ?string
+    {
+        return $this->sectionConfig['name'];
+    }
+
+    public function getSectionOrder(): int
+    {
+        return $this->sectionConfig['order'];
+    }
+
+    public function isMetaSection(): bool
+    {
+        return $this->sectionConfig['is_meta'];
+    }
+
+    public function hasSection(): bool
+    {
+        return $this->sectionConfig['name'] !== null;
     }
 }

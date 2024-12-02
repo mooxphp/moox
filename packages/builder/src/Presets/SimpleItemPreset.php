@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Presets;
 
+use Moox\Builder\Blocks\Sections\AddressSection;
 use Moox\Builder\Blocks\Simple;
 use Moox\Builder\Blocks\Tabs;
 use Moox\Builder\Blocks\Taxonomy;
@@ -34,6 +35,7 @@ class SimpleItemPreset extends AbstractPreset
                 description: 'The content of the item'
             ),
             new Tabs,
+            /*
             new Taxonomy(
                 name: 'tags',
                 label: 'Tags',
@@ -45,6 +47,8 @@ class SimpleItemPreset extends AbstractPreset
                 description: 'The categories of the item',
                 nested: true,
             ),
+            */
+            new AddressSection,
         ];
     }
 }
