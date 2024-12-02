@@ -10,11 +10,11 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\NestedTaxonomy;
 use Moox\Builder\Resources\NestedTaxonomyResource;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 
 class ListNestedTaxonomies extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = NestedTaxonomyResource::class;
 

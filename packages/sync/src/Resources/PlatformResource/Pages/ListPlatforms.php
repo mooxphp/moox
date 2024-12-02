@@ -5,14 +5,14 @@ namespace Moox\Sync\Resources\PlatformResource\Pages;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 use Moox\Sync\Jobs\SyncPlatformJob;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Resources\PlatformResource;
 
 class ListPlatforms extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = PlatformResource::class;
 

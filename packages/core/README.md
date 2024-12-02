@@ -31,7 +31,7 @@ Moox Core requires these packages:
 
 ## Traits
 
-### TabsInPage
+### TabsInListPage
 
 This trait provides functionality for creating dynamic tabs in Filament resources.
 
@@ -44,11 +44,11 @@ This trait provides functionality for creating dynamic tabs in Filament resource
 The DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature in your existing package:
 
 ```php
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 
 class ListItems extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public function getTabs(): array
     {
@@ -329,7 +329,7 @@ And finally the most-known mistake, throws "Cannot access offset of type string 
 
 So don't forget to put the query in an extra array, even if it is a single query.
 
-As mentioned, the QueriesInConfig trait is used in TabsInPage, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
+As mentioned, the QueriesInConfig trait is used in TabsInListPage, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
 
 ### TranslatableConfig
 

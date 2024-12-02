@@ -4,13 +4,13 @@ namespace Moox\PressWiki\Resources\WpWikiResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 use Moox\PressWiki\Models\WpWiki;
 use Moox\PressWiki\Resources\WpWikiResource;
 
 class ListWpWikis extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     protected static string $resource = WpWikiResource::class;
 

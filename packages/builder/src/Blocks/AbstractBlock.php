@@ -131,6 +131,8 @@ abstract class AbstractBlock
 
     protected array $constructorParameters = [];
 
+    protected array $config = [];
+
     public function __construct(
         protected string $name,
         protected string $label,
@@ -718,5 +720,10 @@ abstract class AbstractBlock
                 $this->useStatements[$context] = $contextStatements;
             }
         }
+    }
+
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 }

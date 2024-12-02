@@ -8,17 +8,17 @@ We work on these tasks in order from top to bottom:
 
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
     -   [WIP] PreviewSimItem is working like a charm including filters and bulk actions
-        -   [ ] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
-            -   Tabs needs
-                -   to be generated in the Resource
-                -   to be generated in the Resource Pages, most probably
-                -   to be generated in the Config
-            -   Taxonomy needs
-                -   to be generated in the Resource
-                -   to be generated in the Config
-            -   Relations needs
-                -   to be generated in the Resource
-                -   to be generated in the Config
+        -   [WIP] Need to generate Tabs, Taxonomy and Relations partials, may already work partially
+            -   [WIP] Tabs needs
+                -   [ ] the TabsInResource trait in the Resource
+                -   [ ] to be generated in the Resource Pages, most probably
+                -   [ ] to be generated in the Config
+            -   [ ] Taxonomy needs
+                -   [ ] to be generated in the Resource
+                -   [ ] to be generated in the Config
+            -   [ ] Relations needs
+                -   [ ] to be generated in the Resource
+                -   [ ] to be generated in the Config
         -   [ ] Generate two sections, one for the main form and one for the meta
         -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
     -   [ ] PreviewPubItem
@@ -47,7 +47,7 @@ We work on these tasks in order from top to bottom:
     -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
     -   [ ] Naming convention InModel InResource InPages and Single for single-use traits
     -   [ ] TabsInResource - contains TODO
-    -   [ ] TabsInPage - just getTabs needs to be defined
+    -   [ ] TabsInListPage - just getTabs needs to be defined
     -   [ ] TaxonomyInPages - needs that mount method in ViewPage
 -   [ ] Refactor DeleteCommand to use new services
 -   [ ] Add --migration option to create command

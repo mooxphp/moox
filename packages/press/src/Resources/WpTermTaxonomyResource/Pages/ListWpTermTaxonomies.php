@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpTermTaxonomyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 use Moox\Press\Models\WpTermTaxonomy;
 use Moox\Press\Resources\WpTermTaxonomyResource;
 
 class ListWpTermTaxonomies extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     protected static string $resource = WpTermTaxonomyResource::class;
 

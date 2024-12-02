@@ -6,11 +6,11 @@ use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 
-trait TabsInPage
+trait TabsInListPage
 {
     use QueriesInConfig;
 
-    public function mountTabsInPage(): void
+    public function mountTabsInListPage(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
     }

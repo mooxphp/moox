@@ -11,11 +11,11 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\FullItem;
 use Moox\Builder\Resources\FullItemResource;
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 
 class ListFullItems extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = FullItemResource::class;
 

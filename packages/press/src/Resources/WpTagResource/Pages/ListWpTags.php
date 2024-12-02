@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpTagResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 use Moox\Press\Models\WpTag;
 use Moox\Press\Resources\WpTagResource;
 
 class ListWpTags extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     protected static string $resource = WpTagResource::class;
 

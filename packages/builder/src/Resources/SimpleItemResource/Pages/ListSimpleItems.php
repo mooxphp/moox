@@ -8,11 +8,11 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleItem;
 use Moox\Builder\Resources\SimpleItemResource;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 
 class ListSimpleItems extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = SimpleItemResource::class;
 

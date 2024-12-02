@@ -4,14 +4,14 @@ namespace Moox\Passkey\Resources\PasskeyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 
 class ListPage extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = PasskeyResource::class;
 

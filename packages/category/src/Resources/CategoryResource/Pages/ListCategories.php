@@ -10,11 +10,11 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 
 class ListCategories extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = CategoryResource::class;
 

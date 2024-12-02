@@ -4,13 +4,13 @@ namespace Moox\Notification\Resources\NotificationResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 use Moox\Notification\Models\Notification;
 use Moox\Notification\Resources\NotificationResource;
 
 class ListNotifications extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     protected static string $resource = NotificationResource::class;
 

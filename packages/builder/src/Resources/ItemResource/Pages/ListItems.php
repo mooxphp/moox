@@ -10,18 +10,18 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Core\Traits\TabsInPage;
+use Moox\Core\Traits\TabsInListPage;
 
 class ListItems extends ListRecords
 {
-    use TabsInPage;
+    use TabsInListPage;
 
     public static string $resource = ItemResource::class;
 
     public function mount(): void
     {
         parent::mount();
-        $this->mountTabsInPage();
+        $this->mountTabsInListPage();
     }
 
     protected function getHeaderActions(): array
