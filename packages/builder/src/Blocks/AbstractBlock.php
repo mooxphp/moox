@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Blocks;
 
+use Illuminate\Support\Facades\Log;
+use Moox\Builder\Support\SectionBuilder;
+
 abstract class AbstractBlock
 {
     protected bool $fillable = true;
@@ -138,6 +141,8 @@ abstract class AbstractBlock
     protected array $constructorParameters = [];
 
     protected array $config = [];
+
+    protected array $sections = [];
 
     public function __construct(
         protected string $name,
@@ -350,13 +355,6 @@ abstract class AbstractBlock
         } else {
             $this->methods[$context][] = $method;
         }
-
-        return $this;
-    }
-
-    protected function addFormField(string $field): self
-    {
-        $this->formFields['resource'][] = $field;
 
         return $this;
     }
@@ -758,5 +756,53 @@ abstract class AbstractBlock
     public function hasSection(): bool
     {
         return $this->sectionConfig['name'] !== null;
+    }
+
+    protected function addSection(string $name, int $order = 0): SectionBuilder
+    {
+        Log::info('Adding section: '.$name);
+
+        return new SectionBuilder($this->sections, $name, $order);
+    }
+
+    public function getSections(): array
+    {
+        Log::info('Getting sections for: '.get_class($this));
+        Log::info('Current sections structure', ['sections' => $this->sections]);
+
+        // Migrate old fields to sections if they exist
+        if (! empty($this->formFields['resource'])) {
+            foreach ($this->formFields['resource'] as $field) {
+                $this->addFormField($field);
+            }
+        }
+
+        if (! empty($this->metaFields['resource'])) {
+            foreach ($this->metaFields['resource'] as $field) {
+                $this->addMetaField($field);
+            }
+        }
+
+        Log::info('Final sections structure', ['sections' => $this->sections]);
+
+        return $this->sections;
+    }
+
+    protected function addFormField(string $field): void
+    {
+        Log::info('Adding form field', ['field' => $field]);
+        if (! isset($this->sections['form'])) {
+            $this->addSection('form')->withFields([]);
+        }
+        $this->sections['form']['fields'][] = $field;
+    }
+
+    protected function addMetaField(string $field): void
+    {
+        Log::info('Adding meta field', ['field' => $field]);
+        if (! isset($this->sections['meta'])) {
+            $this->addSection('meta')->asMeta()->withFields([]);
+        }
+        $this->sections['meta']['fields'][] = $field;
     }
 }

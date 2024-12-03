@@ -39,6 +39,7 @@ class ResourceGenerator extends AbstractGenerator
             throw new RuntimeException('Failed to load template: '.$this->getTemplate());
         }
 
+        $formSchema = $this->generateFormSchema();
         $variables = [
             'namespace' => $this->context->formatNamespace('resource', false),
             'class_name' => $this->context->getEntityName(),
@@ -53,10 +54,10 @@ class ResourceGenerator extends AbstractGenerator
             'navigation_icon' => $this->getNavigationIcon(),
             'use_statements' => $this->formatUseStatements(),
             'traits' => $this->formatTraits(),
-            'form_schema' => $this->getFormSchema(),
-            'form_sections' => $sections['form_sections'],
-            'meta_schema' => $this->getMetaSchema(),
-            'meta_sections' => $sections['meta_sections'],
+            'form_schema' => $formSchema['form_schema'],
+            'form_sections' => $formSchema['form_sections'],
+            'meta_schema' => $formSchema['meta_schema'],
+            'meta_sections' => $formSchema['meta_sections'],
             'table_columns' => $this->getTableColumns(),
             'table_filters' => $this->getTableFilters(),
             'table_actions' => $this->getTableActions(),
@@ -182,17 +183,57 @@ class ResourceGenerator extends AbstractGenerator
         return 'use '.implode(', ', array_unique($traits)).';';
     }
 
-    protected function getFormSchema(): string
+    protected function generateFormSchema(): array
     {
-        $fields = [];
+        $mainFields = [];
+        $mainSections = [];
+        $metaFields = [];
+        $metaSections = [];
+        $hasTaxonomy = false;
+
         foreach ($this->getBlocks() as $block) {
-            $formFields = $block->getFormFields('resource');
-            if (! empty($formFields)) {
-                $fields = array_merge($fields, $formFields);
+            foreach ($block->getSections() as $section) {
+                if (str_contains($section['name'], '_actions') && $section['name'] !== 'resource_actions') {
+                    continue;
+                }
+
+                if ($section['name'] === 'taxonomy') {
+                    $hasTaxonomy = true;
+
+                    continue;
+                }
+
+                if ($section['isMeta']) {
+                    if ($section['name'] === 'meta') {
+                        $metaFields = array_merge($metaFields, $section['fields']);
+                    } else {
+                        $metaSections[] = $section;
+                    }
+                } else {
+                    if ($section['name'] === 'form') {
+                        $mainFields = array_merge($mainFields, $section['fields']);
+                    } else {
+                        $mainSections[] = $section;
+                    }
+                }
             }
         }
 
-        return implode(",\n            ", $fields);
+        if ($hasTaxonomy) {
+            $metaSections[] = [
+                'name' => 'taxonomy',
+                'isMeta' => true,
+                'fields' => ['static::getTaxonomyFields()'],
+                'order' => 20,
+            ];
+        }
+
+        return [
+            'form_schema' => implode(",\n", $mainFields),
+            'form_sections' => $this->sectionManager->formatSections($mainSections),
+            'meta_schema' => implode(",\n", $metaFields),
+            'meta_sections' => $this->sectionManager->formatSections($metaSections),
+        ];
     }
 
     protected function getTableColumns(): string
@@ -261,19 +302,6 @@ class ResourceGenerator extends AbstractGenerator
     protected function getModelReference(): string
     {
         return $this->context->formatNamespace('model', true).'\\'.$this->context->getEntityName();
-    }
-
-    protected function getMetaSchema(): string
-    {
-        $fields = [];
-        foreach ($this->getBlocks() as $block) {
-            $metaFields = $block->getMetaFields();
-            if (! empty($metaFields)) {
-                $fields = array_merge($fields, $metaFields);
-            }
-        }
-
-        return implode(",\n            ", $fields);
     }
 
     protected function getUseStatements(string $context, ?string $subContext = null): array

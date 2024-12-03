@@ -29,12 +29,13 @@ class Text extends AbstractBlock
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "TextInput::make('{$this->name}')
-                ->label('{$this->label}')
-                ->maxLength({$this->length})"
+        $this->addSection('form')
+            ->withFields([
+                "TextInput::make('{$this->name}')
+                    ->label('{$this->label}')
+                    ->maxLength({$this->length})"
                 .($this->nullable ? '->nullable()' : '->required()'),
-        ];
+            ]);
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')"

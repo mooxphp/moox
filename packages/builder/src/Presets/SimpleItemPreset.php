@@ -35,19 +35,27 @@ class SimpleItemPreset extends AbstractPreset
                 description: 'The content of the item'
             ),
             new Tabs,
-            /*
             new Taxonomy(
-                name: 'tags',
-                label: 'Tags',
-                description: 'The tags of the item'
-            ),
-            new Taxonomy(
-                name: 'categories',
-                label: 'Categories',
-                description: 'The categories of the item',
+                single: 'Category',
+                plural: 'Categories',
+                model: '\Moox\Category\Models\Category::class',
+                table: 'categorizables',
+                relationship: 'categorizable',
+                foreignKey: 'categorizable_id',
+                relatedKey: 'category_id',
+                createForm: '\Moox\Category\Forms\TaxonomyCreateForm::class',
                 nested: true,
             ),
-            */
+            new Taxonomy(
+                single: 'Tag',
+                plural: 'Tags',
+                model: '\Moox\Tag\Models\Tag::class',
+                table: 'taggables',
+                relationship: 'taggable',
+                foreignKey: 'taggable_id',
+                relatedKey: 'tag_id',
+                createForm: '\Moox\Tag\Forms\TaxonomyCreateForm::class',
+            ),
             new AddressSection,
         ];
     }

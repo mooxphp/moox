@@ -25,13 +25,13 @@ class TextArea extends AbstractBlock
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "Textarea::make('{$this->name}')
+        $this->addSection('form')
+            ->withFields(["Textarea::make('{$this->name}')
                 ->label('{$this->label}')"
                 .($this->nullable ? '' : '->required()')
                 .($this->maxLength ? "->maxLength({$this->maxLength})" : '')
                 .($this->rows ? "->rows({$this->rows})" : ''),
-        ];
+            ]);
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')

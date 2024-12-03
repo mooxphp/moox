@@ -57,6 +57,8 @@ trait SingleSimpleInResource
             ->outlined()
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->action(fn ($record) => $record->delete())
+            ->keyBindings(['delete'])
+            ->url(fn ($record) => static::getUrl('index'))
             ->visible(fn ($livewire) => $livewire instanceof EditRecord);
     }
 

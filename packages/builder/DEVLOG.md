@@ -4,23 +4,64 @@ We work on these tasks in order from top to bottom:
 
 ## Tasks
 
+### Sections (CURRENTLY WIP)
+
+Current issues with section implementation:
+
+1. ✓ Code Generation Format
+
+    - [x] Generated code is now properly formatted line by line
+    - [x] Pint can handle the formatting
+
+2. ✓ Section Structure
+
+    - [x] Taxonomy section appears only once
+    - [x] Taxonomy in meta grid with actions
+    - [x] Array brackets fixed for taxonomy fields
+    - [x] Sections in correct grids based on meta flag
+
+3. Page Actions
+
+    - [ ] Page generators need section-based API implementation
+    - [ ] Add section support to AbstractPageGenerator
+    - [ ] Update page templates to handle sections
+    - [ ] Review action placement in templates:
+        - ListPage: getHeaderActions()
+        - ViewPage: getHeaderActions()
+        - CreatePage: getHeaderActions()
+        - EditPage: getHeaderActions()
+
+4. Section Order
+
+    - [ ] Order determined by preset block order
+    - [ ] Individual blocks can suggest order but preset has final say
+    - [ ] No need for explicit order in simple blocks
+
+5. Section Headers
+    - [ ] Empty section name for actions (currently shows 'resource_actions')
+    - [ ] Consistent capitalization (e.g., 'Address' vs 'address')
+    - [ ] Option to hide section header entirely
+
+Next steps:
+
+1. Implement section support in AbstractPageGenerator
+2. Update page templates for section handling
+3. Review section ordering approach
+4. Implement flexible section headers
+
 ### Entity
 
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
     -   [WIP] PreviewSimItem is working like a charm including filters and bulk actions
         -   [WIP] Need to generate Taxonomy and Relations partials, may already work partially
-            -   [WIP] Taxonomy needs
-                -   [WIP] sections, so we need to implement sections first
+            -   [WIP] Taxonomy block needs to be finished. Does not show the taxonomy fields in form or table
+                -   [ ] Config is generated with wrong class names and wrong table names, I prepared the SimpleItemPreset for that, so all information needed should be used from there
+                -   [ ] Resource is hardcoded with comment, that is maybe fixed in the Taxonomy block, see comment there
+                -   [ ] Now taxonomies should be shown, just columns andfilters are missing
+            -   [ ] Relations needs
+                -   [ ] to be implemented first, because relations is a bit different to taxonomies
                 -   [ ] to be generated in the Resource
                 -   [ ] to be generated in the Config
-            -   [ ] Relations needs - not implemented yet, skip for now
-                -   [ ] to be generated in the Resource
-                -   [ ] to be generated in the Config
-        -   [WIP] Generate two sections, one for the main form and one for the meta, needs an idea on how to implement sections first
-            -   [WIP] Sections are wrapped around fields
-            -   [WIP] Sections are predefined sets of fields, like an address section
-            -   [WIP] Sections can be used by features like Taxonomies or Relations, so we need to find a way to make them flexible
-            -   [WIP] Idea: Blocks can implement sections, we can also use named sections, like taxonomies or relations, what means multiple blocks can be grouped together in a section, then there could be an order options for the blocks inside a section
         -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
     -   [ ] PreviewPubItem
         -   [ ] We need to bring this on the Simple Item level first
@@ -43,7 +84,6 @@ We work on these tasks in order from top to bottom:
 -   [ ] Iterate over all blocks, presets and contexts to find out if they are working as expected
 -   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
     -   [ ] Publish feature seems to miss the save method
-    -   [ ] getResourceName should be auto detected
     -   [ ] Relations, like Taxonomies, but "on the left"
     -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
     -   [ ] Naming convention InModel InResource InPages and Single for single-use traits

@@ -2,6 +2,8 @@
 
 namespace Moox\Core\Traits;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 trait QueriesInConfig
 {
     protected function applyConditions($query, $conditions)
@@ -12,7 +14,8 @@ trait QueriesInConfig
             if ($value instanceof \Closure) {
                 $value = $value();
             }
-            if ($condition['field'] === 'deleted_at') {
+
+            if ($condition['field'] === 'deleted_at' && in_array(SoftDeletes::class, class_uses_recursive($query->getModel()))) {
                 $query = $query->withTrashed();
             }
 

@@ -29,7 +29,8 @@ class TaxonomyService
     {
         $this->ensureResourceIsSet();
 
-        return Config::get("builder.resources.{$this->currentResource}.taxonomies", []);
+        return Config::get("previews.{$this->currentResource}.taxonomies", [])
+            ?: Config::get("builder.resources.{$this->currentResource}.taxonomies", []);
     }
 
     public function getTaxonomyModel(string $taxonomy): ?string

@@ -25,13 +25,7 @@ class Tabs extends AbstractBlock
             'all' => [
                 'label' => 'trans//core::core.all',
                 'icon' => 'gmdi-filter-list',
-                'query' => [
-                    [
-                        'field' => 'deleted_at',
-                        'operator' => '=',
-                        'value' => null,
-                    ],
-                ],
+                'query' => [],
             ],
         ];
     }

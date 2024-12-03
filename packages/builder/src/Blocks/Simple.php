@@ -30,25 +30,11 @@ class Simple extends AbstractBlock
         $this->traits['pages']['create'] = ['Moox\Core\Traits\SingleSimpleInCreatePage'];
         $this->traits['pages']['edit'] = ['Moox\Core\Traits\SingleSimpleInEditPage'];
 
-        $this->metaFields['resource'] = [
-            'static::getSimpleFormActions()',
-        ];
-
-        $this->metaFields['pages']['list'] = [
-            'static::getSimpleListActions()',
-        ];
-
-        $this->metaFields['pages']['view'] = [
-            'static::getSimpleViewActions()',
-        ];
-
-        $this->metaFields['pages']['create'] = [
-            'static::getSimpleCreateActions()',
-        ];
-
-        $this->metaFields['pages']['edit'] = [
-            'static::getSimpleEditActions()',
-        ];
+        $this->addSection('resource_actions', 100)
+            ->asMeta()
+            ->withFields([
+                'static::getSimpleFormActions()',
+            ]);
 
         $this->actions['resource'] = [
             '\Filament\Tables\Actions\ViewAction::make()',

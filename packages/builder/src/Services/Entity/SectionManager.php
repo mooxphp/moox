@@ -12,63 +12,85 @@ final class SectionManager
 
     private array $metaSections = [];
 
+    private array $defaultFields = [];
+
+    private array $defaultMetaFields = [];
+
     public function addBlock(AbstractBlock $block): void
     {
-        if (! $block->hasSection()) {
-            $sectionName = 'default';
-        } else {
+        if ($block->hasSection()) {
             $sectionName = $block->getSectionName();
+            $fields = $block->getFormFields();
+
+            if ($block->isMetaSection()) {
+                if (! isset($this->metaSections[$sectionName])) {
+                    $this->metaSections[$sectionName] = [];
+                }
+                $this->metaSections[$sectionName] = array_merge(
+                    $this->metaSections[$sectionName],
+                    $fields
+                );
+            } else {
+                if (! isset($this->sections[$sectionName])) {
+                    $this->sections[$sectionName] = [];
+                }
+                $this->sections[$sectionName] = array_merge(
+                    $this->sections[$sectionName],
+                    $fields
+                );
+            }
+
+            return;
         }
 
-        $order = $block->getSectionOrder();
-
         if ($block->isMetaSection()) {
-            if (! isset($this->metaSections[$sectionName])) {
-                $this->metaSections[$sectionName] = [];
-            }
-            $this->metaSections[$sectionName][$order][] = $block;
+            $this->defaultMetaFields = array_merge(
+                $this->defaultMetaFields,
+                $block->getFormFields()
+            );
         } else {
-            if (! isset($this->sections[$sectionName])) {
-                $this->sections[$sectionName] = [];
-            }
-            $this->sections[$sectionName][$order][] = $block;
+            $this->defaultFields = array_merge(
+                $this->defaultFields,
+                $block->getFormFields()
+            );
         }
     }
 
-    private function formatSections(array $sections): string
+    public function formatSections(array $sections): string
     {
         if (empty($sections)) {
             return '';
         }
 
         $output = [];
-        foreach ($sections as $sectionName => $orderBlocks) {
-            ksort($orderBlocks);
-            $formattedBlocks = [];
+        foreach ($sections as $section) {
+            if ($section['name'] === 'taxonomy') {
+                $output[] = "                    Section::make('Taxonomy')
+                        ->schema(static::getTaxonomyFields())";
 
-            foreach ($orderBlocks as $blocks) {
-                foreach ($blocks as $block) {
-                    if (isset($block->getFormFields()['resource'])) {
-                        $formattedBlocks = array_merge($formattedBlocks, $block->getFormFields()['resource']);
-                    }
-                }
+                continue;
             }
 
-            if (! empty($formattedBlocks)) {
-                if ($sectionName === 'default') {
-                    $output[] = implode(',', $formattedBlocks);
-                } else {
-                    $output[] = "Section::make('".$sectionName."')->schema([".implode(',', $formattedBlocks).'])';
-                }
-            }
+            $fields = array_map(function ($field) {
+                return "                        {$field},";
+            }, $section['fields']);
+
+            $sectionTitle = $section['hideHeader'] ?? false ? "''" : "'".ucfirst($section['name'])."'";
+
+            $output[] = "                    Section::make({$sectionTitle})
+                        ->schema([
+".implode("\n", $fields).'
+                        ]),';
         }
 
-        return implode(',', $output);
+        return implode("\n                    ", $output);
     }
 
     public function getFormattedSections(): array
     {
         return [
+            'form_schema' => implode(",\n", $this->defaultFields),
+            'meta_schema' => implode(",\n", $this->defaultMetaFields),
             'form_sections' => $this->formatSections($this->sections),
             'meta_sections' => $this->formatSections($this->metaSections),
         ];

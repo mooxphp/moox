@@ -94,12 +94,21 @@ class ConfigGenerator extends AbstractGenerator
             default => throw new \InvalidArgumentException('Invalid context type: '.$contextType),
         };
 
-        return "<?php\n\nreturn [\n    'single' => 'trans//{$translationKey}.{$this->getSingularKey()}',\n    'plural' => 'trans//{$translationKey}.{$this->getPluralKey()}',\n    'tabs' => {$this->formatTabs()},\n    'relations' => [],\n    'taxonomies' => [],\n];\n";
+        $taxonomies = $this->generateTaxonomiesConfig();
+        $taxonomiesConfig = empty($taxonomies) ? '[]' : "[\n        {$taxonomies}\n    ]";
+
+        return "<?php\n\nreturn [\n".
+            "    'single' => 'trans//{$translationKey}.{$this->getSingularKey()}',\n".
+            "    'plural' => 'trans//{$translationKey}.{$this->getPluralKey()}',\n".
+            "    'tabs' => {$this->formatTabs()},\n".
+            "    'relations' => [],\n".
+            "    'taxonomies' => {$taxonomiesConfig},\n".
+            "];\n";
     }
 
     protected function getConfigPath(): string
     {
-        return $this->context->getPath('config').'/'.$this->context->getEntityName().'.php';
+        return $this->context->getPath('config').'/'.Str::kebab($this->context->getEntityName()).'.php';
     }
 
     protected function getSingularKey(): string
@@ -130,6 +139,7 @@ class ConfigGenerator extends AbstractGenerator
                 'TaxonomyRelationship' => $taxonomy['relationship'],
                 'TaxonomyForeignKey' => $taxonomy['foreign_key'],
                 'TaxonomyRelatedKey' => $taxonomy['related_key'],
+                'TaxonomyCreateForm' => $taxonomy['create_form'],
                 'TaxonomyHierarchical' => $taxonomy['hierarchical'] ? 'true' : 'false',
             ];
 
