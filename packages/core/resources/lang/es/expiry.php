@@ -28,4 +28,7 @@ return [
     'no_fixed_cycle' => 'sin ciclo fijo',
     'no_expiry_set' => 'Si no se fija ninguna fecha de caducidad, ésta deberá fijarse manualmente.',
     'expiry_in_future' => 'La fecha de caducidad debe estar en el futuro.',
+    'processing_deadline' => 'Fecha límite de procesamiento',
+    'escalated_to' => 'Escalado a',
+    'escalated_at' => 'Escalado en',
 ];
