@@ -26,4 +26,5 @@ return [
     'post_type' => 'Post Type',
     'post_mime_type' => 'Post mime Type',
     'wp_post_meta' => 'WP Post Meta',
+    'wp_post_metas' => 'WP Post Metas',
 ];
