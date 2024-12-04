@@ -4,41 +4,28 @@ We work on these tasks in order from top to bottom:
 
 ## Tasks
 
-### General (WIP)
-
-From publishable item we learn that TitleWithSlug should implement it's own section, it currently seems to add a comma, why?
-Another issue is that the List page is missing the eloquent builder use statement, why?
-After fixing that, the list page has other issues too.
-Tabs are not generated from the Publish block, should overwrite Tabs block
-
-We need to document the new section API and section classes.
-
-And we need to fix the issue with the FullItem, maybe we need a new way to handle relations like author, user, etc.
-Failed to create entity: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'authors' (Connection: mysql, SQL: alter table `preview_preview_full_items` add constraint `preview_preview_full_items_author_id_foreign` foreign key (`author_id`) references `authors` (`id`) on delete cascade)
-
 ### Entity
 
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
-    -   [WIP] PreviewSimItem is working like a charm including actions, filters, bulk actions and taxonomies
-        -   [ ] Delete does not delete the record
-        -   [ ] Status field is not working as expected, completely weird behavior
+    -   [x] PreviewSimItem is working like a charm including actions, filters, bulk actions, tabs and taxonomies
+    -   [WIP] PreviewPubItem
+        -   [ ] Saving is not working, trait or code in pages or resource missing? Must be for TitleWithSlug block
+        -   [ ] List page is missing the eloquent builder use statement, why?
+        -   [ ] After fixing that, the list page has other issues too.
         -   [ ] Uniqueness is not implemented or not used?
         -   [ ] Taxonomies needs to be tested, TaxonomyInPages has issues
-        -   [ ] Page / AbstractPage generators need section-based API implementation?
         -   [ ] Relations needs
             -   [ ] to be implemented first, because relations is a bit different to taxonomies
             -   [ ] to be generated in the Resource
             -   [ ] to be generated in the Config
-    -   [WIP] PreviewPubItem
-        -   [ ] We need to bring this on the Simple Item level first
-            -   [ ] Tabs needs to be implemented and should replace the simple tabs
-            -   [ ] Taxonomies needs to be tested, TaxonomyInPages has issues
-            -   [ ] TitleWithSlug should implement it's own section
-            -   [ ] Relations
-            -   [ ] Actions need to work as expected
+            -   [ ] RelationManager?
+        -   [ ] Page / AbstractPage generators need section-based API implementation?
         -   [ ] We need to work on the publish feature with custom actions, see https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167
         -   [ ] Then we need to implement the relation feature
-    -   [WIP] PreviewFullItem
+        -   [ ] Add author when fixed
+    -   [ ] PreviewFullItem
+        -   [ ] We need a new way to handle relations like author, user, etc. from the block to fix:
+                Failed to create entity: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'authors' (Connection: mysql, SQL: alter table `preview_preview_full_items` add constraint `preview_preview_full_items_author_id_foreign` foreign key (`author_id`) references `authors` (`id`) on delete cascade)
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] We need to work on all existing blocks and generate theme here
         -   [ ] Maybe add the three widgets here, needs wiget-generator and template?
@@ -52,10 +39,7 @@ Failed to create entity: SQLSTATE[HY000]: General error: 1824 Failed to open the
         -   [ ] Then we need to implement the soft delete feature
         -   [ ] Then it need Category specific implementation with nested set
 -   [ ] Iterate over all blocks, presets and contexts to find out if they are working as expected
--   [ ] Moox Core Features need to be refactored to be able to generate them without issues, eliminate methods and move to traits
-    -   [ ] Publish feature seems to miss the save method
-    -   [ ] Relations, like Taxonomies, but "on the left"
-    -   [ ] Relations like Taxonomies, and what about Relationsmanagers?
+-   [ ] Moox Core Features need to be documented
     -   [ ] Naming convention InModel InResource InPages and Single for single-use traits
     -   [ ] TabsInResource - contains TODO
     -   [ ] TabsInListPage - just getTabs needs to be defined
@@ -64,11 +48,11 @@ Failed to create entity: SQLSTATE[HY000]: General error: 1824 Failed to open the
 -   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself based on the current migrations?
 -   [ ] How would we generate a complete different type of resource, like a Media Manager? The only thing we need is a different table, switching to a grid.
-
--   All Blocks need to be updated
+-   [ ] All Blocks need to be updated
     -   [ ] Toggleable option like in Text
     -   [ ] Filterable option like in Text, and filterable needs to be implemented in ResourceGenerator (only generate filters if filterable is true)
     -   [ ] The new section API
+-   [ ] Document the new section API
 
 ### Merge and Release
 

@@ -21,8 +21,8 @@ class PublishableItemPreset extends AbstractPreset
                 description: 'The title of the item',
                 nullable: false
             ),
-            new Publish,
             new Tabs,
+            new Publish,
             new MarkdownEditor(
                 name: 'content',
                 label: 'Content',

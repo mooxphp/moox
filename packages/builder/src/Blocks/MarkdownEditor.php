@@ -20,24 +20,20 @@ class MarkdownEditor extends AbstractBlock
             'resource' => [
                 'forms' => ['use Filament\Forms\Components\MarkdownEditor;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ['use Filament\Tables\Filters\TextFilter;'],
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "MarkdownEditor::make('{$this->name}')
-                ->label('{$this->label}')"
-                .($this->nullable ? '' : '->required()'),
-        ];
+        $this->addSection('form')
+            ->withFields([
+                "MarkdownEditor::make('{$this->name}')
+                    ->label('{$this->label}')"
+                    .($this->nullable ? '' : '->required()'),
+            ]);
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')
                 ->markdown()"
                 .($this->searchable ? '->searchable()' : ''),
-        ];
-
-        $this->filters['resource'] = [
-            "TextFilter::make('{$this->name}')",
         ];
 
         $this->migrations['fields'] = [

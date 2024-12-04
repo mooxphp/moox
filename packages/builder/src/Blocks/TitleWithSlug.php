@@ -30,12 +30,16 @@ class TitleWithSlug extends AbstractBlock
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "TitleWithSlugInput::make(
-                fieldTitle: '{$this->titleFieldName}',
-                fieldSlug: '{$this->slugFieldName}',
-            ),",
-        ];
+        $this->addSection('form')
+            ->withFields([
+                "TitleWithSlugInput::make(
+                    fieldTitle: '{$this->titleFieldName}',
+                    fieldSlug: '{$this->slugFieldName}',
+                )",
+                "TextInput::make('{$this->slugFieldName}')
+                    ->label('Slug')
+                    ->placeholder('Slug')",
+            ]);
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->titleFieldName}')

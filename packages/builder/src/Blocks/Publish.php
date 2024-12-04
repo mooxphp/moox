@@ -33,9 +33,10 @@ class Publish extends AbstractBlock
             ],
             'pages' => [
                 'list' => [
-                    'use Moox\Core\Traits\SinglePublishInListPage;',
                     // This is missing in the generated list page, why?
                     'use Illuminate\Database\Eloquent\Builder;',
+                    // while this is generated
+                    'use Moox\Core\Traits\SinglePublishInListPage;',
                 ],
             ],
         ];
@@ -71,18 +72,9 @@ class Publish extends AbstractBlock
             }',
         ];
 
-        $this->formFields['resource'] = [
-        ];
-
-        $this->formSections['resource'] = [
-        ];
-
         $this->metaFields['resource'] = [
             'static::getFormActions()',
             'static::getPublishAtFormField()',
-        ];
-
-        $this->metaSections['resource'] = [
         ];
 
         $this->tableColumns['resource'] = [
@@ -148,7 +140,7 @@ class Publish extends AbstractBlock
         ];
 
         $this->config['tabs'] = [
-            "'all' => [
+            'all' => [
                 'label' => 'trans//core::core.all',
                 'icon' => 'gmdi-filter-list',
                 'query' => [
@@ -158,60 +150,41 @@ class Publish extends AbstractBlock
                         'value' => null,
                     ],
                 ],
-            ],",
-            "'published' => [
+            ],
+            'published' => [
                 'label' => 'trans//core::core.published',
                 'icon' => 'gmdi-check-circle',
                 'query' => [
                     [
                         'field' => 'publish_at',
                         'operator' => '<=',
-                        'value' => function () {
-                            return now();
-                        },
-                    ],
-                    [
-                        'field' => 'deleted_at',
-                        'operator' => '=',
-                        'value' => null,
+                        'value' => 'now()',
                     ],
                 ],
-            ],",
-            "'scheduled' => [
+            ],
+            'scheduled' => [
                 'label' => 'trans//core::core.scheduled',
                 'icon' => 'gmdi-schedule',
                 'query' => [
                     [
                         'field' => 'publish_at',
                         'operator' => '>',
-                        'value' => function () {
-                            return now();
-                        },
-                    ],
-                    [
-                        'field' => 'deleted_at',
-                        'operator' => '=',
-                        'value' => null,
+                        'value' => 'now()',
                     ],
                 ],
-            ],",
-            "'draft' => [
+            ],
+            'draft' => [
                 'label' => 'trans//core::core.draft',
-                'icon' => 'gmdi-text-snippet',
+                'icon' => 'gmdi-drafts',
                 'query' => [
                     [
-                        'field' => 'publish_at',
-                        'operator' => '=',
-                        'value' => null,
-                    ],
-                    [
-                        'field' => 'deleted_at',
+                        'field' => 'published_at',
                         'operator' => '=',
                         'value' => null,
                     ],
                 ],
-            ],",
-            "'deleted' => [
+            ],
+            'deleted' => [
                 'label' => 'trans//core::core.deleted',
                 'icon' => 'gmdi-delete',
                 'query' => [
@@ -221,7 +194,12 @@ class Publish extends AbstractBlock
                         'value' => null,
                     ],
                 ],
-            ],",
+            ],
         ];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->config['tabs'];
     }
 }

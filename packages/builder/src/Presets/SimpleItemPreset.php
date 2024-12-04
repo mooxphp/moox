@@ -22,7 +22,17 @@ class SimpleItemPreset extends AbstractPreset
                 name: 'title',
                 label: 'Title',
                 description: 'The title of the item',
-                length: 255,
+                nullable: false,
+                unique: true,
+                searchable: true,
+                sortable: true,
+                toggleable: true,
+                filterable: true,
+            ),
+            new Text(
+                name: 'slug',
+                label: 'Slug',
+                description: 'The slug of the item',
                 nullable: false,
                 unique: true,
                 searchable: true,
@@ -58,7 +68,9 @@ class SimpleItemPreset extends AbstractPreset
                 createForm: '\Moox\Tag\Forms\TaxonomyCreateForm::class',
             ),
             new AddressSection,
-            new SimpleStatus,
+            new SimpleStatus(
+                enum: ['Probably', 'Never', 'Done', 'Maybe'],
+            ),
         ];
     }
 }

@@ -6,12 +6,30 @@ namespace Moox\Builder\Blocks;
 
 class Author extends AbstractBlock
 {
+    protected bool $searchable;
+
+    protected bool $toggleable;
+
+    protected bool $sortable;
+
+    protected string $userModel;
+
     public function __construct(
         string $name = 'author',
         string $label = 'Author',
         string $description = 'Author management',
+        bool $nullable = false,
+        bool $searchable = true,
+        bool $toggleable = true,
+        bool $sortable = true,
+        string $userModel = 'App\Models\User',
     ) {
-        parent::__construct($name, $label, $description);
+        parent::__construct($name, $label, $description, $nullable);
+
+        $this->searchable = $searchable;
+        $this->toggleable = $toggleable;
+        $this->sortable = $sortable;
+        $this->userModel = $userModel;
 
         $this->useStatements = [
             'resource' => [
@@ -31,18 +49,16 @@ class Author extends AbstractBlock
 
         $this->formFields['resource'] = [
             "Select::make('author_id')
-                ->relationship('author', 'name')
-                ->searchable()
-                ->preload()
-                ->required()",
+                ->relationship('author', 'name')"
+                .($this->nullable ? '' : '->required()'),
         ];
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('author.name')
-                ->label(__('core::core.author'))
-                ->sortable()
-                ->searchable()
-                ->toggleable()",
+                ->label(__('core::core.author'))"
+                .($this->sortable ? '' : '->sortable()')
+                .($this->searchable ? '' : '->searchable()')
+                .($this->toggleable ? '' : '->toggleable()'),
         ];
 
         $this->migrations['fields'] = [

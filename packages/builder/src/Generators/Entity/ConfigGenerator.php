@@ -36,9 +36,13 @@ class ConfigGenerator extends AbstractGenerator
 
     protected function collectFeatures(): void
     {
+        $this->tabs = [];
+        $this->taxonomies = [];
+        $this->relations = [];
+
         foreach ($this->getBlocks() as $block) {
             if (method_exists($block, 'getTabs')) {
-                $this->tabs = array_merge($this->tabs, $block->getTabs());
+                $this->tabs = $block->getTabs();
             }
 
             if (method_exists($block, 'getTaxonomies')) {

@@ -19,25 +19,21 @@ class RichEditor extends AbstractBlock
             'resource' => [
                 'forms' => ['use Filament\Forms\Components\RichEditor;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ['use Filament\Tables\Filters\TextFilter;'],
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "RichEditor::make('{$this->name}')
-                ->label('{$this->label}')"
-                .($this->nullable ? '' : '->required()'),
-        ];
+        $this->addSection('form')
+            ->withFields([
+                "RichEditor::make('{$this->name}')
+                    ->label('{$this->label}')"
+                    .($this->nullable ? '' : '->required()'),
+            ]);
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')
                 ->html()
                 ->limit(50)"
                 .($this->searchable ? '->searchable()' : ''),
-        ];
-
-        $this->filters['resource'] = [
-            "TextFilter::make('{$this->name}')",
         ];
 
         $this->migrations['fields'] = [

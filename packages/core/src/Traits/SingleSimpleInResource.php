@@ -56,10 +56,13 @@ trait SingleSimpleInResource
             ->color('danger')
             ->outlined()
             ->extraAttributes(attributes: ['class' => 'w-full'])
-            ->action(fn ($record) => $record->delete())
+            ->action(function ($livewire) {
+                $livewire->record->delete();
+                $livewire->redirect(static::getUrl('index'));
+            })
             ->keyBindings(['delete'])
-            ->url(fn ($record) => static::getUrl('index'))
-            ->visible(fn ($livewire) => $livewire instanceof EditRecord);
+            ->visible(fn ($livewire) => $livewire instanceof EditRecord)
+            ->requiresConfirmation();
     }
 
     public static function getEditAction(): Action

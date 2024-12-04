@@ -18,22 +18,18 @@ class ColorPicker extends AbstractBlock
             'resource' => [
                 'forms' => ['use Filament\Forms\Components\ColorPicker;'],
                 'columns' => ['use Filament\Tables\Columns\ColorColumn;'],
-                'filters' => ['use Filament\Tables\Filters\TextFilter;'],
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "ColorPicker::make('{$this->name}')
-                ->label('{$this->label}')"
-                .($this->nullable ? '' : '->required()'),
-        ];
+        $this->addSection('form')
+            ->withFields([
+                "ColorPicker::make('{$this->name}')
+                    ->label('{$this->label}')"
+                    .($this->nullable ? '' : '->required()'),
+            ]);
 
         $this->tableColumns['resource'] = [
             "ColorColumn::make('{$this->name}')",
-        ];
-
-        $this->filters['resource'] = [
-            "TextFilter::make('{$this->name}')",
         ];
 
         $this->migrations['fields'] = [

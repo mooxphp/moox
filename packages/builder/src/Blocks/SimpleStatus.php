@@ -16,7 +16,7 @@ class SimpleStatus extends AbstractBlock
         string $name = 'status',
         string $label = 'Status',
         string $description = 'Adds a simple status field based on an enum to a resource',
-        array $enum = ['New', 'Open', 'Pending', 'Closed', 'Rejected', 'Cancelled'],
+        array $enum = ['New', 'Open', 'Pending', 'Closed'],
         bool $nullable = false,
         bool $sortable = true,
         bool $searchable = true,
@@ -37,7 +37,7 @@ class SimpleStatus extends AbstractBlock
             ],
         ];
 
-        $options = '["'.implode('", "', $enum).'"]';
+        $options = '['.implode(', ', array_map(fn ($value) => "'$value' => '$value'", $enum)).']';
 
         $this->addSection('status')
             ->asMeta()
@@ -46,7 +46,8 @@ class SimpleStatus extends AbstractBlock
                 'Select::make(\''.$this->name.'\')
                     ->label(\''.$this->label.'\')
                     ->placeholder(__(\'core::core.status\'))
-                    ->options('.$options.')',
+                    ->options('.$options.')
+                    '.($this->nullable ? '' : '->required()'),
             ]);
 
         $this->tableColumns['resource'] = [
@@ -70,5 +71,62 @@ class SimpleStatus extends AbstractBlock
                         ->options({$options})
                 ])",
         ];
+
+        $this->config['tabs'] = [
+            'all' => [
+                'label' => 'trans//core::core.all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [],
+            ],
+            'probably' => [
+                'label' => 'Probably',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    [
+                        'field' => 'status',
+                        'operator' => '=',
+                        'value' => 'Probably',
+                    ],
+                ],
+            ],
+            'never' => [
+                'label' => 'Never',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    [
+                        'field' => 'status',
+                        'operator' => '=',
+                        'value' => 'Never',
+                    ],
+                ],
+            ],
+            'done' => [
+                'label' => 'Done',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    [
+                        'field' => 'status',
+                        'operator' => '=',
+                        'value' => 'Done',
+                    ],
+                ],
+            ],
+            'maybe' => [
+                'label' => 'Maybe',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    [
+                        'field' => 'status',
+                        'operator' => '=',
+                        'value' => 'Maybe',
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return $this->config['tabs'];
     }
 }
