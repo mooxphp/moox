@@ -65,7 +65,8 @@ final class SectionManager
         $output = [];
         foreach ($sections as $section) {
             if ($section['name'] === 'taxonomy') {
-                $output[] = "                    Section::make('Taxonomy')
+                $sectionTitle = $section['hideHeader'] ?? false ? "''" : "'Taxonomy'";
+                $output[] = "                    Section::make({$sectionTitle})
                         ->schema(static::getTaxonomyFields())";
 
                 continue;

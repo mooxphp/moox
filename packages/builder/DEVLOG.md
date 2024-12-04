@@ -4,71 +4,41 @@ We work on these tasks in order from top to bottom:
 
 ## Tasks
 
-### Sections (CURRENTLY WIP)
+### General (WIP)
 
-Current issues with section implementation:
+From publishable item we learn that TitleWithSlug should implement it's own section, it currently seems to add a comma, why?
+Another issue is that the List page is missing the eloquent builder use statement, why?
+After fixing that, the list page has other issues too.
+Tabs are not generated from the Publish block, should overwrite Tabs block
 
-1. ✓ Code Generation Format
+We need to document the new section API and section classes.
 
-    - [x] Generated code is now properly formatted line by line
-    - [x] Pint can handle the formatting
-
-2. ✓ Section Structure
-
-    - [x] Taxonomy section appears only once
-    - [x] Taxonomy in meta grid with actions
-    - [x] Array brackets fixed for taxonomy fields
-    - [x] Sections in correct grids based on meta flag
-
-3. Page Actions
-
-    - [ ] Page generators need section-based API implementation
-    - [ ] Add section support to AbstractPageGenerator
-    - [ ] Update page templates to handle sections
-    - [ ] Review action placement in templates:
-        - ListPage: getHeaderActions()
-        - ViewPage: getHeaderActions()
-        - CreatePage: getHeaderActions()
-        - EditPage: getHeaderActions()
-
-4. Section Order
-
-    - [ ] Order determined by preset block order
-    - [ ] Individual blocks can suggest order but preset has final say
-    - [ ] No need for explicit order in simple blocks
-
-5. Section Headers
-    - [ ] Empty section name for actions (currently shows 'resource_actions')
-    - [ ] Consistent capitalization (e.g., 'Address' vs 'address')
-    - [ ] Option to hide section header entirely
-
-Next steps:
-
-1. Implement section support in AbstractPageGenerator
-2. Update page templates for section handling
-3. Review section ordering approach
-4. Implement flexible section headers
+And we need to fix the issue with the FullItem, maybe we need a new way to handle relations like author, user, etc.
+Failed to create entity: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'authors' (Connection: mysql, SQL: alter table `preview_preview_full_items` add constraint `preview_preview_full_items_author_id_foreign` foreign key (`author_id`) references `authors` (`id`) on delete cascade)
 
 ### Entity
 
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
-    -   [WIP] PreviewSimItem is working like a charm including filters and bulk actions
-        -   [WIP] Need to generate Taxonomy and Relations partials, may already work partially
-            -   [WIP] Taxonomy block needs to be finished. Does not show the taxonomy fields in form or table
-                -   [ ] Config is generated with wrong class names and wrong table names, I prepared the SimpleItemPreset for that, so all information needed should be used from there
-                -   [ ] Resource is hardcoded with comment, that is maybe fixed in the Taxonomy block, see comment there
-                -   [ ] Now taxonomies should be shown, just columns andfilters are missing
-            -   [ ] Relations needs
-                -   [ ] to be implemented first, because relations is a bit different to taxonomies
-                -   [ ] to be generated in the Resource
-                -   [ ] to be generated in the Config
-        -   [ ] Polish Simple Resource with a filterable date field, maybe add a status field too
-    -   [ ] PreviewPubItem
+    -   [WIP] PreviewSimItem is working like a charm including actions, filters, bulk actions and taxonomies
+        -   [ ] Delete does not delete the record
+        -   [ ] Status field is not working as expected, completely weird behavior
+        -   [ ] Uniqueness is not implemented or not used?
+        -   [ ] Taxonomies needs to be tested, TaxonomyInPages has issues
+        -   [ ] Page / AbstractPage generators need section-based API implementation?
+        -   [ ] Relations needs
+            -   [ ] to be implemented first, because relations is a bit different to taxonomies
+            -   [ ] to be generated in the Resource
+            -   [ ] to be generated in the Config
+    -   [WIP] PreviewPubItem
         -   [ ] We need to bring this on the Simple Item level first
-        -   [ ] We need to add Tabs and Taxonomies here
+            -   [ ] Tabs needs to be implemented and should replace the simple tabs
+            -   [ ] Taxonomies needs to be tested, TaxonomyInPages has issues
+            -   [ ] TitleWithSlug should implement it's own section
+            -   [ ] Relations
+            -   [ ] Actions need to work as expected
         -   [ ] We need to work on the publish feature with custom actions, see https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167
         -   [ ] Then we need to implement the relation feature
-    -   [ ] PreviewFullItem
+    -   [WIP] PreviewFullItem
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] We need to work on all existing blocks and generate theme here
         -   [ ] Maybe add the three widgets here, needs wiget-generator and template?
@@ -92,12 +62,13 @@ Next steps:
     -   [ ] TaxonomyInPages - needs that mount method in ViewPage
 -   [ ] Refactor DeleteCommand to use new services
 -   [ ] Add --migration option to create command
--   [ ] Would Builder now be able to generate itself?
+-   [ ] Would Builder now be able to generate itself based on the current migrations?
 -   [ ] How would we generate a complete different type of resource, like a Media Manager? The only thing we need is a different table, switching to a grid.
 
--   All Blocks need to be updated:
+-   All Blocks need to be updated
     -   [ ] Toggleable option like in Text
     -   [ ] Filterable option like in Text, and filterable needs to be implemented in ResourceGenerator (only generate filters if filterable is true)
+    -   [ ] The new section API
 
 ### Merge and Release
 
@@ -151,11 +122,19 @@ Missing:
 -   Relations configuration
 -   Validation rules
 -   Config entries
+-   Sections
 
 After adding the missing data, we need to implement the RestoreService and use it in the UI.
 
-### Extras
+### Ideas
 
+-   [ ] Tests
+    -   [ ] Write tests for all services
+    -   [ ] Write tests for all generators
+    -   [ ] Write tests for all commands
+    -   [ ] Write build tests using presets, blocks and contexts
+    -   [ ] Generate Factories from Blocks
+    -   [ ] Generate Tests from Blocks
 -   [ ] Implement App Generator command
     -   [ ] Add (Moox) Packages to composer.json
     -   [ ] Create PanelProvider
@@ -169,18 +148,6 @@ After adding the missing data, we need to implement the RestoreService and use i
 -   [ ] Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
 -   [ ] Im and Export, see https://github.com/pxlrbt/filament-excel and https://github.com/eighty9nine/filament-excel-import or https://github.com/konnco/filament-import
 -   [ ] PDF see https://laraveldaily.com/post/filament-export-record-to-pdf-two-ways or https://tapansharma.dev/blog/a-guide-to-work-with-pdf-generation-in-filamentphp
-
-### Tests
-
--   [ ] Write tests for all services
--   [ ] Write tests for all generators
--   [ ] Write tests for all commands
--   [ ] Write build tests using presets, blocks and contexts
--   [ ] Generate Factories from Blocks
--   [ ] Generate Tests from Blocks
-
-### Ideas
-
 -   [ ] Option to generate from Blueprint
     -   [ ] Create BlueprintValidator service
     -   [ ] --blueprint option for CreateCommand
@@ -195,7 +162,10 @@ After adding the missing data, we need to implement the RestoreService and use i
 -   [ ] Add more Blocks
     -   [ ] https://github.com/lucasgiovanny/filament-multiselect-two-sides - for Builder
     -   [ ] ResourceLinkTable - https://www.youtube.com/watch?v=bjv_RiBUtNs
-    -   [ ] Most wanted like Phone, Address etc.
+    -   [ ] TipTap Editor
+    -   [ ] Code Editor
+    -   [ ] Languages, Currency, Country, Timezone, etc.
+    -   [ ] Phone, Address with validation
 
 ## Packages
 

@@ -30,7 +30,7 @@ class Simple extends AbstractBlock
         $this->traits['pages']['create'] = ['Moox\Core\Traits\SingleSimpleInCreatePage'];
         $this->traits['pages']['edit'] = ['Moox\Core\Traits\SingleSimpleInEditPage'];
 
-        $this->addSection('resource_actions', 100)
+        $this->addSection('meta')
             ->asMeta()
             ->withFields([
                 'static::getSimpleFormActions()',

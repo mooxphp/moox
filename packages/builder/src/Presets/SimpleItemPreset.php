@@ -6,6 +6,7 @@ namespace Moox\Builder\Presets;
 
 use Moox\Builder\Blocks\Sections\AddressSection;
 use Moox\Builder\Blocks\Simple;
+use Moox\Builder\Blocks\SimpleStatus;
 use Moox\Builder\Blocks\Tabs;
 use Moox\Builder\Blocks\Taxonomy;
 use Moox\Builder\Blocks\Text;
@@ -57,6 +58,7 @@ class SimpleItemPreset extends AbstractPreset
                 createForm: '\Moox\Tag\Forms\TaxonomyCreateForm::class',
             ),
             new AddressSection,
+            new SimpleStatus,
         ];
     }
 }

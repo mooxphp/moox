@@ -225,6 +225,7 @@ class ResourceGenerator extends AbstractGenerator
                 'isMeta' => true,
                 'fields' => ['static::getTaxonomyFields()'],
                 'order' => 20,
+                'hideHeader' => true,
             ];
         }
 

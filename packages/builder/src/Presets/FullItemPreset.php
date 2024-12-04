@@ -7,7 +7,6 @@ namespace Moox\Builder\Presets;
 use Moox\Builder\Blocks\Author;
 use Moox\Builder\Blocks\FileUpload;
 use Moox\Builder\Blocks\Publish;
-use Moox\Builder\Blocks\SoftDelete;
 use Moox\Builder\Blocks\Text;
 use Moox\Builder\Blocks\TextArea;
 
@@ -48,7 +47,6 @@ class FullItemPreset extends AbstractPreset
             ),
             new Author,
             new Publish,
-            new SoftDelete,
         ];
     }
 }

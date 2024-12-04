@@ -34,6 +34,7 @@ class Publish extends AbstractBlock
             'pages' => [
                 'list' => [
                     'use Moox\Core\Traits\SinglePublishInListPage;',
+                    // This is missing in the generated list page, why?
                     'use Illuminate\Database\Eloquent\Builder;',
                 ],
             ],

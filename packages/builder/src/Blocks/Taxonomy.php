@@ -27,7 +27,9 @@ class Taxonomy extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
-        $this->addSection('taxonomy', 20)
+        $this->addSection('taxonomy')
+            ->asMeta()
+            ->hideHeader()
             ->withFields([
                 'static::getTaxonomyFields()',
             ]);
