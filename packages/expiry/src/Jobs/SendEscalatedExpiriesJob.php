@@ -38,12 +38,6 @@ class SendEscalatedExpiriesJob implements ShouldQueue
 
         $escalatedEntries = $escalatedExpiries->filter(fn ($entry) => $entry->escalated_at !== null);
 
-        $escalatedEntries->each(function ($entry) {
-            $responsibleId = $entry->notified_to;
-            $entry->escalated_to = $responsibleId;
-            $entry->save();
-        });
-
         $data = [
             'escalatedEntries' => $escalatedEntries->map(function ($entry) {
                 return [
@@ -62,5 +56,11 @@ class SendEscalatedExpiriesJob implements ShouldQueue
         Mail::to($responsibleEmail)
             ->cc($adminEmail)
             ->send(new EscalatedExpiriesMail($data, $panelPath));
+
+        $escalatedEntries->each(function ($entry) {
+            $responsibleId = $entry->notified_to;
+            $entry->escalated_to = $responsibleId;
+            $entry->save();
+        });
     }
 }
