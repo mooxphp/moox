@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Presets;
 
-use Moox\Builder\Blocks\Sections\AddressSection;
+use Moox\Builder\Blocks\AddressSection;
 use Moox\Builder\Blocks\Simple;
 use Moox\Builder\Blocks\SimpleStatus;
+use Moox\Builder\Blocks\SimpleType;
 use Moox\Builder\Blocks\Tabs;
 use Moox\Builder\Blocks\Taxonomy;
-use Moox\Builder\Blocks\Text;
 use Moox\Builder\Blocks\TextArea;
+use Moox\Builder\Blocks\TitleWithSlug;
 
 class SimpleItemPreset extends AbstractPreset
 {
@@ -18,27 +19,9 @@ class SimpleItemPreset extends AbstractPreset
     {
         $this->blocks = [
             new Simple,
-            new Text(
-                name: 'title',
-                label: 'Title',
-                description: 'The title of the item',
-                nullable: false,
-                unique: true,
-                searchable: true,
-                sortable: true,
-                toggleable: true,
-                filterable: true,
-            ),
-            new Text(
-                name: 'slug',
-                label: 'Slug',
-                description: 'The slug of the item',
-                nullable: false,
-                unique: true,
-                searchable: true,
-                sortable: true,
-                toggleable: true,
-                filterable: true,
+            new TitleWithSlug(
+                titleFieldName: 'title',
+                slugFieldName: 'slug',
             ),
             new TextArea(
                 name: 'content',
@@ -70,6 +53,9 @@ class SimpleItemPreset extends AbstractPreset
             new AddressSection,
             new SimpleStatus(
                 enum: ['Probably', 'Never', 'Done', 'Maybe'],
+            ),
+            new SimpleType(
+                enum: ['Post', 'Page'],
             ),
         ];
     }

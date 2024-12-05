@@ -36,9 +36,6 @@ class TitleWithSlug extends AbstractBlock
                     fieldTitle: '{$this->titleFieldName}',
                     fieldSlug: '{$this->slugFieldName}',
                 )",
-                "TextInput::make('{$this->slugFieldName}')
-                    ->label('Slug')
-                    ->placeholder('Slug')",
             ]);
 
         $this->tableColumns['resource'] = [
@@ -51,23 +48,49 @@ class TitleWithSlug extends AbstractBlock
         ];
 
         $this->filters['resource'] = [
+            "Filter::make('{$this->titleFieldName}')
+                ->form([
+                    TextInput::make('{$this->titleFieldName}')
+                        ->label('{$this->label}')
+                        ->placeholder(__('core::core.filter').' {$this->label}'),
+                ])
+                ->query(function (Builder \$query, array \$data): Builder {
+                    return \$query->when(
+                        \$data['{$this->titleFieldName}'],
+                        fn (Builder \$query, \$value): Builder => \$query->where('{$this->titleFieldName}', 'like', \"%{\$value}%\"),
+                    );
+                })
+                ->indicateUsing(function (array \$data): ?string {
+                    if (! \$data['{$this->titleFieldName}']) {
+                        return null;
+                    }
+
+                    return '{$this->label}: '.\$data['{$this->titleFieldName}'];
+                })",
             "Filter::make('{$this->slugFieldName}')
                 ->form([
                     TextInput::make('{$this->slugFieldName}')
                         ->label(__('core::core.slug'))
-                        ->placeholder(__('core::core.search_by_slug')),
+                        ->placeholder(__('core::core.filter').' {$this->label}'),
                 ])
                 ->query(function (Builder \$query, array \$data): Builder {
                     return \$query->when(
                         \$data['{$this->slugFieldName}'],
-                        fn (Builder \$query, \$slug): Builder => \$query->where('{$this->slugFieldName}', 'like', \"%{\$slug}%\"),
+                        fn (Builder \$query, \$value): Builder => \$query->where('{$this->slugFieldName}', 'like', \"%{\$value}%\"),
                     );
+                })
+                ->indicateUsing(function (array \$data): ?string {
+                    if (! \$data['{$this->slugFieldName}']) {
+                        return null;
+                    }
+
+                    return __('core::core.slug').': '.\$data['{$this->slugFieldName}'];
                 })",
         ];
 
         $this->migrations['fields'] = [
             "\$table->string('{$this->titleFieldName}')",
-            "\$table->string('{$this->slugFieldName}')->unique()",
+            "\$table->string('{$this->slugFieldName}')->unique()->nullable(false)",
         ];
 
         $this->factories['model']['definitions'] = [
@@ -101,6 +124,21 @@ class TitleWithSlug extends AbstractBlock
 
         $this->addCast("'{$this->slugFieldName}' => 'string'")
             ->addCast("'{$this->titleFieldName}' => 'string'");
+    }
+
+    public function isFillable(): bool
+    {
+        return true;
+    }
+
+    public function getName(): string
+    {
+        return $this->titleFieldName;
+    }
+
+    public function getFillableFields(): array
+    {
+        return [$this->titleFieldName, $this->slugFieldName];
     }
 
     protected function hasMultipleFields(): bool

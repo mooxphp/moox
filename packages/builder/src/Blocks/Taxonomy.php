@@ -34,6 +34,10 @@ class Taxonomy extends AbstractBlock
                 'static::getTaxonomyFields()',
             ]);
 
+        $this->tableColumns['resource'] = [
+            '...static::getTaxonomyColumns()',
+        ];
+
         $this->taxonomies[] = [
             'name' => strtolower($single),
             'label' => $plural,
@@ -48,7 +52,6 @@ class Taxonomy extends AbstractBlock
 
         $this->traits['model'] = ['Moox\Core\Traits\TaxonomyInModel'];
         $this->traits['resource'] = ['Moox\Core\Traits\TaxonomyInResource'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\TaxonomyInPages'];
         $this->traits['pages']['create'] = ['Moox\Core\Traits\TaxonomyInPages'];
         $this->traits['pages']['view'] = ['Moox\Core\Traits\TaxonomyInPages'];
         $this->traits['pages']['edit'] = ['Moox\Core\Traits\TaxonomyInPages'];

@@ -7,34 +7,30 @@ We work on these tasks in order from top to bottom:
 ### Entity
 
 -   [WIP] We currently work on generating Presets in Preview Context and optimize the generated resources
-    -   [x] PreviewSimItem is working like a charm including actions, filters, bulk actions, tabs and taxonomies
-    -   [WIP] PreviewPubItem
-        -   [ ] Saving is not working, trait or code in pages or resource missing? Must be for TitleWithSlug block
+    -   [x] SimpleItem is working like a charm including actions, filters, bulk actions, tabs and taxonomies
+    -   [WIP] PublishItem is working with flaws and without author
+        -   [ ] We need to work on the publish feature with custom actions, it needs to implement a preview url that depends on the status
         -   [ ] List page is missing the eloquent builder use statement, why?
         -   [ ] After fixing that, the list page has other issues too.
         -   [ ] Uniqueness is not implemented or not used?
-        -   [ ] Taxonomies needs to be tested, TaxonomyInPages has issues
         -   [ ] Relations needs
             -   [ ] to be implemented first, because relations is a bit different to taxonomies
             -   [ ] to be generated in the Resource
             -   [ ] to be generated in the Config
             -   [ ] RelationManager?
         -   [ ] Page / AbstractPage generators need section-based API implementation?
-        -   [ ] We need to work on the publish feature with custom actions, see https://youtu.be/bjv_RiBUtNs?si=cellheQYyxhiHxRg&t=167
-        -   [ ] Then we need to implement the relation feature
-        -   [ ] Add author when fixed
-    -   [ ] PreviewFullItem
         -   [ ] We need a new way to handle relations like author, user, etc. from the block to fix:
                 Failed to create entity: SQLSTATE[HY000]: General error: 1824 Failed to open the referenced table 'authors' (Connection: mysql, SQL: alter table `preview_preview_full_items` add constraint `preview_preview_full_items_author_id_foreign` foreign key (`author_id`) references `authors` (`id`) on delete cascade)
+    -   [ ] FullItem is working with flaws and without author
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] We need to work on all existing blocks and generate theme here
         -   [ ] Maybe add the three widgets here, needs wiget-generator and template?
         -   [ ] Then we need to implement the relation feature
-    -   [ ] PreviewSimTax
+    -   [ ] SimpleTaxonomy generates, but is empty yet
         -   [ ] We need to bring this on the Simple Item level first
         -   [ ] Then we need to implement the soft delete feature
         -   [ ] Then it need Tag specific implementation
-    -   [ ] PreviewPubTax
+    -   [ ] PublishTaxonomy generates, but is empty yet
         -   [ ] We need to bring this on the Publish Item level first
         -   [ ] Then we need to implement the soft delete feature
         -   [ ] Then it need Category specific implementation with nested set
@@ -48,22 +44,15 @@ We work on these tasks in order from top to bottom:
 -   [ ] Add --migration option to create command
 -   [ ] Would Builder now be able to generate itself based on the current migrations?
 -   [ ] How would we generate a complete different type of resource, like a Media Manager? The only thing we need is a different table, switching to a grid.
+-   [ ] Blocks do not provide and generate translations
+    -   [ ] Blocks should be able to define translations, generated for this resource
+    -   [ ] The translation generator needs to be aware of these new translations and generate them
 -   [ ] All Blocks need to be updated
     -   [ ] Toggleable option like in Text
     -   [ ] Filterable option like in Text, and filterable needs to be implemented in ResourceGenerator (only generate filters if filterable is true)
     -   [ ] The new section API
 -   [ ] Document the new section API
-
-### Merge and Release
-
--   [ ] Fix custom package config and translations (see /press)
--   [ ] Merge into main
--   [ ] Test locally and on moox.org
--   [ ] Release core
--   [ ] Release builder and all packages
-
-### Docs and Core Extras
-
+-   [ ] Camya Trait needs to be replaced by Moox Trait
 -   [ ] Category / Tag Docs
     -   Provides a powerful hierarchical Category system, based on Nested Set and highly configurable Filament resources to build.
     -   https://github.com/lazychaser/laravel-nestedset
@@ -78,6 +67,10 @@ We work on these tasks in order from top to bottom:
 -   [ ] Bulk restore does not work
 -   [ ] Set indices for slug etc, or not?
 -   [ ] not Cascade (for taxonomies) specially? Cascade is most of the times not a good idea, configurable?
+-   [ ] Merge into main
+-   [ ] Test locally and on moox.org
+-   [ ] Release core
+-   [ ] Release builder and all packages
 
 ### Restoring entities
 
@@ -285,3 +278,37 @@ Some early thoughts:
     -   Version (probably stored, no relation)
     -   Data (could be a all fields JSON)
     -   Files (JSON)
+
+## Pro Version
+
+Monetization is a thing. We need a way to add a pro version to the Builder.
+
+-   [ ] Full UI
+-   [ ] More Blocks, specially ones that are based on Moox Packages like Countries, Currencies, Languages, etc.
+-   [ ] More Sections, specially complex ones like Address, Phone, etc.
+-   [ ] More Presets, specially ones that are able to build complex entities
+-   [ ] Using the Build Recorder for Versioning
+-   [ ] Ability to update code (diff, PHP Parser) or generate custom code using AI
+-   [ ] Ability to generate from Blueprint or Migration
+-   [ ] Ability to generate Frontend
+-   [ ] Ability to generate Packages
+-   [ ] Ability to generate Apps (Filament Panels and composer.json)
+
+That means:
+
+-   [ ] We need to create a new Builder Pro package in a private repo that depends on the Builder package
+-   [ ] To develop that package, we need a private monorepo
+-   [ ] Package Context needs to be moved to the Pro package
+-   [ ] Builder Pro needs to overwrite the config
+-   [ ] Builder Pro needs to overwrite the Builder Panel
+-   [ ] Builder can then have a simple UI, too
+-   [ ] Builder Pro has commands to generate Packages and Apps, and from Blueprint or Migration
+-   [ ] We need to use Satis to publish the Builder Pro package
+-   [ ] We need to implement License Verification
+-   [ ] We need to implement Payment Gateways
+
+Then we need to think about the pricing model.
+
+-   [ ] Yearly Subscription 100€
+-   [ ] Lifetime Subscription 500€
+-   [ ] 50% Discount when launching and on Black Friday on Lifetime

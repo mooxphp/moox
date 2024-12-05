@@ -175,7 +175,7 @@ class Publish extends AbstractBlock
             ],
             'draft' => [
                 'label' => 'trans//core::core.draft',
-                'icon' => 'gmdi-drafts',
+                'icon' => 'gmdi-text-snippet',
                 'query' => [
                     [
                         'field' => 'published_at',

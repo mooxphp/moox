@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Sections;
-
-use Moox\Builder\Blocks\AbstractBlock;
+namespace Moox\Builder\Blocks;
 
 final class AddressSection extends AbstractBlock
 {

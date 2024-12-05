@@ -69,6 +69,13 @@ class Text extends AbstractBlock
                         \$data['{$this->name}'],
                         fn (Builder \$query, \$value): Builder => \$query->where('{$this->name}', 'like', \"%{\$value}%\"),
                     );
+                })
+                ->indicateUsing(function (array \$data): ?string {
+                    if (! \$data['{$this->name}']) {
+                        return null;
+                    }
+
+                    return '{$this->label}: '.\$data['{$this->name}'];
                 })",
         ];
     }

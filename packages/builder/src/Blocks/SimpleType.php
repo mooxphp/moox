@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Blocks;
 
-class SimpleStatus extends AbstractBlock
+class SimpleType extends AbstractBlock
 {
     public function __construct(
-        string $name = 'status',
-        string $label = 'Status',
-        string $description = 'Adds a simple status field based on an enum to a resource',
-        protected array $enum = ['New', 'Open', 'Pending', 'Closed'],
+        string $name = 'type',
+        string $label = 'Type',
+        string $description = 'Adds a simple feature to a resource',
         protected bool $nullable = false,
         protected bool $sortable = true,
         protected bool $searchable = true,
         protected bool $toggleable = true,
+        protected array $enum = ['Article', 'Quote', 'Video', 'Note'],
     ) {
         parent::__construct($name, $label, $description, $nullable);
+
+        $options = '['.implode(', ', array_map(fn ($value) => "'$value' => '$value'", $this->enum)).']';
 
         $this->useStatements['resource'] = [
             'forms' => ['use Filament\Forms\Components\Select;'],
@@ -27,15 +29,13 @@ class SimpleStatus extends AbstractBlock
             ],
         ];
 
-        $options = '['.implode(', ', array_map(fn ($value) => "'$value' => '$value'", $this->enum)).']';
-
-        $this->addSection('status')
+        $this->addSection('type')
             ->asMeta()
             ->hideHeader()
             ->withFields([
                 'Select::make(\''.$this->name.'\')
                     ->label(\''.$this->label.'\')
-                    ->placeholder(__(\'core::core.status\'))
+                    ->placeholder(__(\'core::core.type\'))
                     ->options('.$options.')
                     '.($this->nullable ? '' : '->required()'),
             ]);
@@ -65,14 +65,14 @@ class SimpleStatus extends AbstractBlock
                 'icon' => 'gmdi-filter-list',
                 'query' => [],
             ],
-            ...array_map(fn ($status) => [
-                'label' => $status,
+            ...array_map(fn ($type) => [
+                'label' => $type,
                 'icon' => 'gmdi-filter-list',
                 'query' => [
                     [
-                        'field' => 'status',
+                        'field' => 'type',
                         'operator' => '=',
-                        'value' => $status,
+                        'value' => 'Article',
                     ],
                 ],
             ], $this->enum),

@@ -70,3 +70,4 @@ Thumbs.db
 /app/Builder/*/*
 /config/previews/*
 /lang/*/previews/*
+/packages/builder-pro

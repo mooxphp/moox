@@ -59,13 +59,7 @@ class BuildContext
 
     public function getEntityName(): string
     {
-        if ($this->contextType !== 'preview') {
-            return $this->entityName;
-        }
-
-        return str_starts_with($this->entityName, 'Preview')
-            ? $this->entityName
-            : 'Preview'.$this->entityName;
+        return $this->entityName;
     }
 
     public function getPluralName(): string

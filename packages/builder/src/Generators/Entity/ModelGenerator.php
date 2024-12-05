@@ -46,11 +46,11 @@ class ModelGenerator extends AbstractGenerator
         $fillable = [];
         foreach ($this->getBlocks() as $block) {
             if ($block->isFillable()) {
-                $fillable[] = "'".$block->getName()."'";
+                $fillable = array_merge($fillable, $block->getFillableFields());
             }
         }
 
-        return implode(",\n        ", $fillable);
+        return implode(",\n        ", array_map(fn ($field) => "'$field'", $fillable));
     }
 
     protected function getCasts(): string

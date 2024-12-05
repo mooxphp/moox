@@ -121,4 +121,5 @@ return [
     'trash_emptied_successfully' => 'Trash emptied successfully',
     'items_permanently_deleted' => '{0} No items were permanently deleted.|{1} One item was permanently deleted.|[2,*] :count items were permanently deleted.',
     'search' => 'Search',
+    'filter' => 'Filter',
 ];

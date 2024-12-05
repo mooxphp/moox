@@ -45,7 +45,7 @@ class FullItemPreset extends AbstractPreset
                 acceptedFileTypes: ['image/jpeg', 'image/png', 'image/webp'],
                 directory: 'images'
             ),
-            new Author,
+            //new Author,
             new Publish,
         ];
     }

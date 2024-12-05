@@ -805,4 +805,9 @@ abstract class AbstractBlock
         }
         $this->sections['meta']['fields'][] = $field;
     }
+
+    public function getFillableFields(): array
+    {
+        return [$this->name];
+    }
 }
