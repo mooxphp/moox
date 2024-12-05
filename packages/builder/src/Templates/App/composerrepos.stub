@@ -1,6 +1,0 @@
-    "repositories": [
-    {
-        "type": "path",
-            "url": "packages/*"
-        }
-    ],

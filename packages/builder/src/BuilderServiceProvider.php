@@ -32,6 +32,10 @@ class BuilderServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
+        $this->app->bind('moox.builder.path', function () {
+            return dirname(__DIR__);
+        });
+
         $this->mergeConfigFrom(__DIR__.'/../config/builder.php', 'builder');
 
         $this->app->register(BuilderPanelProvider::class);
