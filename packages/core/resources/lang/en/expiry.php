@@ -22,8 +22,14 @@ return [
     'escalated_at' => 'Escalated at',
     'escalated_to' => 'Escalated to',
     'cycle' => 'Cycle',
-    'notifyUser' => 'Verantwortlicher',
+    'notifyUser' => 'Assignee',
     'expiry_job' => 'Type',
+
+    'escalated_entries_in_expiry_dashboard' => 'Escalated entries in the expiry dashboard',
+    'following_escalated_entries' => 'The following entries have been escalated:',
+    'will_expire_at' => 'Will expire at',
+    'review_entreis' => 'Please review these entries as soon as possible in the ',
+    'expiry_dashboard' => 'Expiry Dashboard',
 
     'set_date_based_on_cycle' => 'Set date based on cycle',
     'date_updated' => 'Expiry date successfully updated',

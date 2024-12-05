@@ -21,6 +21,12 @@ return [
     'notifyUser' => 'Verantwortlicher',
     'expiry_job' => 'Typ',
 
+    'escalated_entries_in_expiry_dashboard' => 'Eskalierte Einträge im Expiry Dashboard',
+    'following_escalated_entries' => 'Folgende Einträge sind eskaliert:',
+    'will_expire_at' => 'Läuft ab am',
+    'review_entreis' => 'Bitte überprüfen Sie diese Einträge so bald wie möglich im ',
+    'expiry_dashboard' => 'Ablaufdaten Dashboard',
+
     'set_date_based_on_cycle' => 'Neues Ablaufdatum setzen basierend auf dem Turnus',
     'date_updated' => 'Ablaufdatum erfolgreich aktualisiert',
     'set_new_expiry_date' => 'Neues Ablaufdatum setzen',

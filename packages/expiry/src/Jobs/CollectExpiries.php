@@ -60,7 +60,8 @@ class CollectExpiries implements ShouldQueue
                 'expired_at' => Carbon::now()->addDays(60),
                 'processing_deadline' => Carbon::now()->addDays(30),
                 'notified_to' => 2,
-                'escalated_to' => 3,
+                'escalated_at' => Carbon::now()->addDays(-10),
+                'escalated_to' => null,
                 'handled_by' => 1,
                 'done_at' => Carbon::now()->addDays(10),
             ],
@@ -99,10 +100,10 @@ class CollectExpiries implements ShouldQueue
                     'escalated_to' => $data['escalated_to'],
                     'handled_by' => $data['handled_by'],
                     'done_at' => $data['done_at'],
-                    'cycle' => array_rand($cycleOptions), // Random cycle
+                    'cycle' => array_rand($cycleOptions),
                     'meta_id' => null,
                     'notified_at' => Carbon::now(),
-                    'escalated_at' => Carbon::now()->addDays(2),
+                    'escalated_at' => $data['escalated_at'] ?? null,
                 ]
             );
         }

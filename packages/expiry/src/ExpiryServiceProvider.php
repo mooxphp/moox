@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Expiry;
 
+use Moox\Expiry\Commands\EscalatedExpiriesCommand;
 use Moox\Expiry\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -15,10 +16,10 @@ class ExpiryServiceProvider extends PackageServiceProvider
         $package
             ->name('expiry')
             ->hasConfigFile()
-            ->hasViews()
+            ->hasViews('escalated_expiries')
             ->hasMigration('create_expiries_table')
             ->hasRoutes('api')
-            ->hasCommands(InstallCommand::class);
+            ->hasCommands(InstallCommand::class, EscalatedExpiriesCommand::class);
     }
 
     public function boot()
