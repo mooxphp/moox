@@ -32,6 +32,8 @@ class BuilderServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
+        $this->mergeConfigFrom(__DIR__.'/../config/builder.php', 'builder');
+
         $this->app->register(BuilderPanelProvider::class);
 
         $this->app->singleton(EntityCreator::class);

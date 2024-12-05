@@ -118,8 +118,6 @@ After adding the missing data, we need to implement the RestoreService and use i
     -   [ ] Create Installer
     -   [ ] Create Readme
 -   [ ] Implement Frontend generator command
--   [ ] We need to implement Sections ... see Chat on that
--   [ ] Author for example needs to know which User model, we need to find out or ask on installation, so the blocks need to have a definition for this
 -   [ ] Install Script like Breezy - https://github.com/jeffgreco13/filament-breezy/blob/2.x/src/Commands/Install.php
 -   [ ] Permissions - https://laracasts.com/discuss/channels/laravel/policies-in-packages
 -   [ ] Dashboard Widgets https://github.com/Flowframe/laravel-trend and https://github.com/leandrocfe/filament-apex-charts
@@ -283,32 +281,44 @@ Some early thoughts:
 
 Monetization is a thing. We need a way to add a pro version to the Builder.
 
--   [ ] Full UI
--   [ ] More Blocks, specially ones that are based on Moox Packages like Countries, Currencies, Languages, etc.
--   [ ] More Sections, specially complex ones like Address, Phone, etc.
--   [ ] More Presets, specially ones that are able to build complex entities
--   [ ] Using the Build Recorder for Versioning
--   [ ] Ability to update code (diff, PHP Parser) or generate custom code using AI
--   [ ] Ability to generate from Blueprint or Migration
--   [ ] Ability to generate Frontend
--   [ ] Ability to generate Packages
--   [ ] Ability to generate Apps (Filament Panels and composer.json)
+-   Full UI
+-   More Blocks, specially ones that are based on Moox Packages like Countries, Currencies, Languages, etc.
+-   More Sections, specially complex ones like Address, Phone, etc.
+-   More Presets, specially ones that are able to build complex entities
+-   Using the Build Recorder for Versioning
+-   Ability to update code (diff, PHP Parser) or generate custom code using AI
+-   Ability to generate from Blueprint or Migration
+-   Ability to generate Frontend
+-   Ability to generate Packages
+-   Ability to generate Apps (Filament Panels and composer.json)
 
 That means:
 
--   [ ] We need to create a new Builder Pro package in a private repo that depends on the Builder package
--   [ ] To develop that package, we need a private monorepo
+-   [x] We need to create a new Builder Pro package in a private repo that depends on the Builder package
+-   [ ] Builder Pro needs to overwrite the config, merged in both SPs but not tested yet
 -   [ ] Package Context needs to be moved to the Pro package
--   [ ] Builder Pro needs to overwrite the config
--   [ ] Builder Pro needs to overwrite the Builder Panel
--   [ ] Builder can then have a simple UI, too
+-   [x] Builder Pro needs an own Builder Panel /builderpro
 -   [ ] Builder Pro has commands to generate Packages and Apps, and from Blueprint or Migration
--   [ ] We need to use Satis to publish the Builder Pro package
--   [ ] We need to implement License Verification
--   [ ] We need to implement Payment Gateways
+-   [ ] Builder Pro has cleanup commands and jobs
+-   [ ] Builder Pro has a UI to build Entities, Packages and Apps, and to manage them
+-   [ ] Builder Pro has more Generators, like Tests, Factories, etc.
+
+-   [ ] We need a moox.pro website
+    -   [ ] Just a simple page for now
+    -   [ ] Starting with GitHub Invite maybe
+    -   [ ] We need to use Satis to publish the Builder Pro package
+    -   [ ] We need to implement License Verification
+    -   [ ] We need to implement Payment Gateways
+    -   [ ] We need to build a Builder Pro Course (that could be public btw)
+    -   [ ] We need Support (Issues, Discussions, then GitHub Invite)
 
 Then we need to think about the pricing model.
 
--   [ ] Yearly Subscription 100€
--   [ ] Lifetime Subscription 500€
--   [ ] 50% Discount when launching and on Black Friday on Lifetime
+-   While in Alpha: Free
+-   Prelaunch 100€ Lifetime, get the Beta now!
+-   Yearly Subscription 100€
+-   Lifetime Subscription 300€
+-   50% Discount when launching and on Black Friday on Lifetime or first Year, not combineable with other discounts
+-   20% Discount vouchers available for Lifetime or first Year, not combineable with other discounts
+-   Unlimited Installations, Apps, Packages and Entities
+-   100% Open Source, we can use the built packages in our own projects, publish or sell them

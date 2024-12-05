@@ -803,14 +803,13 @@ return [
             'toggle-buttons' => \Moox\Builder\Blocks\ToggleButtons::class,
         ],
         'features' => [
-            'author' => \Moox\Builder\Blocks\Author::class,
-            'publish' => \Moox\Builder\Blocks\Publish::class,
             'simple' => \Moox\Builder\Blocks\Simple::class,
             'soft-delete' => \Moox\Builder\Blocks\SoftDelete::class,
             'title-with-slug' => \Moox\Builder\Blocks\TitleWithSlug::class,
+            // TODO: Add the simple features
         ],
         'sections' => [
-            // TODO: Not implemented yet.
+            // TODO: Add default sections
         ],
     ],
 
@@ -875,51 +874,6 @@ return [
                 ],
             ],
         ],
-        'package' => [
-            'base_path' => '$PackagePath',
-            'base_namespace' => '$PackageNamespace',
-            'generators' => [
-                'model' => [
-                    'path' => '%BasePath%\src\Models',
-                    'namespace' => '%BaseNamespace%\\Models',
-                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
-                ],
-                'resource' => [
-                    'path' => '%BasePath%\src\Resources',
-                    'namespace' => '%BaseNamespace%\\Resources',
-                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
-                    'page_templates' => [
-                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
-                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
-                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
-                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
-                    ],
-                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
-                ],
-                'migration_stub' => [
-                    'path' => '%BasePath%\database\migrations',
-                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
-                ],
-                'plugin' => [
-                    'path' => '%BasePath%\src',
-                    'namespace' => '%BaseNamespace%',
-                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
-                ],
-                'translation' => [
-                    'path' => '%BasePath%\resources\lang\entities',
-                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
-                ],
-                'config' => [
-                    'path' => '%BasePath%\config\entities',
-                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
-                ],
-            ],
-        ],
         'preview' => [
             'base_path' => app_path('Builder'),
             'base_namespace' => 'App\\Builder',
@@ -972,14 +926,6 @@ return [
             'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
-        'publishable-item' => [
-            'class' => \Moox\Builder\Presets\PublishableItemPreset::class,
-            'generators' => ['model', 'migration', 'resource'],
-        ],
-        'full-item' => [
-            'class' => \Moox\Builder\Presets\FullItemPreset::class,
-            'generators' => ['model', 'migration', 'resource', 'factory'],
-        ],
         'simple-taxonomy' => [
             'class' => \Moox\Builder\Presets\SimpleTaxonomyPreset::class,
             'generators' => ['model', 'migration', 'resource'],
@@ -989,111 +935,4 @@ return [
             'generators' => ['model', 'migration', 'resource'],
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Package Generator
-    |--------------------------------------------------------------------------
-    |
-    | Define the available generators for the package builder and their
-    | templates. You can also add your own generators and templates.
-    |
-    */
-
-    'package_generator' => [
-        'archtest' => [
-            'template' => __DIR__.'/../src/Templates/package/archtest.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\ArchTestGenerator::class,
-        ],
-        'changelog' => [
-            'template' => __DIR__.'/../src/Templates/package/changelog.md.stub',
-            'generator' => \Moox\Builder\Generators\Package\ChangelogGenerator::class,
-        ],
-        'composer' => [
-            'template' => __DIR__.'/../src/Templates/package/composer.json.stub',
-            'generator' => \Moox\Builder\Generators\Package\ComposerJsonGenerator::class,
-        ],
-        'config' => [
-            'template' => __DIR__.'/../src/Templates/package/config.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\ConfigFileGenerator::class,
-        ],
-        'funding' => [
-            'template' => __DIR__.'/../src/Templates/package/funding.yml.stub',
-            'generator' => \Moox\Builder\Generators\Package\FundingGenerator::class,
-        ],
-        'gitignore' => [
-            'template' => __DIR__.'/../src/Templates/package/gitignore.stub',
-            'generator' => \Moox\Builder\Generators\Package\GitignoreGenerator::class,
-        ],
-        'install' => [
-            'template' => __DIR__.'/../src/Templates/package/install.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\InstallGenerator::class,
-        ],
-        'license' => [
-            'template' => __DIR__.'/../src/Templates/package/license.md.stub',
-            'generator' => \Moox\Builder\Generators\Package\LicenceGenerator::class,
-        ],
-        'panelprovider' => [
-            'template' => __DIR__.'/../src/Templates/package/panelprovider.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\PanelProviderGenerator::class,
-        ],
-        'pest' => [
-            'template' => __DIR__.'/../src/Templates/package/pest.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\PestGenerator::class,
-        ],
-        'readme' => [
-            'template' => __DIR__.'/../src/Templates/package/readme.md.stub',
-            'generator' => \Moox\Builder\Generators\Package\ReadmeGenerator::class,
-        ],
-        'security' => [
-            'template' => __DIR__.'/../src/Templates/package/security.md.stub',
-            'generator' => \Moox\Builder\Generators\Package\SecurityGenerator::class,
-        ],
-        'serviceprovider' => [
-            'template' => __DIR__.'/../src/Templates/package/serviceprovider.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\ServiceProviderGenerator::class,
-        ],
-        'testcase' => [
-            'template' => __DIR__.'/../src/Templates/package/testcase.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\TestCaseGenerator::class,
-        ],
-        'translation' => [
-            'template' => __DIR__.'/../src/Templates/package/translation.php.stub',
-            'generator' => \Moox\Builder\Generators\Package\TranslationGenerator::class,
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Package Activator
-    |--------------------------------------------------------------------------
-    |
-    | To activate a package, we need to require it and run the install
-    | command. You can define your own activator if you like.
-    |
-    */
-
-    'package_activator' => \Moox\Builder\Services\PackageActivator::class,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Package Publisher
-    |--------------------------------------------------------------------------
-    |
-    | Publishing a package is a multi step process. You can define your own.
-    |
-    */
-
-    'package_publisher' => [
-        'git' => \Moox\Builder\Services\PackageGitPublisher::class,
-        'github' => \Moox\Builder\Services\PackageGitHubPublisher::class,
-        'packagist' => \Moox\Builder\Services\PackagePackagistPublisher::class,
-    ],
-
-    // GitHub API Token
-    'github_api_token' => env('BUILDER_GITHUB_API_TOKEN'),
-
-    // Packagist API Token
-    'packagist_username' => env('BUILDER_PACKAGIST_USERNAME'),
-    'packagist_api_token' => env('BUILDER_PACKAGIST_API_TOKEN'),
 ];
