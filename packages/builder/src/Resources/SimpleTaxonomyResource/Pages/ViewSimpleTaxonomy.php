@@ -7,7 +7,7 @@ namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class ViewSimpleTaxonomy extends ViewRecord
 {

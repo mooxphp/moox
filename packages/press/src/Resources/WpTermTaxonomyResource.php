@@ -13,7 +13,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpTermTaxonomy;
 use Moox\Press\Resources\WpTermTaxonomyResource\Pages;
 

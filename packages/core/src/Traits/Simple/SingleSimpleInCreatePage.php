@@ -1,8 +1,8 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Simple;
 
-trait SingleSimpleInEditPage
+trait SingleSimpleInCreatePage
 {
     public function getFormActions(): array
     {

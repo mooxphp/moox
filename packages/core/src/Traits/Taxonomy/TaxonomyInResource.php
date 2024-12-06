@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Taxonomy;
 
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Select;

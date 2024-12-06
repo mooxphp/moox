@@ -587,7 +587,7 @@ return [
     |
     */
 
-    'author_model' => \Moox\User\Models\User::class,
+    'user_model' => \Moox\User\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------

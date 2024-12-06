@@ -23,14 +23,14 @@ use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
-use Moox\Core\Traits\AuthorInResource;
-use Moox\Core\Traits\SinglePublishInResource;
-use Moox\Core\Traits\TabsInResource;
-use Moox\Core\Traits\TaxonomyInResource;
+use Moox\Core\Traits\Publish\SinglePublishInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
+use Moox\Core\Traits\UserRelation\UserInResource;
 
 class ItemResource extends Resource
 {
-    use AuthorInResource, SinglePublishInResource, TabsInResource, TaxonomyInResource;
+    use SinglePublishInResource, TabsInResource, TaxonomyInResource, UserInResource;
 
     protected static ?string $model = Item::class;
 
@@ -38,7 +38,7 @@ class ItemResource extends Resource
 
     public static function form(Form $form): Form
     {
-        static::initAuthorModel();
+        static::initUserModel();
 
         return $form->schema([
             Grid::make(2)
@@ -67,7 +67,7 @@ class ItemResource extends Resource
                                 ->schema([
                                     static::getFormActions(),
                                     static::getPublishAtFormField(),
-                                    static::getAuthorFormField(),
+                                    static::getUserFormField(),
                                 ]),
 
                             Section::make()
@@ -83,7 +83,7 @@ class ItemResource extends Resource
 
     public static function table(Table $table): Table
     {
-        static::initAuthorModel();
+        static::initUserModel();
 
         $currentTab = static::getCurrentTab();
 
@@ -112,7 +112,7 @@ class ItemResource extends Resource
                     ->limit(30)
                     ->searchable()
                     ->toggleable(),
-                static::getAuthorTableColumn(),
+                static::getUserTableColumn(),
                 ...static::getTaxonomyColumns(),
                 static::getStatusTableColumn(),
 
@@ -145,7 +145,7 @@ class ItemResource extends Resource
             ])
             ->filters([
                 ...static::getTableFilters(),
-                ...static::getAuthorFilters(),
+                ...static::getUserFilters(),
                 ...static::getTaxonomyFilters(),
             ]);
     }

@@ -14,7 +14,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;

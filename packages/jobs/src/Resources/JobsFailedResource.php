@@ -15,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\FailedJob;
 use Moox\Jobs\Resources\JobsFailedResource\Pages\ListFailedJobs;
 

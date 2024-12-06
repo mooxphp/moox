@@ -16,7 +16,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource\Pages;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;

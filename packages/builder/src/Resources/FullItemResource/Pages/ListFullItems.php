@@ -11,7 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\FullItem;
 use Moox\Builder\Resources\FullItemResource;
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 
 class ListFullItems extends ListRecords
 {

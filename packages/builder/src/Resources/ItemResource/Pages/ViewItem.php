@@ -7,7 +7,7 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class ViewItem extends ViewRecord
 {

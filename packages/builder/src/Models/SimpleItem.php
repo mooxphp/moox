@@ -6,7 +6,7 @@ namespace Moox\Builder\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Moox\Core\Traits\TaxonomyInModel;
+use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
 
 class SimpleItem extends Model
 {

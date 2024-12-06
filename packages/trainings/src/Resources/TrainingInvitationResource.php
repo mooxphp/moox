@@ -15,7 +15,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingInvitation;
 use Moox\Training\Resources\TrainingInvitationResource\Pages;

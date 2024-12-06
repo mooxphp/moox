@@ -4,7 +4,7 @@ namespace Moox\Press\Resources\WpPostResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource;
 

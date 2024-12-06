@@ -21,7 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Services\PlatformRelationService;

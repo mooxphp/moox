@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Taxonomy;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;

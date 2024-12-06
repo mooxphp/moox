@@ -11,7 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\Job;
 use Moox\Jobs\Resources\JobsWaitingResource\Pages\ListJobsWaiting;
 use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;

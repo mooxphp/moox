@@ -36,14 +36,14 @@ class Publish extends AbstractBlock
                     // This is missing in the generated list page, why?
                     'use Illuminate\Database\Eloquent\Builder;',
                     // while this is generated
-                    'use Moox\Core\Traits\SinglePublishInListPage;',
+                    'use Moox\Core\Traits\Publish\SinglePublishInListPage;',
                 ],
             ],
         ];
 
-        $this->traits['model'] = ['Moox\Core\Traits\SinglePublishInModel'];
-        $this->traits['resource'] = ['Moox\Core\Traits\SinglePublishInResource'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\SinglePublishInListPage'];
+        $this->traits['model'] = ['Moox\Core\Traits\Publish\SinglePublishInModel'];
+        $this->traits['resource'] = ['Moox\Core\Traits\Publish\SinglePublishInResource'];
+        $this->traits['pages']['list'] = ['Moox\Core\Traits\Publish\SinglePublishInListPage'];
 
         $this->methods['model'] = [
             'scopes' => [

@@ -4,7 +4,7 @@ namespace Moox\Sync\Resources\SyncResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource;
 

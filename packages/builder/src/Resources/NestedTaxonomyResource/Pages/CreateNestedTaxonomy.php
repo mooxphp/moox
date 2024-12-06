@@ -6,7 +6,7 @@ namespace Moox\Builder\Resources\NestedTaxonomyResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\NestedTaxonomyResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class CreateNestedTaxonomy extends CreateRecord
 {

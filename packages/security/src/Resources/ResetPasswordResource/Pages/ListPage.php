@@ -4,7 +4,7 @@ namespace Moox\Security\Resources\ResetPasswordResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Models\Security;
 use Moox\Security\Resources\ResetPasswordResource;

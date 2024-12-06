@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Taxonomy;
 
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\EditRecord;

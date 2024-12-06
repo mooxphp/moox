@@ -8,7 +8,7 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 

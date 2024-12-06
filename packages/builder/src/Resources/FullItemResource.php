@@ -50,19 +50,16 @@ use Moox\Builder\Resources\FullItemResource\Pages\ViewFullItem;
 /* ! Author ! */
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
 /* ! Publish ! */
-use Moox\Core\Traits\AuthorInResource;
 /* ! Tabs ! */
-use Moox\Core\Traits\SinglePublishInResource;
+use Moox\Core\Traits\Publish\SinglePublishInResource;
 /* ! Taxonomy ! */
-use Moox\Core\Traits\TabsInResource;
-use Moox\Core\Traits\TaxonomyInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
+use Moox\Core\Traits\UserRelation\UserInResource;
 
 /* ! FullItem => Entity */
 class FullItemResource extends Resource
 {
-    /* ! Author ! */
-    use AuthorInResource;
-
     /* ! Publish ! */
     use SinglePublishInResource;
 
@@ -72,6 +69,9 @@ class FullItemResource extends Resource
     /* ! Taxonomy ! */
     use TaxonomyInResource;
 
+    /* ! Author ! */
+    use UserInResource;
+
     protected static ?string $model = FullItem::class;
 
     protected static ?string $navigationIcon = 'gmdi-engineering';
@@ -79,7 +79,7 @@ class FullItemResource extends Resource
     public static function form(Form $form): Form
     {
         /* ! Author ! */
-        static::initAuthorModel();
+        static::initUserModel();
 
         return $form->schema([
             Grid::make(2)
@@ -198,7 +198,7 @@ class FullItemResource extends Resource
                                     DateTimePicker::make('publish_at')
                                         ->label(__('core::core.publish_at')),
                                     /* ! Author ! */
-                                    static::getAuthorFormField(),
+                                    static::getUserFormField(),
                                     /* !! Meta Form Fields */
                                 ]),
 
@@ -216,7 +216,7 @@ class FullItemResource extends Resource
     public static function table(Table $table): Table
     {
         /* ! Author ! */
-        static::initAuthorModel();
+        static::initUserModel();
 
         /* ! Tabs ! */
         $currentTab = static::getCurrentTab();
@@ -250,7 +250,7 @@ class FullItemResource extends Resource
                     ->searchable()
                     ->toggleable(),
                 /* ! Author ! */
-                static::getAuthorTableColumn(),
+                static::getUserTableColumn(),
                 TextColumn::make('type')
                     ->label(__('core::core.type'))
                     ->visible(! empty(config('builder.types')))
@@ -325,7 +325,7 @@ class FullItemResource extends Resource
                 /* ! Taxonomy ! */
                 ...static::getTaxonomyFilters(),
                 /* ! Author ! */
-                ...static::getAuthorFilters(),
+                ...static::getUserFilters(),
                 /* !! Table Filters */
             ]);
     }

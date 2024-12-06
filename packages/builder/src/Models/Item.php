@@ -7,13 +7,13 @@ namespace Moox\Builder\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Traits\AuthorInModel;
-use Moox\Core\Traits\SinglePublishInModel;
-use Moox\Core\Traits\TaxonomyInModel;
+use Moox\Core\Traits\Publish\SinglePublishInModel;
+use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
+use Moox\Core\Traits\UserRelation\UserInModel;
 
 class Item extends Model
 {
-    use AuthorInModel, HasFactory, SinglePublishInModel, SoftDeletes, TaxonomyInModel;
+    use HasFactory, SinglePublishInModel, SoftDeletes, TaxonomyInModel, UserInModel;
 
     protected $table = 'items';
 

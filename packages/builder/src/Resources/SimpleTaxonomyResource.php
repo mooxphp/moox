@@ -24,7 +24,7 @@ use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\CreateSimpleTaxonomy;
 use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\EditSimpleTaxonomy;
 use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\ListSimpleTaxonomies;
 use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\ViewSimpleTaxonomy;
-use Moox\Core\Traits\TaxonomyInResource;
+use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
 
 class SimpleTaxonomyResource extends Resource
 {

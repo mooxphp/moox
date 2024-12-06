@@ -93,6 +93,15 @@ class SoftDelete extends AbstractBlock
                 ->visible(fn (\$livewire, \$record) => \$record && ! \$record->trashed())",
         ];
 
+        $this->actions['pages']['list']['header'] = [
+            "Action::make('create')
+                ->label(__('core::core.create'))
+                ->color('success')
+                ->button()
+                ->extraAttributes(['class' => 'w-full'])
+                ->action(fn (\$livewire) => \$livewire->create())",
+        ];
+
         $this->actions['bulk'] = [
             "DeleteBulkAction::make()
                 ->hidden(fn () => request()->routeIs('*.trash'))",

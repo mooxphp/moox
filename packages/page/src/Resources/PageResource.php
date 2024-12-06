@@ -11,7 +11,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource\Pages\ListPage;
 use Moox\Page\Resources\PageResource\Widgets\PageWidgets;

@@ -4,7 +4,7 @@ namespace Moox\User\Resources\UserResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
 

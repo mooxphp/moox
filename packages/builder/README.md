@@ -301,19 +301,19 @@ You can configure the user model used for displaying Authors. By default it is t
     |
     */
 
-    'author_model' => \App\Models\User::class,
+    'user_model' => \App\Models\User::class,
 ```
 
 You may probably use Moox User
 
 ```php
-    'author_model' => \Moox\User\Models\User::class,
+    'user_model' => \Moox\User\Models\User::class,
 ```
 
 or Moox Press User instead:
 
 ```php
-    'author_model' => \Moox\Press\Models\WpUser::class,
+    'user_model' => \Moox\Press\Models\WpUser::class,
 ```
 
 ## Do not track Previews

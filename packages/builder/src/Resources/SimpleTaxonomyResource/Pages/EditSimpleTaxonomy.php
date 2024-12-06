@@ -6,7 +6,7 @@ namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class EditSimpleTaxonomy extends EditRecord
 {

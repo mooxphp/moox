@@ -4,7 +4,7 @@ namespace Moox\Press\Resources\WpPostMetaResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Resources\WpPostMetaResource;
 

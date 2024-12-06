@@ -32,18 +32,18 @@ Name and table for the Resource can be changed while building your package.
 3. Create a new repository based on the template
 4. Clone the repository locally
 5. Run `php build.php`in the repo's directory and follow the steps
-   - Author Name (Default: Moox Developer): Your Name
-   - Author Email (Default: dev@moox.org): your@mail.com
-   - Package Name (Default: Blog Package): Your Package
-   - Package Description (Default: This is my package Blog Package)
-   - Package Entity (Default: Tag): e.g. Post
-   - Tablename (Default: tags): e.g. posts
+    - Author Name (Default: Moox Developer): Your Name
+    - Author Email (Default: dev@moox.org): your@mail.com
+    - Package Name (Default: Blog Package): Your Package
+    - Package Description (Default: This is my package Blog Package)
+    - Package Entity (Default: Tag): e.g. Post
+    - Tablename (Default: tags): e.g. posts
 
 After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
 
 ### Config
 
-After that the Resource is highly configurable. 
+After that the Resource is highly configurable.
 
 #### Tabs and Translation
 
@@ -180,19 +180,19 @@ You can configure the user model used for displaying Authors. By default it is t
     |
     */
 
-    'author_model' => \App\Models\User::class,
+    'user_model' => \App\Models\User::class,
 ```
 
 You may probably use Moox User
 
 ```php
-    'author_model' => \Moox\User\Models\User::class,
+    'user_model' => \Moox\User\Models\User::class,
 ```
 
 or Moox Press User instead:
 
 ```php
-    'author_model' => \Moox\Press\Models\WpUser::class,
+    'user_model' => \Moox\Press\Models\WpUser::class,
 ```
 
 <!--/whatdoes-->

@@ -10,7 +10,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Notification\Models\Notification;
 use Moox\Notification\Resources\NotificationResource\Pages\CreateNotification;
 use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;

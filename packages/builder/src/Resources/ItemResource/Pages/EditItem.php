@@ -6,7 +6,7 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\ItemResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class EditItem extends EditRecord
 {

@@ -6,7 +6,7 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\JobBatch;
 use Moox\Jobs\Resources\JobBatchesResource\Pages\ListJobBatches;
 

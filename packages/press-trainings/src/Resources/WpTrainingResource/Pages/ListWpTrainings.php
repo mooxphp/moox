@@ -4,7 +4,7 @@ namespace Moox\PressTrainings\Resources\WpTrainingResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\PressTrainings\Models\WpTraining;
 use Moox\PressTrainings\Resources\WpTrainingResource;
 

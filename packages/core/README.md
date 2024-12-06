@@ -44,7 +44,7 @@ This trait provides functionality for creating dynamic tabs in Filament resource
 The DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature in your existing package:
 
 ```php
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 
 class ListItems extends ListRecords
 {
@@ -443,7 +443,7 @@ This trait provides functionality for models to work with dynamic taxonomies.
 #### Usage
 
 ```php
-use Moox\Core\Traits\TaxonomyInModel;
+use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
 
 class YourItem extends Model
 {
@@ -497,7 +497,7 @@ This trait provides methods for generating Filament form fields, table columns, 
 #### Usage
 
 ```php
-use Moox\Core\Traits\TaxonomyInResource;
+use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
 
 class YourResource extends Resource
 {
@@ -539,7 +539,7 @@ This trait provides methods for handling dynamic taxonomies in Filament resource
 #### Usage
 
 ```php
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class EditYourModel extends EditRecord
 {

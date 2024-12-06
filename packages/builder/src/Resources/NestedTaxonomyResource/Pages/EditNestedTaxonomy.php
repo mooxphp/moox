@@ -6,7 +6,7 @@ namespace Moox\Builder\Resources\NestedTaxonomyResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\NestedTaxonomyResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class EditNestedTaxonomy extends EditRecord
 {

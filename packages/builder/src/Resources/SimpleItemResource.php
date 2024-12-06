@@ -23,7 +23,7 @@ use Moox\Builder\Resources\SimpleItemResource\Pages\CreateSimpleItem;
 use Moox\Builder\Resources\SimpleItemResource\Pages\EditSimpleItem;
 use Moox\Builder\Resources\SimpleItemResource\Pages\ListSimpleItems;
 use Moox\Builder\Resources\SimpleItemResource\Pages\ViewSimpleItem;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 
 class SimpleItemResource extends Resource
 {

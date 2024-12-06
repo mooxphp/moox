@@ -32,7 +32,7 @@ use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
 use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
 use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 
 //use Moox\Core\Forms\Components\TitleWithSlugInput;
 

@@ -132,7 +132,7 @@ return [
     |
     */
 
-    'author_model' => \App\Models\User::class,
+    'user_model' => \App\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------

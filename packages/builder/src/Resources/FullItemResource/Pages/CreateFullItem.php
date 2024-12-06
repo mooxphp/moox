@@ -6,7 +6,7 @@ namespace Moox\Builder\Resources\FullItemResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\FullItemResource;
-use Moox\Core\Traits\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
 
 class CreateFullItem extends CreateRecord
 {

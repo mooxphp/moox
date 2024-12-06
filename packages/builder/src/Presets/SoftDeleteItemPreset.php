@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\Builder\Presets;
 
 use Moox\Builder\Blocks\AddressSection;
-use Moox\Builder\Blocks\Simple;
 use Moox\Builder\Blocks\SimpleStatus;
 use Moox\Builder\Blocks\SimpleType;
+use Moox\Builder\Blocks\SoftDelete;
 use Moox\Builder\Blocks\Tabs;
 use Moox\Builder\Blocks\Taxonomy;
 use Moox\Builder\Blocks\TextArea;
@@ -18,7 +18,6 @@ class SoftDeleteItemPreset extends AbstractPreset
     protected function initializePreset(): void
     {
         $this->blocks = [
-            new Simple,
             new TitleWithSlug(
                 titleFieldName: 'title',
                 slugFieldName: 'slug',
@@ -57,6 +56,7 @@ class SoftDeleteItemPreset extends AbstractPreset
             new SimpleType(
                 enum: ['Post', 'Page'],
             ),
+            new SoftDelete,
         ];
     }
 }

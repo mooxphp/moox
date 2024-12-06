@@ -11,8 +11,8 @@ class Tabs extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
-        $this->traits['resource'] = ['Moox\Core\Traits\TabsInResource'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\TabsInListPage'];
+        $this->traits['resource'] = ['Moox\Core\Traits\Tabs\TabsInResource'];
+        $this->traits['pages']['list'] = ['Moox\Core\Traits\Tabs\TabsInListPage'];
 
         $this->methods['pages']['list']['mount'] = '$this->mountTabsInListPage();';
 

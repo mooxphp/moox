@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Tabs;
 
 use Illuminate\Database\Eloquent\Builder;
 

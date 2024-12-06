@@ -10,7 +10,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleTaxonomy;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 
 class ListSimpleTaxonomies extends ListRecords
 {

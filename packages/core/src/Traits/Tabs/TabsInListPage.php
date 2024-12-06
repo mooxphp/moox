@@ -1,10 +1,11 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Tabs;
 
 use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
+use Moox\Core\Traits\QueriesInConfig;
 
 trait TabsInListPage
 {

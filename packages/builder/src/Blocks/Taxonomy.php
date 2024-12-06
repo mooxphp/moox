@@ -50,11 +50,11 @@ class Taxonomy extends AbstractBlock
             'hierarchical' => $nested,
         ];
 
-        $this->traits['model'] = ['Moox\Core\Traits\TaxonomyInModel'];
-        $this->traits['resource'] = ['Moox\Core\Traits\TaxonomyInResource'];
-        $this->traits['pages']['create'] = ['Moox\Core\Traits\TaxonomyInPages'];
-        $this->traits['pages']['view'] = ['Moox\Core\Traits\TaxonomyInPages'];
-        $this->traits['pages']['edit'] = ['Moox\Core\Traits\TaxonomyInPages'];
+        $this->traits['model'] = ['Moox\Core\Traits\Taxonomy\TaxonomyInModel'];
+        $this->traits['resource'] = ['Moox\Core\Traits\Taxonomy\TaxonomyInResource'];
+        $this->traits['pages']['create'] = ['Moox\Core\Traits\Taxonomy\TaxonomyInPages'];
+        $this->traits['pages']['view'] = ['Moox\Core\Traits\Taxonomy\TaxonomyInPages'];
+        $this->traits['pages']['edit'] = ['Moox\Core\Traits\Taxonomy\TaxonomyInPages'];
 
         $this->methods['model'] = [
             'protected function getResourceName(): string

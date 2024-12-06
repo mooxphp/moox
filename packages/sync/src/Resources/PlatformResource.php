@@ -21,7 +21,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Services\DnsLookupService;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Resources\PlatformResource\Pages\CreatePlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\EditPlatform;

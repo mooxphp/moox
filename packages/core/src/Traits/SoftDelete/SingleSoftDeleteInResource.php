@@ -1,6 +1,6 @@
 <?php
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\SoftDelete;
 
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
@@ -8,7 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
 
-trait SingleSimpleInResource
+trait SingleSoftDeleteInResource
 {
     public static function getSaveAction(): Action
     {

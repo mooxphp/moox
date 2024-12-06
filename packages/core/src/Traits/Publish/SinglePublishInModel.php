@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Core\Traits;
+namespace Moox\Core\Traits\Publish;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 

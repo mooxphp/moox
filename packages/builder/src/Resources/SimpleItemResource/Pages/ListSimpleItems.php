@@ -8,7 +8,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleItem;
 use Moox\Builder\Resources\SimpleItemResource;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 
 class ListSimpleItems extends ListRecords
 {

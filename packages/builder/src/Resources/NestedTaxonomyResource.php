@@ -26,7 +26,7 @@ use Moox\Builder\Resources\NestedTaxonomyResource\Pages\CreateNestedTaxonomy;
 use Moox\Builder\Resources\NestedTaxonomyResource\Pages\EditNestedTaxonomy;
 use Moox\Builder\Resources\NestedTaxonomyResource\Pages\ListNestedTaxonomies;
 use Moox\Builder\Resources\NestedTaxonomyResource\Pages\ViewNestedTaxonomy;
-use Moox\Core\Traits\TaxonomyInResource;
+use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
 
 class NestedTaxonomyResource extends Resource
 {

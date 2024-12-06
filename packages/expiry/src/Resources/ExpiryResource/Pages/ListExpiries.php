@@ -5,7 +5,7 @@ namespace Moox\Expiry\Resources\ExpiryResource\Pages;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource;
 

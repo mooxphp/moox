@@ -4,7 +4,7 @@ namespace Moox\LoginLink\Resources\LoginLinkResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;

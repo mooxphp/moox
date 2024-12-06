@@ -25,7 +25,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Core\Traits\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
@@ -51,7 +51,7 @@ class TagResource extends Resource
 
     public static function form(Form $form): Form
     {
-        static::initAuthorModel();
+        static::initUserModel();
 
         return $form->schema([
             Grid::make(2)
@@ -154,7 +154,7 @@ class TagResource extends Resource
 
     public static function table(Table $table): Table
     {
-        static::initAuthorModel();
+        static::initUserModel();
 
         $currentTab = static::getCurrentTab();
 
@@ -268,14 +268,14 @@ class TagResource extends Resource
         return config('tag.navigation_sort') + 3;
     }
 
-    protected static function initAuthorModel(): void
+    protected static function initUserModel(): void
     {
         if (static::$authorModel === null) {
-            static::$authorModel = config('tag.author_model');
+            static::$authorModel = config('tag.user_model');
         }
     }
 
-    protected static function getAuthorOptions(): array
+    protected static function getUserOptions(): array
     {
         return static::$authorModel::query()->get()->pluck('name', 'id')->toArray();
     }
