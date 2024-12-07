@@ -30,12 +30,7 @@ class Simple extends AbstractBlock
                 'static::getSimpleFormActions()',
             ]);
 
-        $this->actions['resource'] = [
-            'static::getSimpleResourceActions()',
-        ];
-
-        $this->actions['bulk'] = [
-            'static::getSimpleBulkActions()',
-        ];
+        $this->actions['resource'] = 'static::getSimpleResourceActions()';
+        $this->actions['bulk'] = 'static::getSimpleBulkActions()';
     }
 }

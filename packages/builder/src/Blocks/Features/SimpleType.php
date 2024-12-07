@@ -74,7 +74,7 @@ class SimpleType extends AbstractBlock
                     [
                         'field' => 'type',
                         'operator' => '=',
-                        'value' => 'Article',
+                        'value' => $type,
                     ],
                 ],
             ], $this->enum),

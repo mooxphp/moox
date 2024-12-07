@@ -502,7 +502,15 @@ abstract class AbstractBlock
 
     public function getTableBulkActions(): array
     {
-        return $this->actions['bulk'] ?? [];
+        if (! isset($this->actions['bulk'])) {
+            return [];
+        }
+
+        if (is_string($this->actions['bulk'])) {
+            return [$this->actions['bulk']];
+        }
+
+        return $this->actions['bulk'];
     }
 
     public function getTitle(): string
@@ -537,7 +545,17 @@ abstract class AbstractBlock
 
     public function getTableActions(): array
     {
-        return $this->getActions('resource');
+        if (! isset($this->actions['resource'])) {
+            return [];
+        }
+
+        // If it's a string (method call), wrap it in an array
+        if (is_string($this->actions['resource'])) {
+            return [$this->actions['resource']];
+        }
+
+        // If it's already an array, return as is
+        return $this->actions['resource'];
     }
 
     public function getPageActions(string $page): array

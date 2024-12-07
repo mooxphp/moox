@@ -81,12 +81,8 @@ class {{ class_name }}Resource extends Resource
                 {{ table_columns }}
             ])
             ->defaultSort('{{ default_sort_column }}', '{{ default_sort_direction }}')
-            ->actions([
-                {{ table_actions }}
-            ])
-            ->bulkActions([
-                {{ table_bulk_actions }}
-            ])
+            ->actions({{ table_actions }})
+            ->bulkActions({{ table_bulk_actions }})
             ->filters([
                 {{ table_filters }}
             ]);

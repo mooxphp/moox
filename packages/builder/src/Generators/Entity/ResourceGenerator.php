@@ -256,11 +256,14 @@ class ResourceGenerator extends AbstractGenerator
         foreach ($this->getBlocks() as $block) {
             $blockActions = $block->getTableActions();
             if (! empty($blockActions)) {
-                $actions = array_merge($actions, $blockActions);
+                if (is_string($blockActions) && str_contains($blockActions, 'static::')) {
+                    return $blockActions;
+                }
+                $actions = array_merge($actions, (array) $blockActions);
             }
         }
 
-        return implode(",\n            ", $actions);
+        return '['.implode(",\n            ", $actions).']';
     }
 
     protected function getTableFilters(): string
@@ -283,12 +286,15 @@ class ResourceGenerator extends AbstractGenerator
             if (method_exists($block, 'getTableBulkActions')) {
                 $blockActions = $block->getTableBulkActions();
                 if (! empty($blockActions)) {
-                    $actions = array_merge($actions, $blockActions);
+                    if (is_string($blockActions) && str_contains($blockActions, 'static::')) {
+                        return $blockActions;
+                    }
+                    $actions = array_merge($actions, (array) $blockActions);
                 }
             }
         }
 
-        return implode(",\n            ", $actions);
+        return '['.implode(",\n            ", $actions).']';
     }
 
     protected function getNavigationGroup(): string

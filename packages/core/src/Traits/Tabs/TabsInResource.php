@@ -27,25 +27,21 @@ trait TabsInResource
 
     protected static function applyTabQuery(Builder $query, string $currentTab): Builder
     {
-        // Skip if this is a soft-delete tab as it's already handled
         if (in_array($currentTab, ['trash', 'deleted'])) {
             return $query;
         }
 
-        // Get tab configuration
         $tabsConfig = config(static::getResourceKey().'.tabs', []);
 
         if (isset($tabsConfig[$currentTab]['query'])) {
             foreach ($tabsConfig[$currentTab]['query'] as $condition) {
-                $value = $condition['value'];
-
-                // Handle closure values
-                if (is_string($value) && str_contains($value, 'function')) {
-                    $value = eval("return {$value};");
+                if (! isset($condition['field']) || ! isset($condition['operator'])) {
+                    continue;
                 }
 
-                // Apply configured query conditions
-                $query->where(
+                $value = $condition['value'] ?? null;
+
+                $query = $query->where(
                     $condition['field'],
                     $condition['operator'],
                     is_callable($value) ? $value() : $value
@@ -58,10 +54,13 @@ trait TabsInResource
 
     protected static function getResourceKey(): string
     {
-        // Convert class name to config key
-        // e.g., App\Resources\UserResource -> 'user'
         $className = class_basename(static::class);
+        $key = strtolower(str_replace('Resource', '', $className));
 
-        return strtolower(str_replace('Resource', '', $className));
+        if (str_contains(static::class, 'Builder\\Resources')) {
+            return 'previews.'.str_replace('_', '-', $key);
+        }
+
+        return $key;
     }
 }
