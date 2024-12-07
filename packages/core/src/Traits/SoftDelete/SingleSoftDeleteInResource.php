@@ -7,9 +7,13 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\TableQueryTrait;
 
 trait SingleSoftDeleteInResource
 {
+    use TableQueryTrait;
+
     public static function getSaveAction(): Action
     {
         return Action::make('save')
@@ -85,5 +89,22 @@ trait SingleSoftDeleteInResource
             static::getDeleteAction(),
             static::getEditAction(),
         ]);
+    }
+
+    protected static function applySoftDeleteQuery(Builder $query): Builder
+    {
+        $currentTab = request()->query('tab');
+        $model = static::getModel();
+        $modelInstance = new $model;
+
+        if (! method_exists($modelInstance, 'getQualifiedDeletedAtColumn')) {
+            return $query;
+        }
+
+        if ($currentTab === 'trash' || $currentTab === 'deleted') {
+            return $query->whereNotNull($modelInstance->getQualifiedDeletedAtColumn());
+        }
+
+        return $query->whereNull($modelInstance->getQualifiedDeletedAtColumn());
     }
 }

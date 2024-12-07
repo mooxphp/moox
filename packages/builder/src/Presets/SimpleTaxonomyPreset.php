@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Presets;
 
-use Moox\Builder\Blocks\Text;
-use Moox\Builder\Blocks\TextArea;
+use Moox\Builder\Blocks\Filament\Text;
+use Moox\Builder\Blocks\Filament\TextArea;
 
 class SimpleTaxonomyPreset extends AbstractPreset
 {

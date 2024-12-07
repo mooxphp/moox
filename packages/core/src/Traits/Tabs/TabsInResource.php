@@ -3,9 +3,12 @@
 namespace Moox\Core\Traits\Tabs;
 
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\TableQueryTrait;
 
 trait TabsInResource
 {
+    use TableQueryTrait;
+
     protected static ?string $currentTab = null;
 
     public static function getCurrentTab(): ?string
@@ -22,18 +25,43 @@ trait TabsInResource
         static::$currentTab = $tab;
     }
 
-    public static function getTableQuery(?string $currentTab = null): Builder
+    protected static function applyTabQuery(Builder $query, string $currentTab): Builder
     {
-        $query = parent::getEloquentQuery()->withoutGlobalScopes();
+        // Skip if this is a soft-delete tab as it's already handled
+        if (in_array($currentTab, ['trash', 'deleted'])) {
+            return $query;
+        }
 
-        $currentTab = $currentTab ?? static::getCurrentTab();
+        // Get tab configuration
+        $tabsConfig = config(static::getResourceKey().'.tabs', []);
 
-        // TODO: Published is not a tab, it's a status, how to handle this in the traits?
-        // Current solution is to handle it in the resource
-        // if ($currentTab === 'published') {
-        //     $query->where('status', 'published');
-        // }
+        if (isset($tabsConfig[$currentTab]['query'])) {
+            foreach ($tabsConfig[$currentTab]['query'] as $condition) {
+                $value = $condition['value'];
+
+                // Handle closure values
+                if (is_string($value) && str_contains($value, 'function')) {
+                    $value = eval("return {$value};");
+                }
+
+                // Apply configured query conditions
+                $query->where(
+                    $condition['field'],
+                    $condition['operator'],
+                    is_callable($value) ? $value() : $value
+                );
+            }
+        }
 
         return $query;
+    }
+
+    protected static function getResourceKey(): string
+    {
+        // Convert class name to config key
+        // e.g., App\Resources\UserResource -> 'user'
+        $className = class_basename(static::class);
+
+        return strtolower(str_replace('Resource', '', $className));
     }
 }

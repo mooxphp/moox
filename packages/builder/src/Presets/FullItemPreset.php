@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Presets;
 
-use Moox\Builder\Blocks\AddressSection;
-use Moox\Builder\Blocks\Simple;
-use Moox\Builder\Blocks\SimpleStatus;
-use Moox\Builder\Blocks\SimpleType;
-use Moox\Builder\Blocks\Tabs;
-use Moox\Builder\Blocks\Taxonomy;
-use Moox\Builder\Blocks\TextArea;
-use Moox\Builder\Blocks\TitleWithSlug;
+use Moox\Builder\Blocks\Features\SimpleStatus;
+use Moox\Builder\Blocks\Features\SimpleType;
+use Moox\Builder\Blocks\Features\Tabs;
+use Moox\Builder\Blocks\Features\Taxonomy;
+use Moox\Builder\Blocks\Filament\TextArea;
+use Moox\Builder\Blocks\Moox\TitleWithSlug;
+use Moox\Builder\Blocks\Sections\AddressSection;
+use Moox\Builder\Blocks\Singles\Simple;
 
 class FullItemPreset extends AbstractPreset
 {

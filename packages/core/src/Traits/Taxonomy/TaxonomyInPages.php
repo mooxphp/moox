@@ -1,5 +1,13 @@
 <?php
 
+/*
+ |  Attention!
+ |
+ |  This trait is only used on EditPage, CreatePage and ViewPage.
+ |  Using it on ListPage will work, but probably cause CI errors.
+ |
+ */
+
 namespace Moox\Core\Traits\Taxonomy;
 
 use Filament\Forms\Components\Select;

@@ -7,9 +7,27 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 
 trait SingleSimpleInResource
 {
+    public static function getSimpleResourceActions()
+    {
+        return [
+            ViewAction::make(),
+            EditAction::make(),
+        ];
+    }
+
+    public static function getSimpleBulkActions()
+    {
+        return [
+            DeleteBulkAction::make(),
+        ];
+    }
+
     public static function getSaveAction(): Action
     {
         return Action::make('save')

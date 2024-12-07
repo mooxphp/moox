@@ -1,0 +1,41 @@
+<?php
+
+namespace Moox\Builder\Blocks\Singles;
+
+use Moox\Builder\Blocks\AbstractBlock;
+
+class Simple extends AbstractBlock
+{
+    protected array $incompatibleBlocks = [
+        SoftDelete::class,
+        Publish::class,
+    ];
+
+    public function __construct(
+        string $name = 'simple',
+        string $label = 'Simple',
+        string $description = 'Adds default actions for a simple resource',
+    ) {
+        parent::__construct($name, $label, $description);
+
+        $this->traits['resource'] = ['Moox\Core\Traits\Simple\SingleSimpleInResource'];
+        $this->traits['pages']['list'] = ['Moox\Core\Traits\Simple\SingleSimpleInListPage'];
+        $this->traits['pages']['view'] = ['Moox\Core\Traits\Simple\SingleSimpleInViewPage'];
+        $this->traits['pages']['create'] = ['Moox\Core\Traits\Simple\SingleSimpleInCreatePage'];
+        $this->traits['pages']['edit'] = ['Moox\Core\Traits\Simple\SingleSimpleInEditPage'];
+
+        $this->addSection('meta')
+            ->asMeta()
+            ->withFields([
+                'static::getSimpleFormActions()',
+            ]);
+
+        $this->actions['resource'] = [
+            'static::getSimpleResourceActions()',
+        ];
+
+        $this->actions['bulk'] = [
+            'static::getSimpleBulkActions()',
+        ];
+    }
+}
