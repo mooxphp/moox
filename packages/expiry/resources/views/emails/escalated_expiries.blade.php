@@ -99,7 +99,7 @@
     <div class="container">
         <!-- Header with Logo -->
         <div class="logo">
-            <img src="{{ config('expiry.logo_url') }}" alt="Company Logo" class="w-24 h-auto">
+            <img src="{{ $logoUrl }}" alt="Company Logo" class="w-24 h-auto">
         </div>
         <h1>{{ __('core::expiry.escalated_entries_in_expiry_dashboard') }}</h1>
         <h4>{{ __('core::expiry.following_escalated_entries') }}</h4>

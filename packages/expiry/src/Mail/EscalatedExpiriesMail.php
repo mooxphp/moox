@@ -22,11 +22,15 @@ class EscalatedExpiriesMail extends Mailable
 
     public function build()
     {
+        $logoPath = config('expiry.logo_url');
+        $logoUrl = asset($logoPath);
+
         return $this->subject('Eskalierte Einträge in den Ablaufdaten')
             ->view('expiry::emails.escalated_expiries')
             ->with([
                 'escalatedEntries' => $this->entries['escalatedEntries'],
                 'panelPath' => $this->panelPath,
+                'logoUrl' => $logoUrl,
             ]);
     }
 }

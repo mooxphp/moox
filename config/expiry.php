@@ -203,7 +203,7 @@ return [
 
     'send-escalation' => env('EXPIRY_SEND_ESCALATION', true),
     'send-escalation-days-before' => env('EXPIRY_SEND_ESCALATION_DAYS_BEFORE', 7),
-    'send-escalation-copy' => env('EXPIRY_SEND_ESCALATION_COPY', 'christine.dobler@heco.de'),
+    'send-escalation-copy' => env('EXPIRY_SEND_ESCALATION_COPY', 'admin@moox.com'),
     'panel_path' => env('EXPIRY_PANEL_PATH', 'press'),
     'logo_url' => env('LOGO_URL', 'https://moox.org/img/logo.png'),
 
