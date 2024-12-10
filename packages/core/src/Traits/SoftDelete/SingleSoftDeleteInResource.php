@@ -3,84 +3,48 @@
 namespace Moox\Core\Traits\SoftDelete;
 
 use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\EditRecord;
-use Filament\Resources\Pages\ViewRecord;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\TableQueryTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 trait SingleSoftDeleteInResource
 {
-    use TableQueryTrait;
-
-    public static function getSaveAction(): Action
+    public static function getSoftDeleteEditTableAction(): EditAction
     {
-        return Action::make('save')
-            ->label(__('core::core.save'))
-            ->extraAttributes(attributes: ['class' => 'w-full'])
-            ->keyBindings(['command+s', 'ctrl+s'])
-            ->color('success')
-            ->action(function ($livewire) {
-                $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
-            })
-            ->visible(fn ($livewire) => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
-    }
-
-    public static function getSaveAndCreateAnotherAction(): Action
-    {
-        return Action::make('saveAndCreateAnother')
-            ->label(__('core::core.save_and_create_another'))
-            ->color('secondary')
-            ->button()
-            ->extraAttributes(['class' => 'w-full'])
-            ->action(function ($livewire) {
-                $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
-                $livewire->redirect(static::getUrl('create'));
-            })
-            ->visible(fn ($livewire) => $livewire instanceof CreateRecord);
-    }
-
-    public static function getCancelAction(): Action
-    {
-        return Action::make('cancel')
-            ->extraAttributes(attributes: ['class' => 'w-full'])
-            ->label(__('core::core.cancel'))
-            ->keyBindings(['escape'])
-            ->color('secondary')
-            ->outlined()
-            ->url(fn () => static::getUrl('index'))
-            ->visible(fn ($livewire) => $livewire instanceof CreateRecord);
-    }
-
-    public static function getDeleteAction(): Action
-    {
-        return Action::make('delete')
-            ->label(__('core::core.delete'))
-            ->color('danger')
-            ->outlined()
-            ->extraAttributes(attributes: ['class' => 'w-full'])
-            ->action(function ($livewire) {
-                $livewire->record->delete();
-                $livewire->redirect(static::getUrl('index'));
-            })
-            ->keyBindings(['delete'])
-            ->visible(fn ($livewire) => $livewire instanceof EditRecord)
-            ->requiresConfirmation();
-    }
-
-    public static function getEditAction(): Action
-    {
-        return Action::make('edit')
-            ->label(__('core::core.edit'))
+        return EditAction::make('edit')
             ->color('primary')
-            ->extraAttributes(attributes: ['class' => 'w-full'])
-            ->keyBindings(['command+e', 'ctrl+e'])
             ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-            ->visible(fn ($livewire) => $livewire instanceof ViewRecord);
+            ->visible(fn ($livewire, $record) => $record && ! $record->trashed());
     }
 
-    public static function getSimpleFormActions(): Actions
+    public static function getSoftDeleteViewTableAction(): ViewAction
+    {
+        return ViewAction::make('view')
+            ->color('secondary')
+            ->url(fn ($record) => static::getUrl('view', ['record' => $record]))
+            ->visible(fn ($livewire, $record) => $record && ! $record->trashed());
+    }
+
+    public static function getTableActions(): array
+    {
+        return [
+            static::getSoftDeleteEditTableAction(),
+            static::getSoftDeleteViewTableAction(),
+            static::getRestoreTableAction(),
+        ];
+    }
+
+    public static function getBulkActions(): array
+    {
+        return [
+            static::getRestoreBulkAction(),
+            static::getDeleteBulkAction(),
+        ];
+    }
+
+    public static function getFormActions(): Actions
     {
         return Actions::make([
             static::getSaveAction(),
@@ -88,23 +52,18 @@ trait SingleSoftDeleteInResource
             static::getCancelAction(),
             static::getDeleteAction(),
             static::getEditAction(),
+            static::getRestoreAction(),
         ]);
     }
 
     protected static function applySoftDeleteQuery(Builder $query): Builder
     {
-        $currentTab = request()->query('tab');
         $model = static::getModel();
-        $modelInstance = new $model;
 
-        if (! method_exists($modelInstance, 'getQualifiedDeletedAtColumn')) {
-            return $query;
+        if (in_array(SoftDeletes::class, class_uses_recursive($model)) && request()->query('activeTab') === 'deleted') {
+            $query->withoutGlobalScope(SoftDeletingScope::class);
         }
 
-        if ($currentTab === 'trash' || $currentTab === 'deleted') {
-            return $query->whereNotNull($modelInstance->getQualifiedDeletedAtColumn());
-        }
-
-        return $query->whereNull($modelInstance->getQualifiedDeletedAtColumn());
+        return $query;
     }
 }

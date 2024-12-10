@@ -3,12 +3,9 @@
 namespace Moox\Core\Traits\Tabs;
 
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\TableQueryTrait;
 
 trait TabsInResource
 {
-    use TableQueryTrait;
-
     protected static ?string $currentTab = null;
 
     public static function getCurrentTab(): ?string

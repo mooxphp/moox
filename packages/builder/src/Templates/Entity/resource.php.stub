@@ -46,6 +46,8 @@ class {{ class_name }}Resource extends Resource
 
     public static function form(Form $form): Form
     {
+        {{ form_init }}
+
         return $form->schema([
             Grid::make(2)
                 ->schema([
@@ -76,6 +78,8 @@ class {{ class_name }}Resource extends Resource
 
     public static function table(Table $table): Table
     {
+        {{ table_init }}
+
         return $table
             ->columns([
                 {{ table_columns }}

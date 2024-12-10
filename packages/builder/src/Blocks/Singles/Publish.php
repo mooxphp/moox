@@ -137,8 +137,11 @@ class Publish extends AbstractBlock
                 'published_at' => 'null',
             ],
         ];
+    }
 
-        $this->config['tabs'] = [
+    public function getTabs(): array
+    {
+        return [
             'all' => [
                 'label' => 'trans//core::core.all',
                 'icon' => 'gmdi-filter-list',
@@ -195,10 +198,5 @@ class Publish extends AbstractBlock
                 ],
             ],
         ];
-    }
-
-    public function getTabs(): array
-    {
-        return $this->config['tabs'];
     }
 }

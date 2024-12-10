@@ -166,15 +166,17 @@ trait TaxonomyInResource
         }
     }
 
-    public static function getEloquentQuery(): Builder
+    protected static function addTaxonomyRelationsToQuery(Builder $query): Builder
     {
-        $query = parent::getEloquentQuery();
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
         foreach ($taxonomies as $taxonomy => $settings) {
             $relationshipName = $taxonomyService->getTaxonomyRelationship($taxonomy);
-            $query->with($relationshipName);
+
+            if (method_exists($query->getModel(), $relationshipName)) {
+                $query->with($relationshipName);
+            }
         }
 
         return $query;

@@ -40,6 +40,13 @@ class ResourceGenerator extends AbstractGenerator
         }
 
         $formSchema = $this->generateFormSchema();
+        $resourceInit = [];
+        $tableInit = [];
+        foreach ($this->getBlocks() as $block) {
+            $resourceInit = array_merge($resourceInit, $block->getResourceInit());
+            $tableInit = array_merge($tableInit, $block->getTableInit());
+        }
+
         $variables = [
             'namespace' => $this->context->formatNamespace('resource', false),
             'class_name' => $this->context->getEntityName(),
@@ -64,6 +71,8 @@ class ResourceGenerator extends AbstractGenerator
             'table_bulk_actions' => $this->getTableBulkActions(),
             'default_sort_column' => $this->getDefaultSortColumn(),
             'default_sort_direction' => $this->getDefaultSortDirection(),
+            'resource_init' => implode("\n    ", $resourceInit),
+            'table_init' => implode("\n    ", $tableInit),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);

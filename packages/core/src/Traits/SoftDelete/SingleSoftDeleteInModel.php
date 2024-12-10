@@ -13,6 +13,6 @@ trait SingleSoftDeleteInModel
 
     public function scopeOnlyTrashed(Builder $query): Builder
     {
-        return $query->whereNotNull('deleted_at');
+        return $query->whereNotNull($this->getQualifiedDeletedAtColumn());
     }
 }

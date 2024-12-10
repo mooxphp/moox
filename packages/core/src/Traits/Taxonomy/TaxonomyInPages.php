@@ -258,13 +258,6 @@ trait TaxonomyInPages
         return $record;
     }
 
-    public function resolveRecord($key): Model
-    {
-        $model = $this->getModel();
-
-        return $model::findOrFail($key);
-    }
-
     public function getModel(): string
     {
         return static::getResource()::getModel();

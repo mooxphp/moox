@@ -23,48 +23,29 @@ class SoftDelete extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
-        $this->useStatements = [
-            'resource' => [
-                'actions' => [
-                    'use Filament\Tables\Actions\DeleteBulkAction;',
-                    'use Filament\Tables\Actions\RestoreBulkAction;',
-                ],
-            ],
-            'pages' => [
-                'edit' => ['use Filament\Actions\Action;'],
-                'view' => ['use Filament\Actions\Action;'],
-            ],
+        $this->traits['model'] = [
+            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel',
+            'Moox\Core\Traits\Base\BaseInModel',
         ];
-
-        $this->traits['model'] = ['Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel'];
-        $this->traits['resource'] = ['Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource'];
-        $this->traits['pages']['edit'] = ['Moox\Core\Traits\SoftDelete\SingleSoftDeleteInEditPage'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage'];
-        $this->traits['pages']['view'] = ['Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage'];
-        $this->traits['pages']['create'] = ['Moox\Core\Traits\SoftDelete\SingleSoftDeleteInCreatePage'];
-
-        $this->actions['pages']['edit']['header'] = [
-            "Action::make('restore')
-                ->label(__('core::core.restore'))
-                ->color('success')
-                ->button()
-                ->extraAttributes(['class' => 'w-full'])
-                ->action(fn (\$record) => \$record->restore())
-                ->visible(fn (\$livewire, \$record) => \$record && \$record->trashed())",
-            "Action::make('delete')
-                ->label(__('core::core.delete'))
-                ->color('danger')
-                ->button()
-                ->extraAttributes(['class' => 'w-full'])
-                ->action(fn (\$record) => \$record->delete())
-                ->visible(fn (\$livewire, \$record) => \$record && ! \$record->trashed())",
+        $this->traits['resource'] = [
+            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource',
+            'Moox\Core\Traits\Base\BaseInResource',
         ];
-
-        $this->actions['bulk'] = [
-            "DeleteBulkAction::make()
-                ->hidden(fn () => request()->routeIs('*.trash'))",
-            "RestoreBulkAction::make()
-                ->visible(fn () => request()->routeIs('*.trash'))",
+        $this->traits['pages']['edit'] = [
+            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInEditPage',
+            'Moox\Core\Traits\Base\BaseInEditPage',
+        ];
+        $this->traits['pages']['list'] = [
+            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage',
+            'Moox\Core\Traits\Base\BaseInListPage',
+        ];
+        $this->traits['pages']['view'] = [
+            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage',
+            'Moox\Core\Traits\Base\BaseInViewPage',
+        ];
+        $this->traits['pages']['create'] = [
+            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInCreatePage',
+            'Moox\Core\Traits\Base\BaseInCreatePage',
         ];
 
         $this->migrations['fields'] = [
@@ -74,16 +55,42 @@ class SoftDelete extends AbstractBlock
         $this->addSection('meta')
             ->asMeta()
             ->withFields([
-                'static::getSimpleFormActions()',
+                'static::getFormActions()',
             ]);
 
         $this->actions['resource'] = [
-            '\Filament\Tables\Actions\ViewAction::make()',
-            '\Filament\Tables\Actions\EditAction::make()',
+            '...static::getTableActions()',
         ];
 
         $this->actions['bulk'] = [
-            '\Filament\Tables\Actions\DeleteBulkAction::make()',
+            '...static::getBulkActions()',
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => [
+                'label' => 'trans//core::core.all',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
+                ],
+            ],
+            'deleted' => [
+                'label' => 'trans//core::core.deleted',
+                'icon' => 'gmdi-filter-list',
+                'query' => [
+                    ['field' => 'deleted_at', 'operator' => '!=', 'value' => null],
+                ],
+            ],
+        ];
+    }
+
+    public function getTableInit(): array
+    {
+        return [
+            '$currentTab = static::getCurrentTab();',
         ];
     }
 }

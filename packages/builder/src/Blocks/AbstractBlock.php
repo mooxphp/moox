@@ -144,6 +144,10 @@ abstract class AbstractBlock
 
     protected array $sections = [];
 
+    protected array $resourceInit = [];
+
+    protected array $tableInit = [];
+
     public function __construct(
         protected string $name,
         protected string $label,
@@ -827,5 +831,15 @@ abstract class AbstractBlock
     public function getFillableFields(): array
     {
         return [$this->name];
+    }
+
+    public function getResourceInit(): array
+    {
+        return $this->resourceInit;
+    }
+
+    public function getTableInit(): array
+    {
+        return $this->tableInit;
     }
 }

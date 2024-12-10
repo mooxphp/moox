@@ -7,6 +7,11 @@ namespace Moox\Core\Traits\Publish;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Resources\Pages\ViewRecord;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +22,53 @@ use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
 
 trait SinglePublishInResource
 {
+    public static function getEditTableAction(): EditAction
+    {
+        return EditAction::make('edit')
+            ->label(__('core::core.edit'))
+            ->color('primary')
+            ->keyBindings(['command+e', 'ctrl+e'])
+            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
+            ->visible(fn ($livewire, $record) => $record && ! $record->trashed());
+    }
+
+    public static function getViewTableAction(): ViewAction
+    {
+        return ViewAction::make('view')
+            ->label(__('core::core.view'))
+            ->color('secondary')
+            ->keyBindings(['command+v', 'ctrl+v'])
+            ->url(fn ($record) => static::getUrl('view', ['record' => $record]));
+    }
+
+    public static function getTableActions(): array
+    {
+        return [
+            static::getEditTableAction(),
+            static::getViewTableAction(),
+        ];
+    }
+
+    public static function getRestoreBulkAction(): RestoreBulkAction
+    {
+        return RestoreBulkAction::make()
+            ->visible(fn ($livewire) => $livewire instanceof ViewRecord);
+    }
+
+    public static function getDeleteBulkAction(): DeleteBulkAction
+    {
+        return DeleteBulkAction::make()
+            ->visible(fn ($livewire) => $livewire instanceof ViewRecord);
+    }
+
+    public static function getBulkActions(): array
+    {
+        return [
+            static::getRestoreBulkAction(),
+            static::getDeleteBulkAction(),
+        ];
+    }
+
     public static function getStatusTableColumn(): TextColumn
     {
         return TextColumn::make('status')

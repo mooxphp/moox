@@ -39,11 +39,11 @@ return [
             'toggle-buttons' => \Moox\Builder\Blocks\Filament\ToggleButtons::class,
         ],
         'features' => [
-            'simple' => \Moox\Builder\Blocks\Simple::class,
-            'soft-delete' => \Moox\Builder\Blocks\SoftDelete::class,
-            'title-with-slug' => \Moox\Builder\Blocks\TitleWithSlug::class,
-            'simple-status' => \Moox\Builder\Blocks\SimpleStatus::class,
-            'simple-type' => \Moox\Builder\Blocks\SimpleType::class,
+            'simple' => \Moox\Builder\Blocks\Single\Simple::class,
+            'soft-delete' => \Moox\Builder\Blocks\Single\SoftDelete::class,
+            'title-with-slug' => \Moox\Builder\Blocks\Moox\TitleWithSlug::class,
+            'simple-status' => \Moox\Builder\Blocks\Features\SimpleStatus::class,
+            'simple-type' => \Moox\Builder\Blocks\Features\SimpleType::class,
         ],
         'sections' => [
             'address' => \Moox\Builder\Blocks\Sections\AddressSection::class,

@@ -18,19 +18,39 @@ class Simple extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
-        $this->traits['resource'] = ['Moox\Core\Traits\Simple\SingleSimpleInResource'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\Simple\SingleSimpleInListPage'];
-        $this->traits['pages']['view'] = ['Moox\Core\Traits\Simple\SingleSimpleInViewPage'];
-        $this->traits['pages']['create'] = ['Moox\Core\Traits\Simple\SingleSimpleInCreatePage'];
-        $this->traits['pages']['edit'] = ['Moox\Core\Traits\Simple\SingleSimpleInEditPage'];
+        $this->traits['resource'] = [
+            'Moox\Core\Traits\Simple\SingleSimpleInResource',
+            'Moox\Core\Traits\Base\BaseInResource',
+        ];
+        $this->traits['pages']['list'] = [
+            'Moox\Core\Traits\Simple\SingleSimpleInListPage',
+            'Moox\Core\Traits\Base\BaseInListPage',
+        ];
+        $this->traits['pages']['view'] = [
+            'Moox\Core\Traits\Simple\SingleSimpleInViewPage',
+            'Moox\Core\Traits\Base\BaseInViewPage',
+        ];
+        $this->traits['pages']['create'] = [
+            'Moox\Core\Traits\Simple\SingleSimpleInCreatePage',
+            'Moox\Core\Traits\Base\BaseInCreatePage',
+        ];
+        $this->traits['pages']['edit'] = [
+            'Moox\Core\Traits\Simple\SingleSimpleInEditPage',
+            'Moox\Core\Traits\Base\BaseInEditPage',
+        ];
 
         $this->addSection('meta')
             ->asMeta()
             ->withFields([
-                'static::getSimpleFormActions()',
+                'static::getFormActions()',
             ]);
 
-        $this->actions['resource'] = 'static::getSimpleResourceActions()';
-        $this->actions['bulk'] = 'static::getSimpleBulkActions()';
+        $this->actions['resource'] = [
+            '...static::getTableActions()',
+        ];
+
+        $this->actions['bulk'] = [
+            '...static::getBulkActions()',
+        ];
     }
 }

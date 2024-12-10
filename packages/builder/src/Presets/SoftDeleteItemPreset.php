@@ -50,11 +50,11 @@ class SoftDeleteItemPreset extends AbstractPreset
                 createForm: '\Moox\Tag\Forms\TaxonomyCreateForm::class',
             ),
             new AddressSection,
-            new SimpleStatus(
-                enum: ['Probably', 'Never', 'Done', 'Maybe'],
-            ),
             new SimpleType(
                 enum: ['Post', 'Page'],
+            ),
+            new SimpleStatus(
+                enum: ['Probably', 'Never', 'Done', 'Maybe'],
             ),
             new SoftDelete,
         ];
