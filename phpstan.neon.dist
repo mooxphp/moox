@@ -11,8 +11,8 @@ parameters:
         - 'packages/*/vendor/*'
         - 'packages/press/wordpress/*'
         - 'packages/press/src/Handlers'
-        - 'packages/press/src/Transformers'
-        - 'packages/press/src/Resolvers'
+        - 'packages/press/src/Transformer'
+        - 'packages/press/src/Resolver'
         - 'packages/sync'
         - 'packages/*/tests/*'
     tmpDir: build/phpstan
