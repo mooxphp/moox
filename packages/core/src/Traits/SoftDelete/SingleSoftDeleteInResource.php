@@ -115,10 +115,13 @@ trait SingleSoftDeleteInResource
             ->modalDescription(__('core::core.hard_delete_bulk_description'))
             ->action(function (Collection $records, $livewire) {
                 $records->each->forceDelete();
-                $livewire->refreshTable();
+
+                $livewire->resetTable();
             })
             ->deselectRecordsAfterCompletion()
-            ->visible(fn ($livewire) => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']))
+            ->visible(
+                fn ($livewire) => isset($livewire->activeTab)
+                && in_array($livewire->activeTab, ['trash', 'deleted']))
             ->requiresConfirmation();
     }
 
@@ -149,7 +152,10 @@ trait SingleSoftDeleteInResource
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->keyBindings(['command+e', 'ctrl+e'])
             ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-            ->visible(fn ($livewire, $record) => $livewire instanceof ViewRecord && method_exists($record, 'trashed') && ! $record->trashed());
+            ->visible(
+                fn ($livewire, $record) => $livewire instanceof ViewRecord
+                && method_exists($record, 'trashed')
+                && ! $record->trashed());
     }
 
     public static function getFormActions(): Actions
