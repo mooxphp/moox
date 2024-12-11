@@ -2,27 +2,27 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Press\Models\WpPost;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource\Pages;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpCommentRelationManager;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpPostMetaRelationManager;
 
 class WpPostResource extends Resource
 {
-    use TabsInResource, BaseInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = WpPost::class;
 

@@ -2,35 +2,35 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Press\Models\WpUser;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
-use Moox\Security\Helper\PasswordHash;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
-use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
-use Moox\Press\Resources\WpUserResource\Pages\ListWpUsers;
+use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
-use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
+use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
+use Moox\Press\Resources\WpUserResource\Pages\ListWpUsers;
+use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
 use Moox\Press\Resources\WpUserResource\RelationManagers\WpUserMetaRelationManager;
+use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
+use Moox\Security\Helper\PasswordHash;
 
 class WpUserResource extends Resource
 {
-    use TabsInResource, BaseInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = WpUser::class;
 

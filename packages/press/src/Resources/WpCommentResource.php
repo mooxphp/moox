@@ -2,27 +2,27 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Moox\Press\Models\WpComment;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Press\Models\WpComment;
 use Moox\Press\Resources\WpCommentResource\Pages;
 use Moox\Press\Resources\WpCommentResource\RelationManagers\WpCommentMetaRelationManager;
 
 class WpCommentResource extends Resource
 {
-    use TabsInResource, BaseInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = WpComment::class;
 

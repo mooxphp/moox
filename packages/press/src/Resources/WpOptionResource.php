@@ -2,25 +2,25 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Press\Models\WpOption;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Press\Models\WpOption;
 use Moox\Press\Resources\WpOptionResource\Pages;
 
 class WpOptionResource extends Resource
 {
-    use TabsInResource, BaseInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = WpOption::class;
 

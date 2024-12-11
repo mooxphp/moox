@@ -2,27 +2,27 @@
 
 namespace Moox\UserSession\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Illuminate\Support\Facades\Log;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
-use Moox\UserSession\Models\UserSession;
-use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Table;
+use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
+use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
 
 class UserSessionResource extends Resource
 {
-    use TabsInResource, BaseInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = UserSession::class;
 
