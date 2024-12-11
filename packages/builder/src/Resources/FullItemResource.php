@@ -30,6 +30,7 @@ use Moox\Builder\Resources\FullItemResource\Pages\EditFullItem;
 use Moox\Builder\Resources\FullItemResource\Pages\ListFullItems;
 use Moox\Builder\Resources\FullItemResource\Pages\ViewFullItem;
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Publish\SinglePublishInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
@@ -37,6 +38,7 @@ use Moox\Core\Traits\UserRelation\UserInResource;
 
 class FullItemResource extends Resource
 {
+    use BaseInResource;
     use SinglePublishInResource;
     use TabsInResource;
     use TaxonomyInResource;

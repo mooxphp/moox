@@ -23,18 +23,41 @@ trait SingleSoftDeleteInListPage
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make('create')
-                ->visible(function (): bool {
-                    return $this->activeTab !== 'deleted';
-                }),
-            Action::make('emptyTrash')
+        $actions = [];
+
+        $resource = static::getResource();
+
+        if ($resource::enableCreate()) {
+            $actions[] = CreateAction::make('create')
+                ->visible(fn (): bool => $this->activeTab !== 'deleted');
+        }
+
+        if ($resource::enableEmptyTrash()) {
+            $actions[] = Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->color('danger')
                 ->icon('heroicon-m-trash')
                 ->requiresConfirmation()
                 ->modalHeading(__('core::core.empty_trash_confirmation'))
                 ->modalDescription(__('core::core.empty_trash_description'))
+                ->disabled(function () {
+                    $model = $this->getModel();
+
+                    if (! in_array(SoftDeletes::class, class_uses_recursive($model))) {
+                        return true;
+                    }
+
+                    $modelInstance = new $model;
+                    if (! method_exists($modelInstance, 'getQualifiedDeletedAtColumn')) {
+                        return true;
+                    }
+
+                    $deletedAtColumn = $modelInstance->getQualifiedDeletedAtColumn();
+
+                    return $model::withoutGlobalScope(SoftDeletingScope::class)
+                        ->whereNotNull($deletedAtColumn)
+                        ->count() === 0;
+                })
                 ->action(function () {
                     $model = $this->getModel();
 
@@ -55,10 +78,10 @@ trait SingleSoftDeleteInListPage
 
                     $this->dispatch('refresh');
                 })
-                ->visible(function (): bool {
-                    return $this->activeTab === 'deleted';
-                }),
-        ];
+                ->visible(fn (): bool => $this->activeTab === 'deleted');
+        }
+
+        return $actions;
     }
 
     protected function applyStatusFilter(Builder $query, string $status): Builder

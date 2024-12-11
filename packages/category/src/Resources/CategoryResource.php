@@ -32,13 +32,14 @@ use Moox\Category\Resources\CategoryResource\Pages\CreateCategory;
 use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
 use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 
 //use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class CategoryResource extends Resource
 {
-    use TabsInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = Category::class;
 

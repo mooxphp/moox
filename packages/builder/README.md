@@ -10,7 +10,8 @@ From idea to a working LaravelApp in minutes. No coding required.
 
 -   ✅ Entity generation with `builder:create`
 -   🟡 Generate all available contexts and presets
--   🟡 Entity deletion with `builder:delete`
+-   🚧 Entity deletion with `builder:delete`
+-   🚧 Cleanup old builder stuff, remove template from GitHub
 
 ## Pro Version (WIP, too)
 

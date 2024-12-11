@@ -8,8 +8,24 @@ The Moox Core package provides common features, used by all Moox packages. If yo
 
 -   Dynamic Tabs - create your own tabs just by a few lines of configuration
 -   Dynamic Taxonomies - attach hierarchical or flat taxonomies to your items
+-   Simple Items - provides simple form actions and features
+-   Soft Delete Items - provides soft delete actions, features and tabs
+-   Publishable Items - provides publis and soft delete features, actions and tabs
 
-and some other mentioned below in Traits, Services and Forms.
+The last three features provide traits for model, resource and resource pages. They are named Single... as they can not be used together with other Single... traits. You need to also include the Base traits. Example:
+
+```php
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+
+class YourResource extends Resource
+{
+    use BaseInResource;
+    use SingleSoftDeleteInResource;
+}
+```
+
+This part is currently not well documented. We will cover that soon.
 
 ## Installation
 

@@ -122,4 +122,12 @@ return [
     'items_permanently_deleted' => '{0} No items were permanently deleted.|{1} One item was permanently deleted.|[2,*] :count items were permanently deleted.',
     'search' => 'Search',
     'filter' => 'Filter',
+    'hard_delete' => 'Hard Delete',
+    'hard_delete_selected' => 'Hard Delete selected',
+    'hard_delete_bulk_confirmation' => 'Are you sure you want to hard delete these items?',
+    'hard_delete_bulk_description' => 'This action will permanently delete these items.',
+    'hard_delete_confirmation' => 'Are you sure you want to hard delete this item?',
+    'hard_delete_description' => 'This action will permanently delete this item.',
+    'empty_trash_confirmation' => 'Are you sure you want to empty the trash?',
+    'empty_trash_description' => 'This action will permanently delete all items in the trash.',
 ];

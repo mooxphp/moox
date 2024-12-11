@@ -4,18 +4,18 @@ namespace Moox\Builder\Blocks\Singles;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class Simple extends AbstractBlock
+class Light extends AbstractBlock
 {
     protected array $incompatibleBlocks = [
-        SoftDelete::class,
+        Simple::class,
         Publish::class,
-        Light::class,
+        SoftDelete::class,
     ];
 
     public function __construct(
-        string $name = 'simple',
-        string $label = 'Simple',
-        string $description = 'Adds default actions for a simple resource',
+        string $name = 'light',
+        string $label = 'Light',
+        string $description = 'Shows how to disable actions in the resource',
     ) {
         parent::__construct($name, $label, $description);
 
@@ -52,6 +52,13 @@ class Simple extends AbstractBlock
 
         $this->actions['bulk'] = [
             '...static::getBulkActions()',
+        ];
+
+        $this->methods['resource'] = [
+            'public static function enableCreate(): bool
+            {
+                return false;
+            }',
         ];
     }
 }

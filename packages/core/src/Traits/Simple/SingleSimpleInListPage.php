@@ -8,8 +8,14 @@ trait SingleSimpleInListPage
 {
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make('create'),
-        ];
+        $actions = [];
+
+        $resource = static::getResource();
+
+        if ($resource::enableCreate()) {
+            $actions[] = CreateAction::make('create');
+        }
+
+        return $actions;
     }
 }

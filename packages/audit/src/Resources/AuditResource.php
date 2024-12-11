@@ -16,12 +16,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Audit\Resources\AuditResource\Pages\ListAudits;
 use Moox\Audit\Resources\AuditResource\Pages\ViewAudit;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Spatie\Activitylog\Models\Activity;
 
 class AuditResource extends Resource
 {
-    use TabsInResource;
+    use BaseInResource, TabsInResource;
 
     protected static ?string $model = Activity::class;
 

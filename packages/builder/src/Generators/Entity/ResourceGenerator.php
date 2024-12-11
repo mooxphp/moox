@@ -73,6 +73,7 @@ class ResourceGenerator extends AbstractGenerator
             'default_sort_direction' => $this->getDefaultSortDirection(),
             'resource_init' => implode("\n    ", $resourceInit),
             'table_init' => implode("\n    ", $tableInit),
+            'methods' => $this->formatMethods(),
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);

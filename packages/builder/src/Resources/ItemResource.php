@@ -23,6 +23,7 @@ use Moox\Builder\Resources\ItemResource\Pages\CreateItem;
 use Moox\Builder\Resources\ItemResource\Pages\EditItem;
 use Moox\Builder\Resources\ItemResource\Pages\ListItems;
 use Moox\Builder\Resources\ItemResource\Pages\ViewItem;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Publish\SinglePublishInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
@@ -30,7 +31,7 @@ use Moox\Core\Traits\UserRelation\UserInResource;
 
 class ItemResource extends Resource
 {
-    use SinglePublishInResource, TabsInResource, TaxonomyInResource, UserInResource;
+    use BaseInResource, SinglePublishInResource, TabsInResource, TaxonomyInResource, UserInResource;
 
     protected static ?string $model = Item::class;
 

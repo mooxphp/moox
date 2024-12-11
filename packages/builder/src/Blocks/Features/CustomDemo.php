@@ -2,19 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Singles;
+namespace Moox\Builder\Blocks\Features;
 
 use Moox\Builder\Blocks\AbstractBlock;
+use Moox\Builder\Blocks\Singles\Simple;
+use Moox\Builder\Blocks\Singles\SoftDelete;
 
-class Publish extends AbstractBlock
+class CustomDemo extends AbstractBlock
 {
     protected array $containsBlocks = [
         Simple::class,
         SoftDelete::class,
-    ];
-
-    protected array $incompatibleBlocks = [
-        Light::class,
     ];
 
     public function __construct(
@@ -44,30 +42,9 @@ class Publish extends AbstractBlock
             ],
         ];
 
-        $this->traits['model'] = [
-            'Moox\Core\Traits\Publish\SinglePublishInModel',
-            'Moox\Core\Traits\Base\BaseInModel',
-        ];
-        $this->traits['resource'] = [
-            'Moox\Core\Traits\Publish\SinglePublishInResource',
-            'Moox\Core\Traits\Base\BaseInResource',
-        ];
-        $this->traits['pages']['list'] = [
-            'Moox\Core\Traits\Publish\SinglePublishInListPage',
-            'Moox\Core\Traits\Base\BaseInListPage',
-        ];
-        $this->traits['pages']['view'] = [
-            'Moox\Core\Traits\Publish\SinglePublishInViewPage',
-            'Moox\Core\Traits\Base\BaseInViewPage',
-        ];
-        $this->traits['pages']['edit'] = [
-            'Moox\Core\Traits\Publish\SinglePublishInEditPage',
-            'Moox\Core\Traits\Base\BaseInEditPage',
-        ];
-        $this->traits['pages']['create'] = [
-            'Moox\Core\Traits\Publish\SinglePublishInCreatePage',
-            'Moox\Core\Traits\Base\BaseInCreatePage',
-        ];
+        $this->traits['model'] = ['Moox\Core\Traits\Publish\SinglePublishInModel'];
+        $this->traits['resource'] = ['Moox\Core\Traits\Publish\SinglePublishInResource'];
+        $this->traits['pages']['list'] = ['Moox\Core\Traits\Publish\SinglePublishInListPage'];
 
         $this->methods['model'] = [
             'scopes' => [

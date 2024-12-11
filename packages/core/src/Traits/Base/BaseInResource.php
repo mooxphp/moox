@@ -113,21 +113,13 @@ trait BaseInResource
     public static function getRestoreBulkAction(): RestoreBulkAction
     {
         return RestoreBulkAction::make()
-            ->visible(function () {
-                $currentTab = static::getCurrentTab();
-
-                return in_array($currentTab, ['trash', 'deleted']);
-            });
+            ->visible(fn ($livewire) => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getDeleteBulkAction(): DeleteBulkAction
     {
         return DeleteBulkAction::make()
-            ->hidden(function () {
-                $currentTab = static::getCurrentTab();
-
-                return in_array($currentTab, ['trash', 'deleted']);
-            });
+            ->hidden(fn ($livewire) => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getSaveAction(): Action

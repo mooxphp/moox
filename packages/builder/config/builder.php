@@ -39,8 +39,8 @@ return [
             'toggle-buttons' => \Moox\Builder\Blocks\Filament\ToggleButtons::class,
         ],
         'features' => [
-            'simple' => \Moox\Builder\Blocks\Single\Simple::class,
-            'soft-delete' => \Moox\Builder\Blocks\Single\SoftDelete::class,
+            'simple' => \Moox\Builder\Blocks\Singles\Simple::class,
+            'soft-delete' => \Moox\Builder\Blocks\Singles\SoftDelete::class,
             'title-with-slug' => \Moox\Builder\Blocks\Moox\TitleWithSlug::class,
             'simple-status' => \Moox\Builder\Blocks\Features\SimpleStatus::class,
             'simple-type' => \Moox\Builder\Blocks\Features\SimpleType::class,
@@ -159,6 +159,10 @@ return [
     */
 
     'presets' => [
+        'light-item' => [
+            'class' => \Moox\Builder\Presets\LightItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
         'simple-item' => [
             'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],

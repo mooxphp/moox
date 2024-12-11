@@ -14,6 +14,7 @@ class SoftDelete extends AbstractBlock
 
     protected array $incompatibleBlocks = [
         Publish::class,
+        Light::class,
     ];
 
     public function __construct(

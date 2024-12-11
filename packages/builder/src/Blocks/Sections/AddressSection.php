@@ -12,7 +12,8 @@ final class AddressSection extends AbstractBlock
         string $name = 'address_section',
         string $label = 'Address',
         string $description = 'Address section with street, city, postal code and country',
-        bool $nullable = false,
+        bool $nullable = true,
+        protected int $length = 255,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
@@ -30,5 +31,26 @@ final class AddressSection extends AbstractBlock
                 "TextInput::make('postal_code')",
                 "TextInput::make('country')",
             ]);
+
+        $this->migrations['fields'] = [
+            "\$table->string('street', {$this->length})"
+                .($this->nullable ? '->nullable()' : ''),
+            "\$table->string('city', {$this->length})"
+                .($this->nullable ? '->nullable()' : ''),
+            "\$table->string('postal_code', {$this->length})"
+                .($this->nullable ? '->nullable()' : ''),
+            "\$table->string('country', {$this->length})"
+                .($this->nullable ? '->nullable()' : ''),
+        ];
+    }
+
+    public function getFillableFields(): array
+    {
+        return [
+            'street',
+            'city',
+            'postal_code',
+            'country',
+        ];
     }
 }
