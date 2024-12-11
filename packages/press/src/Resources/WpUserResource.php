@@ -190,6 +190,7 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    /* Must be provided by Sync, use a static maybe?
                     Select::make('platforms')
                         ->label('Platforms')
                         ->multiple()
@@ -219,6 +220,7 @@ class WpUserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                        */
                 ]),
             ]),
 

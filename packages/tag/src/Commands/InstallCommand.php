@@ -41,19 +41,7 @@ class InstallCommand extends Command
         $this->publishConfiguration();
         $this->publishMigrations();
         $this->runMigrations();
-        $providerPath = app_path('Providers/Filament');
-        $panelsToregister = $this->getPanelProviderPath();
-        if ($panelsToregister != null) {
-            if (is_array($panelsToregister)) {
-                foreach ($panelsToregister as $panelprovider) {
-                    $this->registerPlugins($providerPath.'/'.$panelprovider);
-                }
-            } else {
-                $this->registerPlugins($panelsToregister);
-            }
-        } else {
-            $this->registerPlugins($panelsToregister[0]);
-        }
+        $this->registerPluginInPanelProvider();
         $this->sayGoodbye();
     }
 
@@ -165,6 +153,25 @@ class InstallCommand extends Command
             }
         } else {
             alert('There are no new plugins detected.');
+        }
+    }
+
+    public function registerPluginInPanelProvider(): void
+    {
+        $providerPath = app_path('Providers/Filament');
+        $panelsToregister = $this->getPanelProviderPath();
+        if ($panelsToregister != null) {
+            if (is_array($panelsToregister)) {
+                //Multiselect
+                foreach ($panelsToregister as $panelprovider) {
+                    $this->registerPlugins($providerPath.'/'.$panelprovider);
+                }
+            } else {
+                //only one
+                $this->registerPlugins($panelsToregister);
+            }
+        } else {
+            alert('No PanelProvider Detected please register Plugins manualy.');
         }
     }
 

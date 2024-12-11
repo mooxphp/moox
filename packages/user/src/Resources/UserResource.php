@@ -83,6 +83,7 @@ class UserResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    /* Must be provided by Sync, use a static maybe?
                     Select::make('platforms')
                         ->label('Platforms')
                         ->multiple()
@@ -112,6 +113,7 @@ class UserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                    */
 
                     Select::make('gender')
                         ->label(__('core::user.gender'))
