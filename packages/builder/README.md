@@ -10,11 +10,14 @@ From idea to a working LaravelApp in minutes. No coding required.
 
 -   ✅ Entity generation with `builder:create`
 -   🟡 Generate all available contexts and presets
+-   🟡 Generate simple and nested taxonomies
 -   🚧 Entity deletion with `builder:delete`
--   🚧 Cleanup old builder stuff, remove template from GitHub
+-   🚧 Bring back the build command to create packages
 
 ## Pro Version (WIP, too)
 
+-   ✅ Implements more Blocks and Presets
+-   🟡 Offers advanced features like Publish, Author, Relations
 -   🚧 Package generation with `builder:package`
 -   🚧 App (Panel) generation with `builder:app`
 -   🚧 Frontend generation with `builder:frontend`
