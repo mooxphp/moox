@@ -14,7 +14,7 @@ return [
 
     'blocks' => [
         'fields' => [
-            'bool' => \Moox\Builder\Blocks\Filament\Bool::class,
+            'boolean' => \Moox\Builder\Blocks\Filament\Boolean::class,
             'builder' => \Moox\Builder\Blocks\Filament\Builder::class,
             'checkbox-list' => \Moox\Builder\Blocks\Filament\CheckboxList::class,
             'color-picker' => \Moox\Builder\Blocks\Filament\ColorPicker::class,

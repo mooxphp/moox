@@ -6,7 +6,7 @@ namespace Moox\Builder\Blocks\Filament;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class Bool extends AbstractBlock
+class Boolean extends AbstractBlock
 {
     public function __construct(
         string $name,
