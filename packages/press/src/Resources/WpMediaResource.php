@@ -2,28 +2,29 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Moox\Press\Models\WpMedia;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Columns\Layout\Stack;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Press\Models\WpMedia;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Press\Resources\WpMediaResource\Pages;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;
 
 class WpMediaResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = WpMedia::class;
 

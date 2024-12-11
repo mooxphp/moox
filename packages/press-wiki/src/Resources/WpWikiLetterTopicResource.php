@@ -2,23 +2,24 @@
 
 namespace Moox\PressWiki\Resources;
 
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressWiki\Models\WpWikiLetterTopic;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\PressWiki\Resources\WpWikiLetterTopicResource\Pages;
 
 class WpWikiLetterTopicResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = WpWikiLetterTopic::class;
 

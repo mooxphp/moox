@@ -2,25 +2,26 @@
 
 namespace Moox\PressTrainings\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Table;
+use Filament\Forms\Components\RichEditor;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressTrainings\Models\WpTraining;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\PressTrainings\Resources\WpTrainingResource\Pages;
 use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers;
 
 class WpTrainingResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = WpTraining::class;
 

@@ -2,25 +2,26 @@
 
 namespace Moox\Passkey\Resources;
 
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Passkey\Models\Passkey;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Config;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Support\Facades\Config;
+use Filament\Forms\Components\TextInput;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Passkey\Models\Passkey;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 
 class PasskeyResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = Passkey::class;
 

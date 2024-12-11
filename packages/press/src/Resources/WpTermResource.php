@@ -2,26 +2,27 @@
 
 namespace Moox\Press\Resources;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Moox\Press\Models\WpTerm;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Press\Models\WpTerm;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Press\Resources\WpTermResource\Pages;
 
 class WpTermResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = WpTerm::class;
 

@@ -2,25 +2,26 @@
 
 namespace Moox\Notification\Resources;
 
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Notification\Models\Notification;
-use Moox\Notification\Resources\NotificationResource\Pages\CreateNotification;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;
-use Moox\Notification\Resources\NotificationResource\Pages\ListNotifications;
 use Moox\Notification\Resources\NotificationResource\Pages\ViewNotification;
+use Moox\Notification\Resources\NotificationResource\Pages\ListNotifications;
+use Moox\Notification\Resources\NotificationResource\Pages\CreateNotification;
 use Moox\Notification\Resources\NotificationResource\Widgets\NotificationWidgets;
 
 class NotificationResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = Notification::class;
 

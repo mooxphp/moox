@@ -3,18 +3,19 @@
 namespace Moox\Security\Resources;
 
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
 use Moox\Security\Models\ResetPassword;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 
 class ResetPasswordResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $modelLabel = 'Reset Tokens';
 

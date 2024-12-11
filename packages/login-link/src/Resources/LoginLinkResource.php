@@ -2,26 +2,27 @@
 
 namespace Moox\LoginLink\Resources;
 
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\LoginLink\Models\LoginLink;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Config;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Support\Facades\Config;
+use Filament\Forms\Components\TextInput;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\LoginLink\Models\LoginLink;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
 
 class LoginLinkResource extends Resource
 {
-    use TabsInResource;
+    use TabsInResource, BaseInResource;
 
     protected static ?string $model = LoginLink::class;
 
