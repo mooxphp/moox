@@ -20,7 +20,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'mooxlocate:install';
+    protected $signature = 'locate:install';
 
     /**
      * The console command description.
@@ -39,8 +39,8 @@ class InstallCommand extends Command
         $this->publishConfiguration();
         $this->publishMigrations();
         $this->runMigrations();
-        $this->registerPlugins();
-        $this->finish();
+        $this->registerPluginInPanelProvider();
+        $this->sayGoodbye();
     }
 
     public function art(): void
@@ -103,21 +103,19 @@ class InstallCommand extends Command
         }
     }
 
-    public function registerPlugins(): void
+    public function registerPlugins(string $providerPath): void
     {
-        $providerPath = app_path('Providers/Filament/AdminPanelProvider.php');
-
         if (File::exists($providerPath)) {
             $content = File::get($providerPath);
 
             $intend = '                ';
 
-            $namespace = "\Moox\Locate";
+            $namespace = "\Moox\Builder";
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['AreaPlugin'],
-                default: ['AreaPlugin'],
+                options: ['ItemPlugin'],
+                default: ['ItemPlugin'],
             );
 
             $function = '::make(),';
@@ -126,11 +124,11 @@ class InstallCommand extends Command
             $newPlugins = '';
 
             foreach ($pluginsToAdd as $plugin) {
-                $searchPlugin = '/'.$plugin.'/';
+                $searchPlugin = '/' . $plugin . '/';
                 if (preg_match($searchPlugin, $content)) {
                     warning("$plugin already registered.");
                 } else {
-                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
+                    $newPlugins .= $intend . $namespace . '\\' . $plugin . $function . "\n";
                 }
             }
 
@@ -145,19 +143,61 @@ class InstallCommand extends Command
 
                     $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
                     $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                    $replacement = "$1\n".$pluginsSection;
+                    $replacement = "$1\n" . $pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
 
                 File::put($providerPath, $newContent);
             }
         } else {
-            alert('AdminPanelProvider not found. You need to add the plugins manually.');
+            alert('There are no new plugins detected.');
         }
     }
 
-    public function finish(): void
+    public function registerPluginInPanelProvider(): void
+
     {
-        note('Moox Locate installed successfully. Enjoy!');
+        $providerPath = app_path('Providers/Filament');
+        $panelsToregister = $this->getPanelProviderPath();
+        if ($panelsToregister != null) {
+            if (is_array($panelsToregister)) {
+                //Multiselect
+                foreach ($panelsToregister as $panelprovider) {
+                    $this->registerPlugins($providerPath . '/' . $panelprovider);
+                }
+            } else {
+                //only one
+                $this->registerPlugins($panelsToregister);
+            }
+        } else {
+            alert('No PanelProvider Detected please register Plugins manualy.');
+        }
+    }
+
+    public function getPanelProviderPath(): string|array
+    {
+        $providerPath = app_path('Providers/Filament');
+        $providers = File::allFiles($providerPath);
+        if (count($providers) > 1) {
+            $providerNames = [];
+            foreach ($providers as $provider) {
+                $providerNames[] = $provider->getBasename();
+            }
+            $providerPath = multiselect(
+                label: 'Which Panel should it be registered',
+                options: [...$providerNames],
+                default: [$providerNames[0]],
+            );
+        }
+        if (count($providers) == 1) {
+            $providerPath .= '/' . $providers[0]->getBasename();
+        }
+
+        return $providerPath;
+    }
+
+    public function sayGoodbye(): void
+    {
+        note('Moox Builder installed successfully. Enjoy!');
     }
 }
