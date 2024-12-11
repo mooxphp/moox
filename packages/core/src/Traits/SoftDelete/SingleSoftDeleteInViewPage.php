@@ -39,17 +39,6 @@ trait SingleSoftDeleteInViewPage
         $this->fillForm();
     }
 
-    // TODO: this clashes with other traits, if we need, it must be abstracted
-    /*    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        if ($this->record->trashed()) {
-            // You can add a banner, or adjust the layout to show it's deleted
-        }
-
-        return $data;
-    }
-    */
-
     public function getFormActions(): array
     {
         return [];

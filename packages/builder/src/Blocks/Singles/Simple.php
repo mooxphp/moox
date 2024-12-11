@@ -19,6 +19,10 @@ class Simple extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
+        $this->traits['model'] = [
+            'Moox\Core\Traits\Simple\SingleSimpleInModel',
+            'Moox\Core\Traits\Base\BaseInModel',
+        ];
         $this->traits['resource'] = [
             'Moox\Core\Traits\Simple\SingleSimpleInResource',
             'Moox\Core\Traits\Base\BaseInResource',
