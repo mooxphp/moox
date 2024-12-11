@@ -65,8 +65,8 @@ Curious what the install command does? See manual installation below.
 All generated code is:
 
 -   Type-safe with full type declarations
--   PSR-12 compliant via Pint
--   PHPStan Level 8 validated
+-   PSR-12 compliant via Laravel Pint
+-   PHPStan Level 5 validated
 -   Pest tested
 -   Ready for production
 
