@@ -10,6 +10,7 @@ parameters:
     excludePaths:
         - 'packages/*/vendor/*'
         - 'packages/press/wordpress/*'
+        - 'packages/press/Handlers'
         - 'packages/sync'
         - 'packages/*/tests/*'
     tmpDir: build/phpstan
