@@ -42,13 +42,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Search and replace "moox/core": "*" with "moox/core": "^2.2.0" in composer.json
+      # Search and replace "moox/core": "*" with "moox/core": "^3.0.0" in composer.json
       - name: Replace core version in composer.json
         working-directory: packages/${{ matrix.package }}
         run: |
           if [ -f composer.json ]; then
             echo "Updating moox/core version in ${{ matrix.package }}"
-            sed -i 's/"moox\/core": "\*"/"moox\/core": "^2.2.0"/g' composer.json
+            sed -i 's/"moox\/core": "\*"/"moox\/core": "^3.0.0"/g' composer.json
           fi
 
       # Commit the updated composer.json (if there was a change)
