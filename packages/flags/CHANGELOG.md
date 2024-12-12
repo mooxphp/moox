@@ -1,9 +1,5 @@
 # Changelog
 
-This changelog follows [the Keep a Changelog standard](https://keepachangelog.com).
+We currently don't track changes in this package. Please refer to the [Moox Monorepo](https://github.com/mooxphp/moox) for the latest changes.
 
-## [Unreleased](https://github.com/mooxphp/flags/compare/1.0.0...main)
-
-## 1.0.0 (20??-??-??)
-
-Initial release.
+We'll add a changelog in the future.

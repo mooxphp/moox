@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.0
+
+-   New Traits and Service Structure
+-   New Single Traits for Resources
+-   Custom Taxonomy Support
+
 ## 2.0.2
 
 -   Loglevel feature, see README
