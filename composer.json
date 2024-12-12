@@ -39,6 +39,7 @@
         "moox/press-trainings": "*",
         "moox/press-wiki": "*",
         "moox/security": "*",
+        "moox/skeleton": "*",
         "moox/trainings": "*",
         "moox/user": "*",
         "moox/user-device": "*",
