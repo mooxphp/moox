@@ -23,7 +23,10 @@ class FileFormatter
             return;
         }
 
-        $command = "vendor/bin/pint {$fileList} --quiet";
+        $command = PHP_OS_FAMILY === 'Windows'
+            ? "php vendor/bin/pint {$fileList} --quiet"
+            : "vendor/bin/pint {$fileList} --quiet";
+
         exec($command, $output, $returnCode);
 
         if ($returnCode !== 0) {
