@@ -19,6 +19,7 @@ jobs:
         package:
           - audit
           - builder
+          - category
           - core
           - expiry
           - flags
@@ -30,7 +31,9 @@ jobs:
           - permission
           - press
           - security
+          - skeleton
           - sync
+          - tag
           - trainings
           - user
           - user-device
