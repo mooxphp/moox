@@ -39,7 +39,8 @@ Welcome to the Moox Project. This is a Monorepo and installable Laravel App to d
 
 ## Packages
 
--   [Moox Builder](packages/builder/README.md), our Skeleton Package to create new Filament Plugins
+-   [Moox Skeleton](packages/skeleton/README.md), our Skeleton Package to create new Filament Plugins
+-   [Moox Builder](packages/builder/README.md), our Builder Package to create Filament Resources
 -   [Moox Core](packages/core/README.md), required by all of our packages, ships common things
 -   [Moox Jobs](packages/jobs/README.md), manage Job Queues, Failed Jobs and Batches in Filament
 
