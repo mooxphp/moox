@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpCommentResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Press\Models\WpComment;
 use Moox\Press\Resources\WpCommentResource;
 
 class ListWpComments extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     protected static string $resource = WpCommentResource::class;
 

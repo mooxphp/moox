@@ -55,6 +55,19 @@ return [
                 ],
             ],
         ],
+        'category' => [
+            'package' => 'Moox Category',
+            'models' => [
+                'Category' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'core' => [
             'package' => 'Moox Core',
             'models' => [],
@@ -263,7 +276,6 @@ return [
                 ],
             ],
         ],
-
         'security' => [
             'package' => 'Moox Security',
             'models' => [
@@ -289,6 +301,19 @@ return [
                     ],
                 ],
                 'Sync' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'tag' => [
+            'package' => 'Moox Tag',
+            'models' => [
+                'Tag' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',

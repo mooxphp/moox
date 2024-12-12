@@ -14,12 +14,16 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpComment;
 use Moox\Press\Resources\WpCommentResource\Pages;
 use Moox\Press\Resources\WpCommentResource\RelationManagers\WpCommentMetaRelationManager;
 
 class WpCommentResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = WpComment::class;
 
     protected static ?string $navigationIcon = 'gmdi-comment';

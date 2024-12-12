@@ -11,12 +11,15 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource\Pages\ListPage;
 use Moox\Page\Resources\PageResource\Widgets\PageWidgets;
 
 class PageResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Page::class;
 
     protected static ?string $navigationIcon = 'gmdi-pages';

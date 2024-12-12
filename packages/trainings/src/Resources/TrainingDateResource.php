@@ -15,12 +15,15 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingDate;
 use Moox\Training\Resources\TrainingDateResource\Pages;
 
 class TrainingDateResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = TrainingDate::class;
 
     protected static ?string $navigationIcon = 'gmdi-date-range';

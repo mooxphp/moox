@@ -4,13 +4,13 @@ namespace Moox\PressTrainings\Resources\WpTrainingsResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\PressTrainings\Models\WpTraining;
 use Moox\PressTrainings\Resources\WpTrainingResource;
 
 class ListWpTrainings extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     protected static string $resource = WpTrainingResource::class;
 

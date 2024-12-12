@@ -15,11 +15,14 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\FailedJob;
 use Moox\Jobs\Resources\JobsFailedResource\Pages\ListFailedJobs;
 
 class JobsFailedResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = FailedJob::class;
 
     protected static ?string $navigationIcon = null;

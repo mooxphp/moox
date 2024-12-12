@@ -65,18 +65,26 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->spa()
             ->plugins([
-                // GravatarPlugin::make(),
-                \Moox\Sync\PlatformPlugin::make(),
-                \Moox\Audit\AuditPlugin::make(),
 
+                // Development
+                GravatarPlugin::make(),
+                \Moox\Audit\AuditPlugin::make(),
                 \Moox\Locate\AreaPlugin::make(),
                 //\Moox\Locate\CountryPlugin::make(),
                 //\Moox\Locate\LanguagePlugin::make(),
                 //\Moox\Locate\TimezonePlugin::make(),
 
-                \Moox\UserDevice\UserDevicePlugin::make(),
+                // Builder plugin
+                \Moox\Builder\SimpleTaxonomyPlugin::make(),
+                \Moox\Builder\NestedTaxonomyPlugin::make(),
+                \Moox\Builder\ItemPlugin::make(),
+                \Moox\Builder\FullItemPlugin::make(),
+                \Moox\Builder\SimpleItemPlugin::make(),
+
                 // CMS plugin
                 \Moox\Page\PagePlugin::make(),
+                \Moox\Category\CategoryPlugin::make(),
+                \Moox\Tag\TagPlugin::make(),
 
                 // Notification plugin
                 \Moox\Notification\NotificationPlugin::make(),
@@ -91,13 +99,11 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Jobs\JobsBatchesPlugin::make(),
 
                 // Sync Plugins
-                \Moox\Sync\SyncPlugin::make(),
-                \Moox\Sync\PlatformPlugin::make(),
+                //\Moox\Sync\SyncPlugin::make(),
+                //\Moox\Sync\PlatformPlugin::make(),
 
                 // User plugins
                 \Moox\User\UserPlugin::make(),
-                GravatarPlugin::make(),
-
                 \Moox\UserDevice\UserDevicePlugin::make(),
                 \Moox\LoginLink\LoginLinkPlugin::make(),
                 \Moox\UserSession\UserSessionPlugin::make(),

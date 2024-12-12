@@ -19,12 +19,11 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        // TODO: Uncomment this line to enable policies
-        //$this->setPolicies();
-
         if (config('core.use_google_icons', true)) {
             $this->useGoogleIcons();
         }
+
+        $this->loadTranslationsFrom(lang_path('previews'), 'previews');
 
         $this->app->booted(function () {
             $this->translateConfigurations();
@@ -55,14 +54,14 @@ class CoreServiceProvider extends PackageServiceProvider
 
     protected function translateConfigurations()
     {
-        $packages = $this->getPackageNames();
+        $configs = config()->all();
+        $translatedConfigs = $this->translateConfig($configs);
 
-        foreach ($packages as $slug => $name) {
-            $configData = config($slug);
-            if (is_array($configData)) {
-                $translatedConfig = $this->translateConfig($configData);
-                config([$slug => $translatedConfig]);
+        foreach ($translatedConfigs as $key => $value) {
+            if ($key === 'app') {
+                continue;
             }
+            config([$key => $value]);
         }
     }
 

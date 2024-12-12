@@ -3,14 +3,14 @@
 namespace Moox\UserDevice\Resources\UserDeviceResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
 
 class ListPage extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     public static string $resource = UserDeviceResource::class;
 

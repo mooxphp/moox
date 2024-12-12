@@ -15,11 +15,15 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpTermResource\Pages;
 
 class WpTermResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = WpTerm::class;
 
     protected static ?string $navigationIcon = 'gmdi-category-o';

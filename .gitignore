@@ -4,6 +4,8 @@
 
 # Composer
 /vendor
+/vendor-dev
+/vendor-def
 auth.json
 composer.lock
 
@@ -65,3 +67,9 @@ Thumbs.db
 # Moox Press
 /public/vendor/*
 /public/wp/*
+
+# Moox Builder
+/app/Builder/*/*
+/config/previews/*
+/lang/*/previews/*
+/packages/builder-pro

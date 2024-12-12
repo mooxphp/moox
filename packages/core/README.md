@@ -2,7 +2,30 @@
 
 # Moox Core
 
-The Moox Core package cares for many common features. It is required by all Moox packages including Moox Builder. If you want to use Moox Builder to generate a Custom Package, check out the features you're already able to use, if you want to Moox Core independently in your app or a package, you need to use the traits accordingly.
+The Moox Core package provides common features, used by all Moox packages. If you use Moox Builder to create your own Moox package, these features are already included and pre-configured.
+
+## Features
+
+-   Dynamic Tabs - create your own tabs just by a few lines of configuration
+-   Dynamic Taxonomies - attach hierarchical or flat taxonomies to your items
+-   Simple Items - provides simple form actions and features
+-   Soft Delete Items - provides soft delete actions, features and tabs
+-   Publishable Items - provides publis and soft delete features, actions and tabs
+
+The last three features provide traits for model, resource and resource pages. They are named Single... as they can not be used together with other Single... traits. You need to also include the Base traits. Example:
+
+```php
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+
+class YourResource extends Resource
+{
+    use BaseInResource;
+    use SingleSoftDeleteInResource;
+}
+```
+
+This part is currently not well documented. We will cover that soon.
 
 ## Installation
 
@@ -24,9 +47,72 @@ Moox Core requires these packages:
 
 ## Traits
 
-### Dynamic Tabs
+### TabsInListPage
 
-Moox allows you to change (or remove) the Filter tabs for Filament Resources. The HasDynamicTabs Trait is used in all of our packages including Moox Builder.
+This trait provides functionality for creating dynamic tabs in Filament resources.
+
+#### Key Methods
+
+-   `getDynamicTabs(string $configPath, string $modelClass)`: Returns an array of dynamic tabs based on configuration.
+
+#### Usage
+
+The DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature in your existing package:
+
+```php
+use Moox\Core\Traits\Tabs\TabsInListPage;
+
+class ListItems extends ListRecords
+{
+    use TabsInListPage;
+
+    public function getTabs(): array
+    {
+        return $this->getDynamicTabs('package.resources.item.tabs', YourModel::class);
+    }
+}
+```
+
+#### Configuration
+
+Provide a configuration like:
+
+```php
+    'resources' => [
+        'item' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Tabs
+            |--------------------------------------------------------------------------
+            |
+            | Define the tabs for the Resource table. They are optional, but
+            | pretty awesome to filter the table by certain values.
+            | You may simply do a 'tabs' => [], to disable them.
+            |
+            */
+
+            'tabs' => [
+                'all' => [
+                    'label' => 'trans//core::core.all',
+                    'icon' => 'gmdi-filter-list',
+                    'query' => [],
+                ],
+                'documents' => [
+                    'label' => 'trans//core::core.documents',
+                    'icon' => 'gmdi-text-snippet',
+                    'query' => [
+                        [
+                            'field' => 'expiry_job',
+                            'operator' => '=',
+                            'value' => 'Documents',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+```
 
 #### Disable Tabs
 
@@ -73,73 +159,42 @@ The `visible`-option is not necessary, as it defaults to true. But if you want t
                     ]),
 ```
 
-#### Translation
-
-See [Translations in Config](#translations-in-config) on how to use the trans feature.
-
 #### Queries
 
-See [Queries in Config](#queries-in-config) on how to use the query feature.
+See [Queries in Config](#queriesinconfig) on how to use the query feature.
 
-#### Custom implementation
+#### Translation
 
-As mentioned, the DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature from outside Moox, please have a look at one of our Filament resources list pages:
+See [Translatable Config](#translatableconfig) on how to use the trans feature.
+
+### QueriesInConfig
+
+This trait allows building complex queries from configuration arrays.
+
+#### Key Methods
+
+-   `buildQueryFromConfig(array $queryConfig)`: Builds a query based on the provided configuration.
+
+#### Usage
 
 ```php
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\QueriesInConfig;
 
-class ListItems extends ListRecords
+class YourClass
 {
-    use HasDynamicTabs;
+    use QueriesInConfig;
 
-		public function getTabs(): array
+    public function someMethod()
     {
-        return $this->getDynamicTabs('package.resources.item.tabs', Expiry::class);
+        $queryConfig = [
+            ['field' => 'status', 'operator' => '=', 'value' => 'open'],
+        ];
+        $query = $this->buildQueryFromConfig($queryConfig);
     }
+}
 ```
 
-and the config of the package:
-
-```php
-    'resources' => [
-        'item' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [],
-                ],
-                'documents' => [
-                    'label' => 'trans//core::core.documents',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'expiry_job',
-                            'operator' => '=',
-                            'value' => 'Documents',
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ],
-```
-
-on how to implement the feature in your custom package.
-
-### Queries in Config
+#### Configuration
 
 Dynamic Tabs uses the QueriesInConfig Trait, that means you can build queries like this:
 
@@ -290,9 +345,33 @@ And finally the most-known mistake, throws "Cannot access offset of type string 
 
 So don't forget to put the query in an extra array, even if it is a single query.
 
-As mentioned, the QueriesInConfig trait is used in HasDynamicTabs, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
+As mentioned, the QueriesInConfig trait is used in TabsInListPage, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
 
-### Translations in Config
+### TranslatableConfig
+
+This trait provides functionality for translating configuration values.
+
+#### Key Methods
+
+-   `translateConfigurations()`: Translates configuration values based on defined translation keys.
+
+#### Usage
+
+```php
+use Moox\Core\Traits\TranslatableConfig;
+
+class YourServiceProvider extends ServiceProvider
+{
+    use TranslatableConfig;
+
+    public function boot()
+    {
+        $this->translateConfigurations();
+    }
+}
+```
+
+#### Configuration
 
 A simple but useful feature is the TranslationsInConfig Trait that is used a lot in our config files, as seen with Tabs:
 
@@ -302,27 +381,29 @@ A simple but useful feature is the TranslationsInConfig Trait that is used a lot
 
 Translations of our packages are generally organized in Moox Core. Only few of our packages ship with own translation files. These packages are registered in the core.php configuration file. If you develop a custom package (preferably using Moox Builder) you need to add your custom package to the [Package Registration](#Package-registration).
 
-Translations in Config are used in the CoreServiceProvider like this:
+### RequestInModel
+
+This trait allows access to request data within models.
+
+#### Key Methods
+
+-   `getRequestData(string $key)`: Retrieves request data for the given key.
+
+#### Usage
 
 ```php
-use Moox\Core\Traits\TranslatableConfig;
+use Moox\Core\Traits\RequestInModel;
 
-class CoreServiceProvider extends PackageServiceProvider
+class YourModel extends Model
 {
-    use TranslatableConfig;
+    use RequestInModel;
 
-    public function boot()
+    public function someMethod()
     {
-        parent::boot();
-
-        $this->app->booted(function () {
-            $this->translateConfigurations();
-        });
+        $data = $this->getRequestData('some_key');
     }
 }
 ```
-
-### Request in Model
 
 The RequestInModel Trait is currently used by all Moox Press packages. It allows us to use the request data in some of our models. You can code dive into Moox\Press\Models\WpTerm.php, to find more code examples. The basic implementation looks like this:
 
@@ -338,27 +419,151 @@ class WpTerm extends Model
 }
 ```
 
-### Google Material Design Icons
+### GoogleIcons
 
-As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The GoogleIcons Trait changes the default Filament Icons, too. It is used in the CoreServiceProvider like this:
+This trait provides methods for using Google Material Design Icons in your application.
+
+#### Key Methods
+
+-   `useGoogleIcons()`: Configures the application to use Google Material Design Icons.
+
+#### Usage
 
 ```php
 use Moox\Core\Traits\GoogleIcons;
 
-class CoreServiceProvider extends PackageServiceProvider
+class YourServiceProvider extends ServiceProvider
 {
     use GoogleIcons;
 
     public function boot()
     {
-        parent::boot();
-
         $this->useGoogleIcons();
     }
 }
 ```
 
+As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The GoogleIcons Trait changes the default Filament Icons, too. It is used in the CoreServiceProvider like this:
+
 You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
+
+### TaxonomyInModel
+
+This trait provides functionality for models to work with dynamic taxonomies.
+
+#### Key Methods
+
+-   `taxonomy(string $taxonomy)`: Returns a MorphToMany relationship for the given taxonomy.
+-   `syncTaxonomy(string $taxonomy, array $ids)`: Syncs the given taxonomy with the provided IDs.
+
+#### Usage
+
+```php
+use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
+
+class YourItem extends Model
+{
+    use TaxonomyInModel;
+
+    protected function getResourceName(): string
+    {
+        return 'youritem'; // name your item
+    }
+
+    // ... other model code ...
+
+    // Add a polymorphic relation
+    public function youritemables(string $type): MorphToMany
+    {
+        return $this->morphedByMany($type, 'youritemable');
+    }
+
+    // Delete relations on (soft)-delete
+    public function detachAllYouritemables(): void
+    {
+        DB::table('youritemables')->where('youritem_id', $this->id)->delete();
+    }
+
+  	// Needed for deletion
+    protected static function booted(): void
+    {
+        static::deleting(function (YourItem $youritem) {
+            $youritem->detachAllYouritemables();
+        });
+    }
+}
+```
+
+```
+> [!WARNING]
+> We do not soft-delete the polymorphics, so if you restore a Taxonomy, these are lost.
+```
+
+### TaxonomyInResource
+
+This trait provides methods for generating Filament form fields, table columns, and filters for dynamic taxonomies.
+
+#### Key Methods
+
+-   `getTaxonomyFields()`: Returns an array of Filament form fields for taxonomies.
+-   `getTaxonomyFilters()`: Returns an array of Filament table filters for taxonomies.
+-   `getTaxonomyColumns()`: Returns an array of Filament table columns for taxonomies.
+-   `handleTaxonomies(Model $record, array $data)`: Handles saving taxonomy relationships.
+
+#### Usage
+
+```php
+use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
+
+class YourResource extends Resource
+{
+    use TaxonomyInResource;
+
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
+            // ... other fields ...
+            ...static::getTaxonomyFields(),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                // ... other columns ...
+                ...static::getTaxonomyColumns(),
+            ])
+            ->filters([
+                // ... other filters ...
+                ...static::getTaxonomyFilters(),
+            ]);
+    }
+}
+```
+
+### TaxonomyInPages
+
+This trait provides methods for handling dynamic taxonomies in Filament resource pages.
+
+#### Key Methods
+
+-   `handleTaxonomies()`: Handles saving taxonomy relationships.
+-   `mutateFormDataBeforeFill(array $data)`: Prepares taxonomy data for form filling.
+-   `refreshTaxonomyFormData()`: Refreshes taxonomy form data after save.
+
+#### Usage
+
+```php
+use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+
+class EditYourModel extends EditRecord
+{
+    use TaxonomyInPages;
+
+    // ... other page code ...
+}
+```
 
 ### Log Level
 
@@ -375,9 +580,63 @@ You can adjust the log level and whether to log in production in Moox Core's [Co
 
 ## Services
 
-### DNS Lookup
+### TaxonomyService
 
-The DnsLookupService does just a - you guessed it - DNS Lookup. That Service is currently used in Moox Sync's PlatformResource like so:
+This service manages taxonomy configurations and provides utility methods for working with taxonomies.
+
+#### Key Methods
+
+-   `setCurrentResource(string $resource)`: Sets the current resource context.
+-   `getTaxonomies()`: Returns all configured taxonomies for the current resource.
+-   `getTaxonomyModel(string $taxonomy)`: Returns the model class for a given taxonomy.
+-   `validateTaxonomy(string $taxonomy)`: Validates a taxonomy configuration.
+
+#### Usage
+
+```php
+use Moox\Core\Services\TaxonomyService;
+
+class YourClass
+{
+    protected TaxonomyService $taxonomyService;
+
+    public function __construct(TaxonomyService $taxonomyService)
+    {
+        $this->taxonomyService = $taxonomyService;
+        $this->taxonomyService->setCurrentResource('your_resource');
+    }
+
+    public function someMethod()
+    {
+        $taxonomies = $this->taxonomyService->getTaxonomies();
+        // ... use taxonomies ...
+    }
+}
+```
+
+### DnsLookupService
+
+This service provides DNS lookup functionality.
+
+#### Key Methods
+
+-   `getIpAddress(string $domain)`: Retrieves the IP address for a given domain.
+
+#### Usage
+
+```php
+use Moox\Core\Services\DnsLookupService;
+
+class YourClass
+{
+    public function someMethod(string $domain)
+    {
+        $ipAddress = DnsLookupService::getIpAddress($domain);
+    }
+}
+```
+
+That Service is currently used in Moox Sync's PlatformResource like so:
 
 ```php
 use Moox\Core\Services\DnsLookupService;
@@ -406,8 +665,31 @@ class PlatformResource extends Resource
                   ]),
             ]),
         ]);
-    }
+
 ```
+
+### TaxonomyCreateForm
+
+This class provides a schema for creating taxonomy entries.
+
+#### Usage
+
+```php
+use Moox\Tag\Forms\TaxonomyCreateForm;
+
+class YourResource extends Resource
+{
+    public static function form(Form $form): Form
+    {
+        return $form->schema([
+            // ... other fields ...
+            ...TaxonomyCreateForm::getSchema(),
+        ]);
+    }
+}
+```
+
+This form includes fields for title and slug, as these are needed for creating Taxonomies. As your taxonomy might need further fields, you can use your own form to create your custom taxonomies.
 
 ## APIs
 
@@ -431,9 +713,11 @@ https://yourdomain.com/schedule/run?token=secure
 
 If you want to use the Shared Hosting API, you need to set the `SHARED_HOSTING_ENABLED` [config](#Shared-Hosting) to `true` and the `SHARED_HOSTING_TOKEN` config to a secure token.
 
-## Config
+## Configuration
 
 ### Package Registration
+
+Register Moox packages and custom packages in the `config/core.php` file:
 
 Moox has a simple package registration. To ensure that some features of Moox Core are only available for known packages, all Moox packages and all custom packages, created with Moox Builder, need to register here:
 
@@ -480,7 +764,7 @@ php artisan vendor:publish --tag="core-config"
 
 but remember to update the Array regularly then, to allow newer Moox packages to work flawlessly.
 
-### Disable Google Icons
+### Google Icons
 
 You can disable Google Icons, and use the Filament default iconset (Heroicons) instead.
 

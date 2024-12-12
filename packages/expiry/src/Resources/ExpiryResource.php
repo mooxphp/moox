@@ -10,12 +10,16 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Expiry\Actions\CustomExpiryAction;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource\Pages;
 
 class ExpiryResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = Expiry::class;
 
     protected static ?string $navigationIcon = 'gmdi-access-time-o';

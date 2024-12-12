@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Filament\Resources\Pages\ListRecords;
+{{ use_statements }}
+
+class List{{ model_plural }} extends ListRecords
+{
+    {{ traits }}
+
+    protected static string $resource = {{ resource }}::class;
+
+    {{ methods }}
+}

@@ -15,6 +15,8 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
@@ -22,6 +24,8 @@ use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
 
 class UserDeviceResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = UserDevice::class;
 
     protected static ?string $navigationIcon = 'gmdi-devices-o';

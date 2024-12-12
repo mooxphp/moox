@@ -21,6 +21,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Services\PlatformRelationService;
@@ -32,6 +34,8 @@ use Moox\User\Resources\UserResource\Pages\ViewUser;
 
 class UserResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
@@ -79,6 +83,7 @@ class UserResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    /* Must be provided by Sync, use a static maybe?
                     Select::make('platforms')
                         ->label('Platforms')
                         ->multiple()
@@ -108,6 +113,7 @@ class UserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                    */
 
                     Select::make('gender')
                         ->label(__('core::user.gender'))

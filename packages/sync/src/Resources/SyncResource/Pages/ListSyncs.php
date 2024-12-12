@@ -4,13 +4,13 @@ namespace Moox\Sync\Resources\SyncResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource;
 
 class ListSyncs extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     public static string $resource = SyncResource::class;
 

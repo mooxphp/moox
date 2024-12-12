@@ -16,12 +16,16 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource\Pages;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;
 
 class WpMediaResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = WpMedia::class;
 
     protected static ?string $navigationIcon = 'gmdi-image';

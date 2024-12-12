@@ -4,7 +4,7 @@ namespace Moox\Security\Resources\ResetPasswordResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Models\Security;
 use Moox\Security\Resources\ResetPasswordResource;
@@ -12,7 +12,7 @@ use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
 
 class ListPage extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     public static string $resource = ResetPasswordResource::class;
 

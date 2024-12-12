@@ -19,6 +19,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\HtmlString;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Sync\Models\Platform;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource\Pages\CreateSync;
@@ -29,6 +30,8 @@ use Moox\Sync\Services\ModelCompatibilityChecker;
 
 class SyncResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Sync::class;
 
     protected static ?string $navigationIcon = 'gmdi-sync';

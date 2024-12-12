@@ -4,12 +4,12 @@ namespace Moox\Audit\Resources\AuditResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
 use Moox\Audit\Resources\AuditResource;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Spatie\Activitylog\Models\Activity;
 
 class ListAudits extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     protected static string $resource = AuditResource::class;
 

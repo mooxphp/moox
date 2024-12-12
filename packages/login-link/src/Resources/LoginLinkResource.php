@@ -14,12 +14,16 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
 
 class LoginLinkResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = LoginLink::class;
 
     protected static ?string $navigationIcon = 'gmdi-lock-clock-o';

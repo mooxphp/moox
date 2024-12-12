@@ -1,0 +1,6 @@
+<?php
+
+return [
+    '{{ LowercaseEntity }}' => '{{ Entity }}',
+    '{{ LowercaseEntities }}' => '{{ Entities }}',
+];

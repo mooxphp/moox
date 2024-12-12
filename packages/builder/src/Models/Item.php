@@ -6,16 +6,21 @@ namespace Moox\Builder\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Moox\Builder\Database\Factories\ItemFactory;
-use Moox\Core\Traits\HasSlug;
+use Moox\Core\Traits\Publish\SinglePublishInModel;
+use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
+use Moox\Core\Traits\UserRelation\UserInModel;
 
 class Item extends Model
 {
-    use HasFactory, HasSlug, SoftDeletes;
+    use HasFactory, SinglePublishInModel, SoftDeletes, TaxonomyInModel, UserInModel;
 
     protected $table = 'items';
+
+    protected function getResourceName(): string
+    {
+        return 'item';
+    }
 
     protected $fillable = [
         'title',
@@ -32,37 +37,4 @@ class Item extends Model
         'publish_at' => 'datetime',
         'gallery_image_urls' => 'array',
     ];
-
-    public static function getTypeOptions(): array
-    {
-        return config('builder.types');
-    }
-
-    public function getStatusAttribute(): string
-    {
-        if ($this->deleted_at) {
-            return 'deleted';
-        }
-
-        if (! $this->publish_at) {
-            return 'draft';
-        }
-
-        return $this->publish_at->isFuture() ? 'scheduled' : 'published';
-    }
-
-    public function author(): ?BelongsTo
-    {
-        $authorModel = config('builder.author_model');
-        if ($authorModel && class_exists($authorModel)) {
-            return $this->belongsTo($authorModel, 'author_id');
-        }
-
-        return null;
-    }
-
-    protected static function newFactory()
-    {
-        return ItemFactory::new();
-    }
 }

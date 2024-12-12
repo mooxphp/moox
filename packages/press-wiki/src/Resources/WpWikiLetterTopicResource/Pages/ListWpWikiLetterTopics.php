@@ -4,13 +4,13 @@ namespace Moox\PressWiki\Resources\WpWikiLetterTopicResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\PressWiki\Models\WpWikiLetterTopic;
 use Moox\PressWiki\Resources\WpWikiLetterTopicResource;
 
 class ListWpWikiLetterTopics extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     protected static string $resource = WpWikiLetterTopicResource::class;
 

@@ -17,6 +17,8 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Password;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
 use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
@@ -28,6 +30,8 @@ use Moox\Security\Helper\PasswordHash;
 
 class WpUserResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = WpUser::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
@@ -187,6 +191,7 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ]),
 
+                    /* Must be provided by Sync, use a static maybe?
                     Select::make('platforms')
                         ->label('Platforms')
                         ->multiple()
@@ -216,6 +221,7 @@ class WpUserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
+                        */
                 ]),
             ]),
 

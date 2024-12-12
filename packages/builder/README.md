@@ -2,11 +2,42 @@
 
 # Moox Builder
 
-<!--shortdesc-->
+🚀 What do you want to ~~build~~ **ship** today?
 
-This template is used for generating Moox packages. Press the Template-Button in GitHub, create your own Laravel and Filament package.
+From idea to a working LaravelApp in minutes. No coding required.
 
-<!--/shortdesc-->
+## Work-in-Progress
+
+-   ✅ Entity generation with `builder:create`
+-   🟡 Generate all available contexts and presets
+-   🟡 Generate simple and nested taxonomies
+-   🚧 Entity deletion with `builder:delete`
+-   🚧 Bring back the build command to create packages
+
+## Pro Version (WIP, too)
+
+-   ✅ Implements more Blocks and Presets
+-   🟡 Offers advanced features like Publish, Author, Relations
+-   🚧 Package generation with `builder:package`
+-   🚧 App (Panel) generation with `builder:app`
+-   🚧 Frontend generation with `builder:frontend`
+-   🚧 UI for creating entities with custom blocks
+-   🚧 UI for creating packages
+-   🚧 UI for managing apps (panels)
+-   🚧 UI for managing frontend (themes)
+-   🚧 UI for managing versions
+-   🚧 Generate complete packages or apps as zip
+
+## Overview
+
+Moox Builder is a Laravel Package and Filament UI to build complete applications and packages with zero coding:
+
+-   🚀 Generate complete Filament Resources in App or Package context
+-   🚀 Generate and Publish Laravel Packages
+-   🚀 Preview and test everything instantly
+-   🔧 Production-ready code
+-   🔧 Dependency free, remove anytime
+-   🔧 Fully extensible
 
 ## Quick Installation
 
@@ -19,132 +50,222 @@ php artisan mooxbuilder:install
 
 Curious what the install command does? See manual installation below.
 
-## What it does
+## Compatibility
 
-<!--whatdoes-->
+-   Laravel 11
+-   PHP 8.3
+-   Filament 3.2
+-   Livewire 3
+-   Tailwind CSS 3
+-   PHPStan 2
+-   Pest 3
 
-This Laravel Package Template can be used to create a package including a powerful Filament resource called Item.
+## Quality Assurance
 
-![Moox Builder Item](https://github.com/mooxphp/moox/raw/main/art/screenshot/builder-item.jpg)
+All generated code is:
 
-Name and table for the Resource can be changed while building your package.
+-   Type-safe with full type declarations
+-   PSR-12 compliant via Laravel Pint
+-   PHPStan Level 5 validated
+-   Pest tested
+-   Ready for production
 
-### Using the Template
+## Core Concepts
 
-1. Go to https://github.com/mooxphp/builder
-2. Press the `Use this template` button
-3. Create a new repository based on the template
-4. Clone the repository locally
-5. Run `php build.php`in the repo's directory and follow the steps
-   - Author Name (Default: Moox Developer): Your Name
-   - Author Email (Default: dev@moox.org): your@mail.com
-   - Package Name (Default: Blog Package): Your Package
-   - Package Description (Default: This is my package Blog Package)
-   - Package Entity (Default: Item): e.g. Post
-   - Tablename (Default: items): e.g. posts
+### Contexts
 
-After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
+-   **App**: Direct application integration
+-   **Package**: Laravel package generation
+-   **Preview**: Instant testing environment
+-   Custom contexts via configuration
 
-### Config
+### Blocks
 
-After that the Resource is highly configurable. 
+Building blocks for your entities:
+
+-   **Fields**: Text, Number, Date, Select, etc.
+-   **Features**: SoftDelete, Publish, Author
+-   **Sections**: Logical field groupings
+
+### Presets
+
+Presets are pre-configured collections of blocks:
+
+-   `Simple Item`: Basic CRUD resource
+-   `Publishable Item`: With publishing workflow
+-   `Full Item`: All available features
+-   `Simple Taxonomy`: For tag-like structures
+-   `Nested Taxonomy`: For category-like structures, using nested set
+-   Custom presets via configuration
+
+### Generators
+
+Generators combine Blocks and Templates to generate the files. They are located in the `src/Generators` directory. They are divided into `Entity` and `Package` generators. You can implement own Generators and Templates in the `contexts` config array, see [Configuration](#configuration).
+
+### Templates
+
+Templates are PHP stub files with simple markers to be replaced by the Generator. You can implement own Templates in the `contexts` config array, see [Configuration](#configuration). They are organized in the `src/Templates` directory into `App`, `Entity` and `Package` folders.
+
+### Services
+
+The service layer manages the generation workflow:
+
+**Block Services**
+
+-   `BlockFactory`: Creates block instances from configuration
+-   `BlockReconstructor`: Reconstructs blocks from database records
+
+**Build Services**
+
+-   `BuildManager`: Orchestrates the build lifecycle and state transitions
+-   `BuildRecorder`: Persists build data and manages build history
+-   `BuildStateManager`: Tracks and manages build states across contexts
+-   `VersionManager`: Handles version control for packages and builds
+
+**Entity Services**
+
+-   `ContextAwareService`: Base class for entity services to handle context
+-   `EntityCreator`: Creates new entities with initial configuration
+-   `EntityRebuilder`: Updates existing entities with new blocks/settings
+-   `EntityGenerator`: Generates all entity-related files
+-   `EntityImporter`: Imports entities from existing migrations
+-   `EntityTablesRemover`: Manages database table cleanup
+
+**File Services**
+
+-   `FileManager`: Handles file operations, path normalization, and content formatting
+
+**Migration Services**
+
+-   `MigrationAnalyzer`: Analyzes existing migrations to extract structure
+-   `MigrationCreator`: Generates new migrations from entity configuration
+
+**Package Services**
+
+-   This part is not implemented yet
+
+**Preview Services**
+
+-   `PreviewManager`: Manages the preview context
+
+### Build Process
+
+1. **Entity Definition**
+
+    - Command/UI initiates build
+    - Option to generate from migration
+    - Block configuration (or Preset)
+    - Context selection
+
+2. **Generation**
+
+    - Creates DB entries for entity and build
+    - Generates files from templates and blocks
+
+3. **Integration**
+
+    - Preview functionality
+    - Production deployment
+    - Package publishing
+
+### Types
+
+Types are currently only partly implemented and only used for the EntityImporter.
+
+## Usage
+
+### Commands
+
+Commands allow to create and delete an Entity using a Preset.
+
+-   AbstractBuilderCommand
+    -   CreateEntityCommand
+    -   DeleteEntityCommand
+
+#### Create Entity
+
+This command `builder:create`creates an Entity. If you call it without any parameters, it will ask you some questions. With these parameters you can preset all needed information:
+
+Name your Entity:
+
+```bash
+php artisan builder:create Post
+# Model will be Post, table will be posts
+```
+
+Choose your context:
+
+```bash
+php artisan builder:create Post --app
+# Generates in App/Filament
+
+php artisan builder:create Post --package
+# Asks for the Package
+
+php artisan builder:create Post --preview
+# Generates in App/Builder and migrates
+# To preview: https://your.test/builder/
+```
+
+Choose your preset:
+
+```bash
+php artisan builder:create Post --preview --preset=simple-item
+
+php artisan builder:create Post --preview --preset=publishable-item
+
+php artisan builder:create Post --preview --preset=full-item
+
+php artisan builder:create Post --preview --preset=simple-taxonomy
+
+php artisan builder:create Post --preview --preset=nested-taxonomy
+```
+
+Generate a package entity:
+
+```bash
+php artisan builder:create Post --package=My/Blog --preset=simple-item
+# will also work --package=My\Blog
+```
+
+#### Delete Entity
+
+To delete an entity including the migration and the migrated tables in the database, you can use the delete command. This command will search for a package in app or preview context or it will ask for a namespace, if it does not find the Entity.
+
+```bash
+php artisan builder:delete Post
+# Searches and deletes the entity
+# Asks to remove the database table
+```
+
+You can force the command to just remove everything:
+
+```bash
+php artisan builder:delete Post --force
+# Searches and deletes the entity
+# and the migrated db table
+```
+
+And you can specify a namespace to also remove the entity from there:
+
+```bash
+php artisan builder:delete --package=My/Blog
+# will also work --package=My\Blog
+```
+
+## Configuration
+
+You can change nearly everything, Blocks, Generators, Templates, Presets and Contexts in the Moox Builder configuration.
+
+Take a look at the [Configuration](config/builder.php) for more information.
+
+## Moox Core Features
+
+You can opt-out of any Moox dependency, but these niceties you'll miss then:
 
 #### Tabs and Translation
 
-Moox Core features like Dynamic Tabs and Translatable Config. See the config file for more details, but as a quick example:
-
-```php
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Resource table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-        ],
-```
-
-All options for Tabs are explained in [Moox Core docs](https://github.com/mooxphp/core/blob/main/README.md#dynamic-tabs).
+Moox Core provides Dynamic Tabs and Translatable Config. See [Moox Core docs](https://github.com/mooxphp/core/blob/main/README.md#dynamic-tabs).
 
 #### Item Types
 
@@ -184,22 +305,30 @@ You can configure the user model used for displaying Authors. By default it is t
     |
     */
 
-    'author_model' => \App\Models\User::class,
+    'user_model' => \App\Models\User::class,
 ```
 
 You may probably use Moox User
 
 ```php
-    'author_model' => \Moox\User\Models\User::class,
+    'user_model' => \Moox\User\Models\User::class,
 ```
 
 or Moox Press User instead:
 
 ```php
-    'author_model' => \Moox\Press\Models\WpUser::class,
+    'user_model' => \Moox\Press\Models\WpUser::class,
 ```
 
-<!--/whatdoes-->
+## Do not track Previews
+
+If you want to use the Preview feature, you may add the following to your `.gitignore`:
+
+```
+/app/Builder/*
+/config/previews/*
+/lang/*/previews/*
+```
 
 ## Manual Installation
 
@@ -214,17 +343,63 @@ php artisan migrate
 php artisan vendor:publish --tag="builder-config"
 ```
 
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
 ## Security Vulnerabilities
 
 Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
+-   [Alf Drollinger](https://github.com/adrolli)
 -   [All Contributors](../../contributors)
+
+## Contributing
+
+We value every contribution. Moox is developed in the [Moox Monorepo](https://github.com/mooxphp/moox), that uses [All Contributors](https://allcontributors.org/) for managing contributions. Please refer to the Monorepo docs for more information.
+
+## Coding Rules
+
+1. Single Responsibility
+
+-   Services have ONE responsibility
+-   Generators collect files
+-   FileManager handles operations
+-   BuildContext manages paths
+
+2. Never
+
+-   Use direct file operations
+-   Handle paths manually
+-   Format files directly
+-   Assume types or interfaces
+
+3. Always
+
+-   Use FileManager for files
+-   Use BuildContext for paths
+-   Validate inputs
+-   Document changes
+
+4. Type Safety
+
+-   Full type declarations
+-   PHPStan level 8
+-   No assumed signatures
+-   Validated inputs
+
+5. All services follow these principles:
+
+-   Type-safe implementations
+-   Context awareness where needed
+-   Clear responsibility boundaries
+-   Proper error handling
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Roadmap
+
+See [DEVLOG.md](DEVLOG.md) for the current tasks and ideas for the future.
 
 ## License
 

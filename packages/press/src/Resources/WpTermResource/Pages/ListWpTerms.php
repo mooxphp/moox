@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpTermResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpTermResource;
 
 class ListWpTerms extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     protected static string $resource = WpTermResource::class;
 

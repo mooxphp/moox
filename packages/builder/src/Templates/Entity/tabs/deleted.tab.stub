@@ -1,0 +1,11 @@
+'deleted' => [
+    'label' => 'trans//core::core.deleted',
+    'icon' => 'gmdi-delete',
+    'query' => [
+        [
+            'field' => 'deleted_at',
+            'operator' => '!=',
+            'value' => null,
+        ],
+    ],
+],

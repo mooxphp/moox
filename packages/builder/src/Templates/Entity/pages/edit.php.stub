@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Filament\Resources\Pages\EditRecord;
+{{ use_statements }}
+
+class Edit{{ model }} extends EditRecord
+{
+    {{ traits }}
+
+    protected static string $resource = {{ resource }}::class;
+
+    {{ methods }}
+}

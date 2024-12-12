@@ -11,12 +11,15 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Permission\Models\Permission;
 use Moox\Permission\Resources\PermissionResource\Pages\ListPage;
 use Moox\Permission\Resources\PermissionResource\Widgets\PermissionWidgets;
 
 class PermissionResource extends Resource
 {
+    use TabsInResource;
+
     protected static ?string $model = Permission::class;
 
     protected static ?string $navigationIcon = 'gmdi-engineering';

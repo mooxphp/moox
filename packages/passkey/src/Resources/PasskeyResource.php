@@ -13,12 +13,16 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
 
 class PasskeyResource extends Resource
 {
+    use BaseInResource, TabsInResource;
+
     protected static ?string $model = Passkey::class;
 
     protected static ?string $navigationIcon = 'gmdi-fingerprint-o';

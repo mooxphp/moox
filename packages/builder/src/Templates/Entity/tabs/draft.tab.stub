@@ -1,0 +1,16 @@
+'draft' => [
+    'label' => 'trans//core::core.draft',
+    'icon' => 'gmdi-text-snippet',
+    'query' => [
+        [
+            'field' => 'publish_at',
+            'operator' => '=',
+            'value' => null,
+        ],
+        [
+            'field' => 'deleted_at',
+            'operator' => '=',
+            'value' => null,
+        ],
+    ],
+],

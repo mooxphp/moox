@@ -55,6 +55,19 @@ return [
                 ],
             ],
         ],
+        'category' => [
+            'package' => 'Moox Category',
+            'models' => [
+                'Category' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
         'core' => [
             'package' => 'Moox Core',
             'models' => [],
@@ -263,88 +276,7 @@ return [
                 ],
             ],
         ],
-        'press-trainings' => [
-            'package' => 'Moox Press Trainings',
-            'models' => [
-                'WpTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpTraining' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpTrainingsTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-            ],
-        ],
-        'press-wiki' => [
-            'package' => 'Moox Press Wiki',
-            'models' => [
-                'WpWiki' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpWikiCompanyTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpDepartmentTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpLetterTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpLocationTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-                'WpWikiTopic' => [
-                    'api' => [
-                        'Index' => '',
-                        'Show' => '',
-                        'Update' => '',
-                        'Delete' => '',
-                    ],
-                ],
-            ],
-        ],
+
         'security' => [
             'package' => 'Moox Security',
             'models' => [
@@ -370,6 +302,19 @@ return [
                     ],
                 ],
                 'Sync' => [
+                    'api' => [
+                        'Index' => '',
+                        'Show' => '',
+                        'Update' => '',
+                        'Delete' => '',
+                    ],
+                ],
+            ],
+        ],
+        'tag' => [
+            'package' => 'Moox Tag',
+            'models' => [
+                'Tag' => [
                     'api' => [
                         'Index' => '',
                         'Show' => '',

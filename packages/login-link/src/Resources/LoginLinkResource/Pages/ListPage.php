@@ -4,14 +4,14 @@ namespace Moox\LoginLink\Resources\LoginLinkResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\HasDynamicTabs;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
 
 class ListPage extends ListRecords
 {
-    use HasDynamicTabs;
+    use TabsInListPage;
 
     public static string $resource = LoginLinkResource::class;
 

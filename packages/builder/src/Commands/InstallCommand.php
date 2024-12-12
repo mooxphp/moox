@@ -87,13 +87,13 @@ class InstallCommand extends Command
     public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
-            if (Schema::hasTable('items')) {
-                warning('The items table already exists. The migrations will not be published.');
+            if (Schema::hasTable('simple_taxonomyables')) {
+                warning('The builder tables already exist. The migrations will not be published.');
 
                 return;
             }
             info('Publishing Items Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'builder-migrations']);
+            $this->call('vendor:publish', ['--tag' => 'builder-migrations']);
         }
     }
 
@@ -101,58 +101,69 @@ class InstallCommand extends Command
     {
         if (confirm('Do you wish to run the migrations?', true)) {
             info('Running Builder Migrations...');
-            $this->callSilent('migrate');
+            $this->call('migrate');
         }
     }
 
     public function registerPlugins(string $providerPath): void
     {
-        if (File::exists($providerPath)) {
-            $content = File::get($providerPath);
+        if (! File::exists($providerPath)) {
+            alert('Provider file not found.');
 
-            $intend = '                ';
+            return;
+        }
 
-            $namespace = "\Moox\Builder";
+        $content = File::get($providerPath);
+        $pluginPath = dirname(__DIR__).'/Plugins';
+        $pluginFiles = File::glob($pluginPath.'/*Plugin.php');
 
-            $pluginsToAdd = multiselect(
-                label: 'These plugins will be installed:',
-                options: ['ItemPlugin'],
-                default: ['ItemPlugin'],
-            );
+        if (empty($pluginFiles)) {
+            alert('No plugins found in src/Plugins directory.');
 
-            $function = '::make(),';
+            return;
+        }
 
-            $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
-            $newPlugins = '';
+        $availablePlugins = array_map(function ($file) {
+            return basename($file, '.php');
+        }, $pluginFiles);
 
-            foreach ($pluginsToAdd as $plugin) {
-                $searchPlugin = '/'.$plugin.'/';
-                if (preg_match($searchPlugin, $content)) {
-                    warning("$plugin already registered.");
-                } else {
-                    $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
-                }
+        $pluginsToAdd = multiselect(
+            label: 'These plugins will be installed:',
+            options: $availablePlugins,
+            default: $availablePlugins,
+        );
+
+        $intend = '                ';
+        $namespace = "\Moox\Builder\Plugins";
+        $function = '::make(),';
+        $pattern = '/->plugins\(\[([\s\S]*?)\]\);/';
+        $newPlugins = '';
+
+        foreach ($pluginsToAdd as $plugin) {
+            $searchPlugin = '/'.$plugin.'/';
+            if (preg_match($searchPlugin, $content)) {
+                warning("$plugin already registered.");
+            } else {
+                $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
+            }
+        }
+
+        if ($newPlugins) {
+            if (preg_match($pattern, $content)) {
+                info('Plugins section found. Adding new plugins...');
+
+                $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                $newContent = preg_replace($pattern, $replacement, $content);
+            } else {
+                info('Plugins section created. Adding new plugins...');
+
+                $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
+                $replacement = "$1\n".$pluginsSection;
+                $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
             }
 
-            if ($newPlugins) {
-                if (preg_match($pattern, $content)) {
-                    info('Plugins section found. Adding new plugins...');
-
-                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
-                    $newContent = preg_replace($pattern, $replacement, $content);
-                } else {
-                    info('Plugins section created. Adding new plugins...');
-
-                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
-                    $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
-                    $replacement = "$1\n".$pluginsSection;
-                    $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
-                }
-
-                File::put($providerPath, $newContent);
-            }
-        } else {
-            alert('There are no new plugins detected.');
+            File::put($providerPath, $newContent);
         }
     }
 
