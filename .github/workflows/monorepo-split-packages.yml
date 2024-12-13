@@ -59,7 +59,7 @@ jobs:
             git config --global user.name "mooxbot"
             git config --global user.email "bot@moox.org"
             git add composer.json
-            git commit -m "Update moox/core dependency to ^^2.2.0" || echo "No changes to commit"
+            git commit -m "Update moox/core dependency to ^^3.0.0" || echo "No changes to commit"
           fi
 
       - if: "!startsWith(github.ref, 'refs/tags/')"
