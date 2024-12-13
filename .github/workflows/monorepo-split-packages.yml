@@ -7,7 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.BOT }}
-  CORE_VERSION: "^3.0.0"
+  CORE_VERSION: "^3.0.2"
 
 jobs:
   packages_split:
@@ -42,13 +42,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Search and replace "moox/core": "*" with "moox/core": "^3.0.0" in composer.json
+      # Search and replace "moox/core": "*" with "moox/core": "^3.0.2" in composer.json
       - name: Replace core version in composer.json
         working-directory: packages/${{ matrix.package }}
         run: |
           if [ -f composer.json ]; then
             echo "Updating moox/core version in ${{ matrix.package }}"
-            sed -i 's/"moox\/core": "\*"/"moox\/core": "^3.0.0"/g' composer.json
+            sed -i 's/"moox\/core": "\*"/"moox\/core": "^3.0.2"/g' composer.json
           fi
 
       # Commit the updated composer.json (if there was a change)
@@ -59,7 +59,7 @@ jobs:
             git config --global user.name "mooxbot"
             git config --global user.email "bot@moox.org"
             git add composer.json
-            git commit -m "Update moox/core dependency to ^^3.0.0" || echo "No changes to commit"
+            git commit -m "Update moox/core dependency to ^^3.0.2" || echo "No changes to commit"
           fi
 
       - if: "!startsWith(github.ref, 'refs/tags/')"
