@@ -110,6 +110,7 @@
                 <tr>
                     <th>{{ __('core::core.title') }}</th>
                     <th>{{ __('core::expiry.notifyUser') }}</th>
+                    <th>{{ __('core::core.category') }}</th>
                     <th>{{ __('core::expiry.will_expire_at') }}</th>
                     <th>{{ __('core::expiry.processing_deadline') }}</th>
                     <th>{{ __('core::expiry.escalated_at') }}</th>
@@ -120,6 +121,7 @@
                     <tr>
                         <td class="title">{{ $entry['title'] }}</td>
                         <td>{{ $entry['notified_to'] }}</td>
+                        <td>{{ $entry['category'] }}</td>
                         <td>{{ $entry['expired_at'] }}</td>
                         <td>{{ $entry['processing_deadline'] }}</td>
                         <td class="escalation">{{ $entry['escalated_at'] }}</td>

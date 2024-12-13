@@ -63,7 +63,7 @@ return [
                     'icon' => 'gmdi-text-snippet',
                     'query' => [
                         [
-                            'field' => 'expiry_job',
+                            'field' => 'category',
                             'operator' => '=',
                             'value' => 'Documents',
                         ],
@@ -77,7 +77,7 @@ return [
                     'icon' => 'gmdi-account-circle',
                     'query' => [
                         [
-                            'field' => 'expiry_job',
+                            'field' => 'category',
                             'operator' => '=',
                             'value' => 'Articles',
                         ],
@@ -91,7 +91,7 @@ return [
                     'icon' => 'gmdi-no-accounts',
                     'query' => [
                         [
-                            'field' => 'expiry_job',
+                            'field' => 'category',
                             'operator' => '=',
                             'value' => 'Tasks',
                         ],

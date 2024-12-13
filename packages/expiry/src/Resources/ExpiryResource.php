@@ -59,7 +59,10 @@ class ExpiryResource extends Resource
                     ->toggleable()
                     ->sortable()
                     ->since()
-                    ->visible(fn () => Expiry::query()->whereNotNull('processing_deadline')->exists()),
+                    ->hidden(fn () => ! Expiry::query()->whereNotNull('processing_deadline')->exists())
+                    ->visible(
+                        fn ($livewire) => isset($livewire->activeTab)
+                        && in_array($livewire->activeTab, ['all', 'documents', 'tasks'])),
                 Tables\Columns\TextColumn::make('escalated_at')
                     ->label(__('core::expiry.escalated_at'))
                     ->toggleable()
@@ -67,7 +70,10 @@ class ExpiryResource extends Resource
                     ->date()
                     ->icon('gmdi-warning')
                     ->color('warning')
-                    ->visible(fn () => Expiry::query()->whereNotNull('escalated_at')->exists()),
+                    ->hidden(fn () => ! Expiry::query()->whereNotNull('escalated_at')->exists())
+                    ->visible(
+                        fn ($livewire) => isset($livewire->activeTab)
+                        && in_array($livewire->activeTab, ['all', 'documents', 'tasks'])),
                 Tables\Columns\TextColumn::make('cycle')
                     ->label(__('core::expiry.cycle'))
                     ->toggleable()
