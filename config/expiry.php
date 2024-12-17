@@ -56,7 +56,9 @@ return [
                 'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
-                    'query' => [],
+                    'query' => [
+                        ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
+                    ],
                 ],
                 'documents' => [
                     'label' => 'trans//core::core.documents',
@@ -67,6 +69,7 @@ return [
                             'operator' => '=',
                             'value' => 'Documents',
                         ],
+                        ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
                     ],
                     'visible' => in_array(rtrim(env('APP_URL'), '/'), [
                         config('app.url'),
@@ -81,6 +84,7 @@ return [
                             'operator' => '=',
                             'value' => 'Articles',
                         ],
+                        ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
                     ],
                     'visible' => in_array(rtrim(env('APP_URL'), '/'), [
                         config('app.url'),
@@ -95,6 +99,7 @@ return [
                             'operator' => '=',
                             'value' => 'Tasks',
                         ],
+                        ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
                     ],
                     'visible' => in_array(rtrim(env('APP_URL'), '/'), [
                         config('app.url'),
@@ -109,6 +114,7 @@ return [
                             'operator' => '=',
                             'value' => 'No assignee',
                         ],
+                        ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
                     ],
                     'visible' => in_array(rtrim(env('APP_URL'), '/'), [
                         config('app.url'),
@@ -123,6 +129,7 @@ return [
                             'operator' => '=',
                             'value' => 'No expiry date',
                         ],
+                        ['field' => 'deleted_at', 'operator' => '=', 'value' => null],
                     ],
                     'visible' => in_array(rtrim(env('APP_URL'), '/'), [
                         config('app.url'),
