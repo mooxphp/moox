@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 function ask(string $question, string $default = ''): string
 {
-    $answer = readline($question . ($default ? " ({$default})" : null) . ': ');
+    $answer = readline($question.($default ? " ({$default})" : null).': ');
 
     if (! $answer) {
         return $default;
@@ -15,7 +15,7 @@ function ask(string $question, string $default = ''): string
 
 function confirm(string $question, bool $default = false): bool
 {
-    $answer = ask($question . ' (' . ($default ? 'Y/n' : 'y/N') . ')');
+    $answer = ask($question.' ('.($default ? 'Y/n' : 'y/N').')');
 
     if (! $answer) {
         return $default;
@@ -40,7 +40,7 @@ function isValidPackageName($packageName)
 
 function writeln(string $line): void
 {
-    echo $line . PHP_EOL;
+    echo $line.PHP_EOL;
 }
 
 function run(string $command): string
@@ -121,12 +121,12 @@ function determineSeparator(string $path): string
 
 function replaceForWindows(): array
 {
-    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i ' . basename(__FILE__) . ' | findstr /r /i /M /F:/ "Skeleton skeleton"'));
+    return preg_split('/\\r\\n|\\r|\\n/', run('dir /S /B * | findstr /v /i .git\ | findstr /v /i vendor | findstr /v /i '.basename(__FILE__).' | findstr /r /i /M /F:/ "Skeleton skeleton"'));
 }
 
 function replaceForAllOtherOSes(): array
 {
-    return explode(PHP_EOL, run('grep -E -r -l -i "Skeleton|skeleton" --exclude-dir=vendor ./* | grep -v ' . basename(__FILE__)));
+    return explode(PHP_EOL, run('grep -E -r -l -i "Skeleton|skeleton" --exclude-dir=vendor ./* | grep -v '.basename(__FILE__)));
 }
 
 writeln(' ');
@@ -201,12 +201,12 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/' . $className . 'ServiceProvider.php')),
+        str_contains($file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
         str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };
 }
-rename(determineSeparator('config/skeleton.php'), determineSeparator('./config/' . $packageSlugWithoutPrefix . '.php'));
+rename(determineSeparator('config/skeleton.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
 
 confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
 
