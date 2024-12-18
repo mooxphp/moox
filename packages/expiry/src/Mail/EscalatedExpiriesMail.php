@@ -25,7 +25,7 @@ class EscalatedExpiriesMail extends Mailable
         $logoPath = config('expiry.logo_url');
         $logoUrl = asset($logoPath);
 
-        return $this->subject('Eskalierte Einträge in den Ablaufdaten')
+        return $this->subject(__('core::expiry.escalated_entries_in_expiry_dashboard'))
             ->view('expiry::emails.escalated_expiries')
             ->with([
                 'escalatedEntries' => $this->entries['escalatedEntries'],

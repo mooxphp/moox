@@ -68,7 +68,7 @@
         }
 
         .table .escalation {
-            color: #e53e3e;
+            color: #e5be01;
             font-weight: bold;
         }
 
@@ -101,8 +101,7 @@
         <div class="logo">
             <img src="{{ $logoUrl }}" alt="Company Logo" class="w-24 h-auto">
         </div>
-        <h1>{{ __('core::expiry.escalated_entries_in_expiry_dashboard') }}</h1>
-        <h4>{{ __('core::expiry.following_escalated_entries') }}</h4>
+        <h1>{{ __('core::expiry.following_escalated_entries') }}</h1>
 
         <!-- Escalated Entries -->
         <table class="table">
@@ -111,7 +110,7 @@
                     <th>{{ __('core::core.title') }}</th>
                     <th>{{ __('core::expiry.notifyUser') }}</th>
                     <th>{{ __('core::core.category') }}</th>
-                    <th>{{ __('core::expiry.will_expire_at') }}</th>
+                    <th>{{ __('core::expiry.expired_at') }}</th>
                     <th>{{ __('core::expiry.processing_deadline') }}</th>
                     <th>{{ __('core::expiry.escalated_at') }}</th>
                 </tr>
@@ -133,7 +132,7 @@
         <br>
 
         <!-- Footer -->
-        <p class="footer">{{ __('core::expiry.review_entreis') }}<a
+        <p class="footer">{{ __('core::expiry.review_entries') }}<a
                 href="{{ url($panelPath . '/expiries') }}">{{ __('core::expiry.expiry_dashboard') }}</a>.</p>
     </div>
 </body>
