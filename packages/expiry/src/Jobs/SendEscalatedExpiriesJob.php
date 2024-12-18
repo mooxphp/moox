@@ -42,8 +42,8 @@ class SendEscalatedExpiriesJob implements ShouldQueue
             'escalatedEntries' => $escalatedEntries->map(function ($entry) {
                 return [
                     'title' => $entry->title,
-                    'expired_at' => Carbon::parse($entry->expired_at)->format('d.m.Y'),
-                    'processing_deadline' => Carbon::parse($entry->processing_deadline)->format('d.m.Y'),
+                    'expired_at' => Carbon::parse($entry->expired_at)->diffForHumans(),
+                    'processing_deadline' => Carbon::parse($entry->processing_deadline)->diffForHumans(),
                     'escalated_at' => Carbon::parse($entry->escalated_at)->format('d.m.Y'),
                     'notified_to' => config('expiry.user_model')::where('ID', $entry->notified_to)->first()?->display_name,
                     'user_email' => config('expiry.user_model')::where('ID', $entry->notified_to)->first()?->email,

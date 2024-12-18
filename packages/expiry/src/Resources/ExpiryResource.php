@@ -23,7 +23,7 @@ class ExpiryResource extends Resource
 
     protected static ?string $model = Expiry::class;
 
-    protected static ?string $navigationIcon = 'gmdi-access-time-o';
+    protected static ?string $navigationIcon = 'gmdi-view-timeline-o';
 
     protected static ?string $recordTitleAttribute = 'title';
 
