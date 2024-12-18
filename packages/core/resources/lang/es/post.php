@@ -1,16 +1,12 @@
 <?php
 
 return [
-
     // Press refers to the package name Moox Press, don't translate this
     'press' => 'Press',
-
     // Posts refers to the posts in the package Moox Press (WordPress)
     'post' => 'Post',
-
     // Posts refers to the posts in the package Moox Press (WordPress)
     'posts' => 'Posts',
-
     'post_author' => 'Post Author',
     'post_date' => 'Post Date',
     'post_date_gmt' => 'Post Date GMT',
@@ -30,5 +26,6 @@ return [
     'post_parent' => 'Post Parent',
     'post_type' => 'Post Type',
     'post_mime_type' => 'Post mime Type',
-
+    'wp_post_meta' => 'WP Post Meta',
+    'wp_post_metas' => 'WP Post Metas',
 ];
