@@ -1,5 +1,4 @@
 <?php
-
 return [
     'title' => 'Title',
     'slug' => 'Slug',
@@ -118,4 +117,15 @@ return [
     'items_permanently_deleted' => '{0} No se eliminaron elementos de forma permanente.|{1} Se eliminó un elemento de forma permanente.|[2,*] :count elementos se eliminaron de forma permanente.',
     'wp_term_meta' => 'Término Meta en WP',
     'wp_term_metas' => 'Término Meta WP',
+    'empty_trash_confirmation' => '¿Estás seguro que deseas vaciar la papelera?',
+    'search' => 'Buscar',
+    'cms' => 'CMS',
+    'filter' => 'Filtrar',
+    'hard_delete_bulk_confirmation' => '¿Está seguro de que desea eliminar definitivamente estos elementos?',
+    'hard_delete_confirmation' => '¿Está seguro de que desea eliminar definitivamente este elemento?',
+    'hard_delete' => 'Eliminación definitiva',
+    'hard_delete_selected' => 'Eliminar el disco seleccionado',
+    'hard_delete_bulk_description' => 'Esta acción eliminará estos elementos de forma permanente.',
+    'hard_delete_description' => 'Esta acción eliminará este elemento de forma permanente.',
+    'empty_trash_description' => 'Esta acción eliminará permanentemente todos los elementos de la papelera.',
 ];
