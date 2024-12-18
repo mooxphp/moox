@@ -1,4 +1,4 @@
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton.jpg)
+![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton-package.jpg)
 
 # Moox Skeleton
 
