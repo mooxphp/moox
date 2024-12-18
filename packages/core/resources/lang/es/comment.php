@@ -1,10 +1,8 @@
 <?php
-
 return [
-
     'comment' => 'Comment',
-    'comments' => 'Comments',
-    'no_comments' => 'No comments',
+    'comments' => 'Comentarios',
+    'no_comments' => 'Sin comentarios',
     'no_comment' => 'No comment',
     'comment_id' => 'Comment ID',
     'comment_post_ID' => 'Comment Post ID',
@@ -13,10 +11,10 @@ return [
     'comment_author_url' => 'Comment Author Url',
     'comment_author_IP' => 'Comment Author IP',
     'comment_date' => 'Comment Date',
-    'comment_date_gmt' => 'Comment Date GMT',
+    'comment_date_gmt' => 'Fecha GMT del comentario',
     'comment_content' => 'Comment Content',
     'comment_karma' => 'Comment Karma',
-    'comment_approved' => 'Comment approved',
+    'comment_approved' => 'Comentario aprobado',
     'comment_agent' => 'Comment Agent',
     'comment_parent' => 'Comment Parent',
     'comment_type' => 'Comment Type',
@@ -24,5 +22,4 @@ return [
     'comment_count' => 'Comment count',
     'wp_comment_meta' => 'WP Comment Meta',
     'wp_comment_metas' => 'WP Comment Metas',
-
 ];
