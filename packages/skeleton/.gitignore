@@ -30,6 +30,7 @@ phpstan.neon
 
 # Testbench
 testbench.yaml
+/workbench/*
 
 # PHP CS Fixer
 .php-cs-fixer.cache
