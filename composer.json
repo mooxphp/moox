@@ -17,6 +17,10 @@
         {
             "type": "path",
             "url": "packages/*"
+        },
+        {
+            "type": "composer",
+            "url": "https://satis.ralphjsmit.com"
         }
     ],
     "license": "MIT",
@@ -44,6 +48,7 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
+        "ralphjsmit/laravel-filament-media-library": "dev-main",
         "resend/resend-laravel": "^1.0@dev",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
@@ -120,7 +125,8 @@
             "pestphp/pest-plugin": true,
             "phpstan/extension-installer": true,
             "wikimedia/composer-merge-plugin": true,
-            "roots/wordpress-core-installer": true
+            "roots/wordpress-core-installer": true,
+            "ralphjsmit/packages": true
         }
     },
     "minimum-stability": "dev",

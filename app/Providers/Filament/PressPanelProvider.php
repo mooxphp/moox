@@ -19,6 +19,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Press\Services\Login;
 use Moox\Security\Services\RequestPasswordReset;
 use Moox\Security\Services\ResetPassword;
+use RalphJSmit\Filament\MediaLibrary\FilamentMediaLibrary;
 
 class PressPanelProvider extends PanelProvider
 {
@@ -57,6 +58,7 @@ class PressPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->viteTheme('resources/css/filament/press/theme.css')
             ->plugins([
                 // Press plugins
                 \Moox\Press\WpPostPlugin::make(),
@@ -119,6 +121,7 @@ class PressPanelProvider extends PanelProvider
 
                 \Moox\PressTrainings\WpTrainingPlugin::make(),
                 \Moox\PressTrainings\WpTrainingsTopicPlugin::make(),
+                FilamentMediaLibrary::make(),
 
             ]);
     }
