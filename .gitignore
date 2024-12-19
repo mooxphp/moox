@@ -72,4 +72,5 @@ Thumbs.db
 /app/Builder/*/*
 /config/previews/*
 /lang/*/previews/*
+/resources/lang/*/previews/*
 /packages/builder-pro

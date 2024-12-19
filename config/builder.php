@@ -17,6 +17,29 @@
 
 return [
 
+    'presets' => [
+        'light-item' => [
+            'class' => \Moox\Builder\Presets\LightItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'simple-item' => [
+            'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'soft-delete-item' => [
+            'class' => \Moox\Builder\Presets\SoftDeleteItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'full-item' => [
+            'class' => \Moox\Builder\Presets\FullItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'static-language' => [
+            'class' => \App\Builder\Presets\StaticLanguagePreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Resources
