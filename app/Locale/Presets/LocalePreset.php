@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace App\Builder\Presets;
 
-use Moox\Builder\Blocks\Fields\Text;
 use Moox\Builder\Blocks\Features\Tabs;
-use Moox\Builder\Blocks\Singles\Simple;
-use Moox\Builder\Blocks\Fields\TextArea;
-use Moox\Builder\Presets\AbstractPreset;
-use Moox\Builder\Blocks\Features\SimpleType;
-use Moox\Builder\Blocks\Features\SimpleStatus;
 use Moox\Builder\Blocks\Fields\Relationship;
+use Moox\Builder\Blocks\Fields\Text;
+use Moox\Builder\Blocks\Singles\Simple;
+use Moox\Builder\Presets\AbstractPreset;
 
 class LocalePreset extends AbstractPreset
 {

@@ -122,7 +122,7 @@ class AdminPanelProvider extends PanelProvider
                 // Builder plugin
                 \Moox\Builder\ItemPlugin::make(),
                 \App\Locale\Plugins\StaticLanguagePlugin::make(),
-                \App\Locale\Plugins\StaticCountryPlugin::make()
+                \App\Locale\Plugins\StaticCountryPlugin::make(),
 
             ]);
     }
