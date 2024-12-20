@@ -97,7 +97,7 @@ return [
                 //    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
                 //],
                 'translation' => [
-                    'path' => '%BasePath%\app\Locale\lang\%locale%\entities',
+                    'path' => 'Locale\lang\%locale%\entities',
                     'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/translation.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
                 ],
@@ -214,15 +214,15 @@ return [
             'generators' => ['model', 'migration', 'resource'],
         ],
         'language-item' => [
-            'class' => \App\Builder\Presets\StaticLanguagePreset::class,
+            'class' => \App\Locale\Presets\StaticLanguagePreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'country-item' => [
-            'class' => \App\Builder\Presets\CountryPreset::class,
+            'class' => \App\Locale\Presets\CountryPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'locale-item' => [
-            'class' => \App\Builder\Presets\LocalePreset::class,
+            'class' => \App\Locale\Presets\LocalePreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'soft-delete-item' => [
@@ -234,7 +234,7 @@ return [
             'generators' => ['model', 'migration', 'resource'],
         ],
         'static-language' => [
-            'class' => \App\Builder\Presets\StaticLanguagePreset::class,
+            'class' => \App\Locale\Presets\StaticLanguagePreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
     ],

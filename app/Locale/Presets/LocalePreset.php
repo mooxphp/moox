@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Builder\Presets;
+namespace App\Locale\Presets;
 
 use Moox\Builder\Blocks\Fields\Text;
 use Moox\Builder\Blocks\Features\Tabs;
@@ -54,14 +54,14 @@ class LocalePreset extends AbstractPreset
                 label: 'language',
                 description: 'Language to Locale',
                 nullable: false,
-                relatedModel: \App\Builder\Locale\Models\StaticLanguage::class,
+                relatedModel: \App\Locale\Locale\Models\StaticLanguage::class,
             ),
             new Relationship(
                 name: 'country',
                 label: 'country',
                 description: 'Country to Locale',
                 nullable: false,
-                // relatedModel: \App\Builder\Locale\Models\Country::class,
+                // relatedModel: \App\Locale\Locale\Models\Country::class,
             ),
         ];
     }

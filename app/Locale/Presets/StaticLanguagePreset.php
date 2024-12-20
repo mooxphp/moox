@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Builder\Presets;
+namespace App\Locale\Presets;
 
 use Moox\Builder\Blocks\Fields\Text;
 use Moox\Builder\Blocks\Singles\Simple;
