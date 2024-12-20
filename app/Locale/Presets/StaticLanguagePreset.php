@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Locale\Presets;
 
+use Moox\Builder\Blocks\Features\SimpleType;
+use Moox\Builder\Blocks\Fields\KeyValue;
 use Moox\Builder\Blocks\Fields\Text;
 use Moox\Builder\Blocks\Singles\Simple;
-use Moox\Builder\Blocks\Fields\KeyValue;
 use Moox\Builder\Presets\AbstractPreset;
-use Moox\Builder\Blocks\Features\SimpleType;
 
 class StaticLanguagePreset extends AbstractPreset
 {

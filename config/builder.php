@@ -162,7 +162,7 @@ return [
                 'model' => [
                     'path' => '%BasePath%\Locale\Models',
                     'namespace' => '%BaseNamespace%\\Locale\\Models',
-                    'template' =>   __DIR__ . '/../packages/builder/src/Templates/Entity/model.php.stub',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/model.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
                 ],
                 'resource' => [

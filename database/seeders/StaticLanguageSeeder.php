@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StaticLanguageSeeder extends Seeder
@@ -221,7 +220,7 @@ class StaticLanguageSeeder extends Seeder
                 ]),
                 'native_name' => 'हिन्दी',
                 'script' => 'Devanagari',
-            ]
+            ],
         ]);
     }
 }

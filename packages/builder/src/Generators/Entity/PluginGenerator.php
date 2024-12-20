@@ -32,14 +32,14 @@ class PluginGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $path = $this->context->getPath('plugin') . '/' .
-            $this->context->getEntityName() . 'Plugin.php';
+        $path = $this->context->getPath('plugin').'/'.
+            $this->context->getEntityName().'Plugin.php';
         $this->writeFile($path, $content);
     }
 
     protected function getResources(): string
     {
-        return $this->context->getEntityName() . 'Resource::class';
+        return $this->context->getEntityName().'Resource::class';
     }
 
     protected function getBootMethods(): string
@@ -55,11 +55,11 @@ class PluginGenerator extends AbstractGenerator
     protected function formatUseStatements(): string
     {
         $statements = [
-            'use ' . $this->context->getNamespace('resource') . '\\' . $this->context->getEntityName() . 'Resource;',
+            'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource;',
         ];
 
         return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';') . ';';
+            return rtrim($statement, ';').';';
         }, array_unique($statements)));
     }
 }

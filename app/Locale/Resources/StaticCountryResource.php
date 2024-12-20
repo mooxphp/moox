@@ -14,7 +14,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\NumberFilter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -189,7 +188,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha2'],
-                            fn(Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -197,7 +196,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-2 Code: ' . $data['alpha2'];
+                        return 'Alpha-2 Code: '.$data['alpha2'];
                     }),
                 Filter::make('alpha3_b')
                     ->form([
@@ -208,7 +207,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_b'],
-                            fn(Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -216,7 +215,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-3 Code (B): ' . $data['alpha3_b'];
+                        return 'Alpha-3 Code (B): '.$data['alpha3_b'];
                     }),
                 Filter::make('alpha3_t')
                     ->form([
@@ -227,7 +226,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_t'],
-                            fn(Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -235,7 +234,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-3 Code (T): ' . $data['alpha3_t'];
+                        return 'Alpha-3 Code (T): '.$data['alpha3_t'];
                     }),
                 Filter::make('common_name')
                     ->form([
@@ -246,7 +245,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['common_name'],
-                            fn(Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -254,7 +253,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Common Name: ' . $data['common_name'];
+                        return 'Common Name: '.$data['common_name'];
                     }),
                 Filter::make('native_name')
                     ->form([
@@ -265,7 +264,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['native_name'],
-                            fn(Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -273,17 +272,17 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Native Name: ' . $data['native_name'];
+                        return 'Native Name: '.$data['native_name'];
                     }),
                 Filter::make('has_exonyms')
-                    ->query(fn($query) => $query->whereNotNull('exonyms')),
+                    ->query(fn ($query) => $query->whereNotNull('exonyms')),
                 SelectFilter::make('region')
                     ->label('Region')
-                    ->placeholder(__('core::core.filter') . ' Region')
+                    ->placeholder(__('core::core.filter').' Region')
                     ->options(['Africa' => 'Africa', 'Americas' => 'Americas', 'Asia' => 'Asia', 'Europe' => 'Europe', 'Oceania' => 'Oceania', 'Antarctica' => 'Antarctica']),
                 SelectFilter::make('subregion')
                     ->label('Subregion')
-                    ->placeholder(__('core::core.filter') . ' Subregion')
+                    ->placeholder(__('core::core.filter').' Subregion')
                     ->options(['Northern Africa' => 'Northern Africa', 'Sub-Saharan Africa' => 'Sub-Saharan Africa', 'Eastern Africa' => 'Eastern Africa', 'Middle Africa' => 'Middle Africa', 'Southern Africa' => 'Southern Africa', 'Western Africa' => 'Western Africa', 'Latin America and the Caribbean' => 'Latin America and the Caribbean', 'Northern America' => 'Northern America', 'Caribbean' => 'Caribbean', 'Central America' => 'Central America', 'South America' => 'South America', 'Central Asia' => 'Central Asia', 'Eastern Asia' => 'Eastern Asia', 'South-Eastern Asia' => 'South-Eastern Asia', 'Southern Asia' => 'Southern Asia', 'Western Asia' => 'Western Asia', 'Eastern Europe' => 'Eastern Europe', 'Northern Europe' => 'Northern Europe', 'Southern Europe' => 'Southern Europe', 'Western Europe' => 'Western Europe', 'Australia and New Zealand' => 'Australia and New Zealand', 'Melanesia' => 'Melanesia', 'Micronesia' => 'Micronesia', 'Polynesia' => 'Polynesia']),
                 Filter::make('capital')
                     ->form([
@@ -294,7 +293,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['capital'],
-                            fn(Builder $query, $value): Builder => $query->where('capital', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('capital', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -302,7 +301,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Capital: ' . $data['capital'];
+                        return 'Capital: '.$data['capital'];
                     }),
                 Filter::make('population')
                     ->form([
@@ -313,7 +312,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['population'],
-                            fn(Builder $query, $value): Builder => $query->where('population', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('population', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -321,7 +320,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Population: ' . $data['population'];
+                        return 'Population: '.$data['population'];
                     }),
                 Filter::make('area')
                     ->form([
@@ -332,7 +331,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['area'],
-                            fn(Builder $query, $value): Builder => $query->where('area', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('area', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -340,22 +339,22 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Area: ' . $data['area'];
+                        return 'Area: '.$data['area'];
                     }),
                 Filter::make('has_links')
-                    ->query(fn($query) => $query->whereNotNull('links')),
+                    ->query(fn ($query) => $query->whereNotNull('links')),
                 Filter::make('has_tlds')
-                    ->query(fn($query) => $query->whereNotNull('tlds')),
+                    ->query(fn ($query) => $query->whereNotNull('tlds')),
                 Filter::make('has_membership')
-                    ->query(fn($query) => $query->whereNotNull('membership')),
+                    ->query(fn ($query) => $query->whereNotNull('membership')),
                 SelectFilter::make('embargo')
                     ->label('Embargo')
-                    ->placeholder(__('core::core.filter') . ' Embargo')
+                    ->placeholder(__('core::core.filter').' Embargo')
                     ->options(['New' => 'New', 'Open' => 'Open', 'Pending' => 'Pending', 'Closed' => 'Closed']),
                 Filter::make('has_embargo_data')
-                    ->query(fn($query) => $query->whereNotNull('embargo_data')),
+                    ->query(fn ($query) => $query->whereNotNull('embargo_data')),
                 Filter::make('has_address_format')
-                    ->query(fn($query) => $query->whereNotNull('address_format')),
+                    ->query(fn ($query) => $query->whereNotNull('address_format')),
                 Filter::make('postal_code_regex')
                     ->form([
                         TextInput::make('postal_code_regex')
@@ -365,7 +364,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['postal_code_regex'],
-                            fn(Builder $query, $value): Builder => $query->where('postal_code_regex', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('postal_code_regex', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -373,7 +372,7 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Postal Code Regex: ' . $data['postal_code_regex'];
+                        return 'Postal Code Regex: '.$data['postal_code_regex'];
                     }),
                 Filter::make('dialing_prefix')
                     ->form([
@@ -384,7 +383,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['dialing_prefix'],
-                            fn(Builder $query, $value): Builder => $query->where('dialing_prefix', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('dialing_prefix', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -392,10 +391,10 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Dialing Prefix: ' . $data['dialing_prefix'];
+                        return 'Dialing Prefix: '.$data['dialing_prefix'];
                     }),
                 Filter::make('has_phone_number_formatting')
-                    ->query(fn($query) => $query->whereNotNull('phone_number_formatting')),
+                    ->query(fn ($query) => $query->whereNotNull('phone_number_formatting')),
                 Filter::make('date_format')
                     ->form([
                         TextInput::make('date_format')
@@ -405,7 +404,7 @@ class StaticCountryResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['date_format'],
-                            fn(Builder $query, $value): Builder => $query->where('date_format', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('date_format', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -413,10 +412,10 @@ class StaticCountryResource extends Resource
                             return null;
                         }
 
-                        return 'Date Format: ' . $data['date_format'];
+                        return 'Date Format: '.$data['date_format'];
                     }),
                 Filter::make('has_currency_format')
-                    ->query(fn($query) => $query->whereNotNull('currency_format')),
+                    ->query(fn ($query) => $query->whereNotNull('currency_format')),
             ]);
     }
 
