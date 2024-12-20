@@ -17,6 +17,193 @@
 
 return [
 
+    'contexts' => [
+        'custom' => [
+            'base_path' => app_path('Custom'),
+            'base_namespace' => 'App',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__ . '/../src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__ . '/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__ . '/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__ . '/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__ . '/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__ . '/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'migration' => [
+                    'path' => 'database\migrations',
+                    'template' => __DIR__ . '/../src/Templates/Entity/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\Filament\Plugins',
+                    'namespace' => '%BaseNamespace%\\Filament\\Plugins',
+                    'template' => __DIR__ . '/../src/Templates/Entity/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\%locale%\entities',
+                    'template' => __DIR__ . '/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\entities',
+                    'template' => __DIR__ . '/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+        ],
+        'app' => [
+            'base_path' => app_path('app/Locale'),
+            'base_namespace' => 'App\\Locale',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\app\Locale\Models',
+                    'namespace' => '%BaseNamespace%\\Locale\\Models',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\app\Locale\Resources',
+                    'namespace' => '%BaseNamespace%\\Locale\\Resources',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\app\Locale\Plugins',
+                    'namespace' => '%BaseNamespace%\\Locale\\Plugins',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                //'migration' => [
+                //    'path' => '%BasePath%\app\Builder\Locale\database\migrations',
+                //    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/migration.php.stub',
+                //    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                //],
+                'translation' => [
+                    'path' => '%BasePath%\app\Locale\lang\%locale%\entities',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => '%BasePath%\app\Locale\config\entities',
+                    'template' => __DIR__ . '/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+        ],
+        /*
+        'package' => [
+            'base_path' => '$PackagePath',
+            'base_namespace' => '$PackageNamespace',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\src\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\src\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'migration_stub' => [
+                    'path' => '%BasePath%\database\migrations',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\src',
+                    'namespace' => '%BaseNamespace%',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => '%BasePath%\resources\lang\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => '%BasePath%\config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+        ],
+        */
+        'preview' => [
+            'base_path' => 'Locale',
+            'base_namespace' => 'Locale',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\Locale\Models',
+                    'namespace' => '%BaseNamespace%\\Locale\\Models',
+                    'template' =>   __DIR__ . '/../packages/builder/src/Templates/Entity/model.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Locale\Resources',
+                    'namespace' => '%BaseNamespace%\\Locale\\Resources',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__ . '/../packages/builder/src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\Locale\Plugins',
+                    'namespace' => '%BaseNamespace%\\Locale\\Plugins',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/plugin.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => '%BasePath%\Locale\lang\%locale%\previews',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/translation.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => '%BasePath%\Locale\config\previews',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/config.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+                'migration' => [
+                    'path' => '%BasePath%\Locale\database\migrations',
+                    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/migration.php.stub',
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+            ],
+            'should_migrate' => true,
+        ],
+
+    ],
+
     'presets' => [
         'light-item' => [
             'class' => \Moox\Builder\Presets\LightItemPreset::class,
@@ -24,6 +211,18 @@ return [
         ],
         'simple-item' => [
             'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'language-item' => [
+            'class' => \App\Builder\Presets\StaticLanguagePreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'country-item' => [
+            'class' => \App\Builder\Presets\CountryPreset::class,
+            'generators' => ['model', 'migration', 'resource'],
+        ],
+        'locale-item' => [
+            'class' => \App\Builder\Presets\LocalePreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'soft-delete-item' => [
