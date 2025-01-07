@@ -132,7 +132,7 @@ class PasskeyResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            //PasskeyWidgets::class,
+            // PasskeyWidgets::class,
         ];
     }
 

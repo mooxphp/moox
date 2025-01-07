@@ -23,7 +23,7 @@ class ListPage extends ListRecords
     {
         return [
             // TODO: Widgets
-            //UserDeviceWidgets::class,
+            // UserDeviceWidgets::class,
         ];
     }
 

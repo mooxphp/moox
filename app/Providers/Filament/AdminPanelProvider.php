@@ -32,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->passwordReset(RequestPasswordReset::class)
             ->login(Login::class)
             // TODO: check this
-            //->authGuard('admin')
+            // ->authGuard('admin')
             ->brandLogo(asset('img/logo.png'))
             ->brandLogoHeight('1.6rem')
             ->colors([
@@ -70,9 +70,9 @@ class AdminPanelProvider extends PanelProvider
                 GravatarPlugin::make(),
                 \Moox\Audit\AuditPlugin::make(),
                 \Moox\Locate\AreaPlugin::make(),
-                //\Moox\Locate\CountryPlugin::make(),
-                //\Moox\Locate\LanguagePlugin::make(),
-                //\Moox\Locate\TimezonePlugin::make(),
+                // \Moox\Locate\CountryPlugin::make(),
+                // \Moox\Locate\LanguagePlugin::make(),
+                // \Moox\Locate\TimezonePlugin::make(),
 
                 // Builder plugin
                 \Moox\Builder\SimpleTaxonomyPlugin::make(),
@@ -99,8 +99,8 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Jobs\JobsBatchesPlugin::make(),
 
                 // Sync Plugins
-                //\Moox\Sync\SyncPlugin::make(),
-                //\Moox\Sync\PlatformPlugin::make(),
+                // \Moox\Sync\SyncPlugin::make(),
+                // \Moox\Sync\PlatformPlugin::make(),
 
                 // User plugins
                 \Moox\User\UserPlugin::make(),

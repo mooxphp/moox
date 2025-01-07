@@ -138,7 +138,7 @@ class UserDeviceResource extends Resource
     {
         return [
             'index' => ListPage::route('/'),
-            //'view' => ViewPage::route('/{record}'),
+            // 'view' => ViewPage::route('/{record}'),
         ];
     }
 
@@ -146,7 +146,7 @@ class UserDeviceResource extends Resource
     {
         return [
             // TODO: Implement widgets
-            //UserDeviceWidgets::class,
+            // UserDeviceWidgets::class,
         ];
     }
 

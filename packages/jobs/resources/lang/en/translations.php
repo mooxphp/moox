@@ -22,11 +22,11 @@ return [
         'navigation_label' => 'Job Batches',
     ],
 
-    //general
+    // general
     'breadcrumb' => 'Moox Job',
     'navigation_group' => 'Job Manager',
 
-    //used by multiple plugins
+    // used by multiple plugins
     'id' => 'ID',
     'failed_at' => 'Failed at',
     'delete' => 'Delete',
@@ -39,20 +39,20 @@ return [
     'exception_message' => 'Exception message',
     'created_at' => 'Created at',
 
-    //jobs
+    // jobs
     'status' => 'Status',
     'running' => 'Running',
     'succeeded' => 'Succeeded',
     'progress' => 'Progress',
 
-    //Jobswaiting
+    // Jobswaiting
     'attempts' => 'Attempts',
     'reserved_at' => 'Reserved at',
     'waiting_jobs' => 'Total Jobs Waiting',
     'execution_time' => 'Total Execution Time',
     'average_time' => 'Average Execution Time',
 
-    //jobfailed
+    // jobfailed
     'uuid' => 'Uuid',
     'payload' => 'Queue',
     'connection' => 'Connection',
@@ -65,7 +65,7 @@ return [
     'jobs_pushed_back_notification' => 'jobs have been pushed back onto the queue.',
     'job_pushed_back_notification' => 'has been pushed back onto the queue.',
 
-    //jobbatches
+    // jobbatches
     'canceled_at' => 'Canceled at',
     'failed_jobs' => 'Failed Jobs',
     'failed_job_id' => 'Failed Job id',

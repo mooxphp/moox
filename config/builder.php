@@ -91,11 +91,11 @@ return [
                     'template' => __DIR__.'/../packages/builder/src/Templates/Entity/plugin.php.stub',
                     'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
                 ],
-                //'migration' => [
+                // 'migration' => [
                 //    'path' => '%BasePath%\app\Builder\Locale\database\migrations',
                 //    'template' => __DIR__ . '/../packages/builder/src/Templates/Entity/migration.php.stub',
                 //    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
-                //],
+                // ],
                 'translation' => [
                     'path' => 'Locale\lang\%locale%\entities',
                     'template' => __DIR__.'/../packages/builder/src/Templates/Entity/translation.php.stub',

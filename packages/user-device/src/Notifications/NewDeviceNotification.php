@@ -49,7 +49,7 @@ class NewDeviceNotification extends Notification implements ShouldQueue
             ->line(__('core::device.device_details').': '.$this->deviceDetails['title'])
             ->line(__('core::device.if_not_you_secure_account'));
         // TODO: Add a button to review devices (need user profile) or Magic Link or to secure account
-        //->action('Review Devices', url('/user/devices'))
+        // ->action('Review Devices', url('/user/devices'))
     }
 
     /**

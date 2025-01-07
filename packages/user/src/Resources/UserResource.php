@@ -334,10 +334,10 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //UserResource\RelationManagers\AuthorsRelationManager::class,
-            //UserResource\RelationManagers\SessionsRelationManager::class,
-            //UserResource\RelationManagers\SyncsRelationManager::class,
-            //UserResource\RelationManagers\PlatformsRelationManager::class,
+            // UserResource\RelationManagers\AuthorsRelationManager::class,
+            // UserResource\RelationManagers\SessionsRelationManager::class,
+            // UserResource\RelationManagers\SyncsRelationManager::class,
+            // UserResource\RelationManagers\PlatformsRelationManager::class,
         ];
     }
 

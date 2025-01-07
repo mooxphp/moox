@@ -19,7 +19,7 @@ class StaticLocale extends Model
         'country_id',
         'locale',
         'name',
-        'is_official_language'
+        'is_official_language',
     ];
 
     public function language()

@@ -20,5 +20,5 @@ arch()
     ->expect('App\Http')
     ->toOnlyBeUsedIn('App\Http');
 
-//arch()->preset()->php();
-//arch()->preset()->security()->ignoring('md5');
+// arch()->preset()->php();
+// arch()->preset()->security()->ignoring('md5');

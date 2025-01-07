@@ -34,7 +34,7 @@ class UserSessionResource extends Resource
     {
         return $form
             ->schema([
-                //TextInput::make('id')
+                // TextInput::make('id')
                 //    ->maxLength(255),
                 TextInput::make('user_id')
                     ->label(__('core::user.user_id'))
@@ -45,8 +45,8 @@ class UserSessionResource extends Resource
                 TextInput::make('user_agent')
                     ->label(__('core::user.user_agent'))
                     ->maxLength(255),
-                //Textarea::make('payload'),
-                //TextInput::make('last_activity')
+                // Textarea::make('payload'),
+                // TextInput::make('last_activity')
                 //    ->maxLength(255),
             ]);
     }
@@ -127,7 +127,7 @@ class UserSessionResource extends Resource
     {
         return [
             'index' => ListPage::route('/'),
-            //'view' => ViewPage::route('/{record}'),
+            // 'view' => ViewPage::route('/{record}'),
 
         ];
     }
@@ -136,7 +136,7 @@ class UserSessionResource extends Resource
     {
         return [
             // TODO: Implement widgets
-            //UserSessionWidgets::class,
+            // UserSessionWidgets::class,
         ];
     }
 

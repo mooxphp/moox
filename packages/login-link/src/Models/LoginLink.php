@@ -31,8 +31,8 @@ class LoginLink extends Model
         parent::__construct($attributes);
 
         // TODO: Add the appends here.
-        //$this->appends = [
-        //];
+        // $this->appends = [
+        // ];
     }
 
     protected static function boot()

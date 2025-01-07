@@ -35,7 +35,7 @@ use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 
-//use Moox\Core\Forms\Components\TitleWithSlugInput;
+// use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class CategoryResource extends Resource
 {

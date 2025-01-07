@@ -160,12 +160,12 @@ class InstallCommand extends Command
         $panelsToregister = $this->getPanelProviderPath();
         if ($panelsToregister != null) {
             if (is_array($panelsToregister)) {
-                //Multiselect
+                // Multiselect
                 foreach ($panelsToregister as $panelprovider) {
                     $this->registerPlugins($providerPath.'/'.$panelprovider);
                 }
             } else {
-                //only one
+                // only one
                 $this->registerPlugins($panelsToregister);
             }
         } else {

@@ -126,6 +126,6 @@ return [
     | // TODO: currently not implemented!
     */
     'whitelisted_ips' => [
-        //'Your Network' => '61.2.101.101',
+        // 'Your Network' => '61.2.101.101',
     ],
 ];

@@ -21,10 +21,10 @@ return [
         'plural' => '',
         'navigation_label' => '',
     ],
-    //general
+    // general
     'breadcrumb' => '',
     'navigation_group' => '',
-    //used by multiple plugins
+    // used by multiple plugins
     'id' => 'ID',
     'failed_at' => 'Neuspjelo',
     'delete' => 'Izbriši',
@@ -36,18 +36,18 @@ return [
     'waiting' => 'Čeka',
     'exception_message' => 'Poruka za iznimku',
     'created_at' => 'Stvoreno',
-    //jobs
+    // jobs
     'status' => 'Stanje',
     'running' => '',
     'succeeded' => 'Uspjelo',
     'progress' => 'Napredak',
-    //Jobswaiting
+    // Jobswaiting
     'attempts' => 'Pokušaji',
     'reserved_at' => 'Rezervirano',
     'waiting_jobs' => '',
     'execution_time' => 'Ukupno vrijeme izvršavanja',
     'average_time' => 'Prosječno vrijeme izvršavanja',
-    //jobfailed
+    // jobfailed
     'uuid' => 'Univerzalni jedinstveni identifikator (Uuid)',
     'payload' => '',
     'connection' => 'Veza',
@@ -59,7 +59,7 @@ return [
     'delete_all_failed_jobs_notification' => 'Svi neuspjeli poslovi su uklonjeni.',
     'jobs_pushed_back_notification' => '',
     'job_pushed_back_notification' => '',
-    //jobbatches
+    // jobbatches
     'canceled_at' => 'Prekinuto',
     'failed_jobs' => 'Neuspjeli poslovi',
     'failed_job_id' => 'ID neuspjelog posla',

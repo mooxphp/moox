@@ -16,9 +16,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('moox:batchjob')->daily();
         $schedule->command('moox:demojob')->hourly();
-        //$schedule->command('moox:failjob')->cron('0 */3 * * *');        // Every 3 minutes
-        //$schedule->command('moox:longjob')->cron('0 */45 * * *');       // Every 45 minutes
-        //$schedule->command('moox:timeoutjob')->cron('0 */20 * * *');    // Every 20 minutes
+        // $schedule->command('moox:failjob')->cron('0 */3 * * *');        // Every 3 minutes
+        // $schedule->command('moox:longjob')->cron('0 */45 * * *');       // Every 45 minutes
+        // $schedule->command('moox:timeoutjob')->cron('0 */20 * * *');    // Every 20 minutes
     }
 
     /**
