@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'single' => 'trans//entities/static-country.static-country',
-    'plural' => 'trans//entities/static-country.static-countries',
+    'single' => 'trans//entities/static-country.static_country',
+    'plural' => 'trans//entities/static-country.static_countries',
     'tabs' => [
         'all' => [
             'label' => 'trans//core::core.all',

@@ -13,10 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 
@@ -68,57 +65,57 @@ class StaticCountryResource extends Resource
                             Section::make()
                                 ->schema([
                                     TextInput::make('alpha2')
-                                        ->label('Alpha-2 Code')
+                                        ->label(__('locale.alpha2'))
                                         ->maxLength(3)->required(),
                                     TextInput::make('alpha3_b')
-                                        ->label('Alpha-3 Code (B)')
+                                        ->label(__('locale.alpha3_b'))
                                         ->maxLength(3)->nullable(),
                                     TextInput::make('alpha3_t')
-                                        ->label('Alpha-3 Code (T)')
+                                        ->label(__('locale.alpha3_t'))
                                         ->maxLength(3)->nullable(),
                                     TextInput::make('common_name')
-                                        ->label('Common Name')
+                                        ->label(__('locale.common_name'))
                                         ->maxLength(255)->required(),
                                     TextInput::make('native_name')
-                                        ->label('Native Name')
+                                        ->label(__('locale.native_name'))
                                         ->maxLength(255)->nullable(),
                                     KeyValue::make('exonyms')
-                                        ->label('Exonyms'),
+                                        ->label(__('locale.exonyms')),
                                     TextInput::make('calling_code')
-                                        ->label('Calling Code')
+                                        ->label(__('entities/static-country.calling_code'))
                                         ->numeric()->maxValue(100),
                                     TextInput::make('capital')
-                                        ->label('Capital')
+                                        ->label(__('entities/static-country.capital'))
                                         ->maxLength(255)->nullable(),
                                     TextInput::make('population')
-                                        ->label('Population')
+                                        ->label(__('entities/static-country.population'))
                                         ->maxLength(255)->nullable(),
                                     TextInput::make('area')
-                                        ->label('Area')
+                                        ->label(__('entities/static-country.area'))
                                         ->maxLength(255)->nullable(),
                                     KeyValue::make('links')
-                                        ->label('Links'),
+                                        ->label(__('entities/static-country.links')),
                                     KeyValue::make('tlds')
-                                        ->label('TLDs'),
+                                        ->label(__('entities/static-country.tlds')),
                                     KeyValue::make('membership')
-                                        ->label('Membership'),
+                                        ->label(__('entities/static-country.membership')),
                                     KeyValue::make('embargo_data')
-                                        ->label('Embargo Data'),
+                                        ->label(__('entities/static-country.embargo_data')),
                                     KeyValue::make('address_format')
-                                        ->label('Address Format'),
+                                        ->label(__('entities/static-country.address_format')),
                                     TextInput::make('postal_code_regex')
-                                        ->label('Postal Code Regex')
+                                        ->label(__('entities/static-country.postal_code_regex'))
                                         ->maxLength(255)->nullable(),
                                     TextInput::make('dialing_prefix')
-                                        ->label('Dialing Prefix')
+                                        ->label(__('entities/static-country.dialing_prefix'))
                                         ->maxLength(10)->nullable(),
                                     KeyValue::make('phone_number_formatting')
-                                        ->label('Phone Number Formatting'),
+                                        ->label(__('entities/static-country.phone_number_formatting')),
                                     TextInput::make('date_format')
-                                        ->label('Date Format')
+                                        ->label(__('entities/static-country.date_format'))
                                         ->maxLength(10)->required(),
                                     KeyValue::make('currency_format')
-                                        ->label('Currency Format'),
+                                        ->label(__('entities/static-country.currency_format')),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -131,23 +128,20 @@ class StaticCountryResource extends Resource
                             Section::make('')
                                 ->schema([
                                     Select::make('region')
-                                        ->label('Region')
-                                        ->placeholder(__('core::core.type'))
-                                        ->options(['Africa' => 'Africa', 'Americas' => 'Americas', 'Asia' => 'Asia', 'Europe' => 'Europe', 'Oceania' => 'Oceania', 'Antarctica' => 'Antarctica']),
+                                        ->label(__('entities/static-country.region'))
+                                        ->options(__('entities/static-country.region_options')),
                                 ]),
                             Section::make('')
                                 ->schema([
                                     Select::make('subregion')
-                                        ->label('Subregion')
-                                        ->placeholder(__('core::core.type'))
-                                        ->options(['Northern Africa' => 'Northern Africa', 'Sub-Saharan Africa' => 'Sub-Saharan Africa', 'Eastern Africa' => 'Eastern Africa', 'Middle Africa' => 'Middle Africa', 'Southern Africa' => 'Southern Africa', 'Western Africa' => 'Western Africa', 'Latin America and the Caribbean' => 'Latin America and the Caribbean', 'Northern America' => 'Northern America', 'Caribbean' => 'Caribbean', 'Central America' => 'Central America', 'South America' => 'South America', 'Central Asia' => 'Central Asia', 'Eastern Asia' => 'Eastern Asia', 'South-Eastern Asia' => 'South-Eastern Asia', 'Southern Asia' => 'Southern Asia', 'Western Asia' => 'Western Asia', 'Eastern Europe' => 'Eastern Europe', 'Northern Europe' => 'Northern Europe', 'Southern Europe' => 'Southern Europe', 'Western Europe' => 'Western Europe', 'Australia and New Zealand' => 'Australia and New Zealand', 'Melanesia' => 'Melanesia', 'Micronesia' => 'Micronesia', 'Polynesia' => 'Polynesia']),
+                                        ->label(__('entities/static-country.subregion'))
+                                        ->options(__('entities/static-country.subregion_options')),
                                 ]),
                             Section::make('')
                                 ->schema([
                                     Select::make('embargo')
-                                        ->label('Embargo')
-                                        ->placeholder(__('core::core.type'))
-                                        ->options(['New' => 'New', 'Open' => 'Open', 'Pending' => 'Pending', 'Closed' => 'Closed']),
+                                        ->label(__('entities/static-country.embargo'))
+                                        ->options(__('entities/static-country.embargo_options')),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 1]),
@@ -160,263 +154,25 @@ class StaticCountryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('alpha2'),
-                TextColumn::make('alpha3_b'),
-                TextColumn::make('alpha3_t'),
-                TextColumn::make('common_name'),
-                TextColumn::make('native_name'),
-                TextColumn::make('region')->sortable()->searchable()->toggleable(),
-                TextColumn::make('subregion')->sortable()->searchable()->toggleable(),
-                TextColumn::make('capital'),
-                TextColumn::make('population'),
-                TextColumn::make('area'),
-                TextColumn::make('embargo')->sortable()->searchable()->toggleable(),
-                TextColumn::make('postal_code_regex'),
-                TextColumn::make('dialing_prefix'),
-                TextColumn::make('date_format'),
+                TextColumn::make('alpha2')->label(__('locale.alpha2')),
+                TextColumn::make('alpha3_b')->label(__('locale.alpha3_b')),
+                TextColumn::make('alpha3_t')->label(__('locale.alpha3_t')),
+                TextColumn::make('common_name')->label(__('locale.common_name')),
+                TextColumn::make('native_name')->label(__('locale.native_name')),
+                TextColumn::make('region')->sortable()->searchable()->toggleable()->label(__('entities/static-country.region')),
+                TextColumn::make('subregion')->sortable()->searchable()->toggleable()->label(__('entities/static-country.subregion')),
+                TextColumn::make('capital')->label(__('entities/static-country.capital')),
+                TextColumn::make('population')->label(__('entities/static-country.population')),
+                TextColumn::make('area')->label(__('entities/static-country.area')),
+                TextColumn::make('embargo')->sortable()->searchable()->toggleable()->label(__('entities/static-country.embargo')),
+                TextColumn::make('postal_code_regex')->label(__('entities/static-country.postal_code_regex')),
+                TextColumn::make('dialing_prefix')->label(__('entities/static-country.dialing_prefix')),
+                TextColumn::make('date_format')->label(__('entities/static-country.date_format')),
             ])
             ->defaultSort('id', 'desc')
             ->actions([...static::getTableActions()])
             ->bulkActions([...static::getBulkActions()])
-            ->filters([
-                Filter::make('alpha2')
-                    ->form([
-                        TextInput::make('alpha2')
-                            ->label('Alpha-2 Code')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['alpha2'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['alpha2']) {
-                            return null;
-                        }
-
-                        return 'Alpha-2 Code: '.$data['alpha2'];
-                    }),
-                Filter::make('alpha3_b')
-                    ->form([
-                        TextInput::make('alpha3_b')
-                            ->label('Alpha-3 Code (B)')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['alpha3_b'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['alpha3_b']) {
-                            return null;
-                        }
-
-                        return 'Alpha-3 Code (B): '.$data['alpha3_b'];
-                    }),
-                Filter::make('alpha3_t')
-                    ->form([
-                        TextInput::make('alpha3_t')
-                            ->label('Alpha-3 Code (T)')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['alpha3_t'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['alpha3_t']) {
-                            return null;
-                        }
-
-                        return 'Alpha-3 Code (T): '.$data['alpha3_t'];
-                    }),
-                Filter::make('common_name')
-                    ->form([
-                        TextInput::make('common_name')
-                            ->label('Common Name')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['common_name'],
-                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['common_name']) {
-                            return null;
-                        }
-
-                        return 'Common Name: '.$data['common_name'];
-                    }),
-                Filter::make('native_name')
-                    ->form([
-                        TextInput::make('native_name')
-                            ->label('Native Name')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['native_name'],
-                            fn (Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['native_name']) {
-                            return null;
-                        }
-
-                        return 'Native Name: '.$data['native_name'];
-                    }),
-                Filter::make('has_exonyms')
-                    ->query(fn ($query) => $query->whereNotNull('exonyms')),
-                SelectFilter::make('region')
-                    ->label('Region')
-                    ->placeholder(__('core::core.filter').' Region')
-                    ->options(['Africa' => 'Africa', 'Americas' => 'Americas', 'Asia' => 'Asia', 'Europe' => 'Europe', 'Oceania' => 'Oceania', 'Antarctica' => 'Antarctica']),
-                SelectFilter::make('subregion')
-                    ->label('Subregion')
-                    ->placeholder(__('core::core.filter').' Subregion')
-                    ->options(['Northern Africa' => 'Northern Africa', 'Sub-Saharan Africa' => 'Sub-Saharan Africa', 'Eastern Africa' => 'Eastern Africa', 'Middle Africa' => 'Middle Africa', 'Southern Africa' => 'Southern Africa', 'Western Africa' => 'Western Africa', 'Latin America and the Caribbean' => 'Latin America and the Caribbean', 'Northern America' => 'Northern America', 'Caribbean' => 'Caribbean', 'Central America' => 'Central America', 'South America' => 'South America', 'Central Asia' => 'Central Asia', 'Eastern Asia' => 'Eastern Asia', 'South-Eastern Asia' => 'South-Eastern Asia', 'Southern Asia' => 'Southern Asia', 'Western Asia' => 'Western Asia', 'Eastern Europe' => 'Eastern Europe', 'Northern Europe' => 'Northern Europe', 'Southern Europe' => 'Southern Europe', 'Western Europe' => 'Western Europe', 'Australia and New Zealand' => 'Australia and New Zealand', 'Melanesia' => 'Melanesia', 'Micronesia' => 'Micronesia', 'Polynesia' => 'Polynesia']),
-                Filter::make('capital')
-                    ->form([
-                        TextInput::make('capital')
-                            ->label('Capital')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['capital'],
-                            fn (Builder $query, $value): Builder => $query->where('capital', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['capital']) {
-                            return null;
-                        }
-
-                        return 'Capital: '.$data['capital'];
-                    }),
-                Filter::make('population')
-                    ->form([
-                        TextInput::make('population')
-                            ->label('Population')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['population'],
-                            fn (Builder $query, $value): Builder => $query->where('population', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['population']) {
-                            return null;
-                        }
-
-                        return 'Population: '.$data['population'];
-                    }),
-                Filter::make('area')
-                    ->form([
-                        TextInput::make('area')
-                            ->label('Area')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['area'],
-                            fn (Builder $query, $value): Builder => $query->where('area', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['area']) {
-                            return null;
-                        }
-
-                        return 'Area: '.$data['area'];
-                    }),
-                Filter::make('has_links')
-                    ->query(fn ($query) => $query->whereNotNull('links')),
-                Filter::make('has_tlds')
-                    ->query(fn ($query) => $query->whereNotNull('tlds')),
-                Filter::make('has_membership')
-                    ->query(fn ($query) => $query->whereNotNull('membership')),
-                SelectFilter::make('embargo')
-                    ->label('Embargo')
-                    ->placeholder(__('core::core.filter').' Embargo')
-                    ->options(['New' => 'New', 'Open' => 'Open', 'Pending' => 'Pending', 'Closed' => 'Closed']),
-                Filter::make('has_embargo_data')
-                    ->query(fn ($query) => $query->whereNotNull('embargo_data')),
-                Filter::make('has_address_format')
-                    ->query(fn ($query) => $query->whereNotNull('address_format')),
-                Filter::make('postal_code_regex')
-                    ->form([
-                        TextInput::make('postal_code_regex')
-                            ->label('Postal Code Regex')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['postal_code_regex'],
-                            fn (Builder $query, $value): Builder => $query->where('postal_code_regex', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['postal_code_regex']) {
-                            return null;
-                        }
-
-                        return 'Postal Code Regex: '.$data['postal_code_regex'];
-                    }),
-                Filter::make('dialing_prefix')
-                    ->form([
-                        TextInput::make('dialing_prefix')
-                            ->label('Dialing Prefix')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['dialing_prefix'],
-                            fn (Builder $query, $value): Builder => $query->where('dialing_prefix', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['dialing_prefix']) {
-                            return null;
-                        }
-
-                        return 'Dialing Prefix: '.$data['dialing_prefix'];
-                    }),
-                Filter::make('has_phone_number_formatting')
-                    ->query(fn ($query) => $query->whereNotNull('phone_number_formatting')),
-                Filter::make('date_format')
-                    ->form([
-                        TextInput::make('date_format')
-                            ->label('Date Format')
-                            ->placeholder(__('core::core.search')),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['date_format'],
-                            fn (Builder $query, $value): Builder => $query->where('date_format', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['date_format']) {
-                            return null;
-                        }
-
-                        return 'Date Format: '.$data['date_format'];
-                    }),
-                Filter::make('has_currency_format')
-                    ->query(fn ($query) => $query->whereNotNull('currency_format')),
-            ]);
+            ->filters([]);
     }
 
     public static function getPages(): array

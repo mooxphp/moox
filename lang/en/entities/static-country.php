@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'static_country' => 'Static Country',
+    'static_countries' => 'Static Countries',
+    'region' => 'Region',
+    'subregion' => 'Subregion',
+    'capital' => 'Capital',
+    'population' => 'Population',
+    'area' => 'Area',
+    'embargo' => 'Embargo',
+    'postal_code_regex' => 'Postal Code Regex',
+    'dialing_prefix' => 'Dialing Prefix',
+    'calling_code' => 'Calling Code',
+    'date_format' => 'Date Format',
+    'region_options' => ['Africa' => 'Africa', 'Americas' => 'Americas', 'Asia' => 'Asia', 'Europe' => 'Europe', 'Oceania' => 'Oceania', 'Antarctica' => 'Antarctica'],
+    'subregion_options' => ['Northern Africa' => 'Northern Africa', 'Sub-Saharan Africa' => 'Sub-Saharan Africa', 'Eastern Africa' => 'Eastern Africa', 'Middle Africa' => 'Middle Africa', 'Southern Africa' => 'Southern Africa', 'Western Africa' => 'Western Africa', 'Latin America and the Caribbean' => 'Latin America and the Caribbean', 'Northern America' => 'Northern America', 'Caribbean' => 'Caribbean', 'Central America' => 'Central America', 'South America' => 'South America', 'Central Asia' => 'Central Asia', 'Eastern Asia' => 'Eastern Asia', 'South-Eastern Asia' => 'South-Eastern Asia', 'Southern Asia' => 'Southern Asia', 'Western Asia' => 'Western Asia', 'Eastern Europe' => 'Eastern Europe', 'Northern Europe' => 'Northern Europe', 'Southern Europe' => 'Southern Europe', 'Western Europe' => 'Western Europe', 'Australia and New Zealand' => 'Australia and New Zealand', 'Melanesia' => 'Melanesia', 'Micronesia' => 'Micronesia', 'Polynesia' => 'Polynesia'],
+    'embargo_options' => ['New' => 'New', 'Open' => 'Open', 'Pending' => 'Pending', 'Closed' => 'Closed'],
+    'calling_code' => 'Calling Code',
+    'links' => 'Links',
+    'tlds' => 'TLDs',
+    'membership' => 'Membership',
+    'embargo_data' => 'Embargo Data',
+    'address_format' => 'Address Format',
+    'phone_number_formatting' => 'Phone Number Formatting',
+    'currency_format' => 'Currency Format',
+];

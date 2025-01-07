@@ -51,7 +51,7 @@ class LocalePreset extends AbstractPreset
                 label: 'language',
                 description: 'Language to Locale',
                 nullable: false,
-                relatedModel: \App\Locale\Locale\Models\StaticLanguage::class,
+                relatedModel: \App\Locale\Models\StaticLanguage::class,
             ),
             new Relationship(
                 name: 'country',

@@ -1,14 +1,13 @@
 <?php
 
 return [
-    'single' => 'trans//entities/static-language.static-language',
-    'plural' => 'trans//entities/static-language.static-languages',
+    'single' => 'trans//entities/static-language.static_language',
+    'plural' => 'trans//entities/static-language.static_languages',
     'tabs' => [
         'all' => [
             'label' => 'trans//core::core.all',
             'icon' => 'gmdi-filter-list',
-            'query' => [
-            ],
+            'query' => [],
         ],
         '0' => [
             'label' => 'LTR',

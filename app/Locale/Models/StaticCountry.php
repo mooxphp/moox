@@ -51,4 +51,9 @@ class StaticCountry extends Model
         'phone_number_formatting' => 'array',
         'currency_format' => 'array',
     ];
+
+    public function locales()
+    {
+        return $this->hasMany(StaticLocale::class);
+    }
 }

@@ -50,12 +50,12 @@ class StaticLanguageResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return config('app.navigation_group');
+        return config('static-language.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('navigation_sort') + 1;
+        return config('static-language.navigation_sort') + 1;
     }
 
     public static function form(Form $form): Form
@@ -68,22 +68,22 @@ class StaticLanguageResource extends Resource
                             Section::make()
                                 ->schema([
                                     TextInput::make('alpha2')
-                                        ->label('Alpha-2 Code')
+                                        ->label(__('locale.alpha2'))
                                         ->maxLength(255)->required(),
                                     TextInput::make('alpha3_b')
-                                        ->label('Alpha-3 Bibliographic Code')
+                                        ->label(__('locale.alpha3_b'))
                                         ->maxLength(255)->nullable(),
                                     TextInput::make('alpha3_t')
-                                        ->label('Alpha-3 Terminology Code')
+                                        ->label(__('locale.alpha3_t'))
                                         ->maxLength(255)->nullable(),
                                     TextInput::make('common_name')
-                                        ->label('Common Name')
+                                        ->label(__('locale.common_name'))
                                         ->maxLength(255)->required(),
                                     TextInput::make('native_name')
-                                        ->label('Native Name')
+                                        ->label(__('locale.native_name'))
                                         ->maxLength(255)->nullable(),
                                     KeyValue::make('exonyms')
-                                        ->label('Exonyms'),
+                                        ->label(__('locale.exonyms')),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -96,17 +96,15 @@ class StaticLanguageResource extends Resource
                             Section::make('')
                                 ->schema([
                                     Select::make('script')
-                                        ->label('Script')
-                                        ->placeholder(__('core::core.type'))
-                                        ->options(['Latin' => 'Latin', 'Cyrillic' => 'Cyrillic', 'Arabic' => 'Arabic', 'Devanagari' => 'Devanagari', 'Other' => 'Other'])
+                                        ->label(__('entities/static-language.script'))
+                                        ->options(__('entities/static-language.script_options'))
                                         ->required(),
                                 ]),
                             Section::make('')
                                 ->schema([
                                     Select::make('direction')
-                                        ->label('Direction')
-                                        ->placeholder(__('core::core.type'))
-                                        ->options(['LTR' => 'LTR', 'RTL' => 'RTL'])
+                                        ->label(__('entities/static-language.direction'))
+                                        ->options(__('entities/static-language.direction_options'))
                                         ->required(),
                                 ]),
                         ])
@@ -141,7 +139,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha2'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -149,7 +147,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-2 Code: '.$data['alpha2'];
+                        return 'Alpha-2 Code: ' . $data['alpha2'];
                     }),
                 Filter::make('alpha3_b')
                     ->form([
@@ -160,7 +158,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_b'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -168,7 +166,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-3 Bibliographic Code: '.$data['alpha3_b'];
+                        return 'Alpha-3 Bibliographic Code: ' . $data['alpha3_b'];
                     }),
                 Filter::make('alpha3_t')
                     ->form([
@@ -179,7 +177,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_t'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -187,7 +185,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-3 Terminology Code: '.$data['alpha3_t'];
+                        return 'Alpha-3 Terminology Code: ' . $data['alpha3_t'];
                     }),
                 Filter::make('common_name')
                     ->form([
@@ -198,7 +196,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['common_name'],
-                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -206,7 +204,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Common Name: '.$data['common_name'];
+                        return 'Common Name: ' . $data['common_name'];
                     }),
                 Filter::make('native_name')
                     ->form([
@@ -217,7 +215,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['native_name'],
-                            fn (Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -225,15 +223,15 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Native Name: '.$data['native_name'];
+                        return 'Native Name: ' . $data['native_name'];
                     }),
                 SelectFilter::make('script')
                     ->label('Script')
-                    ->placeholder(__('core::core.filter').' Script')
+                    ->placeholder(__('core::core.filter') . ' Script')
                     ->options(['Latin' => 'Latin', 'Cyrillic' => 'Cyrillic', 'Arabic' => 'Arabic', 'Devanagari' => 'Devanagari', 'Other' => 'Other']),
                 SelectFilter::make('direction')
                     ->label('Direction')
-                    ->placeholder(__('core::core.filter').' Direction')
+                    ->placeholder(__('core::core.filter') . ' Direction')
                     ->options(['LTR' => 'LTR', 'RTL' => 'RTL']),
             ]);
     }

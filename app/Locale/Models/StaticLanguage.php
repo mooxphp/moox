@@ -31,4 +31,9 @@ class StaticLanguage extends Model
     protected $casts = [
         'exonyms' => 'array',
     ];
+
+    public function locales()
+    {
+        return $this->hasMany(StaticLocale::class);
+    }
 }
