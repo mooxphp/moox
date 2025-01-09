@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Locale\Models\StaticCountry;
+use Illuminate\Database\Seeder;
 
 class StaticCountrySeeder extends Seeder
 {
@@ -12,8 +12,6 @@ class StaticCountrySeeder extends Seeder
      */
     public function run(): void
     {
-
-
         $country = new StaticCountry(
             [
                 'alpha2' => 'US',

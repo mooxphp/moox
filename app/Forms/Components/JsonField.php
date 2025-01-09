@@ -8,7 +8,6 @@ class JsonField extends Textarea
 {
     protected string $view = 'forms.components.json-field';
 
-
     protected function setUp(): void
     {
         parent::setUp();

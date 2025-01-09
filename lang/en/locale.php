@@ -9,5 +9,4 @@ return [
     'common_name' => 'Common Name',
     'native_name' => 'Native Name',
 
-
 ];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Locale\Resources;
 
+use App\Forms\Components\JsonField;
 use App\Locale\Resources\StaticCountryResource\Pages;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -15,7 +16,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use App\Forms\Components\JsonField;
 
 class StaticCountryResource extends Resource
 {
