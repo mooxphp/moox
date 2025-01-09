@@ -6,7 +6,6 @@ namespace App\Locale\Resources;
 
 use App\Locale\Resources\StaticCountryResource\Pages;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use App\Forms\Components\JsonField;
 
 class StaticCountryResource extends Resource
 {
@@ -79,8 +79,7 @@ class StaticCountryResource extends Resource
                                     TextInput::make('native_name')
                                         ->label(__('locale.native_name'))
                                         ->maxLength(255)->nullable(),
-                                    KeyValue::make('exonyms')
-                                        ->label(__('locale.exonyms')),
+                                    JsonField::make('exonyms')->label(__('locale.exonyms')),
                                     TextInput::make('calling_code')
                                         ->label(__('entities/static-country.calling_code'))
                                         ->numeric()->maxValue(100),
@@ -93,15 +92,19 @@ class StaticCountryResource extends Resource
                                     TextInput::make('area')
                                         ->label(__('entities/static-country.area'))
                                         ->maxLength(255)->nullable(),
-                                    KeyValue::make('links')
+                                    JsonField::make('links')
                                         ->label(__('entities/static-country.links')),
-                                    KeyValue::make('tlds')
+                                    JsonField::make('tlds')
+                                        ->rows(4)
                                         ->label(__('entities/static-country.tlds')),
-                                    KeyValue::make('membership')
+                                    JsonField::make('membership')
+                                        ->rows(7)
                                         ->label(__('entities/static-country.membership')),
-                                    KeyValue::make('embargo_data')
+                                    JsonField::make('embargo_data')
+                                        ->rows(2)
                                         ->label(__('entities/static-country.embargo_data')),
-                                    KeyValue::make('address_format')
+                                    JsonField::make('address_format')
+                                        ->rows(7)
                                         ->label(__('entities/static-country.address_format')),
                                     TextInput::make('postal_code_regex')
                                         ->label(__('entities/static-country.postal_code_regex'))
@@ -109,12 +112,14 @@ class StaticCountryResource extends Resource
                                     TextInput::make('dialing_prefix')
                                         ->label(__('entities/static-country.dialing_prefix'))
                                         ->maxLength(10)->nullable(),
-                                    KeyValue::make('phone_number_formatting')
+                                    JsonField::make('phone_number_formatting')
+                                        ->rows(5)
                                         ->label(__('entities/static-country.phone_number_formatting')),
                                     TextInput::make('date_format')
                                         ->label(__('entities/static-country.date_format'))
                                         ->maxLength(10)->required(),
-                                    KeyValue::make('currency_format')
+                                    JsonField::make('currency_format')
+                                        ->rows(7)
                                         ->label(__('entities/static-country.currency_format')),
                                 ]),
                         ])

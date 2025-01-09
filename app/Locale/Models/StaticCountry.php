@@ -15,7 +15,6 @@ class StaticCountry extends Model
     protected $table = 'static_countries';
 
     protected $fillable = [
-        'simple',
         'alpha2',
         'alpha3_b',
         'alpha3_t',

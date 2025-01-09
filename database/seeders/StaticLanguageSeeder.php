@@ -11,21 +11,21 @@ class StaticLanguageSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Builder\Locale\Models\StaticLanguage::insert([
+        \App\Locale\Models\StaticLanguage::insert([
             [
                 'alpha2' => 'en',
                 'alpha3_b' => 'eng',
                 'alpha3_t' => 'eng',
                 'common_name' => 'English',
                 'direction' => 'LTR',
-                'exonyms' => json_encode([
+                'exonyms' => [
                     'fr' => 'Anglais',
                     'es' => 'Inglés',
                     'de' => 'Englisch',
                     'it' => 'Inglese',
                     'pt' => 'Inglês',
                     'zh' => '',
-                ]),
+                ],
                 'native_name' => 'English',
                 'script' => 'Latin',
             ],

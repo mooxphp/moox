@@ -14,3 +14,6 @@ FIX Plugin Generator
 - JSON Validation Block bauen
 - Relations
 - Die restlichen Entitäten generieren/ aufbauen
+
+## Notes 
+- Static Locales Name? -> braucht man dann dafür theoretisch exonyms?

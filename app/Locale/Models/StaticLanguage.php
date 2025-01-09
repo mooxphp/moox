@@ -15,7 +15,6 @@ class StaticLanguage extends Model
     protected $table = 'static_languages';
 
     protected $fillable = [
-        'simple',
         'alpha2',
         'alpha3_b',
         'alpha3_t',
