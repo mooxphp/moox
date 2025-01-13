@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace App\Locale\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
+use App\Locale\Resources\StaticLocaleResource\Pages;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Moox\Builder\Blocks\Fields\Boolean;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use App\Locale\Resources\StaticLocaleResource\Pages;
+use Moox\Core\Traits\Tabs\TabsInResource;
 
 class StaticLocaleResource extends Resource
 {
@@ -136,7 +134,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -144,7 +142,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'ID: ' . $data['id'];
+                        return 'ID: '.$data['id'];
                     }),
                 Filter::make('language_id')
                     ->form([
@@ -155,7 +153,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['language_id'],
-                            fn(Builder $query, $value): Builder => $query->where('language_id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('language_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -163,7 +161,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Language ID: ' . $data['language_id'];
+                        return 'Language ID: '.$data['language_id'];
                     }),
                 Filter::make('country_id')
                     ->form([
@@ -174,7 +172,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['country_id'],
-                            fn(Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -182,7 +180,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Country ID: ' . $data['country_id'];
+                        return 'Country ID: '.$data['country_id'];
                     }),
                 Filter::make('locale')
                     ->form([
@@ -193,7 +191,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['locale'],
-                            fn(Builder $query, $value): Builder => $query->where('locale', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('locale', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -201,7 +199,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Locale: ' . $data['locale'];
+                        return 'Locale: '.$data['locale'];
                     }),
                 Filter::make('name')
                     ->form([
@@ -212,7 +210,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -220,7 +218,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Name: ' . $data['name'];
+                        return 'Name: '.$data['name'];
                     }),
                 SelectFilter::make('language')
                     ->relationship('language', 'common_name'),

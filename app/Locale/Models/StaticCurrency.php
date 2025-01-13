@@ -22,7 +22,7 @@ class StaticCurrency extends Model
     ];
 
     protected $casts = [
-        'exonyms' => 'array'
+        'exonyms' => 'array',
     ];
 
     public function staticCountriesStaticCurrencies()

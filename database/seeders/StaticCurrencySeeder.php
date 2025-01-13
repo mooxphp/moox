@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class StaticCurrencySeeder extends Seeder
@@ -17,9 +16,9 @@ class StaticCurrencySeeder extends Seeder
             'common_name' => 'United States Dollar',
             'symbol' => '$',
             'exonyms' => json_encode([
-                "en" => "United States Dollar",
-                "fr" => "Dollar des États-Unis",
-                "es" => "Dólar estadounidense",
+                'en' => 'United States Dollar',
+                'fr' => 'Dollar des États-Unis',
+                'es' => 'Dólar estadounidense',
             ], JSON_UNESCAPED_UNICODE),
         ]);
 
@@ -28,9 +27,9 @@ class StaticCurrencySeeder extends Seeder
             'common_name' => 'Euro',
             'symbol' => '€',
             'exonyms' => json_encode([
-                "en" => "Euro",
-                "fr" => "Euro",
-                "es" => "Euro",
+                'en' => 'Euro',
+                'fr' => 'Euro',
+                'es' => 'Euro',
             ], JSON_UNESCAPED_UNICODE),
         ]);
 
@@ -39,9 +38,9 @@ class StaticCurrencySeeder extends Seeder
             'common_name' => 'Pound Sterling',
             'symbol' => '£',
             'exonyms' => json_encode([
-                "en" => "Pound Sterling",
-                "fr" => "Livre sterling",
-                "es" => "Libra esterlina",
+                'en' => 'Pound Sterling',
+                'fr' => 'Livre sterling',
+                'es' => 'Libra esterlina',
             ], JSON_UNESCAPED_UNICODE),
         ]);
 
@@ -50,9 +49,9 @@ class StaticCurrencySeeder extends Seeder
             'common_name' => 'Japanese Yen',
             'symbol' => '¥',
             'exonyms' => json_encode([
-                "en" => "Japanese Yen",
-                "fr" => "Yen japonais",
-                "es" => "Yen japonés",
+                'en' => 'Japanese Yen',
+                'fr' => 'Yen japonais',
+                'es' => 'Yen japonés',
             ], JSON_UNESCAPED_SLASHES),
         ]);
 
@@ -61,9 +60,9 @@ class StaticCurrencySeeder extends Seeder
             'common_name' => 'Swiss Franc',
             'symbol' => 'CHF',
             'exonyms' => json_encode([
-                "en" => "Swiss Franc",
-                "fr" => "Franc suisse",
-                "es" => "Franco suizo",
+                'en' => 'Swiss Franc',
+                'fr' => 'Franc suisse',
+                'es' => 'Franco suizo',
             ]),
         ]);
     }

@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Locale\Presets;
 
-use Moox\Builder\Blocks\Fields\Text;
-use Moox\Builder\Blocks\Features\Tabs;
 use Moox\Builder\Blocks\Fields\Boolean;
-use Moox\Builder\Blocks\Singles\Simple;
-use Moox\Builder\Presets\AbstractPreset;
 use Moox\Builder\Blocks\Fields\Relationship;
+use Moox\Builder\Blocks\Fields\Text;
+use Moox\Builder\Presets\AbstractPreset;
 
 class PivotPreset extends AbstractPreset
 {

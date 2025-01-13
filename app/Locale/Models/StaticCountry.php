@@ -60,6 +60,7 @@ class StaticCountry extends Model
     {
         return $this->hasMany(StaticCountriesStaticTimezones::class);
     }
+
     public function staticTimezones()
     {
         return $this->hasMany(StaticCountriesStaticTimezones::class);

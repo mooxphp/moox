@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Locale\Presets;
 
 use Moox\Builder\Blocks\Fields\Relationship;
-use Moox\Builder\Blocks\Fields\Text;
 use Moox\Builder\Blocks\Singles\Simple;
 use Moox\Builder\Presets\AbstractPreset;
 

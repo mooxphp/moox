@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Locale\Presets;
 
+use Moox\Builder\Blocks\Fields\Boolean;
 use Moox\Builder\Blocks\Fields\Date;
 use Moox\Builder\Blocks\Fields\Text;
-use Moox\Builder\Blocks\Fields\Boolean;
 use Moox\Builder\Blocks\Singles\Simple;
 use Moox\Builder\Presets\AbstractPreset;
 

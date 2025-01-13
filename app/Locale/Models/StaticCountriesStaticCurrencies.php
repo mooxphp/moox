@@ -14,7 +14,6 @@ class StaticCountriesStaticCurrencies extends Model
 
     protected $table = 'static_countries_static_currencies';
 
-
     protected $fillable = [
         'country_id',
         'currency_id',

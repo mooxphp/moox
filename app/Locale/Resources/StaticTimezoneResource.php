@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Locale\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
+use App\Locale\Resources\StaticTimezoneResource\Pages;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
-use Filament\Forms\Components\DateTimePicker;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use App\Locale\Resources\StaticTimezoneResource\Pages;
 
 class StaticTimezoneResource extends Resource
 {
@@ -127,7 +127,7 @@ class StaticTimezoneResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -135,7 +135,7 @@ class StaticTimezoneResource extends Resource
                             return null;
                         }
 
-                        return 'name: ' . $data['name'];
+                        return 'name: '.$data['name'];
                     }),
                 Filter::make('offset_standart')
                     ->form([
@@ -146,7 +146,7 @@ class StaticTimezoneResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['offset_standart'],
-                            fn(Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -154,7 +154,7 @@ class StaticTimezoneResource extends Resource
                             return null;
                         }
 
-                        return 'name: ' . $data['offset_standart'];
+                        return 'name: '.$data['offset_standart'];
                     }),
             ]);
     }

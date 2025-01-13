@@ -13,8 +13,9 @@ class JsonField extends Textarea
         parent::setUp();
 
         $this->dehydrateStateUsing(function ($state) {
-            if (is_string($state))
+            if (is_string($state)) {
                 return json_decode($state, true);
+            }
         });
     }
 }
