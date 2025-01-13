@@ -12,10 +12,9 @@ class JsonField extends Textarea
     {
         parent::setUp();
 
-        $this->rules(['json']);
-
         $this->dehydrateStateUsing(function ($state) {
-            return json_decode($this->getState(), true);
+            if (is_string($state))
+                return json_decode($state, true);
         });
     }
 }

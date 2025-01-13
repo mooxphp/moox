@@ -4,21 +4,25 @@ declare(strict_types=1);
 
 namespace App\Locale\Resources;
 
-use App\Locale\Resources\StaticLocaleResource\Pages;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Grid;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Section;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Builder\Blocks\Fields\Boolean;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use App\Locale\Resources\StaticLocaleResource\Pages;
 
 class StaticLocaleResource extends Resource
 {
@@ -26,7 +30,7 @@ class StaticLocaleResource extends Resource
 
     protected static ?string $model = \App\Locale\Models\StaticLocale::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-fmd-good-s';
 
     public static function getModelLabel(): string
     {
@@ -67,9 +71,6 @@ class StaticLocaleResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    TextInput::make('id')
-                                        ->label(__('entities/static-locale.id'))
-                                        ->maxLength(255)->required(),
                                     Select::make('language_id')
                                         ->label(__('entities/static-locale.language'))
                                         ->relationship('language', 'common_name')
@@ -80,6 +81,9 @@ class StaticLocaleResource extends Resource
                                         ->relationship('country', 'common_name')
                                         ->searchable()
                                         ->preload()->required(),
+                                    Toggle::make('is_official_language')
+                                        ->label(__('entities/static-locale.is_official_language'))
+                                        ->default(false),
                                     TextInput::make('locale')
                                         ->label(__('entities/static-locale.locale'))
                                         ->maxLength(255)->required(),
@@ -109,6 +113,9 @@ class StaticLocaleResource extends Resource
             ->columns([
                 TextColumn::make('locale')->label(__('entities/static-locale.locale')),
                 TextColumn::make('name')->label(__('entities/static-locale.name'))->sortable()->searchable()->toggleable(),
+                IconColumn::make('is_official_language')
+                    ->label(__('entities/static-locale.is_official_language'))
+                    ->boolean(),
                 TextColumn::make('language.common_name')
                     ->label(__('entities/static-locale.common_language_name'))
                     ->sortable(),
@@ -129,7 +136,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -137,7 +144,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'ID: '.$data['id'];
+                        return 'ID: ' . $data['id'];
                     }),
                 Filter::make('language_id')
                     ->form([
@@ -148,7 +155,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['language_id'],
-                            fn (Builder $query, $value): Builder => $query->where('language_id', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('language_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -156,7 +163,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Language ID: '.$data['language_id'];
+                        return 'Language ID: ' . $data['language_id'];
                     }),
                 Filter::make('country_id')
                     ->form([
@@ -167,7 +174,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['country_id'],
-                            fn (Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -175,7 +182,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Country ID: '.$data['country_id'];
+                        return 'Country ID: ' . $data['country_id'];
                     }),
                 Filter::make('locale')
                     ->form([
@@ -186,7 +193,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['locale'],
-                            fn (Builder $query, $value): Builder => $query->where('locale', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('locale', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -194,7 +201,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Locale: '.$data['locale'];
+                        return 'Locale: ' . $data['locale'];
                     }),
                 Filter::make('name')
                     ->form([
@@ -205,7 +212,7 @@ class StaticLocaleResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -213,7 +220,7 @@ class StaticLocaleResource extends Resource
                             return null;
                         }
 
-                        return 'Name: '.$data['name'];
+                        return 'Name: ' . $data['name'];
                     }),
                 SelectFilter::make('language')
                     ->relationship('language', 'common_name'),

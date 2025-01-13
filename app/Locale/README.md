@@ -12,6 +12,9 @@ FIX Plugin Generator
 ## Todos (Für Kim)
 - Anpassen der views, Felder noch passender machen in List, Edit, View
 - JSON Validation Block bauen
+    - Felder hydration checken 
+    - Validation einbauen 
+    - abstract class???
 - Relations
 - Die restlichen Entitäten generieren/ aufbauen
 

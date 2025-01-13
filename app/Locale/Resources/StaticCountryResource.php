@@ -23,7 +23,7 @@ class StaticCountryResource extends Resource
 
     protected static ?string $model = \App\Locale\Models\StaticCountry::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'gmdi-flag-o';
 
     public static function getModelLabel(): string
     {
@@ -88,7 +88,8 @@ class StaticCountryResource extends Resource
                                         ->maxLength(255)->nullable(),
                                     TextInput::make('population')
                                         ->label(__('entities/static-country.population'))
-                                        ->maxLength(255)->nullable(),
+                                        ->integer()
+                                        ->nullable(),
                                     TextInput::make('area')
                                         ->label(__('entities/static-country.area'))
                                         ->maxLength(255)->nullable(),
@@ -100,11 +101,9 @@ class StaticCountryResource extends Resource
                                     JsonField::make('membership')
                                         ->rows(7)
                                         ->label(__('entities/static-country.membership')),
-                                    JsonField::make('embargo_data')
-                                        ->rows(2)
+                                    TextInput::make('embargo_data')
                                         ->label(__('entities/static-country.embargo_data')),
-                                    JsonField::make('address_format')
-                                        ->rows(7)
+                                    TextInput::make('address_format')
                                         ->label(__('entities/static-country.address_format')),
                                     TextInput::make('postal_code_regex')
                                         ->label(__('entities/static-country.postal_code_regex'))
@@ -112,15 +111,14 @@ class StaticCountryResource extends Resource
                                     TextInput::make('dialing_prefix')
                                         ->label(__('entities/static-country.dialing_prefix'))
                                         ->maxLength(10)->nullable(),
-                                    JsonField::make('phone_number_formatting')
-                                        ->rows(5)
+                                    TextInput::make('phone_number_formatting')
                                         ->label(__('entities/static-country.phone_number_formatting')),
                                     TextInput::make('date_format')
                                         ->label(__('entities/static-country.date_format'))
                                         ->maxLength(10)->required(),
-                                    JsonField::make('currency_format')
-                                        ->rows(7)
+                                    TextInput::make('currency_format')
                                         ->label(__('entities/static-country.currency_format')),
+
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),

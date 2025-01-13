@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('native_name', 255)->nullable();
             $table->enum('script', ['Latin', 'Han', 'Hangul', 'Cyrillic', 'Arabic', 'Devanagari', 'Other', 'Bengali', 'Gujarati', 'Kannada', 'Malayalam', 'Oriya', 'Punjabi', 'Tamil', 'Telugu']);
             $table->enum('direction', ['LTR', 'RTL']);
-            $table->text('exonyms')->nullable();
+            $table->json('exonyms')->nullable();
         });
     }
 

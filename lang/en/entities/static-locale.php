@@ -4,6 +4,7 @@ return [
     'id' => 'id',
     'static_locale' => 'Static Local',
     'static_locales' => 'Static Locales',
+    'is_official_language' => 'Official Language',
     'language' => 'Language',
     'language_id' => 'Language id',
     'country_id' => 'Country id',
