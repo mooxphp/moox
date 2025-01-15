@@ -17,6 +17,18 @@ FIX Plugin Generator
     - abstract class???
 - Relations
 - Die restlichen Entitäten generieren/ aufbauen
+- Changes in Builder!!! nach tinkern raus machen 
 
 ## Notes 
 - Static Locales Name? -> braucht man dann dafür theoretisch exonyms?
+
+
+## Lang switch 
+- created Controller app\Http\Controllers\ChangeLanguageController.php
+- created Middleware app\Http\Middleware\SetLocale.php
+
+                 ->getStateUsing(function ($record) {
+                        $locale = app()->getLocale();
+
+                        return $record->exonyms[$locale] ?? $record->name;
+                    }),

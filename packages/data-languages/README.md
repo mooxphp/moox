@@ -1,8 +1,8 @@
 ![Moox DataLanguages](https://github.com/mooxphp/moox/raw/main/art/banner/data-languages-package.jpg)
 
-# Moox Data Languages
+# Moox DataLanguages
 
-This is my package data-languages
+Some Static Data
 
 ## Quick Installation
 

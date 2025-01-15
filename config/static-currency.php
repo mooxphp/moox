@@ -1,14 +1,13 @@
 <?php
 
 return [
-    'single' => 'trans//entities/static-currency.static-currency',
-    'plural' => 'trans//entities/static-currency.static-currencies',
+    'single' => 'trans//core::data-language.static-currency',
+    'plural' => 'trans//core::data-language.tatic-currencies',
     'tabs' => [
         'all' => [
             'label' => 'trans//core::core.all',
             'icon' => 'gmdi-filter-list',
-            'query' => [
-            ],
+            'query' => [],
         ],
     ],
     'relations' => [],

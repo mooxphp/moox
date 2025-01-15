@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-We maintain the current version of `Moox Data Languages` actively.
+We maintain the current version of `Moox DataLanguages` actively.
 
 Do not expect security fixes for older versions.
 

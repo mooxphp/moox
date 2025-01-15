@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\DataLanguages\Tests;
+namespace Moox\DataLanguages\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Moox\DataLanguages\DataLanguagesServiceProvider;
