@@ -28,7 +28,7 @@ class LanguagePanelProvider extends PanelProvider
                 'primary' => Color::Indigo,
                 'secondary' => Color::Neutral,
             ])
-            ->discoverResources(in: __DIR__ . '/../Resources', for: 'Moox\\DataLanguages\\Resources')
+            ->discoverResources(in: __DIR__.'/../Resources', for: 'Moox\\DataLanguages\\Resources')
             ->plugins([])
             ->pages([])
             ->middleware([

@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -20,10 +20,10 @@ class SetLocale
             app()->setLocale($request->session()->get('locale'));
             Carbon::setLocale($request->session()->get('locale'));
         } else {
-
             app()->setLocale(session('locale', 'en'));
             Carbon::setLocale(session('locale', 'en'));
         }
+
         return $next($request);
     }
 }

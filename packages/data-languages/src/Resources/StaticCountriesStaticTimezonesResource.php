@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Resources;
 
-use Moox\DataLanguages\Resources\StaticCountriesStaticTimezonesResource\Pages;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -15,6 +14,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\DataLanguages\Resources\StaticCountriesStaticTimezonesResource\Pages;
 
 class StaticCountriesStaticTimezonesResource extends Resource
 {

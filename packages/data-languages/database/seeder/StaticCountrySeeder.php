@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Moox\DataLanguages\Models\StaticCountry;
 use Illuminate\Database\Seeder;
+use Moox\DataLanguages\Models\StaticCountry;
 
 class StaticCountrySeeder extends Seeder
 {

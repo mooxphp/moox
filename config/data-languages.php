@@ -16,5 +16,5 @@
 */
 
 return [
-    'navigation_group' => 'Data Language'
+    'navigation_group' => 'Data Language',
 ];

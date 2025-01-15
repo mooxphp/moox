@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages;
 
-use Spatie\LaravelPackageTools\Package;
-use Moox\DataLanguages\Traits\ConfigScannerTrait;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Moox\DataLanguages\Providers\LanguagePanelProvider;
+use Moox\DataLanguages\Traits\ConfigScannerTrait;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class DataLanguagesServiceProvider extends PackageServiceProvider
 {
-
     use ConfigScannerTrait;
+
     public function register(): void
     {
         parent::register();
 
         $this->mergeConfigFiles();
-
 
         $this->app->register(LanguagePanelProvider::class);
     }
@@ -37,7 +36,7 @@ class DataLanguagesServiceProvider extends PackageServiceProvider
         ];
 
         foreach ($configs as $file => $namespace) {
-            $this->mergeConfigFrom(__DIR__ . "/../config/{$file}.php", $namespace);
+            $this->mergeConfigFrom(__DIR__."/../config/{$file}.php", $namespace);
         }
     }
 

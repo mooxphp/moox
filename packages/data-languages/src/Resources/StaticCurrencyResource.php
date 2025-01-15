@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use App\Forms\Components\JsonField;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\DataLanguages\Resources\StaticCurrencyResource\Pages;
 
 class StaticCurrencyResource extends Resource
@@ -118,7 +118,7 @@ class StaticCurrencyResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -126,7 +126,7 @@ class StaticCurrencyResource extends Resource
                             return null;
                         }
 
-                        return 'ID: ' . $data['id'];
+                        return 'ID: '.$data['id'];
                     }),
                 Filter::make('code')
                     ->form([
@@ -137,7 +137,7 @@ class StaticCurrencyResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['code'],
-                            fn(Builder $query, $value): Builder => $query->where('code', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('code', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -145,7 +145,7 @@ class StaticCurrencyResource extends Resource
                             return null;
                         }
 
-                        return 'Code: ' . $data['code'];
+                        return 'Code: '.$data['code'];
                     }),
                 Filter::make('common_name')
                     ->form([
@@ -156,7 +156,7 @@ class StaticCurrencyResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['common_name'],
-                            fn(Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -164,7 +164,7 @@ class StaticCurrencyResource extends Resource
                             return null;
                         }
 
-                        return 'Common Name: ' . $data['common_name'];
+                        return 'Common Name: '.$data['common_name'];
                     }),
                 Filter::make('symbol')
                     ->form([
@@ -175,7 +175,7 @@ class StaticCurrencyResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['symbol'],
-                            fn(Builder $query, $value): Builder => $query->where('symbol', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('symbol', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -183,7 +183,7 @@ class StaticCurrencyResource extends Resource
                             return null;
                         }
 
-                        return 'Symbol: ' . $data['symbol'];
+                        return 'Symbol: '.$data['symbol'];
                     }),
                 Filter::make('exonyms')
                     ->form([
@@ -194,7 +194,7 @@ class StaticCurrencyResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['exonyms'],
-                            fn(Builder $query, $value): Builder => $query->where('exonyms', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('exonyms', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -202,7 +202,7 @@ class StaticCurrencyResource extends Resource
                             return null;
                         }
 
-                        return 'Exonyms: ' . $data['exonyms'];
+                        return 'Exonyms: '.$data['exonyms'];
                     }),
             ]);
     }

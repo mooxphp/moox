@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Resources;
 
-use Moox\DataLanguages\Resources\StaticCountriesStaticCurrenciesResource\Pages;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -21,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\DataLanguages\Resources\StaticCountriesStaticCurrenciesResource\Pages;
 
 class StaticCountriesStaticCurrenciesResource extends Resource
 {
@@ -124,7 +124,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['id'],
-                            fn(Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -132,7 +132,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                             return null;
                         }
 
-                        return 'ID: ' . $data['id'];
+                        return 'ID: '.$data['id'];
                     }),
                 Filter::make('country_id')
                     ->form([
@@ -143,7 +143,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['country_id'],
-                            fn(Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('country_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -151,7 +151,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                             return null;
                         }
 
-                        return 'Country ID: ' . $data['country_id'];
+                        return 'Country ID: '.$data['country_id'];
                     }),
                 Filter::make('currency_id')
                     ->form([
@@ -162,7 +162,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['currency_id'],
-                            fn(Builder $query, $value): Builder => $query->where('currency_id', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('currency_id', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -170,7 +170,7 @@ class StaticCountriesStaticCurrenciesResource extends Resource
                             return null;
                         }
 
-                        return 'Currency ID: ' . $data['currency_id'];
+                        return 'Currency ID: '.$data['currency_id'];
                     }),
                 SelectFilter::make('currency')
                     ->relationship('currency', 'symbol'),

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Plugins;
 
-use Moox\DataLanguages\Resources\StaticLanguageResource;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
+use Moox\DataLanguages\Resources\StaticLanguageResource;
 
 class StaticLanguagePlugin implements Plugin
 {
