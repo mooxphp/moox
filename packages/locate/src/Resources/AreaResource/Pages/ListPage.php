@@ -18,7 +18,7 @@ class ListPage extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            //LocateWidgets::class,
+            // LocateWidgets::class,
         ];
     }
 

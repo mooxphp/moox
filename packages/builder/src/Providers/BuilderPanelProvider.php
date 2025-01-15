@@ -32,7 +32,7 @@ class BuilderPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Builder/Resources'), for: 'App\\Builder\\Resources')
             ->plugins([
-                //ExpiryPlugin::make(),
+                // ExpiryPlugin::make(),
             ])
             ->pages([
                 BuilderDashboard::class,
