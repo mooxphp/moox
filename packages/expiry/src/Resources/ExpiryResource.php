@@ -43,6 +43,11 @@ class ExpiryResource extends Resource
         }
 
         return $table
+            ->query(
+                Expiry::query()
+                    ->orderBy('escalated_at', 'desc')
+                    ->orderBy('expired_at', 'asc')
+            )
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label(__('core::core.title'))
@@ -114,7 +119,6 @@ class ExpiryResource extends Resource
                     ->searchable()
                     ->limit(50),
             ])
-            ->defaultSort('escalated_at', 'desc')
             ->filters([
                 SelectFilter::make('expiry_job')
                     ->label(__('core::expiry.expiry_job'))
