@@ -1,0 +1,30 @@
+name: Cleanup Empty Translations
+
+on:
+  pull_request:
+    branches: [ "main" ]  # Adjust if needed
+
+jobs:
+  remove-empty-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"  # or 8.2
+
+      - name: Run cleanup script
+        run: php .github/scripts/cleanup-empty-translations.php
+
+      - name: Commit changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add .
+            git commit -m "Remove empty translations"
+            git push
+          fi
