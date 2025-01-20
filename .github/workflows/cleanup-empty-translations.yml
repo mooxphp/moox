@@ -1,8 +1,8 @@
 name: Cleanup Empty Translations
 
 on:
-  pull_request:
-    branches: [ "main" ]  # Adjust if needed
+  push:
+    branches: [ "main" ]
 
 jobs:
   remove-empty-translations:
@@ -14,7 +14,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"  # or 8.2
+          php-version: "8.3"
 
       - name: Run cleanup script
         run: php .github/scripts/cleanup-empty-translations.php
