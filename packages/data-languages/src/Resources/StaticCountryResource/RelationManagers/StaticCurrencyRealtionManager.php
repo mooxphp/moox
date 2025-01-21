@@ -7,9 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Moox\DataLanguages\Models\StaticCountriesStaticCurrencies;
-use Moox\DataLanguages\Models\StaticCountry;
-use Moox\DataLanguages\Models\StaticCurrency;
 
 class StaticCurrencyRealtionManager extends RelationManager
 {

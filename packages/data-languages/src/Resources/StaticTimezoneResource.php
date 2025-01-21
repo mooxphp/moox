@@ -20,7 +20,6 @@ use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\DataLanguages\Resources\StaticTimezoneResource\Pages;
 use Moox\DataLanguages\Resources\StaticTimezoneResource\RelationManagers\StaticCountriesRelationManager;
-use Moox\DataLanguages\Resources\StaticTimezoneResource\RelationManagers\StaticCountryRealtionManager;
 
 class StaticTimezoneResource extends Resource
 {
@@ -129,7 +128,7 @@ class StaticTimezoneResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['name'],
-                            fn(Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -137,7 +136,7 @@ class StaticTimezoneResource extends Resource
                             return null;
                         }
 
-                        return 'name: ' . $data['name'];
+                        return 'name: '.$data['name'];
                     }),
                 Filter::make('offset_standart')
                     ->form([
@@ -148,7 +147,7 @@ class StaticTimezoneResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['offset_standart'],
-                            fn(Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
+                            fn (Builder $query, $value): Builder => $query->where('offset_standart', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -156,10 +155,11 @@ class StaticTimezoneResource extends Resource
                             return null;
                         }
 
-                        return 'name: ' . $data['offset_standart'];
+                        return 'name: '.$data['offset_standart'];
                     }),
             ]);
     }
+
     public static function getRelations(): array
     {
         return [StaticCountriesRelationManager::class];

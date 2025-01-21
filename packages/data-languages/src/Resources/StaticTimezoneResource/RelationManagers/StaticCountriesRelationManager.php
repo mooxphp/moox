@@ -3,11 +3,11 @@
 namespace Moox\DataLanguages\Resources\StaticTimezoneResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Forms\Components;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
+use Filament\Tables\Table;
 
 class StaticCountriesRelationManager extends RelationManager
 {
@@ -37,7 +37,6 @@ class StaticCountriesRelationManager extends RelationManager
                         Components\Textarea::make('exonyms')
                             ->label(__('data-languages::data-languages.exonyms'))
                             ->afterStateHydrated(function (Components\Textarea $component, $state) {
-
                                 if (is_array($state) || is_object($state)) {
                                     $state = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                                 }
