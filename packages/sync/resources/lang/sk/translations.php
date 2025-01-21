@@ -1,5 +1,5 @@
 <?php
 
-return array (
-  'single' => 'Synchronizácia',
-);
+return [
+    'single' => 'Synchronizácia',
+];
