@@ -330,6 +330,7 @@ Moox is made by these nice people, and bots ...
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rogash"><img src="https://avatars.githubusercontent.com/u/4563683?v=4?s=100" width="100px;" alt="Alexandre Mendes"/><br /><sub><b>Alexandre Mendes</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Arogash" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.rodrigoborges.com.br"><img src="https://avatars.githubusercontent.com/u/5695498?v=4?s=100" width="100px;" alt="Rodrigo Borges"/><br /><sub><b>Rodrigo Borges</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Arodrigoborges" title="Reviewed Pull Requests">👀</a></td>
     </tr>
   </tbody>
 </table>
