@@ -20,7 +20,6 @@ use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\DataLanguages\Resources\StaticTimezoneResource\Pages;
 use Moox\DataLanguages\Resources\StaticTimezoneResource\RelationManagers\StaticCountriesRelationManager;
-use Moox\DataLanguages\Resources\StaticTimezoneResource\RelationManagers\StaticCountryRealtionManager;
 
 class StaticTimezoneResource extends Resource
 {
