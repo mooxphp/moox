@@ -284,7 +284,7 @@ class WpMediaResource extends Resource
                         ->label(__('core::core.asset'))
                         ->square()
                         ->size('100%'),
-                    //->url(fn ($record) => $record->getAssetAttribute()),
+                    // ->url(fn ($record) => $record->getAssetAttribute()),
                 ]),
                 /* Currently not looking nice
 
@@ -357,8 +357,8 @@ class WpMediaResource extends Resource
                 96,
                 'all',
             ]);
-        //->actions([ViewAction::make(), EditAction::make()]);
-        //->bulkActions([DeleteBulkAction::make()]);
+        // ->actions([ViewAction::make(), EditAction::make()]);
+        // ->bulkActions([DeleteBulkAction::make()]);
     }
 
     public static function getRelations(): array

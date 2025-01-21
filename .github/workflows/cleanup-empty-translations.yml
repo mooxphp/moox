@@ -1,0 +1,26 @@
+name: Cleanup Empty Translations
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  remove-empty-translations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+
+      - name: Run cleanup script
+        run: php .github/scripts/cleanup-empty-translations.php
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          push_options: --force
+          commit_message: Cleanup translations
