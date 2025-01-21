@@ -322,6 +322,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mattrabe",
+      "name": "Matt Rabe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1786783?v=4",
+      "profile": "https://completecodesolutions.com/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
