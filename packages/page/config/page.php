@@ -1,5 +1,9 @@
 <?php
 
 return [
-    'navigation_sort' => 101,
+    'frontend' => [
+        'page' => [
+            'url_path' => '/{slug}',
+        ],
+    ],
 ];
