@@ -331,6 +331,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rogash",
+      "name": "Alexandre Mendes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4563683?v=4",
+      "profile": "https://github.com/rogash",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
