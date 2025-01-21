@@ -340,6 +340,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "rodrigoborges",
+      "name": "Rodrigo Borges",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5695498?v=4",
+      "profile": "http://www.rodrigoborges.com.br",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
