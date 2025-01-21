@@ -15,7 +15,7 @@ use function Laravel\Prompts\warning;
 
 class InstallCommand extends Command
 {
-    protected $signature = 'jobs:install';
+    protected $signature = 'mooxjobs:install';
 
     protected $description = 'Install Moox Jobs, publishes configuration, migrations and registers plugins.';
 
