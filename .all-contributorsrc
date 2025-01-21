@@ -358,6 +358,15 @@
       "contributions": [
         "review"
       ]
+    },
+    {
+      "login": "marcelonogueira",
+      "name": "Marcelo Nogueira",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15114097?v=4",
+      "profile": "https://github.com/marcelonogueira",
+      "contributions": [
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
