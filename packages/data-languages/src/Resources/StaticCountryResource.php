@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Resources;
 
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use App\Forms\Components\JsonField;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\TextInput;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\DataLanguages\Resources\StaticCountryResource\Pages;
+use Moox\DataLanguages\Resources\StaticCountryResource\RelationManagers;
 
 class StaticCountryResource extends Resource
 {
@@ -79,7 +81,17 @@ class StaticCountryResource extends Resource
                                     TextInput::make('native_name')
                                         ->label(__('data-languages::data-languages.native_name'))
                                         ->maxLength(255)->nullable(),
-                                    JsonField::make('exonyms')->label(__('data-languages::data-languages.exonyms')),
+                                    Textarea::make('exonyms')
+                                        ->label(__('data-languages::data-languages.exonyms'))
+                                        ->afterStateHydrated(function (Textarea $component, $state) {
+
+                                            if (is_array($state) || is_object($state)) {
+                                                $state = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                                            }
+
+                                            $component->state($state);
+                                        })
+                                        ->rule('json'),
                                     TextInput::make('calling_code')
                                         ->label(__('data-languages::static-country.calling_code'))
                                         ->numeric()->maxValue(100),
@@ -93,12 +105,12 @@ class StaticCountryResource extends Resource
                                     TextInput::make('area')
                                         ->label(__('data-languages::static-country.area'))
                                         ->maxLength(255)->nullable(),
-                                    JsonField::make('links')
+                                    Textarea::make('links')
                                         ->label(__('data-languages::static-country.links')),
-                                    JsonField::make('tlds')
+                                    Textarea::make('tlds')
                                         ->rows(4)
                                         ->label(__('data-languages::static-country.tlds')),
-                                    JsonField::make('membership')
+                                    Textarea::make('membership')
                                         ->rows(7)
                                         ->label(__('data-languages::static-country.membership')),
                                     TextInput::make('embargo_data')
@@ -178,6 +190,14 @@ class StaticCountryResource extends Resource
             ->filters([]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\LocalesRelationManager::class,
+            RelationManagers\StaticCurrencyRealtionManager::class,
+            RelationManagers\StaticTimezoneRealtionManager::class
+        ];
+    }
     public static function getPages(): array
     {
         return [

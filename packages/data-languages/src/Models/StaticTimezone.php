@@ -24,8 +24,8 @@ class StaticTimezone extends Model
 
     protected $casts = [];
 
-    public function staticCountriesStaticTimezones()
+    public function countries()
     {
-        return $this->hasMany(StaticCountriesStaticTimezones::class);
+        return $this->belongsToMany(StaticCountry::class, 'static_countries_static_timezones', 'timezone_id', 'country_id');
     }
 }

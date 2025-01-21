@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Resources;
 
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use App\Forms\Components\JsonField;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\DataLanguages\Resources\StaticLanguageResource\Pages;
+use Moox\DataLanguages\Resources\StaticLanguageResource\RelationManagers\StaticLocalesRelationManager;
 
 class StaticLanguageResource extends Resource
 {
@@ -145,7 +146,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha2'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('alpha2', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -153,7 +154,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-2 Code: '.$data['alpha2'];
+                        return 'Alpha-2 Code: ' . $data['alpha2'];
                     }),
                 Filter::make('alpha3_b')
                     ->form([
@@ -164,7 +165,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_b'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('alpha3_b', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -172,7 +173,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-3 Bibliographic Code: '.$data['alpha3_b'];
+                        return 'Alpha-3 Bibliographic Code: ' . $data['alpha3_b'];
                     }),
                 Filter::make('alpha3_t')
                     ->form([
@@ -183,7 +184,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['alpha3_t'],
-                            fn (Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('alpha3_t', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -191,7 +192,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Alpha-3 Terminology Code: '.$data['alpha3_t'];
+                        return 'Alpha-3 Terminology Code: ' . $data['alpha3_t'];
                     }),
                 Filter::make('common_name')
                     ->form([
@@ -202,7 +203,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['common_name'],
-                            fn (Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('common_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -210,7 +211,7 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Common Name: '.$data['common_name'];
+                        return 'Common Name: ' . $data['common_name'];
                     }),
                 Filter::make('native_name')
                     ->form([
@@ -221,7 +222,7 @@ class StaticLanguageResource extends Resource
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when(
                             $data['native_name'],
-                            fn (Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
+                            fn(Builder $query, $value): Builder => $query->where('native_name', 'like', "%{$value}%"),
                         );
                     })
                     ->indicateUsing(function (array $data): ?string {
@@ -229,18 +230,24 @@ class StaticLanguageResource extends Resource
                             return null;
                         }
 
-                        return 'Native Name: '.$data['native_name'];
+                        return 'Native Name: ' . $data['native_name'];
                     }),
                 SelectFilter::make('script')
                     ->label(__('data-languages::static-language.script'))
-                    ->placeholder(__('core::core.filter').' Script')
+                    ->placeholder(__('core::core.filter') . ' Script')
                     ->options(__('data-languages::static-language.script_options')),
                 SelectFilter::make('direction')
                     ->label('Direction')
-                    ->placeholder(__('core::core.filter').' Direction')
+                    ->placeholder(__('core::core.filter') . ' Direction')
                     ->options(__('data-languages::static-language.direction_options')),
             ]);
     }
+
+    public static function getRelations(): array
+    {
+        return [StaticLocalesRelationManager::class];
+    }
+
 
     public static function getPages(): array
     {

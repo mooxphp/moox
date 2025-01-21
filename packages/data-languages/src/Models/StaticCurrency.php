@@ -25,8 +25,8 @@ class StaticCurrency extends Model
         'exonyms' => 'array',
     ];
 
-    public function staticCountriesStaticCurrencies()
+    public function countries()
     {
-        return $this->hasMany(StaticCountriesStaticCurrencies::class);
+        return $this->belongsToMany(StaticCountry::class, 'static_countries_static_currencies', 'currency_id', 'country_id');
     }
 }

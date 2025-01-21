@@ -53,16 +53,19 @@ class StaticCountry extends Model
 
     public function locales()
     {
-        return $this->hasMany(StaticLocale::class);
+        return $this->hasMany(StaticLocale::class, 'country_id');
     }
 
-    public function staticCurrencies()
+    public function currencies()
     {
-        return $this->hasMany(StaticCountriesStaticTimezones::class);
+        return $this->belongsToMany(StaticCurrency::class, 'static_countries_static_currencies', 'country_id', 'currency_id')
+            ->withPivot('is_primary')
+            ->withTimestamps();
     }
 
-    public function staticTimezones()
+    public function timezones()
     {
-        return $this->hasMany(StaticCountriesStaticTimezones::class);
+        return $this->belongsToMany(StaticTimezone::class, 'static_countries_static_timezones', 'country_id', 'timezone_id')
+            ->withTimestamps();
     }
 }

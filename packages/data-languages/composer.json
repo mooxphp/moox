@@ -35,7 +35,8 @@
     "autoload": {
         "psr-4": {
             "Moox\\DataLanguages\\": "src",
-            "Moox\\DataLanguages\\Database\\Factories\\": "database/factories"
+            "Moox\\DataLanguages\\Database\\Factories\\": "database/factories",
+            "Moox\\DataLanguages\\Database\\Seeders\\": "database/seeders"
         }
     },
     "autoload-dev": {
