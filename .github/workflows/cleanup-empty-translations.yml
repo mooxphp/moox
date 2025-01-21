@@ -1,7 +1,7 @@
 name: Cleanup Empty Translations
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:
