@@ -328,6 +328,9 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Filefabrik"><img src="https://avatars.githubusercontent.com/u/84433563?v=4?s=100" width="100px;" alt="Filefabrik"/><br /><sub><b>Filefabrik</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=Filefabrik" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://completecodesolutions.com/"><img src="https://avatars.githubusercontent.com/u/1786783?v=4?s=100" width="100px;" alt="Matt Rabe"/><br /><sub><b>Matt Rabe</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=mattrabe" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/rogash"><img src="https://avatars.githubusercontent.com/u/4563683?v=4?s=100" width="100px;" alt="Alexandre Mendes"/><br /><sub><b>Alexandre Mendes</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Arogash" title="Reviewed Pull Requests">👀</a></td>
+    </tr>
   </tbody>
 </table>
 
