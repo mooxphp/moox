@@ -1,5 +1,4 @@
 <?php
-
 return [
     // Sync refers to the package name Moox Sync, and data transfer between platforms
     'sync' => 'Sync',
@@ -67,4 +66,7 @@ return [
     'lock_reason' => 'Grund der Sperre',
     'missing_columns' => 'Fehlende Spalten',
     'extra_columns' => 'Zusätzliche Spalten',
+    'model_compatibility_warning' => 'Model Kompatibilitätswarnung',
+    'models_are_not_fully_compatible' => 'Die gewählten Models sind nicht voll kompatibel',
+    'please_map_fields_manually' => 'Bitte die Felder manuell zuordnen',
 ];
