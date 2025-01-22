@@ -205,10 +205,10 @@ function moox_check_laravel_db_session(): void
 
             if ($decryptedValue) {
                 error_log('Successfully decrypted session data');
-                error_log('Decrypted data: '.bin2hex((string) $decryptedValue));
+                error_log('Decrypted data: '.bin2hex($decryptedValue));
 
                 // Split the decrypted data by the pipe character
-                $parts = explode('|', (string) $decryptedValue);
+                $parts = explode('|', $decryptedValue);
                 if (count($parts) == 2) {
                     $sessionId = $parts[1]; // Use the second part as the session ID
                     error_log('Session ID: '.$sessionId);

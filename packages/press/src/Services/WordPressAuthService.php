@@ -13,12 +13,12 @@ class WordPressAuthService
         $this->hasher = new PasswordHash(8, true);
     }
 
-    public function hashPassword($password)
+    public function hashPassword($password): string
     {
         return $this->hasher->HashPassword($password);
     }
 
-    public function checkPassword($password, $hashedPassword)
+    public function checkPassword($password, $hashedPassword): bool
     {
         return $this->hasher->CheckPassword($password, $hashedPassword);
     }

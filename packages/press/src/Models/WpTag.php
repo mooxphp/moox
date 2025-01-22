@@ -9,8 +9,7 @@ class WpTag extends WpTerm
 {
     protected $taxonomy = 'tag';
 
-    #[Override]
-    public static function boot(): void
+    #[Override]protected static function boot(): void
     {
         parent::boot();
 

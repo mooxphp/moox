@@ -8,8 +8,7 @@ use Moox\Press\Models\WpTerm;
 
 class WpWikiDepartmentTopic extends WpTerm
 {
-    #[Override]
-    public static function boot(): void
+    #[Override]protected static function boot(): void
     {
         parent::boot();
 

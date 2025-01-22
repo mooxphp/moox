@@ -226,10 +226,7 @@ class PasswordHash
         return $output;
     }
 
-    /**
-     * @param  string  $password
-     */
-    public function HashPassword($password): string
+    public function HashPassword(string $password): string
     {
         $random = '';
 
@@ -260,10 +257,9 @@ class PasswordHash
     }
 
     /**
-     * @param  string  $password
      * @param  string  $stored_hash
      */
-    public function CheckPassword($password, $stored_hash): bool
+    public function CheckPassword(string $password, $stored_hash): bool
     {
         $hash = $this->crypt_private($password, $stored_hash);
         if ($hash[0] === '*') {

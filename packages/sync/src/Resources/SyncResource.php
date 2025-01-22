@@ -266,7 +266,7 @@ class SyncResource extends Resource
                     Hidden::make('title')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->default(fn (callable $get) => SyncResource::generateTitle($get))
+                        ->default(fn (callable $get): string => SyncResource::generateTitle($get))
                         ->reactive(),
 
                     Hidden::make('models_compatible')

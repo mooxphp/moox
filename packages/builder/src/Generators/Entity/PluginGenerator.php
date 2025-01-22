@@ -58,6 +58,6 @@ class PluginGenerator extends AbstractGenerator
             'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource;',
         ];
 
-        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
+        return implode("\n", array_map(fn($statement): string => rtrim($statement, ';').';', array_unique($statements)));
     }
 }

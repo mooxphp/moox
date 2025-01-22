@@ -26,7 +26,7 @@ class SyncService
 
         if ($modelClass === Platform::class) {
             $this->syncPlatform($modelData, $eventType, $targetPlatform);
-        } elseif ($targetPlatform) {
+        } elseif ($targetPlatform instanceof Platform) {
             $this->syncToSinglePlatform($modelClass, $modelData, $eventType, $sourcePlatform, $targetPlatform);
         } else {
             $this->syncToAllPlatforms($modelClass, $modelData, $eventType, $sourcePlatform);

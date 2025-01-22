@@ -91,7 +91,7 @@ class FileSyncController extends Controller
         }
     }
 
-    protected function saveTempChunk(Request $request)
+    protected function saveTempChunk(Request $request): string
     {
         $chunkPath = $this->getTempChunkPath($request);
         Storage::put($chunkPath, base64_decode((string) $request->input('chunk')));
@@ -99,7 +99,7 @@ class FileSyncController extends Controller
         return $chunkPath;
     }
 
-    protected function reassembleFile(Request $request)
+    protected function reassembleFile(Request $request): string
     {
         $tempFilePath = $this->getTempFilePath($request);
         $totalChunks = $request->input('file_data.total_chunks');

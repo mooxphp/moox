@@ -35,7 +35,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    public function toMail($notifiable): MailMessage
+    public function toMail(CanResetPassword|Model|Authenticatable $notifiable): MailMessage
     {
         $mailRecipientName = config('security.mail_recipient_name') ?? 'name';
 
