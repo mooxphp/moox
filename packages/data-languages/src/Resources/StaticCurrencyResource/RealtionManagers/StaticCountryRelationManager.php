@@ -35,7 +35,6 @@ class StaticCountryRealtionManager extends RelationManager
                 Forms\Components\Textarea::make('exonyms')
                     ->label(__('data-languages::data-languages.exonyms'))
                     ->afterStateHydrated(function (Forms\Components\Textarea $component, $state) {
-
                         if (is_array($state) || is_object($state)) {
                             $state = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                         }

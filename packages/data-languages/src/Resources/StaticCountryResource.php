@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use App\Forms\Components\JsonField;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
 use Moox\DataLanguages\Resources\StaticCountryResource\Pages;
@@ -84,7 +83,6 @@ class StaticCountryResource extends Resource
                                     Textarea::make('exonyms')
                                         ->label(__('data-languages::data-languages.exonyms'))
                                         ->afterStateHydrated(function (Textarea $component, $state) {
-
                                             if (is_array($state) || is_object($state)) {
                                                 $state = json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                                             }
@@ -195,9 +193,10 @@ class StaticCountryResource extends Resource
         return [
             RelationManagers\LocalesRelationManager::class,
             RelationManagers\StaticCurrencyRealtionManager::class,
-            RelationManagers\StaticTimezoneRealtionManager::class
+            RelationManagers\StaticTimezoneRealtionManager::class,
         ];
     }
+
     public static function getPages(): array
     {
         return [

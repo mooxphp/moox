@@ -34,7 +34,7 @@ class StaticCountrySeeder extends Seeder
                 'address_format' => [
                     'line1' => '{street_address}',
                     'line2' => '{city}, {state} {postal_code}',
-                    'line3' => '{country}'
+                    'line3' => '{country}',
                 ],
                 'postal_code_regex' => '/^\d{5}(-\d{4})?$/',
                 'dialing_prefix' => '+1',
@@ -46,7 +46,7 @@ class StaticCountrySeeder extends Seeder
                 'currency_format' => [
                     'symbol' => '$',
                     'code' => 'USD',
-                    'format' => '{symbol}{amount}'
+                    'format' => '{symbol}{amount}',
                 ],
             ],
             [
@@ -70,7 +70,7 @@ class StaticCountrySeeder extends Seeder
                 'address_format' => [
                     'line1' => '{street_address}',
                     'line2' => '{postal_code} {city}',
-                    'line3' => '{country}'
+                    'line3' => '{country}',
                 ],
                 'postal_code_regex' => '/^\d{5}$/',
                 'dialing_prefix' => '+33',
@@ -82,7 +82,7 @@ class StaticCountrySeeder extends Seeder
                 'currency_format' => [
                     'symbol' => '€',
                     'code' => 'EUR',
-                    'format' => '{amount} {symbol}'
+                    'format' => '{amount} {symbol}',
                 ],
             ],
         ];

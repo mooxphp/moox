@@ -1,6 +1,6 @@
 <?php
 
-namespace  Moox\DataLanguages\Database\Seeders;
+namespace Moox\DataLanguages\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
