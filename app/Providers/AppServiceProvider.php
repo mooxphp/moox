@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Override;
 use Illuminate\Support\ServiceProvider;
+use Override;
 
 class AppServiceProvider extends ServiceProvider
 {

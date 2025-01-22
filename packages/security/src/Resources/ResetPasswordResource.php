@@ -2,7 +2,6 @@
 
 namespace Moox\Security\Resources;
 
-use Override;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -13,11 +12,13 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
+use Override;
 
 class ResetPasswordResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $modelLabel = 'Reset Tokens';
 
     protected static ?string $model = ResetPassword::class;

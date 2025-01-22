@@ -2,12 +2,12 @@
 
 namespace Moox\Sync\Resources\SyncResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource;
+use Override;
 
 class ListSyncs extends ListRecords
 {
@@ -30,7 +30,7 @@ class ListSyncs extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Sync => $model::create($data)),
+                ->using(fn (array $data, string $model): Sync => $model::create($data)),
         ];
     }
 

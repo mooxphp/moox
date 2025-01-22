@@ -2,14 +2,6 @@
 
 namespace Moox\PressTrainings\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers\WpTrainingMetaRelationManager;
-use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers\WpCommentRelationManager;
-use Moox\PressTrainings\Resources\WpTrainingResource\Pages\ListWpTrainings;
-use Moox\PressTrainings\Resources\WpTrainingResource\Pages\CreateWpTraining;
-use Moox\PressTrainings\Resources\WpTrainingResource\Pages\ViewWpTraining;
-use Moox\PressTrainings\Resources\WpTrainingResource\Pages\EditWpTraining;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -17,20 +9,26 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressTrainings\Models\WpTraining;
-use Moox\PressTrainings\Resources\WpTrainingResource\Pages;
-use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\CreateWpTraining;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\EditWpTraining;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\ListWpTrainings;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\ViewWpTraining;
+use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers\WpCommentRelationManager;
+use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers\WpTrainingMetaRelationManager;
+use Override;
 
 class WpTrainingResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpTraining::class;
 
     protected static ?string $navigationIcon = 'gmdi-school';

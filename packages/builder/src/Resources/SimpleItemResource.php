@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
-use Override;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -26,11 +25,13 @@ use Moox\Builder\Resources\SimpleItemResource\Pages\ListSimpleItems;
 use Moox\Builder\Resources\SimpleItemResource\Pages\ViewSimpleItem;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Override;
 
 class SimpleItemResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = SimpleItem::class;
 
     protected static ?string $navigationIcon = 'gmdi-circle';

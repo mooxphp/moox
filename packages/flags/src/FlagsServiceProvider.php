@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Flags;
 
-use Override;
 use BladeUI\Icons\Factory;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
+use Override;
 
 final class FlagsServiceProvider extends ServiceProvider
 {

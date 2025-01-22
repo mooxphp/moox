@@ -2,12 +2,12 @@
 
 namespace Moox\Page\Resources\PageResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource;
 use Moox\Page\Resources\PageResource\Widgets\PageWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -18,7 +18,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             PageWidgets::class,
@@ -35,7 +36,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Page => $model::create($data)),
+                ->using(fn (array $data, string $model): Page => $model::create($data)),
         ];
     }
 }

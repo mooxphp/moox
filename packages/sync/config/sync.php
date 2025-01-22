@@ -1,13 +1,13 @@
 <?php
 
-use Moox\Sync\Models\Sync;
-use Moox\Sync\Resources\SyncResource;
+use Moox\Press\Models\WpUser;
+use Moox\Sync\Http\Controllers\Api\PlatformController;
 use Moox\Sync\Http\Controllers\Api\SyncController;
 use Moox\Sync\Models\Platform;
+use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\PlatformResource;
-use Moox\Sync\Http\Controllers\Api\PlatformController;
+use Moox\Sync\Resources\SyncResource;
 use Moox\User\Models\User;
-use Moox\Press\Models\WpUser;
 
 /*
 |--------------------------------------------------------------------------

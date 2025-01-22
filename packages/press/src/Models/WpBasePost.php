@@ -2,7 +2,6 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Awobaz\Mutator\Mutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Override;
 
 /**
  * @property int $ID
@@ -21,6 +21,7 @@ class WpBasePost extends Model
 {
     use HasFactory;
     use Mutable;
+
     protected $fillable = [
         'post_author',
         'post_date',
@@ -101,7 +102,7 @@ class WpBasePost extends Model
     public function metaKey($key)
     {
         if (! Str::startsWith($key, $this->wpPrefix)) {
-            $key = $this->wpPrefix . $key;
+            $key = $this->wpPrefix.$key;
         }
 
         return $this->getMeta($key);

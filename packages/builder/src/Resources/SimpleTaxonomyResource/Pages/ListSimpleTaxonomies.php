@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 
-use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -12,6 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleTaxonomy;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListSimpleTaxonomies extends ListRecords
 {
@@ -23,7 +23,7 @@ class ListSimpleTaxonomies extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): SimpleTaxonomy => $model::create($data))
+                ->using(fn (array $data, string $model): SimpleTaxonomy => $model::create($data))
                 ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))

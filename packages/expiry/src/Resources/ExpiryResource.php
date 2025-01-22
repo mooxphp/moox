@@ -2,17 +2,11 @@
 
 namespace Moox\Expiry\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Expiry\Resources\ExpiryResource\Pages\ListExpiries;
-use Moox\Expiry\Resources\ExpiryResource\Pages\CreateExpiry;
-use Moox\Expiry\Resources\ExpiryResource\Pages\ViewExpiry;
-use Moox\Expiry\Resources\ExpiryResource\Pages\EditExpiry;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,13 +15,18 @@ use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Expiry\Actions\CustomExpiryAction;
 use Moox\Expiry\Models\Expiry;
-use Moox\Expiry\Resources\ExpiryResource\Pages;
+use Moox\Expiry\Resources\ExpiryResource\Pages\CreateExpiry;
+use Moox\Expiry\Resources\ExpiryResource\Pages\EditExpiry;
+use Moox\Expiry\Resources\ExpiryResource\Pages\ListExpiries;
+use Moox\Expiry\Resources\ExpiryResource\Pages\ViewExpiry;
+use Override;
 
 class ExpiryResource extends Resource
 {
     use BaseInResource;
     use SingleSoftDeleteInResource;
     use TabsInResource;
+
     protected static ?string $model = Expiry::class;
 
     protected static ?string $navigationIcon = 'gmdi-view-timeline-o';
@@ -104,8 +103,8 @@ class ExpiryResource extends Resource
                         $tableName = $wpPrefix.'users';
 
                         return $query
-                            ->leftJoin($tableName, 'expiries.notified_to', '=', $tableName . '.ID')
-                            ->orderBy($tableName . '.display_name', $direction)
+                            ->leftJoin($tableName, 'expiries.notified_to', '=', $tableName.'.ID')
+                            ->orderBy($tableName.'.display_name', $direction)
                             ->select('expiries.*');
                     })
                     ->limit(50),

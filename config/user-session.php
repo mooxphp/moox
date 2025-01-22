@@ -1,7 +1,7 @@
 <?php
 
-use Moox\User\Models\User;
 use Moox\Press\Models\WpUser;
+use Moox\User\Models\User;
 use Moox\UserDevice\Models\UserDevice;
 
 /*
@@ -68,7 +68,7 @@ return [
                         [
                             'field' => 'user_id',
                             'operator' => '=',
-                            'value' => fn() => auth()->user()->id,
+                            'value' => fn () => auth()->user()->id,
                         ],
                     ],
                 ],

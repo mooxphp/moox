@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
+use Override;
 
 class Tag extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $table = 'tags';
 
     protected $fillable = [

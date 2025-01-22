@@ -2,9 +2,9 @@
 
 namespace Moox\Core\Services;
 
-use RuntimeException;
-use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
+use InvalidArgumentException;
+use RuntimeException;
 
 class TaxonomyService
 {

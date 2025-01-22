@@ -2,7 +2,6 @@
 
 namespace Moox\Expiry\Actions;
 
-use Override;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -10,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\Action;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 class CustomExpiryAction extends Action
 {
@@ -42,7 +42,7 @@ class CustomExpiryAction extends Action
                 }
             })
             ->form(function ($record): array {
-                $cycleOptions = collect(config('expiry.cycle_options'))->mapWithKeys(fn($value, $key) => [__('core::expiry.'.$key) => $value]);
+                $cycleOptions = collect(config('expiry.cycle_options'))->mapWithKeys(fn ($value, $key) => [__('core::expiry.'.$key) => $value]);
 
                 return [
                     Grid::make(2)
@@ -89,6 +89,6 @@ class CustomExpiryAction extends Action
             ->modalHeading(__('core::expiry.set_date'))
             ->modalSubmitActionLabel(__('core::expiry.save'))
             ->color('primary')
-            ->visible(fn($record) => config('expiry.expiry_action_enable', true));
+            ->visible(fn ($record) => config('expiry.expiry_action_enable', true));
     }
 }

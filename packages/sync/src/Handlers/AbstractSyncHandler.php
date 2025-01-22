@@ -10,9 +10,7 @@ abstract class AbstractSyncHandler
 {
     use LogLevel;
 
-    public function __construct(protected string $modelClass, protected array $modelData, protected string $eventType)
-    {
-    }
+    public function __construct(protected string $modelClass, protected array $modelData, protected string $eventType) {}
 
     public function handle(): void
     {

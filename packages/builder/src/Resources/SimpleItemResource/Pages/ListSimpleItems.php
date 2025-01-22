@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\SimpleItemResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleItem;
 use Moox\Builder\Resources\SimpleItemResource;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListSimpleItems extends ListRecords
 {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Category\Resources\CategoryResource\Pages;
 
-use Override;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Category\Resources\CategoryResource;
+use Override;
 
 class ViewCategory extends ViewRecord
 {

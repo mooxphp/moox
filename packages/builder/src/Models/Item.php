@@ -18,6 +18,7 @@ class Item extends Model
     use SoftDeletes;
     use TaxonomyInModel;
     use UserInModel;
+
     protected $table = 'items';
 
     protected function getResourceName(): string

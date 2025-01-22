@@ -2,13 +2,14 @@
 
 namespace Moox\PressWiki\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpBasePost;
+use Override;
 
 class WpWiki extends WpBasePost
 {
-    #[Override]protected static function boot()
+    #[Override]
+    protected static function boot()
     {
         parent::boot();
 

@@ -31,7 +31,7 @@ trait TaxonomyInModel
         $taxonomies = $this->getTaxonomyService()->getTaxonomies();
 
         if (! isset($taxonomies[$taxonomy])) {
-            Log::error('Taxonomy not found: ' . $taxonomy);
+            Log::error('Taxonomy not found: '.$taxonomy);
 
             return $this->emptyMorphToMany();
         }

@@ -2,7 +2,6 @@
 
 namespace Moox\Sync\Resources;
 
-use Override;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -28,6 +27,7 @@ use Moox\Sync\Resources\PlatformResource\Pages\CreatePlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\EditPlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\ListPlatforms;
 use Moox\Sync\Resources\PlatformResource\Pages\ViewPlatform;
+use Override;
 
 class PlatformResource extends Resource
 {

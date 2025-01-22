@@ -14,6 +14,7 @@ class ListExpiries extends ListRecords
 {
     use SingleSoftDeleteInListPage;
     use TabsInListPage;
+
     protected static string $resource = ExpiryResource::class;
 
     protected function getHeaderActions(): array

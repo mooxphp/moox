@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity\Pages;
 
-use Override;
-use InvalidArgumentException;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\AbstractGenerator;
 use Moox\Builder\Services\File\FileManager;
+use Override;
 use RuntimeException;
 
 abstract class AbstractPageGenerator extends AbstractGenerator
@@ -115,7 +115,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
             }
         }
 
-        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 
     #[Override]
@@ -197,9 +197,9 @@ abstract class AbstractPageGenerator extends AbstractGenerator
         $entityName = Str::kebab($this->context->getEntityName());
 
         return match ($contextType) {
-            'app' => 'entities.' . $entityName,
-            'preview' => 'previews.' . $entityName,
-            'package' => $this->context->getConfig()['package']['name'].('.entities.' . $entityName),
+            'app' => 'entities.'.$entityName,
+            'preview' => 'previews.'.$entityName,
+            'package' => $this->context->getConfig()['package']['name'].('.entities.'.$entityName),
             default => throw new InvalidArgumentException('Invalid context type: '.$contextType),
         };
     }

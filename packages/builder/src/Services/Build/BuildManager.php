@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Build;
 
-use Override;
 use Moox\Builder\Services\Block\BlockReconstructor;
 use Moox\Builder\Services\ContextAwareService;
+use Override;
 use RuntimeException;
 
 class BuildManager extends ContextAwareService
@@ -74,12 +74,12 @@ class BuildManager extends ContextAwareService
 
         foreach ($files as $type => $typeFiles) {
             if (! is_array($typeFiles)) {
-                throw new RuntimeException('Invalid file structure for type: ' . $type);
+                throw new RuntimeException('Invalid file structure for type: '.$type);
             }
 
             foreach ($typeFiles as $path => $content) {
                 if (! is_string($path)) {
-                    throw new RuntimeException('Invalid path in type ' . $type);
+                    throw new RuntimeException('Invalid path in type '.$type);
                 }
 
                 if (! is_string($content)) {
@@ -114,7 +114,7 @@ class BuildManager extends ContextAwareService
 
         if (! isset($config['base_path'], $config['base_namespace'], $config['generators'])) {
             throw new RuntimeException(
-                'Missing required configuration for context ' . $contextType
+                'Missing required configuration for context '.$contextType
             );
         }
 

@@ -2,7 +2,6 @@
 
 namespace Moox\Jobs;
 
-use Throwable;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
@@ -11,6 +10,7 @@ use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use Moox\Jobs\Models\JobManager;
+use Throwable;
 
 class JobManagerProvider extends ServiceProvider
 {

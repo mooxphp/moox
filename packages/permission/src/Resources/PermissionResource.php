@@ -2,7 +2,6 @@
 
 namespace Moox\Permission\Resources;
 
-use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -16,6 +15,7 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Permission\Models\Permission;
 use Moox\Permission\Resources\PermissionResource\Pages\ListPage;
 use Moox\Permission\Resources\PermissionResource\Widgets\PermissionWidgets;
+use Override;
 
 class PermissionResource extends Resource
 {

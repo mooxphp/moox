@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\UserSession;
 
-use Override;
 use Moox\UserSession\Commands\InstallCommand;
 use Moox\UserSession\Services\SessionRelationService;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -27,7 +27,7 @@ class UserSessionServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->app->singleton(SessionRelationService::class, fn($app): SessionRelationService => new SessionRelationService);
+        $this->app->singleton(SessionRelationService::class, fn ($app): SessionRelationService => new SessionRelationService);
     }
 
     #[Override]

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Security;
 
-use Override;
 use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
 use Moox\Security\Commands\GetPasswordResetLinksCommand;
 use Moox\Security\Commands\InstallCommand;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

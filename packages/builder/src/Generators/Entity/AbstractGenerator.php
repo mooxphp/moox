@@ -57,7 +57,7 @@ abstract class AbstractGenerator
     {
         $statements = $this->getUseStatements($this->getGeneratorType());
 
-        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 
     protected function formatTraits(): string
@@ -173,7 +173,7 @@ abstract class AbstractGenerator
     protected function loadStub(string $path): string
     {
         if (! file_exists($path)) {
-            throw new RuntimeException('Template not found: ' . $path);
+            throw new RuntimeException('Template not found: '.$path);
         }
 
         return file_get_contents($path);

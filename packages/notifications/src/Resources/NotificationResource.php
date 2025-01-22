@@ -2,7 +2,6 @@
 
 namespace Moox\Notification\Resources;
 
-use Override;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -19,11 +18,13 @@ use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;
 use Moox\Notification\Resources\NotificationResource\Pages\ListNotifications;
 use Moox\Notification\Resources\NotificationResource\Pages\ViewNotification;
 use Moox\Notification\Resources\NotificationResource\Widgets\NotificationWidgets;
+use Override;
 
 class NotificationResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = Notification::class;
 
     protected static ?string $navigationIcon = 'gmdi-notifications';

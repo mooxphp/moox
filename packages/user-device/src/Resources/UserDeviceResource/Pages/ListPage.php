@@ -2,12 +2,12 @@
 
 namespace Moox\UserDevice\Resources\UserDeviceResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -20,7 +20,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             // TODO: Widgets

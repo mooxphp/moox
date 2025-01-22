@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources\TagResource\Pages;
 
-use Override;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Tag\Resources\TagResource;
+use Override;
 
 class ViewTag extends ViewRecord
 {

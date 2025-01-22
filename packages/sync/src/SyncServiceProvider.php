@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Sync;
 
-use Override;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\LogLevel;
@@ -14,6 +13,7 @@ use Moox\Sync\Http\Middleware\WebhookAuthMiddleware;
 use Moox\Sync\Jobs\SyncBackupJob;
 use Moox\Sync\Jobs\SyncPlatformJob;
 use Moox\Sync\Listener\SyncListener;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

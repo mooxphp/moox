@@ -2,7 +2,6 @@
 
 namespace Moox\Page\Resources;
 
-use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -16,6 +15,7 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource\Pages\ListPage;
 use Moox\Page\Resources\PageResource\Widgets\PageWidgets;
+use Override;
 
 class PageResource extends Resource
 {

@@ -2,11 +2,6 @@
 
 namespace Moox\Press\Resources;
 
-use Override;
-use Moox\Press\Resources\WpMediaResource\Pages\ListWpPosts;
-use Moox\Press\Resources\WpMediaResource\Pages\CreateWpPost;
-use Moox\Press\Resources\WpMediaResource\Pages\ViewWpPost;
-use Moox\Press\Resources\WpMediaResource\Pages\EditWpPost;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -24,13 +19,18 @@ use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpMedia;
-use Moox\Press\Resources\WpMediaResource\Pages;
+use Moox\Press\Resources\WpMediaResource\Pages\CreateWpPost;
+use Moox\Press\Resources\WpMediaResource\Pages\EditWpPost;
+use Moox\Press\Resources\WpMediaResource\Pages\ListWpPosts;
+use Moox\Press\Resources\WpMediaResource\Pages\ViewWpPost;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;
+use Override;
 
 class WpMediaResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpMedia::class;
 
     protected static ?string $navigationIcon = 'gmdi-image';

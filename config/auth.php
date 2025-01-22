@@ -1,7 +1,7 @@
 <?php
 
-use Moox\User\Models\User;
 use Moox\Press\Models\WpUser;
+use Moox\User\Models\User;
 
 return [
 

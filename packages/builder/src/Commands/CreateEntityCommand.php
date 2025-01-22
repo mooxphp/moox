@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Moox\Builder\Commands;
 
 use Exception;
-use Override;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
@@ -14,6 +13,7 @@ use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Build\BuildStateManager;
 use Moox\Builder\Services\Entity\EntityCreator;
 use Moox\Builder\Services\Preview\PreviewTableManager;
+use Override;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -104,7 +104,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
                 'error' => $exception->getMessage(),
                 'trace' => $exception->getTraceAsString(),
             ]);
-            $this->error('Failed to create entity: ' . $exception->getMessage());
+            $this->error('Failed to create entity: '.$exception->getMessage());
 
             return self::FAILURE;
         }

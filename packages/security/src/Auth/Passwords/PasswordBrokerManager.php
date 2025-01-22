@@ -2,10 +2,10 @@
 
 namespace Moox\Security\Auth\Passwords;
 
-use Override;
-use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use Illuminate\Auth\Passwords\PasswordBrokerManager as PasswordBrokerManagerBase;
+use Illuminate\Auth\Passwords\TokenRepositoryInterface;
 use Illuminate\Support\Str;
+use Override;
 
 class PasswordBrokerManager extends PasswordBrokerManagerBase
 {

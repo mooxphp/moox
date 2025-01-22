@@ -2,11 +2,9 @@
 
 namespace Moox\Expiry\Widgets;
 
-use Filament\Tables\Columns\TextColumn;
-use Override;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -14,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
 use Livewire\WithPagination;
 use Moox\Expiry\Models\Expiry;
+use Override;
 
 class MyExpiry extends BaseWidget
 {

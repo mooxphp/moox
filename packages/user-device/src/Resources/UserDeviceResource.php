@@ -2,7 +2,6 @@
 
 namespace Moox\UserDevice\Resources;
 
-use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,11 +21,13 @@ use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
+use Override;
 
 class UserDeviceResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = UserDevice::class;
 
     protected static ?string $navigationIcon = 'gmdi-devices-o';
@@ -84,7 +85,7 @@ class UserDeviceResource extends Resource
             ->columns([
                 IconColumn::make('platform')
                     ->label(__('core::sync.platform'))
-                    ->icon(fn($record): string => match ($record->platform) {
+                    ->icon(fn ($record): string => match ($record->platform) {
                         'Mobile' => 'heroicon-o-device-phone-mobile',
                         'Desktop' => 'heroicon-o-computer-desktop',
                         default => 'heroicon-o-computer-desktop',
@@ -94,7 +95,7 @@ class UserDeviceResource extends Resource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(fn($record) => optional($record->user)->name ?? 'unknown')
+                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
 
                 // TODO: Not implemented yet, must be editable then

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('web')->group(function (): void {
     if (config('press.redirect_index') === true) {
-        Route::get('/', fn() => Redirect::to('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug')));
+        Route::get('/', fn () => Redirect::to('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug')));
     }
 
     if (config('press.redirect_logout') === true) {

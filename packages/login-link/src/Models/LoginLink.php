@@ -2,11 +2,11 @@
 
 namespace Moox\LoginLink\Models;
 
-use Override;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use Override;
 
 class LoginLink extends Model
 {

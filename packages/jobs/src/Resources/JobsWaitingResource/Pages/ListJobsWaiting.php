@@ -2,10 +2,10 @@
 
 namespace Moox\Jobs\Resources\JobsWaitingResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Jobs\Resources\JobsWaitingResource;
 use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
+use Override;
 
 class ListJobsWaiting extends ListRecords
 {
@@ -16,7 +16,8 @@ class ListJobsWaiting extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             JobsWaitingOverview::class,

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
-use Override;
-use Filament\Forms\Components\Actions\Action;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -37,6 +36,7 @@ use Moox\Core\Traits\Publish\SinglePublishInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
 use Moox\Core\Traits\UserRelation\UserInResource;
+use Override;
 
 class FullItemResource extends Resource
 {
@@ -223,8 +223,8 @@ class FullItemResource extends Resource
                 ...static::getTableActions(),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 Filter::make('title')
@@ -232,7 +232,7 @@ class FullItemResource extends Resource
                         TextInput::make('title')
                             ->label(__('core::core.title')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['title'],
                         fn (Builder $query, $title): Builder => $query->where('title', 'like', sprintf('%%%s%%', $title)),
                     )),
@@ -241,7 +241,7 @@ class FullItemResource extends Resource
                         TextInput::make('slug')
                             ->label(__('core::core.slug')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['slug'],
                         fn (Builder $query, $slug): Builder => $query->where('slug', 'like', sprintf('%%%s%%', $slug)),
                     )),

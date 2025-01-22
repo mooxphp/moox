@@ -15,6 +15,7 @@ class BatchJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
     public function handle(): void
     {
         Bus::batch([

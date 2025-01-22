@@ -2,8 +2,8 @@
 
 namespace Moox\Sync\Http\Resources;
 
-use Override;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @property int $id

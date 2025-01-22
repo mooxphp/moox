@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Expiry;
 
-use Override;
 use Moox\Expiry\Commands\EscalatedExpiriesCommand;
 use Moox\Expiry\Commands\InstallCommand;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

@@ -2,13 +2,14 @@
 
 namespace Moox\PressTrainings\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpTerm;
+use Override;
 
 class WpTrainingsTopic extends WpTerm
 {
-    #[Override]protected static function boot(): void
+    #[Override]
+    protected static function boot(): void
     {
         parent::boot();
 

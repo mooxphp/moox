@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
-use Override;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -29,6 +28,7 @@ use Moox\Core\Traits\Publish\SinglePublishInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
 use Moox\Core\Traits\UserRelation\UserInResource;
+use Override;
 
 class ItemResource extends Resource
 {
@@ -37,6 +37,7 @@ class ItemResource extends Resource
     use TabsInResource;
     use TaxonomyInResource;
     use UserInResource;
+
     protected static ?string $model = Item::class;
 
     protected static ?string $navigationIcon = 'gmdi-article';
@@ -139,8 +140,8 @@ class ItemResource extends Resource
             ])
             ->bulkActions([
                 // SinglePublishInResource - getTableBulkActions
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 ...static::getTableFilters(),

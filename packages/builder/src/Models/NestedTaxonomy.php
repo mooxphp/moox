@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,12 +11,14 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
+use Override;
 
 class NestedTaxonomy extends Model
 {
     use HasFactory;
     use NodeTrait;
     use SoftDeletes;
+
     protected $table = 'nested_taxonomies';
 
     protected function getResourceName(): string

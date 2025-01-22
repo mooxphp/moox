@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\ItemResource\Widgets;
 
-use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Models\Item;
+use Override;
 
 class ItemWidgets extends BaseWidget
 {

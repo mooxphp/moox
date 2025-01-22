@@ -1,16 +1,16 @@
 <?php
 
+use App\Builder\Presets\StaticLanguagePreset;
+use Moox\Booking\Models\Booking;
+use Moox\Brand\Forms\RelationCreateForm;
+use Moox\Builder\Presets\FullItemPreset;
 use Moox\Builder\Presets\LightItemPreset;
 use Moox\Builder\Presets\SimpleItemPreset;
 use Moox\Builder\Presets\SoftDeleteItemPreset;
-use Moox\Builder\Presets\FullItemPreset;
-use App\Builder\Presets\StaticLanguagePreset;
-use Moox\Category\Models\Category;
 use Moox\Category\Forms\TaxonomyCreateForm;
-use Moox\Tag\Models\Tag;
+use Moox\Category\Models\Category;
 use Moox\Room\Models\Room;
-use Moox\Brand\Forms\RelationCreateForm;
-use Moox\Booking\Models\Booking;
+use Moox\Tag\Models\Tag;
 use Moox\User\Models\User;
 
 /*
@@ -106,7 +106,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '<=',
-                            'value' => fn() => now(),
+                            'value' => fn () => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -122,7 +122,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '>',
-                            'value' => fn() => now(),
+                            'value' => fn () => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -236,7 +236,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '<=',
-                            'value' => fn() => now(),
+                            'value' => fn () => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -252,7 +252,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '>',
-                            'value' => fn() => now(),
+                            'value' => fn () => now(),
                         ],
                         [
                             'field' => 'deleted_at',

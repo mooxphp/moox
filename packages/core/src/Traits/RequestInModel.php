@@ -19,6 +19,6 @@ trait RequestInModel
 
         $firstComponent = $components[0] ?? [];
 
-        return $firstComponent['updates']['data.' . $key] ?? null;
+        return $firstComponent['updates']['data.'.$key] ?? null;
     }
 }

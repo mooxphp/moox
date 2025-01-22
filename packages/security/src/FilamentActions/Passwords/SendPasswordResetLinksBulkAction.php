@@ -2,7 +2,6 @@
 
 namespace Moox\Security\FilamentActions\Passwords;
 
-use Override;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
@@ -12,11 +11,13 @@ use Filament\Tables\Actions\BulkAction;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Collection;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
+use Override;
 
 class SendPasswordResetLinksBulkAction extends BulkAction
 {
     use CanCustomizeProcess;
     use WithRateLimiting;
+
     public static function getDefaultName(): ?string
     {
         return 'sendPasswordResetLinks';

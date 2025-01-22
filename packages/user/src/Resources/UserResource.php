@@ -2,7 +2,6 @@
 
 namespace Moox\User\Resources;
 
-use Override;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -32,11 +31,13 @@ use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
+use Override;
 
 class UserResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
@@ -281,7 +282,7 @@ class UserResource extends Resource
                     ->size(50),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(fn($state, User $user): string => $user->first_name.' '.$user->last_name)
+                    ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
                     ->toggleable()
                     ->sortable()
                     ->searchable()

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class CreateSimpleTaxonomy extends CreateRecord
 {

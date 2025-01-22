@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
-use Override;
-use Filament\Forms\Components\Actions\Action;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
@@ -27,6 +26,7 @@ use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\EditSimpleTaxonomy;
 use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\ListSimpleTaxonomies;
 use Moox\Builder\Resources\SimpleTaxonomyResource\Pages\ViewSimpleTaxonomy;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
+use Override;
 
 class SimpleTaxonomyResource extends Resource
 {

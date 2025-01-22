@@ -1,16 +1,16 @@
 <?php
 
-use Moox\Sync\Models\Sync;
-use Moox\Sync\Resources\SyncResource;
+use App\Models\User;
+use Moox\Press\Handlers\WpUserSyncHandler;
+use Moox\Press\Models\WpUser;
+use Moox\Press\Resolver\WpUserFileResolver;
+use Moox\Press\Transformer\WpUserTransformer;
+use Moox\Sync\Http\Controllers\Api\PlatformController;
 use Moox\Sync\Http\Controllers\Api\SyncController;
 use Moox\Sync\Models\Platform;
+use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\PlatformResource;
-use Moox\Sync\Http\Controllers\Api\PlatformController;
-use App\Models\User;
-use Moox\Press\Models\WpUser;
-use Moox\Press\Transformer\WpUserTransformer;
-use Moox\Press\Handlers\WpUserSyncHandler;
-use Moox\Press\Resolver\WpUserFileResolver;
+use Moox\Sync\Resources\SyncResource;
 
 /*
 |--------------------------------------------------------------------------

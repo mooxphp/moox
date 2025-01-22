@@ -2,8 +2,6 @@
 
 namespace Moox\PressWiki\Resources\WpWikiResource\RelationManagers;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -11,11 +9,12 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Override;
 
 class WpCommentRelationManager extends RelationManager
 {

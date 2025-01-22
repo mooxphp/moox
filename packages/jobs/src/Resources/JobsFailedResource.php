@@ -2,7 +2,6 @@
 
 namespace Moox\Jobs\Resources;
 
-use Override;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -19,6 +18,7 @@ use Illuminate\Support\Facades\Artisan;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\FailedJob;
 use Moox\Jobs\Resources\JobsFailedResource\Pages\ListFailedJobs;
+use Override;
 
 class JobsFailedResource extends Resource
 {
@@ -82,7 +82,7 @@ class JobsFailedResource extends Resource
                     ->requiresConfirmation()
                     ->action(function (Collection $records): void {
                         foreach ($records as $record) {
-                            Artisan::call('queue:retry ' . $record->uuid);
+                            Artisan::call('queue:retry '.$record->uuid);
                         }
 
                         Notification::make()
@@ -98,7 +98,7 @@ class JobsFailedResource extends Resource
                     ->label(__('jobs::translations.retry'))
                     ->requiresConfirmation()
                     ->action(function (FailedJob $record): void {
-                        Artisan::call('queue:retry ' . $record->uuid);
+                        Artisan::call('queue:retry '.$record->uuid);
                         Notification::make()
                             ->title(__('jobs::translations.jobs.single').sprintf(' %s ', $record->uuid).__('jobs::translations.job_pushed_back_notification'))
                             ->success()

@@ -2,7 +2,6 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
-use Override;
 use Exception;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -14,6 +13,7 @@ use Moox\Press\Models\WpBasePost;
 use Moox\Press\Models\WpPostMeta;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource;
+use Override;
 use Symfony\Component\Mime\MimeTypes;
 
 class EditWpUser extends EditRecord

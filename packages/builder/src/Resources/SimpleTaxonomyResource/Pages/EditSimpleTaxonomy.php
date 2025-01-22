@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class EditSimpleTaxonomy extends EditRecord
 {

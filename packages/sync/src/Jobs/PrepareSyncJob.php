@@ -22,6 +22,7 @@ class PrepareSyncJob implements ShouldQueue
     use LogLevel;
     use Queueable;
     use SerializesModels;
+
     protected $sourcePlatform;
 
     protected $modelData;
@@ -115,7 +116,7 @@ class PrepareSyncJob implements ShouldQueue
             'identifier_value' => $this->identifierValue,
         ]);
 
-        $transformerClass = config('sync.transformer_bindings.' . $this->modelClass);
+        $transformerClass = config('sync.transformer_bindings.'.$this->modelClass);
 
         if ($transformerClass && class_exists($transformerClass)) {
             $transformer = new $transformerClass($model);
@@ -133,7 +134,7 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function addFileMetadata(array $data): array
     {
-        $fileResolverClass = config('sync.file_sync_resolver.' . $this->modelClass);
+        $fileResolverClass = config('sync.file_sync_resolver.'.$this->modelClass);
         if (! $fileResolverClass || ! class_exists($fileResolverClass)) {
             return $data;
         }
@@ -202,7 +203,7 @@ class PrepareSyncJob implements ShouldQueue
             'identifier_value' => $this->identifierValue,
         ]);
 
-        $transformerClass = config('sync.transformer_bindings.' . $this->modelClass);
+        $transformerClass = config('sync.transformer_bindings.'.$this->modelClass);
 
         if ($transformerClass && class_exists($transformerClass)) {
             $transformer = new $transformerClass($model);

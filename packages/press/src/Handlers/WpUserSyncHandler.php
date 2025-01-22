@@ -66,7 +66,7 @@ class WpUserSyncHandler extends AbstractSyncHandler
 
     protected function ensureAllFieldsHaveValue(array $data): array
     {
-        return array_map(fn($value) => $value ?? '', $data);
+        return array_map(fn ($value) => $value ?? '', $data);
     }
 
     protected function getMainTableData(): array

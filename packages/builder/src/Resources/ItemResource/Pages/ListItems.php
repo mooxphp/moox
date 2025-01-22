@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\ItemResource\Pages;
 
-use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -12,6 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\Item;
 use Moox\Builder\Resources\ItemResource;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListItems extends ListRecords
 {
@@ -30,7 +30,7 @@ class ListItems extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Item => $model::create($data))
+                ->using(fn (array $data, string $model): Item => $model::create($data))
                 ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))

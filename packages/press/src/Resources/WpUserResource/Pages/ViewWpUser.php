@@ -2,12 +2,12 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
-use Override;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource;
+use Override;
 
 class ViewWpUser extends ViewRecord
 {

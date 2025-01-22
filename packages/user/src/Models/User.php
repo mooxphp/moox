@@ -20,6 +20,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     use Notifiable;
     use SoftDeletes;
     use TwoFactorAuthenticatable;
+
     protected $fillable = [
         'name',
         'slug',

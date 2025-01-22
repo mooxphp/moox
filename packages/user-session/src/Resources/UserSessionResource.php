@@ -2,7 +2,6 @@
 
 namespace Moox\UserSession\Resources;
 
-use Override;
 use Exception;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -21,11 +20,13 @@ use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
+use Override;
 
 class UserSessionResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = UserSession::class;
 
     protected static ?string $navigationIcon = 'gmdi-safety-check';

@@ -3,10 +3,10 @@
 namespace Moox\Passkey\Models;
 
 use App\Models\User;
-use Moox\UserDevice\Models\UserDevice;
-use Moox\UserSession\Models\UserSession;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\UserDevice\Models\UserDevice;
+use Moox\UserSession\Models\UserSession;
 
 class Passkey extends Model
 {

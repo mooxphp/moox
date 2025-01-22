@@ -33,7 +33,7 @@ class PresetRegistry
 
     public static function getPresetBlocks(string $presetName): array
     {
-        $presetConfig = config('builder.presets.' . $presetName);
+        $presetConfig = config('builder.presets.'.$presetName);
 
         if (! $presetConfig) {
             throw new RuntimeException(sprintf("Preset '%s' not found in configuration", $presetName));
@@ -42,7 +42,7 @@ class PresetRegistry
         $presetClass = $presetConfig['class'];
 
         if (! class_exists($presetClass)) {
-            throw new RuntimeException('Preset class not found: ' . $presetClass);
+            throw new RuntimeException('Preset class not found: '.$presetClass);
         }
 
         $preset = new $presetClass;
@@ -51,7 +51,7 @@ class PresetRegistry
         if (empty($blocks)) {
             throw new RuntimeException(
                 sprintf("Preset '%s' initialization failed. ", $presetName).
-                ('Class: ' . $presetClass)
+                ('Class: '.$presetClass)
             );
         }
 
@@ -60,7 +60,7 @@ class PresetRegistry
 
     public static function getPresetGenerators(string $presetName): array
     {
-        $presetConfig = config('builder.presets.' . $presetName);
+        $presetConfig = config('builder.presets.'.$presetName);
 
         if (! $presetConfig) {
             throw new RuntimeException(sprintf("Preset '%s' not found in configuration", $presetName));

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Category\Resources\CategoryResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Category\Resources\CategoryResource;
+use Override;
 
 class CreateCategory extends CreateRecord
 {

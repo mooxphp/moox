@@ -2,28 +2,28 @@
 
 namespace Moox\PressWiki\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages\ListWpWikiDepartmentTopics;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressWiki\Models\WpWikiDepartmentTopic;
 use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages;
+use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages\ListWpWikiDepartmentTopics;
+use Override;
 
 class WpWikiDepartmentTopicResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpWikiDepartmentTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-apartment';

@@ -2,18 +2,18 @@
 
 namespace Moox\Builder\Blocks\Singles;
 
+use Moox\Builder\Blocks\AbstractBlock;
 use Moox\BuilderPro\Blocks\Singles\Publish;
-use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Simple\SingleSimpleInListPage;
+use Moox\Core\Traits\Base\BaseInCreatePage;
+use Moox\Core\Traits\Base\BaseInEditPage;
 use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Base\BaseInViewPage;
 use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
-use Moox\Core\Traits\Base\BaseInCreatePage;
 use Moox\Core\Traits\Simple\SingleSimpleInEditPage;
-use Moox\Core\Traits\Base\BaseInEditPage;
-use Moox\Builder\Blocks\AbstractBlock;
+use Moox\Core\Traits\Simple\SingleSimpleInListPage;
+use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
 
 class Light extends AbstractBlock
 {

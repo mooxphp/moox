@@ -125,7 +125,7 @@ class InstallCommand extends Command
             return;
         }
 
-        $availablePlugins = array_map(fn($file): string => basename((string) $file, '.php'), $pluginFiles);
+        $availablePlugins = array_map(fn ($file): string => basename((string) $file, '.php'), $pluginFiles);
 
         $pluginsToAdd = multiselect(
             label: 'These plugins will be installed:',
@@ -142,7 +142,7 @@ class InstallCommand extends Command
         foreach ($pluginsToAdd as $plugin) {
             $searchPlugin = '/'.$plugin.'/';
             if (preg_match($searchPlugin, $content)) {
-                warning($plugin . ' already registered.');
+                warning($plugin.' already registered.');
             } else {
                 $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
             }

@@ -2,10 +2,10 @@
 
 namespace Moox\Locate\Resources\AreaResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Locate\Resources\AreaResource;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -16,7 +16,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             // LocateWidgets::class,
@@ -33,7 +34,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): static => $model::create($data)),
+                ->using(fn (array $data, string $model): static => $model::create($data)),
         ];
     }
 }

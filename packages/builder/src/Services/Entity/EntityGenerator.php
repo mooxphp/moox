@@ -24,9 +24,7 @@ class EntityGenerator extends ContextAwareService
 
     protected array $generationResult = [];
 
-    public function __construct(private readonly FileManager $fileManager, protected array $blocks = [])
-    {
-    }
+    public function __construct(private readonly FileManager $fileManager, protected array $blocks = []) {}
 
     public function setBlocks(array $blocks): void
     {
@@ -51,7 +49,7 @@ class EntityGenerator extends ContextAwareService
     {
         $this->validateContext();
         $contextType = $this->context->getContextType();
-        $contextConfig = config('builder.contexts.' . $contextType);
+        $contextConfig = config('builder.contexts.'.$contextType);
 
         Log::info('EntityGenerator: Initializing generators', [
             'contextType' => $contextType,
@@ -59,12 +57,12 @@ class EntityGenerator extends ContextAwareService
         ]);
 
         if (! isset($contextConfig['generators'])) {
-            throw new RuntimeException('No generators configured for context ' . $contextType);
+            throw new RuntimeException('No generators configured for context '.$contextType);
         }
 
         foreach ($contextConfig['generators'] as $name => $config) {
             if (! isset($config['generator'])) {
-                throw new RuntimeException('Generator class not specified for ' . $name);
+                throw new RuntimeException('Generator class not specified for '.$name);
             }
 
             $generatorClass = $config['generator'];

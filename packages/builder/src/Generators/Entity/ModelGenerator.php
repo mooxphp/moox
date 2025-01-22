@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Moox\Builder\Generators\Entity;
 
 use Exception;
-use Override;
 use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
+use Override;
 
 class ModelGenerator extends AbstractGenerator
 {
@@ -90,7 +90,7 @@ class ModelGenerator extends AbstractGenerator
             }
         }
 
-        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 
     #[Override]

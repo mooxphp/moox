@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\Category\Resources;
 
-use Override;
-use Filament\Forms\Components\Actions\Action;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -36,6 +35,7 @@ use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Override;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
@@ -43,6 +43,7 @@ class CategoryResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = Category::class;
 
     protected static ?string $currentTab = null;
@@ -239,8 +240,8 @@ class CategoryResource extends Resource
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 SelectFilter::make('parent_id')
@@ -255,7 +256,7 @@ class CategoryResource extends Resource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
                         switch ($option) {
                             case '0':
                                 return $query->doesntHave('children');
@@ -270,7 +271,7 @@ class CategoryResource extends Resource
                 SelectFilter::make('depth')
                     ->label('Level')
                     ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
                             $subquery->select('id')
                                 ->from('categories as c')
@@ -284,8 +285,8 @@ class CategoryResource extends Resource
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 SelectFilter::make('parent_id')
@@ -300,7 +301,7 @@ class CategoryResource extends Resource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
                         switch ($option) {
                             case '0':
                                 return $query->doesntHave('children');
@@ -315,7 +316,7 @@ class CategoryResource extends Resource
                 SelectFilter::make('depth')
                     ->label('Level')
                     ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
-                    ->query(fn(Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
                         $query->whereIn('id', function ($subquery) use ($depth): void {
                             $subquery->select('id')
                                 ->from('categories as c')

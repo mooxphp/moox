@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\NestedTaxonomyResource\Pages;
 
-use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -12,6 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\NestedTaxonomy;
 use Moox\Builder\Resources\NestedTaxonomyResource;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListNestedTaxonomies extends ListRecords
 {
@@ -23,7 +23,7 @@ class ListNestedTaxonomies extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): NestedTaxonomy => $model::create($data))
+                ->using(fn (array $data, string $model): NestedTaxonomy => $model::create($data))
                 ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))

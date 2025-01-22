@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,12 +12,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
 use Moox\Category\Database\Factories\CategoryFactory;
+use Override;
 
 class Category extends Model
 {
     use HasFactory;
     use NodeTrait;
     use SoftDeletes;
+
     protected $table = 'categories';
 
     protected $fillable = [

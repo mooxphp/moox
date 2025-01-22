@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
-use InvalidArgumentException;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 
@@ -87,8 +87,7 @@ class ConfigGenerator extends AbstractGenerator
             $output .= "        ],\n";
         }
 
-
-        return $output . '    ]';
+        return $output.'    ]';
     }
 
     protected function generateConfigContent(): string
@@ -96,9 +95,9 @@ class ConfigGenerator extends AbstractGenerator
         $entityName = Str::kebab($this->context->getEntityName());
         $contextType = $this->context->getContextType();
         $translationKey = match ($contextType) {
-            'app' => 'entities/' . $entityName,
-            'preview' => 'previews/' . $entityName,
-            'package' => $this->context->getConfig()['package']['name'].('/' . $entityName),
+            'app' => 'entities/'.$entityName,
+            'preview' => 'previews/'.$entityName,
+            'package' => $this->context->getConfig()['package']['name'].('/'.$entityName),
             default => throw new InvalidArgumentException('Invalid context type: '.$contextType),
         };
 

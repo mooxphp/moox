@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
-use InvalidArgumentException;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 

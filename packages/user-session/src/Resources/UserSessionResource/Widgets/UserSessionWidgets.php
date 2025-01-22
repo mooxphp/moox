@@ -2,11 +2,11 @@
 
 namespace Moox\UserSession\Resources\UserSessionResource\Widgets;
 
-use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\UserSession\Models\UserSession;
+use Override;
 
 class UserSessionWidgets extends BaseWidget
 {

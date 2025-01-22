@@ -2,32 +2,31 @@
 
 namespace Moox\Press\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Press\Resources\WpUserMetaResource\Pages\ListWpUserMetas;
-use Moox\Press\Resources\WpUserMetaResource\Pages\CreateWpUserMeta;
-use Moox\Press\Resources\WpUserMetaResource\Pages\ViewWpUserMeta;
-use Moox\Press\Resources\WpUserMetaResource\Pages\EditWpUserMeta;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpUserMeta;
-use Moox\Press\Resources\WpUserMetaResource\Pages;
+use Moox\Press\Resources\WpUserMetaResource\Pages\CreateWpUserMeta;
+use Moox\Press\Resources\WpUserMetaResource\Pages\EditWpUserMeta;
+use Moox\Press\Resources\WpUserMetaResource\Pages\ListWpUserMetas;
+use Moox\Press\Resources\WpUserMetaResource\Pages\ViewWpUserMeta;
+use Override;
 
 class WpUserMetaResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpUserMeta::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';

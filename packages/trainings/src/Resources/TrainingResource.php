@@ -2,14 +2,6 @@
 
 namespace Moox\Training\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Moox\Training\Resources\TrainingResource\RelationManagers\TrainingInvitationsRelationManager;
-use Moox\Training\Resources\TrainingResource\Pages\ListTrainings;
-use Moox\Training\Resources\TrainingResource\Pages\CreateTraining;
-use Moox\Training\Resources\TrainingResource\Pages\ViewTraining;
-use Moox\Training\Resources\TrainingResource\Pages\EditTraining;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -19,16 +11,22 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\Training;
-use Moox\Training\Resources\TrainingResource\Pages;
+use Moox\Training\Resources\TrainingResource\Pages\CreateTraining;
+use Moox\Training\Resources\TrainingResource\Pages\EditTraining;
+use Moox\Training\Resources\TrainingResource\Pages\ListTrainings;
+use Moox\Training\Resources\TrainingResource\Pages\ViewTraining;
+use Moox\Training\Resources\TrainingResource\RelationManagers\TrainingInvitationsRelationManager;
+use Override;
 
 class TrainingResource extends Resource
 {

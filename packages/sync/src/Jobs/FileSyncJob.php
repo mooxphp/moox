@@ -20,9 +20,8 @@ class FileSyncJob implements ShouldQueue
     use LogLevel;
     use Queueable;
     use SerializesModels;
-    public function __construct(protected $modelClass, protected $modelId, protected $field, protected $fileData, protected Platform $sourcePlatform, protected Platform $targetPlatform)
-    {
-    }
+
+    public function __construct(protected $modelClass, protected $modelId, protected $field, protected $fileData, protected Platform $sourcePlatform, protected Platform $targetPlatform) {}
 
     public function handle(): void
     {
@@ -115,7 +114,7 @@ class FileSyncJob implements ShouldQueue
         ]);
 
         if (! $response->successful()) {
-            throw new Exception('Failed to send chunk ' . $chunkIndex);
+            throw new Exception('Failed to send chunk '.$chunkIndex);
         }
     }
 

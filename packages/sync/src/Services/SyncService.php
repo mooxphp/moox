@@ -11,9 +11,7 @@ class SyncService
 {
     use LogLevel;
 
-    public function __construct(protected PlatformRelationService $platformRelationService)
-    {
-    }
+    public function __construct(protected PlatformRelationService $platformRelationService) {}
 
     public function performSync($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, ?Platform $targetPlatform = null): void
     {
@@ -164,7 +162,7 @@ class SyncService
         }
 
         if (! $uniqueIdentifier) {
-            throw new Exception('No unique identifier found for model ' . $modelClass);
+            throw new Exception('No unique identifier found for model '.$modelClass);
         }
 
         $model = $modelClass::updateOrCreate(

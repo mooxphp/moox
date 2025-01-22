@@ -53,7 +53,7 @@ class FileManager
             }
 
             if (file_put_contents($path, $content) === false) {
-                throw new RuntimeException('Failed to write file: ' . $path);
+                throw new RuntimeException('Failed to write file: '.$path);
             }
 
             $paths[] = $path;
@@ -77,7 +77,7 @@ class FileManager
     public function findMigrationFiles(string $path): array
     {
         if (! is_dir($path)) {
-            throw new RuntimeException('Migration directory not found: ' . $path);
+            throw new RuntimeException('Migration directory not found: '.$path);
         }
 
         $finder = new Finder;
@@ -109,15 +109,15 @@ class FileManager
 
     protected function ensureDirectoryExists(string $directory): void
     {
-        if (!File::exists($directory) && ! File::makeDirectory($directory, 0755, true)) {
-            throw new RuntimeException('Failed to create directory: ' . $directory);
+        if (! File::exists($directory) && ! File::makeDirectory($directory, 0755, true)) {
+            throw new RuntimeException('Failed to create directory: '.$directory);
         }
     }
 
     protected function writeFile(string $path, string $content): void
     {
         if (! File::put($path, $content)) {
-            throw new RuntimeException('Failed to write file: ' . $path);
+            throw new RuntimeException('Failed to write file: '.$path);
         }
     }
 
@@ -141,7 +141,7 @@ class FileManager
             }
 
             if (File::exists($path) && ! is_writable($path)) {
-                throw new RuntimeException('File not writable: ' . $path);
+                throw new RuntimeException('File not writable: '.$path);
             }
         }
     }

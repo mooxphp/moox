@@ -18,6 +18,7 @@ class ShortJob implements ShouldQueue
     use JobProgress;
     use Queueable;
     use SerializesModels;
+
     /**
      * @var int
      */

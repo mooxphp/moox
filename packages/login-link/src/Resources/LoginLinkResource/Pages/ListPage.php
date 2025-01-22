@@ -2,13 +2,13 @@
 
 namespace Moox\LoginLink\Resources\LoginLinkResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -21,7 +21,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             LoginLinkWidgets::class,
@@ -38,7 +39,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): LoginLink => $model::create($data)),
+                ->using(fn (array $data, string $model): LoginLink => $model::create($data)),
         ];
     }
 

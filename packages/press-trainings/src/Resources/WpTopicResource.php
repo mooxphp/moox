@@ -2,25 +2,23 @@
 
 namespace Moox\PressWiki\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\ListWpTopics;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\CreateWpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\ViewWpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages\EditWpTopic;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressWiki\Models\WpTopic;
-use Moox\PressWiki\Resources\WpTopicResource\Pages;
+use Moox\PressWiki\Resources\WpTopicResource\Pages\CreateWpTopic;
+use Moox\PressWiki\Resources\WpTopicResource\Pages\EditWpTopic;
+use Moox\PressWiki\Resources\WpTopicResource\Pages\ListWpTopics;
+use Moox\PressWiki\Resources\WpTopicResource\Pages\ViewWpTopic;
+use Override;
 
 class WpTopicResource extends Resource
 {

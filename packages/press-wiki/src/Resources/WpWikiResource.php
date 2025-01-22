@@ -2,9 +2,6 @@
 
 namespace Moox\PressWiki\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\PressWiki\Resources\WpWikiResource\Pages\ListWpWikis;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -12,21 +9,24 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressWiki\Models\WpWiki;
 use Moox\PressWiki\Resources\WpWikiResource\Pages;
+use Moox\PressWiki\Resources\WpWikiResource\Pages\ListWpWikis;
 use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpCommentRelationManager;
 use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpPostMetaRelationManager;
+use Override;
 
 class WpWikiResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpWiki::class;
 
     protected static ?string $navigationIcon = 'gmdi-library-books';

@@ -2,9 +2,9 @@
 
 namespace Moox\Builder\Blocks\Features;
 
-use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Builder\Blocks\AbstractBlock;
+use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\TabsInResource;
 
 class Tabs extends AbstractBlock
 {

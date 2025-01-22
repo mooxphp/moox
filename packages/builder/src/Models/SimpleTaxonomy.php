@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 class SimpleTaxonomy extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $table = 'simple_taxonomies';
 
     protected function getResourceName(): string

@@ -2,7 +2,6 @@
 
 namespace Moox\Locate\Resources;
 
-use Override;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -15,6 +14,7 @@ use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Locate\Models\Area;
 use Moox\Locate\Resources\AreaResource\Pages\ListPage;
+use Override;
 
 class AreaResource extends Resource
 {

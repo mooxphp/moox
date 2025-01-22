@@ -2,12 +2,12 @@
 
 namespace Moox\Permission\Resources\PermissionResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Permission\Models\Permission;
 use Moox\Permission\Resources\PermissionResource;
 use Moox\Permission\Resources\PermissionResource\Widgets\PermissionWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -18,7 +18,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             PermissionWidgets::class,
@@ -35,7 +36,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Permission => $model::create($data)),
+                ->using(fn (array $data, string $model): Permission => $model::create($data)),
         ];
     }
 }

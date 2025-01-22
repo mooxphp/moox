@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\UserDevice;
 
-use Override;
 use Moox\UserDevice\Commands\InstallCommand;
 use Moox\UserDevice\Services\LocationService;
 use Moox\UserDevice\Services\UserDeviceTracker;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -29,8 +29,8 @@ class UserDeviceServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        $this->app->singleton(LocationService::class, fn($app): LocationService => new LocationService);
+        $this->app->singleton(LocationService::class, fn ($app): LocationService => new LocationService);
 
-        $this->app->singleton(UserDeviceTracker::class, fn($app): UserDeviceTracker => new UserDeviceTracker($app->make(LocationService::class)));
+        $this->app->singleton(UserDeviceTracker::class, fn ($app): UserDeviceTracker => new UserDeviceTracker($app->make(LocationService::class)));
     }
 }

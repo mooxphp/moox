@@ -2,14 +2,14 @@
 
 namespace Moox\Security\Notifications\Passwords;
 
-use Illuminate\Contracts\Auth\CanResetPassword;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -23,6 +23,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
     protected Panel $panel;
 
     public function __construct(public string $token)

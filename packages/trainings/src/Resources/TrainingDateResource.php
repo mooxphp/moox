@@ -2,12 +2,6 @@
 
 namespace Moox\Training\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Training\Resources\TrainingDateResource\Pages\ListTrainingDates;
-use Moox\Training\Resources\TrainingDateResource\Pages\CreateTrainingDate;
-use Moox\Training\Resources\TrainingDateResource\Pages\ViewTrainingDate;
-use Moox\Training\Resources\TrainingDateResource\Pages\EditTrainingDate;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -15,16 +9,20 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingDate;
-use Moox\Training\Resources\TrainingDateResource\Pages;
+use Moox\Training\Resources\TrainingDateResource\Pages\CreateTrainingDate;
+use Moox\Training\Resources\TrainingDateResource\Pages\EditTrainingDate;
+use Moox\Training\Resources\TrainingDateResource\Pages\ListTrainingDates;
+use Moox\Training\Resources\TrainingDateResource\Pages\ViewTrainingDate;
+use Override;
 
 class TrainingDateResource extends Resource
 {

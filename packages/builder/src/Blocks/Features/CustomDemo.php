@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Blocks\Features;
 
-use Moox\Core\Traits\Publish\SinglePublishInModel;
-use Moox\Core\Traits\Publish\SinglePublishInResource;
-use Moox\Core\Traits\Publish\SinglePublishInListPage;
 use Moox\Builder\Blocks\AbstractBlock;
 use Moox\Builder\Blocks\Singles\Simple;
 use Moox\Builder\Blocks\Singles\SoftDelete;
+use Moox\Core\Traits\Publish\SinglePublishInListPage;
+use Moox\Core\Traits\Publish\SinglePublishInModel;
+use Moox\Core\Traits\Publish\SinglePublishInResource;
 
 class CustomDemo extends AbstractBlock
 {

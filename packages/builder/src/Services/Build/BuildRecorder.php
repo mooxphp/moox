@@ -193,12 +193,12 @@ class BuildRecorder
     {
         foreach ($files as $type => $typeFiles) {
             if (! is_array($typeFiles)) {
-                throw new RuntimeException('Invalid file structure for type: ' . $type);
+                throw new RuntimeException('Invalid file structure for type: '.$type);
             }
 
             foreach ($typeFiles as $path => $content) {
                 if (! is_string($path)) {
-                    throw new RuntimeException('Invalid path in type ' . $type);
+                    throw new RuntimeException('Invalid path in type '.$type);
                 }
 
                 if (! is_string($content)) {
@@ -221,7 +221,7 @@ class BuildRecorder
         $build = $query->orderBy('created_at', 'desc')->first();
 
         if (! $build) {
-            throw new RuntimeException('No active build found for entity ' . $entityId);
+            throw new RuntimeException('No active build found for entity '.$entityId);
         }
 
         return $build;
@@ -234,7 +234,7 @@ class BuildRecorder
             ->first();
 
         if (! $entity) {
-            throw new RuntimeException('Entity not found with name: ' . $entityName);
+            throw new RuntimeException('Entity not found with name: '.$entityName);
         }
 
         return $entity->id;

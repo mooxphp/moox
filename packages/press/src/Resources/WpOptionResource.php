@@ -2,32 +2,31 @@
 
 namespace Moox\Press\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Press\Resources\WpOptionResource\Pages\ListWpOptions;
-use Moox\Press\Resources\WpOptionResource\Pages\CreateWpOption;
-use Moox\Press\Resources\WpOptionResource\Pages\ViewWpOption;
-use Moox\Press\Resources\WpOptionResource\Pages\EditWpOption;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpOption;
-use Moox\Press\Resources\WpOptionResource\Pages;
+use Moox\Press\Resources\WpOptionResource\Pages\CreateWpOption;
+use Moox\Press\Resources\WpOptionResource\Pages\EditWpOption;
+use Moox\Press\Resources\WpOptionResource\Pages\ListWpOptions;
+use Moox\Press\Resources\WpOptionResource\Pages\ViewWpOption;
+use Override;
 
 class WpOptionResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpOption::class;
 
     protected static ?string $navigationIcon = 'gmdi-settings';

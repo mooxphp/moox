@@ -22,6 +22,7 @@ class SendInvitationRequests implements ShouldQueue
     use JobProgress;
     use Queueable;
     use SerializesModels;
+
     /**
      * @var int
      */
@@ -48,7 +49,7 @@ class SendInvitationRequests implements ShouldQueue
 
         $invitationRequests = Training::where('due_at', '<', now())
             ->get()
-            ->map(fn($training) => TrainingInvitation::create([
+            ->map(fn ($training) => TrainingInvitation::create([
                 'training_id' => $training->id,
                 'title' => $training->title,
                 'slug' => Str::slug($training->title),

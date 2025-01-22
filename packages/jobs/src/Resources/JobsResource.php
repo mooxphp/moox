@@ -2,7 +2,6 @@
 
 namespace Moox\Jobs\Resources;
 
-use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +15,7 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
 use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
+use Override;
 use RyanChandler\FilamentProgressColumn\ProgressColumn;
 
 class JobsResource extends Resource
@@ -75,7 +75,7 @@ class JobsResource extends Resource
                     ->badge()
                     ->sortable()
                     ->label(__('jobs::translations.status'))
-                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.' . $state))
+                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.'.$state))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'succeeded' => 'success',
@@ -95,7 +95,7 @@ class JobsResource extends Resource
                     // TODO: poll? extra poll needed?, color (test live), width etc.
                     // IDEA: For adding width (of each separately) to the progress bar, fork (into core?)
                     // SEE: https://github.com/ryangjchandler/filament-progress-column
-                    ->color(fn($record): string => $record->progress > 99 ? 'success' : ''),
+                    ->color(fn ($record): string => $record->progress > 99 ? 'success' : ''),
                 TextColumn::make('started_at')
                     ->label(__('jobs::translations.started_at'))
                     ->since()

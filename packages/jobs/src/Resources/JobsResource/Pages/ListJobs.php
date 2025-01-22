@@ -2,10 +2,10 @@
 
 namespace Moox\Jobs\Resources\JobsResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Jobs\Resources\JobsResource;
 use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
+use Override;
 
 class ListJobs extends ListRecords
 {
@@ -16,7 +16,8 @@ class ListJobs extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             JobStatsOverview::class,

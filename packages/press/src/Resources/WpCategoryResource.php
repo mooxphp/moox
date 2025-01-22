@@ -2,12 +2,6 @@
 
 namespace Moox\Press\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Press\Resources\WpCategoryResource\Pages\ListWpCategories;
-use Moox\Press\Resources\WpCategoryResource\Pages\CreateWpCategory;
-use Moox\Press\Resources\WpCategoryResource\Pages\ViewWpCategory;
-use Moox\Press\Resources\WpCategoryResource\Pages\EditWpCategory;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -15,21 +9,26 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpCategory;
 use Moox\Press\Models\WpTerm;
-use Moox\Press\Resources\WpCategoryResource\Pages;
+use Moox\Press\Resources\WpCategoryResource\Pages\CreateWpCategory;
+use Moox\Press\Resources\WpCategoryResource\Pages\EditWpCategory;
+use Moox\Press\Resources\WpCategoryResource\Pages\ListWpCategories;
+use Moox\Press\Resources\WpCategoryResource\Pages\ViewWpCategory;
+use Override;
 
 class WpCategoryResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpCategory::class;
 
     protected static ?string $navigationIcon = 'gmdi-category';

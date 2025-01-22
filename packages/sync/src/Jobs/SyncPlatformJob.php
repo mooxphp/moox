@@ -19,6 +19,7 @@ class SyncPlatformJob implements ShouldQueue
     use LogLevel;
     use Queueable;
     use SerializesModels;
+
     protected $currentPlatform;
 
     public function __construct()

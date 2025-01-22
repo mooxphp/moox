@@ -2,11 +2,11 @@
 
 namespace Moox\Locate\Resources\LocateResource\Widgets;
 
-use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Locate\Models\Area;
+use Override;
 
 class LocateWidgets extends BaseWidget
 {

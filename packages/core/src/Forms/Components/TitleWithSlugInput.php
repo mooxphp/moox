@@ -16,9 +16,7 @@ class TitleWithSlugInput
 
     protected ?string $slugPrefix = null;
 
-    public function __construct(protected string $name)
-    {
-    }
+    public function __construct(protected string $name) {}
 
     public static function make(string $name): self
     {

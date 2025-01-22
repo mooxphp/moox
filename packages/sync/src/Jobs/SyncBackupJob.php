@@ -15,6 +15,7 @@ class SyncBackupJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
     public function handle(): void
     {
         $syncs = Sync::where('status', true)->get();

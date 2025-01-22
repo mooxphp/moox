@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
-use Override;
 use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\Pages\CreatePageGenerator;
@@ -13,6 +12,7 @@ use Moox\Builder\Generators\Entity\Pages\ListPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ViewPageGenerator;
 use Moox\Builder\Services\Entity\SectionManager;
 use Moox\Builder\Services\File\FileManager;
+use Override;
 use RuntimeException;
 
 class ResourceGenerator extends AbstractGenerator
@@ -169,7 +169,7 @@ class ResourceGenerator extends AbstractGenerator
         $statements = array_unique($statements);
         sort($statements);
 
-        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', $statements));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', $statements));
     }
 
     #[Override]

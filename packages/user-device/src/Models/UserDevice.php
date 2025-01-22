@@ -2,11 +2,11 @@
 
 namespace Moox\UserDevice\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
+use Override;
 
 class UserDevice extends Model
 {
@@ -82,7 +82,7 @@ class UserDevice extends Model
     /**
      * Scope a query to only include active devices.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeActive($query)
@@ -93,7 +93,7 @@ class UserDevice extends Model
     /**
      * Scope a query to only include whitelisted devices.
      *
-     * @param Builder $query
+     * @param  Builder  $query
      * @return Builder
      */
     public function scopeWhitelisted($query)

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
-use Override;
-use Moox\Permission\Policies\DefaultPolicy;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Commands\InstallCommand;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
+use Moox\Permission\Policies\DefaultPolicy;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -17,6 +17,7 @@ class CoreServiceProvider extends PackageServiceProvider
 {
     use GoogleIcons;
     use TranslatableConfig;
+
     #[Override]
     public function boot(): void
     {
@@ -77,7 +78,7 @@ class CoreServiceProvider extends PackageServiceProvider
             if (isset($package['models']) && is_array($package['models'])) {
                 foreach ($package['models'] as $model => $settings) {
                     if (isset($settings['policy']) && class_exists($settings['policy'])) {
-                        $modelClass = 'App\Models\\' . $model;
+                        $modelClass = 'App\Models\\'.$model;
                         if (class_exists($modelClass)) {
                             Gate::policy($modelClass, $settings['policy']);
                         }
@@ -86,6 +87,6 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        Gate::guessPolicyNamesUsing(fn($modelClass): string => DefaultPolicy::class);
+        Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
     }
 }

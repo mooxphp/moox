@@ -2,7 +2,6 @@
 
 namespace Moox\Jobs\Resources;
 
-use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +15,7 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\Job;
 use Moox\Jobs\Resources\JobsWaitingResource\Pages\ListJobsWaiting;
 use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
+use Override;
 
 class JobsWaitingResource extends Resource
 {
@@ -72,7 +72,7 @@ class JobsWaitingResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->label(__('jobs::translations.status'))
-                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.' . $state))
+                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.'.$state))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'waiting' => 'success',

@@ -4,9 +4,9 @@ namespace Moox\Press\Commands;
 
 use DB;
 use Exception;
-use Symfony\Component\Process\Process;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Process\Process;
 
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\info;
@@ -135,7 +135,7 @@ class InstallWordPress extends Command
         if ($missingVariables !== []) {
             warning('The following required variables are missing from your .env file:');
             foreach ($missingVariables as $variable) {
-                $this->line('- ' . $variable);
+                $this->line('- '.$variable);
             }
 
             warning('Please add the missing variables to your .env file and rerun this command.');
@@ -342,7 +342,7 @@ class InstallWordPress extends Command
         $adminPassword = $this->generateSecurePassword();
         $adminEmail = $this->ask('Please enter the admin email');
 
-        info('A secure password has been generated: ' . $adminPassword);
+        info('A secure password has been generated: '.$adminPassword);
         warning('Please make sure to save this password as it will not be shown again.');
 
         $command = [

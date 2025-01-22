@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources\TagResource\Pages;
 
-use Override;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Tag\Resources\TagResource;
+use Override;
 
 class EditTag extends EditRecord
 {

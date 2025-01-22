@@ -16,9 +16,7 @@ class NewDeviceNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(protected $deviceDetails)
-    {
-    }
+    public function __construct(protected $deviceDetails) {}
 
     /**
      * Get the notification's delivery channels.

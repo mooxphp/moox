@@ -2,15 +2,6 @@
 
 namespace Moox\Training\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Moox\Training\Resources\TrainingInvitationResource\RelationManagers\TrainingDatesRelationManager;
-use Moox\Training\Resources\TrainingInvitationResource\Pages\ListTrainingInvitations;
-use Moox\Training\Resources\TrainingInvitationResource\Pages\CreateTrainingInvitation;
-use Moox\Training\Resources\TrainingInvitationResource\Pages\ViewTrainingInvitation;
-use Moox\Training\Resources\TrainingInvitationResource\Pages\EditTrainingInvitation;
-use Moox\Training\Resources\TrainingInvitationResource\Pages\PrepareTrainingInvitation;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -19,15 +10,22 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingInvitation;
-use Moox\Training\Resources\TrainingInvitationResource\Pages;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\CreateTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\EditTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\ListTrainingInvitations;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\PrepareTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\ViewTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\RelationManagers\TrainingDatesRelationManager;
+use Override;
 
 class TrainingInvitationResource extends Resource
 {

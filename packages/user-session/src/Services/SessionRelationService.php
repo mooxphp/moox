@@ -2,8 +2,8 @@
 
 namespace Moox\UserSession\Services;
 
-use Log;
 use Exception;
+use Log;
 use Moox\UserSession\Models\UserSession;
 
 class SessionRelationService

@@ -2,7 +2,6 @@
 
 namespace Moox\User\Resources\UserResource\Pages;
 
-use Override;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -10,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
+use Override;
 use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord

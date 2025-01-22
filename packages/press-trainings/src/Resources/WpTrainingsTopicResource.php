@@ -2,31 +2,30 @@
 
 namespace Moox\PressTrainings\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\ListWpTrainingsTopics;
-use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\CreateWpTrainingsTopic;
-use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\ViewWpTrainingsTopic;
-use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\EditWpTrainingsTopic;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressTrainings\Models\WpTrainingsTopic;
-use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages;
+use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\CreateWpTrainingsTopic;
+use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\EditWpTrainingsTopic;
+use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\ListWpTrainingsTopics;
+use Moox\PressTrainings\Resources\WpTrainingsTopicResource\Pages\ViewWpTrainingsTopic;
+use Override;
 
 class WpTrainingsTopicResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpTrainingsTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-category';

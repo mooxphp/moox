@@ -74,7 +74,7 @@ final class SectionManager
                 continue;
             }
 
-            $fields = array_map(fn($field): string => sprintf('                        %s,', $field), $section['fields']);
+            $fields = array_map(fn ($field): string => sprintf('                        %s,', $field), $section['fields']);
 
             $sectionTitle = $section['hideHeader'] ?? false ? "''" : "'".ucfirst((string) $section['name'])."'";
 

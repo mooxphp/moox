@@ -2,7 +2,6 @@
 
 namespace Moox\Expiry\Models;
 
-use Override;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,11 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
+use Override;
 
 class Expiry extends Model
 {
     use HasFactory;
     use SingleSoftDeleteInModel;
+
     protected $fillable = [
         'title',
         'slug',
@@ -116,8 +117,8 @@ class Expiry extends Model
 
         return $users
             ->pluck('display_name', 'ID')
-            ->filter(fn($displayName): bool => ! is_null($displayName))
-            ->sortBy(fn($displayName, $id) => strtolower((string) $displayName))
+            ->filter(fn ($displayName): bool => ! is_null($displayName))
+            ->sortBy(fn ($displayName, $id) => strtolower((string) $displayName))
             ->toArray();
     }
 }

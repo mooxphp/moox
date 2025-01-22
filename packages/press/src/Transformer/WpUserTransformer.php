@@ -2,10 +2,10 @@
 
 namespace Moox\Press\Transformer;
 
-use Override;
 use Moox\Core\Traits\LogLevel;
 use Moox\Press\Models\WpUser;
 use Moox\Sync\Transformer\AbstractTransformer;
+use Override;
 
 class WpUserTransformer extends AbstractTransformer
 {
@@ -44,7 +44,7 @@ class WpUserTransformer extends AbstractTransformer
         $metaFields = $this->getMetaFields();
         foreach ($metaFields as $metaKey) {
             if (! isset($data[$metaKey])) {
-                $data[$metaKey] = $this->wpUser->getMeta($metaKey) ?? config('press.default_user_meta.' . $metaKey, '');
+                $data[$metaKey] = $this->wpUser->getMeta($metaKey) ?? config('press.default_user_meta.'.$metaKey, '');
             }
         }
 

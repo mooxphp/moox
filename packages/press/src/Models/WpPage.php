@@ -2,12 +2,13 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class WpPage extends WpBasePost
 {
-    #[Override]protected static function boot()
+    #[Override]
+    protected static function boot()
     {
         parent::boot();
 

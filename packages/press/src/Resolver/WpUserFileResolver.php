@@ -2,10 +2,10 @@
 
 namespace Moox\Press\Resolver;
 
-use Override;
 use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpUser;
 use Moox\Sync\Resolver\AbstractFileResolver;
+use Override;
 
 class WpUserFileResolver extends AbstractFileResolver
 {

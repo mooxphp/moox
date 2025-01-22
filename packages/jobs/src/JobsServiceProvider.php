@@ -2,9 +2,9 @@
 
 namespace Moox\Jobs;
 
-use Override;
 use Moox\Jobs\Commands\InstallCommand;
 use Moox\Jobs\Commands\UpdateCommand;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

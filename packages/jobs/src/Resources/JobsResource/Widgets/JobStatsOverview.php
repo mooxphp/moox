@@ -2,12 +2,12 @@
 
 namespace Moox\Jobs\Resources\JobsResource\Widgets;
 
-use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Traits\FormatSeconds;
+use Override;
 
 class JobStatsOverview extends BaseWidget
 {

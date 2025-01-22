@@ -183,7 +183,7 @@ class InstallCommand extends Command
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    warning($plugin . ' already registered.');
+                    warning($plugin.' already registered.');
                 } else {
                     $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }

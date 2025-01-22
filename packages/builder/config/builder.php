@@ -1,5 +1,9 @@
 <?php
 
+use Moox\Builder\Blocks\Features\CustomDemo;
+use Moox\Builder\Blocks\Features\SimpleStatus;
+use Moox\Builder\Blocks\Features\SimpleType;
+use Moox\Builder\Blocks\Features\Tabs;
 use Moox\Builder\Blocks\Fields\Boolean;
 use Moox\Builder\Blocks\Fields\Builder;
 use Moox\Builder\Blocks\Fields\CheckboxList;
@@ -23,24 +27,20 @@ use Moox\Builder\Blocks\Fields\Text;
 use Moox\Builder\Blocks\Fields\TextArea;
 use Moox\Builder\Blocks\Fields\Toggle;
 use Moox\Builder\Blocks\Fields\ToggleButtons;
-use Moox\Builder\Blocks\Features\CustomDemo;
-use Moox\Builder\Blocks\Features\SimpleStatus;
-use Moox\Builder\Blocks\Features\SimpleType;
-use Moox\Builder\Blocks\Features\Tabs;
 use Moox\Builder\Blocks\Sections\SimpleAddressSection;
 use Moox\Builder\Blocks\Singles\Light;
 use Moox\Builder\Blocks\Singles\Simple;
 use Moox\Builder\Blocks\Singles\SoftDelete;
-use Moox\Builder\Generators\Entity\ModelGenerator;
-use Moox\Builder\Generators\Entity\ResourceGenerator;
-use Moox\Builder\Generators\Entity\MigrationGenerator;
-use Moox\Builder\Generators\Entity\PluginGenerator;
-use Moox\Builder\Generators\Entity\TranslationGenerator;
 use Moox\Builder\Generators\Entity\ConfigGenerator;
+use Moox\Builder\Generators\Entity\MigrationGenerator;
+use Moox\Builder\Generators\Entity\ModelGenerator;
+use Moox\Builder\Generators\Entity\PluginGenerator;
+use Moox\Builder\Generators\Entity\ResourceGenerator;
+use Moox\Builder\Generators\Entity\TranslationGenerator;
+use Moox\Builder\Presets\FullItemPreset;
 use Moox\Builder\Presets\LightItemPreset;
 use Moox\Builder\Presets\SimpleItemPreset;
 use Moox\Builder\Presets\SoftDeleteItemPreset;
-use Moox\Builder\Presets\FullItemPreset;
 
 return [
 

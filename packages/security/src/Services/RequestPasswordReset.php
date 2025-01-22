@@ -2,7 +2,6 @@
 
 namespace Moox\Security\Services;
 
-use Override;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
@@ -20,6 +19,7 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Password;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
+use Override;
 
 /**
  * @property Form $form

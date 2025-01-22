@@ -568,7 +568,7 @@ abstract class AbstractBlock
 
     public function getPageActions(string $page): array
     {
-        return $this->getActions('pages.' . $page);
+        return $this->getActions('pages.'.$page);
     }
 
     public function getHeaderActions(string $page): array

@@ -25,19 +25,19 @@ trait FormatSeconds
         $formattedSeconds = '';
 
         if ($days > 0) {
-            $formattedSeconds .= $days . ' d ';
+            $formattedSeconds .= $days.' d ';
         }
 
         if ($hours > 0 || $days > 0) {
-            $formattedSeconds .= $hours . ' h ';
+            $formattedSeconds .= $hours.' h ';
         }
 
         if ($minutes > 0 || $hours > 0 || $days > 0) {
-            $formattedSeconds .= $minutes . ' m ';
+            $formattedSeconds .= $minutes.' m ';
         }
 
         if ($days == 0 && ($seconds > 0 || $minutes > 0 || $hours > 0)) {
-            $formattedSeconds .= $seconds . ' s';
+            $formattedSeconds .= $seconds.' s';
         }
 
         return $formattedSeconds;

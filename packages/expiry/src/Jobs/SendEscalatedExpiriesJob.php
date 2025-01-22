@@ -18,6 +18,7 @@ class SendEscalatedExpiriesJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
     public function handle(): void
     {
         if (! config('expiry.send-escalation')) {
@@ -41,7 +42,7 @@ class SendEscalatedExpiriesJob implements ShouldQueue
         $escalatedEntries = $escalatedExpiries->filter(fn ($entry): bool => $entry->escalated_at !== null);
 
         $data = [
-            'escalatedEntries' => $escalatedEntries->map(fn($entry): array => [
+            'escalatedEntries' => $escalatedEntries->map(fn ($entry): array => [
                 'title' => $entry->title,
                 'expired_at' => Carbon::parse($entry->expired_at)->diffForHumans(),
                 'processing_deadline' => Carbon::parse($entry->processing_deadline)->diffForHumans(),

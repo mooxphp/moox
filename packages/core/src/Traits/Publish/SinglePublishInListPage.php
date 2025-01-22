@@ -15,7 +15,7 @@ trait SinglePublishInListPage
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Item => $model::create($data))
+                ->using(fn (array $data, string $model): Item => $model::create($data))
                 ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))

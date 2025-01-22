@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
-use Override;
-use Filament\Forms\Components\Actions\Action;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
@@ -29,6 +28,7 @@ use Moox\Builder\Resources\NestedTaxonomyResource\Pages\EditNestedTaxonomy;
 use Moox\Builder\Resources\NestedTaxonomyResource\Pages\ListNestedTaxonomies;
 use Moox\Builder\Resources\NestedTaxonomyResource\Pages\ViewNestedTaxonomy;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
+use Override;
 
 class NestedTaxonomyResource extends Resource
 {
@@ -190,8 +190,8 @@ class NestedTaxonomyResource extends Resource
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 ...static::getTaxonomyFilters(),

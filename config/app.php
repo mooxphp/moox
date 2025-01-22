@@ -1,14 +1,20 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\Filament\PressPanelProvider;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\AuthServiceProvider;
+use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
 use Illuminate\Broadcasting\BroadcastServiceProvider;
 use Illuminate\Bus\BusServiceProvider;
 use Illuminate\Cache\CacheServiceProvider;
-use Illuminate\Foundation\Providers\ConsoleSupportServiceProvider;
 use Illuminate\Cookie\CookieServiceProvider;
 use Illuminate\Database\DatabaseServiceProvider;
 use Illuminate\Encryption\EncryptionServiceProvider;
 use Illuminate\Filesystem\FilesystemServiceProvider;
+use Illuminate\Foundation\Providers\ConsoleSupportServiceProvider;
 use Illuminate\Foundation\Providers\FoundationServiceProvider;
 use Illuminate\Hashing\HashServiceProvider;
 use Illuminate\Mail\MailServiceProvider;
@@ -17,17 +23,11 @@ use Illuminate\Pagination\PaginationServiceProvider;
 use Illuminate\Pipeline\PipelineServiceProvider;
 use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Redis\RedisServiceProvider;
-use Illuminate\Auth\Passwords\PasswordResetServiceProvider;
 use Illuminate\Session\SessionServiceProvider;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Translation\TranslationServiceProvider;
 use Illuminate\Validation\ValidationServiceProvider;
 use Illuminate\View\ViewServiceProvider;
-use App\Providers\AppServiceProvider;
-use App\Providers\EventServiceProvider;
-use App\Providers\Filament\AdminPanelProvider;
-use App\Providers\Filament\PressPanelProvider;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Support\Facades\Facade;
 
 return [
 

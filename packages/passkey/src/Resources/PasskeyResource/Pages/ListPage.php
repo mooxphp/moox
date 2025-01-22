@@ -2,13 +2,13 @@
 
 namespace Moox\Passkey\Resources\PasskeyResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -21,7 +21,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             // PasskeyWidgets::class,
@@ -38,7 +39,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(fn(array $data, string $model): Passkey => $model::create($data)),
+                ->using(fn (array $data, string $model): Passkey => $model::create($data)),
         ];
     }
 

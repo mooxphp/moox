@@ -16,6 +16,7 @@ class LongJob implements ShouldQueue
     use JobProgress;
     use Queueable;
     use SerializesModels;
+
     /**
      * @var int
      */

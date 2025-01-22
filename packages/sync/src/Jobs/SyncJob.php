@@ -2,9 +2,9 @@
 
 namespace Moox\Sync\Jobs;
 
-use DateTimeInterface;
-use Carbon\WeekDay;
 use Carbon\Month;
+use Carbon\WeekDay;
+use DateTimeInterface;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -24,9 +24,8 @@ class SyncJob implements ShouldQueue
     use LogLevel;
     use Queueable;
     use SerializesModels;
-    public function __construct(protected $modelClass, protected $modelData, protected $eventType, protected Platform $sourcePlatform, protected Platform $targetPlatform, protected bool $shouldDelete)
-    {
-    }
+
+    public function __construct(protected $modelClass, protected $modelData, protected $eventType, protected Platform $sourcePlatform, protected Platform $targetPlatform, protected bool $shouldDelete) {}
 
     public function handle(): void
     {
@@ -79,7 +78,7 @@ class SyncJob implements ShouldQueue
 
     protected function syncModel()
     {
-        $handlerClass = config('sync.sync_bindings.' . $this->modelClass);
+        $handlerClass = config('sync.sync_bindings.'.$this->modelClass);
 
         if ($handlerClass && class_exists($handlerClass)) {
             $handler = new $handlerClass($this->modelClass, $this->modelData, $this->eventType);

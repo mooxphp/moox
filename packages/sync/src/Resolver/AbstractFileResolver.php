@@ -8,9 +8,7 @@ use Moox\Sync\Interfaces\FileResolverInterface;
 
 abstract class AbstractFileResolver implements FileResolverInterface
 {
-    public function __construct(protected Model $model)
-    {
-    }
+    public function __construct(protected Model $model) {}
 
     public function resolve(): array
     {

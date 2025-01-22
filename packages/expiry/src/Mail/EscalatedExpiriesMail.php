@@ -10,9 +10,8 @@ class EscalatedExpiriesMail extends Mailable
 {
     use Queueable;
     use SerializesModels;
-    public function __construct(public array $entries, public string $panelPath)
-    {
-    }
+
+    public function __construct(public array $entries, public string $panelPath) {}
 
     public function build()
     {

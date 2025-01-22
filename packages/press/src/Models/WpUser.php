@@ -2,7 +2,6 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Awobaz\Mutator\Mutable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -13,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
+use Override;
 
 /**
  * @property string $user_email
@@ -22,6 +22,7 @@ class WpUser extends Authenticatable implements FilamentUser
     use HasFactory;
     use Mutable;
     use Notifiable;
+
     protected $fillable = [
         'user_login',
         'user_pass',

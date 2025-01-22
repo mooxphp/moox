@@ -2,7 +2,6 @@
 
 namespace Moox\Passkey\Resources;
 
-use Override;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,11 +18,13 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
+use Override;
 
 class PasskeyResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = Passkey::class;
 
     protected static ?string $navigationIcon = 'gmdi-fingerprint-o';
@@ -98,7 +99,7 @@ class PasskeyResource extends Resource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(fn($record) => optional($record->user)->name ?? 'unknown')
+                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
                 TextColumn::make('device_id')
                     ->label(__('core::session.device_id'))

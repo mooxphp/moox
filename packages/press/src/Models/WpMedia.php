@@ -2,10 +2,10 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Override;
 
 class WpMedia extends WpBasePost
 {
@@ -24,7 +24,8 @@ class WpMedia extends WpBasePost
         $this->table = $this->wpPrefix.'posts';
     }
 
-    #[Override]protected static function boot()
+    #[Override]
+    protected static function boot()
     {
         parent::boot();
 

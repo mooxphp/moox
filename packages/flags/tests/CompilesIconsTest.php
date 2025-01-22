@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Orchestra\Testbench\TestCase;
 use BladeUI\Icons\BladeIconsServiceProvider;
 use Moox\Flags\FlagsServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 // TODO: Care for Testbench
 class CompilesIconsTest extends TestCase

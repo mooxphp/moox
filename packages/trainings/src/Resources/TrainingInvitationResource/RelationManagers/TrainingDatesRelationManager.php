@@ -2,7 +2,6 @@
 
 namespace Moox\Training\Resources\TrainingInvitationResource\RelationManagers;
 
-use Override;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
@@ -19,6 +18,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class TrainingDatesRelationManager extends RelationManager
 {
@@ -139,7 +139,7 @@ class TrainingDatesRelationManager extends RelationManager
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query
+                    ->query(fn (Builder $query, array $data): Builder => $query
                         ->when(
                             $data['created_from'],
                             fn (

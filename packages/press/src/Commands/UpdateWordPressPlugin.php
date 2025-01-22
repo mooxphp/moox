@@ -104,7 +104,7 @@ class UpdateWordPressPlugin extends Command
         if ($missingVariables !== []) {
             warning('The following required variables are missing from your .env file:');
             foreach ($missingVariables as $variable) {
-                $this->line('- ' . $variable);
+                $this->line('- '.$variable);
             }
 
             warning('Please add the missing variables to your .env file and rerun this command.');

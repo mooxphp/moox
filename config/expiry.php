@@ -1,8 +1,8 @@
 <?php
 
-use Moox\Press\Models\WpUser;
-use Moox\Expiry\Jobs\CollectExpiries;
 use Moox\Expiry\Actions\CustomExpiryAction;
+use Moox\Expiry\Jobs\CollectExpiries;
+use Moox\Press\Models\WpUser;
 
 /*
 |--------------------------------------------------------------------------

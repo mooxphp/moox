@@ -64,19 +64,19 @@ class SyncListener
     {
         $this->logInfo('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
 
-        Event::listen('eloquent.created: ' . $modelClass, function ($model) use ($modelClass): void {
+        Event::listen('eloquent.created: '.$modelClass, function ($model) use ($modelClass): void {
             $localIdentifier = $this->getLocalIdentifier($model);
             $this->logDebug('Moox Sync: Created event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'created');
         });
 
-        Event::listen('eloquent.updated: ' . $modelClass, function ($model) use ($modelClass): void {
+        Event::listen('eloquent.updated: '.$modelClass, function ($model) use ($modelClass): void {
             $localIdentifier = $this->getLocalIdentifier($model);
             $this->logDebug('Moox Sync: Updated event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'updated');
         });
 
-        Event::listen('eloquent.deleted: ' . $modelClass, function ($model) use ($modelClass): void {
+        Event::listen('eloquent.deleted: '.$modelClass, function ($model) use ($modelClass): void {
             $localIdentifier = $this->getLocalIdentifier($model);
             $this->logDebug('Moox Sync: Deleted event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'deleted');
@@ -118,7 +118,7 @@ class SyncListener
             ->where('source_model', $model::class)
             ->where('status', true)
             ->get()
-            ->map(fn($sync): array => [
+            ->map(fn ($sync): array => [
                 'target_platform_id' => $sync->target_platform_id,
                 'target_model' => $sync->target_model,
             ]);

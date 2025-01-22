@@ -2,12 +2,12 @@
 
 namespace Moox\Training\Resources\TrainingInvitationResource\Pages;
 
-use Override;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Training\Resources\TrainingInvitationResource;
+use Override;
 
 class PrepareTrainingInvitation extends EditRecord
 {

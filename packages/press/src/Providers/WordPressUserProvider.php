@@ -2,11 +2,11 @@
 
 namespace Moox\Press\Providers;
 
-use Illuminate\Contracts\Hashing\Hasher;
-use Override;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
+use Illuminate\Contracts\Hashing\Hasher;
 use Moox\Press\Services\WordPressAuthService;
+use Override;
 
 class WordPressUserProvider extends EloquentUserProvider
 {

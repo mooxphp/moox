@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Traits;
 
-use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 trait HandlesMigrationFiles
 {

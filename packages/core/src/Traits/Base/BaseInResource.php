@@ -43,7 +43,7 @@ trait BaseInResource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
             && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
@@ -73,7 +73,7 @@ trait BaseInResource
             $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), fn($method): bool => str_ends_with($method, 'ModifyTableQuery')
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
             && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {

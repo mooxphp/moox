@@ -2,14 +2,15 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class WpTag extends WpTerm
 {
     protected $taxonomy = 'tag';
 
-    #[Override]protected static function boot(): void
+    #[Override]
+    protected static function boot(): void
     {
         parent::boot();
 

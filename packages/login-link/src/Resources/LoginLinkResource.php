@@ -2,7 +2,6 @@
 
 namespace Moox\LoginLink\Resources;
 
-use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -20,11 +19,13 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
+use Override;
 
 class LoginLinkResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = LoginLink::class;
 
     protected static ?string $navigationIcon = 'gmdi-lock-clock-o';
@@ -112,7 +113,7 @@ class LoginLinkResource extends Resource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(fn($record) => optional($record->user)->name ?? 'unknown')
+                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
             ])
             ->actions([

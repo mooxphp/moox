@@ -2,12 +2,6 @@
 
 namespace Moox\Press\Resources;
 
-use Override;
-use Filament\Tables\Columns\TextColumn;
-use Moox\Press\Resources\WpCommentResource\Pages\ListWpComments;
-use Moox\Press\Resources\WpCommentResource\Pages\CreateWpComment;
-use Moox\Press\Resources\WpCommentResource\Pages\ViewWpComment;
-use Moox\Press\Resources\WpCommentResource\Pages\EditWpComment;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -15,21 +9,26 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpComment;
-use Moox\Press\Resources\WpCommentResource\Pages;
+use Moox\Press\Resources\WpCommentResource\Pages\CreateWpComment;
+use Moox\Press\Resources\WpCommentResource\Pages\EditWpComment;
+use Moox\Press\Resources\WpCommentResource\Pages\ListWpComments;
+use Moox\Press\Resources\WpCommentResource\Pages\ViewWpComment;
 use Moox\Press\Resources\WpCommentResource\RelationManagers\WpCommentMetaRelationManager;
+use Override;
 
 class WpCommentResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = WpComment::class;
 
     protected static ?string $navigationIcon = 'gmdi-comment';

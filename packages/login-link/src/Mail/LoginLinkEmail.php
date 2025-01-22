@@ -11,6 +11,7 @@ class LoginLinkEmail extends Mailable
 {
     use Queueable;
     use SerializesModels;
+
     /**
      * @var LoginLink
      */

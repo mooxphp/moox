@@ -2,7 +2,6 @@
 
 namespace Moox\Security\Services;
 
-use Override;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -24,6 +23,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Moox\Security\Helper\PasswordHash;
+use Override;
 
 /**
  * @property Form $form

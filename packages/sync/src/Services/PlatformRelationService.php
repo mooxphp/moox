@@ -2,8 +2,8 @@
 
 namespace Moox\Sync\Services;
 
-use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Moox\Sync\Models\Platform;
 
 class PlatformRelationService
@@ -18,7 +18,7 @@ class PlatformRelationService
             ->where('model_id', $modelId)
             ->delete();
 
-        $insertData = array_map(fn($platformId): array => [
+        $insertData = array_map(fn ($platformId): array => [
             'model_type' => $modelType,
             'model_id' => $modelId,
             'platform_id' => $platformId,

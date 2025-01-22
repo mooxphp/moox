@@ -2,9 +2,6 @@
 
 namespace Moox\User\Services;
 
-use Moox\UserDevice\Services\UserDeviceTracker;
-use Moox\UserSession\Services\SessionRelationService;
-use Override;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -26,6 +23,9 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 use Jenssegers\Agent\Agent;
+use Moox\UserDevice\Services\UserDeviceTracker;
+use Moox\UserSession\Services\SessionRelationService;
+use Override;
 
 /**
  * @property Form $form
@@ -34,6 +34,7 @@ class Login extends SimplePage
 {
     use InteractsWithFormActions;
     use WithRateLimiting;
+
     protected $userDeviceTracker;
 
     protected $sessionRelationService;

@@ -2,14 +2,15 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class WpCategory extends WpTerm
 {
     protected $taxonomy = 'category';
 
-    #[Override]protected static function boot()
+    #[Override]
+    protected static function boot()
     {
         parent::boot();
 

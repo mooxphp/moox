@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Blocks\Singles;
 
+use Moox\Builder\Blocks\AbstractBlock;
 use Moox\BuilderPro\Blocks\Singles\Publish;
-use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel;
-use Moox\Core\Traits\Base\BaseInModel;
-use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInEditPage;
+use Moox\Core\Traits\Base\BaseInCreatePage;
 use Moox\Core\Traits\Base\BaseInEditPage;
-use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
 use Moox\Core\Traits\Base\BaseInListPage;
-use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage;
+use Moox\Core\Traits\Base\BaseInModel;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Base\BaseInViewPage;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInCreatePage;
-use Moox\Core\Traits\Base\BaseInCreatePage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInEditPage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage;
 use Override;
-use Moox\Builder\Blocks\AbstractBlock;
 
 class SoftDelete extends AbstractBlock
 {

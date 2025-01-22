@@ -3,7 +3,6 @@
 namespace Moox\Sync\Resources;
 
 use Exception;
-use Override;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
@@ -29,6 +28,7 @@ use Moox\Sync\Resources\SyncResource\Pages\EditSync;
 use Moox\Sync\Resources\SyncResource\Pages\ListSyncs;
 use Moox\Sync\Resources\SyncResource\Pages\ViewSync;
 use Moox\Sync\Services\ModelCompatibilityChecker;
+use Override;
 
 class SyncResource extends Resource
 {
@@ -131,7 +131,7 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('sourcePlatform', 'name')
-                        ->options(fn() => Platform::all()->mapWithKeys(fn($platform) => [$platform->id => $platform->name ?? 'Platform ' . $platform->id])->toArray())
+                        ->options(fn () => Platform::all()->mapWithKeys(fn ($platform) => [$platform->id => $platform->name ?? 'Platform '.$platform->id])->toArray())
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get): void {
@@ -159,7 +159,7 @@ class SyncResource extends Resource
 
                             $options = $apiUrl ? self::fetchModelsFromApi($apiUrl, $sourcePlatform) : [];
 
-                            return collect($options)->filter(fn($value, $key): bool => $key !== null && $value !== null)->toArray();
+                            return collect($options)->filter(fn ($value, $key): bool => $key !== null && $value !== null)->toArray();
                         })
                         ->rules(['max:255'])
                         ->required()
@@ -195,7 +195,7 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('targetPlatform', 'name')
-                        ->options(fn() => Platform::all()->mapWithKeys(fn($platform) => [$platform->id => $platform->name ?? 'Platform ' . $platform->id])->toArray())
+                        ->options(fn () => Platform::all()->mapWithKeys(fn ($platform) => [$platform->id => $platform->name ?? 'Platform '.$platform->id])->toArray())
                         ->columnSpan(['default' => 12])
                         ->reactive()
                         ->afterStateUpdated(function ($state, callable $set, callable $get): void {
@@ -223,7 +223,7 @@ class SyncResource extends Resource
 
                             $options = $apiUrl ? self::fetchModelsFromApi($apiUrl, $targetPlatform) : [];
 
-                            return collect($options)->filter(fn($value, $key): bool => $key !== null && $value !== null)->toArray();
+                            return collect($options)->filter(fn ($value, $key): bool => $key !== null && $value !== null)->toArray();
                         })
                         ->rules(['max:255'])
                         ->required()

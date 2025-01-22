@@ -2,11 +2,11 @@
 
 namespace Moox\Passkey\Resources\PasskeyResource\Widgets;
 
-use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Passkey\Models\Passkey;
+use Override;
 
 class PasskeyWidgets extends BaseWidget
 {

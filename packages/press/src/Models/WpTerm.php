@@ -2,15 +2,16 @@
 
 namespace Moox\Press\Models;
 
-use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\RequestInModel;
+use Override;
 
 class WpTerm extends Model
 {
     use HasFactory;
     use RequestInModel;
+
     protected $taxonomy = 'term';
 
     protected $fillable = [
@@ -47,7 +48,8 @@ class WpTerm extends Model
         $this->table = $this->wpPrefix.'terms';
     }
 
-    #[Override]protected static function boot()
+    #[Override]
+    protected static function boot()
     {
         parent::boot();
 

@@ -116,7 +116,7 @@ trait TaxonomyInResource
                         $query->whereExists(function ($subQuery) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable, $selectedIds): void {
                             $subQuery->select(DB::raw(1))
                                 ->from($pivotTable)
-                                ->whereColumn(sprintf('%s.%s', $pivotTable, $foreignKey), $resourceTable . '.id')
+                                ->whereColumn(sprintf('%s.%s', $pivotTable, $foreignKey), $resourceTable.'.id')
                                 ->whereIn(sprintf('%s.%s', $pivotTable, $relatedKey), $selectedIds);
                         });
                     }
@@ -129,7 +129,7 @@ trait TaxonomyInResource
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-        return collect($taxonomies)->map(fn($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
+        return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
             ->label($settings['label'] ?? ucfirst((string) $taxonomy))
             ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
                 $relationshipName = $settings['relationship'] ?? $taxonomy;
@@ -142,9 +142,9 @@ trait TaxonomyInResource
                 $modelTable = $model->getTable();
 
                 return DB::table($table)
-                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable . '.id')
+                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
                     ->where(sprintf('%s.%s', $table, $foreignKey), $record->id)
-                    ->pluck($modelTable . '.title')
+                    ->pluck($modelTable.'.title')
                     ->toArray();
             })
             ->toggleable(isToggledHiddenByDefault: true)

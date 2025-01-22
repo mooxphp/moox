@@ -2,9 +2,9 @@
 
 namespace Moox\Security\Auth\Passwords;
 
-use Override;
 use Illuminate\Auth\Passwords\DatabaseTokenRepository as DatabaseTokenRepositoryBase;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Override;
 
 class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
 {

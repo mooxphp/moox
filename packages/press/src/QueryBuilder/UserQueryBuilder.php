@@ -2,8 +2,8 @@
 
 namespace Moox\Press\QueryBuilder;
 
-use Override;
 use Illuminate\Database\Query\Builder;
+use Override;
 
 class UserQueryBuilder extends Builder
 {

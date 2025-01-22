@@ -2,7 +2,6 @@
 
 namespace Moox\Audit\Resources;
 
-use Override;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\RichEditor;
@@ -19,12 +18,14 @@ use Moox\Audit\Resources\AuditResource\Pages\ListAudits;
 use Moox\Audit\Resources\AuditResource\Pages\ViewAudit;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Override;
 use Spatie\Activitylog\Models\Activity;
 
 class AuditResource extends Resource
 {
     use BaseInResource;
     use TabsInResource;
+
     protected static ?string $model = Activity::class;
 
     protected static ?string $navigationIcon = 'gmdi-troubleshoot';

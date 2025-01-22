@@ -1,7 +1,7 @@
 <?php
 
-use Moox\Press\Models\WpUser;
 use Illuminate\Validation\Rules\Password;
+use Moox\Press\Models\WpUser;
 
 /*
 |--------------------------------------------------------------------------

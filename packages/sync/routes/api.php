@@ -1,7 +1,7 @@
 <?php
 
-use Moox\Sync\Http\Controllers\Api\PlatformSyncController;
 use Illuminate\Support\Facades\Route;
+use Moox\Sync\Http\Controllers\Api\PlatformSyncController;
 use Moox\Sync\Http\Controllers\SyncResponseController;
 use Moox\Sync\Http\Controllers\SyncWebhookController;
 

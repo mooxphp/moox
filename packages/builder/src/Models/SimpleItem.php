@@ -12,6 +12,7 @@ class SimpleItem extends Model
 {
     use HasFactory;
     use TaxonomyInModel;
+
     protected $table = 'simple_items';
 
     protected function getResourceName(): string

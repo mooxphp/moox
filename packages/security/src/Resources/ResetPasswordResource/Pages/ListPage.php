@@ -2,7 +2,6 @@
 
 namespace Moox\Security\Resources\ResetPasswordResource\Pages;
 
-use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
@@ -10,6 +9,7 @@ use Moox\Security\Models\ResetPassword;
 use Moox\Security\Models\Security;
 use Moox\Security\Resources\ResetPasswordResource;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -22,7 +22,8 @@ class ListPage extends ListRecords
         return [];
     }
 
-    #[Override]protected function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             ResetPasswordWidgets::class,

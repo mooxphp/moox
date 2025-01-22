@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Override;
-use Filament\Forms\Components\Actions\Action;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -33,6 +32,7 @@ use Moox\Tag\Resources\TagResource\Pages\CreateTag;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Override;
 
 class TagResource extends Resource
 {
@@ -208,8 +208,8 @@ class TagResource extends Resource
                 EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ]);
     }
 

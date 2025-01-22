@@ -18,6 +18,7 @@ class FullItem extends Model
     use SoftDeletes;
     use TaxonomyInModel;
     use UserInModel;
+
     protected $table = 'full_items';
 
     protected function getResourceName(): string

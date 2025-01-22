@@ -31,7 +31,8 @@ function isValidPackageName($packageName): bool
     }
 
     $reservedName = 'skeleton';
-    return !str_contains(strtolower((string) $packageName), $reservedName);
+
+    return ! str_contains(strtolower((string) $packageName), $reservedName);
 }
 
 function writeln(string $line): void
@@ -169,13 +170,13 @@ $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
-$description = ask('Package description', 'This is my package ' . $packageSlug);
+$description = ask('Package description', 'This is my package '.$packageSlug);
 
 writeln('------');
-writeln('Author : ' . $authorName);
-writeln('Author Email : ' . $authorEmail);
-writeln('Namespace  : Moox\\' . $className);
-writeln('Packagename : moox\\' . $packageSlug);
+writeln('Author : '.$authorName);
+writeln('Author Email : '.$authorEmail);
+writeln('Namespace  : Moox\\'.$className);
+writeln('Packagename : moox\\'.$packageSlug);
 writeln(sprintf('Class name : %sPlugin', $className));
 writeln('------');
 
