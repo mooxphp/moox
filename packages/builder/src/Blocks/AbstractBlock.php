@@ -135,7 +135,7 @@ abstract class AbstractBlock
     /** @var array<class-string> */
     protected array $containsBlocks = [];
 
-    /** @var array<class-string> */
+    /** @var array<int, class-string> */
     protected array $incompatibleBlocks = [];
 
     protected array $constructorParameters = [];
