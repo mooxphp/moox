@@ -2,6 +2,7 @@
 
 namespace Moox\Locate\Resources;
 
+use Override;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -25,6 +26,7 @@ class AreaResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-place';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -44,6 +46,7 @@ class AreaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table->columns([
@@ -59,6 +62,7 @@ class AreaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -67,6 +71,7 @@ class AreaResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return 8001;

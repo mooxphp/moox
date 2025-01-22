@@ -38,7 +38,7 @@ class PreviewTableManager extends ContextAwareService
         $tableName = $this->context->getTableName();
         $this->dropTableIfExists($tableName);
 
-        Schema::create($tableName, function (Blueprint $table) {
+        Schema::create($tableName, function (Blueprint $table): void {
             $table->id();
 
             foreach ($this->blocks as $block) {
@@ -59,7 +59,7 @@ class PreviewTableManager extends ContextAwareService
     protected function addField(Blueprint $table, string $field): void
     {
         $field = trim(rtrim($field, ';'));
-        if (! empty($field)) {
+        if ($field !== '' && $field !== '0') {
             $field = str_replace('$table->', '', $field);
             eval('$table->'.$field.';');
         }

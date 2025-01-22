@@ -49,9 +49,7 @@ trait TabsInListPage
                 $tab->modifyQueryUsing(fn ($query) => $query)
                     ->badge($modelClass::query()->count());
             } else {
-                $tab->modifyQueryUsing(function ($query) use ($queryConditions) {
-                    return $this->applyConditions($query, $queryConditions);
-                });
+                $tab->modifyQueryUsing(fn($query) => $this->applyConditions($query, $queryConditions));
 
                 $badgeCountQuery = $modelClass::query();
                 $badgeCountQuery = $this->applyConditions($badgeCountQuery, $queryConditions);

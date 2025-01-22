@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\ItemResource\Pages;
 
+use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -18,6 +19,7 @@ class ListItems extends ListRecords
 
     public static string $resource = ItemResource::class;
 
+    #[Override]
     public function mount(): void
     {
         parent::mount();
@@ -28,15 +30,13 @@ class ListItems extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Item {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Item => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = Item::onlyTrashed()->count();
                     Item::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -46,10 +46,11 @@ class ListItems extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('builder.resources.item.plural');

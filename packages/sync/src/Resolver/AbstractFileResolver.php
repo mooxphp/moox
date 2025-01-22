@@ -8,11 +8,8 @@ use Moox\Sync\Interfaces\FileResolverInterface;
 
 abstract class AbstractFileResolver implements FileResolverInterface
 {
-    protected $model;
-
-    public function __construct(Model $model)
+    public function __construct(protected Model $model)
     {
-        $this->model = $model;
     }
 
     public function resolve(): array
@@ -45,7 +42,7 @@ abstract class AbstractFileResolver implements FileResolverInterface
             'size' => Storage::size($filePath),
             'last_modified' => Storage::lastModified($filePath),
             'mime_type' => Storage::mimeType($filePath),
-            'extension' => pathinfo($filePath, PATHINFO_EXTENSION),
+            'extension' => pathinfo((string) $filePath, PATHINFO_EXTENSION),
         ];
     }
 }

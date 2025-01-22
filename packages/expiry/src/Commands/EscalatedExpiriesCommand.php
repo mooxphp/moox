@@ -11,7 +11,7 @@ class EscalatedExpiriesCommand extends Command
 
     protected $description = 'Dispatch the job to send notifications for escalated expiries';
 
-    public function handle()
+    public function handle(): void
     {
         SendEscalatedExpiriesJob::dispatch();
         $this->info('Escalated Expiries Notification Dispatched');

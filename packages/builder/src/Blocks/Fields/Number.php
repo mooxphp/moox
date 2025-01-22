@@ -33,9 +33,9 @@ class Number extends AbstractBlock
                 ->label('{$this->label}')
                 ->numeric()"
                 .($this->nullable ? '' : '->required()')
-                .($this->min !== null ? "->minValue({$this->min})" : '')
-                .($this->max !== null ? "->maxValue({$this->max})" : '')
-                .($this->step !== null ? "->step({$this->step})" : ''),
+                .($this->min !== null ? sprintf('->minValue(%d)', $this->min) : '')
+                .($this->max !== null ? sprintf('->maxValue(%d)', $this->max) : '')
+                .($this->step !== null ? sprintf('->step(%s)', $this->step) : ''),
         ];
 
         $this->tableColumns['resource'] = [
@@ -44,16 +44,16 @@ class Number extends AbstractBlock
         ];
 
         $this->filters['resource'] = [
-            "NumberFilter::make('{$this->name}')",
+            sprintf("NumberFilter::make('%s')", $this->name),
         ];
 
         $this->migrations['fields'] = [
-            '$table->'.($this->isFloat ? 'float' : 'integer')."('{$this->name}')"
+            '$table->'.($this->isFloat ? 'float' : 'integer').sprintf("('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => $this->isFloat ? 'fake()->randomFloat(2)' : 'fake()->randomNumber()',
+            $this->name => $this->isFloat ? 'fake()->randomFloat(2)' : 'fake()->randomNumber()',
         ];
     }
 }

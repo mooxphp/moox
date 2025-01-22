@@ -38,16 +38,16 @@ class Date extends AbstractBlock
         ];
 
         $this->filters['resource'] = [
-            "DateFilter::make('{$this->name}')",
+            sprintf("DateFilter::make('%s')", $this->name),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->date('{$this->name}')"
+            sprintf("\$table->date('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->date()',
+            $this->name => 'fake()->date()',
         ];
     }
 }

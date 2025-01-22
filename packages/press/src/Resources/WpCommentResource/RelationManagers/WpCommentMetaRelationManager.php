@@ -2,6 +2,8 @@
 
 namespace Moox\Press\Resources\WpCommentResource\RelationManagers;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -20,6 +22,7 @@ class WpCommentMetaRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'comment_id';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([
@@ -65,17 +68,17 @@ class WpCommentMetaRelationManager extends RelationManager
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('comment_id')
+                TextColumn::make('comment_id')
                     ->label(__('core::comment.comment_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_key')
+                TextColumn::make('meta_key')
                     ->label(__('core::core.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_value')
+                TextColumn::make('meta_value')
                     ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()

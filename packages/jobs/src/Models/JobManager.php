@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Queue\Job as JobContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,8 +11,8 @@ use Illuminate\Support\Facades\Hash;
 
 class JobManager extends Model
 {
-    use HasFactory, Prunable;
-
+    use HasFactory;
+    use Prunable;
     protected $table = 'job_manager';
 
     /**
@@ -76,7 +77,7 @@ class JobManager extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function prunable()
     {

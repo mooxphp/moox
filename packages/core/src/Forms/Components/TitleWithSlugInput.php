@@ -8,8 +8,6 @@ use Illuminate\Support\Str;
 
 class TitleWithSlugInput
 {
-    protected string $name;
-
     protected ?string $titleLabel = null;
 
     protected ?string $slugLabel = null;
@@ -18,9 +16,8 @@ class TitleWithSlugInput
 
     protected ?string $slugPrefix = null;
 
-    public function __construct(string $name)
+    public function __construct(protected string $name)
     {
-        $this->name = $name;
     }
 
     public static function make(string $name): self
@@ -63,7 +60,7 @@ class TitleWithSlugInput
                 ->label($this->titleLabel ?? __('core::core.title'))
                 ->required()
                 ->live(onBlur: true)
-                ->afterStateUpdated(function ($state, $set) {
+                ->afterStateUpdated(function ($state, $set): void {
                     if (! $state || $this->evaluateShowSlugInput()) {
                         $set('slug', Str::slug($state));
                     }
@@ -76,7 +73,7 @@ class TitleWithSlugInput
                 ->rules(['max:255'])
                 ->afterStateUpdated(fn ($state, $set) => $set('slug', Str::slug($state)))
                 ->prefix($this->slugPrefix)
-                ->hidden(fn () => ! $this->evaluateShowSlugInput()),
+                ->hidden(fn (): bool => ! $this->evaluateShowSlugInput()),
         ];
     }
 

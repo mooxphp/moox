@@ -11,25 +11,32 @@ use Moox\Jobs\Traits\JobProgress;
 
 class DemoJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use JobProgress;
+    use Queueable;
+    use SerializesModels;
+    /**
+     * @var int
+     */
+    public $tries = 10;
 
-    public $tries;
+    /**
+     * @var int
+     */
+    public $timeout = 120;
 
-    public $timeout;
+    /**
+     * @var int
+     */
+    public $maxExceptions = 3;
 
-    public $maxExceptions;
+    /**
+     * @var int
+     */
+    public $backoff = 240;
 
-    public $backoff;
-
-    public function __construct()
-    {
-        $this->tries = 10;
-        $this->timeout = 120;
-        $this->maxExceptions = 3;
-        $this->backoff = 240;
-    }
-
-    public function handle()
+    public function handle(): void
     {
         $count = 0;
         $steps = 10;
@@ -37,7 +44,7 @@ class DemoJob implements ShouldQueue
 
         while ($count < $final) {
             $this->setProgress($count);
-            $count = $count + $steps;
+            $count += $steps;
             sleep(10);
         }
     }

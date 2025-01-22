@@ -2,13 +2,14 @@
 
 namespace Moox\Press\Resolver;
 
+use Override;
 use Illuminate\Support\Facades\Storage;
 use Moox\Press\Models\WpUser;
 use Moox\Sync\Resolver\AbstractFileResolver;
 
 class WpUserFileResolver extends AbstractFileResolver
 {
-    protected $wpUser;
+    protected WpUser $wpUser;
 
     public function __construct(WpUser $wpUser)
     {
@@ -23,7 +24,7 @@ class WpUserFileResolver extends AbstractFileResolver
 
         foreach ($this->wpUser->getAttributes() as $field => $value) {
             foreach ($fieldsToCheck as $keyword) {
-                if (stripos($field, $keyword) !== false) {
+                if (stripos((string) $field, (string) $keyword) !== false) {
                     $fileFields[] = $field;
                     break;
                 }
@@ -39,13 +40,10 @@ class WpUserFileResolver extends AbstractFileResolver
         return array_unique($fileFields);
     }
 
+    #[Override]
     public function getFileData(string $field): ?array
     {
-        if ($field === 'wp_user_avatar') {
-            $attachmentPath = $this->wpUser->getMeta('wp_user_avatar_path');
-        } else {
-            $attachmentPath = $this->wpUser->$field;
-        }
+        $attachmentPath = $field === 'wp_user_avatar' ? $this->wpUser->getMeta('wp_user_avatar_path') : $this->wpUser->$field;
 
         if (! $attachmentPath || ! Storage::exists($attachmentPath)) {
             return null;
@@ -56,7 +54,7 @@ class WpUserFileResolver extends AbstractFileResolver
             'size' => Storage::size($attachmentPath),
             'last_modified' => Storage::lastModified($attachmentPath),
             'mime_type' => Storage::mimeType($attachmentPath),
-            'extension' => pathinfo($attachmentPath, PATHINFO_EXTENSION),
+            'extension' => pathinfo((string) $attachmentPath, PATHINFO_EXTENSION),
         ];
     }
 }

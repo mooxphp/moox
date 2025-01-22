@@ -13,25 +13,33 @@ use Moox\Jobs\Traits\JobProgress;
 
 class FailJob implements ShouldQueue
 {
-    use Batchable, Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
+    use Batchable;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use JobProgress;
+    use Queueable;
+    use SerializesModels;
+    /**
+     * @var int
+     */
+    public $tries = 10;
 
-    public $tries;
+    /**
+     * @var int
+     */
+    public $timeout = 10;
 
-    public $timeout;
+    /**
+     * @var int
+     */
+    public $maxExceptions = 3;
 
-    public $maxExceptions;
+    /**
+     * @var int
+     */
+    public $backoff = 20;
 
-    public $backoff;
-
-    public function __construct()
-    {
-        $this->tries = 10;
-        $this->timeout = 10;
-        $this->maxExceptions = 3;
-        $this->backoff = 20;
-    }
-
-    public function handle()
+    public function handle(): never
     {
         throw new Exception('This job is meant to fail.');
     }

@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Http\Resources;
 
+use Override;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -20,6 +21,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PlatformResource extends JsonResource
 {
+    #[Override]
     public function toArray($request): array
     {
         return [

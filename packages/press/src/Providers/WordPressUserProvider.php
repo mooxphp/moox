@@ -2,20 +2,22 @@
 
 namespace Moox\Press\Providers;
 
+use Override;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as UserContract;
 use Moox\Press\Services\WordPressAuthService;
 
 class WordPressUserProvider extends EloquentUserProvider
 {
-    protected $wpAuthService;
+    protected WordPressAuthService $wpAuthService;
 
-    public function __construct($hasher, $model)
+    public function __construct(\Illuminate\Contracts\Hashing\Hasher $hasher, $model)
     {
         parent::__construct($hasher, $model);
         $this->wpAuthService = new WordPressAuthService;
     }
 
+    #[Override]
     public function validateCredentials(UserContract $user, array $credentials)
     {
         $plain = $credentials['password'];

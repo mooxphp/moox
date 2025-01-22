@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Traits;
 
+use InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
 
 trait HandlesMigrationFiles
@@ -17,7 +18,7 @@ trait HandlesMigrationFiles
             'app' => $migrationPath.'/[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php',
             'package' => $migrationPath.'/create_'.$tableName.'_table.php.stub',
             'preview' => $migrationPath.'/preview_[0-9]{4}_[0-9]{2}_[0-9]{2}_[0-9]{6}_create_'.$tableName.'_table.php',
-            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+            default => throw new InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
         };
     }
 
@@ -37,7 +38,7 @@ trait HandlesMigrationFiles
                 ->first();
 
             if ($latestBuild) {
-                $files = json_decode($latestBuild->files, true);
+                $files = json_decode((string) $latestBuild->files, true);
                 if (isset($files['migration']) && file_exists($files['migration'])) {
                     return $files['migration'];
                 }
@@ -47,6 +48,6 @@ trait HandlesMigrationFiles
         $pattern = $this->getMigrationPattern();
         $files = glob($pattern);
 
-        return ! empty($files) ? $files[0] : null;
+        return $files === [] || $files === false ? null : $files[0];
     }
 }

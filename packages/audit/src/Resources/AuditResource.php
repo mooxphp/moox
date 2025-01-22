@@ -2,6 +2,7 @@
 
 namespace Moox\Audit\Resources;
 
+use Override;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\RichEditor;
@@ -22,12 +23,13 @@ use Spatie\Activitylog\Models\Activity;
 
 class AuditResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = Activity::class;
 
     protected static ?string $navigationIcon = 'gmdi-troubleshoot';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -126,6 +128,7 @@ class AuditResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -176,6 +179,7 @@ class AuditResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -183,6 +187,7 @@ class AuditResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -191,31 +196,37 @@ class AuditResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('audit.resources.audit.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('audit.resources.audit.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('audit.resources.audit.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('audit.resources.audit.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('audit.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('audit.navigation_sort') + 1;

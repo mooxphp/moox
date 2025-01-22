@@ -2,6 +2,14 @@
 
 namespace Moox\Training\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Training\Resources\TrainingTypeResource\RelationManagers\TrainingsRelationManager;
+use Moox\Training\Resources\TrainingTypeResource\Pages\ListTrainingTypes;
+use Moox\Training\Resources\TrainingTypeResource\Pages\CreateTrainingType;
+use Moox\Training\Resources\TrainingTypeResource\Pages\ViewTrainingType;
+use Moox\Training\Resources\TrainingTypeResource\Pages\EditTrainingType;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -31,6 +39,7 @@ class TrainingTypeResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -70,20 +79,21 @@ class TrainingTypeResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
@@ -91,8 +101,8 @@ class TrainingTypeResource extends Resource
             ->filters([DateRangeFilter::make('created_at')])
             ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->action(function ($records, Tables\Actions\DeleteBulkAction $action) {
+                DeleteBulkAction::make()
+                    ->action(function ($records, DeleteBulkAction $action): void {
                         foreach ($records as $record) {
                             try {
                                 $record->delete();
@@ -117,23 +127,26 @@ class TrainingTypeResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
-            TrainingTypeResource\RelationManagers\TrainingsRelationManager::class,
+            TrainingsRelationManager::class,
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTrainingTypes::route('/'),
-            'create' => Pages\CreateTrainingType::route('/create'),
-            'view' => Pages\ViewTrainingType::route('/{record}'),
-            'edit' => Pages\EditTrainingType::route('/{record}/edit'),
+            'index' => ListTrainingTypes::route('/'),
+            'create' => CreateTrainingType::route('/create'),
+            'view' => ViewTrainingType::route('/{record}'),
+            'edit' => EditTrainingType::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('trainings.navigation_sort') + 3;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\FullItemResource\Pages;
 
+use Override;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\FullItemResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
@@ -14,6 +15,7 @@ class CreateFullItem extends CreateRecord
 
     protected static string $resource = FullItemResource::class;
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

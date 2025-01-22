@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\User;
+use Moox\UserDevice\Models\UserDevice;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +17,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -105,10 +107,10 @@ return [
     | And you can use your own device model to store the device information.
     */
     'user_models' => [
-        'App Users' => \App\Models\User::class,
+        'App Users' => User::class,
         'Moox Users' => \Moox\User\Models\User::class,
     ],
-    'device_model' => \Moox\UserDevice\Models\UserDevice::class,
+    'device_model' => UserDevice::class,
 
     /*
     | Session expiry for different scopes,

@@ -1,5 +1,7 @@
 <?php
 
+use Moox\User\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +16,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -136,7 +137,7 @@ return [
     */
 
     'password_reset_links' => [
-        'model' => Moox\User\Models\User::class,
+        'model' => User::class,
     ],
 
     /*

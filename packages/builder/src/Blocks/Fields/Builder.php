@@ -47,16 +47,16 @@ class Builder extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->json('{$this->name}')"
+            sprintf("\$table->json('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => '[]',
+            $this->name => '[]',
         ];
 
         $this->casts['model'] = [
-            "'{$this->name}' => 'array'",
+            sprintf("'%s' => 'array'", $this->name),
         ];
     }
 }

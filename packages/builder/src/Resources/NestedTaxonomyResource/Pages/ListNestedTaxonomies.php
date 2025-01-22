@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\NestedTaxonomyResource\Pages;
 
+use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -22,15 +23,13 @@ class ListNestedTaxonomies extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): NestedTaxonomy {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): NestedTaxonomy => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = NestedTaxonomy::onlyTrashed()->count();
                     NestedTaxonomy::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -40,10 +39,11 @@ class ListNestedTaxonomies extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && NestedTaxonomy::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && NestedTaxonomy::onlyTrashed()->exists()),
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('builder.resources.nested-taxonomy.plural');

@@ -2,6 +2,7 @@
 
 namespace Moox\User\Resources\UserResource\Pages;
 
+use Override;
 use Filament\Actions\DeleteAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -20,6 +21,7 @@ class EditUser extends EditRecord
         return [DeleteAction::make(), Impersonate::make()->record($this->getRecord())];
     }
 
+    #[Override]
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (filled($data['new_password'])) {
@@ -40,6 +42,7 @@ class EditUser extends EditRecord
         return redirect('moox/users');
     }
 
+    #[Override]
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()

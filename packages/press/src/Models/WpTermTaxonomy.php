@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $description
  * @property int $parent
  * @property int $count
- * @property \Moox\Press\Models\WpTerm $term
+ * @property WpTerm $term
  */
 class WpTermTaxonomy extends Model
 {

@@ -2,6 +2,9 @@
 
 namespace Moox\Security\Notifications\Passwords;
 
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Panel;
@@ -16,15 +19,14 @@ use Illuminate\Support\HtmlString;
 
 class PasswordResetNotification extends Notification implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public string $token;
-
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
     protected Panel $panel;
 
-    public function __construct($token)
+    public function __construct(public string $token)
     {
-        $this->token = $token;
         $this->panel = Filament::getCurrentPanel();
     }
 
@@ -39,7 +41,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject(__('security::translations.Reset Password Message'))
-            ->greeting(__('security::translations.Hello')." {$notifiable->$mailRecipientName},")
+            ->greeting(__('security::translations.Hello').sprintf(' %s,', $notifiable->$mailRecipientName))
             ->line(__('security::translations.You are receiving this email because we received a password reset request for your account.'))
             ->action(__('security::translations.Reset Password'), $this->resetUrl($notifiable))
             ->line(__('security::translations.This password reset link will expire').' '.$this->getReadableExpiryTime().'.')
@@ -47,7 +49,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
             ->salutation(new HtmlString(__('security::translations.Regards').'<br>'.config('mail.from.name')));
     }
 
-    protected function resetUrl($notifiable): string
+    protected function resetUrl(CanResetPassword|Model|Authenticatable $notifiable): string
     {
         return $this->panel->getResetPasswordUrl($this->token, $notifiable);
     }

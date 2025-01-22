@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Exception;
+use Override;
 use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
@@ -21,8 +23,8 @@ class ModelGenerator extends AbstractGenerator
     public function generate(): void
     {
         $template = $this->loadStub($this->getTemplate());
-        if (! $template) {
-            throw new \Exception('Failed to load template: '.$this->getTemplate());
+        if ($template === '' || $template === '0') {
+            throw new Exception('Failed to load template: '.$this->getTemplate());
         }
 
         $variables = [
@@ -50,7 +52,7 @@ class ModelGenerator extends AbstractGenerator
             }
         }
 
-        return implode(",\n        ", array_map(fn ($field) => "'$field'", $fillable));
+        return implode(",\n        ", array_map(fn ($field): string => sprintf("'%s'", $field), $fillable));
     }
 
     protected function getCasts(): string
@@ -59,7 +61,7 @@ class ModelGenerator extends AbstractGenerator
         foreach ($this->getBlocks() as $block) {
             $cast = $block->modelCast();
             if (! empty($cast)) {
-                $cast = preg_replace("/['\"](.*?)['\"]\s*=>\s*['\"](.*?)['\"]/", "'$1' => '$2'", $cast);
+                $cast = preg_replace("/['\"](.*?)['\"]\s*=>\s*['\"](.*?)['\"]/", "'$1' => '$2'", (string) $cast);
                 $casts[] = $cast;
             }
         }
@@ -72,6 +74,7 @@ class ModelGenerator extends AbstractGenerator
         return 'model';
     }
 
+    #[Override]
     protected function formatUseStatements(): string
     {
         $statements = $this->getUseStatements('model');
@@ -80,18 +83,17 @@ class ModelGenerator extends AbstractGenerator
             $blockTraits = $block->getTraits('model');
             if (! empty($blockTraits)) {
                 foreach ($blockTraits as $trait) {
-                    if (! in_array("use $trait;", $statements)) {
-                        $statements[] = "use $trait;";
+                    if (! in_array(sprintf('use %s;', $trait), $statements)) {
+                        $statements[] = sprintf('use %s;', $trait);
                     }
                 }
             }
         }
 
-        return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 
+    #[Override]
     protected function formatMethods(): string
     {
         $methods = [];
@@ -105,6 +107,7 @@ class ModelGenerator extends AbstractGenerator
                             if (! is_string($subMethod)) {
                                 continue;
                             }
+
                             if (preg_match('/protected function ([a-zA-Z]+)\(/', $subMethod, $matches)) {
                                 $methodName = $matches[1];
                                 if (! in_array($methodName, $methodNames)) {

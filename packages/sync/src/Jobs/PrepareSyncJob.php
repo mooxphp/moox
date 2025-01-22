@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -16,40 +17,22 @@ use Moox\Sync\Services\PlatformRelationService;
 
 class PrepareSyncJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
-
-    protected $identifierField;
-
-    protected $identifierValue;
-
-    protected $modelClass;
-
-    protected $eventType;
-
-    protected $platformId;
-
-    protected $syncConfigurations;
-
+    use Dispatchable;
+    use InteractsWithQueue;
+    use LogLevel;
+    use Queueable;
+    use SerializesModels;
     protected $sourcePlatform;
 
     protected $modelData;
 
-    protected $fileFields;
-
-    public function __construct($identifierField, $identifierValue, $modelClass, $eventType, $sourcePlatformId, $relevantSyncs, $fileFields = [])
+    public function __construct(protected $identifierField, protected $identifierValue, protected $modelClass, protected $eventType, protected $platformId, protected $syncConfigurations, protected $fileFields = [])
     {
-        $this->identifierField = $identifierField;
-        $this->identifierValue = $identifierValue;
-        $this->modelClass = $modelClass;
-        $this->eventType = $eventType;
-        $this->platformId = $sourcePlatformId;
-        $this->syncConfigurations = $relevantSyncs;
-        $this->sourcePlatform = Platform::findOrFail($sourcePlatformId);
+        $this->sourcePlatform = Platform::findOrFail($this->platformId);
         $this->modelData = $this->findModel()->toArray();
-        $this->fileFields = $fileFields;
     }
 
-    public function handle(PlatformRelationService $platformRelationService)
+    public function handle(PlatformRelationService $platformRelationService): void
     {
         $sync = Sync::where('source_model', $this->modelClass)
             ->where('source_platform_id', $this->sourcePlatform->id)
@@ -115,11 +98,11 @@ class PrepareSyncJob implements ShouldQueue
                 'response_status' => $response->status(),
                 'response_body' => $response->body(),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             $this->logDebug('Moox Sync: Webhook invocation error', [
                 'platform' => $platform->name,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
             ]);
         }
     }
@@ -132,7 +115,7 @@ class PrepareSyncJob implements ShouldQueue
             'identifier_value' => $this->identifierValue,
         ]);
 
-        $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
+        $transformerClass = config('sync.transformer_bindings.' . $this->modelClass);
 
         if ($transformerClass && class_exists($transformerClass)) {
             $transformer = new $transformerClass($model);
@@ -150,7 +133,7 @@ class PrepareSyncJob implements ShouldQueue
 
     protected function addFileMetadata(array $data): array
     {
-        $fileResolverClass = config("sync.file_sync_resolver.{$this->modelClass}");
+        $fileResolverClass = config('sync.file_sync_resolver.' . $this->modelClass);
         if (! $fileResolverClass || ! class_exists($fileResolverClass)) {
             return $data;
         }
@@ -166,7 +149,7 @@ class PrepareSyncJob implements ShouldQueue
             }
         }
 
-        if (! empty($fileData)) {
+        if ($fileData !== []) {
             $data['_file_sync'] = $fileData;
         }
 
@@ -219,7 +202,7 @@ class PrepareSyncJob implements ShouldQueue
             'identifier_value' => $this->identifierValue,
         ]);
 
-        $transformerClass = config("sync.transformer_bindings.{$this->modelClass}");
+        $transformerClass = config('sync.transformer_bindings.' . $this->modelClass);
 
         if ($transformerClass && class_exists($transformerClass)) {
             $transformer = new $transformerClass($model);
@@ -265,7 +248,7 @@ class PrepareSyncJob implements ShouldQueue
                     'response_status' => $response->status(),
                     'response_body' => $response->body(),
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logDebug('Moox Sync: Webhook invocation error', [
                     'platform' => $targetPlatform->name,
                     'error' => $e->getMessage(),

@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpUserMetaResource\Pages\ListWpUserMetas;
+use Moox\Press\Resources\WpUserMetaResource\Pages\CreateWpUserMeta;
+use Moox\Press\Resources\WpUserMetaResource\Pages\ViewWpUserMeta;
+use Moox\Press\Resources\WpUserMetaResource\Pages\EditWpUserMeta;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -20,14 +26,15 @@ use Moox\Press\Resources\WpUserMetaResource\Pages;
 
 class WpUserMetaResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpUserMeta::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -68,22 +75,23 @@ class WpUserMetaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('user_id')
+                TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_key')
+                TextColumn::make('meta_key')
                     ->label(__('core::core.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_value')
+                TextColumn::make('meta_value')
                     ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()
@@ -93,41 +101,48 @@ class WpUserMetaResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpUserMetas::route('/'),
-            'create' => Pages\CreateWpUserMeta::route('/create'),
-            'view' => Pages\ViewWpUserMeta::route('/{record}'),
-            'edit' => Pages\EditWpUserMeta::route('/{record}/edit'),
+            'index' => ListWpUserMetas::route('/'),
+            'create' => CreateWpUserMeta::route('/create'),
+            'view' => ViewWpUserMeta::route('/{record}'),
+            'edit' => EditWpUserMeta::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.userMeta.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.userMeta.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.userMeta.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.userMeta.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.meta_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.meta_navigation_sort') + 8;

@@ -12,8 +12,8 @@ use Moox\Expiry\Resources\ExpiryResource;
 
 class ListExpiries extends ListRecords
 {
-    use SingleSoftDeleteInListPage, TabsInListPage;
-
+    use SingleSoftDeleteInListPage;
+    use TabsInListPage;
     protected static string $resource = ExpiryResource::class;
 
     protected function getHeaderActions(): array
@@ -23,14 +23,14 @@ class ListExpiries extends ListRecords
                 Action::make('collectExpiries')
                     ->label(__('core::expiry.update_expiries'))
                     ->requiresConfirmation()
-                    ->action(function () {
+                    ->action(function (): void {
                         self::collectExpiries();
                     }),
             ]
             : [];
     }
 
-    public static function collectExpiries()
+    public static function collectExpiries(): void
     {
         $jobs = config('expiry.collect_expiries_jobs', []);
         foreach ($jobs as $jobClass) {

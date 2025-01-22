@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Category\Resources\CategoryResource\Pages;
 
+use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
@@ -22,15 +23,13 @@ class ListCategories extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Category {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn(array $data, string $model): Category => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = Category::onlyTrashed()->count();
                     Category::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -40,10 +39,11 @@ class ListCategories extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && Category::onlyTrashed()->exists()),
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('category.resources.category.plural');

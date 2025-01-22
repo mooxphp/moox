@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Listener;
 
+use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -17,11 +18,8 @@ class SyncListener
 
     protected $currentPlatform;
 
-    protected $syncService;
-
-    public function __construct(SyncService $syncService)
+    public function __construct(protected SyncService $syncService)
     {
-        $this->syncService = $syncService;
         $this->setCurrentPlatform();
         $this->logInfo('Moox Sync: SyncListener constructed');
     }
@@ -41,12 +39,12 @@ class SyncListener
             }
         } catch (QueryException $e) {
             Log::error('Moox Sync: Database error occurred while querying for domain', ['domain' => $domain, 'error' => $e->getMessage()]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Moox Sync: An unexpected error occurred', ['error' => $e->getMessage()]);
         }
     }
 
-    public function registerListeners()
+    public function registerListeners(): void
     {
         $this->logInfo('Moox Sync: Registering listeners');
         if ($this->currentPlatform) {
@@ -55,29 +53,30 @@ class SyncListener
             foreach ($syncsToListen as $sync) {
                 $this->registerModelListeners($sync->source_model);
             }
+
             $this->logInfo('Moox Sync: Listeners registered', ['models' => $syncsToListen->pluck('source_model')]);
         } else {
             $this->logDebug('Moox Sync: No listeners registered - current platform not set');
         }
     }
 
-    protected function registerModelListeners($modelClass)
+    protected function registerModelListeners(string $modelClass)
     {
         $this->logInfo('Moox Sync: Registering listeners for model', ['model' => $modelClass]);
 
-        Event::listen("eloquent.created: {$modelClass}", function ($model) use ($modelClass) {
+        Event::listen('eloquent.created: ' . $modelClass, function ($model) use ($modelClass): void {
             $localIdentifier = $this->getLocalIdentifier($model);
             $this->logDebug('Moox Sync: Created event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'created');
         });
 
-        Event::listen("eloquent.updated: {$modelClass}", function ($model) use ($modelClass) {
+        Event::listen('eloquent.updated: ' . $modelClass, function ($model) use ($modelClass): void {
             $localIdentifier = $this->getLocalIdentifier($model);
             $this->logDebug('Moox Sync: Updated event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'updated');
         });
 
-        Event::listen("eloquent.deleted: {$modelClass}", function ($model) use ($modelClass) {
+        Event::listen('eloquent.deleted: ' . $modelClass, function ($model) use ($modelClass): void {
             $localIdentifier = $this->getLocalIdentifier($model);
             $this->logDebug('Moox Sync: Deleted event triggered', ['model' => $modelClass, 'local_identifier' => $localIdentifier]);
             $this->handleModelEvent($model, 'deleted');
@@ -87,7 +86,7 @@ class SyncListener
     protected function handleModelEvent($model, $eventType)
     {
         if (! $this->currentPlatform) {
-            $this->logDebug('Moox Sync: Model event ignored - current platform not set', ['model' => get_class($model), 'event' => $eventType]);
+            $this->logDebug('Moox Sync: Model event ignored - current platform not set', ['model' => $model::class, 'event' => $eventType]);
 
             return;
         }
@@ -95,19 +94,19 @@ class SyncListener
         $localIdentifier = $this->getLocalIdentifier($model);
 
         if (! $localIdentifier) {
-            $this->logDebug('Moox Sync: Model event ignored - no local identifier found', ['model' => get_class($model), 'event' => $eventType]);
+            $this->logDebug('Moox Sync: Model event ignored - no local identifier found', ['model' => $model::class, 'event' => $eventType]);
 
             return;
         }
 
         $this->logInfo('Dispatching PrepareSyncJob', [
-            'model' => get_class($model),
+            'model' => $model::class,
             'local_identifier' => $localIdentifier,
             'event' => $eventType,
             'platform' => $this->currentPlatform->id,
         ]);
 
-        $transformerClass = config('sync.transformer_bindings.'.get_class($model));
+        $transformerClass = config('sync.transformer_bindings.'.$model::class);
         $delay = 0;
 
         if ($transformerClass && class_exists($transformerClass)) {
@@ -116,15 +115,13 @@ class SyncListener
         }
 
         $relevantSyncs = Sync::where('source_platform_id', $this->currentPlatform->id)
-            ->where('source_model', get_class($model))
+            ->where('source_model', $model::class)
             ->where('status', true)
             ->get()
-            ->map(function ($sync) {
-                return [
-                    'target_platform_id' => $sync->target_platform_id,
-                    'target_model' => $sync->target_model,
-                ];
-            });
+            ->map(fn($sync): array => [
+                'target_platform_id' => $sync->target_platform_id,
+                'target_model' => $sync->target_model,
+            ]);
 
         $fileFields = [];
         foreach ($model->getAttributes() as $field => $value) {
@@ -140,7 +137,7 @@ class SyncListener
         PrepareSyncJob::dispatch(
             $localIdentifier['field'],
             $localIdentifier['value'],
-            get_class($model),
+            $model::class,
             $eventType,
             $this->currentPlatform->id,
             $relevantSyncs,
@@ -148,7 +145,7 @@ class SyncListener
         )->delay(now()->addSeconds($delay));
     }
 
-    protected function getLocalIdentifier($model)
+    protected function getLocalIdentifier($model): ?array
     {
         $localIdentifierFields = config('sync.local_identifier_fields', ['id', 'ID', 'uuid', 'ulid']);
 
@@ -158,7 +155,7 @@ class SyncListener
             }
         }
 
-        $this->logDebug('No local identifier found for model', ['model' => get_class($model)]);
+        $this->logDebug('No local identifier found for model', ['model' => $model::class]);
 
         return null;
     }
@@ -167,12 +164,12 @@ class SyncListener
     {
         $fileFieldSearch = config('sync.file_sync_fieldsearch', []);
         foreach ($fileFieldSearch as $search) {
-            if (strpos(strtolower($field), strtolower($search)) !== false) {
+            if (str_contains(strtolower((string) $field), strtolower((string) $search))) {
                 return true;
             }
         }
 
-        $resolverClass = config('sync.file_sync_resolver.'.get_class($model));
+        $resolverClass = config('sync.file_sync_resolver.'.$model::class);
         if ($resolverClass && class_exists($resolverClass)) {
             $resolver = new $resolverClass($model);
 

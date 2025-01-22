@@ -2,6 +2,7 @@
 
 namespace Moox\Page\Resources;
 
+use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -24,6 +25,7 @@ class PageResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-pages';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -37,6 +39,7 @@ class PageResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -61,6 +64,7 @@ class PageResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -68,6 +72,7 @@ class PageResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -75,6 +80,7 @@ class PageResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -82,31 +88,37 @@ class PageResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('page::translations.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('page::translations.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('page::translations.navigation_label');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('page::translations.navigation_group');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return __('page::translations.breadcrumb');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('page.navigation_sort');

@@ -48,7 +48,7 @@ class Relationship extends AbstractBlock
         ];
 
         $this->migrations['fields'] = $this->relationshipType === 'belongsTo'
-            ? ["\$table->foreignId('{$this->name}_id')->constrained()".($this->nullable ? '->nullable()' : '')]
+            ? [sprintf("\$table->foreignId('%s_id')->constrained()", $this->name).($this->nullable ? '->nullable()' : '')]
             : [];
 
         $this->methods['model']['relations'] = [

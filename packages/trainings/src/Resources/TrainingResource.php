@@ -2,6 +2,14 @@
 
 namespace Moox\Training\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Training\Resources\TrainingResource\RelationManagers\TrainingInvitationsRelationManager;
+use Moox\Training\Resources\TrainingResource\Pages\ListTrainings;
+use Moox\Training\Resources\TrainingResource\Pages\CreateTraining;
+use Moox\Training\Resources\TrainingResource\Pages\ViewTraining;
+use Moox\Training\Resources\TrainingResource\Pages\EditTraining;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -34,6 +42,7 @@ class TrainingResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -169,48 +178,49 @@ class TrainingResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('duration')
+                TextColumn::make('duration')
                     ->toggleable()
                     ->searchable(true, null, true),
-                Tables\Columns\TextColumn::make('link')
+                TextColumn::make('link')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('due_at')
+                TextColumn::make('due_at')
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('cycle')
+                TextColumn::make('cycle')
                     ->toggleable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('source_id')
+                TextColumn::make('source_id')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('trainingType.title')
+                TextColumn::make('trainingType.title')
                     ->toggleable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('trainingable_id')
+                TextColumn::make('trainingable_id')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('trainingable_type')
+                TextColumn::make('trainingable_type')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
@@ -226,8 +236,8 @@ class TrainingResource extends Resource
             ])
             ->actions([ViewAction::make(), EditAction::make()])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->action(function ($records, Tables\Actions\DeleteBulkAction $action) {
+                DeleteBulkAction::make()
+                    ->action(function ($records, DeleteBulkAction $action): void {
                         foreach ($records as $record) {
                             try {
                                 $record->delete();
@@ -252,23 +262,26 @@ class TrainingResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
-            TrainingResource\RelationManagers\TrainingInvitationsRelationManager::class,
+            TrainingInvitationsRelationManager::class,
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTrainings::route('/'),
-            'create' => Pages\CreateTraining::route('/create'),
-            'view' => Pages\ViewTraining::route('/{record}'),
-            'edit' => Pages\EditTraining::route('/{record}/edit'),
+            'index' => ListTrainings::route('/'),
+            'create' => CreateTraining::route('/create'),
+            'view' => ViewTraining::route('/{record}'),
+            'edit' => EditTraining::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('trainings.navigation_sort');

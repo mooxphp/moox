@@ -2,6 +2,8 @@
 
 namespace Moox\Builder\Blocks\Features;
 
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Builder\Blocks\AbstractBlock;
 
 class Tabs extends AbstractBlock
@@ -13,8 +15,8 @@ class Tabs extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
-        $this->traits['resource'] = ['Moox\Core\Traits\Tabs\TabsInResource'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\Tabs\TabsInListPage'];
+        $this->traits['resource'] = [TabsInResource::class];
+        $this->traits['pages']['list'] = [TabsInListPage::class];
 
         $this->methods['pages']['list']['mount'] = '$this->mountTabsInListPage();';
 

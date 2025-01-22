@@ -2,6 +2,8 @@
 
 namespace Moox\UserDevice\Models;
 
+use Override;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
@@ -50,17 +52,18 @@ class UserDevice extends Model
     /**
      * The "booting" method of the model.
      */
+    #[Override]
     protected static function boot()
     {
         parent::boot();
 
-        UserDevice::creating(function ($item) {
+        UserDevice::creating(function ($item): void {
             $baseSlug = Str::slug($item->title);
             $slug = $baseSlug;
             $counter = 1;
 
             while (UserDevice::where('slug', $slug)->exists()) {
-                $slug = "{$baseSlug}-{$counter}";
+                $slug = sprintf('%s-%d', $baseSlug, $counter);
                 $counter++;
             }
 
@@ -79,8 +82,8 @@ class UserDevice extends Model
     /**
      * Scope a query to only include active devices.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopeActive($query)
     {
@@ -90,8 +93,8 @@ class UserDevice extends Model
     /**
      * Scope a query to only include whitelisted devices.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param Builder $query
+     * @return Builder
      */
     public function scopeWhitelisted($query)
     {

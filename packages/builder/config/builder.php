@@ -1,5 +1,47 @@
 <?php
 
+use Moox\Builder\Blocks\Fields\Boolean;
+use Moox\Builder\Blocks\Fields\Builder;
+use Moox\Builder\Blocks\Fields\CheckboxList;
+use Moox\Builder\Blocks\Fields\ColorPicker;
+use Moox\Builder\Blocks\Fields\Date;
+use Moox\Builder\Blocks\Fields\DateTime;
+use Moox\Builder\Blocks\Fields\FileUpload;
+use Moox\Builder\Blocks\Fields\Hidden;
+use Moox\Builder\Blocks\Fields\Image;
+use Moox\Builder\Blocks\Fields\KeyValue;
+use Moox\Builder\Blocks\Fields\MarkdownEditor;
+use Moox\Builder\Blocks\Fields\MultiSelect;
+use Moox\Builder\Blocks\Fields\Number;
+use Moox\Builder\Blocks\Fields\Radio;
+use Moox\Builder\Blocks\Fields\Relationship;
+use Moox\Builder\Blocks\Fields\Repeater;
+use Moox\Builder\Blocks\Fields\RichEditor;
+use Moox\Builder\Blocks\Fields\Select;
+use Moox\Builder\Blocks\Fields\TagsInput;
+use Moox\Builder\Blocks\Fields\Text;
+use Moox\Builder\Blocks\Fields\TextArea;
+use Moox\Builder\Blocks\Fields\Toggle;
+use Moox\Builder\Blocks\Fields\ToggleButtons;
+use Moox\Builder\Blocks\Features\CustomDemo;
+use Moox\Builder\Blocks\Features\SimpleStatus;
+use Moox\Builder\Blocks\Features\SimpleType;
+use Moox\Builder\Blocks\Features\Tabs;
+use Moox\Builder\Blocks\Sections\SimpleAddressSection;
+use Moox\Builder\Blocks\Singles\Light;
+use Moox\Builder\Blocks\Singles\Simple;
+use Moox\Builder\Blocks\Singles\SoftDelete;
+use Moox\Builder\Generators\Entity\ModelGenerator;
+use Moox\Builder\Generators\Entity\ResourceGenerator;
+use Moox\Builder\Generators\Entity\MigrationGenerator;
+use Moox\Builder\Generators\Entity\PluginGenerator;
+use Moox\Builder\Generators\Entity\TranslationGenerator;
+use Moox\Builder\Generators\Entity\ConfigGenerator;
+use Moox\Builder\Presets\LightItemPreset;
+use Moox\Builder\Presets\SimpleItemPreset;
+use Moox\Builder\Presets\SoftDeleteItemPreset;
+use Moox\Builder\Presets\FullItemPreset;
+
 return [
 
     /*
@@ -14,43 +56,43 @@ return [
 
     'blocks' => [
         'fields' => [
-            'boolean' => \Moox\Builder\Blocks\Fields\Boolean::class,
-            'builder' => \Moox\Builder\Blocks\Fields\Builder::class,
-            'checkbox-list' => \Moox\Builder\Blocks\Fields\CheckboxList::class,
-            'color-picker' => \Moox\Builder\Blocks\Fields\ColorPicker::class,
-            'date' => \Moox\Builder\Blocks\Fields\Date::class,
-            'date-time' => \Moox\Builder\Blocks\Fields\DateTime::class,
-            'file-upload' => \Moox\Builder\Blocks\Fields\FileUpload::class,
-            'hidden' => \Moox\Builder\Blocks\Fields\Hidden::class,
-            'image' => \Moox\Builder\Blocks\Fields\Image::class,
-            'key-value' => \Moox\Builder\Blocks\Fields\KeyValue::class,
-            'markdown-editor' => \Moox\Builder\Blocks\Fields\MarkdownEditor::class,
-            'multi-select' => \Moox\Builder\Blocks\Fields\MultiSelect::class,
-            'number' => \Moox\Builder\Blocks\Fields\Number::class,
-            'radio' => \Moox\Builder\Blocks\Fields\Radio::class,
-            'relationship' => \Moox\Builder\Blocks\Fields\Relationship::class,
-            'repeater' => \Moox\Builder\Blocks\Fields\Repeater::class,
-            'rich-editor' => \Moox\Builder\Blocks\Fields\RichEditor::class,
-            'select' => \Moox\Builder\Blocks\Fields\Select::class,
-            'tags-input' => \Moox\Builder\Blocks\Fields\TagsInput::class,
-            'text' => \Moox\Builder\Blocks\Fields\Text::class,
-            'textarea' => \Moox\Builder\Blocks\Fields\TextArea::class,
-            'toggle' => \Moox\Builder\Blocks\Fields\Toggle::class,
-            'toggle-buttons' => \Moox\Builder\Blocks\Fields\ToggleButtons::class,
+            'boolean' => Boolean::class,
+            'builder' => Builder::class,
+            'checkbox-list' => CheckboxList::class,
+            'color-picker' => ColorPicker::class,
+            'date' => Date::class,
+            'date-time' => DateTime::class,
+            'file-upload' => FileUpload::class,
+            'hidden' => Hidden::class,
+            'image' => Image::class,
+            'key-value' => KeyValue::class,
+            'markdown-editor' => MarkdownEditor::class,
+            'multi-select' => MultiSelect::class,
+            'number' => Number::class,
+            'radio' => Radio::class,
+            'relationship' => Relationship::class,
+            'repeater' => Repeater::class,
+            'rich-editor' => RichEditor::class,
+            'select' => Select::class,
+            'tags-input' => TagsInput::class,
+            'text' => Text::class,
+            'textarea' => TextArea::class,
+            'toggle' => Toggle::class,
+            'toggle-buttons' => ToggleButtons::class,
         ],
         'features' => [
-            'custom-demo' => \Moox\Builder\Blocks\Features\CustomDemo::class,
-            'simple-status' => \Moox\Builder\Blocks\Features\SimpleStatus::class,
-            'simple-type' => \Moox\Builder\Blocks\Features\SimpleType::class,
-            'tabs' => \Moox\Builder\Blocks\Features\Tabs::class,
+            'custom-demo' => CustomDemo::class,
+            'simple-status' => SimpleStatus::class,
+            'simple-type' => SimpleType::class,
+            'tabs' => Tabs::class,
         ],
         'sections' => [
-            'simple-address' => \Moox\Builder\Blocks\Sections\SimpleAddressSection::class,
+            'simple-address' => SimpleAddressSection::class,
         ],
         'singles' => [
-            'light' => \Moox\Builder\Blocks\Singles\Light::class,
-            'simple' => \Moox\Builder\Blocks\Singles\Simple::class,
-            'soft-delete' => \Moox\Builder\Blocks\Singles\SoftDelete::class,
+            'light' => Light::class,
+            'simple' => Simple::class,
+            'soft-delete' => SoftDelete::class,
         ],
     ],
 
@@ -74,7 +116,7 @@ return [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
                     'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                    'generator' => ModelGenerator::class,
                 ],
                 'resource' => [
                     'path' => '%BasePath%\Resources',
@@ -86,28 +128,28 @@ return [
                         'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
                         'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
                     ],
-                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                    'generator' => ResourceGenerator::class,
                 ],
                 'migration' => [
                     'path' => 'database\migrations',
                     'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                    'generator' => MigrationGenerator::class,
                 ],
                 'plugin' => [
                     'path' => '%BasePath%\Filament\Plugins',
                     'namespace' => '%BaseNamespace%\\Filament\\Plugins',
                     'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                    'generator' => PluginGenerator::class,
                 ],
                 'translation' => [
                     'path' => 'lang\%locale%\entities',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                    'generator' => TranslationGenerator::class,
                 ],
                 'config' => [
                     'path' => 'config\entities',
                     'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                    'generator' => ConfigGenerator::class,
                 ],
             ],
         ],
@@ -119,7 +161,7 @@ return [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
                     'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                    'generator' => ModelGenerator::class,
                 ],
                 'resource' => [
                     'path' => '%BasePath%\Resources',
@@ -131,28 +173,28 @@ return [
                         'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
                         'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
                     ],
-                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                    'generator' => ResourceGenerator::class,
                 ],
                 'plugin' => [
                     'path' => '%BasePath%\Filament\Plugins',
                     'namespace' => '%BaseNamespace%\\Filament\\Plugins',
                     'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                    'generator' => PluginGenerator::class,
                 ],
                 'migration' => [
                     'path' => 'database\migrations',
                     'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                    'generator' => MigrationGenerator::class,
                 ],
                 'translation' => [
                     'path' => 'lang\%locale%\entities',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                    'generator' => TranslationGenerator::class,
                 ],
                 'config' => [
                     'path' => 'config\entities',
                     'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                    'generator' => ConfigGenerator::class,
                 ],
             ],
         ],
@@ -211,7 +253,7 @@ return [
                     'path' => '%BasePath%\Models',
                     'namespace' => '%BaseNamespace%\\Models',
                     'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                    'generator' => ModelGenerator::class,
                 ],
                 'resource' => [
                     'path' => '%BasePath%\Resources',
@@ -223,17 +265,17 @@ return [
                         'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
                         'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
                     ],
-                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                    'generator' => ResourceGenerator::class,
                 ],
                 'translation' => [
                     'path' => 'lang\%locale%\previews',
                     'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                    'generator' => TranslationGenerator::class,
                 ],
                 'config' => [
                     'path' => 'config\previews',
                     'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
-                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                    'generator' => ConfigGenerator::class,
                 ],
             ],
             'should_migrate' => true,
@@ -252,19 +294,19 @@ return [
 
     'presets' => [
         'light-item' => [
-            'class' => \Moox\Builder\Presets\LightItemPreset::class,
+            'class' => LightItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'simple-item' => [
-            'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
+            'class' => SimpleItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'soft-delete-item' => [
-            'class' => \Moox\Builder\Presets\SoftDeleteItemPreset::class,
+            'class' => SoftDeleteItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'full-item' => [
-            'class' => \Moox\Builder\Presets\FullItemPreset::class,
+            'class' => FullItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
     ],

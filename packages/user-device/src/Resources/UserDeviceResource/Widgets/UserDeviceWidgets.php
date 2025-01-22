@@ -2,6 +2,7 @@
 
 namespace Moox\UserDevice\Resources\UserDeviceResource\Widgets;
 
+use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use Moox\UserDevice\Models\UserDevice;
 
 class UserDeviceWidgets extends BaseWidget
 {
+    #[Override]
     protected function getCards(): array
     {
         $aggregationColumns = [

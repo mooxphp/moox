@@ -2,6 +2,35 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Pages\Dashboard;
+use Filament\Widgets\AccountWidget;
+use Filament\Widgets\FilamentInfoWidget;
+use Moox\Audit\AuditPlugin;
+use Moox\Locate\AreaPlugin;
+use Moox\Builder\SimpleTaxonomyPlugin;
+use Moox\Builder\NestedTaxonomyPlugin;
+use Moox\Builder\ItemPlugin;
+use Moox\Builder\FullItemPlugin;
+use Moox\Builder\SimpleItemPlugin;
+use Moox\Page\PagePlugin;
+use Moox\Category\CategoryPlugin;
+use Moox\Tag\TagPlugin;
+use Moox\Notification\NotificationPlugin;
+use Moox\Jobs\JobsPlugin;
+use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Jobs\JobsFailedPlugin;
+use Moox\Jobs\JobsBatchesPlugin;
+use Moox\User\UserPlugin;
+use Moox\UserDevice\UserDevicePlugin;
+use Moox\LoginLink\LoginLinkPlugin;
+use Moox\UserSession\UserSessionPlugin;
+use Moox\Passkey\PasskeyPlugin;
+use Moox\Security\ResetPasswordPlugin;
+use Moox\Expiry\ExpiryPlugin;
+use Moox\Training\TrainingPlugin;
+use Moox\Training\TrainingInvitationPlugin;
+use Moox\Training\TrainingDatePlugin;
+use Moox\Training\TrainingTypePlugin;
 use Awcodes\FilamentGravatar\GravatarPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -42,12 +71,12 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                AccountWidget::class,
+                FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -68,59 +97,59 @@ class AdminPanelProvider extends PanelProvider
 
                 // Development
                 GravatarPlugin::make(),
-                \Moox\Audit\AuditPlugin::make(),
-                \Moox\Locate\AreaPlugin::make(),
+                AuditPlugin::make(),
+                AreaPlugin::make(),
                 // \Moox\Locate\CountryPlugin::make(),
                 // \Moox\Locate\LanguagePlugin::make(),
                 // \Moox\Locate\TimezonePlugin::make(),
 
                 // Builder plugin
-                \Moox\Builder\SimpleTaxonomyPlugin::make(),
-                \Moox\Builder\NestedTaxonomyPlugin::make(),
-                \Moox\Builder\ItemPlugin::make(),
-                \Moox\Builder\FullItemPlugin::make(),
-                \Moox\Builder\SimpleItemPlugin::make(),
+                SimpleTaxonomyPlugin::make(),
+                NestedTaxonomyPlugin::make(),
+                ItemPlugin::make(),
+                FullItemPlugin::make(),
+                SimpleItemPlugin::make(),
 
                 // CMS plugin
-                \Moox\Page\PagePlugin::make(),
-                \Moox\Category\CategoryPlugin::make(),
-                \Moox\Tag\TagPlugin::make(),
+                PagePlugin::make(),
+                CategoryPlugin::make(),
+                TagPlugin::make(),
 
                 // Notification plugin
-                \Moox\Notification\NotificationPlugin::make(),
+                NotificationPlugin::make(),
 
                 // Audit plugin
-                \Moox\Audit\AuditPlugin::make(),
+                AuditPlugin::make(),
 
                 // Jobs plugins
-                \Moox\Jobs\JobsPlugin::make(),
-                \Moox\Jobs\JobsWaitingPlugin::make(),
-                \Moox\Jobs\JobsFailedPlugin::make(),
-                \Moox\Jobs\JobsBatchesPlugin::make(),
+                JobsPlugin::make(),
+                JobsWaitingPlugin::make(),
+                JobsFailedPlugin::make(),
+                JobsBatchesPlugin::make(),
 
                 // Sync Plugins
                 // \Moox\Sync\SyncPlugin::make(),
                 // \Moox\Sync\PlatformPlugin::make(),
 
                 // User plugins
-                \Moox\User\UserPlugin::make(),
-                \Moox\UserDevice\UserDevicePlugin::make(),
-                \Moox\LoginLink\LoginLinkPlugin::make(),
-                \Moox\UserSession\UserSessionPlugin::make(),
-                \Moox\Passkey\PasskeyPlugin::make(),
-                \Moox\Security\ResetPasswordPlugin::make(),
+                UserPlugin::make(),
+                UserDevicePlugin::make(),
+                LoginLinkPlugin::make(),
+                UserSessionPlugin::make(),
+                PasskeyPlugin::make(),
+                ResetPasswordPlugin::make(),
 
                 // Expiry plugin
-                \Moox\Expiry\ExpiryPlugin::make(),
+                ExpiryPlugin::make(),
 
                 // Training plugins
-                \Moox\Training\TrainingPlugin::make(),
-                \Moox\Training\TrainingInvitationPlugin::make(),
-                \Moox\Training\TrainingDatePlugin::make(),
-                \Moox\Training\TrainingTypePlugin::make(),
+                TrainingPlugin::make(),
+                TrainingInvitationPlugin::make(),
+                TrainingDatePlugin::make(),
+                TrainingTypePlugin::make(),
 
                 // Builder plugin
-                \Moox\Builder\ItemPlugin::make(),
+                ItemPlugin::make(),
 
             ]);
     }

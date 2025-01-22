@@ -2,6 +2,7 @@
 
 namespace Moox\Permission\Resources\PermissionResource\Widgets;
 
+use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use Moox\Permission\Models\Permission;
 
 class PermissionWidgets extends BaseWidget
 {
+    #[Override]
     protected function getCards(): array
     {
         $aggregationColumns = [

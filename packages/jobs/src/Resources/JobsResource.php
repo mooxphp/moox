@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs\Resources;
 
+use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -25,19 +26,17 @@ class JobsResource extends Resource
 
     protected static ?string $navigationIcon = null;
 
+    #[Override]
     public static function getNavigationIcon(): string
     {
         if (self::$navigationIcon === null) {
-            if (config('core.use_google_icons', true)) {
-                self::$navigationIcon = 'gmdi-play-arrow';
-            } else {
-                self::$navigationIcon = 'heroicon-o-play';
-            }
+            self::$navigationIcon = config('core.use_google_icons', true) ? 'gmdi-play-arrow' : 'heroicon-o-play';
         }
 
         return self::$navigationIcon;
     }
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -65,6 +64,7 @@ class JobsResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -75,7 +75,7 @@ class JobsResource extends Resource
                     ->badge()
                     ->sortable()
                     ->label(__('jobs::translations.status'))
-                    ->formatStateUsing(fn (string $state): string => __("jobs::translations.{$state}"))
+                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.' . $state))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'succeeded' => 'success',
@@ -95,9 +95,7 @@ class JobsResource extends Resource
                     // TODO: poll? extra poll needed?, color (test live), width etc.
                     // IDEA: For adding width (of each separately) to the progress bar, fork (into core?)
                     // SEE: https://github.com/ryangjchandler/filament-progress-column
-                    ->color(function ($record) {
-                        return $record->progress > 99 ? 'success' : '';
-                    }),
+                    ->color(fn($record): string => $record->progress > 99 ? 'success' : ''),
                 TextColumn::make('started_at')
                     ->label(__('jobs::translations.started_at'))
                     ->since()
@@ -109,6 +107,7 @@ class JobsResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -116,11 +115,13 @@ class JobsResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return ['index' => ListJobs::route('/')];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -128,36 +129,43 @@ class JobsResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('jobs::translations.jobs.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('jobs::translations.jobs.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('jobs::translations.jobs.navigation_label');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return __('jobs::translations.breadcrumb');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('jobs::translations.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('jobs.navigation_sort');

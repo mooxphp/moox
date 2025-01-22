@@ -33,9 +33,9 @@ class DateTime extends AbstractBlock
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ["use Filament\Forms\Components\\{$componentClass};"],
+                'forms' => [sprintf('use Filament\Forms\Components\%s;', $componentClass)],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ["use Filament\Tables\Filters\\{$filterClass};"],
+                'filters' => [sprintf('use Filament\Tables\Filters\%s;', $filterClass)],
             ],
         ];
 
@@ -47,22 +47,22 @@ class DateTime extends AbstractBlock
         ];
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')"
+            sprintf("TextColumn::make('%s')", $this->name)
                 .'->{'.$this->type.'}()'
                 .($this->sortable ? '->sortable()' : ''),
         ];
 
         $this->filters['resource'] = [
-            "{$filterClass}::make('{$this->name}')",
+            sprintf("%s::make('%s')", $filterClass, $this->name),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->{$this->type}('{$this->name}')"
+            sprintf("\$table->%s('%s')", $this->type, $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => match ($this->type) {
+            $this->name => match ($this->type) {
                 'date' => 'fake()->date()',
                 'time' => 'fake()->time()',
                 default => 'fake()->dateTime()',

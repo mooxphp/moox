@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs;
 
+use Override;
 use Moox\Jobs\Commands\InstallCommand;
 use Moox\Jobs\Commands\UpdateCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -18,7 +19,8 @@ class JobsServiceProvider extends PackageServiceProvider
             ->hasCommands(InstallCommand::class, UpdateCommand::class);
     }
 
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         parent::boot();
 

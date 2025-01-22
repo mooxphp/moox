@@ -2,6 +2,8 @@
 
 namespace Moox\Core\Services;
 
+use RuntimeException;
+use InvalidArgumentException;
 use Illuminate\Support\Facades\Config;
 
 class TaxonomyService
@@ -21,7 +23,7 @@ class TaxonomyService
     private function ensureResourceIsSet(): void
     {
         if ($this->currentResource === null) {
-            throw new \RuntimeException('Current resource is not set. Call setCurrentResource() first.');
+            throw new RuntimeException('Current resource is not set. Call setCurrentResource() first.');
         }
     }
 
@@ -29,8 +31,8 @@ class TaxonomyService
     {
         $this->ensureResourceIsSet();
 
-        return Config::get("previews.{$this->currentResource}.taxonomies", [])
-            ?: Config::get("builder.resources.{$this->currentResource}.taxonomies", []);
+        return Config::get(sprintf('previews.%s.taxonomies', $this->currentResource), [])
+            ?: Config::get(sprintf('builder.resources.%s.taxonomies', $this->currentResource), []);
     }
 
     public function getTaxonomyModel(string $taxonomy): ?string
@@ -43,7 +45,7 @@ class TaxonomyService
         $modelClass = $this->getTaxonomyModel($taxonomy);
 
         if (! $modelClass || ! class_exists($modelClass)) {
-            throw new \InvalidArgumentException("Invalid model class for taxonomy: $taxonomy in resource: {$this->currentResource}");
+            throw new InvalidArgumentException(sprintf('Invalid model class for taxonomy: %s in resource: %s', $taxonomy, $this->currentResource));
         }
     }
 
@@ -71,6 +73,6 @@ class TaxonomyService
     {
         $this->ensureResourceIsSet();
 
-        return ! empty($this->getTaxonomies());
+        return $this->getTaxonomies() !== [];
     }
 }

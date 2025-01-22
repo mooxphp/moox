@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\SimpleTaxonomyResource\Widgets;
 
+use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,7 @@ use Moox\Builder\Models\SimpleTaxonomy;
 
 class SimpleTaxonomyWidgets extends BaseWidget
 {
+    #[Override]
     protected function getStats(): array
     {
         $aggregationColumns = [

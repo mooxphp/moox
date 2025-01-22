@@ -23,7 +23,7 @@ class FileSyncController extends Controller
     {
         $this->validateRequest($request);
 
-        $chunkPath = $this->saveTempChunk($request);
+        $this->saveTempChunk($request);
 
         return response()->json(['status' => 'success', 'message' => 'Chunk received']);
     }
@@ -94,7 +94,7 @@ class FileSyncController extends Controller
     protected function saveTempChunk(Request $request)
     {
         $chunkPath = $this->getTempChunkPath($request);
-        Storage::put($chunkPath, base64_decode($request->input('chunk')));
+        Storage::put($chunkPath, base64_decode((string) $request->input('chunk')));
 
         return $chunkPath;
     }
@@ -113,10 +113,10 @@ class FileSyncController extends Controller
         return $tempFilePath;
     }
 
-    protected function isFileExtensionAllowed($filePath)
+    protected function isFileExtensionAllowed($filePath): bool
     {
         $allowedExtensions = config('sync.file_sync_allowed_extensions', []);
-        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+        $extension = pathinfo((string) $filePath, PATHINFO_EXTENSION);
 
         return in_array(strtolower($extension), $allowedExtensions);
     }
@@ -134,6 +134,7 @@ class FileSyncController extends Controller
             $chunkPath = $this->getTempChunkPath($request, $i);
             Storage::delete($chunkPath);
         }
+
         Storage::delete($this->getTempFilePath($request));
     }
 
@@ -151,29 +152,29 @@ class FileSyncController extends Controller
         return Storage::exists($finalPath) ? Storage::size($finalPath) : 0;
     }
 
-    protected function calculateExistingFileHash(Request $request)
+    protected function calculateExistingFileHash(Request $request): string
     {
         $finalPath = $this->getFinalFilePath($request);
 
-        return Storage::exists($finalPath) ? md5(Storage::get($finalPath)) : '';
+        return Storage::exists($finalPath) ? md5((string) Storage::get($finalPath)) : '';
     }
 
-    protected function getTempChunkPath(Request $request, $chunkIndex = null)
+    protected function getTempChunkPath(Request $request, $chunkIndex = null): string
     {
-        $chunkIndex = $chunkIndex ?? $request->input('chunk_index');
+        $chunkIndex ??= $request->input('chunk_index');
 
-        return "{$this->tempDirectory}/{$request->input('model_class')}/{$request->input('model_id')}/{$request->input('field')}/chunk_{$chunkIndex}";
+        return sprintf('%s/%s/%s/%s/chunk_%s', $this->tempDirectory, $request->input('model_class'), $request->input('model_id'), $request->input('field'), $chunkIndex);
     }
 
-    protected function getTempFilePath(Request $request)
+    protected function getTempFilePath(Request $request): string
     {
-        return "{$this->tempDirectory}/{$request->input('model_class')}/{$request->input('model_id')}/{$request->input('field')}/temp_file";
+        return sprintf('%s/%s/%s/%s/temp_file', $this->tempDirectory, $request->input('model_class'), $request->input('model_id'), $request->input('field'));
     }
 
-    protected function getFinalFilePath(Request $request)
+    protected function getFinalFilePath(Request $request): string
     {
         // This method should be implemented based on your application's file storage logic
         // For example, you might store files in a specific directory structure based on the model and field
-        return "uploads/{$request->input('model_class')}/{$request->input('model_id')}/{$request->input('field')}/{$request->input('file_data.name')}";
+        return sprintf('uploads/%s/%s/%s/%s', $request->input('model_class'), $request->input('model_id'), $request->input('field'), $request->input('file_data.name'));
     }
 }

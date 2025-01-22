@@ -2,6 +2,9 @@
 
 namespace Moox\User\Services;
 
+use Moox\UserDevice\Services\UserDeviceTracker;
+use Moox\UserSession\Services\SessionRelationService;
+use Override;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -29,8 +32,8 @@ use Jenssegers\Agent\Agent;
  */
 class Login extends SimplePage
 {
-    use InteractsWithFormActions, WithRateLimiting;
-
+    use InteractsWithFormActions;
+    use WithRateLimiting;
     protected $userDeviceTracker;
 
     protected $sessionRelationService;
@@ -47,12 +50,12 @@ class Login extends SimplePage
 
     public function __construct()
     {
-        if (class_exists(\Moox\UserDevice\Services\UserDeviceTracker::class)) {
-            $this->userDeviceTracker = app(\Moox\UserDevice\Services\UserDeviceTracker::class);
+        if (class_exists(UserDeviceTracker::class)) {
+            $this->userDeviceTracker = app(UserDeviceTracker::class);
         }
 
-        if (class_exists(\Moox\UserSession\Services\SessionRelationService::class)) {
-            $this->sessionRelationService = app(\Moox\UserSession\Services\SessionRelationService::class);
+        if (class_exists(SessionRelationService::class)) {
+            $this->sessionRelationService = app(SessionRelationService::class);
         }
     }
 
@@ -113,10 +116,10 @@ class Login extends SimplePage
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
         $credentialKey = array_key_first($credentials);
-        $guardProvider = config("auth.guards.$guardName.provider");
-        $userModel = config("auth.providers.$guardProvider.model");
-        $userModelUsername = config("user.auth.$guardName.username");
-        $userModelEmail = config("user.auth.$guardName.email");
+        $guardProvider = config(sprintf('auth.guards.%s.provider', $guardName));
+        $userModel = config(sprintf('auth.providers.%s.model', $guardProvider));
+        $userModelUsername = config(sprintf('user.auth.%s.username', $guardName));
+        $userModelEmail = config(sprintf('user.auth.%s.email', $guardName));
         $query = $userModel::query();
 
         if (! empty($userModelUsername) && $credentialKey === 'name') {
@@ -210,11 +213,13 @@ class Login extends SimplePage
             ->url(filament()->getRegistrationUrl());
     }
 
+    #[Override]
     public function getTitle(): string|Htmlable
     {
         return __('filament-panels::pages/auth/login.title');
     }
 
+    #[Override]
     public function getHeading(): string|Htmlable
     {
         return __('filament-panels::pages/auth/login.heading');
@@ -252,6 +257,7 @@ class Login extends SimplePage
             if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
                 return true;
             }
+
             if ($ipWhiteList === $ipAddress) {
                 return true;
             }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources;
 
+use Override;
+use Filament\Forms\Components\Actions\Action;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\DateTimePicker;
@@ -48,6 +50,7 @@ class FullItemResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-engineering';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         static::initUserModel();
@@ -78,73 +81,74 @@ class FullItemResource extends Resource
                             Section::make()
                                 ->schema([
                                     Actions::make([
-                                        Actions\Action::make('restore')
+                                        Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewFullItem),
-                                        Actions\Action::make('save')
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewFullItem),
+                                        Action::make('save')
                                             ->label(__('core::core.save'))
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
+                                            ->action(function ($livewire): void {
                                                 $livewire instanceof CreateFullItem ? $livewire->create() : $livewire->save();
                                             })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateFullItem || $livewire instanceof EditFullItem),
-                                        Actions\Action::make('publish')
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateFullItem || $livewire instanceof EditFullItem),
+                                        Action::make('publish')
                                             ->label(__('core::core.publish'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
+                                            ->action(function ($livewire): void {
                                                 $data = $livewire->form->getState();
                                                 if (! $data['published_at']) {
                                                     $data['published_at'] = now();
                                                 }
+
                                                 $livewire->form->fill($data);
                                                 $livewire instanceof CreateFullItem ? $livewire->create() : $livewire->save();
                                             })
-                                            ->hidden(fn ($livewire, $record) => $record && $record->trashed()),
-                                        Actions\Action::make('saveAndCreateAnother')
+                                            ->hidden(fn ($livewire, $record): bool => $record && $record->trashed()),
+                                        Action::make('saveAndCreateAnother')
                                             ->label(__('core::core.save_and_create_another'))
                                             ->color('secondary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
+                                            ->action(function ($livewire): void {
                                                 $livewire->saveAndCreateAnother();
                                             })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateFullItem),
-                                        Actions\Action::make('cancel')
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateFullItem),
+                                        Action::make('cancel')
                                             ->label(__('core::core.cancel'))
                                             ->color('secondary')
                                             ->outlined()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn () => static::getUrl('index'))
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateFullItem),
-                                        Actions\Action::make('edit')
+                                            ->url(fn (): string => static::getUrl('index'))
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateFullItem),
+                                        Action::make('edit')
                                             ->label(__('core::core.edit'))
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-                                            ->visible(fn ($livewire, $record) => $livewire instanceof ViewFullItem && ! $record->trashed()),
-                                        Actions\Action::make('restore')
+                                            ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
+                                            ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewFullItem && ! $record->trashed()),
+                                        Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditFullItem),
-                                        Actions\Action::make('delete')
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditFullItem),
+                                        Action::make('delete')
                                             ->label(__('core::core.delete'))
                                             ->color('danger')
                                             ->link()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->delete())
-                                            ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditFullItem),
+                                            ->visible(fn ($livewire, $record): bool => $record && ! $record->trashed() && $livewire instanceof EditFullItem),
                                     ]),
                                     Select::make('type')
                                         ->options(static::getModel()::getTypeOptions())
@@ -159,7 +163,7 @@ class FullItemResource extends Resource
                             Section::make()
                                 ->schema(static::getTaxonomyFields())
                                 ->columns(1)
-                                ->visible(fn () => ! empty(static::getTaxonomyFields())),
+                                ->visible(fn (): bool => static::getTaxonomyFields() !== []),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -167,6 +171,7 @@ class FullItemResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         static::initUserModel();
@@ -202,7 +207,7 @@ class FullItemResource extends Resource
                 TextColumn::make('type')
                     ->label(__('core::core.type'))
                     ->visible(! empty(config('builder.types')))
-                    ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst($record->type))
+                    ->formatStateUsing(fn ($record): string => config('builder.types')[$record->type] ?? ucfirst((string) $record->type))
                     ->sortable(),
                 ...static::getTaxonomyColumns(),
                 static::getStatusTableColumn(),
@@ -218,16 +223,8 @@ class FullItemResource extends Resource
                 ...static::getTableActions(),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
-                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isHidden;
-                }),
-                RestoreBulkAction::make()->visible(function () use ($currentTab) {
-                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isVisible;
-                }),
+                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 Filter::make('title')
@@ -235,23 +232,19 @@ class FullItemResource extends Resource
                         TextInput::make('title')
                             ->label(__('core::core.title')),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['title'],
-                            fn (Builder $query, $title): Builder => $query->where('title', 'like', "%{$title}%"),
-                        );
-                    }),
+                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                        $data['title'],
+                        fn (Builder $query, $title): Builder => $query->where('title', 'like', sprintf('%%%s%%', $title)),
+                    )),
                 Filter::make('slug')
                     ->form([
                         TextInput::make('slug')
                             ->label(__('core::core.slug')),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['slug'],
-                            fn (Builder $query, $slug): Builder => $query->where('slug', 'like', "%{$slug}%"),
-                        );
-                    }),
+                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                        $data['slug'],
+                        fn (Builder $query, $slug): Builder => $query->where('slug', 'like', sprintf('%%%s%%', $slug)),
+                    )),
                 SelectFilter::make('type')
                     ->options(static::getModel()::getTypeOptions())
                     ->label(__('core::core.type')),
@@ -261,6 +254,7 @@ class FullItemResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -268,6 +262,7 @@ class FullItemResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -278,6 +273,7 @@ class FullItemResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -285,26 +281,31 @@ class FullItemResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('builder.resources.full-item.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('builder.resources.full-item.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('builder.resources.full-item.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('builder.resources.full-item.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
@@ -315,11 +316,13 @@ class FullItemResource extends Resource
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('builder.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('builder.navigation_sort') + 2;

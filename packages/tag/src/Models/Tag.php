@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Models;
 
+use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -13,8 +14,8 @@ use Moox\Tag\Database\Factories\TagFactory;
 
 class Tag extends Model
 {
-    use HasFactory, SoftDeletes;
-
+    use HasFactory;
+    use SoftDeletes;
     protected $table = 'tags';
 
     protected $fillable = [
@@ -52,9 +53,10 @@ class Tag extends Model
         DB::table('taggables')->where('tag_id', $this->id)->delete();
     }
 
+    #[Override]
     protected static function booted(): void
     {
-        static::deleting(function (Tag $tag) {
+        static::deleting(function (Tag $tag): void {
             $tag->detachAllTaggables();
         });
     }

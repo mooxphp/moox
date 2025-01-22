@@ -6,7 +6,7 @@ use Moox\Security\Helper\PasswordHash;
 
 class WordPressAuthService
 {
-    protected $hasher;
+    protected PasswordHash $hasher;
 
     public function __construct()
     {

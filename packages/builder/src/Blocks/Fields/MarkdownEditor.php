@@ -39,12 +39,12 @@ class MarkdownEditor extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->text('{$this->name}')"
+            sprintf("\$table->text('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->paragraphs(3, true)',
+            $this->name => 'fake()->paragraphs(3, true)',
         ];
     }
 }

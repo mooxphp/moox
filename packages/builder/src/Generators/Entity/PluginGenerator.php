@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Override;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 
@@ -50,14 +51,13 @@ class PluginGenerator extends AbstractGenerator
         return 'plugin';
     }
 
+    #[Override]
     protected function formatUseStatements(): string
     {
         $statements = [
             'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource;',
         ];
 
-        return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+        return implode("\n", array_map(fn($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 }

@@ -2,16 +2,17 @@
 
 namespace Moox\PressTrainings\Models;
 
+use Override;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpBasePost;
 
 class WpTraining extends WpBasePost
 {
-    public static function boot()
+    #[Override]protected static function boot()
     {
         parent::boot();
 
-        static::addGlobalScope('training', function (Builder $builder) {
+        static::addGlobalScope('training', function (Builder $builder): void {
             $builder
                 ->where('post_type', 'schulung')
                 ->whereIn('post_status', ['publish', 'draft', 'pending', 'trash', 'future', 'private'])

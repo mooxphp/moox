@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Sync;
 
+use Override;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\LogLevel;
@@ -32,6 +33,7 @@ class SyncServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
+    #[Override]
     public function boot(): void
     {
         parent::boot();
@@ -56,7 +58,7 @@ class SyncServiceProvider extends PackageServiceProvider
         $syncPlatformJobConfig = Config::get('sync.sync_platform_job');
 
         if ($syncPlatformJobConfig['enabled']) {
-            $this->app->booted(function () use ($syncPlatformJobConfig) {
+            $this->app->booted(function () use ($syncPlatformJobConfig): void {
                 $this->logDebug('Moox Sync: Registering sync platform job');
 
                 $schedule = $this->app->make(Schedule::class);
@@ -70,7 +72,7 @@ class SyncServiceProvider extends PackageServiceProvider
         $syncBackupJobConfig = Config::get('sync.sync_backup_job');
 
         if ($syncBackupJobConfig['enabled']) {
-            $this->app->booted(function () use ($syncBackupJobConfig) {
+            $this->app->booted(function () use ($syncBackupJobConfig): void {
                 $this->logDebug('Moox Sync: Registering sync backup job');
 
                 $schedule = $this->app->make(Schedule::class);

@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs\Resources\JobsResource\Widgets;
 
+use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ class JobStatsOverview extends BaseWidget
 {
     use FormatSeconds;
 
+    #[Override]
     protected function getCards(): array
     {
         $aggregationColumns = [

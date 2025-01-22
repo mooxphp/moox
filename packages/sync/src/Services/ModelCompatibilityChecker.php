@@ -31,8 +31,8 @@ class ModelCompatibilityChecker
         $extraColumns = array_diff($targetColumns, $sourceColumns);
 
         return [
-            'compatible' => empty($missingColumns),
-            'error' => empty($missingColumns) ? null : 'Target model is missing some columns from the source model.',
+            'compatible' => $missingColumns === [],
+            'error' => $missingColumns === [] ? null : 'Target model is missing some columns from the source model.',
             'missingColumns' => $missingColumns,
             'extraColumns' => $extraColumns,
         ];

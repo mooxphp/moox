@@ -2,6 +2,7 @@
 
 namespace Moox\LoginLink\Resources;
 
+use Override;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,12 +23,13 @@ use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
 
 class LoginLinkResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = LoginLink::class;
 
     protected static ?string $navigationIcon = 'gmdi-lock-clock-o';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -52,13 +54,13 @@ class LoginLinkResource extends Resource
                     ->label(__('core::core.used_at')),
                 Select::make('user_type')
                     ->label(__('core::user.user_type'))
-                    ->options(function () {
+                    ->options(function (): array {
                         $models = Config::get('login-link.user_models', []);
 
                         return array_flip($models);
                     })
                     ->reactive()
-                    ->afterStateUpdated(function (Set $set, $state) {
+                    ->afterStateUpdated(function (Set $set, $state): void {
                         $set('user_id', null);
                     })
                     ->required(),
@@ -77,6 +79,7 @@ class LoginLinkResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -84,10 +87,10 @@ class LoginLinkResource extends Resource
                 IconColumn::make('used')
                     ->label(__('core::core.valid'))
                     ->icons([
-                        'heroicon-o-x-circle' => fn ($record) => empty($record->used_at),
-                        'heroicon-o-check-circle' => fn ($record) => ! empty($record->used_at),
+                        'heroicon-o-x-circle' => fn ($record): bool => empty($record->used_at),
+                        'heroicon-o-check-circle' => fn ($record): bool => ! empty($record->used_at),
                     ])
-                    ->tooltip(fn ($record) => empty($record->used_at) ? 'Not Used' : 'Used')
+                    ->tooltip(fn ($record): string => empty($record->used_at) ? 'Not Used' : 'Used')
                     ->sortable(),
                 TextColumn::make('email')
                     ->label(__('core::user.email'))
@@ -109,9 +112,7 @@ class LoginLinkResource extends Resource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(function ($record) {
-                        return optional($record->user)->name ?? 'unknown';
-                    })
+                    ->getStateUsing(fn($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
             ])
             ->actions([
@@ -122,6 +123,7 @@ class LoginLinkResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -129,6 +131,7 @@ class LoginLinkResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -136,6 +139,7 @@ class LoginLinkResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -143,36 +147,43 @@ class LoginLinkResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('login-link.resources.login-link.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('login-link.resources.login-link.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('login-link.resources.login-link.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('login-link.resources.login-link.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('login-link.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('login-link.navigation_sort') + 4;

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Request;
 
 trait RequestInModel
 {
-    public function getRequestData($key)
+    public function getRequestData(string $key)
     {
         $components = Request::input('components', []);
 
@@ -19,6 +19,6 @@ trait RequestInModel
 
         $firstComponent = $components[0] ?? [];
 
-        return $firstComponent['updates']["data.$key"] ?? null;
+        return $firstComponent['updates']['data.' . $key] ?? null;
     }
 }

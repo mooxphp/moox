@@ -1,5 +1,5 @@
 <?php
 
-test('core example feature', function () {
+test('core example feature', function (): void {
     expect(true)->toBeTrue();
 });

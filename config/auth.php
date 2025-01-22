@@ -1,5 +1,8 @@
 <?php
 
+use Moox\User\Models\User;
+use Moox\Press\Models\WpUser;
+
 return [
 
     /*
@@ -68,11 +71,11 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => \Moox\User\Models\User::class,
+            'model' => User::class,
         ],
         'wpusers' => [
             'driver' => 'eloquent',
-            'model' => \Moox\Press\Models\WpUser::class,
+            'model' => WpUser::class,
         ],
     ],
 

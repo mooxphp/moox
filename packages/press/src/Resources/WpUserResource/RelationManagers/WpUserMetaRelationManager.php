@@ -2,6 +2,8 @@
 
 namespace Moox\Press\Resources\WpUserResource\RelationManagers;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -20,6 +22,7 @@ class WpUserMetaRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([
@@ -65,12 +68,12 @@ class WpUserMetaRelationManager extends RelationManager
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('meta_key')
+                TextColumn::make('meta_key')
                     ->label(__('core::core.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_value')
+                TextColumn::make('meta_value')
                     ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()

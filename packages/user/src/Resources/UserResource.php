@@ -2,6 +2,7 @@
 
 namespace Moox\User\Resources;
 
+use Override;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -34,14 +35,15 @@ use Moox\User\Resources\UserResource\Pages\ViewUser;
 
 class UserResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'gmdi-manage-accounts';
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -167,7 +169,7 @@ class UserResource extends Resource
                         ->unique(
                             'users',
                             'email',
-                            fn (?Model $record) => $record
+                            fn (?Model $record): ?Model => $record
                         )
                         ->email()
                         ->columnSpan([
@@ -265,6 +267,7 @@ class UserResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -278,9 +281,7 @@ class UserResource extends Resource
                     ->size(50),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(function ($state, User $user) {
-                        return $user->first_name.' '.$user->last_name;
-                    })
+                    ->formatStateUsing(fn($state, User $user): string => $user->first_name.' '.$user->last_name)
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -301,8 +302,8 @@ class UserResource extends Resource
                             $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
-                        'success' => fn ($record) => $record->email_verified_at !== null,
-                        'danger' => fn ($record) => $record->email_verified_at === null,
+                        'success' => fn ($record): bool => $record->email_verified_at !== null,
+                        'danger' => fn ($record): bool => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
@@ -331,6 +332,7 @@ class UserResource extends Resource
             ]));
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -341,6 +343,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -351,31 +354,37 @@ class UserResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('user.resources.user.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('user.resources.user.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('user.resources.user.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('user.resources.user.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('user.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('user.navigation_sort') + 1;

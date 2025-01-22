@@ -2,6 +2,7 @@
 
 namespace Moox\Expiry\Actions;
 
+use Override;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
@@ -17,13 +18,14 @@ class CustomExpiryAction extends Action
         return 'setDateAction';
     }
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->label(config('expiry.expiry_action_name', 'Set Expiry Date'))
             ->icon('gmdi-event-available')
-            ->action(function ($record, array $data) {
+            ->action(function ($record, array $data): void {
                 $postId = $record->item_id;
 
                 if ($postId) {
@@ -39,10 +41,8 @@ class CustomExpiryAction extends Action
                         ->send();
                 }
             })
-            ->form(function ($record) {
-                $cycleOptions = collect(config('expiry.cycle_options'))->mapWithKeys(function ($value, $key) {
-                    return [__('core::expiry.'.$key) => $value];
-                });
+            ->form(function ($record): array {
+                $cycleOptions = collect(config('expiry.cycle_options'))->mapWithKeys(fn($value, $key) => [__('core::expiry.'.$key) => $value]);
 
                 return [
                     Grid::make(2)
@@ -89,8 +89,6 @@ class CustomExpiryAction extends Action
             ->modalHeading(__('core::expiry.set_date'))
             ->modalSubmitActionLabel(__('core::expiry.save'))
             ->color('primary')
-            ->visible(function ($record) {
-                return config('expiry.expiry_action_enable', true);
-            });
+            ->visible(fn($record) => config('expiry.expiry_action_enable', true));
     }
 }

@@ -2,6 +2,12 @@
 
 namespace Moox\Expiry\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Expiry\Resources\ExpiryResource\Pages\ListExpiries;
+use Moox\Expiry\Resources\ExpiryResource\Pages\CreateExpiry;
+use Moox\Expiry\Resources\ExpiryResource\Pages\ViewExpiry;
+use Moox\Expiry\Resources\ExpiryResource\Pages\EditExpiry;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,14 +25,16 @@ use Moox\Expiry\Resources\ExpiryResource\Pages;
 
 class ExpiryResource extends Resource
 {
-    use BaseInResource, SingleSoftDeleteInResource, TabsInResource;
-
+    use BaseInResource;
+    use SingleSoftDeleteInResource;
+    use TabsInResource;
     protected static ?string $model = Expiry::class;
 
     protected static ?string $navigationIcon = 'gmdi-view-timeline-o';
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -34,6 +42,7 @@ class ExpiryResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         $expiryActionClass = config('expiry.expiry_action');
@@ -49,43 +58,43 @@ class ExpiryResource extends Resource
                     ->orderBy('expired_at', 'asc')
             )
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->toggleable()
                     ->searchable()
                     ->sortable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('expired_at')
+                TextColumn::make('expired_at')
                     ->label(__('core::expiry.expired_at'))
                     ->toggleable()
                     ->sortable()
                     ->since(),
-                Tables\Columns\TextColumn::make('processing_deadline')
+                TextColumn::make('processing_deadline')
                     ->label(__('core::expiry.processing_deadline'))
                     ->toggleable()
                     ->sortable()
                     ->since()
-                    ->hidden(fn () => ! Expiry::query()->whereNotNull('processing_deadline')->exists())
+                    ->hidden(fn (): bool => ! Expiry::query()->whereNotNull('processing_deadline')->exists())
                     ->visible(
-                        fn ($livewire) => isset($livewire->activeTab)
+                        fn ($livewire): bool => isset($livewire->activeTab)
                         && in_array($livewire->activeTab, ['all', 'documents', 'tasks'])),
-                Tables\Columns\TextColumn::make('escalated_at')
+                TextColumn::make('escalated_at')
                     ->label(__('core::expiry.escalated_at'))
                     ->toggleable()
                     ->sortable()
                     ->date()
                     ->icon('gmdi-warning')
                     ->color('warning')
-                    ->hidden(fn () => ! Expiry::query()->whereNotNull('escalated_at')->exists())
+                    ->hidden(fn (): bool => ! Expiry::query()->whereNotNull('escalated_at')->exists())
                     ->visible(
-                        fn ($livewire) => isset($livewire->activeTab)
+                        fn ($livewire): bool => isset($livewire->activeTab)
                         && in_array($livewire->activeTab, ['all', 'documents', 'tasks'])),
-                Tables\Columns\TextColumn::make('cycle')
+                TextColumn::make('cycle')
                     ->label(__('core::expiry.cycle'))
                     ->toggleable()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('notifyUser.display_name')
+                TextColumn::make('notifyUser.display_name')
                     ->label(__('core::expiry.notifyUser'))
                     ->toggleable()
                     ->searchable()
@@ -95,24 +104,24 @@ class ExpiryResource extends Resource
                         $tableName = $wpPrefix.'users';
 
                         return $query
-                            ->leftJoin($tableName, 'expiries.notified_to', '=', "{$tableName}.ID")
-                            ->orderBy("{$tableName}.display_name", $direction)
+                            ->leftJoin($tableName, 'expiries.notified_to', '=', $tableName . '.ID')
+                            ->orderBy($tableName . '.display_name', $direction)
                             ->select('expiries.*');
                     })
                     ->limit(50),
-                Tables\Columns\TextColumn::make('expiry_job')
+                TextColumn::make('expiry_job')
                     ->label(__('core::expiry.expiry_job'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('category')
+                TextColumn::make('category')
                     ->label(__('core::core.category'))
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label(__('core::core.status'))
                     ->toggleable()
                     ->sortable()
@@ -157,46 +166,54 @@ class ExpiryResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListExpiries::route('/'),
-            'create' => Pages\CreateExpiry::route('/create'),
-            'view' => Pages\ViewExpiry::route('/{record}'),
-            'edit' => Pages\EditExpiry::route('/{record}/edit'),
+            'index' => ListExpiries::route('/'),
+            'create' => CreateExpiry::route('/create'),
+            'view' => ViewExpiry::route('/{record}'),
+            'edit' => EditExpiry::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('expiry.resources.expiry.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('expiry.resources.expiry.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('expiry.resources.expiry.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('expiry.resources.expiry.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('expiry.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('expiry.navigation_sort') + 1;

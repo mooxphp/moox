@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs\Resources\JobsWaitingResource\Widgets;
 
+use Override;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ class JobsWaitingOverview extends BaseWidget
 {
     use FormatSeconds;
 
+    #[Override]
     protected function getCards(): array
     {
         $jobsWaiting = Job::query()

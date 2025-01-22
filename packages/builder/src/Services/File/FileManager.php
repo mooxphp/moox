@@ -28,12 +28,12 @@ class FileManager
             return;
         }
 
-        $files = json_decode($build->files, true);
+        $files = json_decode((string) $build->files, true);
         foreach ($files as $file) {
             $path = $file['path'] ?? null;
             if ($path) {
                 $this->fileOperations->deleteFile($path);
-                $this->removeEmptyDirectories(dirname($path));
+                $this->removeEmptyDirectories(dirname((string) $path));
             }
         }
     }
@@ -53,8 +53,9 @@ class FileManager
             }
 
             if (file_put_contents($path, $content) === false) {
-                throw new RuntimeException("Failed to write file: {$path}");
+                throw new RuntimeException('Failed to write file: ' . $path);
             }
+
             $paths[] = $path;
         }
 
@@ -64,15 +65,11 @@ class FileManager
 
     public function formatFiles(array $files): void
     {
-        if (empty($files)) {
+        if ($files === []) {
             return;
         }
 
-        if (isset($files[0])) {
-            $paths = $files;
-        } else {
-            $paths = array_keys($files);
-        }
+        $paths = isset($files[0]) ? $files : array_keys($files);
 
         $this->fileFormatter->formatFiles($paths);
     }
@@ -80,7 +77,7 @@ class FileManager
     public function findMigrationFiles(string $path): array
     {
         if (! is_dir($path)) {
-            throw new RuntimeException("Migration directory not found: {$path}");
+            throw new RuntimeException('Migration directory not found: ' . $path);
         }
 
         $finder = new Finder;
@@ -100,7 +97,7 @@ class FileManager
 
     protected function removeEmptyDirectories(string $path): void
     {
-        if (empty($path) || $path === '.' || $path === '/') {
+        if ($path === '' || $path === '0' || $path === '.' || $path === '/') {
             return;
         }
 
@@ -112,23 +109,21 @@ class FileManager
 
     protected function ensureDirectoryExists(string $directory): void
     {
-        if (! File::exists($directory)) {
-            if (! File::makeDirectory($directory, 0755, true)) {
-                throw new RuntimeException("Failed to create directory: {$directory}");
-            }
+        if (!File::exists($directory) && ! File::makeDirectory($directory, 0755, true)) {
+            throw new RuntimeException('Failed to create directory: ' . $directory);
         }
     }
 
     protected function writeFile(string $path, string $content): void
     {
         if (! File::put($path, $content)) {
-            throw new RuntimeException("Failed to write file: {$path}");
+            throw new RuntimeException('Failed to write file: ' . $path);
         }
     }
 
     protected function validateFiles(array $files): void
     {
-        if (empty($files)) {
+        if ($files === []) {
             throw new RuntimeException('No files provided for operation');
         }
 
@@ -136,14 +131,17 @@ class FileManager
             if (! is_string($path)) {
                 throw new RuntimeException('File path must be a string');
             }
+
             if (! is_string($content)) {
                 throw new RuntimeException('File content must be a string');
             }
-            if (empty(trim($path))) {
+
+            if (in_array(trim($path), ['', '0'], true)) {
                 throw new RuntimeException('File path cannot be empty');
             }
+
             if (File::exists($path) && ! is_writable($path)) {
-                throw new RuntimeException("File not writable: {$path}");
+                throw new RuntimeException('File not writable: ' . $path);
             }
         }
     }

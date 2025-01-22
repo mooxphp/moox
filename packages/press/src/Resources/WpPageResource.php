@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpPageResource\Pages\ListWpPage;
+use Moox\Press\Resources\WpPageResource\Pages\CreateWpPage;
+use Moox\Press\Resources\WpPageResource\Pages\ViewWpPage;
+use Moox\Press\Resources\WpPageResource\Pages\EditWpPage;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -23,14 +29,15 @@ use Moox\Press\Resources\WpPageResource\RelationManagers\WpPostMetaRelationManag
 
 class WpPageResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpPage::class;
 
     protected static ?string $navigationIcon = 'gmdi-pages';
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -273,112 +280,113 @@ class WpPageResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('post_author')
+                TextColumn::make('post_author')
                     ->label(__('core::post.post_author'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_date')
+                TextColumn::make('post_date')
                     ->label(__('core::post.post_date'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('post_date_gmt')
+                TextColumn::make('post_date_gmt')
                     ->label(__('core::post.post_date_gmt'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('post_content')
+                TextColumn::make('post_content')
                     ->label(__('core::post.post_content'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_title')
+                TextColumn::make('post_title')
                     ->label(__('core::post.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_excerpt')
+                TextColumn::make('post_excerpt')
                     ->label(__('core::post.post_excerpt'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_status')
+                TextColumn::make('post_status')
                     ->label(__('core::post.post_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_status')
+                TextColumn::make('comment_status')
                     ->label(__('core::comment.comment_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('ping_status')
+                TextColumn::make('ping_status')
                     ->label(__('core::post.ping_status'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_password')
+                TextColumn::make('post_password')
                     ->label(__('core::post.post_password'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_name')
+                TextColumn::make('post_name')
                     ->label(__('core::post.post_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('to_ping')
+                TextColumn::make('to_ping')
                     ->label(__('core::post.to_ping'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('pinged')
+                TextColumn::make('pinged')
                     ->label(__('core::post.pinged'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_modified')
+                TextColumn::make('post_modified')
                     ->label(__('core::post.post_modified'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('post_modified_gmt')
+                TextColumn::make('post_modified_gmt')
                     ->label(__('core::post.post_modified_gmt'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('post_content_filtered')
+                TextColumn::make('post_content_filtered')
                     ->label(__('core::post.post_content_filtered'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_parent')
+                TextColumn::make('post_parent')
                     ->label(__('core::post.post_parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('guid')
+                TextColumn::make('guid')
                     ->label(__('core::core.guid'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('menu_order')
+                TextColumn::make('menu_order')
                     ->label(__('core::core.menu_order'))
                     ->toggleable()
                     ->searchable(true, null, true),
-                Tables\Columns\TextColumn::make('post_type')
+                TextColumn::make('post_type')
                     ->label(__('core::post.post_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_mime_type')
+                TextColumn::make('post_mime_type')
                     ->label(__('core::post.post_mime_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_count')
+                TextColumn::make('comment_count')
                     ->label(__('core::comment.comment_count'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -387,11 +395,12 @@ class WpPageResource extends Resource
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
-                Action::make('Wp Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Wp Edit')->url(fn ($record): string => sprintf('/wp/wp-admin/post.php?post=%s&action=edit', $record->ID)),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -399,41 +408,48 @@ class WpPageResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpPage::route('/'),
-            'create' => Pages\CreateWpPage::route('/create'),
-            'view' => Pages\ViewWpPage::route('/{record}'),
-            'edit' => Pages\EditWpPage::route('/{record}/edit'),
+            'index' => ListWpPage::route('/'),
+            'create' => CreateWpPage::route('/create'),
+            'view' => ViewWpPage::route('/{record}'),
+            'edit' => EditWpPage::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.page.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.page.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.page.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.page.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.press_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 2;

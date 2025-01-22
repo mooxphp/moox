@@ -2,6 +2,7 @@
 
 namespace Moox\UserSession\Resources\UserSessionResource\Pages;
 
+use Override;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\UserSession\Models\UserSession;
@@ -14,12 +15,12 @@ class ListPage extends ListRecords
 
     public static string $resource = UserSessionResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]protected function getHeaderWidgets(): array
     {
         return [
             // TODO: Widgets
@@ -27,6 +28,7 @@ class ListPage extends ListRecords
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('core::session.title');

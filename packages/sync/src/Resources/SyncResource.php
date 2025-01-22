@@ -2,6 +2,8 @@
 
 namespace Moox\Sync\Resources;
 
+use Exception;
+use Override;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
@@ -38,7 +40,7 @@ class SyncResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    private static function generateTitle(callable $get)
+    private static function generateTitle(callable $get): string
     {
         if (! $get('source_platform_id') || ! $get('target_platform_id')) {
             return '';
@@ -54,7 +56,7 @@ class SyncResource extends Resource
             return '';
         }
 
-        $title = "{$sourcePlatform->domain} ({$sourceModel}) to {$targetPlatform->domain} ({$targetModel})";
+        $title = sprintf('%s (%s) to %s (%s)', $sourcePlatform->domain, $sourceModel, $targetPlatform->domain, $targetModel);
 
         if ($usePlatformRelations) {
             $title .= ' by platform';
@@ -63,7 +65,7 @@ class SyncResource extends Resource
         return $title;
     }
 
-    private static function updateTitle(callable $set, callable $get)
+    private static function updateTitle(callable $set, callable $get): void
     {
         $title = self::generateTitle($get);
         $set('title', $title);
@@ -71,7 +73,7 @@ class SyncResource extends Resource
 
     private static function getApiUrl(?Platform $platform): ?string
     {
-        return $platform ? "https://{$platform->domain}/api/models" : null;
+        return $platform instanceof Platform ? sprintf('https://%s/api/models', $platform->domain) : null;
     }
 
     private static function fetchModelsFromApi(string $apiUrl, Platform $platform): array
@@ -95,12 +97,12 @@ class SyncResource extends Resource
             foreach ($data['models'] as $model) {
                 $package = str_replace('Models', ' - ', str_replace('\\', ' ', $model));
                 if ($package && $model) {
-                    $options["{$package}"] = "{$model}";
+                    $options[$package] = $model;
                 }
             }
 
             return array_filter(array_flip($options)); // Remove any null values
-        } catch (\Exception $e) {
+        } catch (Exception) {
             Notification::make()
                 ->title('API Error')
                 ->body(__('An error occurred while fetching the models from platform: ').$platform->name.' ('.$platform->domain.')')
@@ -111,6 +113,7 @@ class SyncResource extends Resource
         }
     }
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -128,14 +131,10 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('sourcePlatform', 'name')
-                        ->options(function () {
-                            return Platform::all()->mapWithKeys(function ($platform) {
-                                return [$platform->id => $platform->name ?? "Platform {$platform->id}"];
-                            })->toArray();
-                        })
+                        ->options(fn() => Platform::all()->mapWithKeys(fn($platform) => [$platform->id => $platform->name ?? 'Platform ' . $platform->id])->toArray())
                         ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
                             $sourceModel = $get('source_model');
                             $targetPlatformId = $get('target_platform_id');
                             $targetModel = $get('target_model');
@@ -160,20 +159,18 @@ class SyncResource extends Resource
 
                             $options = $apiUrl ? self::fetchModelsFromApi($apiUrl, $sourcePlatform) : [];
 
-                            return collect($options)->filter(function ($value, $key) {
-                                return $key !== null && $value !== null;
-                            })->toArray();
+                            return collect($options)->filter(fn($value, $key): bool => $key !== null && $value !== null)->toArray();
                         })
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
                         ->columnSpan(['default' => 12])
-                        ->hint(function (callable $get) {
+                        ->hint(function (callable $get): ?HtmlString {
                             $sourcePlatform = Platform::find($get('source_platform_id'));
 
                             return $sourcePlatform ? new HtmlString('<a href="'.self::getApiUrl($sourcePlatform).'" target="_blank">Test API</a>') : null;
                         })
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
                             $sourcePlatformId = $get('source_platform_id');
                             $sourceModel = $get('source_model');
                             $targetPlatformId = $get('target_platform_id');
@@ -198,14 +195,10 @@ class SyncResource extends Resource
                         ->rules(['exists:platforms,id'])
                         ->required()
                         ->relationship('targetPlatform', 'name')
-                        ->options(function () {
-                            return Platform::all()->mapWithKeys(function ($platform) {
-                                return [$platform->id => $platform->name ?? "Platform {$platform->id}"];
-                            })->toArray();
-                        })
+                        ->options(fn() => Platform::all()->mapWithKeys(fn($platform) => [$platform->id => $platform->name ?? 'Platform ' . $platform->id])->toArray())
                         ->columnSpan(['default' => 12])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
                             $sourcePlatformId = $get('source_platform_id');
                             $sourceModel = $get('source_model');
                             $targetModel = $get('target_model');
@@ -230,20 +223,18 @@ class SyncResource extends Resource
 
                             $options = $apiUrl ? self::fetchModelsFromApi($apiUrl, $targetPlatform) : [];
 
-                            return collect($options)->filter(function ($value, $key) {
-                                return $key !== null && $value !== null;
-                            })->toArray();
+                            return collect($options)->filter(fn($value, $key): bool => $key !== null && $value !== null)->toArray();
                         })
                         ->rules(['max:255'])
                         ->required()
                         ->reactive()
                         ->columnSpan(['default' => 12])
-                        ->hint(function (callable $get) {
+                        ->hint(function (callable $get): ?HtmlString {
                             $targetPlatform = Platform::find($get('target_platform_id'));
 
                             return $targetPlatform ? new HtmlString('<a href="'.self::getApiUrl($targetPlatform).'" target="_blank">Test API</a>') : null;
                         })
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
                             $sourcePlatformId = $get('source_platform_id');
                             $sourceModel = $get('source_model');
                             $targetPlatformId = $get('target_platform_id');
@@ -291,7 +282,7 @@ class SyncResource extends Resource
         ]);
     }
 
-    private static function checkModelCompatibility(callable $set, callable $get)
+    private static function checkModelCompatibility(callable $set, callable $get): void
     {
         $sourceModel = $get('source_model');
         $targetModel = $get('target_model');
@@ -320,6 +311,7 @@ class SyncResource extends Resource
         }
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -328,12 +320,12 @@ class SyncResource extends Resource
                 TextColumn::make('sourcePlatformAndModel')
                     ->label(__('core::sync.source_platform_and_model'))
                     ->toggleable()
-                    ->getStateUsing(fn ($record) => "{$record->sourcePlatform->name} ({$record->source_model})")
+                    ->getStateUsing(fn ($record): string => sprintf('%s (%s)', $record->sourcePlatform->name, $record->source_model))
                     ->limit(50),
                 TextColumn::make('targetPlatformAndModel')
                     ->label(__('core::sync.target_platform_and_model'))
                     ->toggleable()
-                    ->getStateUsing(fn ($record) => "{$record->targetPlatform->name} ({$record->target_model})")
+                    ->getStateUsing(fn ($record): string => sprintf('%s (%s)', $record->targetPlatform->name, $record->target_model))
                     ->limit(50),
                 IconColumn::make('use_platform_relations')
                     ->label(__('core::sync.use_platform_relations'))
@@ -360,6 +352,7 @@ class SyncResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -370,26 +363,31 @@ class SyncResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('sync.resources.sync.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('sync.resources.sync.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('sync.resources.sync.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('sync.resources.sync.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
@@ -400,11 +398,13 @@ class SyncResource extends Resource
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('sync.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('sync.navigation_sort') + 1;

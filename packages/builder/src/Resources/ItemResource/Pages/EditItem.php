@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\ItemResource\Pages;
 
+use Override;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\ItemResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
@@ -14,6 +15,7 @@ class EditItem extends EditRecord
 
     protected static string $resource = ItemResource::class;
 
+    #[Override]
     public function mount($record): void
     {
         $this->record = $this->resolveRecord($record);
@@ -28,6 +30,7 @@ class EditItem extends EditRecord
         return [];
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

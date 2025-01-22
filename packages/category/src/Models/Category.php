@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Category\Models;
 
+use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,8 +16,9 @@ use Moox\Category\Database\Factories\CategoryFactory;
 
 class Category extends Model
 {
-    use HasFactory, NodeTrait, SoftDeletes;
-
+    use HasFactory;
+    use NodeTrait;
+    use SoftDeletes;
     protected $table = 'categories';
 
     protected $fillable = [
@@ -60,9 +62,10 @@ class Category extends Model
         DB::table('categorizables')->where('category_id', $this->id)->delete();
     }
 
+    #[Override]
     protected static function booted(): void
     {
-        static::deleting(function (Category $category) {
+        static::deleting(function (Category $category): void {
             $category->detachAllCategorizables();
         });
     }

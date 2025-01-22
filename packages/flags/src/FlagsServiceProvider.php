@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Moox\Flags;
 
+use Override;
 use BladeUI\Icons\Factory;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 
 final class FlagsServiceProvider extends ServiceProvider
 {
+    #[Override]
     public function register(): void
     {
         $this->registerConfig();
 
-        $this->callAfterResolving(Factory::class, function (Factory $factory, Container $container) {
+        $this->callAfterResolving(Factory::class, function (Factory $factory, Container $container): void {
             $config = $container->make('config')->get('flags', []);
 
             $factory->add('flags', array_merge(['path' => __DIR__.'/../resources/svg'], $config));

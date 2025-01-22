@@ -2,14 +2,15 @@
 
 namespace Moox\Press\Models;
 
+use Override;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Core\Traits\RequestInModel;
 
 class WpTerm extends Model
 {
-    use HasFactory, RequestInModel;
-
+    use HasFactory;
+    use RequestInModel;
     protected $taxonomy = 'term';
 
     protected $fillable = [
@@ -46,11 +47,11 @@ class WpTerm extends Model
         $this->table = $this->wpPrefix.'terms';
     }
 
-    public static function boot()
+    #[Override]protected static function boot()
     {
         parent::boot();
 
-        static::created(function ($wpTerm) {
+        static::created(function ($wpTerm): void {
             $taxonomy = $wpTerm->taxonomy;
             $description = $wpTerm->getRequestData('description') ?? '';
             $parent = $wpTerm->getRequestData('parent') ?? 0;
@@ -64,7 +65,7 @@ class WpTerm extends Model
             ]);
         });
 
-        static::updated(function ($wpTerm) {
+        static::updated(function ($wpTerm): void {
             $taxonomy = $wpTerm->taxonomy;
             $description = $wpTerm->getRequestData('description') ?? $wpTerm->getOriginal('description') ?? '';
             $parent = $wpTerm->getRequestData('parent') ?? $wpTerm->getOriginal('parent') ?? 0;
@@ -78,7 +79,7 @@ class WpTerm extends Model
             ]);
         });
 
-        static::deleting(function ($wpTerm) {
+        static::deleting(function ($wpTerm): void {
             $wpTerm->termTaxonomy()->delete();
         });
     }
@@ -108,28 +109,28 @@ class WpTerm extends Model
         return $this->termTaxonomy->count ?? 0;
     }
 
-    public function setTaxonomyAttribute($value)
+    public function setTaxonomyAttribute($value): void
     {
         if ($this->term_id) {
             $this->termTaxonomy()->updateOrCreate([], ['taxonomy' => $value]);
         }
     }
 
-    public function setDescriptionAttribute($value)
+    public function setDescriptionAttribute($value): void
     {
         if ($this->term_id) {
             $this->termTaxonomy()->updateOrCreate([], ['description' => $value]);
         }
     }
 
-    public function setParentAttribute($value)
+    public function setParentAttribute($value): void
     {
         if ($this->term_id) {
             $this->termTaxonomy()->updateOrCreate([], ['parent' => $value]);
         }
     }
 
-    public function setCountAttribute($value)
+    public function setCountAttribute($value): void
     {
         if ($this->term_id) {
             $this->termTaxonomy()->updateOrCreate([], ['count' => $value]);

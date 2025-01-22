@@ -2,6 +2,8 @@
 
 namespace Moox\LoginLink\Models;
 
+use Override;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -35,11 +37,12 @@ class LoginLink extends Model
         // ];
     }
 
+    #[Override]
     protected static function boot()
     {
         parent::boot();
 
-        LoginLink::creating(function ($item) {
+        LoginLink::creating(function ($item): void {
             if (empty($item->token)) {
                 $item->token = Str::random(40);
             }
@@ -53,10 +56,10 @@ class LoginLink extends Model
      */
     public function user(): BelongsTo
     {
-        if (isset($this->user_type)) {
+        if (property_exists($this, 'user_type') && $this->user_type !== null) {
             return $this->belongsTo($this->user_type, 'user_id');
         } else {
-            return $this->belongsTo('App\Models\User', 'user_id');
+            return $this->belongsTo(User::class, 'user_id');
         }
     }
 }

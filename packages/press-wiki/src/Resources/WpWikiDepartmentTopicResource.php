@@ -2,6 +2,9 @@
 
 namespace Moox\PressWiki\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages\ListWpWikiDepartmentTopics;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -19,14 +22,15 @@ use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages;
 
 class WpWikiDepartmentTopicResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpWikiDepartmentTopic::class;
 
     protected static ?string $navigationIcon = 'gmdi-apartment';
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -67,22 +71,23 @@ class WpWikiDepartmentTopicResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('core::core.name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('term_group')
+                TextColumn::make('term_group')
                     ->label(__('core::core.term_group'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -92,46 +97,54 @@ class WpWikiDepartmentTopicResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpWikiDepartmentTopics::route('/'),
+            'index' => ListWpWikiDepartmentTopics::route('/'),
             // 'create' => Pages\CreateWpWikiDepartmentTopic::route('/create'),
             // 'view' => Pages\ViewWpWikiDepartmentTopic::route('/{record}'),
             // 'edit' => Pages\EditWpWikiDepartmentTopic::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press-wiki.resources.wiki-department-topic.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press-wiki.resources.wiki-department-topic.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press-wiki.resources.wiki-department-topic.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press-wiki.resources.wiki-department-topic.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press-wiki.temp_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press-wiki.temp_navigation_sort') + 3;

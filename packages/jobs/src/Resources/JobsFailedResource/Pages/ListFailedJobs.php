@@ -13,7 +13,7 @@ class ListFailedJobs extends ListRecords
 {
     protected static string $resource = JobsFailedResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [
             Action::make('retry_all')

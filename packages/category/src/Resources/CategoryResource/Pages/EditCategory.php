@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Category\Resources\CategoryResource\Pages;
 
+use Override;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Category\Resources\CategoryResource;
@@ -19,6 +20,7 @@ class EditCategory extends EditRecord
         ];
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

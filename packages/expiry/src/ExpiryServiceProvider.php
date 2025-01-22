@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Expiry;
 
+use Override;
 use Moox\Expiry\Commands\EscalatedExpiriesCommand;
 use Moox\Expiry\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -22,14 +23,15 @@ class ExpiryServiceProvider extends PackageServiceProvider
             ->hasCommands(InstallCommand::class, EscalatedExpiriesCommand::class);
     }
 
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         parent::boot();
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'expiry');
     }
 
-    public function packageRegistered()
+    public function packageRegistered(): void
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
     }

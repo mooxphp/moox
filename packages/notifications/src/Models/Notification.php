@@ -2,6 +2,7 @@
 
 namespace Moox\Notification\Models;
 
+use Override;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -14,11 +15,12 @@ class Notification extends Model
 
     public $incrementing = false;
 
+    #[Override]
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             if (empty($model->id)) {
                 $model->id = (string) Str::uuid();
             }

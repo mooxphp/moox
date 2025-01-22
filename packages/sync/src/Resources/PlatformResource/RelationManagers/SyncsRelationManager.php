@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Resources\PlatformResource\RelationManagers;
 
+use Override;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -21,6 +22,7 @@ class SyncsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'syncable_type';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([

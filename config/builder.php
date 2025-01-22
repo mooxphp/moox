@@ -1,5 +1,18 @@
 <?php
 
+use Moox\Builder\Presets\LightItemPreset;
+use Moox\Builder\Presets\SimpleItemPreset;
+use Moox\Builder\Presets\SoftDeleteItemPreset;
+use Moox\Builder\Presets\FullItemPreset;
+use App\Builder\Presets\StaticLanguagePreset;
+use Moox\Category\Models\Category;
+use Moox\Category\Forms\TaxonomyCreateForm;
+use Moox\Tag\Models\Tag;
+use Moox\Room\Models\Room;
+use Moox\Brand\Forms\RelationCreateForm;
+use Moox\Booking\Models\Booking;
+use Moox\User\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,28 +27,27 @@
 | outputs 'All'
 |
 */
-
 return [
 
     'presets' => [
         'light-item' => [
-            'class' => \Moox\Builder\Presets\LightItemPreset::class,
+            'class' => LightItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'simple-item' => [
-            'class' => \Moox\Builder\Presets\SimpleItemPreset::class,
+            'class' => SimpleItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'soft-delete-item' => [
-            'class' => \Moox\Builder\Presets\SoftDeleteItemPreset::class,
+            'class' => SoftDeleteItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'full-item' => [
-            'class' => \Moox\Builder\Presets\FullItemPreset::class,
+            'class' => FullItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
         'static-language' => [
-            'class' => \App\Builder\Presets\StaticLanguagePreset::class,
+            'class' => StaticLanguagePreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
     ],
@@ -94,9 +106,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
+                            'value' => fn() => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -112,9 +122,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
+                            'value' => fn() => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -165,17 +173,17 @@ return [
             'taxonomies' => [
                 'categories' => [
                     'label' => 'Categories',
-                    'model' => \Moox\Category\Models\Category::class,
+                    'model' => Category::class,
                     'table' => 'categorizables',
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
-                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'createForm' => TaxonomyCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'tags' => [
                     'label' => 'Tags',
-                    'model' => \Moox\Tag\Models\Tag::class,
+                    'model' => Tag::class,
                     'table' => 'taggables',
                     'relationship' => 'taggable',
                     'foreignKey' => 'taggable_id',
@@ -228,9 +236,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '<=',
-                            'value' => function () {
-                                return now();
-                            },
+                            'value' => fn() => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -246,9 +252,7 @@ return [
                         [
                             'field' => 'publish_at',
                             'operator' => '>',
-                            'value' => function () {
-                                return now();
-                            },
+                            'value' => fn() => now(),
                         ],
                         [
                             'field' => 'deleted_at',
@@ -299,17 +303,17 @@ return [
             'taxonomies' => [
                 'categories' => [
                     'label' => 'Categories',
-                    'model' => \Moox\Category\Models\Category::class,
+                    'model' => Category::class,
                     'table' => 'categorizables',
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
-                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'createForm' => TaxonomyCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'tags' => [
                     'label' => 'Tags',
-                    'model' => \Moox\Tag\Models\Tag::class,
+                    'model' => Tag::class,
                     'table' => 'taggables',
                     'relationship' => 'taggable',
                     'foreignKey' => 'taggable_id',
@@ -420,17 +424,17 @@ return [
             'taxonomies' => [
                 'categories' => [
                     'label' => 'Categories',
-                    'model' => \Moox\Category\Models\Category::class,
+                    'model' => Category::class,
                     'table' => 'categorizables',
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
-                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'createForm' => TaxonomyCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'tags' => [
                     'label' => 'Tags',
-                    'model' => \Moox\Tag\Models\Tag::class,
+                    'model' => Tag::class,
                     'table' => 'taggables',
                     'relationship' => 'taggable',
                     'foreignKey' => 'taggable_id',
@@ -502,17 +506,17 @@ return [
             'taxonomies' => [
                 'categories' => [
                     'label' => 'Categories',
-                    'model' => \Moox\Category\Models\Category::class,
+                    'model' => Category::class,
                     'table' => 'categorizables',
                     'relationship' => 'categorizable',
                     'foreignKey' => 'categorizable_id',
                     'relatedKey' => 'category_id',
-                    'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
+                    'createForm' => TaxonomyCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'tags' => [
                     'label' => 'Tags',
-                    'model' => \Moox\Tag\Models\Tag::class,
+                    'model' => Tag::class,
                     'table' => 'taggables',
                     'relationship' => 'taggable',
                     'foreignKey' => 'taggable_id',
@@ -534,18 +538,18 @@ return [
             'relations' => [
                 'rooms' => [
                     'label' => 'Rooms',
-                    'model' => \Moox\Room\Models\Room::class,
+                    'model' => Room::class,
                     'table' => 'roomables',
                     'type' => 'has-many',
                     'relationship' => 'roomable',
                     'foreignKey' => 'roomable_id',
                     'relatedKey' => 'room_id',
-                    'createForm' => \Moox\Brand\Forms\RelationCreateForm::class,
+                    'createForm' => RelationCreateForm::class,
                     'hierarchical' => true,
                 ],
                 'bookings' => [
                     'label' => 'Bookings',
-                    'model' => \Moox\Booking\Models\Booking::class,
+                    'model' => Booking::class,
                     'table' => 'bookings',
                     'type' => 'has-many',
                     'relationship' => 'bookable',
@@ -610,7 +614,7 @@ return [
     |
     */
 
-    'user_model' => \Moox\User\Models\User::class,
+    'user_model' => User::class,
 
     /*
     |--------------------------------------------------------------------------

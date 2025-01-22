@@ -204,6 +204,7 @@ abstract class AbstractBlock
             if (! isset($current[$part])) {
                 return [];
             }
+
             $current = $current[$part];
         }
 
@@ -230,6 +231,7 @@ abstract class AbstractBlock
             if (! isset($current[$part])) {
                 return [];
             }
+
             $current = $current[$part];
         }
 
@@ -312,9 +314,11 @@ abstract class AbstractBlock
         if (! isset($this->casts['model'])) {
             $this->casts['model'] = [];
         }
+
         if (! is_array($this->casts['model'])) {
             $this->casts['model'] = [$this->casts['model']];
         }
+
         $this->casts['model'][] = $cast;
 
         return $this;
@@ -354,7 +358,7 @@ abstract class AbstractBlock
 
     protected function addMethod(string $context, string $method, string $type = ''): self
     {
-        if ($type) {
+        if ($type !== '' && $type !== '0') {
             $this->methods[$context][$type][] = $method;
         } else {
             $this->methods[$context][] = $method;
@@ -400,7 +404,7 @@ abstract class AbstractBlock
 
     protected function addPageAction(string $page, string $action, string $position = ''): self
     {
-        if ($position) {
+        if ($position !== '' && $position !== '0') {
             $this->actions['pages'][$page][$position][] = $action;
         } else {
             $this->actions['pages'][$page][] = $action;
@@ -468,7 +472,7 @@ abstract class AbstractBlock
                 foreach ($block->includedBlocks as $includedBlock) {
                     $resolvedBlocks = array_filter(
                         $resolvedBlocks,
-                        fn ($b) => ! ($b instanceof $includedBlock)
+                        fn ($b): bool => ! ($b instanceof $includedBlock)
                     );
                 }
             }
@@ -538,7 +542,7 @@ abstract class AbstractBlock
     protected function flattenArray(array $array): array
     {
         $result = [];
-        array_walk_recursive($array, function ($value) use (&$result) {
+        array_walk_recursive($array, function ($value) use (&$result): void {
             if (is_string($value)) {
                 $result[] = $value;
             }
@@ -564,17 +568,17 @@ abstract class AbstractBlock
 
     public function getPageActions(string $page): array
     {
-        return $this->getActions("pages.{$page}");
+        return $this->getActions('pages.' . $page);
     }
 
     public function getHeaderActions(string $page): array
     {
-        return $this->getActions("pages.{$page}.header");
+        return $this->getActions(sprintf('pages.%s.header', $page));
     }
 
     public function getFooterActions(string $page): array
     {
-        return $this->getActions("pages.{$page}.footer");
+        return $this->getActions(sprintf('pages.%s.footer', $page));
     }
 
     public function getActions(string $path): array
@@ -586,6 +590,7 @@ abstract class AbstractBlock
             if (! isset($current[$part])) {
                 return [];
             }
+
             $current = $current[$part];
         }
 
@@ -789,7 +794,7 @@ abstract class AbstractBlock
 
     public function getSections(): array
     {
-        Log::info('Getting sections for: '.get_class($this));
+        Log::info('Getting sections for: '.static::class);
         Log::info('Current sections structure', ['sections' => $this->sections]);
 
         // Migrate old fields to sections if they exist
@@ -816,6 +821,7 @@ abstract class AbstractBlock
         if (! isset($this->sections['form'])) {
             $this->addSection('form')->withFields([]);
         }
+
         $this->sections['form']['fields'][] = $field;
     }
 
@@ -825,6 +831,7 @@ abstract class AbstractBlock
         if (! isset($this->sections['meta'])) {
             $this->addSection('meta')->asMeta()->withFields([]);
         }
+
         $this->sections['meta']['fields'][] = $field;
     }
 

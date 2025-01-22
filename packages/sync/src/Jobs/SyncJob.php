@@ -2,6 +2,10 @@
 
 namespace Moox\Sync\Jobs;
 
+use DateTimeInterface;
+use Carbon\WeekDay;
+use Carbon\Month;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,53 +19,36 @@ use Moox\Sync\Models\Platform;
 
 class SyncJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
-
-    protected $modelClass;
-
-    protected $modelData;
-
-    protected $eventType;
-
-    protected $sourcePlatform;
-
-    protected $targetPlatform;
-
-    protected $shouldDelete;
-
-    public function __construct($modelClass, $modelData, $eventType, Platform $sourcePlatform, Platform $targetPlatform, bool $shouldDelete)
+    use Dispatchable;
+    use InteractsWithQueue;
+    use LogLevel;
+    use Queueable;
+    use SerializesModels;
+    public function __construct(protected $modelClass, protected $modelData, protected $eventType, protected Platform $sourcePlatform, protected Platform $targetPlatform, protected bool $shouldDelete)
     {
-        $this->modelClass = $modelClass;
-        $this->modelData = $modelData;
-        $this->eventType = $eventType;
-        $this->sourcePlatform = $sourcePlatform;
-        $this->targetPlatform = $targetPlatform;
-        $this->shouldDelete = $shouldDelete;
     }
 
-    public function handle()
+    public function handle(): void
     {
         try {
             if ($this->shouldDelete) {
                 $this->deleteModel();
-            } else {
+            } elseif ($this->modelClass === Platform::class) {
                 // Existing sync logic
-                if ($this->modelClass === Platform::class) {
-                    $this->syncPlatform();
-                } else {
-                    $this->syncModel();
-                }
+                $this->syncPlatform();
+            } else {
+                $this->syncModel();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             Log::error('Moox Sync: Error syncing model', [
                 'model_class' => $this->modelClass,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
                 'source_platform' => $this->sourcePlatform->id,
                 'target_platform' => $this->targetPlatform->id,
                 'should_delete' => $this->shouldDelete,
             ]);
-            throw $e;
+            throw $exception;
         }
     }
 
@@ -92,7 +79,7 @@ class SyncJob implements ShouldQueue
 
     protected function syncModel()
     {
-        $handlerClass = config("sync.sync_bindings.{$this->modelClass}");
+        $handlerClass = config('sync.sync_bindings.' . $this->modelClass);
 
         if ($handlerClass && class_exists($handlerClass)) {
             $handler = new $handlerClass($this->modelClass, $this->modelData, $this->eventType);
@@ -134,7 +121,7 @@ class SyncJob implements ShouldQueue
         return $data;
     }
 
-    protected function formatDatetime($dateString)
+    protected function formatDatetime(DateTimeInterface|WeekDay|Month|string|int|float|null $dateString): string
     {
         return Carbon::parse($dateString)->format('Y-m-d H:i:s');
     }
@@ -157,6 +144,6 @@ class SyncJob implements ShouldQueue
             'model_data' => $this->modelData,
         ]);
 
-        throw new \Exception('No valid identifier found for the model');
+        throw new Exception('No valid identifier found for the model');
     }
 }

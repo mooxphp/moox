@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Resources\PlatformResource\Pages;
 
+use Override;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
@@ -16,11 +17,12 @@ class ListPlatforms extends ListRecords
 
     public static string $resource = PlatformResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('sync::translations.platforms');
@@ -30,13 +32,11 @@ class ListPlatforms extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Platform {
-                    return $model::create($data);
-                }),
+                ->using(fn(array $data, string $model): Platform => $model::create($data)),
             // TODO: make configurable, raise the job frequency then to hourly
             Action::make('Sync Platforms')
                 ->label('Sync Platforms')
-                ->action(function () {
+                ->action(function (): void {
                     SyncPlatformJob::dispatch();
                 })
                 ->requiresConfirmation()

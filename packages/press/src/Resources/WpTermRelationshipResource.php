@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpTermRelationshipResource\Pages\ListWpTermRelationships;
+use Moox\Press\Resources\WpTermRelationshipResource\Pages\CreateWpTermRelationship;
+use Moox\Press\Resources\WpTermRelationshipResource\Pages\ViewWpTermRelationship;
+use Moox\Press\Resources\WpTermRelationshipResource\Pages\EditWpTermRelationship;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -19,14 +25,15 @@ use Moox\Press\Resources\WpTermRelationshipResource\Pages;
 
 class WpTermRelationshipResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpTermRelationship::class;
 
     protected static ?string $navigationIcon = 'gmdi-category-o';
 
     protected static ?string $recordTitleAttribute = 'object_id';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -57,17 +64,18 @@ class WpTermRelationshipResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('term_taxonomy_id')
+                TextColumn::make('term_taxonomy_id')
                     ->label(__('core::core.term_taxonomy_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('term_order')
+                TextColumn::make('term_order')
                     ->label(__('core::core.term_order'))
                     ->toggleable()
                     ->searchable(true, null, true),
@@ -76,46 +84,54 @@ class WpTermRelationshipResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTermRelationships::route('/'),
-            'create' => Pages\CreateWpTermRelationship::route('/create'),
-            'view' => Pages\ViewWpTermRelationship::route('/{record}'),
-            'edit' => Pages\EditWpTermRelationship::route('/{record}/edit'),
+            'index' => ListWpTermRelationships::route('/'),
+            'create' => CreateWpTermRelationship::route('/create'),
+            'view' => ViewWpTermRelationship::route('/{record}'),
+            'edit' => EditWpTermRelationship::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.termRelationships.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.termRelationships.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.termRelationships.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.termRelationships.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.meta_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.meta_navigation_sort') + 4;

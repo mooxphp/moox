@@ -35,7 +35,7 @@
 |
 */
 
-function something()
+function something(): void
 {
     // ..
 }

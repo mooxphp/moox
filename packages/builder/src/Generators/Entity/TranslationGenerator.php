@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use InvalidArgumentException;
 use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
@@ -61,7 +62,7 @@ class TranslationGenerator extends AbstractGenerator
                 'app' => 'entities',
                 'preview' => 'previews',
                 'package' => $this->getPackageName(),
-                default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+                default => throw new InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
             };
         }
 
@@ -69,7 +70,7 @@ class TranslationGenerator extends AbstractGenerator
             'app' => lang_path(config('app.locale', 'en').'/entities/'.$entityFile.'.php'),
             'preview' => lang_path(config('app.locale', 'en').'/previews/'.$entityFile.'.php'),
             'package' => $this->context->getPath('translation').'/'.$entityFile.'.php',
-            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+            default => throw new InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
         };
     }
 

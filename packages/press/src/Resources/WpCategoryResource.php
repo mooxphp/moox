@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpCategoryResource\Pages\ListWpCategories;
+use Moox\Press\Resources\WpCategoryResource\Pages\CreateWpCategory;
+use Moox\Press\Resources\WpCategoryResource\Pages\ViewWpCategory;
+use Moox\Press\Resources\WpCategoryResource\Pages\EditWpCategory;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -22,14 +28,15 @@ use Moox\Press\Resources\WpCategoryResource\Pages;
 
 class WpCategoryResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpCategory::class;
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -101,35 +108,36 @@ class WpCategoryResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('core::core.name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label(__('core::core.description'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('parent')
+                TextColumn::make('parent')
                     ->label(__('core::core.parent'))
                     ->toggleable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('count')
+                TextColumn::make('count')
                     ->label(__('core::core.count'))
                     ->toggleable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('term_group')
+                TextColumn::make('term_group')
                     ->label(__('core::core.term_group'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
@@ -139,46 +147,54 @@ class WpCategoryResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpCategories::route('/'),
-            'create' => Pages\CreateWpCategory::route('/create'),
-            'view' => Pages\ViewWpCategory::route('/{record}'),
-            'edit' => Pages\EditWpCategory::route('/{record}/edit'),
+            'index' => ListWpCategories::route('/'),
+            'create' => CreateWpCategory::route('/create'),
+            'view' => ViewWpCategory::route('/{record}'),
+            'edit' => EditWpCategory::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.category.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.category.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.category.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.category.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.press_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 4;

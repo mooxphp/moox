@@ -2,6 +2,7 @@
 
 namespace Moox\Press\Models;
 
+use Override;
 use Awobaz\Mutator\Mutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,8 +19,8 @@ use Illuminate\Support\Str;
  */
 class WpBasePost extends Model
 {
-    use HasFactory, Mutable;
-
+    use HasFactory;
+    use Mutable;
     protected $fillable = [
         'post_author',
         'post_date',
@@ -45,13 +46,18 @@ class WpBasePost extends Model
         'comment_count',
     ];
 
-    protected $appends;
+    protected $appends = [
+        'verantwortlicher',
+        'gultig_bis',
+        'turnus',
+        'fruhwarnung',
+    ];
 
     protected $wpPrefix;
 
     protected $table;
 
-    protected $metatable;
+    protected string $metatable;
 
     protected $primaryKey = 'ID';
 
@@ -67,15 +73,10 @@ class WpBasePost extends Model
         $this->wpPrefix = config('press.wordpress_prefix');
         $this->table = $this->wpPrefix.'posts';
         $this->metatable = $this->wpPrefix.'postmeta';
-        $this->appends = [
-            'verantwortlicher',
-            'gultig_bis',
-            'turnus',
-            'fruhwarnung',
-        ];
         $this->initializeMetaField();
     }
 
+    #[Override]
     protected static function boot()
     {
         parent::boot();
@@ -93,13 +94,14 @@ class WpBasePost extends Model
         if ($this->metaFieldsInitialized) {
             return;
         }
+
         $this->metaFieldsInitialized = true;
     }
 
     public function metaKey($key)
     {
         if (! Str::startsWith($key, $this->wpPrefix)) {
-            $key = "{$this->wpPrefix}{$key}";
+            $key = $this->wpPrefix . $key;
         }
 
         return $this->getMeta($key);
@@ -110,6 +112,7 @@ class WpBasePost extends Model
         if (! $this->relationLoaded('postMeta')) {
             $this->load('postMeta');
         }
+
         $meta = $this->postMeta->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;
@@ -139,6 +142,7 @@ class WpBasePost extends Model
         return $this;
     }
 
+    #[Override]
     public function toArray()
     {
         $attributes = parent::toArray();
@@ -151,6 +155,7 @@ class WpBasePost extends Model
         return $attributes;
     }
 
+    #[Override]
     public function toJson($options = 0)
     {
         return json_encode($this->toArray(), $options);
@@ -164,7 +169,7 @@ class WpBasePost extends Model
         );
     }
 
-    protected function isMetaField($key)
+    protected function isMetaField($key): bool
     {
         return array_key_exists($key, config('press.default_post_meta', []));
     }
@@ -211,7 +216,7 @@ class WpBasePost extends Model
         return $this->getMeta('verantwortlicher') ?? null;
     }
 
-    public function setVerantwortlicherAttribute($value)
+    public function setVerantwortlicherAttribute($value): void
     {
         $this->addOrUpdateMeta('verantwortlicher', $value);
     }
@@ -221,7 +226,7 @@ class WpBasePost extends Model
         return $this->getMeta('gultig_bis') ?? null;
     }
 
-    public function setGultigBisAttribute($value)
+    public function setGultigBisAttribute($value): void
     {
         $this->addOrUpdateMeta('gultig_bis', $value);
     }
@@ -231,7 +236,7 @@ class WpBasePost extends Model
         return $this->getMeta('turnus') ?? null;
     }
 
-    public function setTurnusAttribute($value)
+    public function setTurnusAttribute($value): void
     {
         $this->addOrUpdateMeta('turnus', $value);
     }
@@ -241,7 +246,7 @@ class WpBasePost extends Model
         return $this->getMeta('fruhwarnung') ?? null;
     }
 
-    public function setFruhwarnungAttribute($value)
+    public function setFruhwarnungAttribute($value): void
     {
         $this->addOrUpdateMeta('fruhwarnung', $value);
     }

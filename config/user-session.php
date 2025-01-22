@@ -1,5 +1,9 @@
 <?php
 
+use Moox\User\Models\User;
+use Moox\Press\Models\WpUser;
+use Moox\UserDevice\Models\UserDevice;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +18,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -65,9 +68,7 @@ return [
                         [
                             'field' => 'user_id',
                             'operator' => '=',
-                            'value' => function () {
-                                return auth()->user()->id;
-                            },
+                            'value' => fn() => auth()->user()->id,
                         ],
                     ],
                 ],
@@ -78,7 +79,7 @@ return [
                         [
                             'field' => 'user_type',
                             'operator' => '=',
-                            'value' => 'Moox\User\Models\User',
+                            'value' => User::class,
                             // TODO: Not implemented yet
                             'hide-if-not-exists' => true,
                         ],
@@ -91,7 +92,7 @@ return [
                         [
                             'field' => 'user_type',
                             'operator' => '=',
-                            'value' => 'Moox\Press\Models\WpUser',
+                            'value' => WpUser::class,
                             // TODO: Not implemented yet
                             'hide-if-not-exists' => true,
                         ],
@@ -144,9 +145,9 @@ return [
     */
     'user_models' => [
         'App Users' => \App\Models\User::class,
-        'Moox Users' => \Moox\User\Models\User::class,
+        'Moox Users' => User::class,
     ],
-    'device_model' => \Moox\UserDevice\Models\UserDevice::class,
+    'device_model' => UserDevice::class,
 
     /*
     | Session expiry for different scopes, currently not implemented!

@@ -2,6 +2,8 @@
 
 namespace Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -21,6 +23,7 @@ class WpCommentRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([
@@ -184,69 +187,69 @@ class WpCommentRelationManager extends RelationManager
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('comment_post_ID')
+                TextColumn::make('comment_post_ID')
                     ->label(__('core::comment.comment_post_ID'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author')
+                TextColumn::make('comment_author')
                     ->label(__('core::comment.comment_author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author_email')
+                TextColumn::make('comment_author_email')
                     ->label(__('core::comment.comment_author_email'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author_url')
+                TextColumn::make('comment_author_url')
                     ->label(__('core::comment.comment_author_email'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author_IP')
+                TextColumn::make('comment_author_IP')
                     ->label(__('core::comment.comment_author_IP'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_date')
+                TextColumn::make('comment_date')
                     ->label(__('core::comment.comment_date'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('comment_date_gmt')
+                TextColumn::make('comment_date_gmt')
                     ->label(__('core::comment.comment_date_gmt'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('comment_content')
+                TextColumn::make('comment_content')
                     ->label(__('core::comment.comment_contet'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_karma')
+                TextColumn::make('comment_karma')
                     ->label(__('core::comment.comment_karma'))
                     ->toggleable()
                     ->searchable(true, null, true),
-                Tables\Columns\TextColumn::make('comment_approved')
+                TextColumn::make('comment_approved')
                     ->label(__('core::comment.comment_approved'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_agent')
+                TextColumn::make('comment_agent')
                     ->label(__('core::comment.comment_agent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_type')
+                TextColumn::make('comment_type')
                     ->label(__('core::comment.comment_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_parent')
+                TextColumn::make('comment_parent')
                     ->label(__('core::comment.comment_parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('user_id')
+                TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
                     ->toggleable()
                     ->searchable(true, null, true)

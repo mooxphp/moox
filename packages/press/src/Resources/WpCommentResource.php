@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpCommentResource\Pages\ListWpComments;
+use Moox\Press\Resources\WpCommentResource\Pages\CreateWpComment;
+use Moox\Press\Resources\WpCommentResource\Pages\ViewWpComment;
+use Moox\Press\Resources\WpCommentResource\Pages\EditWpComment;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -22,14 +28,15 @@ use Moox\Press\Resources\WpCommentResource\RelationManagers\WpCommentMetaRelatio
 
 class WpCommentResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpComment::class;
 
     protected static ?string $navigationIcon = 'gmdi-comment';
 
     protected static ?string $recordTitleAttribute = 'comment_author';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -189,74 +196,75 @@ class WpCommentResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('comment_post_ID')
+                TextColumn::make('comment_post_ID')
                     ->label(__('core::comment.comment_post_ID'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author')
+                TextColumn::make('comment_author')
                     ->label(__('core::comment.comment_author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author_email')
+                TextColumn::make('comment_author_email')
                     ->label(__('core::comment.comment_author_email'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author_url')
+                TextColumn::make('comment_author_url')
                     ->label(__('core::comment.comment_author_url'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_author_IP')
+                TextColumn::make('comment_author_IP')
                     ->label(__('core::comment.comment_author_IP'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_date')
+                TextColumn::make('comment_date')
                     ->label(__('core::comment.comment_date'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('comment_date_gmt')
+                TextColumn::make('comment_date_gmt')
                     ->label(__('core::comment.comment_date_gmt'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('comment_content')
+                TextColumn::make('comment_content')
                     ->label(__('core::comment.comment_content'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_karma')
+                TextColumn::make('comment_karma')
                     ->label(__('core::comment.comment_karma'))
                     ->toggleable()
                     ->searchable(true, null, true),
-                Tables\Columns\TextColumn::make('comment_approved')
+                TextColumn::make('comment_approved')
                     ->label(__('core::comment.comment_approved'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_agent')
+                TextColumn::make('comment_agent')
                     ->label(__('core::comment.comment_agent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_type')
+                TextColumn::make('comment_type')
                     ->label(__('core::comment.comment_type'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_parent')
+                TextColumn::make('comment_parent')
                     ->label(__('core::comment.comment_parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('user_id')
+                TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -266,6 +274,7 @@ class WpCommentResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -273,41 +282,48 @@ class WpCommentResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpComments::route('/'),
-            'create' => Pages\CreateWpComment::route('/create'),
-            'view' => Pages\ViewWpComment::route('/{record}'),
-            'edit' => Pages\EditWpComment::route('/{record}/edit'),
+            'index' => ListWpComments::route('/'),
+            'create' => CreateWpComment::route('/create'),
+            'view' => ViewWpComment::route('/{record}'),
+            'edit' => EditWpComment::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.comment.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.comment.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.comment.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.comment.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.press_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 6;

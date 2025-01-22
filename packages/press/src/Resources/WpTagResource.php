@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpTagResource\Pages\ListWpTags;
+use Moox\Press\Resources\WpTagResource\Pages\CreateWpTag;
+use Moox\Press\Resources\WpTagResource\Pages\ViewWpTag;
+use Moox\Press\Resources\WpTagResource\Pages\EditWpTag;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
@@ -20,22 +26,24 @@ use Moox\Press\Resources\WpTagResource\Pages;
 
 class WpTagResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpTerm::class;
 
     protected static ?string $navigationIcon = 'gmdi-label';
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('termTaxonomy', function ($query) {
+            ->whereHas('termTaxonomy', function ($query): void {
                 $query->where('taxonomy', 'post_tag');
             });
     }
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -76,22 +84,23 @@ class WpTagResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('core::core.name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('term_group')
+                TextColumn::make('term_group')
                     ->label(__('core::core.term_group'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -101,46 +110,54 @@ class WpTagResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTags::route('/'),
-            'create' => Pages\CreateWpTag::route('/create'),
-            'view' => Pages\ViewWpTag::route('/{record}'),
-            'edit' => Pages\EditWpTag::route('/{record}/edit'),
+            'index' => ListWpTags::route('/'),
+            'create' => CreateWpTag::route('/create'),
+            'view' => ViewWpTag::route('/{record}'),
+            'edit' => EditWpTag::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.tag.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.tag.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.tag.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.tag.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.press_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 5;

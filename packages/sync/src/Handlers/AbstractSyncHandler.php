@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Handlers;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Traits\LogLevel;
 
@@ -9,20 +10,11 @@ abstract class AbstractSyncHandler
 {
     use LogLevel;
 
-    protected $modelClass;
-
-    protected $modelData;
-
-    protected $eventType;
-
-    public function __construct(string $modelClass, array $modelData, string $eventType)
+    public function __construct(protected string $modelClass, protected array $modelData, protected string $eventType)
     {
-        $this->modelClass = $modelClass;
-        $this->modelData = $modelData;
-        $this->eventType = $eventType;
     }
 
-    public function handle()
+    public function handle(): void
     {
         DB::beginTransaction();
 
@@ -40,13 +32,13 @@ abstract class AbstractSyncHandler
 
             DB::commit();
             $this->logInfo('Moox Sync: Sync process completed successfully');
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             DB::rollBack();
-            $this->logDebug('Moox Sync: Sync failed: '.$e->getMessage(), [
+            $this->logDebug('Moox Sync: Sync failed: '.$exception->getMessage(), [
                 'model_class' => $this->modelClass,
-                'trace' => $e->getTraceAsString(),
+                'trace' => $exception->getTraceAsString(),
             ]);
-            throw $e;
+            throw $exception;
         }
     }
 

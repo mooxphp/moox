@@ -18,7 +18,7 @@ abstract class ContextAwareService
 
     protected function ensureContextIsSet(): void
     {
-        if (! $this->context) {
+        if (!$this->context instanceof BuildContext) {
             throw new RuntimeException('Context must be set before execution');
         }
     }
@@ -47,14 +47,14 @@ abstract class ContextAwareService
 
         if (! isset($config['base_path'], $config['base_namespace'], $config['generators'])) {
             throw new RuntimeException(
-                "Missing required configuration for context {$contextType}"
+                'Missing required configuration for context ' . $contextType
             );
         }
 
         foreach ($config['generators'] as $type => $genConfig) {
             if (! isset($genConfig['path'])) {
                 throw new RuntimeException(
-                    "Missing path configuration for generator {$type} in context {$contextType}"
+                    sprintf('Missing path configuration for generator %s in context %s', $type, $contextType)
                 );
             }
         }

@@ -18,7 +18,7 @@ class PresetRegistry
         $presetConfig = config('builder.presets.'.$name);
 
         if (! $presetConfig || ! isset($presetConfig['class'])) {
-            throw new RuntimeException("Preset {$name} not found in configuration");
+            throw new RuntimeException(sprintf('Preset %s not found in configuration', $name));
         }
 
         $presetClass = $presetConfig['class'];
@@ -33,16 +33,16 @@ class PresetRegistry
 
     public static function getPresetBlocks(string $presetName): array
     {
-        $presetConfig = config("builder.presets.{$presetName}");
+        $presetConfig = config('builder.presets.' . $presetName);
 
         if (! $presetConfig) {
-            throw new RuntimeException("Preset '{$presetName}' not found in configuration");
+            throw new RuntimeException(sprintf("Preset '%s' not found in configuration", $presetName));
         }
 
         $presetClass = $presetConfig['class'];
 
         if (! class_exists($presetClass)) {
-            throw new RuntimeException("Preset class not found: {$presetClass}");
+            throw new RuntimeException('Preset class not found: ' . $presetClass);
         }
 
         $preset = new $presetClass;
@@ -50,8 +50,8 @@ class PresetRegistry
 
         if (empty($blocks)) {
             throw new RuntimeException(
-                "Preset '{$presetName}' initialization failed. ".
-                "Class: {$presetClass}"
+                sprintf("Preset '%s' initialization failed. ", $presetName).
+                ('Class: ' . $presetClass)
             );
         }
 
@@ -60,10 +60,10 @@ class PresetRegistry
 
     public static function getPresetGenerators(string $presetName): array
     {
-        $presetConfig = config("builder.presets.{$presetName}");
+        $presetConfig = config('builder.presets.' . $presetName);
 
         if (! $presetConfig) {
-            throw new RuntimeException("Preset '{$presetName}' not found in configuration");
+            throw new RuntimeException(sprintf("Preset '%s' not found in configuration", $presetName));
         }
 
         return $presetConfig['generators'] ?? [];

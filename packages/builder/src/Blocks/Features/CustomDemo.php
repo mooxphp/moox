@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Blocks\Features;
 
+use Moox\Core\Traits\Publish\SinglePublishInModel;
+use Moox\Core\Traits\Publish\SinglePublishInResource;
+use Moox\Core\Traits\Publish\SinglePublishInListPage;
 use Moox\Builder\Blocks\AbstractBlock;
 use Moox\Builder\Blocks\Singles\Simple;
 use Moox\Builder\Blocks\Singles\SoftDelete;
@@ -42,9 +45,9 @@ class CustomDemo extends AbstractBlock
             ],
         ];
 
-        $this->traits['model'] = ['Moox\Core\Traits\Publish\SinglePublishInModel'];
-        $this->traits['resource'] = ['Moox\Core\Traits\Publish\SinglePublishInResource'];
-        $this->traits['pages']['list'] = ['Moox\Core\Traits\Publish\SinglePublishInListPage'];
+        $this->traits['model'] = [SinglePublishInModel::class];
+        $this->traits['resource'] = [SinglePublishInResource::class];
+        $this->traits['pages']['list'] = [SinglePublishInListPage::class];
 
         $this->methods['model'] = [
             'scopes' => [

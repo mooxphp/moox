@@ -51,7 +51,7 @@ class WpUserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($id): WpUserResource
     {
         $user = WpUser::with('userMeta')->findOrFail($id);
 
@@ -64,8 +64,8 @@ class WpUserController extends Controller
     public function update(Request $request, $id)
     {
         $wpUser = new WpUser;
-        $wpUserData = $request->only($wpUser->getFillable());
-        $wpUserMeta = $request->except($wpUser->getFillable());
+        $request->only($wpUser->getFillable());
+        $request->except($wpUser->getFillable());
 
         $validator = Validator::make($request->all(), [
             'user_login' => 'required|string|max:255',

@@ -2,6 +2,15 @@
 
 namespace Moox\Training\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Training\Resources\TrainingInvitationResource\RelationManagers\TrainingDatesRelationManager;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\ListTrainingInvitations;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\CreateTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\ViewTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\EditTrainingInvitation;
+use Moox\Training\Resources\TrainingInvitationResource\Pages\PrepareTrainingInvitation;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -32,6 +41,7 @@ class TrainingInvitationResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -83,27 +93,28 @@ class TrainingInvitationResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('training.title')
+                TextColumn::make('training.title')
                     ->toggleable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('title')
-                    ->toggleable()
-                    ->searchable()
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('title')
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('content')
+                TextColumn::make('slug')
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('content')
+                    ->toggleable()
+                    ->searchable()
+                    ->limit(50),
+                TextColumn::make('status')
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
@@ -119,8 +130,8 @@ class TrainingInvitationResource extends Resource
             ])
             ->actions([EditAction::make()])
             ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
-                    ->action(function ($records, Tables\Actions\DeleteBulkAction $action) {
+                DeleteBulkAction::make()
+                    ->action(function ($records, DeleteBulkAction $action): void {
                         foreach ($records as $record) {
                             try {
                                 $record->delete();
@@ -145,24 +156,27 @@ class TrainingInvitationResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
-            TrainingInvitationResource\RelationManagers\TrainingDatesRelationManager::class,
+            TrainingDatesRelationManager::class,
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTrainingInvitations::route('/'),
-            'create' => Pages\CreateTrainingInvitation::route('/create'),
-            'view' => Pages\ViewTrainingInvitation::route('/{record}'),
-            'edit' => Pages\EditTrainingInvitation::route('/{record}/edit'),
-            'prepare' => Pages\PrepareTrainingInvitation::route('/{record}/prepare'),
+            'index' => ListTrainingInvitations::route('/'),
+            'create' => CreateTrainingInvitation::route('/create'),
+            'view' => ViewTrainingInvitation::route('/{record}'),
+            'edit' => EditTrainingInvitation::route('/{record}/edit'),
+            'prepare' => PrepareTrainingInvitation::route('/{record}/prepare'),
         ];
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('trainings.navigation_sort') + 1;

@@ -4,11 +4,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('web')->group(function () {
+Route::middleware('web')->group(function (): void {
     if (config('press.redirect_index') === true) {
-        Route::get('/', function () {
-            return Redirect::to('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug'));
-        });
+        Route::get('/', fn() => Redirect::to('https://'.$_SERVER['SERVER_NAME'].config('press.wordpress_slug')));
     }
 
     if (config('press.redirect_logout') === true) {
@@ -34,7 +32,7 @@ Route::middleware('web')->group(function () {
     // this must be the last route
     if (config('press.redirect_to_wp') === true) {
         Route::any('{any}', function ($any) {
-            if (! str_contains(request()->server()['REQUEST_URI'], config('press.wordpress_slug').'/')) {
+            if (! str_contains((string) request()->server()['REQUEST_URI'], config('press.wordpress_slug').'/')) {
                 return redirect('/wp/'.ltrim(request()->path(), '/'));
             }
         })->where('any', '.*');

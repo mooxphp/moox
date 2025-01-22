@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources\TagResource\Pages;
 
+use Override;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -22,6 +23,7 @@ class ViewTag extends ViewRecord
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         $title = parent::getTitle();

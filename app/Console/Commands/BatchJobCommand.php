@@ -16,7 +16,7 @@ class BatchJobCommand extends Command
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(): void
     {
         $this->info('Starting Moox Batch Job');
 

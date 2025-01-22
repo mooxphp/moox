@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Resources\SimpleItemResource\Pages;
 
+use Override;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleItem;
@@ -23,6 +24,7 @@ class ListSimpleItems extends ListRecords
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('builder.resources.simple-item.plural');

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Press;
 
+use Override;
 use Illuminate\Support\Facades\Auth;
 use Moox\Press\Commands\InstallCommand;
 use Moox\Press\Commands\InstallWordPress;
@@ -31,12 +32,11 @@ class PressServiceProvider extends PackageServiceProvider
             );
     }
 
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         parent::boot();
 
-        Auth::provider('wpuser-provider', function ($app, array $config) {
-            return new WordPressUserProvider($app['hash'], $config['model']);
-        });
+        Auth::provider('wpuser-provider', fn($app, array $config): WordPressUserProvider => new WordPressUserProvider($app['hash'], $config['model']));
     }
 }

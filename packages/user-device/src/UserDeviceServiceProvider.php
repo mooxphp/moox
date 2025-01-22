@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\UserDevice;
 
+use Override;
 use Moox\UserDevice\Commands\InstallCommand;
 use Moox\UserDevice\Services\LocationService;
 use Moox\UserDevice\Services\UserDeviceTracker;
@@ -23,16 +24,13 @@ class UserDeviceServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
-    public function register()
+    #[Override]
+    public function register(): void
     {
         parent::register();
 
-        $this->app->singleton(LocationService::class, function ($app) {
-            return new LocationService;
-        });
+        $this->app->singleton(LocationService::class, fn($app): LocationService => new LocationService);
 
-        $this->app->singleton(UserDeviceTracker::class, function ($app) {
-            return new UserDeviceTracker($app->make(LocationService::class));
-        });
+        $this->app->singleton(UserDeviceTracker::class, fn($app): UserDeviceTracker => new UserDeviceTracker($app->make(LocationService::class)));
     }
 }

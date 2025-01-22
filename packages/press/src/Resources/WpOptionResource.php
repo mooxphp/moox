@@ -2,6 +2,12 @@
 
 namespace Moox\Press\Resources;
 
+use Override;
+use Filament\Tables\Columns\TextColumn;
+use Moox\Press\Resources\WpOptionResource\Pages\ListWpOptions;
+use Moox\Press\Resources\WpOptionResource\Pages\CreateWpOption;
+use Moox\Press\Resources\WpOptionResource\Pages\ViewWpOption;
+use Moox\Press\Resources\WpOptionResource\Pages\EditWpOption;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -20,14 +26,15 @@ use Moox\Press\Resources\WpOptionResource\Pages;
 
 class WpOptionResource extends Resource
 {
-    use BaseInResource, TabsInResource;
-
+    use BaseInResource;
+    use TabsInResource;
     protected static ?string $model = WpOption::class;
 
     protected static ?string $navigationIcon = 'gmdi-settings';
 
     protected static ?string $recordTitleAttribute = 'option_name';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -68,22 +75,23 @@ class WpOptionResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('option_name')
+                TextColumn::make('option_name')
                     ->label(__('core::core.option_name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('option_value')
+                TextColumn::make('option_value')
                     ->label(__('core::core.option_value'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('autoload')
+                TextColumn::make('autoload')
                     ->label(__('core::core.autoload'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -93,46 +101,54 @@ class WpOptionResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpOptions::route('/'),
-            'create' => Pages\CreateWpOption::route('/create'),
-            'view' => Pages\ViewWpOption::route('/{record}'),
-            'edit' => Pages\EditWpOption::route('/{record}/edit'),
+            'index' => ListWpOptions::route('/'),
+            'create' => CreateWpOption::route('/create'),
+            'view' => ViewWpOption::route('/{record}'),
+            'edit' => EditWpOption::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.option.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.option.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.option.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.option.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.system_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 1;

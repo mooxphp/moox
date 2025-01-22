@@ -15,11 +15,11 @@ use Workbench\App\Models\User;
 */
 
 pest()->extends(TestCase::class)
-    ->beforeEach(function () {
+    ->beforeEach(function (): void {
         $this->artisan('migrate');
         $user = User::factory()->create();
         $this->actingAs($user);
-    })->afterEach(function () {
+    })->afterEach(function (): void {
         $this->artisan('db:wipe');
         $this->artisan('optimize:clear');
     })->in('Feature');

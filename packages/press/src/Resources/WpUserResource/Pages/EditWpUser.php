@@ -2,6 +2,8 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
+use Override;
+use Exception;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -23,6 +25,7 @@ class EditWpUser extends EditRecord
         return [DeleteAction::make()];
     }
 
+    #[Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $user = WpUser::with(['userMeta', 'attachment'])->find($data['ID']);
@@ -76,7 +79,7 @@ class EditWpUser extends EditRecord
             Log::error('User record is not an instance of WpUser in EditWpUser::afterSave');
         }
 
-        Event::dispatch('eloquent.updated: '.get_class($this->record), $this->record);
+        Event::dispatch('eloquent.updated: '.($this->record !== null ? $this->record::class : self::class), $this->record);
     }
 
     protected function handleAvatarUpload(WpUser $user, ?string $userAvatarMetaKey): void
@@ -89,19 +92,19 @@ class EditWpUser extends EditRecord
             $mimeType = $mimeTypes->guessMimeType(storage_path('app/'.$temporaryFilePath));
 
             if (! in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])) {
-                throw new \Exception('The file must be an image of type: jpeg, png, gif, webp, or svg.');
+                throw new Exception('The file must be an image of type: jpeg, png, gif, webp, or svg.');
             }
 
             $currentYear = now()->year;
             $currentMonth = sprintf('%02d', now()->month);
-            $relativeDirectory = "{$currentYear}/{$currentMonth}";
+            $relativeDirectory = sprintf('%d/%s', $currentYear, $currentMonth);
 
-            $filenameWithoutExtension = pathinfo($originalName, PATHINFO_FILENAME);
-            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
-            $filename = "{$filenameWithoutExtension}.{$extension}";
+            $filenameWithoutExtension = pathinfo((string) $originalName, PATHINFO_FILENAME);
+            $extension = pathinfo((string) $originalName, PATHINFO_EXTENSION);
+            $filename = sprintf('%s.%s', $filenameWithoutExtension, $extension);
 
             $disk = Storage::disk('press');
-            $newPath = "{$relativeDirectory}/{$filename}";
+            $newPath = sprintf('%s/%s', $relativeDirectory, $filename);
 
             $disk->put($newPath, Storage::get($temporaryFilePath));
 
