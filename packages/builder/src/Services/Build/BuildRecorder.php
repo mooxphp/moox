@@ -150,6 +150,8 @@ class BuildRecorder
                 'migrations' => $block->getMigrations(),
             ];
 
+            /** @var mixed $block */
+            /** @phpstan-ignore-next-line */
             if (method_exists($block, 'getUseStatements')) {
                 $data['useStatements'] = [
                     'model' => $block->getUseStatements('model'),

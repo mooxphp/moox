@@ -97,15 +97,16 @@ class MigrationGenerator extends AbstractGenerator
             $migration = $block->migration();
             if (! empty($migration)) {
                 if (is_array($migration)) {
-                    $fields = array_merge($fields, array_map(function ($field) {
-                        return rtrim(trim($field), ';').';';
-                    }, $migration));
+                    $fields = array_merge($fields, array_map(
+                        fn (string $field): string => rtrim(trim($field), ';').';',
+                        $migration
+                    ));
                 } else {
                     $fields[] = rtrim(trim($migration), ';').';';
                 }
             }
         }
 
-        return array_filter($fields);
+        return $fields;
     }
 }
