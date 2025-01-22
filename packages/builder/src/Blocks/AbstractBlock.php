@@ -129,10 +129,10 @@ abstract class AbstractBlock
 
     protected ?object $context = null;
 
-    /** @var array<class-string> */
+    /** @var array<int, class-string> */
     protected array $requiredBlocks = [];
 
-    /** @var array<class-string> */
+    /** @var array<int, class-string> */
     protected array $containsBlocks = [];
 
     /** @var array<int, class-string> */

@@ -8,21 +8,21 @@ use Moox\Builder\Blocks\AbstractBlock;
 
 class SoftDelete extends AbstractBlock
 {
-    protected array $containsBlocks = [
-        'Moox\Builder\Blocks\Singles\Simple',
-    ];
-
-    protected array $incompatibleBlocks = [
-        'Moox\BuilderPro\Blocks\Singles\Publish',
-        'Moox\Builder\Blocks\Singles\Light',
-    ];
-
     public function __construct(
         string $name = 'softDelete',
         string $label = 'Soft Delete',
         string $description = 'Soft delete functionality',
     ) {
         parent::__construct($name, $label, $description);
+
+        $this->containsBlocks = [
+            'Moox\Builder\Blocks\Singles\Simple',
+        ];
+
+        $this->incompatibleBlocks = [
+            'Moox\BuilderPro\Blocks\Singles\Publish',
+            'Moox\Builder\Blocks\Singles\Light',
+        ];
 
         $this->traits['model'] = [
             'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel',

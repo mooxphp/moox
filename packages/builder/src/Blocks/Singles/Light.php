@@ -6,18 +6,18 @@ use Moox\Builder\Blocks\AbstractBlock;
 
 class Light extends AbstractBlock
 {
-    protected array $incompatibleBlocks = [
-        'Moox\Builder\Blocks\Singles\Simple',
-        'Moox\BuilderPro\Blocks\Singles\Publish',
-        'Moox\Builder\Blocks\Singles\SoftDelete',
-    ];
-
     public function __construct(
         string $name = 'light',
         string $label = 'Light',
         string $description = 'Shows how to disable actions in the resource',
     ) {
         parent::__construct($name, $label, $description);
+
+        $this->incompatibleBlocks = [
+            'Moox\Builder\Blocks\Singles\Simple',
+            'Moox\BuilderPro\Blocks\Singles\Publish',
+            'Moox\Builder\Blocks\Singles\SoftDelete',
+        ];
 
         $this->traits['resource'] = [
             'Moox\Core\Traits\Simple\SingleSimpleInResource',

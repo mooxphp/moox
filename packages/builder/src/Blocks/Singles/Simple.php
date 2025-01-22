@@ -6,18 +6,18 @@ use Moox\Builder\Blocks\AbstractBlock;
 
 class Simple extends AbstractBlock
 {
-    protected array $incompatibleBlocks = [
-        'Moox\Builder\Blocks\Singles\SoftDelete',
-        'Moox\BuilderPro\Blocks\Singles\Publish',
-        'Moox\Builder\Blocks\Singles\Light',
-    ];
-
     public function __construct(
         string $name = 'simple',
         string $label = 'Simple',
         string $description = 'Adds default actions for a simple resource',
     ) {
         parent::__construct($name, $label, $description);
+
+        $this->incompatibleBlocks = [
+            'Moox\Builder\Blocks\Singles\Light',
+            'Moox\BuilderPro\Blocks\Singles\Publish',
+            'Moox\Builder\Blocks\Singles\SoftDelete',
+        ];
 
         $this->traits['model'] = [
             'Moox\Core\Traits\Simple\SingleSimpleInModel',
