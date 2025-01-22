@@ -93,7 +93,7 @@
             "@php artisan key:generate --ansi"
         ],
         "analyse": "./vendor/bin/phpstan analyze --memory-limit 512m",
-        "analyse:fix": "./vendor/bin/phpstan analyze --memory-limit 512m --fix",
+        "analyze": "@analyse",
         "format": "vendor/bin/pint",
         "lint": "vendor/bin/pint --test",
         "refactor": "vendor/bin/rector",
