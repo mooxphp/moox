@@ -223,16 +223,6 @@ We test Moox using:
 
 Please make sure you use the same tools in VS Code (our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) covers this) or do the checks manually before committing to the dev-branch:
 
-        "refactor": "vendor/bin/rector",
-        "test:coverage": "vendor/bin/pest --coverage",
-        "test:lint": "@lint",
-        "test:refactor": "vendor/bin/rector --dry-run",
-        "test:types": "@analyse",
-        "test:arch": "vendor/bin/pest --filter=arch",
-        "test:type-coverage": "vendor/bin/pest --type-coverage --min=100",
-        "test:unit": "vendor/bin/pest --parallel --coverage --exactly=99.4",
-        "test": [
-
 -   Use `composer lint` to do a dry run of Pint, aliased as `test:lint`
 -   Use `composer analyse` to run PHPStan, aliased as `analyze` and `test:types`
 -   Use `composer test` to run the complete test suite
