@@ -69,7 +69,7 @@ Thumbs.db
 /public/wp/*
 
 # Moox Builder
-/app/Builder/*/*
+/app/Builder/*
 /config/previews/*
 /lang/*/previews/*
 /packages/builder-pro
