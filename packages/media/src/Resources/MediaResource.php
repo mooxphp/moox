@@ -3,15 +3,14 @@
 namespace Moox\Media\Resources;
 
 use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Media\Models\Media;
 use Filament\Resources\Resource;
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Expiry\Actions\CustomExpiryAction;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Moox\Media\Resources\MediaResource\Pages;
+use Filament\Tables\Table;
+use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Media\Models\Media;
+use Moox\Media\Resources\MediaResource\Pages;
 
 class MediaResource extends Resource
 {
@@ -59,6 +58,4 @@ class MediaResource extends Resource
             'edit' => Pages\EditMedia::route('/{record}/edit'),
         ];
     }
-
-
 }
