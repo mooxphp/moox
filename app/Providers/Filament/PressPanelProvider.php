@@ -8,13 +8,16 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Moox\Media\MediaPlugin;
+use Moox\Press\Services\Login;
 use Filament\Support\Colors\Color;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Moox\Security\Services\ResetPassword;
+use Filament\Http\Middleware\Authenticate;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Moox\Security\Services\RequestPasswordReset;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Audit\AuditPlugin;
 use Moox\Expiry\ExpiryPlugin;
@@ -156,6 +159,9 @@ class PressPanelProvider extends PanelProvider
                 WpWikiDepartmentTopicPlugin::make(),
                 WpWikiLocationTopicPlugin::make(),
 
+                \Moox\PressTrainings\WpTrainingPlugin::make(),
+                \Moox\PressTrainings\WpTrainingsTopicPlugin::make(),
+                MediaPlugin::make(),
                 WpTrainingPlugin::make(),
                 WpTrainingsTopicPlugin::make(),
 

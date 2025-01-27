@@ -45,6 +45,7 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
+        "moox/media": "*",
         "moox/build": "*",
         "resend/resend-laravel": "^1.0@dev",
         "wikimedia/composer-merge-plugin": "^2.1"
