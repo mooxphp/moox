@@ -21,10 +21,10 @@ return [
         'plural' => 'Lotes de trabajos',
         'navigation_label' => 'Lotes de trabajos',
     ],
-    //general
+    // general
     'breadcrumb' => 'Trabajo en Moox',
     'navigation_group' => 'Sistema',
-    //used by multiple plugins
+    // used by multiple plugins
     'queue' => 'Cola',
     'name' => 'Nombre',
     'started_at' => 'Iniciado a las',
@@ -45,7 +45,7 @@ return [
     'delete' => 'Borrar',
     'finished_at' => 'Completado en',
     'exception_message' => 'Mensaje de excepción',
-    //jobfailed
+    // jobfailed
     'uuid' => 'Identificador único universal (Uuid)',
     'payload' => 'Cola',
     'connection' => 'Conexión',
@@ -54,11 +54,11 @@ return [
     'delete_all_failed_jobs' => 'Se eliminaron todos los trabajos fallidos',
     'delete_all_failed_jobs_notification' => 'Se han eliminado todos los trabajos fallidos.',
     'jobs_pushed_back_notification' => 'Los trabajos han sido devueltos a la cola.',
-    //jobbatches
+    // jobbatches
     'canceled_at' => 'Cancelado en',
     'failed_jobs' => 'Trabajos fallidos',
     'prune_batches_notification' => 'Todos los lotes han sido purgados.',
-    //used by multiple plugins
+    // used by multiple plugins
     'id' => 'ID',
     'failed_job_id' => 'ID del trabajo fallido',
     'pending_jobs' => 'Trabajos pendientes',

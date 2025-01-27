@@ -1148,7 +1148,7 @@ return [
         'user_registered' => now()->toDateTimeString(),
         'user_status' => '0',
         // TODO: suppress errors for first and last name
-        //'display_name' => $first_name.' '.$last_name ?? $user_login ?? '',
+        // 'display_name' => $first_name.' '.$last_name ?? $user_login ?? '',
     ],
 
     /*

@@ -21,10 +21,10 @@ return [
         'plural' => 'Jobs Batches',
         'navigation_label' => 'Job Batches',
     ],
-    //general
+    // general
     'breadcrumb' => 'Jobs',
     'navigation_group' => 'Moox Jobs',
-    //used by multiple plugins
+    // used by multiple plugins
     'id' => 'ID',
     'failed_at' => 'Fehlgeschlagen am',
     'delete' => 'Löschen',
@@ -36,18 +36,18 @@ return [
     'waiting' => 'Wartend',
     'exception_message' => 'Exception message',
     'created_at' => 'Erstellt am',
-    //jobs
+    // jobs
     'status' => 'Status',
     'running' => 'In Bearbeitung',
     'succeeded' => 'Erfolgreich',
     'progress' => 'Fortschritt',
-    //Jobswaiting
+    // Jobswaiting
     'attempts' => 'Versuche',
     'reserved_at' => 'Reserviert am',
     'waiting_jobs' => 'Wartende Jobs',
     'execution_time' => 'Gesamte Ausführungszeit',
     'average_time' => 'Durchschnittliche Ausführungszeit',
-    //jobfailed
+    // jobfailed
     'uuid' => 'Uuid',
     'payload' => 'Warteschlange',
     'connection' => 'Verbindung',
@@ -59,7 +59,7 @@ return [
     'delete_all_failed_jobs_notification' => 'Alle fehlgeschlagenen Jobs wurden gelöscht',
     'jobs_pushed_back_notification' => 'Jobs sind wieder in der Warteschlange.',
     'job_pushed_back_notification' => 'ist wieder zurück in der Warteschlange',
-    //jobbatches
+    // jobbatches
     'canceled_at' => 'Abgebrochen am',
     'failed_jobs' => 'Fehlgeschlagene Jobs',
     'failed_job_id' => 'Fehlgeschlagener Job ID',
