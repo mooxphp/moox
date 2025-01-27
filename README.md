@@ -333,6 +333,7 @@ Moox is made by these nice people, and bots ...
       <td align="center" valign="top" width="14.28%"><a href="http://www.rodrigoborges.com.br"><img src="https://avatars.githubusercontent.com/u/5695498?v=4?s=100" width="100px;" alt="Rodrigo Borges"/><br /><sub><b>Rodrigo Borges</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Arodrigoborges" title="Reviewed Pull Requests">👀</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/thiago25787"><img src="https://avatars.githubusercontent.com/u/1185968?v=4?s=100" width="100px;" alt="Thiago Almeida"/><br /><sub><b>Thiago Almeida</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Athiago25787" title="Reviewed Pull Requests">👀</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/marcelonogueira"><img src="https://avatars.githubusercontent.com/u/15114097?v=4?s=100" width="100px;" alt="Marcelo Nogueira"/><br /><sub><b>Marcelo Nogueira</b></sub></a><br /><a href="https://github.com/mooxphp/moox/pulls?q=is%3Apr+reviewed-by%3Amarcelonogueira" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/flashadvocate"><img src="https://avatars.githubusercontent.com/u/7848492?v=4?s=100" width="100px;" alt="Guybrush"/><br /><sub><b>Guybrush</b></sub></a><br /><a href="https://github.com/mooxphp/moox/commits?author=flashadvocate" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
