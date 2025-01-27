@@ -30,8 +30,8 @@ jobs:
           - permission
           - press
           - security
+          - skeleton
           - sync
-          - redis-model
           - trainings
           - user
           - user-device
