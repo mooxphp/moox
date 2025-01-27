@@ -38,6 +38,7 @@ jobs:
           - user
           - user-device
           - user-session
+          - media
 
     steps:
       - uses: actions/checkout@v4
