@@ -8,9 +8,9 @@ use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Expiry\Actions\CustomExpiryAction;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages\ViewMedia;
@@ -63,6 +63,4 @@ class MediaResource extends Resource
             // 'edit' => Pages\EditMedia::route('/{record}/edit'),
         ];
     }
-
-
 }

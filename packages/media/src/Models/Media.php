@@ -10,7 +10,7 @@ class Media extends Model
 {
     use HasFactory;
 
-    
+
 
     protected $fillable = [
 
@@ -21,6 +21,4 @@ class Media extends Model
     protected $casts = [
 
     ];
-
-
 }
