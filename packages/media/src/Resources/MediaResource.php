@@ -3,21 +3,13 @@
 namespace Moox\Media\Resources;
 
 use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Media\Models\Media;
 use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
-
-use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Media\Forms\Components\MediaPicker;
-
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Table;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages;
-use Moox\Media\Resources\MediaResource\Pages\ViewMedia;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-
 
 class MediaResource extends Resource
 {
