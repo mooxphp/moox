@@ -15,5 +15,4 @@ class ViewUser extends ViewRecord
     {
         return [EditAction::make(), DeleteAction::make()];
     }
-
 }

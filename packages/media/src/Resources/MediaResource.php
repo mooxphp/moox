@@ -3,19 +3,16 @@
 namespace Moox\Media\Resources;
 
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Moox\Media\Resources\MediaResource\Pages\ViewMedia;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 
 class MediaResource extends Resource
 {
