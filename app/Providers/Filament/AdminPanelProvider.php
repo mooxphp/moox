@@ -121,6 +121,7 @@ class AdminPanelProvider extends PanelProvider
 
                 // Builder plugin
                 \Moox\Builder\ItemPlugin::make(),
+                \Moox\Media\MediaPlugin::make(),
 
             ]);
     }

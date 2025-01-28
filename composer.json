@@ -21,6 +21,7 @@
     ],
     "license": "MIT",
     "require": {
+        "filament/spatie-laravel-media-library-plugin": "3.x-dev",
         "laravel-lang/lang": "^15.5",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
@@ -32,6 +33,7 @@
         "moox/jobs": "*",
         "moox/locate": "*",
         "moox/login-link": "*",
+        "moox/media": "*",
         "moox/notifications": "*",
         "moox/page": "*",
         "moox/passkey": "*",
@@ -46,7 +48,6 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
-        "moox/media": "*",
         "resend/resend-laravel": "^1.0@dev",
         "wikimedia/composer-merge-plugin": "^2.1"
     },

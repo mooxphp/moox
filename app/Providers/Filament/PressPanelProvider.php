@@ -120,7 +120,7 @@ class PressPanelProvider extends PanelProvider
 
                 \Moox\PressTrainings\WpTrainingPlugin::make(),
                 \Moox\PressTrainings\WpTrainingsTopicPlugin::make(),
-                MediaPlugin::make(),
+                
 
             ]);
     }

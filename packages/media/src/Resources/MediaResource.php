@@ -4,13 +4,17 @@ namespace Moox\Media\Resources;
 
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Moox\Media\Models\Media;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Expiry\Actions\CustomExpiryAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Media\Resources\MediaResource\Pages;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Moox\Media\Resources\MediaResource\Pages\ViewMedia;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
 
 class MediaResource extends Resource
@@ -34,7 +38,7 @@ class MediaResource extends Resource
     {
         return $table
             ->columns([
-
+                SpatieMediaLibraryImageColumn::make('model.avatar_url')->sortable(),
             ])
             ->filters([
 
@@ -55,8 +59,8 @@ class MediaResource extends Resource
         return [
             'index' => Pages\ListMedia::route('/'),
             'create' => Pages\CreateMedia::route('/create'),
-            'view' => Pages\ViewMedia::route('/{record}'),
-            'edit' => Pages\EditMedia::route('/{record}/edit'),
+            // 'view' => Pages\ViewMedia::route('/{record}'),
+            // 'edit' => Pages\EditMedia::route('/{record}/edit'),
         ];
     }
 
