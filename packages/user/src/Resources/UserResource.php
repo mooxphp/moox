@@ -2,32 +2,39 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Moox\User\Models\User;
+use Moox\Sync\Models\Platform;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Grid;
+use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
+use Moox\User\Resources\UserResource\Pages\ViewUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
+use Moox\User\Resources\UserResource\Pages\CreateUser;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
 use Override;
 
@@ -49,9 +56,9 @@ class UserResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
 
-                    FileUpload::make('avatar_url')
-                        ->label(__('core::user.avatar_url'))
-                        ->avatar(),
+                    MediaPicker::make('media')
+                        ->multiple()
+                        ->label('Avatar'),
 
                     TextInput::make('name')
                         ->label(__('core::core.name'))
@@ -136,7 +143,7 @@ class UserResource extends Resource
                         ->unique(
                             'users',
                             'email',
-                            fn (?Model $record): ?Model => $record
+                            fn(?Model $record): ?Model => $record
                         )
                         ->email()
                         ->columnSpan([
@@ -168,7 +175,7 @@ class UserResource extends Resource
                         ->label(__('core::user.password'))
                         ->revealable()
                         ->required()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
                         ->password()
                         ->visibleOn('create')
                         ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
@@ -240,15 +247,16 @@ class UserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                ImageColumn::make('avatar_url')
-                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
-                    ->circular()
-                    ->label(__('core::user.avatar'))
-                    ->toggleable()
-                    ->size(50),
+                SpatieMediaLibraryImageColumn::make('avatar_url'),
+                // ImageColumn::make('avatar_url')
+                //     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
+                //     ->circular()
+                //     ->label(__('core::user.avatar'))
+                //     ->toggleable()
+                //     ->size(50),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
+                    ->formatStateUsing(fn($state, User $user): string => $user->first_name . ' ' . $user->last_name)
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -265,22 +273,23 @@ class UserResource extends Resource
                     ->sortable()
                     ->alignStart()
                     ->icon(
-                        fn ($record): string => is_null(
-                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                        fn($record): string => is_null(
+                            $record->email_verified_at
+                        ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
-                        'success' => fn ($record): bool => $record->email_verified_at !== null,
-                        'danger' => fn ($record): bool => $record->email_verified_at === null,
+                        'success' => fn($record): bool => $record->email_verified_at !== null,
+                        'danger' => fn($record): bool => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([
-                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'heroicon-o-shield-exclamation' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ])
                     ->colors([
-                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'warning' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([

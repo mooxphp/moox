@@ -21,6 +21,8 @@
     ],
     "license": "MIT",
     "require": {
+        "filament/spatie-laravel-media-library-plugin": "3.x-dev",
+        "laravel-lang/lang": "^15.5",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.8",
         "moox/audit": "*",
@@ -31,6 +33,7 @@
         "moox/jobs": "*",
         "moox/locate": "*",
         "moox/login-link": "*",
+        "moox/media": "*",
         "moox/notifications": "*",
         "moox/page": "*",
         "moox/passkey": "*",

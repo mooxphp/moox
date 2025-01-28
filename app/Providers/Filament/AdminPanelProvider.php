@@ -138,6 +138,15 @@ class AdminPanelProvider extends PanelProvider
                 ExpiryPlugin::make(),
 
                 // Training plugins
+                \Moox\Training\TrainingPlugin::make(),
+                \Moox\Training\TrainingInvitationPlugin::make(),
+                \Moox\Training\TrainingDatePlugin::make(),
+                \Moox\Training\TrainingTypePlugin::make(),
+
+                // Builder plugin
+                \Moox\Builder\ItemPlugin::make(),
+                \Moox\Media\MediaPlugin::make(),
+
                 TrainingPlugin::make(),
                 TrainingInvitationPlugin::make(),
                 TrainingDatePlugin::make(),

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Moox\Media;
 
+
 use Spatie\LaravelPackageTools\Package;
+use Illuminate\Support\Facades\View;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class MediaServiceProvider extends PackageServiceProvider
@@ -14,9 +16,20 @@ class MediaServiceProvider extends PackageServiceProvider
         $package
             ->name('media')
             ->hasConfigFile()
-            ->hasViews()
+            ->hasViews('media-picker')
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
     }
+
+    public function boot()
+    {
+        parent::boot();
+
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
+    }
+
+
+
+
 }
