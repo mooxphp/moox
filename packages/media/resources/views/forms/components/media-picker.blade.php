@@ -8,7 +8,7 @@
                 <h2 class="text-2xl font-semibold text-gray-600 mb-6">Wähle ein Bild</h2>
 
                 <div class="grid grid-cols-3 gap-4">
-                    @foreach ({{ mediaItems }} as $media)
+                    @foreach ($field->getMedia() as $media)
                         <div class="rounded-lg">
                             <img src="{{ $media->getUrl() }}" alt="Bild" class="w-16 h-14 object-cover">
                             <div class="text-gray-600 text-sm p-2 rounded-md">
