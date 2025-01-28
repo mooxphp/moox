@@ -2,8 +2,8 @@
 
 namespace Moox\Media\Forms\Components;
 
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -13,8 +13,4 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     {
         return Media::all();
     }
-
 }
-
-
-

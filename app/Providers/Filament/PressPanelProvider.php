@@ -16,7 +16,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Moox\Media\MediaPlugin;
 use Moox\Press\Services\Login;
 use Moox\Security\Services\RequestPasswordReset;
 use Moox\Security\Services\ResetPassword;
@@ -120,7 +119,6 @@ class PressPanelProvider extends PanelProvider
 
                 \Moox\PressTrainings\WpTrainingPlugin::make(),
                 \Moox\PressTrainings\WpTrainingsTopicPlugin::make(),
-                MediaPlugin::make(),
 
             ]);
     }

@@ -2,41 +2,35 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\User\Models\User;
-use Moox\Sync\Models\Platform;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Grid;
-use Illuminate\Support\Facades\Hash;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
+use Moox\Sync\Models\Platform;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
-use Moox\User\Resources\UserResource\Pages\ViewUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
-use Moox\User\Resources\UserResource\Pages\CreateUser;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
-use Override;
 
 class UserResource extends Resource
 {
