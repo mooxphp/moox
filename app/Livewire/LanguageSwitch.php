@@ -3,16 +3,19 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Moox\DataLanguages\Models\Localization;
 
 class LanguageSwitch extends Component
 {
 
     public $locale;
+    public $context;
 
-    public function mount()
+    public function mount(string $context = 'frontend')
     {
-        // Standardwert aus der aktuellen Session
-        $this->locale = session('locale', config('app.locale'));
+        $this->context = $context;
+
+        $this->locale = session('locale');
     }
 
     public function changeLocale($locale)
@@ -25,10 +28,23 @@ class LanguageSwitch extends Component
         return redirect(request()->header('Referer') ?? '/');
     }
 
+    public function getAvailableLocalesProperty()
+    {
+        return Localization::query()
+            ->when($this->context === 'backend', function ($query) {
+                $query->where('is_active_admin', true);
+            })
+            ->when($this->context === 'frontend', function ($query) {
+                $query->where('is_active_frontend', true);
+            })
+            ->get()
+            ->pluck('language.alpha2', 'language_id');
+    }
+
     public function render()
     {
         return view('livewire.language-switch',[
-            'availableLocales' => config('locale-switcher.locales', ['en' => 'English', 'de' => 'Deutsch']),
+            'availableLocales' => $this->availableLocales,
         ]);
     }
 }
