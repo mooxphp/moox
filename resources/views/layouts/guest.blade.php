@@ -23,6 +23,7 @@
             <div class="flex items-center text-3xl">
                 <a class="px-4 text-lg hover:text-[#69bce2]" href="/">Home</a>
                 <a class="px-4 text-lg hover:text-[#69bce2]" href="/packages">Packages</a>
+                <livewire:language-switch />
                 <!-- Currently not used
                 <a
                     class="px-4 text-lg hover:text-[#69bce2]"

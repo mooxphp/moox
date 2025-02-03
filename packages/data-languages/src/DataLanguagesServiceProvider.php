@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages;
 
-use Moox\DataLanguages\Providers\LanguagePanelProvider;
-use Moox\DataLanguages\Traits\ConfigScannerTrait;
+use Illuminate\Routing\Router;
 use Spatie\LaravelPackageTools\Package;
+use Moox\DataLanguages\Traits\ConfigScannerTrait;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Moox\DataLanguages\Providers\LanguagePanelProvider;
+use Moox\DataLanguages\Http\Middleware\LanguageMiddleware;
 
 class DataLanguagesServiceProvider extends PackageServiceProvider
 {
@@ -49,5 +51,13 @@ class DataLanguagesServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasCommands()
             ->discoversMigrations();
+    }
+
+    public function bootingPackage()
+    {
+        $router = $this->app->make(Router::class);
+
+        // Füge die Middleware zur "web"-Middleware-Gruppe hinzu
+        $router->pushMiddlewareToGroup('web', LanguageMiddleware::class);
     }
 }
