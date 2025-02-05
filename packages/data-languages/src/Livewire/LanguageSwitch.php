@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace Moox\DataLanguages\Livewire;
 
 use Livewire\Component;
 use Moox\DataLanguages\Models\Localization;
@@ -43,7 +43,7 @@ class LanguageSwitch extends Component
 
     public function render()
     {
-        return view('livewire.language-switch',[
+        return view('data-languages::livewire.language-switch',[
             'availableLocales' => $this->availableLocales,
         ]);
     }

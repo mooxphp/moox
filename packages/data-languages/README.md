@@ -17,29 +17,30 @@ Curious what the install command does? See manual installation below.
 
 ## What it does
 
-<!--whatdoes-->
+Static Data for country, language, Timzones, and Currencies. 
 
-This Laravel Package Template can be used to create a package including a powerful Filament resource called Item.
+Include a Language switcher which wil rely on your created locales. 
+To include it in filament panel 
+```
+->renderHook(
+                \Filament\View\PanelsRenderHook::USER_MENU_BEFORE,
+                fn (): string => \Illuminate\Support\Facades\Blade::render('@livewire(\'language-switch\',[\'context\'=>\'backend\'])'),
+            );
 
-![Moox Builder Item](https://github.com/mooxphp/moox/raw/main/art/screenshot/builder-item.jpg)
+```
+also see ==> https://filamentphp.com/docs/3.x/support/render-hooks
 
-Name and table for the Resource can be changed while building your package.
+To include it in your frontend jsut use the livewire notation 
+
+```
+                <livewire:language-switch />
+```
+
+On default the component will assume the context is frontend. If thats not the chase provide the context withing the componenten.
+
+
 
 ### Using the Template
-
-1. Go to https://github.com/mooxphp/data-languages
-2. Press the `Use this template` button
-3. Create a new repository based on the template
-4. Clone the repository locally
-5. Run `php build.php`in the repo's directory and follow the steps
-    - Author Name (Default: Moox Developer): Your Name
-    - Author Email (Default: dev@moox.org): your@mail.com
-    - Package Name (Default: Blog Package): Your Package
-    - Package Description (Default: This is my package Blog Package)
-    - Package Entity (Default: Item): e.g. Post
-    - Tablename (Default: items): e.g. posts
-
-After building the package, you can push the changes to GitHub and create an installable package on Packagist.org. Don't forget to adjust the README to your composer namespace.
 
 ### Config
 

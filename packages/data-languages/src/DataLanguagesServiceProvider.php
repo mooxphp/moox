@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages;
 
+use Livewire\Livewire;
 use Illuminate\Routing\Router;
 use Spatie\LaravelPackageTools\Package;
+use Moox\DataLanguages\Livewire\LanguageSwitch;
 use Moox\DataLanguages\Traits\ConfigScannerTrait;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Moox\DataLanguages\Providers\LanguagePanelProvider;
@@ -59,5 +61,6 @@ class DataLanguagesServiceProvider extends PackageServiceProvider
 
         // Füge die Middleware zur "web"-Middleware-Gruppe hinzu
         $router->pushMiddlewareToGroup('web', LanguageMiddleware::class);
+        Livewire::component('language-switch', LanguageSwitch::class);
     }
 }

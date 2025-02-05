@@ -74,7 +74,7 @@ class LocalizationResource extends Resource
                             ->label(__('data-languages::localization.slug')),
                         Forms\Components\Select::make('fallback_language_id')
                         ->label(__('data-languages::localization.fallback_language'))
-                        ->relationship('fallbackLanguage', 'id')
+                        ->relationship('fallbackLanguage', 'title')
                         ->nullable(),
                         Forms\Components\Toggle::make('is_active_admin')
                             ->label(__('data-languages::localization.is_activ_admin'))
@@ -144,7 +144,7 @@ class LocalizationResource extends Resource
                 ->label(__('data-languages::localization.title')),
                 Tables\Columns\TextColumn::make('slug')
                 ->label(__('data-languages::localization.slug')),
-                Tables\Columns\TextColumn::make('fallbackLanguage.id')
+                Tables\Columns\TextColumn::make('fallbackLanguage.title')
                 ->label(__('data-languages::localization.fallback_language')),
                 Tables\Columns\ToggleColumn::make('is_active_admin')
                 ->label(__('data-languages::localization.is_activ_admin')),

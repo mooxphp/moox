@@ -4,7 +4,6 @@ namespace Moox\DataLanguages\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class LanguageMiddleware
@@ -15,7 +14,7 @@ class LanguageMiddleware
 
         app()->setLocale($language);
 
-        Log::info('Set locale to'. app()->getLocale());
+        Log::info('Set locale to '. app()->getLocale());
         return $next($request);
     }
 }
