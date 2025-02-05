@@ -21,7 +21,9 @@ class LanguageSwitch extends Component
     public function changeLocale($locale)
     {
 
-        session(['locale' => $locale]);
+        session()->put('locale', $locale);
+
+        cookie()->queue(cookie()->forever('switch_locale', $locale));
 
         app()->setLocale($locale);
 

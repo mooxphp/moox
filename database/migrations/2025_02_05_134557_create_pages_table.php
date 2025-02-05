@@ -13,11 +13,21 @@ return new class extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
+
             $table->timestamp('started_at')->nullable()->index();
             $table->timestamp('finished_at')->nullable();
             $table->boolean('failed')->default(false)->index();
             $table->timestamps();
+        });
+        Schema::create('page_translations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('page_id')->constrained()->onDelete('cascade');
+            $table->string('locale')->index();
+            $table->string('name')->nullable();
+
+            $table->timestamps();
+
+            $table->unique(['page_id', 'locale']);
         });
     }
 
@@ -25,7 +35,9 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
+
     {
         Schema::dropIfExists('page');
+        Schema::dropIfExists('page_translations');
     }
 };

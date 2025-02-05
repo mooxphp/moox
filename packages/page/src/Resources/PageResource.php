@@ -52,7 +52,7 @@ class PageResource extends Resource
                     ->label(__('page::translations.failed'))
                     ->sortable(),
             ])
-            ->defaultSort('name', 'desc')
+            // ->defaultSort('name', 'desc')
             ->actions([
                 EditAction::make(),
             ])

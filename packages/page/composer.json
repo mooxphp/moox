@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "*"
+        "moox/core": "*",
+        "astrotomic/laravel-translatable": "*"
     },
     "autoload": {
         "psr-4": {
