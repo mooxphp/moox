@@ -7,8 +7,8 @@ use Moox\DataLanguages\Models\Localization;
 
 class LanguageSwitch extends Component
 {
-
     public $locale;
+
     public $context;
 
     public function mount(string $context = 'frontend')
@@ -20,7 +20,6 @@ class LanguageSwitch extends Component
 
     public function changeLocale($locale)
     {
-
         session()->put('locale', $locale);
 
         cookie()->queue(cookie()->forever('switch_locale', $locale));
@@ -45,7 +44,7 @@ class LanguageSwitch extends Component
 
     public function render()
     {
-        return view('data-languages::livewire.language-switch',[
+        return view('data-languages::livewire.language-switch', [
             'availableLocales' => $this->availableLocales,
         ]);
     }

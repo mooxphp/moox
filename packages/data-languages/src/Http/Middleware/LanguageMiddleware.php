@@ -5,13 +5,11 @@ namespace Moox\DataLanguages\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cookie;
 
 class LanguageMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-
         $locale = session()->get('locale') ??
         request()->get('locale') ??
         request()->cookie('switch_locale') ??
@@ -20,7 +18,8 @@ class LanguageMiddleware
 
         app()->setLocale($locale);
 
-        Log::info('Set locale to '. app()->getLocale());
+        Log::info('Set locale to '.app()->getLocale());
+
         return $next($request);
     }
 }

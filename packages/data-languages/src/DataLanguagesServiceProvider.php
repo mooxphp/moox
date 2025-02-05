@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages;
 
-use Livewire\Livewire;
 use Illuminate\Routing\Router;
-use Spatie\LaravelPackageTools\Package;
-use Moox\DataLanguages\Livewire\LanguageSwitch;
-use Moox\DataLanguages\Traits\ConfigScannerTrait;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Moox\DataLanguages\Providers\LanguagePanelProvider;
+use Livewire\Livewire;
 use Moox\DataLanguages\Http\Middleware\LanguageMiddleware;
+use Moox\DataLanguages\Livewire\LanguageSwitch;
+use Moox\DataLanguages\Providers\LanguagePanelProvider;
+use Moox\DataLanguages\Traits\ConfigScannerTrait;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class DataLanguagesServiceProvider extends PackageServiceProvider
 {

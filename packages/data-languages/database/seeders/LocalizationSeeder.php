@@ -4,7 +4,6 @@ namespace Moox\DataLanguages\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class LocalizationSeeder extends Seeder
 {
@@ -18,6 +17,7 @@ class LocalizationSeeder extends Seeder
 
         if ($languages->isEmpty()) {
             $this->command->info('No languages found in the static_languages table. Add some before running this seeder.');
+
             return;
         }
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\DataLanguages\Plugins;
 
-use Filament\Panel;
 use Filament\Contracts\Plugin;
+use Filament\Panel;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Moox\DataLanguages\Resources\LocalizationResource;
 
@@ -25,10 +25,7 @@ class LocalizationPlugin implements Plugin
         ]);
     }
 
-    public function boot(Panel $panel): void
-    {
-
-    }
+    public function boot(Panel $panel): void {}
 
     public static function make(): static
     {

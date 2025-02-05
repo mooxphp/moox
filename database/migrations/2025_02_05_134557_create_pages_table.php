@@ -35,7 +35,6 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-
     {
         Schema::dropIfExists('page');
         Schema::dropIfExists('page_translations');

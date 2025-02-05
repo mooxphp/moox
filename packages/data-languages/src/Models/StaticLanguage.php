@@ -36,7 +36,8 @@ class StaticLanguage extends Model
         return $this->hasMany(StaticLocale::class, 'language_id');
     }
 
-    public function localizations(){
+    public function localizations()
+    {
         return $this->hasMany(Localization::class);
     }
 }

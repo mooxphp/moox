@@ -1,9 +1,11 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('localizations', function (Blueprint $table) {
@@ -13,13 +15,13 @@ return new class extends Migration {
             $table->string('slug');
 
             $table->foreignId('language_id')
-            ->constrained('static_languages')
-            ->cascadeOnDelete();
+                ->constrained('static_languages')
+                ->cascadeOnDelete();
 
             $table->foreignId('fallback_language_id')
-            ->nullable()
-            ->constrained('localizations')
-            ->nullOnDelete();
+                ->nullable()
+                ->constrained('localizations')
+                ->nullOnDelete();
 
             $table->boolean('is_active_admin')->default(false);
             $table->boolean('is_active_frontend')->default(false);
