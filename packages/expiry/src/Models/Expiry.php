@@ -2,16 +2,19 @@
 
 namespace Moox\Expiry\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
+use Override;
 
 class Expiry extends Model
 {
-    use HasFactory, SingleSoftDeleteInModel;
+    use HasFactory;
+    use SingleSoftDeleteInModel;
 
     protected $fillable = [
         'title',
@@ -61,6 +64,7 @@ class Expiry extends Model
     /**
      * Use the custom query builder for the model.
      */
+    #[Override]
     protected function newBaseQueryBuilder()
     {
         $connection = $this->getConnection();
@@ -99,7 +103,7 @@ class Expiry extends Model
         $userModel = config('expiry.user_model');
 
         if (! class_exists($userModel)) {
-            throw new \Exception("User model class {$userModel} does not exist.");
+            throw new Exception(sprintf('User model class %s does not exist.', $userModel));
         }
 
         $notifiedToUserIds = Expiry::pluck('notified_to')->unique()->filter();
@@ -113,12 +117,8 @@ class Expiry extends Model
 
         return $users
             ->pluck('display_name', 'ID')
-            ->filter(function ($displayName) {
-                return ! is_null($displayName);
-            })
-            ->sortBy(function ($displayName, $id) {
-                return strtolower($displayName);
-            })
+            ->filter(fn ($displayName): bool => ! is_null($displayName))
+            ->sortBy(fn ($displayName, $id) => strtolower((string) $displayName))
             ->toArray();
     }
 }

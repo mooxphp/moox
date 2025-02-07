@@ -33,21 +33,21 @@ class FileUpload extends AbstractBlock
                 ->directory('{$this->directory}')"
                 .($this->multiple ? '->multiple()' : '')
                 .($this->acceptedFileTypes ? "->acceptedFileTypes(['".implode("','", $this->acceptedFileTypes)."'])" : '')
-                ."->maxSize({$this->maxSize})"
+                .sprintf('->maxSize(%d)', $this->maxSize)
                 .($this->nullable ? '' : '->required()'),
         ];
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')",
+            sprintf("TextColumn::make('%s')", $this->name),
         ];
 
         $this->migrations['fields'] = [
-            '$table->'.($this->multiple ? 'json' : 'string')."('{$this->name}')"
+            '$table->'.($this->multiple ? 'json' : 'string').sprintf("('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => $this->multiple
+            $this->name => $this->multiple
                 ? '[]'
                 : "''",
         ];

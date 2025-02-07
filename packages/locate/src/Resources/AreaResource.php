@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Locate\Models\Area;
 use Moox\Locate\Resources\AreaResource\Pages\ListPage;
+use Override;
 
 class AreaResource extends Resource
 {
@@ -25,6 +26,7 @@ class AreaResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-place';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -44,6 +46,7 @@ class AreaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table->columns([
@@ -59,6 +62,7 @@ class AreaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -67,6 +71,7 @@ class AreaResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return 8001;

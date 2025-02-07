@@ -26,6 +26,7 @@ final class SectionManager
                 if (! isset($this->metaSections[$sectionName])) {
                     $this->metaSections[$sectionName] = [];
                 }
+
                 $this->metaSections[$sectionName] = array_merge(
                     $this->metaSections[$sectionName],
                     $fields
@@ -34,6 +35,7 @@ final class SectionManager
                 if (! isset($this->sections[$sectionName])) {
                     $this->sections[$sectionName] = [];
                 }
+
                 $this->sections[$sectionName] = array_merge(
                     $this->sections[$sectionName],
                     $fields
@@ -58,7 +60,7 @@ final class SectionManager
 
     public function formatSections(array $sections): string
     {
-        if (empty($sections)) {
+        if ($sections === []) {
             return '';
         }
 
@@ -72,11 +74,9 @@ final class SectionManager
                 continue;
             }
 
-            $fields = array_map(function ($field) {
-                return "                        {$field},";
-            }, $section['fields']);
+            $fields = array_map(fn ($field): string => sprintf('                        %s,', $field), $section['fields']);
 
-            $sectionTitle = $section['hideHeader'] ?? false ? "''" : "'".ucfirst($section['name'])."'";
+            $sectionTitle = $section['hideHeader'] ?? false ? "''" : "'".ucfirst((string) $section['name'])."'";
 
             $output[] = "                    Section::make({$sectionTitle})
                         ->schema([

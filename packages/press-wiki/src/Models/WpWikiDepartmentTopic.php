@@ -4,15 +4,17 @@ namespace Moox\PressWiki\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Press\Models\WpTerm;
+use Override;
 
 class WpWikiDepartmentTopic extends WpTerm
 {
-    public static function boot()
+    #[Override]
+    protected static function boot(): void
     {
         parent::boot();
 
-        static::addGlobalScope('department', function (Builder $builder) {
-            $builder->whereHas('termTaxonomy', function ($query) {
+        static::addGlobalScope('department', function (Builder $builder): void {
+            $builder->whereHas('termTaxonomy', function ($query): void {
                 $query->where('taxonomy', 'bereiche');
             });
         });

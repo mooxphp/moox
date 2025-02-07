@@ -3,6 +3,7 @@
 namespace Moox\Press\QueryBuilder;
 
 use Illuminate\Database\Query\Builder;
+use Override;
 
 class UserQueryBuilder extends Builder
 {
@@ -13,6 +14,7 @@ class UserQueryBuilder extends Builder
         'id' => 'ID',
     ];
 
+    #[Override]
     public function where($column, $operator = null, $value = null, $boolean = 'and')
     {
         if (is_string($column) && array_key_exists($column, $this->aliasMap)) {
@@ -22,6 +24,7 @@ class UserQueryBuilder extends Builder
         return parent::where($column, $operator, $value, $boolean);
     }
 
+    #[Override]
     public function orderBy($column, $direction = 'asc')
     {
         if (is_string($column) && array_key_exists($column, $this->aliasMap)) {

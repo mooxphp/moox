@@ -9,6 +9,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Tag\Resources\TagResource;
+use Override;
 
 class ViewTag extends ViewRecord
 {
@@ -22,6 +23,7 @@ class ViewTag extends ViewRecord
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         $title = parent::getTitle();

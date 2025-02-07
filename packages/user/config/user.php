@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Validation\Rules\Password;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +16,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -107,7 +108,7 @@ return [
 
     'password' => [
         'validation' => [
-            'rules' => Illuminate\Validation\Rules\Password::min(20)
+            'rules' => Password::min(20)
                 ->max(64)
                 ->mixedCase()
                 ->numbers()

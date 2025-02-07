@@ -40,7 +40,7 @@ trait SingleSoftDeleteInListPage
                 ->requiresConfirmation()
                 ->modalHeading(__('core::core.empty_trash_confirmation'))
                 ->modalDescription(__('core::core.empty_trash_description'))
-                ->disabled(function () {
+                ->disabled(function (): bool {
                     $model = $this->getModel();
 
                     if (! in_array(SoftDeletes::class, class_uses_recursive($model))) {
@@ -58,7 +58,7 @@ trait SingleSoftDeleteInListPage
                         ->whereNotNull($deletedAtColumn)
                         ->count() === 0;
                 })
-                ->action(function () {
+                ->action(function (): void {
                     $model = $this->getModel();
 
                     if (! in_array(SoftDeletes::class, class_uses_recursive($model))) {

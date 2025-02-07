@@ -5,23 +5,26 @@ namespace Moox\Locate\Resources\AreaResource\Pages;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Locate\Resources\AreaResource;
+use Override;
 
 class ListPage extends ListRecords
 {
     public static string $resource = AreaResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             // LocateWidgets::class,
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('locate::translations.title');
@@ -31,9 +34,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): static {
-                    return $model::create($data);
-                }),
+                ->using(fn (array $data, string $model): static => $model::create($data)),
         ];
     }
 }

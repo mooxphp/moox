@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class Scheduler extends Controller
 {
-    public function __invoke()
+    public function __invoke(): string
     {
         $sharedHostingToken = config('core.shared_hosting.token');
 

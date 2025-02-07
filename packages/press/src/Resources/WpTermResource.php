@@ -9,20 +9,25 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpTerm;
-use Moox\Press\Resources\WpTermResource\Pages;
+use Moox\Press\Resources\WpTermResource\Pages\CreateWpTerm;
+use Moox\Press\Resources\WpTermResource\Pages\EditWpTerm;
+use Moox\Press\Resources\WpTermResource\Pages\ListWpTerms;
+use Moox\Press\Resources\WpTermResource\Pages\ViewWpTerm;
+use Override;
 
 class WpTermResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpTerm::class;
 
@@ -30,11 +35,13 @@ class WpTermResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('termTaxonomy');
     }
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -105,31 +112,32 @@ class WpTermResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('core::core.name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label(__('core::core.description'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('parent')
+                TextColumn::make('parent')
                     ->label(__('core::core.parent'))
                     ->toggleable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('count')
+                TextColumn::make('count')
                     ->label(__('core::core.count'))
                     ->toggleable()
                     ->searchable(),
@@ -138,46 +146,54 @@ class WpTermResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTerms::route('/'),
-            'create' => Pages\CreateWpTerm::route('/create'),
-            'view' => Pages\ViewWpTerm::route('/{record}'),
-            'edit' => Pages\EditWpTerm::route('/{record}/edit'),
+            'index' => ListWpTerms::route('/'),
+            'create' => CreateWpTerm::route('/create'),
+            'view' => ViewWpTerm::route('/{record}'),
+            'edit' => EditWpTerm::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.term.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.term.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.term.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.term.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.meta_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.meta_navigation_sort') + 5;

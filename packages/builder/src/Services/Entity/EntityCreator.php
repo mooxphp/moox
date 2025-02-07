@@ -21,7 +21,7 @@ class EntityCreator extends AbstractEntityService
 
     public function setBlocks(array $blocks): void
     {
-        if (empty($blocks)) {
+        if ($blocks === []) {
             throw new RuntimeException('Blocks array cannot be empty');
         }
 
@@ -49,6 +49,7 @@ class EntityCreator extends AbstractEntityService
 
         $this->entityGenerator->setContext($this->context);
         $this->entityGenerator->execute();
+
         $generatedData = $this->entityGenerator->getGenerationResult();
 
         if (! isset($generatedData['blocks'])) {
@@ -57,7 +58,7 @@ class EntityCreator extends AbstractEntityService
 
         $this->blocks = $generatedData['blocks'];
 
-        if (empty($this->blocks)) {
+        if ($this->blocks === []) {
             throw new RuntimeException('Blocks array empty after generation. Debug: '.print_r($this->blocks, true));
         }
 

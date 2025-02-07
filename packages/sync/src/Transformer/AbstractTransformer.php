@@ -6,14 +6,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 abstract class AbstractTransformer
 {
-    protected $query;
-
     protected $model;
 
-    public function __construct(Builder $query)
+    public function __construct(protected Builder $query)
     {
-        $this->query = $query;
-        $this->model = $query->getModel();
+        $this->model = $this->query->getModel();
     }
 
     public function transform(): array

@@ -6,6 +6,7 @@ namespace Moox\Category\Resources\CategoryResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Category\Resources\CategoryResource;
+use Override;
 
 class CreateCategory extends CreateRecord
 {
@@ -16,6 +17,7 @@ class CreateCategory extends CreateRecord
         return false;
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

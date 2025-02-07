@@ -36,13 +36,13 @@ class LoginLinkController extends Controller
         return back()->with('message', 'Login link has been sent!');
     }
 
-    public function sendLinkInternal($user)
+    public function sendLinkInternal($user): void
     {
         $token = Str::random(40);
 
         $loginLink = LoginLink::create([
             'user_id' => $user->id,
-            'user_type' => get_class($user),
+            'user_type' => $user::class,
             'email' => $user->email,
             'token' => $token,
             'expires_at' => now()->addHours(config('login-link.expiration_time')),
@@ -54,8 +54,8 @@ class LoginLinkController extends Controller
     public function authenticate($userId, $token)
     {
         try {
-            $userId = urldecode(decrypt($userId));
-        } catch (DecryptException $e) {
+            $userId = urldecode((string) decrypt($userId));
+        } catch (DecryptException) {
             return redirect()->route('login')->withErrors(['invalid' => 'Invalid or corrupted link.']);
         }
 
@@ -64,11 +64,7 @@ class LoginLinkController extends Controller
             ->where('user_id', $userId)
             ->firstOrFail();
 
-        if (isset($loginLink->user_type)) {
-            $userType = $loginLink->user_type;
-        } else {
-            $userType = 'App\Models\User';
-        }
+        $userType = $loginLink->user_type ?? User::class;
 
         $loginLink->update(['used_at' => now()]);
 

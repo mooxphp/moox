@@ -50,6 +50,7 @@ class WpUserSyncHandler extends AbstractSyncHandler
     {
         $metaData = $this->getMetaData();
         $metaData = $this->ensureAllFieldsHaveValue($metaData);
+
         $foreignKeyName = $this->getForeignKeyName();
 
         foreach ($metaData as $key => $value) {
@@ -65,9 +66,7 @@ class WpUserSyncHandler extends AbstractSyncHandler
 
     protected function ensureAllFieldsHaveValue(array $data): array
     {
-        return array_map(function ($value) {
-            return $value ?? '';
-        }, $data);
+        return array_map(fn ($value) => $value ?? '', $data);
     }
 
     protected function getMainTableData(): array

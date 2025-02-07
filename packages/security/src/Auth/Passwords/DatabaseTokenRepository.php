@@ -4,6 +4,7 @@ namespace Moox\Security\Auth\Passwords;
 
 use Illuminate\Auth\Passwords\DatabaseTokenRepository as DatabaseTokenRepositoryBase;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Override;
 
 class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
 {
@@ -12,6 +13,7 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
      *
      * @return string
      */
+    #[Override]
     public function create(CanResetPasswordContract $user)
     {
         $email = $user->getEmailForPasswordReset();
@@ -34,6 +36,7 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
      * @param  string  $token
      * @return bool
      */
+    #[Override]
     public function exists(CanResetPasswordContract $user, $token)
     {
         $email = $user->getEmailForPasswordReset();
@@ -45,16 +48,15 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
             ->first();
 
         if ($record) {
-            $isValid = ! $this->tokenExpired($record->created_at) &&
+            return ! $this->tokenExpired($record->created_at) &&
                 $this->hasher->check($token, $record->token);
-
-            return $isValid;
         }
 
         return false;
     }
 
-    public function delete(CanResetPasswordContract $user)
+    #[Override]
+    public function delete(CanResetPasswordContract $user): void
     {
         $email = $user->getEmailForPasswordReset();
         $userType = $this->getUserType($user);
@@ -88,8 +90,8 @@ class DatabaseTokenRepository extends DatabaseTokenRepositoryBase
         ];
     }
 
-    protected function getUserType(CanResetPasswordContract $user)
+    protected function getUserType(CanResetPasswordContract $user): string
     {
-        return get_class($user);
+        return $user::class;
     }
 }

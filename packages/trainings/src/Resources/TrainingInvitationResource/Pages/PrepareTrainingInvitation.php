@@ -7,6 +7,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Training\Resources\TrainingInvitationResource;
+use Override;
 
 class PrepareTrainingInvitation extends EditRecord
 {
@@ -17,13 +18,14 @@ class PrepareTrainingInvitation extends EditRecord
         return [
             Action::make('sendInvitations')
                 ->label('Send Invitations')
-                ->action(function () {
+                ->action(function (): void {
                     // Send invitation job
                 }),
             DeleteAction::make(),
         ];
     }
 
+    #[Override]
     public function form(Form $form): Form
     {
         return parent::form($form);

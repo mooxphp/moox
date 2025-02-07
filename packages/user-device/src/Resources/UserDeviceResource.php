@@ -21,15 +21,18 @@ use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
+use Override;
 
 class UserDeviceResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = UserDevice::class;
 
     protected static ?string $navigationIcon = 'gmdi-devices-o';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -75,30 +78,24 @@ class UserDeviceResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 IconColumn::make('platform')
                     ->label(__('core::sync.platform'))
-                    ->icon(function ($record) {
-                        switch ($record->platform) {
-                            case 'Mobile':
-                                return 'heroicon-o-device-phone-mobile';
-                            case 'Desktop':
-                                return 'heroicon-o-computer-desktop';
-                            default:
-                                return 'heroicon-o-computer-desktop';
-                        }
+                    ->icon(fn ($record): string => match ($record->platform) {
+                        'Mobile' => 'heroicon-o-device-phone-mobile',
+                        'Desktop' => 'heroicon-o-computer-desktop',
+                        default => 'heroicon-o-computer-desktop',
                     }),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(function ($record) {
-                        return optional($record->user)->name ?? 'unknown';
-                    })
+                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
 
                 // TODO: Not implemented yet, must be editable then
@@ -127,6 +124,7 @@ class UserDeviceResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -134,6 +132,7 @@ class UserDeviceResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -142,6 +141,7 @@ class UserDeviceResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -150,36 +150,43 @@ class UserDeviceResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('user-device.resources.devices.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('user-device.resources.devices.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('user-device.resources.devices.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('user-device.resources.devices.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('user-device.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('user-device.navigation_sort') + 2;

@@ -10,14 +10,10 @@ use Illuminate\Queue\SerializesModels;
 
 class InvitationRequest extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public $invitationRequest;
-
-    public function __construct($invitationRequest)
-    {
-        $this->invitationRequest = $invitationRequest;
-    }
+    public function __construct(public $invitationRequest) {}
 
     public function envelope(): Envelope
     {

@@ -10,22 +10,22 @@ class FileFormatter
 {
     public function formatFiles(array $paths): void
     {
-        if (empty($paths)) {
+        if ($paths === []) {
             return;
         }
 
         $fileList = implode(' ', array_map(
-            fn ($path) => escapeshellarg(str_replace('\\', '/', $path)),
+            fn ($path): string => escapeshellarg(str_replace('\\', '/', $path)),
             array_filter($paths)
         ));
 
-        if (empty($fileList)) {
+        if ($fileList === '' || $fileList === '0') {
             return;
         }
 
         $command = PHP_OS_FAMILY === 'Windows'
-            ? "php vendor/bin/pint {$fileList} --quiet"
-            : "vendor/bin/pint {$fileList} --quiet";
+            ? sprintf('php vendor/bin/pint %s --quiet', $fileList)
+            : sprintf('vendor/bin/pint %s --quiet', $fileList);
 
         exec($command, $output, $returnCode);
 

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('currencies', function (Blueprint $table) {
+        Schema::create('currencies', function (Blueprint $table): void {
             $table->bigIncrements('id');
 
             $table->timestamps();

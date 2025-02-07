@@ -9,14 +9,11 @@ if (config('press.use_api')) {
         if ($config['enabled']) {
             $middleware = [];
             if (! $config['public']) {
-                if ($config['auth_type'] === 'platform') {
-                    $middleware[] = 'auth.platformtoken';
-                } else {
-                    $middleware[] = 'auth:sanctum';
-                }
+                $middleware[] = $config['auth_type'] === 'platform' ? 'auth.platformtoken' : 'auth:sanctum';
             }
-            Route::middleware($middleware)->group(function () use ($entity) {
-                Route::apiResource("/$entity/wpuser", WpUserController::class)->only(config('press.entities.wp_users.api.route_only'));
+
+            Route::middleware($middleware)->group(function () use ($entity): void {
+                Route::apiResource(sprintf('/%s/wpuser', $entity), WpUserController::class)->only(config('press.entities.wp_users.api.route_only'));
             });
         }
     }

@@ -3,15 +3,22 @@
 namespace Moox\Builder\Blocks\Singles;
 
 use Moox\Builder\Blocks\AbstractBlock;
+use Moox\BuilderPro\Blocks\Singles\Publish;
+use Moox\Core\Traits\Base\BaseInCreatePage;
+use Moox\Core\Traits\Base\BaseInEditPage;
+use Moox\Core\Traits\Base\BaseInListPage;
+use Moox\Core\Traits\Base\BaseInModel;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Base\BaseInViewPage;
+use Moox\Core\Traits\Simple\SingleSimpleInCreatePage;
+use Moox\Core\Traits\Simple\SingleSimpleInEditPage;
+use Moox\Core\Traits\Simple\SingleSimpleInListPage;
+use Moox\Core\Traits\Simple\SingleSimpleInModel;
+use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Moox\Core\Traits\Simple\SingleSimpleInViewPage;
 
 class Simple extends AbstractBlock
 {
-    protected array $incompatibleBlocks = [
-        'Moox\Builder\Blocks\Singles\SoftDelete',
-        'Moox\BuilderPro\Blocks\Singles\Publish',
-        'Moox\Builder\Blocks\Singles\Light',
-    ];
-
     public function __construct(
         string $name = 'simple',
         string $label = 'Simple',
@@ -19,29 +26,35 @@ class Simple extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
+        $this->incompatibleBlocks = [
+            Light::class,
+            Publish::class,
+            SoftDelete::class,
+        ];
+
         $this->traits['model'] = [
-            'Moox\Core\Traits\Simple\SingleSimpleInModel',
-            'Moox\Core\Traits\Base\BaseInModel',
+            SingleSimpleInModel::class,
+            BaseInModel::class,
         ];
         $this->traits['resource'] = [
-            'Moox\Core\Traits\Simple\SingleSimpleInResource',
-            'Moox\Core\Traits\Base\BaseInResource',
+            SingleSimpleInResource::class,
+            BaseInResource::class,
         ];
         $this->traits['pages']['list'] = [
-            'Moox\Core\Traits\Simple\SingleSimpleInListPage',
-            'Moox\Core\Traits\Base\BaseInListPage',
+            SingleSimpleInListPage::class,
+            BaseInListPage::class,
         ];
         $this->traits['pages']['view'] = [
-            'Moox\Core\Traits\Simple\SingleSimpleInViewPage',
-            'Moox\Core\Traits\Base\BaseInViewPage',
+            SingleSimpleInViewPage::class,
+            BaseInViewPage::class,
         ];
         $this->traits['pages']['create'] = [
-            'Moox\Core\Traits\Simple\SingleSimpleInCreatePage',
-            'Moox\Core\Traits\Base\BaseInCreatePage',
+            SingleSimpleInCreatePage::class,
+            BaseInCreatePage::class,
         ];
         $this->traits['pages']['edit'] = [
-            'Moox\Core\Traits\Simple\SingleSimpleInEditPage',
-            'Moox\Core\Traits\Base\BaseInEditPage',
+            SingleSimpleInEditPage::class,
+            BaseInEditPage::class,
         ];
 
         $this->addSection('meta')

@@ -1,7 +1,8 @@
 <?php
 
-// TODO: can be deleted, if not used
+use Moox\User\Models\User;
 
+// TODO: can be deleted, if not used
 return [
     'shield_resource' => [
         'should_register_navigation' => true,
@@ -14,7 +15,7 @@ return [
     ],
 
     'auth_provider_model' => [
-        'fqcn' => 'Moox\\User\\Models\\User',
+        'fqcn' => User::class,
     ],
 
     'super_admin' => [

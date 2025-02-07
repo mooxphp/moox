@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class ViewSimpleTaxonomy extends ViewRecord
 {
@@ -15,6 +16,7 @@ class ViewSimpleTaxonomy extends ViewRecord
 
     protected static string $resource = SimpleTaxonomyResource::class;
 
+    #[Override]
     public function mount($record): void
     {
         $this->record = $this->resolveRecord($record);
@@ -24,6 +26,7 @@ class ViewSimpleTaxonomy extends ViewRecord
         $this->fillForm();
     }
 
+    #[Override]
     public function getTitle(): string
     {
         $title = parent::getTitle();

@@ -2,6 +2,7 @@
 
 namespace Moox\UserSession\Resources;
 
+use Exception;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -19,10 +20,12 @@ use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
+use Override;
 
 class UserSessionResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = UserSession::class;
 
@@ -30,6 +33,7 @@ class UserSessionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'id';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -51,6 +55,7 @@ class UserSessionResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -66,7 +71,7 @@ class UserSessionResource extends Resource
                             return $record->user->name;
                         }
 
-                        return "ID {$record->user_id} (no user type)";
+                        return sprintf('ID %s (no user type)', $record->user_id);
                     })
                     ->sortable(),
 
@@ -95,15 +100,15 @@ class UserSessionResource extends Resource
                 ViewAction::make(),
                 DeleteAction::make()
                     ->label(__('core::core.drop'))
-                    ->action(function ($record) {
+                    ->action(function ($record): void {
                         try {
                             $record->delete();
                             Notification::make()
                                 ->title('Deleted successfully')
                                 ->success()
                                 ->send();
-                        } catch (\Exception $e) {
-                            Log::error('Failed to delete record: '.$e->getMessage());
+                        } catch (Exception $exception) {
+                            Log::error('Failed to delete record: '.$exception->getMessage());
                             Notification::make()
                                 ->title('Error on deleting')
                                 ->success()
@@ -116,6 +121,7 @@ class UserSessionResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -123,6 +129,7 @@ class UserSessionResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -132,6 +139,7 @@ class UserSessionResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -140,36 +148,43 @@ class UserSessionResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('user-session.resources.session.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('user-session.resources.session.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('user-session.resources.session.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('user-session.resources.session.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('user-session.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('user-session.navigation_sort') + 3;

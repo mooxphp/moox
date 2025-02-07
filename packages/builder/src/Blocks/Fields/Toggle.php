@@ -32,8 +32,8 @@ class Toggle extends AbstractBlock
                 ->label('{$this->label}')"
                 .($this->nullable ? '' : '->required()')
                 .($this->default ? '->default(true)' : '')
-                .($this->onColor ? "->onColor('{$this->onColor}')" : '')
-                .($this->offColor ? "->offColor('{$this->offColor}')" : ''),
+                .($this->onColor ? sprintf("->onColor('%s')", $this->onColor) : '')
+                .($this->offColor ? sprintf("->offColor('%s')", $this->offColor) : ''),
         ];
 
         $this->tableColumns['resource'] = [
@@ -42,17 +42,17 @@ class Toggle extends AbstractBlock
         ];
 
         $this->filters['resource'] = [
-            "BooleanFilter::make('{$this->name}')",
+            sprintf("BooleanFilter::make('%s')", $this->name),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->boolean('{$this->name}')"
+            sprintf("\$table->boolean('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : '')
                 .($this->default ? '->default(true)' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => $this->default ? 'true' : 'fake()->boolean()',
+            $this->name => $this->default ? 'true' : 'fake()->boolean()',
         ];
     }
 }

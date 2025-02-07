@@ -9,6 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleItem;
 use Moox\Builder\Resources\SimpleItemResource;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListSimpleItems extends ListRecords
 {
@@ -23,6 +24,7 @@ class ListSimpleItems extends ListRecords
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('builder.resources.simple-item.plural');

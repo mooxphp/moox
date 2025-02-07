@@ -3,6 +3,7 @@
 namespace Moox\Press\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Press\Models\WpUser;
 use Moox\Security\Helper\PasswordHash;
 
@@ -11,7 +12,7 @@ class WpUserFactory extends Factory
     /**
      * The name of the factory's corresponding model.
      *
-     * @var class-string<\Illuminate\Database\Eloquent\Model>
+     * @var class-string<Model>
      */
     protected $model = WpUser::class;
 
@@ -38,7 +39,7 @@ class WpUserFactory extends Factory
         ];
     }
 
-    public function generatePassword($length = 12)
+    public function generatePassword($length = 12): string
     {
         // Define the character set for the password
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_';

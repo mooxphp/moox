@@ -2,8 +2,11 @@
 
 namespace Moox\Passkey\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Moox\UserDevice\Models\UserDevice;
+use Moox\UserSession\Models\UserSession;
 
 class Passkey extends Model
 {
@@ -32,10 +35,10 @@ class Passkey extends Model
      */
     public function user(): BelongsTo
     {
-        if (isset($this->user_type)) {
+        if (property_exists($this, 'user_type') && $this->user_type !== null) {
             return $this->belongsTo($this->user_type, 'user_id');
         } else {
-            return $this->belongsTo('App\Models\User', 'user_id');
+            return $this->belongsTo(User::class, 'user_id');
         }
     }
 
@@ -44,7 +47,7 @@ class Passkey extends Model
      */
     public function userDevice(): BelongsTo
     {
-        return $this->belongsTo('Moox\UserDevice\Models\UserDevice', 'device_id');
+        return $this->belongsTo(UserDevice::class, 'device_id');
     }
 
     /**
@@ -52,6 +55,6 @@ class Passkey extends Model
      */
     public function userSession(): BelongsTo
     {
-        return $this->belongsTo('Moox\UserSession\Models\UserSession', 'session_id');
+        return $this->belongsTo(UserSession::class, 'session_id');
     }
 }

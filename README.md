@@ -223,10 +223,18 @@ We test Moox using:
 
 Please make sure you use the same tools in VS Code (our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) covers this) or do the checks manually before committing to the dev-branch:
 
--   PHPStan: `composer analyse ` or `./vendor/bin/phpstan analyse`, for packages `../../vendor/bin/phpstan analyse`
--   Pest: `composer test ` or `./vendor/bin/pest`, for packages `../../vendor/bin/pest`
--   Coverage: `composer test-coverage ` or `./vendor/bin/pest --coverage`, for packages `../../vendor/bin/pest --coverage`
--   Pint: `composer format ` or `./vendor/bin/pint`, for packages `../../vendor/bin/pint`
+-   Use `composer lint` to do a dry run of Pint, aliased as `test:lint`
+-   Use `composer analyse` to run PHPStan, aliased as `analyze` and `test:types`
+-   Use `composer test` to run the complete test suite
+-   Use `composer test:refactor` to do a dry run of Rector
+-   Use `composer test:arch` to run the architecture tests
+-   Use `composer test:type-coverage` to run the type coverage tests
+-   Use `composer test:unit` to run pest parallel with coverage
+-   Use `composer test:coverage` to run pest with coverage
+-   Use `composer refactor` to run Rector (ATTENTION CHANGES FILES), aliased as `rector`
+-   Use `composer format` to run Pint (ATTENTION CHANGES FILES), aliased as `pint`
+
+For more information, please see [composer.json](composer.json).
 
 ## Admin Navigation
 

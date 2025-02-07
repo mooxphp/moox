@@ -32,8 +32,8 @@ class KeyValue extends AbstractBlock
             "KeyValue::make('{$this->name}')
                 ->label('{$this->label}')"
                 .($this->nullable ? '' : '->required()')
-                .(! $this->keyLabel ? '->disableKeyLabel()' : '')
-                .(! $this->valueLabel ? '->disableValueLabel()' : '')
+                .($this->keyLabel ? '' : '->disableKeyLabel()')
+                .($this->valueLabel ? '' : '->disableValueLabel()')
                 .($this->reorderable ? '->reorderable()' : '')
                 .($this->keyOptions ? '->keyOptions('.var_export($this->keyOptions, true).')' : ''),
         ];
@@ -49,16 +49,16 @@ class KeyValue extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->json('{$this->name}')"
+            sprintf("\$table->json('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => '[]',
+            $this->name => '[]',
         ];
 
         $this->casts['model'] = [
-            "'{$this->name}' => 'array'",
+            sprintf("'%s' => 'array'", $this->name),
         ];
     }
 }

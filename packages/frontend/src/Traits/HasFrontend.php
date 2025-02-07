@@ -9,7 +9,7 @@ trait HasFrontend
     // TODO: Error handling if required fields are not set, etc.
 
     // TODO: these fields are used in the frontend, should be defined in the resource, otherwise all fields are used
-    public function frontendFields()
+    public function frontendFields(): array
     {
         return [
             'title' => $this->title,

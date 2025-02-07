@@ -24,9 +24,9 @@ class Select extends AbstractBlock
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ["use Filament\Forms\Components\\{$componentClass};"],
+                'forms' => [sprintf('use Filament\Forms\Components\%s;', $componentClass)],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ["use Filament\Tables\Filters\\{$filterClass};"],
+                'filters' => [sprintf('use Filament\Tables\Filters\%s;', $filterClass)],
             ],
         ];
 
@@ -39,7 +39,7 @@ class Select extends AbstractBlock
         ];
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')"
+            sprintf("TextColumn::make('%s')", $this->name)
                 .($this->multiple ? '->listWithLineBreaks()' : ''),
         ];
 
@@ -49,12 +49,12 @@ class Select extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            '$table->'.($this->multiple ? 'json' : 'string')."('{$this->name}')"
+            '$table->'.($this->multiple ? 'json' : 'string').sprintf("('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => $this->multiple
+            $this->name => $this->multiple
                 ? 'fake()->randomElements('.var_export(array_keys($this->options), true).', 2)'
                 : 'fake()->randomElement('.var_export(array_keys($this->options), true).')',
         ];

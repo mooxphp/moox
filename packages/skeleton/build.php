@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 function ask(string $question, string $default = ''): string
 {
-    $answer = readline($question.($default ? " ({$default})" : null).': ');
+    $answer = readline($question.($default !== '' && $default !== '0' ? sprintf(' (%s)', $default) : null).': ');
 
     if (! $answer) {
         return $default;
@@ -17,25 +17,22 @@ function confirm(string $question, bool $default = false): bool
 {
     $answer = ask($question.' ('.($default ? 'Y/n' : 'y/N').')');
 
-    if (! $answer) {
+    if ($answer === '' || $answer === '0') {
         return $default;
     }
 
     return strtolower($answer) === 'y';
 }
 
-function isValidPackageName($packageName)
+function isValidPackageName($packageName): bool
 {
     if (empty($packageName)) {
         return false;
     }
 
     $reservedName = 'skeleton';
-    if (str_contains(strtolower($packageName), $reservedName)) {
-        return false;
-    }
 
-    return true;
+    return ! str_contains(strtolower((string) $packageName), $reservedName);
 }
 
 function writeln(string $line): void
@@ -61,7 +58,7 @@ function str_after(string $subject, string $search): string
 
 function slugify(string $subject): string
 {
-    return strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $subject), '-'));
+    return strtolower(trim((string) preg_replace('/[^A-Za-z0-9-]+/', '-', $subject), '-'));
 }
 
 function title_case(string $subject): string
@@ -107,7 +104,7 @@ function replace_readme_paragraphs(string $file, string $content): void
     );
 }
 
-function safeUnlink(string $filename)
+function safeUnlink(string $filename): void
 {
     if (file_exists($filename) && is_file($filename)) {
         unlink($filename);
@@ -173,14 +170,14 @@ $packageSlugWithoutPrefix = remove_prefix('laravel-', $packageSlug);
 $className = title_case($packageName);
 $className = ask('Class name', $className);
 $variableName = lcfirst($className);
-$description = ask('Package description', "This is my package {$packageSlug}");
+$description = ask('Package description', 'This is my package '.$packageSlug);
 
 writeln('------');
-writeln("Author : {$authorName}");
-writeln("Author Email : {$authorEmail}");
-writeln("Namespace  : Moox\\{$className}");
-writeln("Packagename : moox\\{$packageSlug}");
-writeln("Class name : {$className}Plugin");
+writeln('Author : '.$authorName);
+writeln('Author Email : '.$authorEmail);
+writeln('Namespace  : Moox\\'.$className);
+writeln('Packagename : moox\\'.$packageSlug);
+writeln(sprintf('Class name : %sPlugin', $className));
 writeln('------');
 
 writeln('This script will replace the above values in all relevant files in the project directory.');
@@ -201,16 +198,21 @@ foreach ($files as $file) {
     ]);
 
     match (true) {
-        str_contains($file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
-        str_contains($file, 'README.md') => replace_readme_paragraphs($file, $description),
+        str_contains((string) $file, determineSeparator('src/SkeletonServiceProvider.php')) => rename($file, determineSeparator('./src/'.$className.'ServiceProvider.php')),
+        str_contains((string) $file, 'README.md') => replace_readme_paragraphs($file, $description),
         default => [],
     };
 }
+
 rename(determineSeparator('config/skeleton.php'), determineSeparator('./config/'.$packageSlugWithoutPrefix.'.php'));
 
-confirm('Execute `composer install` and run tests?') && run('composer install && composer test');
+if (confirm('Execute `composer install` and run tests?')) {
+    run('composer install && composer test');
+}
 
-confirm('Let this script delete itself?', true) && unlink(__FILE__);
+if (confirm('Let this script delete itself?', true)) {
+    unlink(__FILE__);
+}
 
 writeln(' ');
 writeln('Moox Builder is finished. Have fun!');

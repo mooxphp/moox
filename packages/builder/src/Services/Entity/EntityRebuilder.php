@@ -45,6 +45,7 @@ class EntityRebuilder extends AbstractEntityService
 
         $this->entityGenerator->setContext($this->context);
         $this->entityGenerator->execute();
+
         $generatedData = $this->entityGenerator->getGenerationResult();
 
         $this->buildManager->recordBuild(

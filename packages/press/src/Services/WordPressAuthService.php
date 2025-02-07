@@ -6,19 +6,19 @@ use Moox\Security\Helper\PasswordHash;
 
 class WordPressAuthService
 {
-    protected $hasher;
+    protected PasswordHash $hasher;
 
     public function __construct()
     {
         $this->hasher = new PasswordHash(8, true);
     }
 
-    public function hashPassword($password)
+    public function hashPassword(string $password): string
     {
         return $this->hasher->HashPassword($password);
     }
 
-    public function checkPassword($password, $hashedPassword)
+    public function checkPassword(string $password, $hashedPassword): bool
     {
         return $this->hasher->CheckPassword($password, $hashedPassword);
     }

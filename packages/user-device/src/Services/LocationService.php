@@ -2,11 +2,12 @@
 
 namespace Moox\UserDevice\Services;
 
+use Exception;
 use GeoIp2\Database\Reader;
 
 class LocationService
 {
-    protected $reader;
+    protected Reader $reader;
 
     public function __construct()
     {
@@ -14,7 +15,7 @@ class LocationService
         $this->reader = new Reader($mmdbPath);
     }
 
-    public function getLocation($ipAddress)
+    public function getLocation(string $ipAddress): ?array
     {
         try {
             $record = $this->reader->city($ipAddress);
@@ -27,7 +28,7 @@ class LocationService
                 'lat' => $record->location->latitude,
                 'lon' => $record->location->longitude,
             ];
-        } catch (\Exception $e) {
+        } catch (Exception) {
             // Handle errors or unknown IPs gracefully
             return null;
         }

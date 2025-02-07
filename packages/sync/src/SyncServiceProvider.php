@@ -13,6 +13,7 @@ use Moox\Sync\Http\Middleware\WebhookAuthMiddleware;
 use Moox\Sync\Jobs\SyncBackupJob;
 use Moox\Sync\Jobs\SyncPlatformJob;
 use Moox\Sync\Listener\SyncListener;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -32,6 +33,7 @@ class SyncServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
+    #[Override]
     public function boot(): void
     {
         parent::boot();
@@ -56,7 +58,7 @@ class SyncServiceProvider extends PackageServiceProvider
         $syncPlatformJobConfig = Config::get('sync.sync_platform_job');
 
         if ($syncPlatformJobConfig['enabled']) {
-            $this->app->booted(function () use ($syncPlatformJobConfig) {
+            $this->app->booted(function () use ($syncPlatformJobConfig): void {
                 $this->logDebug('Moox Sync: Registering sync platform job');
 
                 $schedule = $this->app->make(Schedule::class);
@@ -70,7 +72,7 @@ class SyncServiceProvider extends PackageServiceProvider
         $syncBackupJobConfig = Config::get('sync.sync_backup_job');
 
         if ($syncBackupJobConfig['enabled']) {
-            $this->app->booted(function () use ($syncBackupJobConfig) {
+            $this->app->booted(function () use ($syncBackupJobConfig): void {
                 $this->logDebug('Moox Sync: Registering sync backup job');
 
                 $schedule = $this->app->make(Schedule::class);

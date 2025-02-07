@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 class SimpleTaxonomy extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'simple_taxonomies';
 
@@ -51,9 +53,10 @@ class SimpleTaxonomy extends Model
         DB::table('simpletaxonomyables')->where('simple_taxonomy_id', $this->id)->delete();
     }
 
+    #[Override]
     protected static function booted(): void
     {
-        static::deleting(function (SimpleTaxonomy $simpleTaxonomy) {
+        static::deleting(function (SimpleTaxonomy $simpleTaxonomy): void {
             $simpleTaxonomy->detachAllSimpletaxonomyables();
         });
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Core\Traits\SoftDelete;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -14,11 +15,7 @@ trait SingleSoftDeleteInViewPage
     {
         $model = static::getModel();
 
-        if ($record instanceof Model) {
-            $recordId = $record->getKey();
-        } else {
-            $recordId = $record;
-        }
+        $recordId = $record instanceof Model ? $record->getKey() : $record;
 
         $query = $model::query();
 
@@ -29,7 +26,7 @@ trait SingleSoftDeleteInViewPage
         $foundRecord = $query->find($recordId);
 
         if (! $foundRecord) {
-            throw new \Exception("Record with ID {$recordId} not found.");
+            throw new Exception(sprintf('Record with ID %s not found.', $recordId));
         }
 
         parent::mount($recordId);

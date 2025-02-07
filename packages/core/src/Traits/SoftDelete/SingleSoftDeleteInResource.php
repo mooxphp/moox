@@ -11,6 +11,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -56,7 +57,7 @@ trait SingleSoftDeleteInResource
         return EditAction::make('edit')
             ->color('primary')
             ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-            ->visible(fn ($livewire, $record) => $record instanceof \Illuminate\Database\Eloquent\Model && method_exists($record, 'trashed') && ! $record->trashed());
+            ->visible(fn ($livewire, $record): bool => $record instanceof Model && method_exists($record, 'trashed') && ! $record->trashed());
     }
 
     public static function getSoftDeleteViewTableAction(): ViewAction
@@ -64,7 +65,7 @@ trait SingleSoftDeleteInResource
         return ViewAction::make('view')
             ->color('secondary')
             ->url(fn ($record) => static::getUrl('view', ['record' => $record]))
-            ->visible(fn ($livewire, $record) => $record instanceof \Illuminate\Database\Eloquent\Model && method_exists($record, 'trashed') && ! $record->trashed());
+            ->visible(fn ($livewire, $record): bool => $record instanceof Model && method_exists($record, 'trashed') && ! $record->trashed());
     }
 
     public static function getHardDeleteTableAction(): Action
@@ -76,10 +77,10 @@ trait SingleSoftDeleteInResource
             ->requiresConfirmation()
             ->modalHeading(__('core::core.hard_delete_confirmation'))
             ->modalDescription(__('core::core.hard_delete_description'))
-            ->action(function ($record) {
+            ->action(function ($record): void {
                 $record->forceDelete();
             })
-            ->visible(fn ($livewire, $record) => $record instanceof \Illuminate\Database\Eloquent\Model && method_exists($record, 'trashed') && $record->trashed());
+            ->visible(fn ($livewire, $record): bool => $record instanceof Model && method_exists($record, 'trashed') && $record->trashed());
     }
 
     public static function getTableActions(): array
@@ -113,14 +114,14 @@ trait SingleSoftDeleteInResource
             ->icon('heroicon-m-trash')
             ->modalHeading(__('core::core.hard_delete_bulk_confirmation'))
             ->modalDescription(__('core::core.hard_delete_bulk_description'))
-            ->action(function (Collection $records, $livewire) {
+            ->action(function (Collection $records, $livewire): void {
                 $records->each->forceDelete();
 
                 $livewire->resetTable();
             })
             ->deselectRecordsAfterCompletion()
             ->visible(
-                fn ($livewire) => isset($livewire->activeTab)
+                fn ($livewire): bool => isset($livewire->activeTab)
                 && in_array($livewire->activeTab, ['trash', 'deleted']))
             ->requiresConfirmation();
     }
@@ -153,7 +154,7 @@ trait SingleSoftDeleteInResource
             ->keyBindings(['command+e', 'ctrl+e'])
             ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
             ->visible(
-                fn ($livewire, $record) => $livewire instanceof ViewRecord
+                fn ($livewire, $record): bool => $livewire instanceof ViewRecord
                 && method_exists($record, 'trashed')
                 && ! $record->trashed());
     }

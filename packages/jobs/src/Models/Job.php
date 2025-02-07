@@ -16,7 +16,7 @@ class Job extends Model
     public function status(): Attribute
     {
         return Attribute::make(
-            get: function () {
+            get: function (): string {
                 if ($this->reserved_at) {
                     return 'running';
                 }
@@ -28,7 +28,7 @@ class Job extends Model
 
     public function getDisplayNameAttribute()
     {
-        $payload = json_decode($this->attributes['payload'], true);
+        $payload = json_decode((string) $this->attributes['payload'], true);
 
         return $payload['displayName'] ?? null;
     }

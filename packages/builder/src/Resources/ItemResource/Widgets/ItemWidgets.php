@@ -8,9 +8,11 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Models\Item;
+use Override;
 
 class ItemWidgets extends BaseWidget
 {
+    #[Override]
     protected function getStats(): array
     {
         $aggregationColumns = [

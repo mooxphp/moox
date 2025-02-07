@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Generators\Entity;
 
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 
@@ -57,34 +58,36 @@ class ConfigGenerator extends AbstractGenerator
 
     protected function formatTabs(): string
     {
-        if (empty($this->tabs)) {
+        if ($this->tabs === []) {
             return '[]';
         }
 
         $output = "[\n";
         foreach ($this->tabs as $key => $tab) {
-            $output .= "        '$key' => [\n";
+            $output .= "        '{$key}' => [\n";
             foreach ($tab as $property => $value) {
                 if (is_array($value)) {
-                    $output .= "            '$property' => [\n";
+                    $output .= "            '{$property}' => [\n";
                     foreach ($value as $queryItem) {
                         $output .= "                [\n";
                         foreach ($queryItem as $field => $fieldValue) {
-                            $formattedValue = is_null($fieldValue) ? 'null' : "'$fieldValue'";
-                            $output .= "                    '$field' => $formattedValue,\n";
+                            $formattedValue = is_null($fieldValue) ? 'null' : sprintf("'%s'", $fieldValue);
+                            $output .= "                    '{$field}' => {$formattedValue},\n";
                         }
+
                         $output .= "                ],\n";
                     }
+
                     $output .= "            ],\n";
                 } else {
-                    $output .= "            '$property' => '$value',\n";
+                    $output .= "            '{$property}' => '{$value}',\n";
                 }
             }
+
             $output .= "        ],\n";
         }
-        $output .= '    ]';
 
-        return $output;
+        return $output.'    ]';
     }
 
     protected function generateConfigContent(): string
@@ -92,14 +95,14 @@ class ConfigGenerator extends AbstractGenerator
         $entityName = Str::kebab($this->context->getEntityName());
         $contextType = $this->context->getContextType();
         $translationKey = match ($contextType) {
-            'app' => "entities/{$entityName}",
-            'preview' => "previews/{$entityName}",
-            'package' => $this->context->getConfig()['package']['name']."/{$entityName}",
-            default => throw new \InvalidArgumentException('Invalid context type: '.$contextType),
+            'app' => 'entities/'.$entityName,
+            'preview' => 'previews/'.$entityName,
+            'package' => $this->context->getConfig()['package']['name'].('/'.$entityName),
+            default => throw new InvalidArgumentException('Invalid context type: '.$contextType),
         };
 
         $taxonomies = $this->generateTaxonomiesConfig();
-        $taxonomiesConfig = empty($taxonomies) ? '[]' : "[\n        {$taxonomies}\n    ]";
+        $taxonomiesConfig = $taxonomies === '' || $taxonomies === '0' ? '[]' : "[\n        {$taxonomies}\n    ]";
 
         return "<?php\n\nreturn [\n".
             "    'single' => 'trans//{$translationKey}.{$this->getSingularKey()}',\n".
@@ -127,7 +130,7 @@ class ConfigGenerator extends AbstractGenerator
 
     protected function generateTaxonomiesConfig(): string
     {
-        if (empty($this->taxonomies)) {
+        if ($this->taxonomies === []) {
             return '';
         }
 
@@ -155,7 +158,7 @@ class ConfigGenerator extends AbstractGenerator
 
     protected function generateRelationsConfig(): string
     {
-        if (empty($this->relations)) {
+        if ($this->relations === []) {
             return '';
         }
 

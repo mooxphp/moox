@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\User;
+use Moox\Press\Models\WpUser;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +19,6 @@
 | outputs 'All'
 |
 */
-
 /*
 |--------------------------------------------------------------------------
 | IMPORTANT NOTE !
@@ -25,7 +29,6 @@
 | Permission to work properly.
 |
 */
-
 return [
 
     /*
@@ -46,11 +49,11 @@ return [
     'guards' => [
         'moox' => [
             'provider' => 'users',
-            'model' => \App\Models\User::class,
+            'model' => User::class,
         ],
         'press' => [
             'provider' => 'press_users',
-            'model' => \Moox\Press\Models\WpUser::class,
+            'model' => WpUser::class,
         ],
         // Add more guards and user models as needed
     ],
@@ -77,7 +80,7 @@ return [
          * `Spatie\Permission\Contracts\Permission` contract.
          */
 
-        'permission' => Spatie\Permission\Models\Permission::class,
+        'permission' => Permission::class,
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
@@ -88,7 +91,7 @@ return [
          * `Spatie\Permission\Contracts\Role` contract.
          */
 
-        'role' => Spatie\Permission\Models\Role::class,
+        'role' => Role::class,
 
     ],
 
@@ -231,7 +234,7 @@ return [
          * When permissions or roles are updated the cache is flushed automatically.
          */
 
-        'expiration_time' => \DateInterval::createFromDateString('24 hours'),
+        'expiration_time' => DateInterval::createFromDateString('24 hours'),
 
         /*
          * The cache key used to store all permissions.

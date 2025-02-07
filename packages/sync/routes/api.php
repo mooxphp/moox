@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Moox\Sync\Http\Controllers\Api\PlatformSyncController;
 use Moox\Sync\Http\Controllers\SyncResponseController;
 use Moox\Sync\Http\Controllers\SyncWebhookController;
 
@@ -14,15 +15,15 @@ if (is_array($models)) {
                 $middleware[] = $config['api']['auth_type'] === 'platform' ? 'auth.platformtoken' : 'auth:sanctum';
             }
 
-            Route::middleware($middleware)->prefix('api')->group(function () use ($entity, $config) {
+            Route::middleware($middleware)->prefix('api')->group(function () use ($entity, $config): void {
                 Route::apiResource(Str::lower($entity), $config['api_controller'])->only($config['api']['active_routes']);
             });
         }
     }
 }
 
-Route::middleware('auth.platformtoken')->prefix('api')->group(function () {
-    Route::get('platform/{id}/sync', [\Moox\Sync\Http\Controllers\Api\PlatformSyncController::class, 'index']);
+Route::middleware('auth.platformtoken')->prefix('api')->group(function (): void {
+    Route::get('platform/{id}/sync', [PlatformSyncController::class, 'index']);
 });
 
 $webhookPath = config('sync.sync_webhook_url', '/sync-webhook');

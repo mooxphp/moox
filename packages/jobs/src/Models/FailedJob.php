@@ -2,6 +2,7 @@
 
 namespace Moox\Jobs\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $uuid
  * @property string $connection
  * @property string $queue
- * @property \Carbon\Carbon $failed_at
+ * @property Carbon $failed_at
  */
 class FailedJob extends Model
 {

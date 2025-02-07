@@ -15,6 +15,7 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Permission\Models\Permission;
 use Moox\Permission\Resources\PermissionResource\Pages\ListPage;
 use Moox\Permission\Resources\PermissionResource\Widgets\PermissionWidgets;
+use Override;
 
 class PermissionResource extends Resource
 {
@@ -24,6 +25,7 @@ class PermissionResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-engineering';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -37,6 +39,7 @@ class PermissionResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -61,6 +64,7 @@ class PermissionResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -68,6 +72,7 @@ class PermissionResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -75,6 +80,7 @@ class PermissionResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -82,26 +88,31 @@ class PermissionResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('permission::translations.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('permission::translations.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('permission::translations.navigation_label');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return __('permission::translations.breadcrumb');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
@@ -112,11 +123,13 @@ class PermissionResource extends Resource
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('permission::translations.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('permission.navigation_sort');

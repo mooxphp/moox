@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('country_language', function (Blueprint $table) {
+        Schema::table('country_language', function (Blueprint $table): void {
             $table
                 ->foreign('language_id')
                 ->references('id')
@@ -33,7 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('country_language', function (Blueprint $table) {
+        Schema::table('country_language', function (Blueprint $table): void {
             $table->dropForeign(['language_id']);
             $table->dropForeign(['country_id']);
         });

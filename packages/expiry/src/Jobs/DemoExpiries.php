@@ -13,25 +13,33 @@ use Moox\Jobs\Traits\JobProgress;
 
 class DemoExpiries implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use JobProgress;
+    use Queueable;
+    use SerializesModels;
 
-    public $tries;
+    /**
+     * @var int
+     */
+    public $tries = 3;
 
-    public $timeout;
+    /**
+     * @var int
+     */
+    public $timeout = 300;
 
-    public $maxExceptions;
+    /**
+     * @var int
+     */
+    public $maxExceptions = 1;
 
-    public $backoff;
+    /**
+     * @var int
+     */
+    public $backoff = 350;
 
-    public function __construct()
-    {
-        $this->tries = 3;
-        $this->timeout = 300;
-        $this->maxExceptions = 1;
-        $this->backoff = 350;
-    }
-
-    public function handle()
+    public function handle(): void
     {
         $this->setProgress(1);
 

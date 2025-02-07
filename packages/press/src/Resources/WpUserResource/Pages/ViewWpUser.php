@@ -7,6 +7,7 @@ use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource;
+use Override;
 
 class ViewWpUser extends ViewRecord
 {
@@ -17,6 +18,7 @@ class ViewWpUser extends ViewRecord
         return [EditAction::make(), DeleteAction::make()];
     }
 
+    #[Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $user = WpUser::with(['userMeta', 'attachment'])->find($data['ID']);

@@ -11,6 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Builder\Models\SimpleTaxonomy;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListSimpleTaxonomies extends ListRecords
 {
@@ -22,15 +23,13 @@ class ListSimpleTaxonomies extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): SimpleTaxonomy {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): SimpleTaxonomy => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = SimpleTaxonomy::onlyTrashed()->count();
                     SimpleTaxonomy::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -40,10 +39,11 @@ class ListSimpleTaxonomies extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && SimpleTaxonomy::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && SimpleTaxonomy::onlyTrashed()->exists()),
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('builder.resources.simple-taxonomy.plural');

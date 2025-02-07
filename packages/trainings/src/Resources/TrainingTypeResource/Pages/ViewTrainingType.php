@@ -18,7 +18,7 @@ class ViewTrainingType extends ViewRecord
         return [
             EditAction::make(),
             DeleteAction::make()
-                ->action(function ($record, DeleteAction $action) {
+                ->action(function ($record, DeleteAction $action): void {
                     try {
                         $record->delete();
                         Notification::make()
@@ -26,15 +26,15 @@ class ViewTrainingType extends ViewRecord
                             ->body('The type was deleted successfully.')
                             ->success()
                             ->send();
-                    } catch (QueryException $exception) {
-                        if ($exception->getCode() === '23000') {
+                    } catch (QueryException $queryException) {
+                        if ($queryException->getCode() === '23000') {
                             Notification::make()
                                 ->title('Cannot Delete Training Type')
                                 ->body('The type has associated trainings and cannot be deleted.')
                                 ->danger()
                                 ->send();
                         } else {
-                            throw $exception;
+                            throw $queryException;
                         }
                     }
                 }),

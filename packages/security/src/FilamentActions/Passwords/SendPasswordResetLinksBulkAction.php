@@ -11,16 +11,19 @@ use Filament\Tables\Actions\BulkAction;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Database\Eloquent\Collection;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
+use Override;
 
 class SendPasswordResetLinksBulkAction extends BulkAction
 {
-    use CanCustomizeProcess, WithRateLimiting;
+    use CanCustomizeProcess;
+    use WithRateLimiting;
 
     public static function getDefaultName(): ?string
     {
         return 'sendPasswordResetLinks';
     }
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -28,18 +31,18 @@ class SendPasswordResetLinksBulkAction extends BulkAction
         $this
             ->label(__('security::translations.Send Password Reset Links'))
             ->requiresConfirmation()
-            ->action(function (Collection $records) {
+            ->action(function (Collection $records): void {
                 try {
                     $this->rateLimit(2);
-                } catch (TooManyRequestsException $exception) {
+                } catch (TooManyRequestsException $tooManyRequestsException) {
                     Notification::make()
                         ->title(__('filament-panels::pages/auth/password-reset/request-password-reset.notifications.throttled.title', [
-                            'seconds' => $exception->secondsUntilAvailable,
-                            'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                            'seconds' => $tooManyRequestsException->secondsUntilAvailable,
+                            'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                         ]))
                         ->body(array_key_exists('body', __('filament-panels::pages/auth/password-reset/request-password-reset.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/password-reset/request-password-reset.notifications.throttled.body', [
-                            'seconds' => $exception->secondsUntilAvailable,
-                            'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                            'seconds' => $tooManyRequestsException->secondsUntilAvailable,
+                            'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                         ]) : null)
                         ->danger()
                         ->send();
@@ -49,8 +52,8 @@ class SendPasswordResetLinksBulkAction extends BulkAction
 
                 foreach ($records as $record) {
                     if (! $record instanceof CanResetPassword) {
-                        $recordClass = get_class($record);
-                        throw new Exception("Model [{$recordClass}] must implement [Illuminate\Contracts\Auth\CanResetPassword] interface.");
+                        $recordClass = $record::class;
+                        throw new Exception(sprintf('Model [%s] must implement [Illuminate\Contracts\Auth\CanResetPassword] interface.', $recordClass));
                     }
 
                     $user = $record;
@@ -60,7 +63,7 @@ class SendPasswordResetLinksBulkAction extends BulkAction
                     if (! method_exists($user, 'notify')) {
                         $userClass = $user::class;
 
-                        throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
+                        throw new Exception(sprintf('Model [%s] does not have a [notify()] method.', $userClass));
                     }
 
                     $notification = new PasswordResetNotification($token);

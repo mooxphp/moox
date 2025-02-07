@@ -2,6 +2,7 @@
 
 namespace Moox\Core\Traits;
 
+use Closure;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 trait QueriesInConfig
@@ -11,7 +12,7 @@ trait QueriesInConfig
         foreach ($conditions as $condition) {
             $value = $condition['value'];
 
-            if ($value instanceof \Closure) {
+            if ($value instanceof Closure) {
                 $value = $value();
             }
 

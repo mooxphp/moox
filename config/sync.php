@@ -1,5 +1,17 @@
 <?php
 
+use App\Models\User;
+use Moox\Press\Handlers\WpUserSyncHandler;
+use Moox\Press\Models\WpUser;
+use Moox\Press\Resolver\WpUserFileResolver;
+use Moox\Press\Transformer\WpUserTransformer;
+use Moox\Sync\Http\Controllers\Api\PlatformController;
+use Moox\Sync\Http\Controllers\Api\SyncController;
+use Moox\Sync\Models\Platform;
+use Moox\Sync\Models\Sync;
+use Moox\Sync\Resources\PlatformResource;
+use Moox\Sync\Resources\SyncResource;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +26,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -172,9 +183,9 @@ return [
                     'destroy',
                 ],
             ],
-            'model' => '\Moox\Sync\Models\Sync',
-            'resource' => '\Moox\Sync\Resources\SyncResource',
-            'api_controller' => '\Moox\Sync\Http\Controllers\Api\SyncController',
+            'model' => Sync::class,
+            'resource' => SyncResource::class,
+            'api_controller' => SyncController::class,
         ],
         'Platform' => [
             'api' => [
@@ -189,9 +200,9 @@ return [
                     'destroy',
                 ],
             ],
-            'model' => '\Moox\Sync\Models\Platform',
-            'resource' => '\Moox\Sync\Resources\PlatformResource',
-            'api_controller' => '\Moox\Sync\Http\Controllers\Api\PlatformController',
+            'model' => Platform::class,
+            'resource' => PlatformResource::class,
+            'api_controller' => PlatformController::class,
         ],
     ],
 
@@ -281,8 +292,8 @@ return [
     */
 
     'models_with_platform_relations' => [
-        'App\Models\User',
-        'Moox\User\Models\User',
+        User::class,
+        \Moox\User\Models\User::class,
         'Moox\Press\Models\User',
         // Add any other models here
     ],
@@ -302,8 +313,8 @@ return [
     */
 
     'models_with_syncable_relations' => [
-        'Moox\User\Models\User',
-        'Moox\Press\Models\WpUser' => [
+        \Moox\User\Models\User::class,
+        WpUser::class => [
             'Moox\UserSession\Models\Session',
         ],
         // Add any other models here
@@ -377,7 +388,7 @@ return [
     */
 
     'transformer_bindings' => [
-        \Moox\Press\Models\WpUser::class => \Moox\Press\Transformer\WpUserTransformer::class,
+        WpUser::class => WpUserTransformer::class,
     ],
 
     /*
@@ -392,7 +403,7 @@ return [
     */
 
     'sync_bindings' => [
-        \Moox\Press\Models\WpUser::class => \Moox\Press\Handlers\WpUserSyncHandler::class,
+        WpUser::class => WpUserSyncHandler::class,
     ],
 
     /*
@@ -468,7 +479,7 @@ return [
 
     'file_sync_max_size_http' => 2 * 1024 * 1024, // 5 MB
     'file_sync_max_size_rsync' => 50 * 1024 * 1024, // 50 MB, not implemented yet
-    'file_sync_chunk_size_http' => 1 * 1024 * 1024, // 1 MB
+    'file_sync_chunk_size_http' => 1024 * 1024, // 1 MB
 
     /*
     |--------------------------------------------------------------------------
@@ -535,6 +546,6 @@ return [
     */
 
     'file_sync_resolver' => [
-        \Moox\Press\Models\WpUser::class => \Moox\Press\Resolver\WpUserFileResolver::class,
+        WpUser::class => WpUserFileResolver::class,
     ],
 ];

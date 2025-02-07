@@ -2,8 +2,11 @@
 
 namespace Moox\Press\Commands;
 
+use DB;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\Process\Process;
 
 use function Laravel\Prompts\alert;
 use function Laravel\Prompts\info;
@@ -29,12 +32,12 @@ class InstallWordPress extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->art();
         $this->welcome();
         $this->checkDotenv();
-        $env = $this->getDotenv();
+        $this->getDotenv();
         $this->testDatabaseConnection();
         $this->prepareComposer();
         $this->composerInstall();
@@ -129,10 +132,10 @@ class InstallWordPress extends Command
             }
         }
 
-        if (! empty($missingVariables)) {
+        if ($missingVariables !== []) {
             warning('The following required variables are missing from your .env file:');
             foreach ($missingVariables as $variable) {
-                $this->line("- $variable");
+                $this->line('- '.$variable);
             }
 
             warning('Please add the missing variables to your .env file and rerun this command.');
@@ -150,11 +153,11 @@ class InstallWordPress extends Command
 
         try {
             // Attempt to connect to the database
-            \DB::connection()->getPdo();
+            DB::connection()->getPdo();
             info('Database connection successful.');
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             alert('Failed to connect to the database. Please check your database credentials in the .env file.');
-            $this->line($e->getMessage());
+            $this->line($exception->getMessage());
             exit(1);
         }
     }
@@ -168,7 +171,7 @@ class InstallWordPress extends Command
 
         if (File::exists($composerDestination)) {
             $overwrite = $this->ask('The composer.json file already exists in /public. Do you want to overwrite it? (yes/no)', 'no');
-            if (strtolower($overwrite) !== 'yes') {
+            if (strtolower((string) $overwrite) !== 'yes') {
                 info('composer.json file was not overwritten.');
             } else {
                 File::copy($composerSource, $composerDestination);
@@ -186,7 +189,7 @@ class InstallWordPress extends Command
 
         $publicDirectory = public_path();
 
-        $process = new \Symfony\Component\Process\Process(['composer', 'install'], $publicDirectory);
+        $process = new Process(['composer', 'install'], $publicDirectory);
         $process->setTimeout(null);
 
         $process->run();
@@ -205,13 +208,13 @@ class InstallWordPress extends Command
         info('Preparing wp-config.php file...');
 
         $wpPath = env('WP_PATH', '/public/wp');
-        $fullWpPath = base_path(trim($wpPath, '/'));
+        $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         if (! File::exists($fullWpPath)) {
             File::makeDirectory($fullWpPath, 0755, true);
-            info("WordPress directory created at {$fullWpPath}.");
+            info(sprintf('WordPress directory created at %s.', $fullWpPath));
         } else {
-            info("WordPress directory already exists at {$fullWpPath}.");
+            info(sprintf('WordPress directory already exists at %s.', $fullWpPath));
         }
 
         $wpConfigSource = __DIR__.'/../../wordpress/wp-config.php';
@@ -219,7 +222,7 @@ class InstallWordPress extends Command
 
         if (File::exists($wpConfigDestination)) {
             $overwrite = $this->ask('The wp-config.php file already exists in the WordPress directory. Do you want to overwrite it? (yes/no)', 'no');
-            if (strtolower($overwrite) !== 'yes') {
+            if (strtolower((string) $overwrite) !== 'yes') {
                 info('wp-config.php file was not overwritten.');
             } else {
                 File::copy($wpConfigSource, $wpConfigDestination);
@@ -235,7 +238,7 @@ class InstallWordPress extends Command
     {
         $this->info('Checking for wp-cli...');
 
-        $process = new \Symfony\Component\Process\Process(['wp', '--version']);
+        $process = new Process(['wp', '--version']);
         $process->run();
 
         if ($process->isSuccessful()) {
@@ -248,7 +251,7 @@ class InstallWordPress extends Command
 
         $this->info('Downloading wp-cli.phar...');
 
-        $downloadProcess = new \Symfony\Component\Process\Process([
+        $downloadProcess = new Process([
             'curl',
             '-O',
             'https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar',
@@ -265,7 +268,7 @@ class InstallWordPress extends Command
 
         if (PHP_OS_FAMILY !== 'Windows') {
             $this->info('Making wp-cli.phar executable...');
-            $chmodProcess = new \Symfony\Component\Process\Process([
+            $chmodProcess = new Process([
                 'chmod',
                 '+x',
                 base_path('wp-cli.phar'),
@@ -302,7 +305,7 @@ class InstallWordPress extends Command
             }
         } else {
             $this->info('Moving wp-cli.phar to /usr/local/bin/wp...');
-            $moveProcess = new \Symfony\Component\Process\Process([
+            $moveProcess = new Process([
                 'mv',
                 base_path('wp-cli.phar'),
                 '/usr/local/bin/wp',
@@ -326,7 +329,7 @@ class InstallWordPress extends Command
 
         $env = $this->getDotenv();
 
-        $wpPath = base_path(trim($env['WP_PATH'], '/'));
+        $wpPath = base_path(trim((string) $env['WP_PATH'], '/'));
         if (! File::exists($wpPath.'/wp-config.php')) {
             alert('wp-config.php not found! Please ensure the file is created and configured.');
             exit(1);
@@ -339,7 +342,7 @@ class InstallWordPress extends Command
         $adminPassword = $this->generateSecurePassword();
         $adminEmail = $this->ask('Please enter the admin email');
 
-        info("A secure password has been generated: $adminPassword");
+        info('A secure password has been generated: '.$adminPassword);
         warning('Please make sure to save this password as it will not be shown again.');
 
         $command = [
@@ -359,7 +362,7 @@ class InstallWordPress extends Command
             }
         }
 
-        $process = new \Symfony\Component\Process\Process($command, $wpPath, $env);
+        $process = new Process($command, $wpPath, $env);
         $process->setTimeout(null);
 
         $process->run();
@@ -379,7 +382,7 @@ class InstallWordPress extends Command
     {
         $this->info('Ensuring a default theme is installed and activated...');
 
-        $checkThemeProcess = new \Symfony\Component\Process\Process([
+        $checkThemeProcess = new Process([
             'wp',
             'theme',
             'is-installed',
@@ -390,7 +393,7 @@ class InstallWordPress extends Command
         if (! $checkThemeProcess->isSuccessful()) {
             $this->info('Default theme twentytwentyfour is not installed. Installing it now...');
 
-            $installThemeProcess = new \Symfony\Component\Process\Process([
+            $installThemeProcess = new Process([
                 'wp',
                 'theme',
                 'install',
@@ -417,7 +420,7 @@ class InstallWordPress extends Command
         info('Installing the Moox Press plugin...');
 
         $wpPath = env('WP_PATH', '/public/wp');
-        $fullWpPath = base_path(trim($wpPath, '/'));
+        $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         $pluginsPath = $fullWpPath.'/wp-content/plugins';
 
@@ -431,7 +434,7 @@ class InstallWordPress extends Command
 
         if (File::exists($pluginDestination)) {
             $overwrite = $this->ask('The Moox Press plugin already exists in the plugins directory. Do you want to overwrite it? (yes/no)', 'no');
-            if (strtolower($overwrite) !== 'yes') {
+            if (strtolower((string) $overwrite) !== 'yes') {
                 info('Moox Press plugin was not overwritten.');
 
                 return;
@@ -445,7 +448,7 @@ class InstallWordPress extends Command
 
         info('Activating the Moox Press plugin...');
         $activateCommand = ['wp', 'plugin', 'activate', 'moox-press'];
-        $process = new \Symfony\Component\Process\Process($activateCommand, $fullWpPath);
+        $process = new Process($activateCommand, $fullWpPath);
         $process->setTimeout(null);
         $process->run();
 

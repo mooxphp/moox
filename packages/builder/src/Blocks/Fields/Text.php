@@ -40,23 +40,23 @@ class Text extends AbstractBlock
             ]);
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')"
+            sprintf("TextColumn::make('%s')", $this->name)
                 .($this->sortable ? '->sortable()' : '')
                 .($this->searchable ? '->searchable()' : '')
                 .($this->toggleable ? '->toggleable()' : ''),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->string('{$this->name}', {$this->length})"
+            sprintf("\$table->string('%s', %d)", $this->name, $this->length)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         if ($this->unique) {
-            $this->migrations['indexes'][] = "\$table->unique('{$this->name}')";
+            $this->migrations['indexes'][] = sprintf("\$table->unique('%s')", $this->name);
         }
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => "fake()->text({$this->length})",
+            $this->name => sprintf('fake()->text(%d)', $this->length),
         ];
 
         $this->filters['resource'] = [

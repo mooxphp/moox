@@ -3,13 +3,14 @@
 namespace Moox\Sync\Services;
 
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Moox\Sync\Models\Platform;
 
 class PlatformRelationService
 {
     public function syncPlatformsForModel($model, array $platformIds): void
     {
-        $modelType = get_class($model);
+        $modelType = $model::class;
         $modelId = $model->getKey();
 
         DB::table('model_platform')
@@ -17,15 +18,13 @@ class PlatformRelationService
             ->where('model_id', $modelId)
             ->delete();
 
-        $insertData = array_map(function ($platformId) use ($modelType, $modelId) {
-            return [
-                'model_type' => $modelType,
-                'model_id' => $modelId,
-                'platform_id' => $platformId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }, $platformIds);
+        $insertData = array_map(fn ($platformId): array => [
+            'model_type' => $modelType,
+            'model_id' => $modelId,
+            'platform_id' => $platformId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ], $platformIds);
 
         DB::table('model_platform')->insert($insertData);
     }
@@ -33,14 +32,14 @@ class PlatformRelationService
     public function getPlatformsForModel($modelClassOrInstance, $modelId = null)
     {
         if (is_object($modelClassOrInstance)) {
-            $modelClass = get_class($modelClassOrInstance);
+            $modelClass = $modelClassOrInstance::class;
             $modelId = $modelClassOrInstance->getKey();
         } else {
             $modelClass = $modelClassOrInstance;
         }
 
         if ($modelId === null) {
-            throw new \InvalidArgumentException('Model ID must be provided when passing a class name.');
+            throw new InvalidArgumentException('Model ID must be provided when passing a class name.');
         }
 
         $platformIds = DB::table('model_platform')
@@ -51,19 +50,19 @@ class PlatformRelationService
         return Platform::whereIn('id', $platformIds)->get();
     }
 
-    public function addPlatformToModel($model, Platform $platform)
+    public function addPlatformToModel($model, Platform $platform): void
     {
         DB::table('model_platform')->updateOrInsert([
-            'model_type' => get_class($model),
+            'model_type' => $model::class,
             'model_id' => $model->getKey(),
             'platform_id' => $platform->id,
         ]);
     }
 
-    public function removePlatformFromModel($model, Platform $platform)
+    public function removePlatformFromModel($model, Platform $platform): void
     {
         DB::table('model_platform')->where([
-            'model_type' => get_class($model),
+            'model_type' => $model::class,
             'model_id' => $model->getKey(),
             'platform_id' => $platform->id,
         ])->delete();
@@ -72,7 +71,7 @@ class PlatformRelationService
     public function modelHasPlatform($model, Platform $platform)
     {
         return DB::table('model_platform')->where([
-            'model_type' => get_class($model),
+            'model_type' => $model::class,
             'model_id' => $model->getKey(),
             'platform_id' => $platform->id,
         ])->exists();

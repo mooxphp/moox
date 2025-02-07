@@ -10,11 +10,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
@@ -27,10 +27,12 @@ use Moox\Press\Resources\WpUserResource\Pages\ViewWpUser;
 use Moox\Press\Resources\WpUserResource\RelationManagers\WpUserMetaRelationManager;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\Security\Helper\PasswordHash;
+use Override;
 
 class WpUserResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpUser::class;
 
@@ -42,9 +44,7 @@ class WpUserResource extends Resource
     {
         $userCapabilities = config('press.wp_roles');
 
-        return collect($userCapabilities)->mapWithKeys(function ($key, $value) {
-            return [$key => $value];
-        })->toArray();
+        return collect($userCapabilities)->mapWithKeys(fn ($key, $value) => [$key => $value])->toArray();
     }
 
     protected static function getUserLevel($serializedRole)
@@ -66,6 +66,7 @@ class WpUserResource extends Resource
         return 0;
     }
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -77,7 +78,7 @@ class WpUserResource extends Resource
                         ->disk('press')
                         ->directory(now()->year.'/'.sprintf('%02d', now()->month))
                         ->preserveFilenames()
-                        ->afterStateUpdated(function ($state, $set) {
+                        ->afterStateUpdated(function ($state, $set): void {
                             if ($state) {
                                 $tempPath = $state->store('livewire-tmp');
                                 $originalName = $state->getClientOriginalName();
@@ -103,7 +104,7 @@ class WpUserResource extends Resource
                         ->columnSpan(12)
                         ->dehydrateStateUsing(fn ($state) => $state) // Speichert den Rollenwert direkt
                         ->live()
-                        ->afterStateUpdated(function ($state, $set) {
+                        ->afterStateUpdated(function ($state, $set): void {
                             $roleLevel = self::getUserLevel($state);
                             $set(config('press.wordpress_prefix').'user_level', $roleLevel);
                         }),
@@ -118,7 +119,7 @@ class WpUserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ])
-                        ->afterStateUpdated(function ($state, $set, $get) {
+                        ->afterStateUpdated(function ($state, $set, $get): void {
                             $set('user_nicename', strtolower($get('first_name').'-'.$get('last_name')));
                             $set('display_name', ucwords($get('first_name').' '.$get('last_name')));
                         }),
@@ -133,7 +134,7 @@ class WpUserResource extends Resource
                             'lg' => 12,
                         ])
                         ->live(debounce: 1000)
-                        ->afterStateUpdated(function ($state, $set, $get) {
+                        ->afterStateUpdated(function ($state, $set, $get): void {
                             $set('user_nicename', strtolower($get('first_name').'-'.$get('last_name')));
                             $set('display_name', ucwords($get('first_name').' '.$get('last_name')));
                         }),
@@ -296,7 +297,7 @@ class WpUserResource extends Resource
                         ->label(__('core::user.user_pass'))
                         ->password()
                         ->visibleOn('create')
-                        ->dehydrateStateUsing(function ($state) {
+                        ->dehydrateStateUsing(function ($state): string {
                             $passwordHash = new PasswordHash(8, true);
 
                             return $passwordHash->HashPassword($state);
@@ -363,6 +364,7 @@ class WpUserResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -376,25 +378,25 @@ class WpUserResource extends Resource
                     ->toggleable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('display_name')
+                TextColumn::make('display_name')
                     ->label(__('core::user.name'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('user_email')
+                TextColumn::make('user_email')
                     ->label(__('core::user.user_email'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('user_login')
+                TextColumn::make('user_login')
                     ->label(__('core::user.user_login'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make(config('press.wordpress_prefix').'capabilities')
+                TextColumn::make(config('press.wordpress_prefix').'capabilities')
                     ->label(__('core::user.role'))
                     ->toggleable()
                     ->limit(50)
@@ -414,6 +416,7 @@ class WpUserResource extends Resource
             ]));
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -421,6 +424,7 @@ class WpUserResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -431,31 +435,37 @@ class WpUserResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.user.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.user.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.user.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.user.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.user_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.user_navigation_sort') + 1;

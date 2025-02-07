@@ -6,9 +6,11 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\LoginLink\Models\LoginLink;
+use Override;
 
 class LoginLinkWidgets extends BaseWidget
 {
+    #[Override]
     protected function getCards(): array
     {
         $aggregationColumns = [

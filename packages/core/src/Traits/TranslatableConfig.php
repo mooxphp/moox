@@ -9,7 +9,7 @@ trait TranslatableConfig
      */
     protected function translateConfig(array $config): array
     {
-        foreach ($config as $key => &$value) {
+        foreach ($config as &$value) {
             if (is_array($value)) {
                 $value = $this->translateConfig($value);
 

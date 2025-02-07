@@ -18,6 +18,7 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class TrainingDatesRelationManager extends RelationManager
 {
@@ -25,6 +26,7 @@ class TrainingDatesRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'link';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([
@@ -137,31 +139,29 @@ class TrainingDatesRelationManager extends RelationManager
                         DatePicker::make('created_from'),
                         DatePicker::make('created_until'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '>=',
-                                    $date
-                                )
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (
+                                Builder $query,
+                                $date
+                            ): Builder => $query->whereDate(
+                                'created_at',
+                                '>=',
+                                $date
                             )
-                            ->when(
-                                $data['created_until'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '<=',
-                                    $date
-                                )
-                            );
-                    }),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (
+                                Builder $query,
+                                $date
+                            ): Builder => $query->whereDate(
+                                'created_at',
+                                '<=',
+                                $date
+                            )
+                        )),
 
                 SelectFilter::make('training_invitation_id')
                     ->multiple()

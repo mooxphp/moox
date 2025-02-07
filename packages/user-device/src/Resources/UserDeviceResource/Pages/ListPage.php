@@ -7,6 +7,7 @@ use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -14,12 +15,13 @@ class ListPage extends ListRecords
 
     public static string $resource = UserDeviceResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             // TODO: Widgets
@@ -27,6 +29,7 @@ class ListPage extends ListRecords
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('core::device.title');

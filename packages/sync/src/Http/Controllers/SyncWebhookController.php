@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Http;
@@ -40,13 +41,13 @@ class SyncWebhookController extends Controller
             }
 
             return response()->json(['status' => 'success', 'message' => 'Sync job dispatched']);
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             $this->logDebug('SyncWebhookController encountered an error', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
             ]);
 
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => $exception->getMessage()], 500);
         }
     }
 
@@ -89,7 +90,7 @@ class SyncWebhookController extends Controller
     protected function requestMissingFiles(array $data, array $missingFiles, Platform $sourcePlatform)
     {
         $responsePath = config('sync.sync_response_url', '/sync-response');
-        $url = "https://{$sourcePlatform->domain}{$responsePath}";
+        $url = sprintf('https://%s%s', $sourcePlatform->domain, $responsePath);
 
         Http::post($url, [
             'model_class' => $data['model_class'],
@@ -128,7 +129,7 @@ class SyncWebhookController extends Controller
         return true; // For now, always sync the file
     }
 
-    protected function getModelId(array $modelData)
+    protected function getModelId(array $modelData): ?array
     {
         $localIdentifierFields = config('sync.local_identifier_fields', ['ID', 'uuid', 'ulid', 'id']);
 

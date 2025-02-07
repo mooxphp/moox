@@ -7,11 +7,13 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Traits\FormatSeconds;
+use Override;
 
 class JobStatsOverview extends BaseWidget
 {
     use FormatSeconds;
 
+    #[Override]
     protected function getCards(): array
     {
         $aggregationColumns = [

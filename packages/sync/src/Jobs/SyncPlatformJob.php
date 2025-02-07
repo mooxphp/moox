@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,7 +14,11 @@ use Moox\Sync\Models\Platform;
 
 class SyncPlatformJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use LogLevel;
+    use Queueable;
+    use SerializesModels;
 
     protected $currentPlatform;
 
@@ -22,7 +27,7 @@ class SyncPlatformJob implements ShouldQueue
         $this->currentPlatform = Platform::where('domain', request()->getHost())->first();
     }
 
-    public function handle()
+    public function handle(): void
     {
         $this->logDebug('SyncPlatformJob handle method entered');
 
@@ -54,7 +59,7 @@ class SyncPlatformJob implements ShouldQueue
                 ]);
 
                 $this->sendWebhook($platform, $targetPlatform);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->logDebug('Error syncing platform', [
                     'source' => $this->currentPlatform->id,
                     'platform' => $platform->id,

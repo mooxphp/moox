@@ -37,11 +37,11 @@ trait UserInResource
     {
         return Select::make('user_id')
             ->label(__('core::core.user'))
-            ->options(fn () => static::getUserOptions())
+            ->options(fn (): array => static::getUserOptions())
             ->default(fn () => auth()->id())
             ->required()
             ->searchable()
-            ->visible(fn () => static::shouldShowUserField());
+            ->visible(fn (): bool => static::shouldShowUserField());
     }
 
     public static function getUserTableColumn(): ImageColumn
@@ -51,7 +51,7 @@ trait UserInResource
             ->tooltip(fn ($record) => $record->user?->name)
             ->alignment('center')
             ->circular()
-            ->visible(fn () => static::shouldShowUserField())
+            ->visible(fn (): bool => static::shouldShowUserField())
             ->toggleable();
     }
 
@@ -60,7 +60,7 @@ trait UserInResource
         return [
             SelectFilter::make('user_id')
                 ->label(__('core::core.user'))
-                ->options(fn () => static::getUserOptions())
+                ->options(fn (): array => static::getUserOptions())
                 ->searchable(),
         ];
     }

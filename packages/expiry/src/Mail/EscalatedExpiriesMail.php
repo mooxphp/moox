@@ -8,17 +8,10 @@ use Illuminate\Queue\SerializesModels;
 
 class EscalatedExpiriesMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public array $entries;
-
-    public string $panelPath;
-
-    public function __construct(array $entries, string $panelPath)
-    {
-        $this->entries = $entries;
-        $this->panelPath = $panelPath;
-    }
+    public function __construct(public array $entries, public string $panelPath) {}
 
     public function build()
     {

@@ -7,6 +7,7 @@ namespace Moox\Builder\Resources\SimpleTaxonomyResource\Pages;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\SimpleTaxonomyResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class CreateSimpleTaxonomy extends CreateRecord
 {
@@ -14,6 +15,7 @@ class CreateSimpleTaxonomy extends CreateRecord
 
     protected static string $resource = SimpleTaxonomyResource::class;
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

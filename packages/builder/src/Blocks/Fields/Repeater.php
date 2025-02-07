@@ -36,8 +36,8 @@ class Repeater extends AbstractBlock
                 .($this->nullable ? '' : '->required()')
                 .($this->collapsible ? '->collapsible()' : '')
                 .($this->cloneable ? '->cloneable()' : '')
-                .($this->minItems ? "->minItems({$this->minItems})" : '')
-                .($this->maxItems ? "->maxItems({$this->maxItems})" : ''),
+                .($this->minItems ? sprintf('->minItems(%s)', $this->minItems) : '')
+                .($this->maxItems ? sprintf('->maxItems(%s)', $this->maxItems) : ''),
         ];
 
         $this->tableColumns['resource'] = [
@@ -51,16 +51,16 @@ class Repeater extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->json('{$this->name}')"
+            sprintf("\$table->json('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => '[]',
+            $this->name => '[]',
         ];
 
         $this->casts['model'] = [
-            "'{$this->name}' => 'array'",
+            sprintf("'%s' => 'array'", $this->name),
         ];
     }
 }

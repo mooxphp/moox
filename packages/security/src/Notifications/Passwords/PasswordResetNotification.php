@@ -6,7 +6,10 @@ use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -16,15 +19,15 @@ use Illuminate\Support\HtmlString;
 
 class PasswordResetNotification extends Notification implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public string $token;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     protected Panel $panel;
 
-    public function __construct($token)
+    public function __construct(public string $token)
     {
-        $this->token = $token;
         $this->panel = Filament::getCurrentPanel();
     }
 
@@ -33,13 +36,13 @@ class PasswordResetNotification extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    public function toMail($notifiable): MailMessage
+    public function toMail(CanResetPassword|Model|Authenticatable $notifiable): MailMessage
     {
         $mailRecipientName = config('security.mail_recipient_name') ?? 'name';
 
         return (new MailMessage)
             ->subject(__('security::translations.Reset Password Message'))
-            ->greeting(__('security::translations.Hello')." {$notifiable->$mailRecipientName},")
+            ->greeting(__('security::translations.Hello').sprintf(' %s,', $notifiable->$mailRecipientName))
             ->line(__('security::translations.You are receiving this email because we received a password reset request for your account.'))
             ->action(__('security::translations.Reset Password'), $this->resetUrl($notifiable))
             ->line(__('security::translations.This password reset link will expire').' '.$this->getReadableExpiryTime().'.')
@@ -47,7 +50,7 @@ class PasswordResetNotification extends Notification implements ShouldQueue
             ->salutation(new HtmlString(__('security::translations.Regards').'<br>'.config('mail.from.name')));
     }
 
-    protected function resetUrl($notifiable): string
+    protected function resetUrl(CanResetPassword|Model|Authenticatable $notifiable): string
     {
         return $this->panel->getResetPasswordUrl($this->token, $notifiable);
     }

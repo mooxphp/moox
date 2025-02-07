@@ -2,6 +2,8 @@
 
 namespace Moox\UserSession\Services;
 
+use Exception;
+use Log;
 use Moox\UserSession\Models\UserSession;
 
 class SessionRelationService
@@ -10,7 +12,7 @@ class SessionRelationService
     {
         try {
             $sessionId = session()->getId();
-            $userType = get_class($user);
+            $userType = $user::class;
 
             $userSession = UserSession::find($sessionId);
 
@@ -21,10 +23,10 @@ class SessionRelationService
                     'last_activity' => now()->getTimestamp(),
                 ]);
             } else {
-                \Log::warning('Session not found for ID:', ['session_id' => $sessionId]);
+                Log::warning('Session not found for ID:', ['session_id' => $sessionId]);
             }
-        } catch (\Exception $e) {
-            \Log::error('Failed to associate user session:', ['error' => $e->getMessage()]);
+        } catch (Exception $exception) {
+            Log::error('Failed to associate user session:', ['error' => $exception->getMessage()]);
         }
     }
 }

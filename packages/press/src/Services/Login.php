@@ -23,13 +23,17 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 use Jenssegers\Agent\Agent;
+use Moox\UserDevice\Services\UserDeviceTracker;
+use Moox\UserSession\Services\SessionRelationService;
+use Override;
 
 /**
  * @property Form $form
  */
 class Login extends SimplePage
 {
-    use InteractsWithFormActions, WithRateLimiting;
+    use InteractsWithFormActions;
+    use WithRateLimiting;
 
     protected $userDeviceTracker;
 
@@ -47,12 +51,12 @@ class Login extends SimplePage
 
     public function __construct()
     {
-        if (class_exists(\Moox\UserDevice\Services\UserDeviceTracker::class)) {
-            $this->userDeviceTracker = app(\Moox\UserDevice\Services\UserDeviceTracker::class);
+        if (class_exists(UserDeviceTracker::class)) {
+            $this->userDeviceTracker = app(UserDeviceTracker::class);
         }
 
-        if (class_exists(\Moox\UserSession\Services\SessionRelationService::class)) {
-            $this->sessionRelationService = app(\Moox\UserSession\Services\SessionRelationService::class);
+        if (class_exists(SessionRelationService::class)) {
+            $this->sessionRelationService = app(SessionRelationService::class);
         }
     }
 
@@ -113,10 +117,10 @@ class Login extends SimplePage
         $data = $this->form->getState();
         $credentials = $this->getCredentialsFromFormData($data);
         $credentialKey = array_key_first($credentials);
-        $guardProvider = config("auth.guards.$guardName.provider");
-        $userModel = config("auth.providers.$guardProvider.model");
-        $userModelUsername = config("press.auth.$guardName.username");
-        $userModelEmail = config("press.auth.$guardName.email");
+        $guardProvider = config(sprintf('auth.guards.%s.provider', $guardName));
+        $userModel = config(sprintf('auth.providers.%s.model', $guardProvider));
+        $userModelUsername = config(sprintf('press.auth.%s.username', $guardName));
+        $userModelEmail = config(sprintf('press.auth.%s.email', $guardName));
         $query = $userModel::query();
 
         if (! empty($userModelUsername) && $credentialKey === 'name') {
@@ -134,15 +138,12 @@ class Login extends SimplePage
         $user = $query->first();
 
         if (config('press.wpModel') && $user instanceof (config('press.wpModel'))) {
-            $wpAuthService = new \Moox\Press\Services\WordPressAuthService;
-
+            $wpAuthService = new WordPressAuthService;
             if (! $wpAuthService->checkPassword($credentials['password'], $user->user_pass)) {
                 $this->throwFailureValidationException();
             }
-        } else {
-            if (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
-                $this->throwFailureValidationException();
-            }
+        } elseif (! Auth::guard($guardName)->attempt($credentials, $data['remember'] ?? false)) {
+            $this->throwFailureValidationException();
         }
 
         Auth::guard($guardName)->login($user, $data['remember'] ?? false);
@@ -163,8 +164,8 @@ class Login extends SimplePage
             && config('press.auth_wordpress') === true
         ) {
             $payload = base64_encode($user->ID);
-            $signature = hash_hmac('sha256', $payload, env('APP_KEY'));
-            $token = "{$payload}.{$signature}";
+            $signature = hash_hmac('sha256', $payload, (string) env('APP_KEY'));
+            $token = sprintf('%s.%s', $payload, $signature);
 
             $redirectTarget = config('press.redirect_after_login', 'wp-admin');
             $redirectParam = $redirectTarget === 'frontend' ? '&redirect_to=frontend' : '';
@@ -242,11 +243,13 @@ class Login extends SimplePage
             ->url(filament()->getRegistrationUrl());
     }
 
+    #[Override]
     public function getTitle(): string|Htmlable
     {
         return __('filament-panels::pages/auth/login.title');
     }
 
+    #[Override]
     public function getHeading(): string|Htmlable
     {
         return __('filament-panels::pages/auth/login.heading');
@@ -284,6 +287,7 @@ class Login extends SimplePage
             if (is_array($ipWhiteList) && in_array($ipAddress, $ipWhiteList)) {
                 return true;
             }
+
             if ($ipWhiteList === $ipAddress) {
                 return true;
             }

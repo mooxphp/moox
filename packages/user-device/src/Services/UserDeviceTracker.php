@@ -12,14 +12,9 @@ use Moox\UserDevice\Notifications\NewDeviceNotification;
 
 class UserDeviceTracker
 {
-    protected $locationService;
+    public function __construct(protected LocationService $locationService) {}
 
-    public function __construct(LocationService $locationService)
-    {
-        $this->locationService = $locationService;
-    }
-
-    public function addUserDevice(Request $request, $user, Agent $agent)
+    public function addUserDevice(Request $request, $user, Agent $agent): void
     {
         $ipAddress = $request->ip();
         $userAgent = $request->userAgent();
@@ -35,7 +30,7 @@ class UserDeviceTracker
 
         $device = UserDevice::updateOrCreate([
             'user_id' => $user_id,
-            'user_type' => get_class($user),
+            'user_type' => $user::class,
             'ip_address' => $ipAddress,
             'user_agent' => $userAgent,
         ], [

@@ -12,11 +12,12 @@ use Moox\Builder\Generators\Entity\Pages\ListPageGenerator;
 use Moox\Builder\Generators\Entity\Pages\ViewPageGenerator;
 use Moox\Builder\Services\Entity\SectionManager;
 use Moox\Builder\Services\File\FileManager;
+use Override;
 use RuntimeException;
 
 class ResourceGenerator extends AbstractGenerator
 {
-    private SectionManager $sectionManager;
+    private readonly SectionManager $sectionManager;
 
     public function __construct(
         BuildContext $context,
@@ -30,12 +31,12 @@ class ResourceGenerator extends AbstractGenerator
     public function generate(): void
     {
         $this->processBlocks();
-        $sections = $this->getSections();
+        $this->getSections();
 
         $this->generateResourcePages();
 
         $template = $this->loadStub($this->getTemplate());
-        if (! $template) {
+        if ($template === '' || $template === '0') {
             throw new RuntimeException('Failed to load template: '.$this->getTemplate());
         }
 
@@ -124,6 +125,7 @@ class ResourceGenerator extends AbstractGenerator
         return 'resource';
     }
 
+    #[Override]
     protected function formatUseStatements(): string
     {
         $statements = [
@@ -150,16 +152,15 @@ class ResourceGenerator extends AbstractGenerator
                     if ($context === 'pages') {
                         continue;
                     }
+
                     if (is_array($contextStatements)) {
                         foreach ($contextStatements as $statement) {
                             if ($statement !== $resourcePagesNamespace) {
                                 $statements[] = $statement;
                             }
                         }
-                    } else {
-                        if ($contextStatements !== $resourcePagesNamespace) {
-                            $statements[] = $contextStatements;
-                        }
+                    } elseif ($contextStatements !== $resourcePagesNamespace) {
+                        $statements[] = $contextStatements;
                     }
                 }
             }
@@ -168,11 +169,10 @@ class ResourceGenerator extends AbstractGenerator
         $statements = array_unique($statements);
         sort($statements);
 
-        return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, $statements));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', $statements));
     }
 
+    #[Override]
     protected function formatTraits(): string
     {
         $traits = [];
@@ -180,13 +180,13 @@ class ResourceGenerator extends AbstractGenerator
         foreach ($this->getBlocks() as $block) {
             if ($resourceTraits = $block->getTraits('resource')) {
                 foreach ($resourceTraits as $trait) {
-                    $parts = explode('\\', $trait);
+                    $parts = explode('\\', (string) $trait);
                     $traits[] = end($parts);
                 }
             }
         }
 
-        if (empty($traits)) {
+        if ($traits === []) {
             return '';
         }
 
@@ -203,7 +203,7 @@ class ResourceGenerator extends AbstractGenerator
 
         foreach ($this->getBlocks() as $block) {
             foreach ($block->getSections() as $section) {
-                if (str_contains($section['name'], '_actions') && $section['name'] !== 'resource_actions') {
+                if (str_contains((string) $section['name'], '_actions') && $section['name'] !== 'resource_actions') {
                     continue;
                 }
 
@@ -219,12 +219,10 @@ class ResourceGenerator extends AbstractGenerator
                     } else {
                         $metaSections[] = $section;
                     }
+                } elseif ($section['name'] === 'form') {
+                    $mainFields = array_merge($mainFields, $section['fields']);
                 } else {
-                    if ($section['name'] === 'form') {
-                        $mainFields = array_merge($mainFields, $section['fields']);
-                    } else {
-                        $mainSections[] = $section;
-                    }
+                    $mainSections[] = $section;
                 }
             }
         }
@@ -260,6 +258,7 @@ class ResourceGenerator extends AbstractGenerator
         return implode(",\n            ", $columns);
     }
 
+    #[Override]
     protected function getTableActions(): string
     {
         $actions = [];
@@ -269,6 +268,7 @@ class ResourceGenerator extends AbstractGenerator
                 if (is_string($blockActions) && str_contains($blockActions, 'static::')) {
                     return $blockActions;
                 }
+
                 $actions = array_merge($actions, (array) $blockActions);
             }
         }
@@ -276,6 +276,7 @@ class ResourceGenerator extends AbstractGenerator
         return '['.implode(",\n            ", $actions).']';
     }
 
+    #[Override]
     protected function getTableFilters(): string
     {
         $filters = [];
@@ -289,6 +290,7 @@ class ResourceGenerator extends AbstractGenerator
         return implode(",\n            ", $filters);
     }
 
+    #[Override]
     protected function getTableBulkActions(): string
     {
         $actions = [];
@@ -299,6 +301,7 @@ class ResourceGenerator extends AbstractGenerator
                     if (is_string($blockActions) && str_contains($blockActions, 'static::')) {
                         return $blockActions;
                     }
+
                     $actions = array_merge($actions, (array) $blockActions);
                 }
             }
@@ -321,6 +324,7 @@ class ResourceGenerator extends AbstractGenerator
         return $this->context->formatNamespace('model', true).'\\'.$this->context->getEntityName();
     }
 
+    #[Override]
     protected function getUseStatements(string $context, ?string $subContext = null): array
     {
         $statements = [];
@@ -329,7 +333,7 @@ class ResourceGenerator extends AbstractGenerator
                 if ($subContext && isset($block->useStatements[$context][$subContext])) {
                     $statements = array_merge($statements, $block->useStatements[$context][$subContext]);
                 } elseif (! $subContext) {
-                    foreach ($block->useStatements[$context] as $key => $value) {
+                    foreach ($block->useStatements[$context] as $value) {
                         if (is_array($value)) {
                             $statements = array_merge($statements, $value);
                         } else {
@@ -349,7 +353,7 @@ class ResourceGenerator extends AbstractGenerator
 
         foreach ($sortableFields as $field) {
             foreach ($this->getBlocks() as $block) {
-                if ($block->getName() === $field && str_contains($block->tableColumn(), '->sortable()')) {
+                if ($block->getName() === $field && str_contains((string) $block->tableColumn(), '->sortable()')) {
                     return $field;
                 }
             }

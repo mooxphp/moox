@@ -27,6 +27,7 @@ use Moox\Sync\Resources\PlatformResource\Pages\CreatePlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\EditPlatform;
 use Moox\Sync\Resources\PlatformResource\Pages\ListPlatforms;
 use Moox\Sync\Resources\PlatformResource\Pages\ViewPlatform;
+use Override;
 
 class PlatformResource extends Resource
 {
@@ -38,6 +39,7 @@ class PlatformResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -60,7 +62,7 @@ class PlatformResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->live(debounce: 500)
-                        ->afterStateUpdated(function ($state, callable $set) {
+                        ->afterStateUpdated(function ($state, callable $set): void {
                             if (empty($state)) {
                                 $set('ip_address', 'The host is not resolvable');
                             } else {
@@ -113,7 +115,7 @@ class PlatformResource extends Resource
                                 ->label(__('core::sync.generate_token'))
                                 ->icon('gmdi-generating-tokens')
                                 ->action('generateToken')
-                                ->hidden(fn ($livewire) => $livewire instanceof ViewRecord)
+                                ->hidden(fn ($livewire): bool => $livewire instanceof ViewRecord)
                         ),
 
                     Toggle::make('master')
@@ -126,7 +128,7 @@ class PlatformResource extends Resource
                             'lg' => 12,
                         ])
                         ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        ->afterStateUpdated(function ($state, callable $set, callable $get): void {
                             if ($state) {
                                 $existingMaster = Platform::where('master', true)
                                     ->where('id', '!=', $get('id'))
@@ -223,6 +225,7 @@ class PlatformResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -291,6 +294,7 @@ class PlatformResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -299,6 +303,7 @@ class PlatformResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -309,26 +314,31 @@ class PlatformResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('sync.resources.platform.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('sync.resources.platform.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('sync.resources.platform.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('sync.resources.platform.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
@@ -339,11 +349,13 @@ class PlatformResource extends Resource
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('sync.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('sync.navigation_sort') + 2;

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('areas', function (Blueprint $table) {
+        Schema::table('areas', function (Blueprint $table): void {
             $table
                 ->foreign('parent_area_id')
                 ->references('id')
@@ -26,7 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('areas', function (Blueprint $table) {
+        Schema::table('areas', function (Blueprint $table): void {
             $table->dropForeign(['parent_continent_id']);
         });
     }

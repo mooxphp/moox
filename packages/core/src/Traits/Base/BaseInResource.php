@@ -39,16 +39,12 @@ trait BaseInResource
             $query = static::applySoftDeleteQuery($query);
         }
 
-        if ($currentTab = request()->query('tab')) {
-            if (method_exists(static::class, 'applyTabQuery')) {
-                $query = static::applyTabQuery($query, $currentTab);
-            }
+        if (($currentTab = request()->query('tab')) && method_exists(static::class, 'applyTabQuery')) {
+            $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), function ($method) {
-            return str_ends_with($method, 'ModifyTableQuery')
-                && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']);
-        });
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -73,16 +69,12 @@ trait BaseInResource
             $query = static::applySoftDeleteQuery($query);
         }
 
-        if ($currentTab = request()->query('tab')) {
-            if (method_exists(static::class, 'applyTabQuery')) {
-                $query = static::applyTabQuery($query, $currentTab);
-            }
+        if (($currentTab = request()->query('tab')) && method_exists(static::class, 'applyTabQuery')) {
+            $query = static::applyTabQuery($query, $currentTab);
         }
 
-        $methods = array_filter(get_class_methods(static::class), function ($method) {
-            return str_ends_with($method, 'ModifyTableQuery')
-                && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']);
-        });
+        $methods = array_filter(get_class_methods(static::class), fn ($method): bool => str_ends_with($method, 'ModifyTableQuery')
+            && ! in_array($method, ['applySoftDeleteQuery', 'applyTabQuery']));
 
         foreach ($methods as $method) {
             $query = static::$method($query);
@@ -113,13 +105,13 @@ trait BaseInResource
     public static function getRestoreBulkAction(): RestoreBulkAction
     {
         return RestoreBulkAction::make()
-            ->visible(fn ($livewire) => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+            ->visible(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getDeleteBulkAction(): DeleteBulkAction
     {
         return DeleteBulkAction::make()
-            ->hidden(fn ($livewire) => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
+            ->hidden(fn ($livewire): bool => isset($livewire->activeTab) && in_array($livewire->activeTab, ['trash', 'deleted']));
     }
 
     public static function getSaveAction(): Action
@@ -129,10 +121,10 @@ trait BaseInResource
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->keyBindings(['command+s', 'ctrl+s'])
             ->color('success')
-            ->action(function ($livewire) {
+            ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
             })
-            ->visible(fn ($livewire) => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord || $livewire instanceof EditRecord);
     }
 
     public static function getSaveAndCreateAnotherAction(): Action
@@ -142,11 +134,11 @@ trait BaseInResource
             ->color('secondary')
             ->button()
             ->extraAttributes(['class' => 'w-full'])
-            ->action(function ($livewire) {
+            ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
                 $livewire->redirect(static::getUrl('create'));
             })
-            ->visible(fn ($livewire) => $livewire instanceof CreateRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
     public static function getCancelAction(): Action
@@ -158,7 +150,7 @@ trait BaseInResource
             ->color('secondary')
             ->outlined()
             ->url(fn () => static::getUrl('index'))
-            ->visible(fn ($livewire) => $livewire instanceof CreateRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
     public static function getDeleteAction(): Action
@@ -168,12 +160,12 @@ trait BaseInResource
             ->color('danger')
             ->outlined()
             ->extraAttributes(attributes: ['class' => 'w-full'])
-            ->action(function ($livewire) {
+            ->action(function ($livewire): void {
                 $livewire->record->delete();
                 $livewire->redirect(static::getUrl('index'));
             })
             ->keyBindings(['delete'])
-            ->visible(fn ($livewire) => $livewire instanceof EditRecord)
+            ->visible(fn ($livewire): bool => $livewire instanceof EditRecord)
             ->requiresConfirmation();
     }
 
@@ -185,7 +177,7 @@ trait BaseInResource
             ->extraAttributes(attributes: ['class' => 'w-full'])
             ->keyBindings(['command+e', 'ctrl+e'])
             ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-            ->visible(fn ($livewire) => $livewire instanceof ViewRecord);
+            ->visible(fn ($livewire): bool => $livewire instanceof ViewRecord);
     }
 
     public static function getRestoreAction(): Action
@@ -196,6 +188,6 @@ trait BaseInResource
             ->button()
             ->extraAttributes(['class' => 'w-full'])
             ->action(fn ($record) => $record->restore())
-            ->visible(fn ($livewire, $record) => $record && $record->trashed());
+            ->visible(fn ($livewire, $record): bool => $record && $record->trashed());
     }
 }

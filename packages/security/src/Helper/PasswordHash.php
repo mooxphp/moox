@@ -29,13 +29,11 @@ namespace Moox\Security\Helper;
 //
 class PasswordHash
 {
-    private $itoa64;
+    private string $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
     private $iteration_count_log2;
 
-    private $portable_hashes;
-
-    private $random_state;
+    private string $random_state;
 
     /**
      * Constructor
@@ -43,16 +41,13 @@ class PasswordHash
      * @param  int  $iteration_count_log2
      * @param  bool  $portable_hashes
      */
-    public function __construct($iteration_count_log2, $portable_hashes)
+    public function __construct($iteration_count_log2, private $portable_hashes)
     {
-        $this->itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
         if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31) {
             $iteration_count_log2 = 8;
         }
-        $this->iteration_count_log2 = $iteration_count_log2;
 
-        $this->portable_hashes = $portable_hashes;
+        $this->iteration_count_log2 = $iteration_count_log2;
 
         $this->random_state = microtime();
         if (function_exists('getmypid')) {
@@ -63,9 +58,8 @@ class PasswordHash
     /**
      * @param  int  $iteration_count_log2
      * @param  bool  $portable_hashes
-     * @return void
      */
-    public function PasswordHash($iteration_count_log2, $portable_hashes)
+    public function PasswordHash($iteration_count_log2, $portable_hashes): void
     {
         self::__construct($iteration_count_log2, $portable_hashes);
     }
@@ -74,7 +68,7 @@ class PasswordHash
      * @param  int  $count
      * @return string
      */
-    public function get_random_bytes($count)
+    public function get_random_bytes($count): string|false
     {
         $output = '';
         if (@is_readable('/dev/urandom') &&
@@ -90,6 +84,7 @@ class PasswordHash
                     md5(microtime().$this->random_state);
                 $output .= md5($this->random_state, true);
             }
+
             $output = substr($output, 0, $count);
         }
 
@@ -99,9 +94,8 @@ class PasswordHash
     /**
      * @param  string  $input
      * @param  int  $count
-     * @return string
      */
-    public function encode64($input, $count)
+    public function encode64($input, $count): string
     {
         $output = '';
         $i = 0;
@@ -111,17 +105,21 @@ class PasswordHash
             if ($i < $count) {
                 $value |= ord($input[$i]) << 8;
             }
+
             $output .= $this->itoa64[($value >> 6) & 0x3F];
             if ($i++ >= $count) {
                 break;
             }
+
             if ($i < $count) {
                 $value |= ord($input[$i]) << 16;
             }
+
             $output .= $this->itoa64[($value >> 12) & 0x3F];
             if ($i++ >= $count) {
                 break;
             }
+
             $output .= $this->itoa64[($value >> 18) & 0x3F];
         } while ($i < $count);
 
@@ -130,24 +128,20 @@ class PasswordHash
 
     /**
      * @param  string  $input
-     * @return string
      */
-    public function gensalt_private($input)
+    public function gensalt_private($input): string
     {
         $output = '$P$';
         $output .= $this->itoa64[min($this->iteration_count_log2 +
             ((PHP_VERSION >= '5') ? 5 : 3), 30)];
-        $output .= $this->encode64($input, 6);
 
-        return $output;
+        return $output.$this->encode64($input, 6);
     }
 
     /**
-     * @param  string  $password
      * @param  string  $setting
-     * @return string
      */
-    public function crypt_private($password, $setting)
+    public function crypt_private(string $password, $setting): string
     {
         $output = '*0';
         if (substr($setting, 0, 2) === $output) {
@@ -184,16 +178,14 @@ class PasswordHash
         } while (--$count);
 
         $output = substr($setting, 0, 12);
-        $output .= $this->encode64($hash, 16);
 
-        return $output;
+        return $output.$this->encode64($hash, 16);
     }
 
     /**
      * @param  string  $input
-     * @return string
      */
-    public function gensalt_blowfish($input)
+    public function gensalt_blowfish($input): string
     {
         // This one needs to use a different order of characters and a
         // different encoding scheme from the one in encode64() above.
@@ -234,14 +226,11 @@ class PasswordHash
         return $output;
     }
 
-    /**
-     * @param  string  $password
-     */
-    public function HashPassword($password)
+    public function HashPassword(string $password): string
     {
         $random = '';
 
-        if (CRYPT_BLOWFISH === 1 && ! $this->portable_hashes) {
+        if (! $this->portable_hashes) {
             $random = $this->get_random_bytes(16);
             $hash =
                 crypt($password, $this->gensalt_blowfish($random));
@@ -253,6 +242,7 @@ class PasswordHash
         if (strlen($random) < 6) {
             $random = $this->get_random_bytes(6);
         }
+
         $hash =
             $this->crypt_private($password,
                 $this->gensalt_private($random));
@@ -267,11 +257,9 @@ class PasswordHash
     }
 
     /**
-     * @param  string  $password
      * @param  string  $stored_hash
-     * @return bool
      */
-    public function CheckPassword($password, $stored_hash)
+    public function CheckPassword(string $password, $stored_hash): bool
     {
         $hash = $this->crypt_private($password, $stored_hash);
         if ($hash[0] === '*') {

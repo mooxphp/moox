@@ -60,23 +60,28 @@ class UpdateCommand extends Command
             info('Updating job_manager table...');
 
             if (Schema::hasTable('job_manager')) {
-                Schema::table('job_manager', function (Blueprint $table) {
+                Schema::table('job_manager', function (Blueprint $table): void {
                     if (! Schema::hasColumn('job_manager', 'available_at')) {
                         $table->timestamp('available_at')->nullable();
                     }
+
                     if (! Schema::hasColumn('job_manager', 'status')) {
                         $table->string('status');
                         $table->index(['status'], 'job_manager_status_index');
                     }
+
                     if (! Schema::hasColumn('job_manager', 'connection')) {
                         $table->string('connection')->nullable();
                     }
+
                     if (! Schema::hasColumn('job_manager', 'job_queue_worker_id')) {
                         $table->unsignedBigInteger('job_queue_worker_id')->nullable();
                     }
+
                     if (Schema::hasColumn('job_manager', 'job_id')) {
                         $table->index(['job_id'], 'job_manager_job_id_index');
                     }
+
                     if (Schema::hasColumn('job_manager', 'queue')) {
                         $table->index(['queue'], 'job_manager_queue_index');
                     }
@@ -86,7 +91,8 @@ class UpdateCommand extends Command
 
                 return;
             }
-            warning('The job_manager table does not exist. Let\'s publish the migration for it.');
+
+            warning("The job_manager table does not exist. Let's publish the migration for it.");
             $this->callSilent('vendor:publish', ['--tag' => 'jobs-manager-migration']);
         }
     }
@@ -126,7 +132,7 @@ class UpdateCommand extends Command
         $jobCount = DB::table('job_manager')->count();
 
         if ($jobCount > 0) {
-            info("There are {$jobCount} entries in your job_manager table.");
+            info(sprintf('There are %d entries in your job_manager table.', $jobCount));
             if (confirm('Do you want to migrate the jobs to show a correct status?')) {
                 $jobs = DB::table('job_manager')->get();
 

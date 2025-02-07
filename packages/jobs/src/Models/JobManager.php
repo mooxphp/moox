@@ -3,6 +3,7 @@
 namespace Moox\Jobs\Models;
 
 use Illuminate\Contracts\Queue\Job as JobContract;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
@@ -10,14 +11,15 @@ use Illuminate\Support\Facades\Hash;
 
 class JobManager extends Model
 {
-    use HasFactory, Prunable;
+    use HasFactory;
+    use Prunable;
 
     protected $table = 'job_manager';
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'job_id',
@@ -76,7 +78,7 @@ class JobManager extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
     public function prunable()
     {

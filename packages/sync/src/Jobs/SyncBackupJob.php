@@ -11,9 +11,12 @@ use Moox\Sync\Models\Sync;
 
 class SyncBackupJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
-    public function handle()
+    public function handle(): void
     {
         $syncs = Sync::where('status', true)->get();
 

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Moox\Builder\Generators\Entity\Pages;
 
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Generators\Entity\AbstractGenerator;
 use Moox\Builder\Services\File\FileManager;
+use Override;
 use RuntimeException;
 
 abstract class AbstractPageGenerator extends AbstractGenerator
@@ -72,10 +74,11 @@ abstract class AbstractPageGenerator extends AbstractGenerator
         return 'page_'.$this->getPageType();
     }
 
+    #[Override]
     protected function getTemplate(): string
     {
         $template = $this->loadStub($this->getTemplateFile());
-        if (! $template) {
+        if ($template === '' || $template === '0') {
             throw new RuntimeException('Failed to load template: '.$this->getTemplateFile());
         }
 
@@ -92,6 +95,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
         return $templatePath;
     }
 
+    #[Override]
     protected function formatUseStatements(): string
     {
         $statements = [];
@@ -106,16 +110,15 @@ abstract class AbstractPageGenerator extends AbstractGenerator
             $blockTraits = $block->getTraits('pages');
             if (isset($blockTraits[$pageType])) {
                 foreach ($blockTraits[$pageType] as $trait) {
-                    $statements[] = "use $trait;";
+                    $statements[] = sprintf('use %s;', $trait);
                 }
             }
         }
 
-        return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 
+    #[Override]
     protected function formatTraits(): string
     {
         $traits = [];
@@ -124,7 +127,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
         foreach ($this->getBlocks() as $block) {
             $blockTraits = $block->getTraits('pages');
             if (isset($blockTraits[$pageType])) {
-                $shortTraits = array_map(function ($trait) {
+                $shortTraits = array_map(function ($trait): string {
                     $parts = explode('\\', $trait);
 
                     return end($parts);
@@ -133,13 +136,14 @@ abstract class AbstractPageGenerator extends AbstractGenerator
             }
         }
 
-        if (empty($traits)) {
+        if ($traits === []) {
             return '';
         }
 
         return 'use '.implode(', ', array_unique($traits)).';';
     }
 
+    #[Override]
     protected function formatMethods(): string
     {
         $methods = [];
@@ -163,6 +167,7 @@ abstract class AbstractPageGenerator extends AbstractGenerator
                         if (! isset($methods['mount'])) {
                             $methods['mount'] = [];
                         }
+
                         $methods['mount'][] = (string) $methodBody;
                     } else {
                         $methods[$methodName] = (string) $methodBody;
@@ -192,10 +197,10 @@ abstract class AbstractPageGenerator extends AbstractGenerator
         $entityName = Str::kebab($this->context->getEntityName());
 
         return match ($contextType) {
-            'app' => "entities.{$entityName}",
-            'preview' => "previews.{$entityName}",
-            'package' => $this->context->getConfig()['package']['name'].".entities.{$entityName}",
-            default => throw new \InvalidArgumentException('Invalid context type: '.$contextType),
+            'app' => 'entities.'.$entityName,
+            'preview' => 'previews.'.$entityName,
+            'package' => $this->context->getConfig()['package']['name'].('.entities.'.$entityName),
+            default => throw new InvalidArgumentException('Invalid context type: '.$contextType),
         };
     }
 }

@@ -29,12 +29,12 @@ class UpdateWordPressPlugin extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->art();
         $this->welcome();
         $this->checkDotenv();
-        $env = $this->getDotenv();
+        $this->getDotenv();
         $this->pressPluginInstall();
         $this->updateWpConfig();
         $this->sayGoodbye();
@@ -101,10 +101,10 @@ class UpdateWordPressPlugin extends Command
             }
         }
 
-        if (! empty($missingVariables)) {
+        if ($missingVariables !== []) {
             warning('The following required variables are missing from your .env file:');
             foreach ($missingVariables as $variable) {
-                $this->line("- $variable");
+                $this->line('- '.$variable);
             }
 
             warning('Please add the missing variables to your .env file and rerun this command.');
@@ -121,7 +121,7 @@ class UpdateWordPressPlugin extends Command
         info('Updating the Moox Press plugin...');
 
         $wpPath = env('WP_PATH', '/public/wp');
-        $fullWpPath = base_path(trim($wpPath, '/'));
+        $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         $pluginsPath = $fullWpPath.'/wp-content/plugins';
 
@@ -147,7 +147,7 @@ class UpdateWordPressPlugin extends Command
         info('Updating the wp-config.php file...');
 
         $wpPath = env('WP_PATH', '/public/wp');
-        $fullWpPath = base_path(trim($wpPath, '/'));
+        $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         $wpconfigPath = $fullWpPath.'/wp-config.php';
 

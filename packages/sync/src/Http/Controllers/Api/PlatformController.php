@@ -17,21 +17,21 @@ class PlatformController extends Controller
         return PlatformResource::collection($platforms);
     }
 
-    public function show($id)
+    public function show($id): PlatformResource
     {
         $platform = Platform::findOrFail($id);
 
         return new PlatformResource($platform);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): PlatformResource
     {
         $platform = Platform::create($request->all());
 
         return new PlatformResource($platform);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): PlatformResource
     {
         $platform = Platform::findOrFail($id);
         $platform->update($request->all());

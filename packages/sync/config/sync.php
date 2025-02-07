@@ -1,5 +1,14 @@
 <?php
 
+use Moox\Press\Models\WpUser;
+use Moox\Sync\Http\Controllers\Api\PlatformController;
+use Moox\Sync\Http\Controllers\Api\SyncController;
+use Moox\Sync\Models\Platform;
+use Moox\Sync\Models\Sync;
+use Moox\Sync\Resources\PlatformResource;
+use Moox\Sync\Resources\SyncResource;
+use Moox\User\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +23,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -172,9 +180,9 @@ return [
                     'destroy',
                 ],
             ],
-            'model' => '\Moox\Sync\Models\Sync',
-            'resource' => '\Moox\Sync\Resources\SyncResource',
-            'api_controller' => '\Moox\Sync\Http\Controllers\Api\SyncController',
+            'model' => Sync::class,
+            'resource' => SyncResource::class,
+            'api_controller' => SyncController::class,
         ],
         'Platform' => [
             'api' => [
@@ -189,9 +197,9 @@ return [
                     'destroy',
                 ],
             ],
-            'model' => '\Moox\Sync\Models\Platform',
-            'resource' => '\Moox\Sync\Resources\PlatformResource',
-            'api_controller' => '\Moox\Sync\Http\Controllers\Api\PlatformController',
+            'model' => Platform::class,
+            'resource' => PlatformResource::class,
+            'api_controller' => PlatformController::class,
         ],
     ],
 
@@ -293,8 +301,8 @@ return [
     */
 
     'models_with_syncable_relations' => [
-        'Moox\User\Models\User',
-        'Moox\Press\Models\WpUser' => [
+        User::class,
+        WpUser::class => [
             'Moox\UserSession\Models\Session',
         ],
         // Add any other models here
@@ -460,7 +468,7 @@ return [
 
     'file_sync_max_size_http' => 2 * 1024 * 1024, // 5 MB
     'file_sync_max_size_rsync' => 50 * 1024 * 1024, // 50 MB, not implemented yet
-    'file_sync_chunk_size_http' => 1 * 1024 * 1024, // 1 MB
+    'file_sync_chunk_size_http' => 1024 * 1024, // 1 MB
 
     /*
     |--------------------------------------------------------------------------

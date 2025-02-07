@@ -29,7 +29,7 @@ return [
     'data' => 'Données',
     'interval' => 'Intervalle',
     'has_errors' => 'A des erreurs',
-    'error_message' => 'Message d\'erreur',
+    'error_message' => "Message d'erreur",
     'domain' => 'Domaine',
     'ip_address' => 'Address IP',
     'thumbnail' => 'Miniature',

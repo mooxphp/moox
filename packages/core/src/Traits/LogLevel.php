@@ -23,16 +23,9 @@ trait LogLevel
         $logInProduction = Config::get('core.logging.log_in_production', false);
 
         if (
-            ($verboseLevel > 0 && app()->environment() !== 'production') ||
-            ($logInProduction && app()->environment() === 'production')
+            ($verboseLevel > 0 && app()->environment() !== 'production' || $logInProduction && app()->environment() === 'production') && ($level === 'debug' && $verboseLevel >= 1 || $level === 'info' && $verboseLevel >= 2 || $verboseLevel >= 3)
         ) {
-            if (
-                ($level === 'debug' && $verboseLevel >= 1) ||
-                ($level === 'info' && $verboseLevel >= 2) ||
-                $verboseLevel >= 3
-            ) {
-                Log::$level($message, $context);
-            }
+            Log::$level($message, $context);
         }
     }
 }

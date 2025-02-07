@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\User;
+use Moox\UserDevice\Models\UserDevice;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +17,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -98,7 +100,7 @@ return [
     */
 
     'user_models' => [
-        'App Users' => \App\Models\User::class,
+        'App Users' => User::class,
         'Moox Users' => \Moox\User\Models\User::class,
     ],
 
@@ -111,6 +113,6 @@ return [
     |
     */
 
-    'device_model' => \Moox\UserDevice\Models\UserDevice::class,
+    'device_model' => UserDevice::class,
 
 ];

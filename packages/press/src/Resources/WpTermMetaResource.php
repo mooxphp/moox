@@ -8,19 +8,24 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpTermMeta;
-use Moox\Press\Resources\WpTermMetaResource\Pages;
+use Moox\Press\Resources\WpTermMetaResource\Pages\CreateWpTermMeta;
+use Moox\Press\Resources\WpTermMetaResource\Pages\EditWpTermMeta;
+use Moox\Press\Resources\WpTermMetaResource\Pages\ListWpTermMetas;
+use Moox\Press\Resources\WpTermMetaResource\Pages\ViewWpTermMeta;
+use Override;
 
 class WpTermMetaResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpTermMeta::class;
 
@@ -28,6 +33,7 @@ class WpTermMetaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'meta_key';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -68,22 +74,23 @@ class WpTermMetaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('term_id')
+                TextColumn::make('term_id')
                     ->label(__('core::core.term_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_key')
+                TextColumn::make('meta_key')
                     ->label(__('core::core.met_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_value')
+                TextColumn::make('meta_value')
                     ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()
@@ -93,46 +100,54 @@ class WpTermMetaResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTermMetas::route('/'),
-            'create' => Pages\CreateWpTermMeta::route('/create'),
-            'view' => Pages\ViewWpTermMeta::route('/{record}'),
-            'edit' => Pages\EditWpTermMeta::route('/{record}/edit'),
+            'index' => ListWpTermMetas::route('/'),
+            'create' => CreateWpTermMeta::route('/create'),
+            'view' => ViewWpTermMeta::route('/{record}'),
+            'edit' => EditWpTermMeta::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.termMeta.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.termMeta.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.termMeta.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.termMeta.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.meta_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.meta_navigation_sort') + 3;

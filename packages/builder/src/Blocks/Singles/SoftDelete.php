@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace Moox\Builder\Blocks\Singles;
 
 use Moox\Builder\Blocks\AbstractBlock;
+use Moox\BuilderPro\Blocks\Singles\Publish;
+use Moox\Core\Traits\Base\BaseInCreatePage;
+use Moox\Core\Traits\Base\BaseInEditPage;
+use Moox\Core\Traits\Base\BaseInListPage;
+use Moox\Core\Traits\Base\BaseInModel;
+use Moox\Core\Traits\Base\BaseInResource;
+use Moox\Core\Traits\Base\BaseInViewPage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInCreatePage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInEditPage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
+use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage;
+use Override;
 
 class SoftDelete extends AbstractBlock
 {
-    protected array $containsBlocks = [
-        'Moox\Builder\Blocks\Singles\Simple',
-    ];
-
-    protected array $incompatibleBlocks = [
-        'Moox\BuilderPro\Blocks\Singles\Publish',
-        'Moox\Builder\Blocks\Singles\Light',
-    ];
-
     public function __construct(
         string $name = 'softDelete',
         string $label = 'Soft Delete',
@@ -24,29 +29,38 @@ class SoftDelete extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description);
 
+        $this->containsBlocks = [
+            Simple::class,
+        ];
+
+        $this->incompatibleBlocks = [
+            Publish::class,
+            Light::class,
+        ];
+
         $this->traits['model'] = [
-            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInModel',
-            'Moox\Core\Traits\Base\BaseInModel',
+            SingleSoftDeleteInModel::class,
+            BaseInModel::class,
         ];
         $this->traits['resource'] = [
-            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource',
-            'Moox\Core\Traits\Base\BaseInResource',
+            SingleSoftDeleteInResource::class,
+            BaseInResource::class,
         ];
         $this->traits['pages']['edit'] = [
-            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInEditPage',
-            'Moox\Core\Traits\Base\BaseInEditPage',
+            SingleSoftDeleteInEditPage::class,
+            BaseInEditPage::class,
         ];
         $this->traits['pages']['list'] = [
-            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage',
-            'Moox\Core\Traits\Base\BaseInListPage',
+            SingleSoftDeleteInListPage::class,
+            BaseInListPage::class,
         ];
         $this->traits['pages']['view'] = [
-            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInViewPage',
-            'Moox\Core\Traits\Base\BaseInViewPage',
+            SingleSoftDeleteInViewPage::class,
+            BaseInViewPage::class,
         ];
         $this->traits['pages']['create'] = [
-            'Moox\Core\Traits\SoftDelete\SingleSoftDeleteInCreatePage',
-            'Moox\Core\Traits\Base\BaseInCreatePage',
+            SingleSoftDeleteInCreatePage::class,
+            BaseInCreatePage::class,
         ];
 
         $this->migrations['fields'] = [
@@ -88,6 +102,7 @@ class SoftDelete extends AbstractBlock
         ];
     }
 
+    #[Override]
     public function getTableInit(): array
     {
         return [

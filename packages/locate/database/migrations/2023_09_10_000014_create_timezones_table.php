@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('timezones', function (Blueprint $table) {
+        Schema::create('timezones', function (Blueprint $table): void {
             $table->bigIncrements('id');
             $table->string('zone_name');
             $table->string('country_code', 2);

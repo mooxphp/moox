@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('country_currency', function (Blueprint $table) {
+        Schema::create('country_currency', function (Blueprint $table): void {
             $table->unsignedBigInteger('country_id');
             $table->unsignedBigInteger('currency_id');
         });

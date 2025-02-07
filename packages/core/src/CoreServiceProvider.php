@@ -8,14 +8,18 @@ use Illuminate\Support\Facades\Gate;
 use Moox\Core\Commands\InstallCommand;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
+use Moox\Permission\Policies\DefaultPolicy;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class CoreServiceProvider extends PackageServiceProvider
 {
-    use GoogleIcons, TranslatableConfig;
+    use GoogleIcons;
+    use TranslatableConfig;
 
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         parent::boot();
 
@@ -25,7 +29,7 @@ class CoreServiceProvider extends PackageServiceProvider
 
         $this->loadTranslationsFrom(lang_path('previews'), 'previews');
 
-        $this->app->booted(function () {
+        $this->app->booted(function (): void {
             $this->translateConfigurations();
         });
     }
@@ -61,11 +65,12 @@ class CoreServiceProvider extends PackageServiceProvider
             if ($key === 'app') {
                 continue;
             }
+
             config([$key => $value]);
         }
     }
 
-    public function setPolicies()
+    public function setPolicies(): void
     {
         $packages = $this->getPackageNames();
 
@@ -73,7 +78,7 @@ class CoreServiceProvider extends PackageServiceProvider
             if (isset($package['models']) && is_array($package['models'])) {
                 foreach ($package['models'] as $model => $settings) {
                     if (isset($settings['policy']) && class_exists($settings['policy'])) {
-                        $modelClass = "App\\Models\\$model";
+                        $modelClass = 'App\Models\\'.$model;
                         if (class_exists($modelClass)) {
                             Gate::policy($modelClass, $settings['policy']);
                         }
@@ -82,8 +87,6 @@ class CoreServiceProvider extends PackageServiceProvider
             }
         }
 
-        Gate::guessPolicyNamesUsing(function ($modelClass) {
-            return \Moox\Permission\Policies\DefaultPolicy::class;
-        });
+        Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
     }
 }

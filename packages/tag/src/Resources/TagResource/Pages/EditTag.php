@@ -6,6 +6,7 @@ namespace Moox\Tag\Resources\TagResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
 use Moox\Tag\Resources\TagResource;
+use Override;
 
 class EditTag extends EditRecord
 {
@@ -17,6 +18,7 @@ class EditTag extends EditRecord
         ];
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

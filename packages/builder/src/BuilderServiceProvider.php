@@ -18,23 +18,24 @@ use Moox\Builder\Services\File\FileFormatter;
 use Moox\Builder\Services\File\FileManager;
 use Moox\Builder\Services\File\FileOperations;
 use Moox\Builder\Services\Preview\PreviewTableManager;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class BuilderServiceProvider extends PackageServiceProvider
 {
+    #[Override]
     public function boot(): void
     {
         parent::boot();
     }
 
+    #[Override]
     public function register(): void
     {
         parent::register();
 
-        $this->app->bind('moox.builder.path', function () {
-            return dirname(__DIR__);
-        });
+        $this->app->bind('moox.builder.path', fn (): string => dirname(__DIR__));
 
         $this->app->register(BuilderPanelProvider::class);
 
@@ -47,20 +48,16 @@ class BuilderServiceProvider extends PackageServiceProvider
         $this->app->singleton(FileOperations::class);
         $this->app->singleton(FileFormatter::class);
 
-        $this->app->singleton(EntityRebuilder::class, function ($app) {
-            return new EntityRebuilder(
-                $app->make(EntityCreator::class),
-                $app->make(BuildManager::class),
-                $app->make(FileManager::class)
-            );
-        });
+        $this->app->singleton(EntityRebuilder::class, fn ($app): EntityRebuilder => new EntityRebuilder(
+            $app->make(EntityCreator::class),
+            $app->make(BuildManager::class),
+            $app->make(FileManager::class)
+        ));
 
-        $this->app->singleton(FileManager::class, function ($app) {
-            return new FileManager(
-                $app->make(FileOperations::class),
-                $app->make(FileFormatter::class)
-            );
-        });
+        $this->app->singleton(FileManager::class, fn ($app): FileManager => new FileManager(
+            $app->make(FileOperations::class),
+            $app->make(FileFormatter::class)
+        ));
     }
 
     public function configurePackage(Package $package): void

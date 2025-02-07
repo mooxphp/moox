@@ -19,7 +19,7 @@ class EntityDeleter extends AbstractEntityService
         $this->ensureContextIsSet();
         $entity = $this->findEntity($this->context->getEntityName());
 
-        if (! $entity) {
+        if ($entity === null) {
             throw new RuntimeException('Entity not found');
         }
 

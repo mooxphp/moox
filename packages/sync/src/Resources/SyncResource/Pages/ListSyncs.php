@@ -7,6 +7,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Sync\Models\Sync;
 use Moox\Sync\Resources\SyncResource;
+use Override;
 
 class ListSyncs extends ListRecords
 {
@@ -14,11 +15,12 @@ class ListSyncs extends ListRecords
 
     public static string $resource = SyncResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('sync::translations.title');
@@ -28,9 +30,7 @@ class ListSyncs extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Sync {
-                    return $model::create($data);
-                }),
+                ->using(fn (array $data, string $model): Sync => $model::create($data)),
         ];
     }
 

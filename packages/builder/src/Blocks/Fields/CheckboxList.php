@@ -43,12 +43,12 @@ class CheckboxList extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->json('{$this->name}')"
+            sprintf("\$table->json('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->randomElements('.var_export($this->options, true).', 2)',
+            $this->name => 'fake()->randomElements('.var_export($this->options, true).', 2)',
         ];
     }
 }

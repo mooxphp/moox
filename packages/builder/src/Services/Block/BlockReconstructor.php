@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Block;
 
+use Exception;
 use RuntimeException;
 
 class BlockReconstructor
@@ -34,14 +35,12 @@ class BlockReconstructor
         foreach ($blockData as $data) {
             try {
                 $block = $this->reconstructBlock($data, $build->entity_id);
-                if ($block) {
+                if ($block !== null) {
                     $blocks[] = $block;
                 }
-            } catch (\Exception $e) {
-                throw new RuntimeException(
-                    'Block reconstruction failed: '.$e->getMessage().
-                    ' Data: '.json_encode($data)
-                );
+            } catch (Exception $e) {
+                throw new RuntimeException('Block reconstruction failed: '.$e->getMessage().
+                ' Data: '.json_encode($data), $e->getCode(), $e);
             }
         }
 
@@ -52,7 +51,7 @@ class BlockReconstructor
     {
         $block = $this->blockFactory->createFromBuild($data['type'], $entityId);
 
-        if (! $block) {
+        if ($block === null) {
             return null;
         }
 

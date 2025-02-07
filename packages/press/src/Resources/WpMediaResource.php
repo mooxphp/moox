@@ -19,12 +19,17 @@ use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpMedia;
-use Moox\Press\Resources\WpMediaResource\Pages;
+use Moox\Press\Resources\WpMediaResource\Pages\CreateWpPost;
+use Moox\Press\Resources\WpMediaResource\Pages\EditWpPost;
+use Moox\Press\Resources\WpMediaResource\Pages\ListWpPosts;
+use Moox\Press\Resources\WpMediaResource\Pages\ViewWpPost;
 use Moox\Press\Resources\WpMediaResource\RelationManagers\WpPostMetaRelationManager;
+use Override;
 
 class WpMediaResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpMedia::class;
 
@@ -32,6 +37,7 @@ class WpMediaResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -274,6 +280,7 @@ class WpMediaResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -361,6 +368,7 @@ class WpMediaResource extends Resource
         // ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -368,41 +376,48 @@ class WpMediaResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpPosts::route('/'),
-            'create' => Pages\CreateWpPost::route('/create'),
-            'view' => Pages\ViewWpPost::route('/{record}'),
-            'edit' => Pages\EditWpPost::route('/{record}/edit'),
+            'index' => ListWpPosts::route('/'),
+            'create' => CreateWpPost::route('/create'),
+            'view' => ViewWpPost::route('/{record}'),
+            'edit' => EditWpPost::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.media.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.media.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.media.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.media.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.press_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 3;

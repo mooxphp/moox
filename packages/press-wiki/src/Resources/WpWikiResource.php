@@ -9,20 +9,23 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressWiki\Models\WpWiki;
 use Moox\PressWiki\Resources\WpWikiResource\Pages;
+use Moox\PressWiki\Resources\WpWikiResource\Pages\ListWpWikis;
 use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpCommentRelationManager;
 use Moox\PressWiki\Resources\WpWikiResource\RelationManagers\WpPostMetaRelationManager;
+use Override;
 
 class WpWikiResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpWiki::class;
 
@@ -30,6 +33,7 @@ class WpWikiResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -272,44 +276,46 @@ class WpWikiResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('post_title')
+                TextColumn::make('post_title')
                     ->label(__('core::post.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('author.display_name')
+                TextColumn::make('author.display_name')
                     ->label(__('core::post.post_author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('departmentTopics.name')
+                TextColumn::make('departmentTopics.name')
                     ->label(__('press-wiki::translations.wiki-department-topics')),
-                Tables\Columns\TextColumn::make('letterTopics.name')
+                TextColumn::make('letterTopics.name')
                     ->label(__('press-wiki::translations.wiki-letter-topics'))
                     ->alignCenter(),
-                Tables\Columns\TextColumn::make('companyTopics.name')
+                TextColumn::make('companyTopics.name')
                     ->label(__('press-wiki::translations.wiki-company-topics')),
-                Tables\Columns\TextColumn::make('locationTopics.name')
+                TextColumn::make('locationTopics.name')
                     ->label(__('press-wiki::translations.wiki-location-topics')),
-                Tables\Columns\TextColumn::make('wikiTopics.name')
+                TextColumn::make('wikiTopics.name')
                     ->label(__('press-wiki::translations.wiki-topics')),
-                Tables\Columns\TextColumn::make('post_date')
+                TextColumn::make('post_date')
                     ->label(__('core::post.post_date'))
                     ->toggleable()
                     ->dateTime()
                     ->sortable(),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn ($record): string => sprintf('/wp/wp-admin/post.php?post=%s&action=edit', $record->ID)),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -318,41 +324,48 @@ class WpWikiResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpWikis::route('/'),
+            'index' => ListWpWikis::route('/'),
             // 'create' => Pages\CreateWpWiki::route('/create'),
             // 'view' => Pages\ViewWpWiki::route('/{record}'),
             // 'edit' => Pages\EditWpWiki::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press-wiki.resources.wiki.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press-wiki.resources.wiki.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press-wiki.resources.wiki.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press-wiki.resources.wiki.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press-wiki.temp_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press-wiki.temp_navigation_sort');

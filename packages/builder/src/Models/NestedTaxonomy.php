@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Kalnoy\Nestedset\NodeTrait;
+use Override;
 
 class NestedTaxonomy extends Model
 {
-    use HasFactory, NodeTrait, SoftDeletes;
+    use HasFactory;
+    use NodeTrait;
+    use SoftDeletes;
 
     protected $table = 'nested_taxonomies';
 
@@ -59,9 +62,10 @@ class NestedTaxonomy extends Model
         DB::table('nestedtaxonomyables')->where('nested_taxonomy_id', $this->id)->delete();
     }
 
+    #[Override]
     protected static function booted(): void
     {
-        static::deleting(function (NestedTaxonomy $nestedTaxonomy) {
+        static::deleting(function (NestedTaxonomy $nestedTaxonomy): void {
             $nestedTaxonomy->detachAllNestedtaxonomyables();
         });
     }

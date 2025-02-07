@@ -16,3 +16,5 @@ parameters:
         - 'packages/sync'
         - 'packages/*/tests/*'
     tmpDir: build/phpstan
+    ignoreErrors:
+        - "#Called 'env' outside of the config directory which returns null when the config is cached, use 'config'#"

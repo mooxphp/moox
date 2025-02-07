@@ -7,6 +7,7 @@ namespace Moox\Builder\Resources\NestedTaxonomyResource\Pages;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\NestedTaxonomyResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class EditNestedTaxonomy extends EditRecord
 {
@@ -14,6 +15,7 @@ class EditNestedTaxonomy extends EditRecord
 
     protected static string $resource = NestedTaxonomyResource::class;
 
+    #[Override]
     public function mount($record): void
     {
         $this->record = $this->resolveRecord($record);
@@ -28,6 +30,7 @@ class EditNestedTaxonomy extends EditRecord
         return [];
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

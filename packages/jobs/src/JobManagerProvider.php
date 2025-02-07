@@ -10,33 +10,32 @@ use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 use Moox\Jobs\Models\JobManager;
+use Throwable;
 
 class JobManagerProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // Running
-        Queue::before(static function (JobProcessing $event) {
+        Queue::before(static function (JobProcessing $event): void {
             self::jobStarted($event->job);
         });
 
         // Succeeded
-        Queue::after(static function (JobProcessed $event) {
+        Queue::after(static function (JobProcessed $event): void {
             self::jobFinished($event->job);
         });
 
         // Failed
-        Queue::failing(static function (JobFailed $event) {
+        Queue::failing(static function (JobFailed $event): void {
             self::jobFinished($event->job, true, $event->exception);
         });
 
         // Failed (retries exhausted)
-        Queue::exceptionOccurred(static function (JobExceptionOccurred $event) {
+        Queue::exceptionOccurred(static function (JobExceptionOccurred $event): void {
             self::jobFinished($event->job, true, $event->exception);
         });
     }
@@ -72,7 +71,7 @@ class JobManagerProvider extends ServiceProvider
             ->where('job_id', $jobId)
             ->where('failed', false)
             ->whereNull('finished_at')
-            ->each(function (JobManager $monitor) {
+            ->each(function (JobManager $monitor): void {
                 $monitor->finished_at = now();
                 $monitor->failed = true;
                 $monitor->save();
@@ -82,7 +81,7 @@ class JobManagerProvider extends ServiceProvider
     /**
      * Finish Queue Monitoring for Job.
      */
-    protected static function jobFinished(JobContract $job, bool $failed = false, ?\Throwable $exception = null): void
+    protected static function jobFinished(JobContract $job, bool $failed = false, ?Throwable $exception = null): void
     {
         $monitor = JobManager::query()
             ->where('job_id', self::getJobId($job))
@@ -112,7 +111,7 @@ class JobManagerProvider extends ServiceProvider
 
         $attributes += ['status' => 'failed'];
 
-        if ($exception !== null) {
+        if ($exception instanceof Throwable) {
             $attributes += [
                 'exception_message' => mb_strcut($exception->getMessage(), 0, 65535),
             ];

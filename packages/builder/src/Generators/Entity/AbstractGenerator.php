@@ -47,7 +47,7 @@ abstract class AbstractGenerator
         $template = $this->context->getConfig()['generators'][$this->getGeneratorType()]['template'] ?? null;
 
         if (! $template) {
-            throw new RuntimeException("Template configuration for {$this->getGeneratorType()} not found");
+            throw new RuntimeException(sprintf('Template configuration for %s not found', $this->getGeneratorType()));
         }
 
         return $template;
@@ -57,9 +57,7 @@ abstract class AbstractGenerator
     {
         $statements = $this->getUseStatements($this->getGeneratorType());
 
-        return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+        return implode("\n", array_map(fn ($statement): string => rtrim((string) $statement, ';').';', array_unique($statements)));
     }
 
     protected function formatTraits(): string
@@ -72,11 +70,11 @@ abstract class AbstractGenerator
             }
         }
 
-        if (empty($traits)) {
+        if ($traits === []) {
             return '';
         }
 
-        $shortTraits = array_map(function ($trait) {
+        $shortTraits = array_map(function ($trait): string {
             $parts = explode('\\', $trait);
 
             return end($parts);
@@ -106,7 +104,7 @@ abstract class AbstractGenerator
             }
         }
 
-        if (empty($methods)) {
+        if ($methods === []) {
             return '';
         }
 
@@ -175,7 +173,7 @@ abstract class AbstractGenerator
     protected function loadStub(string $path): string
     {
         if (! file_exists($path)) {
-            throw new RuntimeException("Template not found: {$path}");
+            throw new RuntimeException('Template not found: '.$path);
         }
 
         return file_get_contents($path);
@@ -188,10 +186,9 @@ abstract class AbstractGenerator
         }
 
         $template = preg_replace('/\{\{\s*[a-zA-Z_]+\s*\}\}/', '', $template);
-        $template = preg_replace('/^\h*\v+/m', '', $template);
-        $template = preg_replace('/\n\s*\n\s*\n/', "\n\n", $template);
+        $template = preg_replace('/^\h*\v+/m', '', (string) $template);
 
-        return $template;
+        return preg_replace('/\n\s*\n\s*\n/', "\n\n", (string) $template);
     }
 
     protected function writeFile(string $path, string $content): void
@@ -207,7 +204,7 @@ abstract class AbstractGenerator
 
     protected function resolveBlocks(array $blocks): array
     {
-        if (! empty($blocks)) {
+        if ($blocks !== []) {
             $firstBlock = reset($blocks);
 
             return $firstBlock->resolveBlockDependencies($blocks);
