@@ -20,9 +20,22 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Security\Services\RequestPasswordReset;
 use Moox\User\Services\Login;
+use Filament\Support\Assets\Js;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 
 class AdminPanelProvider extends PanelProvider
 {
+
+        public function boot(): void
+        {
+            FilamentAsset::register([
+                Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
+                Css::make('filepond-css', asset('vendor/livewire-filepond/filepond.css')),
+            ]);
+        }
+
+
     public function panel(Panel $panel): Panel
     {
         return $panel

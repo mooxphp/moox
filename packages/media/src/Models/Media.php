@@ -2,20 +2,21 @@
 
 namespace Moox\Media\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
-class Media extends Model
+class Media extends BaseMedia
 {
-    use HasFactory;
+    public function originalModel(): MorphTo
+    {
+        return $this->morphTo('original_model');
+    }
 
-    protected $fillable = [
 
-    ];
-
-    protected $searchableFields = ['*'];
-
-    protected $casts = [
-
-    ];
+    public function usedInModels(): MorphToMany
+    {
+        return $this->morphedByMany(Model::class, 'media_usable', 'media_usables');
+    }
 }

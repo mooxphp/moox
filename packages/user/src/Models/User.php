@@ -15,7 +15,9 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Moox\Media\Models\Media as CustomMedia;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
@@ -69,5 +71,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->addMediaConversion('preview')
             ->fit(Fit::Contain, 300, 300)
             ->nonQueued();
+    }
+
+    public function usedMedia(): MorphToMany
+    {
+        return $this->morphToMany(CustomMedia::class, 'media_usable', 'media_usables');
     }
 }

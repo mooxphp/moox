@@ -3,13 +3,15 @@
 namespace Moox\Media\Resources;
 
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Media\Forms\Components\MediaPicker;
-use Moox\Media\Models\Media;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Moox\Media\Resources\MediaResource\Pages;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class MediaResource extends Resource
 {
@@ -32,7 +34,8 @@ class MediaResource extends Resource
     {
         return $table
             ->columns([
-                MediaPicker::make('media')->label('Avatar'),
+               TextColumn::make('name'),
+              SpatieMediaLibraryImageColumn::make('model.avatar_url'),
             ])
             ->filters([
 
