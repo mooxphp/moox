@@ -66,8 +66,8 @@ abstract class ContextAwareService
 
     protected function validatePackageConfig(array $config): void
     {
-        if (empty($config['package']['name'])) {
-            throw new RuntimeException('Invalid package configuration: missing package name');
+        if (! isset($config['package']['name'], $config['package']['namespace'])) {
+            throw new RuntimeException('Invalid package configuration');
         }
     }
 

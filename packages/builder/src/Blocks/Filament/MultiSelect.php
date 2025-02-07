@@ -2,52 +2,53 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Fields;
+namespace Moox\Builder\Blocks\Filament;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class Date extends AbstractBlock
+class MultiSelect extends AbstractBlock
 {
     public function __construct(
         string $name,
         string $label,
         string $description,
         bool $nullable = false,
-        protected bool $sortable = false,
+        protected array $options = [],
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ['use Filament\Forms\Components\DatePicker;'],
+                'forms' => ['use Filament\Forms\Components\MultiSelect;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ['use Filament\Tables\Filters\DateFilter;'],
+                'filters' => ['use Filament\Tables\Filters\MultiSelectFilter;'],
             ],
         ];
 
         $this->formFields['resource'] = [
-            "DatePicker::make('{$this->name}')
-                ->label('{$this->label}')"
+            "MultiSelect::make('{$this->name}')
+                ->label('{$this->label}')
+                ->options(".var_export($this->options, true).')'
                 .($this->nullable ? '' : '->required()'),
         ];
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')
-                ->date()"
-                .($this->sortable ? '->sortable()' : ''),
+                ->listWithLineBreaks()",
         ];
 
         $this->filters['resource'] = [
-            "DateFilter::make('{$this->name}')",
+            "MultiSelectFilter::make('{$this->name}')
+                ->options(".var_export($this->options, true).')',
         ];
 
         $this->migrations['fields'] = [
-            "\$table->date('{$this->name}')"
+            "\$table->json('{$this->name}')"
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->date()',
+            "{$this->name}" => 'fake()->randomElements('.var_export($this->options, true).', 2)',
         ];
     }
 }

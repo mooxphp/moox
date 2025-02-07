@@ -20,7 +20,7 @@ abstract class AbstractBuilderCommand extends Command
 
         $config = [];
         if ($package !== null) {
-            $config['package'] = ['name' => $package];
+            $config['package_namespace'] = $package;
         }
 
         return ContextFactory::create(
@@ -30,11 +30,10 @@ abstract class AbstractBuilderCommand extends Command
         );
     }
 
-    protected function getBuildContext(bool $preview, ?bool $app = false, ?string $package = null): string
+    protected function getBuildContext(bool $preview, ?string $package = null): string
     {
         return match (true) {
             $preview => 'preview',
-            $app => 'app',
             $package !== null => 'package',
             default => 'app'
         };

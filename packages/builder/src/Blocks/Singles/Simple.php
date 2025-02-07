@@ -7,9 +7,9 @@ use Moox\Builder\Blocks\AbstractBlock;
 class Simple extends AbstractBlock
 {
     protected array $incompatibleBlocks = [
-        'Moox\Builder\Blocks\Singles\SoftDelete',
-        'Moox\BuilderPro\Blocks\Singles\Publish',
-        'Moox\Builder\Blocks\Singles\Light',
+        SoftDelete::class,
+        Publish::class,
+        Light::class,
     ];
 
     public function __construct(

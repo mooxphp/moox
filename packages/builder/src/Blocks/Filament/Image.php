@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Fields;
+namespace Moox\Builder\Blocks\Filament;
 
 class Image extends FileUpload
 {
