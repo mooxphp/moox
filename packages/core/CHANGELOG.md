@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.1.0
+
+-   Remove Mockery
+-   Remove pharaonic/laravel-readable
+
+## 3.0.2
+
+-   Minor fixes
+
+## 3.0.1
+
+-   Minor fixes
+
 ## 3.0.0
 
 -   New Traits and Service Structure
