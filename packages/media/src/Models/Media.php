@@ -14,7 +14,6 @@ class Media extends BaseMedia
         return $this->morphTo('original_model');
     }
 
-
     public function usedInModels(): MorphToMany
     {
         return $this->morphedByMany(Model::class, 'media_usable', 'media_usables');
