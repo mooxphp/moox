@@ -13,7 +13,7 @@ use Moox\Builder\Blocks\Moox\TitleWithSlug;
 use Moox\Builder\Blocks\Sections\AddressSection;
 use Moox\Builder\Blocks\Singles\Simple;
 
-class SimpleItemPreset extends AbstractPreset
+class RelatedItemPreset extends AbstractPreset
 {
     protected function initializePreset(): void
     {

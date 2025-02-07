@@ -6,7 +6,7 @@ namespace Moox\Builder\Blocks\Sections;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-final class SimpleAddressSection extends AbstractBlock
+final class AddressSection extends AbstractBlock
 {
     public function __construct(
         string $name = 'address_section',

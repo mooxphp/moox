@@ -2,34 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Fields;
+namespace Moox\Builder\Blocks\Filament;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class DateTime extends AbstractBlock
+class Select extends AbstractBlock
 {
     public function __construct(
         string $name,
         string $label,
         string $description,
         bool $nullable = false,
-        protected bool $sortable = false,
-        protected bool $withSeconds = false,
-        protected string $type = 'datetime', // datetime, date, time
+        protected array $options = [],
+        protected bool $multiple = false,
+        protected bool $searchable = false,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
-        $componentClass = match ($this->type) {
-            'date' => 'DatePicker',
-            'time' => 'TimePicker',
-            default => 'DateTimePicker',
-        };
-
-        $filterClass = match ($this->type) {
-            'date' => 'DateFilter',
-            'time' => 'TimeFilter',
-            default => 'DateTimeFilter',
-        };
+        $componentClass = $this->multiple ? 'MultiSelect' : 'Select';
+        $filterClass = $this->multiple ? 'MultiSelectFilter' : 'SelectFilter';
 
         $this->useStatements = [
             'resource' => [
@@ -41,32 +32,31 @@ class DateTime extends AbstractBlock
 
         $this->formFields['resource'] = [
             "{$componentClass}::make('{$this->name}')
-                ->label('{$this->label}')"
+                ->label('{$this->label}')
+                ->options(".var_export($this->options, true).')'
                 .($this->nullable ? '' : '->required()')
-                .($this->withSeconds && $this->type !== 'date' ? '->withSeconds()' : ''),
+                .($this->searchable ? '->searchable()' : ''),
         ];
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')"
-                .'->{'.$this->type.'}()'
-                .($this->sortable ? '->sortable()' : ''),
+                .($this->multiple ? '->listWithLineBreaks()' : ''),
         ];
 
         $this->filters['resource'] = [
-            "{$filterClass}::make('{$this->name}')",
+            "{$filterClass}::make('{$this->name}')
+                ->options(".var_export($this->options, true).')',
         ];
 
         $this->migrations['fields'] = [
-            "\$table->{$this->type}('{$this->name}')"
+            '$table->'.($this->multiple ? 'json' : 'string')."('{$this->name}')"
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => match ($this->type) {
-                'date' => 'fake()->date()',
-                'time' => 'fake()->time()',
-                default => 'fake()->dateTime()',
-            },
+            "{$this->name}" => $this->multiple
+                ? 'fake()->randomElements('.var_export(array_keys($this->options), true).', 2)'
+                : 'fake()->randomElement('.var_export(array_keys($this->options), true).')',
         ];
     }
 }

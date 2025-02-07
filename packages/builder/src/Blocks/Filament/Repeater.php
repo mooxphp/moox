@@ -2,40 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Fields;
+namespace Moox\Builder\Blocks\Filament;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class KeyValue extends AbstractBlock
+class Repeater extends AbstractBlock
 {
     public function __construct(
         string $name,
         string $label,
         string $description,
         bool $nullable = false,
-        protected bool $keyLabel = true,
-        protected bool $valueLabel = true,
-        protected bool $reorderable = false,
-        protected ?array $keyOptions = null,
+        protected array $schema = [],
+        protected bool $collapsible = false,
+        protected bool $cloneable = false,
+        protected ?int $minItems = null,
+        protected ?int $maxItems = null,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ['use Filament\Forms\Components\KeyValue;'],
+                'forms' => ['use Filament\Forms\Components\Repeater;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => ['use Filament\Tables\Filters\Filter;'],
             ],
         ];
 
         $this->formFields['resource'] = [
-            "KeyValue::make('{$this->name}')
-                ->label('{$this->label}')"
+            "Repeater::make('{$this->name}')
+                ->label('{$this->label}')
+                ->schema([".implode(', ', array_map(fn ($item) => $item->formField(), $this->schema)).'])'
                 .($this->nullable ? '' : '->required()')
-                .(! $this->keyLabel ? '->disableKeyLabel()' : '')
-                .(! $this->valueLabel ? '->disableValueLabel()' : '')
-                .($this->reorderable ? '->reorderable()' : '')
-                .($this->keyOptions ? '->keyOptions('.var_export($this->keyOptions, true).')' : ''),
+                .($this->collapsible ? '->collapsible()' : '')
+                .($this->cloneable ? '->cloneable()' : '')
+                .($this->minItems ? "->minItems({$this->minItems})" : '')
+                .($this->maxItems ? "->maxItems({$this->maxItems})" : ''),
         ];
 
         $this->tableColumns['resource'] = [
