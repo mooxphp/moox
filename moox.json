@@ -1,0 +1,88 @@
+{
+    "packages": [
+        {
+            "name": "audit",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "builder",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "category",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "core",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "expiry",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "flags",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "jobs",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "locate",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "login-link",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "notifications",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "passkey",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "permission",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "press",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "security",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "skeleton",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "sync",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "tag",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "trainings",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "user",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "user-device",
+            "latest": "3.1.0"
+        },
+        {
+            "name": "user-session",
+            "latest": "3.1.0"
+        }
+    ]
+}
