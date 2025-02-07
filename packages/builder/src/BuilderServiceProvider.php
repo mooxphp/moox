@@ -84,6 +84,7 @@ class BuilderServiceProvider extends PackageServiceProvider
                 'create_builder_entity_tabs_table',
                 'create_builder_package_versions_table',
                 'create_builder_packages_table',
+                'foreigns_for_builder_table',
             ])
             ->hasCommands([
                 InstallCommand::class,
