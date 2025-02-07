@@ -41,7 +41,8 @@
         "pestphp/pest": "^3.2",
         "pestphp/pest-plugin-livewire": "^3.0",
         "pestphp/pest-plugin-laravel": "^3.0",
-        "ryangjchandler/blade-capture-directive": "^1.0"
+        "ryangjchandler/blade-capture-directive": "^1.0",
+        "laravel/pint": "^1.0"
     },
     "autoload-dev": {
         "psr-4": {

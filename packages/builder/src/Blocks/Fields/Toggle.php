@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Filament;
+namespace Moox\Builder\Blocks\Fields;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class Boolean extends AbstractBlock
+class Toggle extends AbstractBlock
 {
     public function __construct(
         string $name,
@@ -14,6 +14,8 @@ class Boolean extends AbstractBlock
         string $description,
         bool $nullable = false,
         protected bool $default = false,
+        protected ?string $onColor = null,
+        protected ?string $offColor = null,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
@@ -29,7 +31,9 @@ class Boolean extends AbstractBlock
             "Toggle::make('{$this->name}')
                 ->label('{$this->label}')"
                 .($this->nullable ? '' : '->required()')
-                .($this->default ? '->default(true)' : ''),
+                .($this->default ? '->default(true)' : '')
+                .($this->onColor ? "->onColor('{$this->onColor}')" : '')
+                .($this->offColor ? "->offColor('{$this->offColor}')" : ''),
         ];
 
         $this->tableColumns['resource'] = [

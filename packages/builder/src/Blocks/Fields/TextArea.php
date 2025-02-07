@@ -2,52 +2,53 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Filament;
+namespace Moox\Builder\Blocks\Fields;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class Date extends AbstractBlock
+class TextArea extends AbstractBlock
 {
     public function __construct(
         string $name,
         string $label,
         string $description,
         bool $nullable = false,
+        protected bool $searchable = false,
         protected bool $sortable = false,
+        protected ?int $maxLength = null,
+        protected ?int $rows = null,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ['use Filament\Forms\Components\DatePicker;'],
+                'forms' => ['use Filament\Forms\Components\Textarea;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
-                'filters' => ['use Filament\Tables\Filters\DateFilter;'],
             ],
         ];
 
-        $this->formFields['resource'] = [
-            "DatePicker::make('{$this->name}')
+        $this->addSection('form')
+            ->withFields(["Textarea::make('{$this->name}')
                 ->label('{$this->label}')"
-                .($this->nullable ? '' : '->required()'),
-        ];
+                .($this->nullable ? '' : '->required()')
+                .($this->maxLength ? "->maxLength({$this->maxLength})" : '')
+                .($this->rows ? "->rows({$this->rows})" : ''),
+            ]);
 
         $this->tableColumns['resource'] = [
             "TextColumn::make('{$this->name}')
-                ->date()"
+                ->limit(50)"
+                .($this->searchable ? '->searchable()' : '')
                 .($this->sortable ? '->sortable()' : ''),
         ];
 
-        $this->filters['resource'] = [
-            "DateFilter::make('{$this->name}')",
-        ];
-
         $this->migrations['fields'] = [
-            "\$table->date('{$this->name}')"
+            "\$table->text('{$this->name}')"
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->date()',
+            "{$this->name}" => 'fake()->paragraphs(2, true)',
         ];
     }
 }

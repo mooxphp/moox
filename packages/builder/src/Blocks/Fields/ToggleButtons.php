@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Filament;
+namespace Moox\Builder\Blocks\Fields;
 
 use Moox\Builder\Blocks\AbstractBlock;
 
-class Radio extends AbstractBlock
+class ToggleButtons extends AbstractBlock
 {
     public function __construct(
         string $name,
@@ -14,23 +14,21 @@ class Radio extends AbstractBlock
         string $description,
         bool $nullable = false,
         protected array $options = [],
-        protected bool $inline = false,
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
         $this->useStatements = [
             'resource' => [
-                'forms' => ['use Filament\Forms\Components\Radio;'],
+                'forms' => ['use Filament\Forms\Components\ToggleButtons;'],
                 'columns' => ['use Filament\Tables\Columns\TextColumn;'],
                 'filters' => ['use Filament\Tables\Filters\SelectFilter;'],
             ],
         ];
 
         $this->formFields['resource'] = [
-            "Radio::make('{$this->name}')
+            "ToggleButtons::make('{$this->name}')
                 ->label('{$this->label}')
                 ->options(".var_export($this->options, true).')'
-                .($this->inline ? '->inline()' : '')
                 .($this->nullable ? '' : '->required()'),
         ];
 

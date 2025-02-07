@@ -9,12 +9,12 @@ use Moox\Builder\Blocks\AbstractBlock;
 class SoftDelete extends AbstractBlock
 {
     protected array $containsBlocks = [
-        Simple::class,
+        'Moox\Builder\Blocks\Singles\Simple',
     ];
 
     protected array $incompatibleBlocks = [
-        Publish::class,
-        Light::class,
+        'Moox\BuilderPro\Blocks\Singles\Publish',
+        'Moox\Builder\Blocks\Singles\Light',
     ];
 
     public function __construct(

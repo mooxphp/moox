@@ -28,9 +28,10 @@ class BuildManager extends ContextAwareService
         $this->validateBlocks($blocks);
         $this->validateFiles($files);
 
-        if ($this->hasConflictingProductionBuild($entityId, $buildContext)) {
-            throw new RuntimeException('Entity already has an active build in a different production context');
-        }
+        // TODO: This was a check to prevent conflicts in the production contexts, but it also prevents the preview from being used.
+        // if ($this->hasConflictingProductionBuild($entityId, $buildContext)) {
+        //     throw new RuntimeException('Entity already has an active build in a different production context');
+        // }
 
         $this->buildRecorder->record($entityId, $buildContext, $blocks, $files);
         $this->buildStateManager->setContext($this->context);

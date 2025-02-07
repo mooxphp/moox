@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Builder\Blocks\Filament;
+namespace Moox\Builder\Blocks\Fields;
 
 use Moox\Builder\Blocks\AbstractBlock;
 

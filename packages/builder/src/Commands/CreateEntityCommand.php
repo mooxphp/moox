@@ -17,8 +17,10 @@ class CreateEntityCommand extends AbstractBuilderCommand
 {
     protected $signature = 'builder:create-entity
         {name : The name of the entity}
+        {--context= : Context to use (app, moox, package, preview)}
         {--package= : Package namespace}
         {--preview : Generate in preview mode}
+        {--app : Generate in app context}
         {--preset= : Preset to use}
         {--plural= : Plural form of the entity name}';
 
@@ -109,13 +111,41 @@ class CreateEntityCommand extends AbstractBuilderCommand
     protected function createContext(
         string $entityName,
         ?string $package = null,
-        bool $preview = false
+        bool $preview = false,
+        bool $app = false
     ): BuildContext {
         return ContextFactory::create(
-            $this->getBuildContext($preview, $package),
+            $this->getBuildContext($preview, $app, $package),
             $entityName,
             $package ? ['package' => ['name' => $package]] : [],
             $this->option('preset')
         );
+    }
+
+    protected function getBuildContext(?bool $preview = false, ?bool $app = false, ?string $package = null): string
+    {
+        if ($context = $this->option('context')) {
+            return $context;
+        }
+
+        if ($app) {
+            return 'app';
+        }
+
+        if ($package) {
+            return 'package';
+        }
+
+        if ($preview) {
+            return 'preview';
+        }
+
+        $contexts = array_keys(config('builder.contexts', []));
+
+        if (count($contexts) === 1) {
+            return reset($contexts);
+        }
+
+        return $this->choice('Choose a context', $contexts);
     }
 }

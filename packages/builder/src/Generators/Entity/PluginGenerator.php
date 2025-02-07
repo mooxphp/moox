@@ -32,7 +32,9 @@ class PluginGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->context->getPath('plugin'), $content);
+        $path = $this->context->getPath('plugin').'/'.
+            $this->context->getEntityName().'Plugin.php';
+        $this->writeFile($path, $content);
     }
 
     protected function getResources(): string
