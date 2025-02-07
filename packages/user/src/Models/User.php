@@ -70,4 +70,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->fit(Fit::Contain, 300, 300)
             ->nonQueued();
     }
+
+    public function usedMedia(): MorphToMany
+    {
+        return $this->morphToMany(CustomMedia::class, 'media_usable', 'media_usables');
+    }
 }

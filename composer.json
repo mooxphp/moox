@@ -51,6 +51,7 @@
         "moox/media": "*",
         "moox/build": "*",
         "resend/resend-laravel": "^1.0@dev",
+        "spatie/livewire-filepond": "dev-main",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {

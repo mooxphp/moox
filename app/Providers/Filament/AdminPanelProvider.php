@@ -50,6 +50,16 @@ use Moox\UserSession\UserSessionPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
+
+    public function boot(): void
+    {
+        FilamentAsset::register([
+            Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
+            Css::make('filepond-css', asset('vendor/livewire-filepond/filepond.css')),
+        ]);
+    }
+
+
     public function panel(Panel $panel): Panel
     {
         return $panel
