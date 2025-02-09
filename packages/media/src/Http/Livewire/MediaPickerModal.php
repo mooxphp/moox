@@ -7,15 +7,15 @@ use Moox\Media\Models\Media;
 
 class MediaPickerModal extends Component
 {
-    public int $modelId;
-
-    public string $modelClass;
-
+    public ?int $modelId = null;
+    public ?string $modelClass = null;
     public $media = [];
+    public array $selectedMediaIds = [];
 
-    public array $selectedMedia = [];
-
-    protected $listeners = ['set-media-picker-model' => 'setModel', 'mediaUploaded' => 'refreshMedia'];
+    protected $listeners = [
+        'set-media-picker-model' => 'setModel',
+        'mediaUploaded' => 'refreshMedia',
+    ];
 
     public function setModel(int $modelId, string $modelClass)
     {
@@ -26,44 +26,43 @@ class MediaPickerModal extends Component
 
     public function refreshMedia()
     {
-        $this->media = Media::where(function ($query) {
-            if ($this->modelId && class_exists($this->modelClass)) {
-                $query->where('model_id', $this->modelId)
-                    ->where('model_type', $this->modelClass);
-            }
-        })
+        $this->media = Media::query()
+            ->where(function ($query) {
+                if ($this->modelId && class_exists($this->modelClass)) {
+                    $query->where('model_id', $this->modelId)
+                        ->where('model_type', $this->modelClass);
+                }
+            })
             ->orWhereNull('model_id')
             ->orWhereNull('model_type')
             ->orderBy('created_at', 'desc')
             ->get();
     }
 
-    public function toggleSelection($mediaId)
+    public function toggleMediaSelection(int $mediaId)
     {
-        if (in_array($mediaId, $this->selectedMedia)) {
-            $this->selectedMedia = array_diff($this->selectedMedia, [$mediaId]);
+        if (in_array($mediaId, $this->selectedMediaIds)) {
+            $this->selectedMediaIds = array_diff($this->selectedMediaIds, [$mediaId]);
         } else {
-            $this->selectedMedia[] = $mediaId;
+            $this->selectedMediaIds[] = $mediaId;
         }
     }
 
-    public function saveSelectedMedia()
+    public function applySelection()
     {
-        if (empty($this->selectedMedia)) {
-            return;
+        $selectedMediaId = $this->selectedMediaIds[0] ?? null;
+
+        if ($selectedMediaId) {
+            $media = Media::find($selectedMediaId);
+
+            if ($media) {
+                $imageUrl = $media->getUrl();
+
+                $this->dispatch('mediaSelected', ['id' => $selectedMediaId, 'url' => $imageUrl]);
+            }
         }
 
-        $selectedMediaUrls = Media::whereIn('id', $this->selectedMedia)
-            ->get()
-            ->map(fn ($media) => $media->getUrl())
-            ->values()
-            ->toArray();
-
-        $this->dispatch('mediaSelected', selectedMediaUrls: $selectedMediaUrls);
-
         $this->dispatch('close-modal', id: 'mediaPickerModal');
-
-        $this->selectedMedia = [];
     }
 
     public function render()

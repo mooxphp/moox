@@ -1,39 +1,44 @@
-<x-filament::modal id="mediaPickerModal" width="max-w-5xl" x-data
-    x-on:close-modal.window="$dispatch('close-modal', { id: 'mediaPickerModal' });">
-
+<x-filament::modal id="mediaPickerModal" width="max-w-5xl">
     <x-slot name="header">
         <h2 class="text-lg font-bold">Upload & Select Media</h2>
     </x-slot>
 
-    <x-filament::section>
-        @if ($modelId && $modelClass)
-            <livewire:media-uploader :model-id="$modelId" :model-class="$modelClass" />
+    <!-- Media-Uploader-Komponente -->
+    <div>
+        @if($modelId && $modelClass)
+            <livewire:media-uploader
+                :model-id="$modelId"
+                :model-class="$modelClass"
+                collection="default"
+            />
         @else
-            <p class="text-gray-500">Please select a model first.</p>
+            <p>Kein gültiges Modell angegeben.</p>
         @endif
-    </x-filament::section>
+    </div>
 
+    <!-- Medienauswahl -->
     <x-filament::section>
-        <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             @foreach ($media as $item)
-                <div wire:click="toggleSelection({{ $item->id }})"
-                    class="relative border rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer"
-                    style="border: {{ in_array($item->id, $selectedMedia) ? '3px solid blue' : '1px solid gray' }}">
+                <div
+                    wire:click="toggleMediaSelection({{ $item->id }})"
+                    class="relative border rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
+                    {{ in_array($item->id, $selectedMediaIds) ? 'border-blue-600' : 'border-gray-200' }}"
+                >
+                    <!-- Bildvorschau -->
+                    <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover">
 
-                    <div class="w-full h-28 sm:h-32 md:h-36 lg:h-40 flex items-center justify-center bg-gray-200">
-                        <img src="{{ $item->getUrl() }}" class="w-full h-full object-cover">
-                    </div>
-
-                    <button wire:click="removeMedia({{ $item->id }})"
-                        class="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 text-xs">
-                        ✕
-                    </button>
-
-                    @if (in_array($item->id, $selectedMedia))
-                        <span class="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1">✔</span>
+                    <!-- Häkchen und visuelle Markierung -->
+                    @if(in_array($item->id, $selectedMediaIds))
+                        <div class="absolute inset-0 bg-blue-200 bg-opacity-50">
+                            <svg class="absolute top-2 right-2 w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 01.083 1.32l-.083.094L8.707 14.707a1 1 0 01-1.497.083l-.094-.083-4-4a1 1 0 011.32-1.497l.094.083L8 12.584l7.293-7.292a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
                     @endif
 
-                    <div class="bg-white text-gray-700 text-xs p-2 text-center truncate">
+                    <!-- Titel des Bildes -->
+                    <div class="absolute bottom-0 px-2 py-1 text-white text-sm bg-black bg-opacity-50">
                         {{ $item->name }}
                     </div>
                 </div>
@@ -41,13 +46,13 @@
         </x-filament::grid>
     </x-filament::section>
 
+    <!-- Modal-Footer -->
     <x-slot name="footer">
-        <x-filament::button wire:click="saveSelectedMedia">
-            Medien übernehmen
+        <x-filament::button wire:click="applySelection" color="primary">
+            Auswahl übernehmen
         </x-filament::button>
-
-        <x-filament::button x-on:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
-            Close
+        <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
+            Schließen
         </x-filament::button>
     </x-slot>
 </x-filament::modal>
