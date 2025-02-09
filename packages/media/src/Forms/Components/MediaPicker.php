@@ -13,10 +13,9 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     {
         parent::setUp();
 
-
         $this->saveRelationshipsUsing(function (self $component, $state) {
             $record = $component->getRecord();
-            if (!$record) {
+            if (! $record) {
                 return;
             }
 
@@ -24,13 +23,13 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                 $state = reset($state);
             }
 
-            if (!$state) {
+            if (! $state) {
                 return;
             }
 
             $media = Media::find($state);
 
-            if (!$media) {
+            if (! $media) {
                 return;
             }
 
@@ -41,11 +40,6 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
             $image = $media->getUrl();
             $component->state($image);
-
-
         });
-
     }
-
-
 }

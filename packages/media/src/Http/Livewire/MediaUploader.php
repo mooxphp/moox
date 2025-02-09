@@ -14,7 +14,9 @@ class MediaUploader extends Component
     public $file; // FilePond hochgeladene Datei
 
     public ?Model $model = null; // Das zugehörige Modell
+
     public ?int $modelId = null; // ID des Modells
+
     public ?string $modelClass = null; // Typ des Modells
 
     public string $collection = 'default'; // Name der Medien-Sammlung
