@@ -8,8 +8,11 @@ use Moox\Media\Models\Media;
 class MediaPickerModal extends Component
 {
     public ?int $modelId = null;
+
     public ?string $modelClass = null;
+
     public $media = [];
+
     public array $selectedMediaIds = [];
 
     protected $listeners = [
