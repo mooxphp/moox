@@ -3,7 +3,7 @@
 namespace Moox\Media\Forms\Components;
 
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Illuminate\Database\Eloquent\Model;
+use Moox\Media\Models\Media;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -13,18 +13,39 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
     {
         parent::setUp();
 
-        $this->afterStateHydrated(function (MediaPicker $component, ?Model $record) {
-            if ($record) {
-                $component->state([
-                    'modelId' => $record->id,
-                    'modelClass' => get_class($record),
-                ]);
+
+        $this->saveRelationshipsUsing(function (self $component, $state) {
+            $record = $component->getRecord();
+            if (!$record) {
+                return;
             }
+
+            if (is_array($state)) {
+                $state = reset($state);
+            }
+
+            if (!$state) {
+                return;
+            }
+
+            $media = Media::find($state);
+
+            if (!$media) {
+                return;
+            }
+
+            $media->update([
+                'model_id' => $record->id,
+                'model_type' => get_class($record),
+            ]);
+
+            $image = $media->getUrl();
+            $component->state($image);
+
+
         });
 
-        $this->saveRelationshipsUsing(function (MediaPicker $component) {
-            $component->saveUploadedFiles();
-            $component->getRecord()->save();
-        });
     }
+
+
 }
