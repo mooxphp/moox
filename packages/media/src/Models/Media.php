@@ -2,10 +2,9 @@
 
 namespace Moox\Media\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
+use Illuminate\Support\Facades\Storage;
 
 class Media extends BaseMedia
 {
@@ -14,8 +13,9 @@ class Media extends BaseMedia
         return $this->morphTo('original_model');
     }
 
-    public function usedInModels(): MorphToMany
+    public function getUrl(string $conversionName = ''): string
     {
-        return $this->morphedByMany(Model::class, 'media_usable', 'media_usables');
+        return Storage::disk($this->disk ?? 'public')->url("media/{$this->id}/{$this->file_name}");
     }
+
 }
