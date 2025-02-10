@@ -3,8 +3,8 @@
 namespace Moox\Media\Models;
 
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
 class Media extends BaseMedia
 {
@@ -17,5 +17,4 @@ class Media extends BaseMedia
     {
         return Storage::disk($this->disk ?? 'public')->url("media/{$this->id}/{$this->file_name}");
     }
-
 }
