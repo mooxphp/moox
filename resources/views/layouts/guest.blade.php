@@ -19,11 +19,10 @@
         background-image: url('{{ asset('img/bg.jpg') }}')">
     <header>
         <nav class="flex justify-between m-8">
-            <a href="/"><img src="{{ asset('img/logo.png') }}" class="h-10 w-auto"></a>
+            <a href="/"><img src="{{ asset('img/logo.png') }}" class="w-auto h-10"></a>
             <div class="flex items-center text-3xl">
                 <a class="px-4 text-lg hover:text-[#69bce2]" href="/">Home</a>
                 <a class="px-4 text-lg hover:text-[#69bce2]" href="/packages">Packages</a>
-                <livewire:language-switch />
                 <!-- Currently not used
                 <a
                     class="px-4 text-lg hover:text-[#69bce2]"
@@ -34,7 +33,7 @@
                 <a class="has-tooltip" href="https://github.com/mooxphp/moox">
                     <img class="h-8 px-4" style="filter: drop-shadow(0px 3px 3px #0C9ADC);"
                         src="{{ asset('img/octocat.png') }} " alt="Code on GitHub">
-                    <span class='text-xs ml-3 tooltip p-1 rounded bg-sky-900'>GitHub</span>
+                    <span class='p-1 ml-3 text-xs rounded tooltip bg-sky-900'>GitHub</span>
                 </a>
             </div>
         </nav>
