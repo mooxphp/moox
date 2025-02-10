@@ -30,9 +30,8 @@ class MediaPickerModal extends Component
     public function refreshMedia()
     {
         $this->media = Media::query()
-    ->orderBy('created_at', 'desc')  // Optional: Nach Erstellungsdatum sortieren
-    ->get();
-
+            ->orderBy('created_at', 'desc')  // Optional: Nach Erstellungsdatum sortieren
+            ->get();
     }
 
     public function toggleMediaSelection(int $mediaId)

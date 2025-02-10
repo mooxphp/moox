@@ -31,7 +31,6 @@ use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class UserResource extends Resource
 {
@@ -243,7 +242,7 @@ class UserResource extends Resource
             ->poll('60s')
             ->columns([
                 SpatieMediaLibraryImageColumn::make('avatar_url')
-                ->circular(),
+                    ->circular(),
                 // ImageColumn::make('avatar_url')
                 //     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
                 //     ->circular()

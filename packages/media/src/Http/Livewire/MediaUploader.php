@@ -23,7 +23,6 @@ class MediaUploader extends Component
 
     public function mount(?int $modelId = null, ?string $modelClass = null)
     {
-        
         if ($modelId && $modelClass) {
             $modelClass = str_replace('\\\\', '\\', $modelClass);
 
@@ -46,12 +45,10 @@ class MediaUploader extends Component
 
     public function updatedFile()
     {
-      
         if (! $this->file) {
             return;
         }
 
-       
         if (! $this->modelId || ! $this->modelClass) {
             throw new \Exception('Kein Modell angegeben für den Upload.');
         }
@@ -61,7 +58,7 @@ class MediaUploader extends Component
 
         $media = $fileAdder->toMediaCollection($this->collection);
 
-        $media->original_model_type = $this->modelClass; 
+        $media->original_model_type = $this->modelClass;
         $media->original_model_id = $this->modelId;
 
         $media->model_id = null;
