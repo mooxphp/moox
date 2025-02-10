@@ -30,16 +30,9 @@ class MediaPickerModal extends Component
     public function refreshMedia()
     {
         $this->media = Media::query()
-            ->where(function ($query) {
-                if ($this->modelId && class_exists($this->modelClass)) {
-                    $query->where('model_id', $this->modelId)
-                        ->where('model_type', $this->modelClass);
-                }
-            })
-            ->orWhereNull('model_id')
-            ->orWhereNull('model_type')
-            ->orderBy('created_at', 'desc')
-            ->get();
+    ->orderBy('created_at', 'desc')  // Optional: Nach Erstellungsdatum sortieren
+    ->get();
+
     }
 
     public function toggleMediaSelection(int $mediaId)
