@@ -48,11 +48,12 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                         'conversions_disk' => $media->conversions_disk,
                         'size' => $media->size,
                         'manipulations' => $media->manipulations,
-                        'custom_properties' => $media->custom_properties,
+                        'custom_properties' => array_merge($media->custom_properties, [
+                            'original_media_id' => $media->id,
+                        ]),
                         'generated_conversions' => $media->generated_conversions,
                         'responsive_images' => $media->responsive_images,
                         'order_column' => $media->order_column,
-
                     ]);
                 } else {
                     $component->state($media->uuid);
@@ -71,9 +72,12 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));
 
-            $record->{$fieldName} = $media->getUrl();
+            $record->{$fieldName} = $media->file_name;
 
             $record->save();
         });
     }
+
+
+
 }

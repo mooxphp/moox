@@ -30,9 +30,18 @@ class MediaPickerModal extends Component
     public function refreshMedia()
     {
         $this->media = Media::query()
-            ->orderBy('created_at', 'desc')  // Optional: Nach Erstellungsdatum sortieren
+            ->where(function ($query) {
+                $query->whereNull('model_id')
+                ->whereNull('model_type');
+            })
+            ->orWhere(function ($query) {
+                $query->whereColumn('model_id', 'original_model_id')
+                    ->whereColumn('model_type', 'original_model_type');
+            })
+            ->orderBy('created_at', 'desc')
             ->get();
     }
+
 
     public function toggleMediaSelection(int $mediaId)
     {
@@ -59,6 +68,8 @@ class MediaPickerModal extends Component
 
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
+
+
 
     public function render()
     {
