@@ -24,8 +24,6 @@ use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
-use Moox\Sync\Models\Platform;
-use Moox\Sync\Services\PlatformRelationService;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
@@ -85,38 +83,6 @@ class UserResource extends Resource
                             'md' => 12,
                             'lg' => 12,
                         ]),
-
-                    /* Must be provided by Sync, use a static maybe?
-                    Select::make('platforms')
-                        ->label('Platforms')
-                        ->multiple()
-                        ->options(function () {
-                            return Platform::pluck('name', 'id')->toArray();
-                        })
-                        ->afterStateHydrated(function ($component, $state, $record) {
-                            if ($record && class_exists(PlatformRelationService::class)) {
-                                $platformService = app(PlatformRelationService::class);
-                                $platforms = $platformService->getPlatformsForModel($record);
-                                $component->state($platforms->pluck('id')->toArray());
-                            }
-                        })
-                        ->dehydrated(false)
-                        ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set, $record) {
-                            if ($record && class_exists(PlatformRelationService::class)) {
-                                $platformService = app(PlatformRelationService::class);
-                                $platformService->syncPlatformsForModel($record, $state ?? []);
-                            }
-                        })
-                        ->preload()
-                        ->searchable()
-                        ->visible(fn () => class_exists(Platform::class))
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-                    */
 
                     Select::make('gender')
                         ->label(__('core::user.gender'))
