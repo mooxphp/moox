@@ -176,7 +176,10 @@ class WpUser extends Authenticatable implements FilamentUser
             $this->load('userMeta');
         }
 
-        $meta = $this->userMeta->where('meta_key', $key)->first();
+        /** @var \Illuminate\Database\Eloquent\Collection<\Moox\Press\Models\WpUserMeta> $userMeta */
+        $userMeta = $this->userMeta;
+        /** @var ?\Moox\Press\Models\WpUserMeta $meta */
+        $meta = $userMeta->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;
     }

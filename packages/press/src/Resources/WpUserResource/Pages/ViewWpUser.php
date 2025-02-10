@@ -25,11 +25,13 @@ class ViewWpUser extends ViewRecord
 
         if ($user) {
             foreach ($user->userMeta as $meta) {
+                /** @var \Moox\Press\Models\WpUserMeta $meta */
                 $data[$meta->meta_key] = $meta->meta_value;
             }
         }
 
         if ($user->attachment) {
+            /** @var \Moox\Press\Models\WpMedia $user->attachment */
             $data['image_url'] = $user->attachment->image_url;
         }
 

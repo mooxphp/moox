@@ -114,6 +114,7 @@ class WpBasePost extends Model
             $this->load('postMeta');
         }
 
+        /** @var ?WpPostMeta $meta */
         $meta = $this->postMeta->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;

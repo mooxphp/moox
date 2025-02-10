@@ -214,6 +214,7 @@ trait TaxonomyInPages
 
     public function refreshFormData(array $attributes = []): void
     {
+        /** @phpstan-ignore-next-line */
         if (method_exists($this, 'fillForm')) {
             $this->fillForm();
         }

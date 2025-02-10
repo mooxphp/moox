@@ -32,11 +32,13 @@ class EditWpUser extends EditRecord
 
         if ($user) {
             foreach ($user->userMeta as $meta) {
+                /** @var \Moox\Press\Models\WpUserMeta $meta */
                 $data[$meta->meta_key] = $meta->meta_value;
             }
         }
 
         if ($user->attachment) {
+            /** @var \Moox\Press\Models\WpMedia $user->attachment */
             $data['image_url'] = $user->attachment->image_url;
         }
 
@@ -79,7 +81,9 @@ class EditWpUser extends EditRecord
             Log::error('User record is not an instance of WpUser in EditWpUser::afterSave');
         }
 
-        Event::dispatch('eloquent.updated: '.($this->record !== null ? $this->record::class : self::class), $this->record);
+        /** @var \Illuminate\Database\Eloquent\Model $record */
+        $record = $this->record;
+        Event::dispatch('eloquent.updated: '.$record::class, $record);
     }
 
     protected function handleAvatarUpload(WpUser $user, ?string $userAvatarMetaKey): void

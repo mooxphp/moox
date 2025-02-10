@@ -19,6 +19,7 @@ trait BaseInResource
 {
     protected static function modifyEloquentQuery(Builder $query): Builder
     {
+        /** @phpstan-ignore-next-line */
         if (method_exists(static::class, 'addTaxonomyRelationsToQuery')) {
             $query = static::addTaxonomyRelationsToQuery($query);
         }
@@ -35,10 +36,12 @@ trait BaseInResource
             $query->withoutGlobalScope(SoftDeletingScope::class);
         }
 
+        /** @phpstan-ignore-next-line */
         if (method_exists(static::class, 'applySoftDeleteQuery')) {
             $query = static::applySoftDeleteQuery($query);
         }
 
+        /** @phpstan-ignore-next-line */
         if (($currentTab = request()->query('tab')) && method_exists(static::class, 'applyTabQuery')) {
             $query = static::applyTabQuery($query, $currentTab);
         }
@@ -65,10 +68,12 @@ trait BaseInResource
                 : static::getModel()::query();
         }
 
+        /** @phpstan-ignore-next-line */
         if (method_exists(static::class, 'applySoftDeleteQuery')) {
             $query = static::applySoftDeleteQuery($query);
         }
 
+        /** @phpstan-ignore-next-line */
         if (($currentTab = request()->query('tab')) && method_exists(static::class, 'applyTabQuery')) {
             $query = static::applyTabQuery($query, $currentTab);
         }

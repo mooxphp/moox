@@ -4,7 +4,6 @@ namespace Moox\Security\Services;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
@@ -73,12 +72,6 @@ class RequestPasswordReset extends SimplePage
         $status = Password::broker(Filament::getAuthPasswordBroker())->sendResetLink(
             $data,
             function (CanResetPassword $user, string $token): void {
-                if (! method_exists($user, 'notify')) {
-                    $userClass = $user::class;
-
-                    throw new Exception(sprintf('Model [%s] does not have a [notify()] method.', $userClass));
-                }
-
                 $notification = new PasswordResetNotification($token);
 
                 $user->notify($notification);

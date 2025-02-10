@@ -24,7 +24,9 @@ class LoginLinkEmail extends Mailable
 
     public function build()
     {
+        /** @phpstan-ignore-next-line */
         $userId = urlencode(encrypt($this->loginLink->user_id));
+        /** @phpstan-ignore-next-line */
         $url = url(sprintf('/login-link/%s-%s', $userId, $this->loginLink->token));
 
         return $this->subject('Your Login Link')

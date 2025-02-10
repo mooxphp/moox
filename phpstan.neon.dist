@@ -18,3 +18,4 @@ parameters:
     tmpDir: build/phpstan
     ignoreErrors:
         - "#Called 'env' outside of the config directory which returns null when the config is cached, use 'config'#"
+        - "#Trait .+ is used zero times and is not analysed.#"

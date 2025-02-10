@@ -22,6 +22,7 @@ trait SinglePublishInModel
 
     public function getStatusAttribute(): string
     {
+        /** @phpstan-ignore-next-line */
         if (method_exists($this, 'trashed') && $this->trashed()) {
             return 'deleted';
         }

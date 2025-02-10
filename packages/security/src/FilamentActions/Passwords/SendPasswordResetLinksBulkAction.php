@@ -60,12 +60,6 @@ class SendPasswordResetLinksBulkAction extends BulkAction
 
                     $token = app('auth.password.broker')->createToken($user);
 
-                    if (! method_exists($user, 'notify')) {
-                        $userClass = $user::class;
-
-                        throw new Exception(sprintf('Model [%s] does not have a [notify()] method.', $userClass));
-                    }
-
                     $notification = new PasswordResetNotification($token);
 
                     $user->notify($notification);
