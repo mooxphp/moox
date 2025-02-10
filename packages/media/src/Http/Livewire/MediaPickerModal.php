@@ -32,7 +32,7 @@ class MediaPickerModal extends Component
         $this->media = Media::query()
             ->where(function ($query) {
                 $query->whereNull('model_id')
-                ->whereNull('model_type');
+                    ->whereNull('model_type');
             })
             ->orWhere(function ($query) {
                 $query->whereColumn('model_id', 'original_model_id')
@@ -41,7 +41,6 @@ class MediaPickerModal extends Component
             ->orderBy('created_at', 'desc')
             ->get();
     }
-
 
     public function toggleMediaSelection(int $mediaId)
     {
@@ -68,8 +67,6 @@ class MediaPickerModal extends Component
 
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
-
-
 
     public function render()
     {

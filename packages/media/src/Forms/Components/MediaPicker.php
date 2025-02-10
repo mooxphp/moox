@@ -77,7 +77,4 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $record->save();
         });
     }
-
-
-
 }

@@ -7,13 +7,12 @@ use Spatie\MediaLibrary\Support\PathGenerator\DefaultPathGenerator as BasePathGe
 
 class CustomPathGenerator extends BasePathGenerator
 {
-    public function getPath(Media $media) : string
+    public function getPath(Media $media): string
     {
         $originalMediaId = $media->getCustomProperty('original_media_id') ?? $media->id;
 
         return "media/{$originalMediaId}/";
     }
-
 
     public function getPathForConversions(Media $media): string
     {
@@ -21,7 +20,6 @@ class CustomPathGenerator extends BasePathGenerator
 
         return "media/{$originalMediaId}/conversions/";
     }
-
 
     public function getPathForResponsiveImages(Media $media): string
     {
