@@ -2,7 +2,6 @@
 
 namespace Moox\User\Commands;
 
-use BezhanSalleh\FilamentShield\FilamentShieldServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
@@ -102,42 +101,6 @@ class InstallCommand extends Command
             info('Running User Migrations...');
             $this->callSilent('migrate');
         }
-    }
-
-    public function customizeFilament(): void
-    {
-        info('Customizing Filament Shield translations...');
-
-        $translationPath = resource_path('lang/vendor/filament-shield');
-
-        if (! File::exists($translationPath)) {
-            $this->call('vendor:publish', [
-                '--provider' => FilamentShieldServiceProvider::class,
-                '--tag' => 'translations',
-            ]);
-
-            info('Filament Shield translations published.');
-
-            return;
-        }
-
-        $locales = File::directories($translationPath);
-
-        foreach ($locales as $localePath) {
-            $files = File::files($localePath);
-            foreach ($files as $file) {
-                $translations = include $file->getPathname();
-                if (isset($translations['nav']['group'])) {
-                    $translations['nav']['group'] = 'Moox User';
-                    $outputPath = $file->getPathname();
-                    $content = "<?php\n\nreturn ".print_r($translations, true).";\n";
-                    File::put($outputPath, $content);
-                    $this->info(sprintf('Updated %s in %s', $file->getFilename(), $localePath));
-                }
-            }
-        }
-
-        info('Filament Shield translations customization complete.');
     }
 
     public function registerPlugins(string $providerPath): void
