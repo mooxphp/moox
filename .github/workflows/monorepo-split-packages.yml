@@ -21,6 +21,7 @@ jobs:
           - builder
           - category
           - core
+          - devlink
           - expiry
           - flags
           - jobs

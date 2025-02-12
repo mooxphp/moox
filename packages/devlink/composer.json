@@ -1,0 +1,30 @@
+{
+    "name": "moox/devlink",
+    "description": "This package is only for internal use. It allows Moox developers to link packages from moox to their projects.",
+    "keywords": [
+        "Moox"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Moox\\Devlink\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Devlink\\DevlinkServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
