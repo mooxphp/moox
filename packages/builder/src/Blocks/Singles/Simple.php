@@ -3,7 +3,6 @@
 namespace Moox\Builder\Blocks\Singles;
 
 use Moox\Builder\Blocks\AbstractBlock;
-use Moox\BuilderPro\Blocks\Singles\Publish;
 use Moox\Core\Traits\Base\BaseInCreatePage;
 use Moox\Core\Traits\Base\BaseInEditPage;
 use Moox\Core\Traits\Base\BaseInListPage;
