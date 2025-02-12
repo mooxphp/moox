@@ -7,6 +7,8 @@ It is used to link the packages from the `moox` monorepo into a project. It runs
 ## Installation
 
 ```bash
+cp composer.json.example composer.json
+cp .env.example .env
 composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
 ```
@@ -32,6 +34,8 @@ packages/*
 !packages/**/
 # Ensure empty directories can be committed
 !packages/*/.gitkeep
+# Ignore all files in packages-linked/ (for Windows)
+packages-linked/*
 ```
 
 ## Configuration
@@ -39,13 +43,17 @@ packages/*
 The configuration is done in the `config/devlink.php` file.
 
 ```php
-'base_paths' => [
-    // 'path/to/base/path',
-],
 
-'packages' => [
-    // 'package-name',
-],
+    'packages_path' => 'packages',
+
+    'base_paths' => [
+        base_path('../moox/packages'),
+    ],
+
+    'packages' => [
+        'moox/tag',
+    ],
+
 ```
 
 ## Command
@@ -53,27 +61,45 @@ The configuration is done in the `config/devlink.php` file.
 The devlink command will create a `packages` directory in the root of the project and symlink the packages from the configured base paths.
 
 ```bash
-php artisan moox:devlink
+
+    php artisan moox:devlink
+
 ```
 
 It will also update the `composer.json` file to include the packages in the `require` section and the `repositories` section.
 
 Finally, it will run `composer update`.
 
-You can have local packages mixed with the symlinked packages in your `/packages` folder.
-
-![Moox Devlink](./devlink-mix.jpg)
-
 ### Changing branches
 
 If you need to change the branches for ANY of the involved repositories, you just need to run the command again, it will automatically update the symlinks for the current branch.
 
 ```bash
-php artisan moox:devlink
+
+    php artisan moox:devlink
+
 ```
 
 > ⚠️ **Important**  
 > If you forget to run the command, when CHANGING BRANCHES ON ANY OF THE REPOS, you will surely run into a 500 error, that drives you nuts.
+
+## Mac
+
+Mac works out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
+
+![Moox Devlink](./devlink-mix.jpg)
+
+## Windows
+
+On Windows there are most probably some issues with the symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
+
+```php
+
+    'packages_path' => 'packages-linked',
+
+```
+
+Devlink will then link the packages into the `packages-linked` folder.
 
 ## Security Vulnerabilities
 

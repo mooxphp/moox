@@ -34,7 +34,7 @@ class LinkPackages extends Command
         }
 
         $this->composerJsonPath = base_path('composer.json');
-        $this->packagesPath = base_path('packages');
+        $this->packagesPath = config('devlink.packages_path', base_path('packages'));
     }
 
     public function handle(): void
