@@ -7,78 +7,59 @@ It is used to link the packages from the `moox` monorepo into a project. It runs
 ## Installation
 
 ```bash
-cp composer.json.example composer.json
 cp .env.example .env
 composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
-```
-
-## Usage
-
-```bash
-php artisan moox:devlink
 ```
 
 ## Screenshot
 
 ![Moox Devlink](./devlink.jpg)
 
-## Preparation
+## How It Works
 
-Before you can use this package, you need to prepare your project's `.gitignore` file.
+1. Prepare your project's `.gitignore` file:
 
 ```bash
+
 # Ignore all files in packages/ (including symlinks)
 packages/*
 # Allow tracking of real directories inside packages/
 !packages/**/
 # Ensure empty directories can be committed
 !packages/*/.gitkeep
-# Ignore all files in packages-linked/ (for Windows)
-packages-linked/*
-```
-
-## Configuration
-
-The configuration is done in the `config/devlink.php` file.
-
-```php
-
-    'packages_path' => 'packages',
-
-    'base_paths' => [
-        base_path('../moox/packages'),
-    ],
-
-    'packages' => [
-        'moox/tag',
-    ],
+# for windows
+/packageslocal/*
 
 ```
 
-## Command
+2. Configure your paths and packages in the `config/devlink.php` file and the `.env` file, if needed (Windows users for example).
 
-The devlink command will create a `packages` directory in the root of the project and symlink the packages from the configured base paths.
+3. When running `devlink:link`:
 
-```bash
+    - Creates backup of original composer.json → composer.json.original
+    - Creates symlinks for all configured packages
+    - Updates composer.json with development configuration
+    - Creates composer.json-deploy for production use
+    - Asks to run `composer install`
+    - Asks to run `php artisan optimize:clear`
+    - Asks to run `php artisan queue:restart`
 
-    php artisan moox:devlink
+4. When running `devlink:deploy`:
 
-```
+    - Removes all symlinks
+    - Deletes the packages folder, if empty
+    - Restores production-ready composer.json from composer.json-deploy
 
-It will also update the `composer.json` file to include the packages in the `require` section and the `repositories` section.
+5. CI Safety Net - `deploy.sh`:
+    - If composer.json-deploy exists in the repository:
+        - The script will restore it as composer.json
+        - Commit and push the change in GH action
+    - This ensures no development configuration reaches production
 
-Finally, it will run `composer update`.
-
-### Changing branches
+## Changing branches
 
 If you need to change the branches for ANY of the involved repositories, you just need to run the command again, it will automatically update the symlinks for the current branch.
-
-```bash
-
-    php artisan moox:devlink
-
-```
 
 > ⚠️ **Important**  
 > If you forget to run the command, when CHANGING BRANCHES ON ANY OF THE REPOS, you will surely run into a 500 error, that drives you nuts.
@@ -100,6 +81,17 @@ On Windows there are most probably some issues with the symlinks. If you run int
 ```
 
 Devlink will then link the packages into the `packages-linked` folder.
+
+## Roadmap
+
+-   [ ] Test on Mac
+-   [ ] Test on Windows
+-   [ ] Test Deployment on Mac
+-   [ ] Test Deployment on Windows
+-   [ ] Implement automatic Deployment
+-   [ ] Implement all 3 types of packages
+-   [ ] If package is a symlink itself, ...?
+-   [ ] If package is in multiple base paths...?
 
 ## Security Vulnerabilities
 

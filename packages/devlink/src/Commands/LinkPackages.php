@@ -215,6 +215,7 @@ class LinkPackages extends Command
             return;
         }
 
+        // Read original composer.json
         $composerContent = file_get_contents($this->composerJsonPath);
         $composerJson = json_decode($composerContent, true);
 
@@ -224,44 +225,50 @@ class LinkPackages extends Command
             return;
         }
 
+        // Backup original before modifications
+        file_put_contents($this->composerJsonPath.'-original', $composerContent);
+
+        // Update development composer.json (with all packages and repositories)
         $repositories = $composerJson['repositories'] ?? [];
         $require = $composerJson['require'] ?? [];
-        $updated = false;
-        $addedRepos = [];
-        $addedRequires = [];
+        $allPackages = array_merge($this->packages, config('devlink.internal_packages', []));
 
-        foreach ($this->packages as $package) {
+        foreach ($allPackages as $package) {
             $packagePath = "packages/{$package}";
             $repoEntry = ['type' => 'path', 'url' => $packagePath, 'options' => ['symlink' => true]];
             $packageName = "moox/{$package}";
 
             if (! collect($repositories)->contains(fn ($repo) => $repo['url'] === $packagePath)) {
                 $repositories[] = $repoEntry;
-                $updated = true;
-                $addedRepos[] = $package;
             }
-
             if (! isset($require[$packageName])) {
                 $require[$packageName] = '*';
-                $updated = true;
-                $addedRequires[] = $packageName;
             }
         }
 
-        if ($updated) {
-            $composerJson['repositories'] = $repositories;
-            $composerJson['require'] = $require;
-            file_put_contents($this->composerJsonPath, json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        $composerJson['repositories'] = $repositories;
+        $composerJson['require'] = $require;
+        file_put_contents(
+            $this->composerJsonPath,
+            json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
+        );
 
-            if ($addedRepos) {
-                $this->info('Added repository entries for: '.implode(', ', $addedRepos));
-            }
-            if ($addedRequires) {
-                $this->info('Added requirements for: '.implode(', ', $addedRequires));
-            }
-        } else {
-            $this->info('No changes needed in composer.json');
+        // Create composer.json-deploy (only public packages, no repositories)
+        $deployJson = $composerJson;
+        unset($deployJson['repositories']);
+        $deployJson['minimum-stability'] = 'stable';
+
+        // Remove internal packages from require
+        foreach (config('devlink.internal_packages', []) as $package) {
+            unset($deployJson['require']["moox/{$package}"]);
         }
+
+        file_put_contents(
+            $this->composerJsonPath.'-deploy',
+            json_encode($deployJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
+        );
+
+        $this->info('Updated composer.json and created composer.json-deploy');
     }
 
     private function runComposerUpdate(): void

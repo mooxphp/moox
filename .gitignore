@@ -4,8 +4,6 @@
 
 # Composer
 /vendor
-/vendor-dev
-/vendor-def
 auth.json
 composer.lock
 
