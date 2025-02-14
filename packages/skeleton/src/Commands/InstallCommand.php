@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Moox\Expiry\Commands;
+namespace Moox\Skeleton\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -22,14 +22,14 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'expiry:install';
+    protected $signature = 'skeleton:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Installs Moox Expiry, publishes configuration, migrations and registers plugins.';
+    protected $description = 'Installs Moox Skeleton, publishes configuration, migrations and registers plugins.';
 
     /**
      * Execute the console command.
@@ -68,41 +68,41 @@ class InstallCommand extends Command
 
     public function welcome(): void
     {
-        info('Welcome to Moox Expiry Installer');
+        info('Welcome to Moox Skeleton Installer');
     }
 
     public function publishConfiguration(): void
     {
         if (confirm('Do you wish to publish the configuration?', true)) {
-            if (! File::exists('config/expiry.php')) {
-                info('Publishing Expiry Configuration...');
-                $this->callSilent('vendor:publish', ['--tag' => 'expiry-config']);
+            if (! File::exists('config/skeleton.php')) {
+                info('Publishing Skeleton Configuration...');
+                $this->callSilent('vendor:publish', ['--tag' => 'skeleton-config']);
 
                 return;
             }
 
-            warning('The Expiry config already exist. The config will not be published.');
+            warning('The Skeleton config already exist. The config will not be published.');
         }
     }
 
     public function publishMigrations(): void
     {
         if (confirm('Do you wish to publish the migrations?', true)) {
-            if (Schema::hasTable('expiry')) {
-                warning('The expiry table already exists. The migrations will not be published.');
+            if (Schema::hasTable('skeleton')) {
+                warning('The skeleton table already exists. The migrations will not be published.');
 
                 return;
             }
 
-            info('Publishing Expirys Migrations...');
-            $this->callSilent('vendor:publish', ['--tag' => 'expiry-migrations']);
+            info('Publishing Skeleton Migrations...');
+            $this->callSilent('vendor:publish', ['--tag' => 'skeleton-migrations']);
         }
     }
 
     public function runMigrations(): void
     {
         if (confirm('Do you wish to run the migrations?', true)) {
-            info('Running Expiry Migrations...');
+            info('Running Skeleton Migrations...');
             $this->callSilent('migrate');
         }
     }
@@ -114,12 +114,12 @@ class InstallCommand extends Command
 
             $intend = '                ';
 
-            $namespace = "\Moox\Expiry";
+            $namespace = "\Moox\Skeleton";
 
             $pluginsToAdd = multiselect(
                 label: 'These plugins will be installed:',
-                options: ['ExpiryPlugin'],
-                default: ['ExpiryPlugin'],
+                options: ['SkeletonPlugin'],
+                default: ['SkeletonPlugin'],
             );
 
             $function = '::make(),';
@@ -203,6 +203,6 @@ class InstallCommand extends Command
 
     public function sayGoodbye(): void
     {
-        note('Moox Expiry installed successfully. Enjoy!');
+        note('Moox Skeleton installed successfully. Enjoy!');
     }
 }
