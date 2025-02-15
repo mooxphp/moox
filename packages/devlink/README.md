@@ -1,13 +1,10 @@
 # Moox Devlink
 
-This package is only for internal use.
-
-It is used to link the packages from the `moox` monorepo into a project. It runs on MacOS, Linux and Windows.
+Moox Devlink is used to link packages a monorepo into any project and to deploy a production-ready composer.json. That allows us to develop Moox packages in any project. It runs on MacOS and Linux, Windows with special configuration.
 
 ## Installation
 
 ```bash
-cp .env.example .env
 composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
 ```
@@ -33,7 +30,7 @@ packages/*
 
 ```
 
-2. Configure your paths and packages in the `config/devlink.php` file and change the package path in the `.env` file, if needed (Windows users for example).
+2. Configure your paths and packages in the `config/devlink.php` file and change the package path in the `.env` file, if needed (Windows users should set the `DEVLINK_PACKAGES_PATH` variable to `packageslocal`).
 
 3. When running `devlink:status`:
 
