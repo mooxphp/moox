@@ -1,13 +1,10 @@
 # Moox Devlink
 
-This package is only for internal use.
-
-It is used to link the packages from the `moox` monorepo into a project. It runs on MacOS, Linux and Windows.
+Moox Devlink is used to link packages a monorepo into any project and to deploy a production-ready composer.json. That allows us to develop Moox packages in any project. It runs on MacOS and Linux, Windows with special configuration.
 
 ## Installation
 
 ```bash
-cp .env.example .env
 composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
 ```
@@ -33,10 +30,18 @@ packages/*
 
 ```
 
-2. Configure your paths and packages in the `config/devlink.php` file and the `.env` file, if needed (Windows users for example).
+2. Configure your paths and packages in the `config/devlink.php` file and change the package path in the `.env` file, if needed (Windows users should set the `DEVLINK_PACKAGES_PATH` variable to `packageslocal`).
 
-3. When running `devlink:link`:
+3. When running `devlink:status`:
 
+    - Lists all packages that are currently devlinked
+    - Lists all packages that are configured but not devlinked
+    - Lists all packages that are not configured, but devlinked
+    - Shows the configuration and the deploy status of each package
+
+4. When running `devlink:link`:
+
+    - Creates the packages folder, if it does not exist
     - Creates backup of original composer.json → composer.json.original
     - Creates symlinks for all configured packages
     - Updates composer.json with development configuration
@@ -45,15 +50,31 @@ packages/*
     - Asks to run `php artisan optimize:clear`
     - Asks to run `php artisan queue:restart`
 
-4. When running `devlink:deploy`:
+5. When running `devlink:unlink`:
 
     - Removes all symlinks
     - Deletes the packages folder, if empty
-    - Restores production-ready composer.json from composer.json-deploy
+    - Creates a backup of composer.json to composer.json-backup
+    - Restores original composer.json from composer.json-original
+    - Asks to run `composer install`
+    - Asks to run `php artisan optimize:clear`
+    - Asks to run `php artisan queue:restart`
 
-5. CI Safety Net - `deploy.sh`:
+6. When running `devlink:deploy`:
+
+    - Removes all symlinks
+    - Deletes the packages folder, if empty
+    - Creates a backup of composer.json to composer.json-backup
+    - Restores production-ready composer.json from composer.json-deploy
+    - Asks to run `composer install`
+    - Asks to run `php artisan optimize:clear`
+    - Asks to run `php artisan queue:restart`
+
+7. CI Safety Net - `deploy.sh`:
+
     - If composer.json-deploy exists in the repository:
-        - The script will restore it as composer.json
+        - the script will restore it as composer.json
+        - rename composer.json-original to composer.json-backup
         - Commit and push the change in GH action
     - This ensures no development configuration reaches production
 
@@ -74,24 +95,23 @@ Mac works out of the box. You can have local packages mixed with the symlinked p
 
 On Windows there are most probably some issues with the symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
 
-```php
-
-    'packages_path' => 'packages-linked',
-
+```env
+DEVLINK_PACKAGES_PATH=packages-linked
 ```
 
-Devlink will then link the packages into the `packages-linked` folder.
+Devlink will then link the packages into the `packages-linked` folder instead of mixing them into packages.
+
+## Classes
+
+Please see the [CLASSES.md](./CLASSES.md) file for a quick class overview.
 
 ## Roadmap
 
--   [ ] Test on Mac
--   [ ] Test on Windows
--   [ ] Test Deployment on Mac
--   [ ] Test Deployment on Windows
--   [ ] Implement automatic Deployment
--   [ ] Implement all 3 types of packages
--   [ ] If package is a symlink itself, ...?
--   [ ] If package is in multiple base paths...?
+Please see the [ROADMAP.md](./ROADMAP.md) file for what is planned.
+
+## Changelog
+
+Please see the [CHANGELOG.md](./CHANGELOG.md) file for what has changed.
 
 ## Security Vulnerabilities
 

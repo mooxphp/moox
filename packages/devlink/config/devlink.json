@@ -1,0 +1,15 @@
+{
+    "status": {
+        "linked": true,
+        "deploy": false,
+        "error": false,
+        "error_message": "Devlink is active, currently not ready for deployment"
+    },
+    "packages": {
+        "devlink": {
+            "active": true,
+            "linked": true,
+            "deployed": false
+        }
+    }
+}

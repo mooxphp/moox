@@ -50,6 +50,7 @@
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
+        "moox/devlink": "*",
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.0",
