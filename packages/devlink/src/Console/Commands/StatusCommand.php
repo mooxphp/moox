@@ -7,13 +7,13 @@ use Moox\Devlink\Console\Traits\Art;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Show;
 
-class ListPackages extends Command
+class StatusCommand extends Command
 {
     use Art, Check, Show;
 
-    protected $signature = 'devlink:list';
+    protected $signature = 'devlink:status';
 
-    protected $description = 'List all devlinked packages in the project';
+    protected $description = 'Show the status of your devlinked packages';
 
     protected array $basePaths;
 
@@ -22,6 +22,8 @@ class ListPackages extends Command
     protected string $composerJsonPath;
 
     protected string $packagesPath;
+
+    protected string $errorMessage;
 
     public function __construct()
     {

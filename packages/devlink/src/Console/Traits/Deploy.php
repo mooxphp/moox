@@ -2,6 +2,9 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
+
 trait Deploy
 {
     private function deploy(): void
@@ -15,9 +18,12 @@ trait Deploy
             copy($destination, $backup);
             unlink($destination);
             copy($source, $destination);
-            $this->info('Deployed composer.json to composer.json-deploy');
+            info('Deployed composer.json to composer.json-deploy');
         } else {
-            $this->error('composer.json-deploy not found!');
+            $this->errorMessage = 'composer.json-deploy not found!';
+            error($this->errorMessage);
         }
+
+        $devlinkStatus = 'deployed';
     }
 }

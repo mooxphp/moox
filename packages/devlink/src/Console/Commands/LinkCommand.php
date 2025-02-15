@@ -11,11 +11,10 @@ use Moox\Devlink\Console\Traits\Link;
 use Moox\Devlink\Console\Traits\Prepare;
 use Moox\Devlink\Console\Traits\Restore;
 use Moox\Devlink\Console\Traits\Show;
-use Moox\Devlink\Console\Traits\Status;
 
-class LinkPackages extends Command
+class LinkCommand extends Command
 {
-    use Art, Backup, Check, Finalize, Link, Prepare, Restore, Show, Status;
+    use Art, Backup, Check, Finalize, Link, Prepare, Restore, Show;
 
     protected $signature = 'devlink:link';
 
@@ -28,6 +27,8 @@ class LinkPackages extends Command
     protected string $composerJsonPath;
 
     protected string $packagesPath;
+
+    protected string $errorMessage;
 
     public function __construct()
     {
@@ -48,8 +49,8 @@ class LinkPackages extends Command
         $this->prepare();
         $this->link();
         $this->show();
-        $this->status();
         $this->finalize();
-        $this->info('Have a nice dev!');
+        $this->info('Packages linked! Have a nice dev!');
+        $this->info(' ');
     }
 }

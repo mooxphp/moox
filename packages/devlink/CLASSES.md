@@ -2,10 +2,10 @@
 
 ## Commands
 
--   `DeployPackages`: Deploy the packages
--   `UnlinkPackages`: Unlink the packages
--   `LinkPackages`: Link the packages
--   `Status`: Show the status of Devlink
+-   `DeployCommand`: Deploy the packages
+-   `UnlinkCommand`: Unlink the packages
+-   `LinkCommand`: Link the packages
+-   `StatusCommand`: Show the status of Devlink
 
 ## Traits
 

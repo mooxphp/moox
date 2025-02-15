@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Moox\Devlink;
 
 use Illuminate\Support\ServiceProvider;
-use Moox\Devlink\Console\Commands\DeployPackages;
-use Moox\Devlink\Console\Commands\LinkPackages;
-use Moox\Devlink\Console\Commands\ListPackages;
-use Moox\Devlink\Console\Commands\UnlinkPackages;
+use Moox\Devlink\Console\Commands\DeployCommand;
+use Moox\Devlink\Console\Commands\LinkCommand;
+use Moox\Devlink\Console\Commands\StatusCommand;
+use Moox\Devlink\Console\Commands\UnlinkCommand;
 
 class DevlinkServiceProvider extends ServiceProvider
 {
@@ -25,10 +25,10 @@ class DevlinkServiceProvider extends ServiceProvider
             ], 'devlink-config');
 
             $this->commands([
-                LinkPackages::class,
-                DeployPackages::class,
-                UnlinkPackages::class,
-                ListPackages::class,
+                LinkCommand::class,
+                DeployCommand::class,
+                UnlinkCommand::class,
+                StatusCommand::class,
             ]);
         }
     }

@@ -35,7 +35,7 @@ packages/*
 
 2. Configure your paths and packages in the `config/devlink.php` file and change the package path in the `.env` file, if needed (Windows users for example).
 
-3. When running `devlink:list`:
+3. When running `devlink:status`:
 
     - Lists all packages that are currently devlinked
     - Lists all packages that are configured but not devlinked

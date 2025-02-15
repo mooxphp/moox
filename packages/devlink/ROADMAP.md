@@ -2,10 +2,8 @@
 
 ## Current tasks
 
+-   [ ] Finalize the link trait and command on web
 -   [ ] Use new config and create the correct files
--   [ ] Generate the JSON status file
--   [ ] Use the status file and show the status
--   [ ] Finalize the link trait and command
 
 ## Publishing
 

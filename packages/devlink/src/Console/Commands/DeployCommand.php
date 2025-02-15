@@ -10,12 +10,14 @@ use Moox\Devlink\Console\Traits\Cleanup;
 use Moox\Devlink\Console\Traits\Deploy;
 use Moox\Devlink\Console\Traits\Finalize;
 use Moox\Devlink\Console\Traits\Restore;
-use Moox\Devlink\Console\Traits\Status;
 use Moox\Devlink\Console\Traits\Unlink;
 
-class DeployPackages extends Command
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
+
+class DeployCommand extends Command
 {
-    use Art, Backup, Check, Cleanup, Deploy, Finalize, Restore, Status, Unlink;
+    use Art, Backup, Check, Cleanup, Deploy, Finalize, Restore, Unlink;
 
     protected $signature = 'devlink:deploy';
 
@@ -28,6 +30,8 @@ class DeployPackages extends Command
     protected string $composerJsonPath;
 
     protected string $packagesPath;
+
+    protected string $errorMessage;
 
     public function __construct()
     {
@@ -42,13 +46,18 @@ class DeployPackages extends Command
     public function handle(): void
     {
         $this->art();
-        $this->info('Hello, I will prepare your project and composer.json for deployment.');
+        info('Hello, I will prepare your project and composer.json for deployment.');
         $this->check();
         $this->unlink();
         $this->deploy();
         $this->cleanup();
-        $this->status();
         $this->finalize();
-        $this->info('All done! Have a nice dev!');
+
+        if ($this->errorMessage) {
+            error('Not ready to deploy! Take a break!');
+        } else {
+            info('Ready to deploy! Have a nice dev!');
+            info(' ');
+        }
     }
 }

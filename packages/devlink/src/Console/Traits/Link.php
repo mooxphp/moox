@@ -215,5 +215,7 @@ trait Link
         );
 
         $this->info('Updated composer.json and created composer.json-deploy');
+
+        $devlinkStatus = 'linked';
     }
 }

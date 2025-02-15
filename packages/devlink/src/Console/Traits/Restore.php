@@ -2,6 +2,9 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use function Laravel\Prompts\error;
+use function Laravel\Prompts\info;
+
 trait Restore
 {
     private function restore(): void
@@ -10,11 +13,17 @@ trait Restore
         $destination = $this->composerJsonPath.'-original';
 
         if (file_exists($source)) {
-            unlink($source);
-            rename($destination, $source);
-            $this->info('Restored composer.json from composer.json-original');
+            if (file_exists($destination)) {
+                unlink($source);
+                rename($destination, $source);
+                info('Restored composer.json from composer.json-original');
+            } else {
+                $this->errorMessage = 'composer.json-original not found!';
+                error($this->errorMessage);
+            }
         } else {
-            $this->error('composer.json-original not found!');
+            $this->errorMessage = 'composer.json not found!';
+            error($this->errorMessage);
         }
     }
 }

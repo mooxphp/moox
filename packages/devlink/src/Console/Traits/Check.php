@@ -4,122 +4,157 @@ namespace Moox\Devlink\Console\Traits;
 
 trait Check
 {
-    private array $config;
-
-    private function check(): void
+    private function check(): array
     {
-        //
-    }
+        $status = 'unknown';
+        $message = 'Devlink is in unknown status';
 
-    private function checks(): void
-    {
-        $this->line("\nConfiguration:");
-        $this->line('Base paths:');
-        if (empty($this->basePaths)) {
-            $this->warn('- No base paths configured');
-        } else {
-            foreach ($this->basePaths as $path) {
-                $resolvedPath = $this->resolvePath($path);
-                $this->line("- $path");
-                $this->line("  → $resolvedPath".(is_dir($resolvedPath) ? ' (exists)' : ' (not found)'));
+        $composerOriginal = false;
+        $composerDeploy = false;
+
+        $packagesArray = [];
+        $realPackages = [];
+
+        $lasterror = null;
+
+        $config = config('devlink');
+
+        if (! isset($config['packages'])) {
+            $lasterror = 'No packages configured in config/devlink.php';
+        }
+
+        foreach ($config['packages'] as $package => $packageConfig) {
+            $packagesArray[$package] = $packageConfig;
+        }
+
+        foreach ($packagesArray as $package => $packageConfig) {
+            if ($packageConfig['active']) {
+                $active = true;
+            } else {
+                $active = false;
+            }
+
+            if ($packageConfig['linked']) {
+                $link = true;
+            } else {
+                $link = false;
+            }
+
+            if ($packageConfig['deploy']) {
+                $deploy = true;
+            } else {
+                $deploy = false;
+            }
+
+            $fullPath = base_path($packageConfig['path']);
+            $cleanPath = rtrim($this->resolvePath(dirname($fullPath)), '/').'/'.basename($fullPath);
+
+            if (! is_dir($cleanPath)) {
+                $valid = false;
+            } else {
+                $valid = true;
+            }
+
+            $composer = json_decode(file_get_contents(base_path('composer.json')), true);
+
+            if (isset($composer['repositories'][$packageConfig['path']])) {
+                $linked = true;
+            } else {
+                $linked = false;
+            }
+
+            $realPackages[$package] = [
+                'name' => $package,
+                'type' => $packageConfig['type'],
+                'active' => $active,
+                'link' => $link,
+                'deploy' => $deploy,
+                'valid' => $valid,
+                'linked' => $linked,
+            ];
+
+            if (str_contains($packageConfig['path'], 'disabled')) {
+                unset($realPackages[$package]);
             }
         }
 
-        $this->line("\nConfigured packages:");
-        if (empty($this->packages)) {
-            $this->warn('No packages configured in config/devlink.php');
-        } else {
-            foreach ($this->packages as $package) {
-                $this->line("- $package");
-            }
+        $packagesPath = $config['packages_path'] ?? 'packages';
+
+        $publicBasePath = $config['public_base_path'] ?? '../moox';
+
+        $privateBasePath = $config['private_base_path'] ?? 'disabled';
+
+        if (! is_dir($packagesPath)) {
+            $lasterror = 'Packages path is invalid';
         }
 
-        $this->line('');
+        if (! is_dir($publicBasePath)) {
+            $lasterror = 'Public base path - '.$publicBasePath.' - is invalid';
+        }
+
+        if (! is_dir($privateBasePath) && $privateBasePath !== 'disabled') {
+            $lasterror = 'Private base path - '.$privateBasePath.' - is invalid';
+        }
+
+        if (! file_exists(base_path('composer.json'))) {
+            $lasterror = 'composer.json does not exist';
+        }
+
+        if (! file_exists(base_path('composer.json'))) {
+            $lasterror = 'composer.json does not exist';
+        }
+
+        if (file_exists(base_path('composer.json-original'))) {
+            $composerOriginal = true;
+        }
+
+        if (file_exists(base_path('composer.json-deploy'))) {
+            $composerDeploy = true;
+        }
+
+        if (file_exists(base_path('composer.json-backup'))) {
+            $composerBackup = true;
+        }
+
+        if (! $composerOriginal && ! $composerDeploy) {
+            $status = 'unused';
+            $message = 'Devlink is not active';
+        }
+
+        if (! $composerOriginal && $composerDeploy) {
+            $status = 'unlinked';
+            $message = 'Devlink is unlinked, not ready for deployment';
+        }
+
+        if ($composerOriginal && $composerDeploy) {
+            $status = 'linked';
+            $message = 'Devlink is linked, notready for deployment';
+        }
+
+        if ($composerOriginal && ! $composerDeploy) {
+            $status = 'deployed';
+            $message = 'Devlink is ready for deployment';
+        }
+
+        if ($lasterror !== null) {
+            $status = 'error';
+            $message = $lasterror;
+        }
+
+        $fullStatus = [
+            'status' => $status,
+            'message' => $message,
+            'packages_path' => $packagesPath,
+            'public_base_path' => $publicBasePath,
+            'private_base_path' => $privateBasePath,
+            'packages' => $realPackages,
+        ];
+
+        return $fullStatus;
     }
 
     private function resolvePath(string $path): string
     {
         return str_starts_with($path, '~/') ? str_replace('~', getenv('HOME'), $path) : rtrim(realpath($path) ?: $path, '/');
-    }
-
-    private function readConfig(): array
-    {
-        $this->config = config('devlink');
-
-        return $this->config;
-    }
-
-    private function getPackagesConfig(): array
-    {
-        return $this->config['packages'] ?? [];
-    }
-
-    private function getPackagesPath(): string
-    {
-        return $this->config['packages_path'] ?? 'packages';
-    }
-
-    private function getMooxBasePath(): string
-    {
-        return $this->config['moox_base_path'] ?? '../moox';
-    }
-
-    private function getMooxproBasePath(): string
-    {
-        return $this->config['mooxpro_base_path'] ?? '../mooxpro';
-    }
-
-    private function checkPackagesPath(): bool
-    {
-        if (! is_dir($this->getPackagesPath())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function checkMooxBasePath(): bool
-    {
-        if (! is_dir($this->getMooxBasePath())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function checkMooxproBasePath(): bool
-    {
-        if (! is_dir($this->getMooxproBasePath())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function checkComposerJson(): bool
-    {
-        if (! file_exists(base_path('composer.json'))) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function checkComposerOriginal(): bool
-    {
-        if (! file_exists(base_path('composer.json-original'))) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private function checkComposerDeploy(): bool
-    {
-        if (! file_exists(base_path('composer.json-deploy'))) {
-            return false;
-        }
-
-        return true;
     }
 }

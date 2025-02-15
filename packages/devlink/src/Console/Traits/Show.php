@@ -2,63 +2,53 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\table;
+
 trait Show
 {
+    private const CHECK_MARK = "\u{2714}"; // ✔
+
+    private const CROSS_MARK = "\u{2718}"; // ✘
+
     private function show(): void
     {
-        $this->showReport();
-    }
+        $fullStatus = $this->check();
 
-    private function getTableData(): array
-    {
-        $packages = $this->getPackagesConfig();
-        $tableData = [];
-
-        foreach ($packages as $name => $package) {
-            $tableData[] = [
-                $name,
-                $package['type'],
-                $package['active'] ? 'Yes' : 'No',
-                $package['linked'] ? 'Yes' : 'No',
-                $package['deploy'] ? 'Yes' : 'No',
-                $package['path'],
+        $headers = ['Package', 'Type', 'Active', 'Link', 'Deploy', 'Valid', 'Linked'];
+        $rows = array_map(function ($row) {
+            return [
+                $row['name'],
+                $row['type'],
+                $row['active'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
+                $row['link'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
+                $row['deploy'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
+                $row['valid'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
+                $row['linked'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
             ];
+        }, $fullStatus['packages']);
+
+        table($headers, $rows);
+
+        $badge = '<fg=black;bg=yellow;options=bold> ';
+
+        if ($fullStatus['status'] === 'error') {
+            $badge = '<fg=black;bg=red;options=bold> ';
         }
 
-        return $tableData;
-    }
-
-    private function showReport(): void
-    {
-        // TODO: Shows config, needs to show real status, too
-
-        if (! $this->readConfig()) {
-            $this->error('Configuration file not found!');
+        if ($fullStatus['status'] === 'unlinked') {
+            $badge = '<fg=black;bg=gray;options=bold> ';
         }
 
-        if (! $this->checkPackagesPath()) {
-            $this->error('Packages path not found!');
+        if ($fullStatus['status'] === 'linked') {
+            $badge = '<fg=black;bg=green;options=bold> ';
         }
 
-        if (! $this->checkMooxBasePath()) {
-            $this->error('Moox base path not found!');
+        if ($fullStatus['status'] === 'deployed') {
+            $badge = '<fg=black;bg=green;options=bold> ';
         }
 
-        if (! $this->checkMooxproBasePath()) {
-            $this->error('Mooxpro base path not found!');
-        }
-
-        if (! $this->checkComposerJson()) {
-            $this->error('composer.json not found!');
-        }
-
-        if (! $this->checkComposerOriginal()) {
-            // means Devlink is not active or already deployed?
-            $this->error('composer.json-original not found!');
-        }
-
-        $this->readConfig();
-        $tableData = $this->getTableData();
-        $this->table(['Package', 'Type', 'Active', 'Linked', 'Deploy', 'Path'], $tableData);
+        info('  '.$badge.strtoupper($fullStatus['status']).' </> '.$fullStatus['message']);
+        info(' ');
     }
 }
