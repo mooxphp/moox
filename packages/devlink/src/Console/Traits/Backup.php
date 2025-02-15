@@ -2,6 +2,8 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use function Laravel\Prompts\info;
+
 trait Backup
 {
     private function backup(): void
@@ -10,11 +12,10 @@ trait Backup
         $backupFile = 'composer.json-original';
 
         if (file_exists($source)) {
-            unlink($backupFile);
             copy($source, $backupFile);
-            $this->info('Backed up composer.json to composer.json-original');
+            info('Backed up composer.json to composer.json-original');
         } else {
-            $this->error('composer.json not found!');
+            $this->errorMessage = 'composer.json not found!';
         }
     }
 }

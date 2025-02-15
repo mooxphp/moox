@@ -2,17 +2,6 @@
 
 ## Current tasks
 
--   [ ] Finalize the link trait and command on web
--   [ ] Use new config and create the correct files
-
-## Publishing
-
--   [ ] Polish the readme, shell script (original and backup?)
--   [ ] Update the version
-
-## Testing
-
--   [ ] Test on Mac
--   [ ] Test on Windows
--   [ ] Test automatic Deployment
--   [ ] What if source package is a symlink?
+-   [ ] Private packages are not yet copied, but when, we also need to delete them in the link and unlink steps
+-   [ ] There is probably an unclear state, because we do not yet use `-backup` yet
+-   [ ] For the shell script, we also need to check if `-original` and `-backup` are correct

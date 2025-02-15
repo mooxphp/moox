@@ -23,58 +23,34 @@ trait Check
             $lasterror = 'No packages configured in config/devlink.php';
         }
 
-        foreach ($config['packages'] as $package => $packageConfig) {
-            $packagesArray[$package] = $packageConfig;
-        }
+        $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
+        $repositories = $composerJson['repositories'] ?? [];
 
-        foreach ($packagesArray as $package => $packageConfig) {
-            if ($packageConfig['active']) {
-                $active = true;
-            } else {
-                $active = false;
+        foreach ($config['packages'] as $name => $package) {
+            $packagePath = "packages/{$name}";
+
+            // Check if package is in repositories
+            $isLinked = false;
+            foreach ($repositories as $repo) {
+                if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
+                    $isLinked = true;
+                    break;
+                }
             }
 
-            if ($packageConfig['linked']) {
-                $link = true;
-            } else {
-                $link = false;
-            }
-
-            if ($packageConfig['deploy']) {
-                $deploy = true;
-            } else {
-                $deploy = false;
-            }
-
-            $fullPath = base_path($packageConfig['path']);
-            $cleanPath = rtrim($this->resolvePath(dirname($fullPath)), '/').'/'.basename($fullPath);
-
-            if (! is_dir($cleanPath)) {
-                $valid = false;
-            } else {
-                $valid = true;
-            }
-
-            $composer = json_decode(file_get_contents(base_path('composer.json')), true);
-
-            if (isset($composer['repositories'][$packageConfig['path']])) {
-                $linked = true;
-            } else {
-                $linked = false;
-            }
-
-            $realPackages[$package] = [
-                'name' => $package,
-                'type' => $packageConfig['type'],
-                'active' => $active,
-                'link' => $link,
-                'deploy' => $deploy,
-                'valid' => $valid,
-                'linked' => $linked,
+            $packagesArray[$name] = $package;
+            $realPackages[$name] = [
+                'name' => $name,
+                'type' => $package['type'] ?? 'unknown',
+                'active' => $package['active'] ?? false,
+                'link' => $package['linked'] ?? true,
+                'deploy' => $package['deploy'] ?? false,
+                'valid' => is_dir($package['path']),
+                'linked' => $isLinked,
             ];
 
-            if (str_contains($packageConfig['path'], 'disabled')) {
-                unset($realPackages[$package]);
+            if (str_contains($package['path'], 'disabled')) {
+                unset($realPackages[$name]);
             }
         }
 
@@ -128,7 +104,7 @@ trait Check
 
         if ($composerOriginal && $composerDeploy) {
             $status = 'linked';
-            $message = 'Devlink is linked, notready for deployment';
+            $message = 'Devlink is linked, not ready for deployment';
         }
 
         if ($composerOriginal && ! $composerDeploy) {

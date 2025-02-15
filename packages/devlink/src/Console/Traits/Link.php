@@ -2,12 +2,18 @@
 
 namespace Moox\Devlink\Console\Traits;
 
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\note;
+
 trait Link
 {
     private function link(): void
     {
         $this->removeSymlinks();
+        $this->composerRemovePackages();
         $this->createSymlinks();
+        $this->updateComposerJson();
+        $this->createDeployComposerJson();
     }
 
     /**
@@ -18,66 +24,79 @@ trait Link
         $linkedPackages = [];
         $notFoundPackages = [];
         $failedPackages = [];
+        $inactivePackages = [];
+        $configuredPackages = config('devlink.packages', []);
 
-        foreach ($this->packages as $package) {
-            $found = false;
+        foreach ($configuredPackages as $name => $package) {
+            if (! ($package['active'] ?? false)) {
+                $inactivePackages[] = $name;
 
-            foreach ($this->basePaths as $basePath) {
-                $resolvedBasePath = $this->resolvePath($basePath);
-                $target = "$resolvedBasePath/$package";
-                $link = "$this->packagesPath/$package";
-
-                if (is_dir($target)) {
-                    $found = true;
-                    try {
-                        if (is_link($link) || is_dir($link)) {
-                            unlink($link);
-                        }
-                        if (PHP_OS_FAMILY === 'Windows') {
-                            exec('mklink /J '.escapeshellarg($link).' '.escapeshellarg($target));
-                        } else {
-                            symlink($target, $link);
-                        }
-                        $linkedPackages[] = "$package → $target";
-                        break;
-                    } catch (\Exception $e) {
-                        $failedPackages[] = "$package ({$e->getMessage()})";
-                    }
-                }
+                continue;
             }
 
-            if (! $found) {
-                $notFoundPackages[] = $package;
+            if (! ($package['linked'] ?? true)) {
+                continue;
+            }
+
+            // Convert target path to absolute path
+            $target = realpath($package['path']);
+            if (! $target) {
+                $target = $package['path']; // Keep original for error message
+            }
+
+            $link = "{$this->packagesPath}/$name";
+
+            if (is_dir($target)) {
+                try {
+                    if (is_link($link) || is_dir($link)) {
+                        if (is_link($link)) {
+                            unlink($link);
+                        } else {
+                            rmdir($link);
+                        }
+                    }
+
+                    info("Creating symlink for $link → $target");
+
+                    if (PHP_OS_FAMILY === 'Windows') {
+                        exec('mklink /J '.escapeshellarg($link).' '.escapeshellarg($target));
+                    } else {
+                        if (! symlink($target, $link)) {
+                            throw new \RuntimeException('Failed to create symlink');
+                        }
+                    }
+                    $linkedPackages[] = "$name → $target";
+                } catch (\Exception $e) {
+                    $failedPackages[] = "$name ({$e->getMessage()})";
+                }
+            } else {
+                $notFoundPackages[] = "$name (path: $target)";
             }
         }
 
         if ($linkedPackages) {
-            $this->info('Successfully linked packages:');
+            info('Successfully linked packages:');
             foreach ($linkedPackages as $package) {
-                $this->line("✓ $package");
+                note("✓ $package");
             }
         }
 
         if ($notFoundPackages) {
-            $this->error('Packages not found in any base path:');
+            $this->error('Packages not found:');
             foreach ($notFoundPackages as $package) {
-                $this->line("✗ $package");
-            }
-            $this->line("\nSearched in paths:");
-            foreach ($this->basePaths as $path) {
-                $this->line('- '.$this->resolvePath($path));
+                note("✗ $package");
             }
         }
 
         if ($failedPackages) {
             $this->error('Failed to link packages:');
             foreach ($failedPackages as $package) {
-                $this->line("✗ $package");
+                note("✗ $package");
             }
         }
 
         if (! $linkedPackages && ! $notFoundPackages && ! $failedPackages) {
-            $this->info('No packages to link.');
+            info('No packages to link.');
         }
     }
 
@@ -86,12 +105,13 @@ trait Link
      */
     private function removeSymlinks(): void
     {
-        // Check for existing symlinks that are no longer in config
+        $configuredPackages = array_keys(config('devlink.packages', []));
         $existingLinks = [];
+
         if (is_dir($this->packagesPath)) {
             foreach (scandir($this->packagesPath) as $item) {
                 if ($item !== '.' && $item !== '..' && is_link("$this->packagesPath/$item")) {
-                    if (! in_array($item, $this->packages)) {
+                    if (! in_array($item, $configuredPackages)) {
                         $existingLinks[] = $item;
                     }
                 }
@@ -99,15 +119,15 @@ trait Link
         }
 
         if ($existingLinks) {
-            $this->warn("\nFound existing symlinks for packages no longer in config:");
+            info("\nFound existing symlinks for packages no longer in config:");
             foreach ($existingLinks as $link) {
-                $this->line("- $link → ".readlink("$this->packagesPath/$link"));
+                note("- $link → ".readlink("$this->packagesPath/$link"));
                 if ($this->confirm("Remove symlink for $link?")) {
                     unlink("$this->packagesPath/$link");
-                    $this->info("Removed symlink for $link");
+                    info("Removed symlink for $link");
                 }
             }
-            $this->line('');
+            info('');
         }
     }
 
@@ -118,11 +138,13 @@ trait Link
     {
         $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
         $removedPackages = [];
+        $configuredPackages = config('devlink.packages', []);
 
         foreach ($composerJson['repositories'] ?? [] as $key => $repo) {
             if ($repo['type'] === 'path' && str_starts_with($repo['url'], 'packages/')) {
                 $package = basename($repo['url']);
-                if (! in_array($package, $this->packages)) {
+
+                if (! isset($configuredPackages[$package]) || ! ($configuredPackages[$package]['active'] ?? false)) {
                     $removedPackages[] = [
                         'key' => $key,
                         'package' => $package,
@@ -133,9 +155,9 @@ trait Link
         }
 
         if ($removedPackages) {
-            $this->warn("\nFound composer.json entries for removed packages:");
+            info("\nFound composer.json entries for removed packages:");
             foreach ($removedPackages as $removed) {
-                $this->line("- {$removed['package']} ({$removed['name']})");
+                note("- {$removed['package']} ({$removed['name']})");
             }
 
             if ($this->confirm('Remove these entries from composer.json?')) {
@@ -148,7 +170,7 @@ trait Link
                     $this->composerJsonPath,
                     json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
                 );
-                $this->info('Removed composer.json entries for removed packages');
+                info('Removed composer.json entries for removed packages');
             }
         }
     }
@@ -161,7 +183,6 @@ trait Link
             return;
         }
 
-        // Read original composer.json
         $composerContent = file_get_contents($this->composerJsonPath);
         $composerJson = json_decode($composerContent, true);
 
@@ -171,51 +192,98 @@ trait Link
             return;
         }
 
-        // Backup original before modifications
-        file_put_contents($this->composerJsonPath.'-original', $composerContent);
-
-        // Update development composer.json (with all packages and repositories)
         $repositories = $composerJson['repositories'] ?? [];
         $require = $composerJson['require'] ?? [];
-        $allPackages = array_merge($this->packages, config('devlink.internal_packages', []));
+        $updated = false;
+        $addedRepos = [];
+        $addedRequires = [];
 
-        foreach ($allPackages as $package) {
-            $packagePath = "packages/{$package}";
-            $repoEntry = ['type' => 'path', 'url' => $packagePath, 'options' => ['symlink' => true]];
-            $packageName = "moox/{$package}";
+        // Debug output
+        info("\nChecking packages for composer.json updates:");
 
-            if (! collect($repositories)->contains(fn ($repo) => $repo['url'] === $packagePath)) {
-                $repositories[] = $repoEntry;
+        foreach (config('devlink.packages', []) as $name => $package) {
+            if (! ($package['active'] ?? false)) {
+                continue;
             }
+
+            $packagePath = "packages/{$name}";
+            $repoEntry = [
+                'type' => 'path',
+                'url' => $packagePath,
+                'options' => [
+                    'symlink' => true,
+                ],
+            ];
+            $packageName = "moox/{$name}";
+
+            $repoExists = false;
+            foreach ($repositories as $repo) {
+                if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
+                    $repoExists = true;
+                    break;
+                }
+            }
+
+            if (! $repoExists) {
+                $repositories[] = $repoEntry;
+                $addedRepos[] = $name;
+                $updated = true;
+            }
+
             if (! isset($require[$packageName])) {
                 $require[$packageName] = '*';
+                $addedRequires[] = $packageName;
+                $updated = true;
             }
         }
 
-        $composerJson['repositories'] = $repositories;
-        $composerJson['require'] = $require;
-        file_put_contents(
-            $this->composerJsonPath,
-            json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
-        );
+        if ($updated) {
+            $composerJson['repositories'] = array_values($repositories);
+            $composerJson['require'] = $require;
+            file_put_contents(
+                $this->composerJsonPath,
+                json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
+            );
 
-        // Create composer.json-deploy (only public packages, no repositories)
-        $deployJson = $composerJson;
-        unset($deployJson['repositories']);
-        $deployJson['minimum-stability'] = 'stable';
+            if ($addedRepos) {
+                info('Added repository entries for: '.implode(', ', $addedRepos));
+            }
+            if ($addedRequires) {
+                info('Added requirements for: '.implode(', ', $addedRequires));
+            }
+        } else {
+            info('No changes needed in composer.json');
+        }
+    }
 
-        // Remove internal packages from require
-        foreach (config('devlink.internal_packages', []) as $package) {
-            unset($deployJson['require']["moox/{$package}"]);
+    private function createDeployComposerJson(): void
+    {
+        if (! file_exists($this->composerJsonPath)) {
+            $this->error('composer.json not found!');
+
+            return;
         }
 
+        $composerContent = file_get_contents($this->composerJsonPath);
+        $composerJson = json_decode($composerContent, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->error('Invalid composer.json format: '.json_last_error_msg());
+
+            return;
+        }
+
+        // Create a copy without the repositories section
+        $deployJson = $composerJson;
+        unset($deployJson['repositories']);
+
+        // Write to composer.json-deploy
+        $deployPath = dirname($this->composerJsonPath).'/composer.json-deploy';
         file_put_contents(
-            $this->composerJsonPath.'-deploy',
+            $deployPath,
             json_encode($deployJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
         );
 
-        $this->info('Updated composer.json and created composer.json-deploy');
-
-        $devlinkStatus = 'linked';
+        info('Created composer.json-deploy without repositories section');
     }
 }

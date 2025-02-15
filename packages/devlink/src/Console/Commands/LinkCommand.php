@@ -10,11 +10,12 @@ use Moox\Devlink\Console\Traits\Finalize;
 use Moox\Devlink\Console\Traits\Link;
 use Moox\Devlink\Console\Traits\Prepare;
 use Moox\Devlink\Console\Traits\Restore;
-use Moox\Devlink\Console\Traits\Show;
+
+use function Laravel\Prompts\info;
 
 class LinkCommand extends Command
 {
-    use Art, Backup, Check, Finalize, Link, Prepare, Restore, Show;
+    use Art, Backup, Check, Finalize, Link, Prepare, Restore;
 
     protected $signature = 'devlink:link';
 
@@ -28,7 +29,7 @@ class LinkCommand extends Command
 
     protected string $packagesPath;
 
-    protected string $errorMessage;
+    protected string $errorMessage = '';
 
     public function __construct()
     {
@@ -43,14 +44,12 @@ class LinkCommand extends Command
     public function handle(): void
     {
         $this->art();
-        $this->info('Hello, I will link the configured packages for you.');
+        info('Hello, I will link the configured packages for you.');
         $this->check();
         $this->backup();
         $this->prepare();
         $this->link();
-        $this->show();
         $this->finalize();
-        $this->info('Packages linked! Have a nice dev!');
-        $this->info(' ');
+        info('Packages linked! Have a nice dev!');
     }
 }
