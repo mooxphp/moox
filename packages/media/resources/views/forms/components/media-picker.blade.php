@@ -46,13 +46,13 @@
                 class="absolute top-2 right-2 space-x-2 flex items-center"
                 x-show="selectedMedia"
             >
-                <x-filament::button
+                {{-- <x-filament::button
                     color="danger"
                     size="xs"
                     class="flex items-center justify-center"
                     x-on:click="selectedMedia = ''; state = null;"
                 >
-                </x-filament::button>
+                </x-filament::button> --}}
             </div>
         </div>
 
@@ -63,6 +63,6 @@
             Kein Bild ausgewählt.
         </div>
 
-        <livewire:media-picker-modal id="media-picker-modal" />
+        <livewire:media-picker-modal id="media-picker-modal"  :multiple="$field->isMultiple()" />
     </div>
 </x-dynamic-component>

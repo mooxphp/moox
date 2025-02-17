@@ -13,8 +13,9 @@ class Media extends BaseMedia
         return $this->morphTo('original_model');
     }
 
-    public function getUrl(string $conversionName = ''): string
+    public function mediaable()
     {
-        return Storage::disk($this->disk ?? 'public')->url("media/{$this->id}/{$this->file_name}");
+        return $this->morphTo();
     }
+
 }

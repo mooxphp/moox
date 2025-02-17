@@ -14,6 +14,7 @@ class MediaPickerModal extends Component
     public $media = [];
 
     public array $selectedMediaIds = [];
+    public $multiple = false;
 
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
@@ -44,10 +45,14 @@ class MediaPickerModal extends Component
 
     public function toggleMediaSelection(int $mediaId)
     {
-        if (in_array($mediaId, $this->selectedMediaIds)) {
-            $this->selectedMediaIds = array_diff($this->selectedMediaIds, [$mediaId]);
+        if ($this->multiple) {
+            if (in_array($mediaId, $this->selectedMediaIds)) {
+                $this->selectedMediaIds = array_diff($this->selectedMediaIds, [$mediaId]);
+            } else {
+                $this->selectedMediaIds[] = $mediaId;
+            }
         } else {
-            $this->selectedMediaIds[] = $mediaId;
+            $this->selectedMediaIds = [$mediaId];
         }
     }
 

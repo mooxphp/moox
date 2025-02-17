@@ -2,22 +2,23 @@
 
 namespace Moox\User\Models;
 
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
-use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
-use Moox\Media\Models\Media as CustomMedia;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Moox\Media\Models\MediaUsable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Moox\Media\Models\Media as CustomMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
 class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
 {
@@ -73,8 +74,38 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->nonQueued();
     }
 
-    public function usedMedia(): MorphToMany
+    public function mediaUsables()
     {
-        return $this->morphToMany(CustomMedia::class, 'media_usable', 'media_usables');
+        return $this->morphMany(MediaUsable::class, 'media_usable');
     }
+
+     /**
+     * Holt alle Medien über die `media_usables`-Tabelle und lädt die Medienobjekte.
+     *
+     * @param string $collectionName Der Name der Sammlung (Standard: 'default').
+     * @param callable|array $filters Filter für die Medien.
+     * @return \Illuminate\Support\Collection
+     */
+    public function getMedia(string $collectionName = 'default', $filters = []): Collection
+    {
+        // Get the media usable entries related to the user
+        $mediaUsables = $this->mediaUsables()
+            ->whereHas('media', function ($query) use ($collectionName) {
+                $query->where('collection_name', $collectionName);
+            })
+            ->get();
+
+        // Map media usable entries to media objects
+        $media = $mediaUsables->map(function (MediaUsable $mediaUsable) {
+            return $mediaUsable->media;
+        });
+
+        // Apply filters if provided
+        if ($filters) {
+            $media = $media->filter($filters);
+        }
+
+        return $media;
+    }
+
 }
