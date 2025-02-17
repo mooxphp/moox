@@ -2,10 +2,9 @@
 
 namespace Moox\Media\Forms\Components;
 
-use Closure;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -55,8 +54,6 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                     'media_usable_type' => get_class($record),
                 ]);
             }
-
-
 
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));

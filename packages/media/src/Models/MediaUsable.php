@@ -9,9 +9,9 @@ class MediaUsable extends Model
     protected $table = 'media_usables';
 
     protected $fillable = [
-        'media_id', 
-        'media_usable_id', 
-        'media_usable_type'
+        'media_id',
+        'media_usable_id',
+        'media_usable_type',
     ];
 
     public function media()

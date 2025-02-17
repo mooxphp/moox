@@ -3,7 +3,6 @@
 namespace Moox\Media\Models;
 
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
 class Media extends BaseMedia
@@ -17,5 +16,4 @@ class Media extends BaseMedia
     {
         return $this->morphTo();
     }
-
 }
