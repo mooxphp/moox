@@ -3,7 +3,6 @@
         <h2 class="text-lg font-bold">Upload & Select Media</h2>
     </x-slot>
 
-    <!-- Media-Uploader-Komponente -->
     <div>
         @if($modelId && $modelClass)
             <livewire:media-uploader
@@ -16,7 +15,6 @@
         @endif
     </div>
 
-    <!-- Medienauswahl -->
     <x-filament::section>
         <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             @foreach ($media as $item)
@@ -25,10 +23,8 @@
                     class="relative border rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
                     {{ in_array($item->id, $selectedMediaIds) ? 'border-blue-600' : 'border-gray-200' }}"
                 >
-                    <!-- Bildvorschau -->
                     <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover">
 
-                    <!-- Häkchen und visuelle Markierung -->
                     @if(in_array($item->id, $selectedMediaIds))
                         <div class="absolute inset-0 bg-blue-200 bg-opacity-50">
                             <svg class="absolute top-2 right-2 w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -37,7 +33,6 @@
                         </div>
                     @endif
 
-                    <!-- Titel des Bildes -->
                     <div class="absolute bottom-0 px-2 py-1 text-white text-sm bg-black bg-opacity-50">
                         {{ $item->name }}
                     </div>
@@ -46,7 +41,6 @@
         </x-filament::grid>
     </x-filament::section>
 
-    <!-- Modal-Footer -->
     <x-slot name="footer">
         <x-filament::button wire:click="applySelection" color="primary">
             Auswahl übernehmen

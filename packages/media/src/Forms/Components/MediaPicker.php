@@ -2,8 +2,10 @@
 
 namespace Moox\Media\Forms\Components;
 
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Closure;
 use Moox\Media\Models\Media;
+use Moox\Media\Models\MediaUsable;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class MediaPicker extends SpatieMediaLibraryFileUpload
 {
@@ -34,40 +36,27 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             }
 
             if ($media->model_id && $media->model_type) {
-                if ($media->model_id != $record->id || $media->model_type != get_class($record)) {
-                    Media::create([
-                        'model_id' => $record->id,
-                        'model_type' => get_class($record),
-                        'original_model_id' => $media->model_id,
-                        'original_model_type' => $media->model_type,
-                        'collection_name' => $media->collection_name,
-                        'name' => $media->name,
-                        'file_name' => $media->file_name,
-                        'mime_type' => $media->mime_type,
-                        'disk' => $media->disk,
-                        'conversions_disk' => $media->conversions_disk,
-                        'size' => $media->size,
-                        'manipulations' => $media->manipulations,
-                        'custom_properties' => array_merge($media->custom_properties, [
-                            'original_media_id' => $media->id,
-                        ]),
-                        'generated_conversions' => $media->generated_conversions,
-                        'responsive_images' => $media->responsive_images,
-                        'order_column' => $media->order_column,
-                    ]);
-                } else {
-                    $component->state($media->uuid);
-
-                    return;
-                }
+                // Der Media-Eintrag ist bereits einem Modell zugeordnet, also erstellen wir nur einen neuen MediaUsable.
+                MediaUsable::create([
+                    'media_id' => $media->id,
+                    'media_usable_id' => $record->id,
+                    'media_usable_type' => get_class($record),
+                ]);
             } else {
-                $media->update([
-                    'model_id' => $record->id,
-                    'model_type' => get_class($record),
+                // Wenn das Bild noch nicht zugeordnet ist, setze die model_id und model_type in der Media-Tabelle
+                $media->model_id = $record->id;
+                $media->model_type = get_class($record);
+                $media->save();
+
+                // Erstelle den MediaUsable-Eintrag
+                MediaUsable::create([
+                    'media_id' => $media->id,
+                    'media_usable_id' => $record->id,
+                    'media_usable_type' => get_class($record),
                 ]);
             }
 
-            $component->state($media->uuid);
+
 
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));
