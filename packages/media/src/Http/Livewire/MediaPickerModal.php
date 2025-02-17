@@ -14,6 +14,7 @@ class MediaPickerModal extends Component
     public $media = [];
 
     public array $selectedMediaIds = [];
+
     public $multiple = false;
 
     protected $listeners = [
