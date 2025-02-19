@@ -26,7 +26,6 @@ class MediaPickerModal extends Component
     {
         $this->modelId = $modelId;
         $this->modelClass = $modelClass;
-        $this->multiple = $multiple;
         $this->refreshMedia();
     }
 
@@ -64,8 +63,7 @@ class MediaPickerModal extends Component
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
-                // Einzelnes Bild zurückgeben
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -73,8 +71,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                // Mehrere Bilder als Array zurückgeben
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -83,7 +80,6 @@ class MediaPickerModal extends Component
                 $this->dispatch('mediaSelected', $selectedMediaData);
             }
         } else {
-            // Nichts ausgewählt -> Reset
             $this->dispatch('mediaSelected', []);
         }
 
