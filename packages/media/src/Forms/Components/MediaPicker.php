@@ -16,13 +16,12 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
         $this->saveRelationshipsUsing(function (self $component, $state) {
             $record = $component->getRecord();
-            if (! $record) {
+            if (!$record) {
                 return;
             }
 
-            // Sicherstellen, dass state immer ein Array ist
             $mediaData = is_array($state) ? $state : [$state];
-            $mediaData = array_filter($mediaData, fn ($value) => ! is_null($value) && $value !== '');
+            $mediaData = array_filter($mediaData, fn($value) => !is_null($value) && $value !== '');
 
             $attachments = [];
 
@@ -31,7 +30,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 $media = Media::find($mediaId);
 
-                if (! $media) {
+                if (!$media) {
                     continue;
                 }
 
@@ -43,6 +42,7 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
                 $attachments[] = [
                     'file_name' => $media->file_name,
+                    'url' => $media->getUrl(),
                     'alt' => is_array($item) ? ($item['alt'] ?? '') : '',
                     'title' => is_array($item) ? ($item['title'] ?? '') : '',
                     'description' => is_array($item) ? ($item['description'] ?? '') : '',
@@ -56,5 +56,6 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
             $record->{$fieldName} = json_encode($attachments);
             $record->save();
         });
+
     }
 }
