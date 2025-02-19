@@ -11,7 +11,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
-use Moox\Media\Models\MediaUsable;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -82,7 +81,4 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             'media_id'
         )->where('media_usables.media_usable_type', '=', static::class);
     }
-
-
-
 }
