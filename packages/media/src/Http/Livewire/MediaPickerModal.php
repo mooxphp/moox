@@ -8,24 +8,21 @@ use Moox\Media\Models\Media;
 class MediaPickerModal extends Component
 {
     public ?int $modelId = null;
-
     public ?string $modelClass = null;
-
-    public $media = [];
-
+    public array $media = [];
     public array $selectedMediaIds = [];
-
-    public $multiple = false;
+    public bool $multiple = false;
 
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
         'mediaUploaded' => 'refreshMedia',
     ];
 
-    public function setModel(int $modelId, string $modelClass)
+    public function setModel(int $modelId, string $modelClass, bool $multiple = false)
     {
         $this->modelId = $modelId;
         $this->modelClass = $modelClass;
+        $this->multiple = $multiple;
         $this->refreshMedia();
     }
 
@@ -41,7 +38,9 @@ class MediaPickerModal extends Component
                     ->whereColumn('model_type', 'original_model_type');
             })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->all();
+
     }
 
     public function toggleMediaSelection(int $mediaId)
@@ -59,20 +58,39 @@ class MediaPickerModal extends Component
 
     public function applySelection()
     {
-        $selectedMediaId = $this->selectedMediaIds[0] ?? null;
+        $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
-        if ($selectedMediaId) {
-            $media = Media::find($selectedMediaId);
+        if ($selectedMedia->isNotEmpty()) {
+            if (!$this->multiple) {
+                // Einzelnes Bild zurückgeben
+                $media = $selectedMedia->first();
+                $this->dispatch('mediaSelected', [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                    'file_name' => $media->file_name,
+                ]);
+            } else {
+                // Mehrere Bilder als Array zurückgeben
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                    'file_name' => $media->file_name,
+                ])->toArray();
 
-            if ($media) {
-                $imageUrl = $media->getUrl();
-
-                $this->dispatch('mediaSelected', ['id' => $selectedMediaId, 'url' => $imageUrl]);
+                $this->dispatch('mediaSelected', $selectedMediaData);
             }
+        } else {
+            // Nichts ausgewählt -> Reset
+            $this->dispatch('mediaSelected', []);
         }
 
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
+
+
+
+
+
 
     public function render()
     {

@@ -44,31 +44,38 @@ class MediaUploader extends Component
     }
 
     public function updatedFile()
-    {
-        if (! $this->file) {
-            return;
-        }
-
-        if (! $this->modelId || ! $this->modelClass) {
-            throw new \Exception('Kein Modell angegeben für den Upload.');
-        }
-
-        /** @var \Spatie\MediaLibrary\MediaCollections\Models\Media $media */
-        $fileAdder = app(FileAdderFactory::class)->create($this->model, $this->file);
-
-        $media = $fileAdder->toMediaCollection($this->collection);
-
-        $media->original_model_type = $this->modelClass;
-        $media->original_model_id = $this->modelId;
-
-        $media->model_id = null;
-        $media->model_type = null;
-
-        $media->save();
-
-        $this->reset('file');
-        $this->dispatch('mediaUploaded');
+{
+    if (! $this->file) {
+        return;
     }
+
+    if (! $this->modelId || ! $this->modelClass) {
+        throw new \Exception('Kein Modell angegeben für den Upload.');
+    }
+
+    $fileAdder = app(FileAdderFactory::class)->create($this->model, $this->file);
+
+    $media = $fileAdder->toMediaCollection($this->collection);
+
+    $title = pathinfo($this->file->getClientOriginalName(), PATHINFO_FILENAME);
+
+    $media->original_model_type = $this->modelClass;
+    $media->original_model_id = $this->modelId;
+
+    $media->model_id = null;
+    $media->model_type = null;
+
+    $media->title = $title;
+    $media->description = null;
+    $media->internal_note = null;
+    $media->alt = $title;
+
+    $media->save();
+
+    $this->reset('file');
+    $this->dispatch('mediaUploaded');
+}
+
 
     public function render()
     {

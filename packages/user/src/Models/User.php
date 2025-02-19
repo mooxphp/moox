@@ -50,6 +50,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     protected $casts = [
         'email_verified_at' => 'datetime',
         'two_factor_confirmed_at' => 'datetime',
+        'avatar_url' => 'array',
     ];
 
     public function canAccessPanel(Panel $panel): bool
@@ -72,37 +73,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
             ->nonQueued();
     }
 
-    public function mediaUsables()
+    public function mediaThroughUsables()
     {
-        return $this->morphMany(MediaUsable::class, 'media_usable');
+        return $this->belongsToMany(
+            Media::class,
+            'media_usables',
+            'media_usable_id',
+            'media_id'
+        )->where('media_usables.media_usable_type', '=', static::class);
     }
 
-    /**
-     * Holt alle Medien über die `media_usables`-Tabelle und lädt die Medienobjekte.
-     *
-     * @param  string  $collectionName  Der Name der Sammlung (Standard: 'default').
-     * @param  callable|array  $filters  Filter für die Medien.
-     * @return \Illuminate\Support\Collection
-     */
-    public function getMedia(string $collectionName = 'default', $filters = []): Collection
-    {
-        // Get the media usable entries related to the user
-        $mediaUsables = $this->mediaUsables()
-            ->whereHas('media', function ($query) use ($collectionName) {
-                $query->where('collection_name', $collectionName);
-            })
-            ->get();
 
-        // Map media usable entries to media objects
-        $media = $mediaUsables->map(function (MediaUsable $mediaUsable) {
-            return $mediaUsable->media;
-        });
 
-        // Apply filters if provided
-        if ($filters) {
-            $media = $media->filter($filters);
-        }
-
-        return $media;
-    }
 }

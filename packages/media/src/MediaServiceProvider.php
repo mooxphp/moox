@@ -30,7 +30,7 @@ class MediaServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'media');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'media');
         Livewire::component('media-picker-modal', MediaPickerModal::class);
         Livewire::component('media-uploader', MediaUploader::class);
 

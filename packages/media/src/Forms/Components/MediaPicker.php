@@ -16,51 +16,47 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
         $this->saveRelationshipsUsing(function (self $component, $state) {
             $record = $component->getRecord();
-            if (! $record) {
+            if (!$record) {
                 return;
             }
 
-            if (is_array($state)) {
-                $state = reset($state);
-            }
+            // Sicherstellen, dass state immer ein Array ist
+            $mediaData = is_array($state) ? $state : [$state];
+            $mediaData = array_filter($mediaData, fn($value) => !is_null($value) && $value !== '');
 
-            if (! $state) {
-                return;
-            }
+            $attachments = [];
 
-            $media = Media::find($state);
+            foreach ($mediaData as $item) {
+                $mediaId = is_array($item) ? ($item['id'] ?? null) : $item;
 
-            if (! $media) {
-                return;
-            }
+                $media = Media::find($mediaId);
 
-            if ($media->model_id && $media->model_type) {
-                // Der Media-Eintrag ist bereits einem Modell zugeordnet, also erstellen wir nur einen neuen MediaUsable.
-                MediaUsable::create([
+                if (!$media) {
+                    continue;
+                }
+
+                MediaUsable::firstOrCreate([
                     'media_id' => $media->id,
                     'media_usable_id' => $record->id,
                     'media_usable_type' => get_class($record),
                 ]);
-            } else {
-                // Wenn das Bild noch nicht zugeordnet ist, setze die model_id und model_type in der Media-Tabelle
-                $media->model_id = $record->id;
-                $media->model_type = get_class($record);
-                $media->save();
 
-                // Erstelle den MediaUsable-Eintrag
-                MediaUsable::create([
-                    'media_id' => $media->id,
-                    'media_usable_id' => $record->id,
-                    'media_usable_type' => get_class($record),
-                ]);
+                $attachments[] = [
+                    'file_name' => $media->file_name,
+                    'alt' => is_array($item) ? ($item['alt'] ?? '') : '',
+                    'title' => is_array($item) ? ($item['title'] ?? '') : '',
+                    'description' => is_array($item) ? ($item['description'] ?? '') : '',
+                    'internal_note' => is_array($item) ? ($item['internal_note'] ?? '') : '',
+                ];
             }
 
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));
 
-            $record->{$fieldName} = $media->file_name;
-
+            $record->{$fieldName} = json_encode($attachments);
             $record->save();
         });
+
+
     }
 }
