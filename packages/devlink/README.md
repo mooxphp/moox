@@ -96,7 +96,7 @@ Mac works out of the box. You can have local packages mixed with the symlinked p
 On Windows there are most probably some issues with the symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
 
 ```env
-DEVLINK_PACKAGES_PATH=packages-linked
+DEVLINK_PACKAGES_PATH=packageslocal
 ```
 
 Devlink will then link the packages into the `packageslocal` folder instead of mixing them into packages.
