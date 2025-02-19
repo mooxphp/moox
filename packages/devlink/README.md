@@ -99,7 +99,7 @@ On Windows there are most probably some issues with the symlinks. If you run int
 DEVLINK_PACKAGES_PATH=packages-linked
 ```
 
-Devlink will then link the packages into the `packages-linked` folder instead of mixing them into packages.
+Devlink will then link the packages into the `packageslocal` folder instead of mixing them into packages.
 
 ## Classes
 
