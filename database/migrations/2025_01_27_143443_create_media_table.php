@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('file_name');
             $table->string('mime_type')->nullable();
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
+            $table->text('internal_note')->nullable();
+            $table->string('alt')->nullable();
             $table->string('disk');
             $table->string('conversions_disk')->nullable();
             $table->unsignedBigInteger('size');
