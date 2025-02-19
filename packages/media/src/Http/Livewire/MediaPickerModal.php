@@ -8,9 +8,13 @@ use Moox\Media\Models\Media;
 class MediaPickerModal extends Component
 {
     public ?int $modelId = null;
+
     public ?string $modelClass = null;
+
     public array $media = [];
+
     public array $selectedMediaIds = [];
+
     public bool $multiple = false;
 
     protected $listeners = [
@@ -40,7 +44,6 @@ class MediaPickerModal extends Component
             ->orderBy('created_at', 'desc')
             ->get()
             ->all();
-
     }
 
     public function toggleMediaSelection(int $mediaId)
@@ -61,7 +64,7 @@ class MediaPickerModal extends Component
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (!$this->multiple) {
+            if (! $this->multiple) {
                 // Einzelnes Bild zurückgeben
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
@@ -71,7 +74,7 @@ class MediaPickerModal extends Component
                 ]);
             } else {
                 // Mehrere Bilder als Array zurückgeben
-                $selectedMediaData = $selectedMedia->map(fn($media) => [
+                $selectedMediaData = $selectedMedia->map(fn ($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -86,11 +89,6 @@ class MediaPickerModal extends Component
 
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
-
-
-
-
-
 
     public function render()
     {

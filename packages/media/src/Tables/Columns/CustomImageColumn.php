@@ -2,9 +2,9 @@
 
 namespace Moox\Media\Tables\Columns;
 
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Moox\Media\Models\Media;
 use Moox\Media\Models\MediaUsable;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class CustomImageColumn extends SpatieMediaLibraryImageColumn
 {
@@ -29,26 +29,25 @@ class CustomImageColumn extends SpatieMediaLibraryImageColumn
     }
 
     public function getImageUrl(?string $state = null): ?string
-{
-    $record = $this->getRecord();
+    {
+        $record = $this->getRecord();
 
-    if (! $record) {
-        return null;
+        if (! $record) {
+            return null;
+        }
+
+        $mediaId = MediaUsable::where('media_usable_id', $record->id)
+            ->where('media_usable_type', get_class($record))
+            ->join('media', 'media_usables.media_id', '=', 'media.id')
+            ->where('media.uuid', $state)
+            ->value('media.id');
+
+        if (! $mediaId) {
+            return null;
+        }
+
+        $media = Media::find($mediaId);
+
+        return $media ? $media->getUrl() : null;
     }
-
-    $mediaId = MediaUsable::where('media_usable_id', $record->id)
-        ->where('media_usable_type', get_class($record))
-        ->join('media', 'media_usables.media_id', '=', 'media.id')
-        ->where('media.uuid', $state)
-        ->value('media.id');
-
-    if (!$mediaId) {
-        return null;
-    }
-
-    $media = Media::find($mediaId);
-
-    return $media ? $media->getUrl() : null;
-}
-
 }
