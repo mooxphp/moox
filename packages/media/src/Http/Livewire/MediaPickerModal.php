@@ -62,20 +62,23 @@ class MediaPickerModal extends Component
     {
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
+
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
                 ]);
+
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
                 ])->toArray();
+
 
                 $this->dispatch('mediaSelected', $selectedMediaData);
             }
@@ -84,6 +87,7 @@ class MediaPickerModal extends Component
         }
 
         $this->dispatch('close-modal', id: 'mediaPickerModal');
+
     }
 
     public function render()
