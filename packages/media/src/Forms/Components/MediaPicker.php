@@ -16,21 +16,24 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
 
         $this->saveRelationshipsUsing(function (self $component, $state) {
             $record = $component->getRecord();
-            if (! $record) {
+            if (!$record) {
                 return;
             }
 
-            $mediaData = is_array($state) ? $state : [$state];
-            $mediaData = array_filter($mediaData, fn ($value) => ! is_null($value) && $value !== '');
+            $mediaIds = is_array($state) ? $state : [$state];
+
+            MediaUsable::where('media_usable_id', $record->id)
+                ->where('media_usable_type', get_class($record))
+                ->whereNotIn('media_id', $mediaIds)
+                ->delete();
 
             $attachments = [];
+            $index = 1;
 
-            foreach ($mediaData as $item) {
-                $mediaId = is_array($item) ? ($item['id'] ?? null) : $item;
-
+            foreach ($mediaIds as $mediaId) {
                 $media = Media::find($mediaId);
 
-                if (! $media) {
+                if (!$media) {
                     continue;
                 }
 
@@ -40,21 +43,31 @@ class MediaPicker extends SpatieMediaLibraryFileUpload
                     'media_usable_type' => get_class($record),
                 ]);
 
-                $attachments[] = [
+                $attachments[$index] = [
                     'file_name' => $media->file_name,
-                    'url' => $media->getUrl(),
-                    'alt' => is_array($item) ? ($item['alt'] ?? '') : '',
-                    'title' => is_array($item) ? ($item['title'] ?? '') : '',
-                    'description' => is_array($item) ? ($item['description'] ?? '') : '',
-                    'internal_note' => is_array($item) ? ($item['internal_note'] ?? '') : '',
+                    'title' => $media->title,
+                    'description' => $media->description,
+                    'internal_note' => $media->internal_note,
+                    'alt' => $media->alt,
                 ];
+
+                $index++;
             }
 
             $statePath = $component->getStatePath();
             $fieldName = last(explode('.', $statePath));
 
-            $record->{$fieldName} = json_encode($attachments);
+            $columnType = \Schema::getColumnType($record->getTable(), $fieldName);
+
+            if ($columnType === 'json') {
+                $record->{$fieldName} = $component->isMultiple() ? $attachments : ($attachments[1] ?? null);
+            } else {
+                $record->{$fieldName} = json_encode($component->isMultiple() ? $attachments : ($attachments[1] ?? null), JSON_UNESCAPED_UNICODE);
+            }
+
             $record->save();
         });
+
+
     }
 }
