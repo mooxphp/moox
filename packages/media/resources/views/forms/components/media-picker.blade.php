@@ -5,7 +5,8 @@
         return [
             'id' => $media->id,
             'url' => $media->getUrl(),
-            'file_name' => $media->file_name
+            'file_name' => $media->file_name,
+            'name' => $media->name
         ];
     })->toArray() ?? [],
     JSON_UNESCAPED_UNICODE
@@ -36,31 +37,37 @@
         initializeState();
     " class="space-y-4">
 
-        <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
-            x-on:click="
-                $dispatch('set-media-picker-model', {
+        @if ($this instanceof \Filament\Resources\Pages\EditRecord)
+            <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
+                x-on:click="
+                    $dispatch('set-media-picker-model', {
                     modelId: '{{ $getRecord()->id ?? null }}',
                     modelClass: '{{ addslashes($getRecord()::class) }}'
-                });
-                $dispatch('open-modal', { id: 'mediaPickerModal' });
-        ">
-            <span>Bild auswählen</span>
-        </x-filament::button>
+                    });
+                    $dispatch('open-modal', { id: 'mediaPickerModal' });
+                    ">
+                <span>Bild auswählen</span>
+            </x-filament::button>
+        @endif
 
-        <div class="relative border border-gray-300 rounded-lg p-4 shadow-sm bg-gray-50 flex flex-wrap gap-2"
-            x-show="selectedMedia.length > 0">
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" x-show="selectedMedia.length > 0">
             <template x-for="(media, index) in selectedMedia" :key="media . id">
-                <div class="relative">
-                    <img :src="media . url" class="w-32 h-32 object-cover rounded-lg" :alt="media . file_name" />
-                    <x-filament::button color="danger" size="xs" icon="heroicon-o-trash"
-                        class="flex absolute top-2 items-center justify-center right-2 w-8 h-8" x-on:click="
-                            selectedMedia.splice(index, 1);
-                            initializeState();
-                        ">
-                    </x-filament::button>
+                <div
+                    class="relative group bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-200">
+                    <img :src="media . url" :alt="media . name" class="w-full h-32 object-cover rounded-t-lg"
+                        :title="media . name" />
+
+                    @if ($this instanceof \Filament\Resources\Pages\EditRecord)
+                        <x-filament::button color="danger" size="xs" icon="heroicon-o-trash"
+                            class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-75 text-gray-600 rounded-full shadow hover:bg-opacity-100 hover:text-red-600 transition duration-300 flex items-center justify-center"
+                            x-on:click="selectedMedia.splice(index, 1); initializeState();">
+                        </x-filament::button>
+                    @endif
                 </div>
             </template>
         </div>
+
 
         <div x-show="selectedMedia.length === 0"
             class="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 flex items-center justify-center text-sm text-gray-500">
