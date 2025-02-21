@@ -15,7 +15,7 @@
         <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             @foreach ($media as $item)
                 <div wire:click="toggleMediaSelection({{ $item->id }})" class="relative border rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                {{ in_array($item->id, $selectedMediaIds) ? 'border-blue-600' : 'border-gray-200' }}">
+                        {{ in_array($item->id, $selectedMediaIds) ? 'border-blue-600' : 'border-gray-200' }}">
                     <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover">
 
                     @if(in_array($item->id, $selectedMediaIds))
