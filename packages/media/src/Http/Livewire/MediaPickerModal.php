@@ -17,6 +17,15 @@ class MediaPickerModal extends Component
 
     public bool $multiple = false;
 
+    public array $selectedMediaMeta = [
+        'id' => null,
+        'file_name' => '',
+        'title' => '',
+        'description' => '',
+        'internal_note' => '',
+        'alt' => '',
+    ];
+
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
         'mediaUploaded' => 'refreshMedia',
@@ -56,14 +65,38 @@ class MediaPickerModal extends Component
         } else {
             $this->selectedMediaIds = [$mediaId];
         }
+
+        $media = Media::find($mediaId);
+
+        if ($media) {
+            $this->selectedMediaMeta = [
+                'id' => $media->id,
+                'file_name' => $media->file_name,
+                'title' => $media->title ?? '',
+                'description' => $media->description ?? '',
+                'internal_note' => $media->internal_note ?? '',
+                'alt' => $media->alt ?? '',
+            ];
+        } else {
+            $this->selectedMediaMeta = [
+                'id' => null,
+                'file_name' => '',
+                'title' => '',
+                'description' => '',
+                'internal_note' => '',
+                'alt' => '',
+            ];
+        }
     }
+
+
 
     public function applySelection()
     {
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -71,7 +104,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -85,6 +118,21 @@ class MediaPickerModal extends Component
 
         $this->dispatch('close-modal', id: 'mediaPickerModal');
     }
+
+
+    public function updatedSelectedMediaMeta($value, $field)
+    {
+        if ($this->selectedMediaMeta['id']) {
+            $media = Media::find($this->selectedMediaMeta['id']);
+
+            if (in_array($field, ['title', 'description', 'internal_note', 'alt'])) {
+                $media->$field = $value;
+                $media->save();
+            }
+        }
+    }
+
+
 
     public function render()
     {
