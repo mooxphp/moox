@@ -28,6 +28,10 @@ class MediaPickerModal extends Component
 
     public string $searchQuery = '';
 
+    public string $fileTypeFilter = '';
+    public string $dateFilter = '';
+
+
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
         'mediaUploaded' => 'refreshMedia',
@@ -44,15 +48,67 @@ class MediaPickerModal extends Component
     {
         $this->media = Media::query()
             ->when($this->searchQuery, function ($query) {
-                $query->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                    ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
-                    ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                    ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                $query->where(function ($subQuery) {
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
+                });
+            })
+            ->when($this->fileTypeFilter, function ($query) {
+                switch ($this->fileTypeFilter) {
+                    case 'images':
+                        $query->whereIn('mime_type', [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                            'image/svg+xml'
+                        ]);
+                        break;
+                    case 'videos':
+                        $query->whereIn('mime_type', [
+                            'video/mp4',
+                            'video/webm'
+                        ]);
+                        break;
+                    case 'audios':
+                        $query->whereIn('mime_type', [
+                            'audio/mpeg',
+                            'audio/ogg'
+                        ]);
+                        break;
+                    case 'documents':
+                        $query->whereIn('mime_type', [
+                            'application/pdf',
+                            'application/msword',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        ]);
+                        break;
+                }
+            })
+            ->when($this->dateFilter, function ($query) {
+                switch ($this->dateFilter) {
+                    case 'today':
+                        $query->whereDate('created_at', now()->toDateString());
+                        break;
+                    case 'week':
+                        $query->whereBetween('created_at', [now()->subDays(7), now()]);
+                        break;
+                    case 'month':
+                        $query->whereBetween('created_at', [now()->subMonth(), now()]);
+                        break;
+                    case 'year':
+                        $query->whereBetween('created_at', [now()->subYear(), now()]);
+                        break;
+                }
             })
             ->orderBy('created_at', 'desc')
             ->get()
             ->all();
     }
+
+
+
 
     public function toggleMediaSelection(int $mediaId)
     {
@@ -94,7 +150,7 @@ class MediaPickerModal extends Component
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -102,7 +158,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -133,6 +189,17 @@ class MediaPickerModal extends Component
     {
         $this->refreshMedia();
     }
+
+    public function updatedFileTypeFilter()
+    {
+        $this->refreshMedia();
+    }
+
+    public function updatedDateFilter()
+    {
+        $this->refreshMedia();
+    }
+
 
     public function render()
     {
