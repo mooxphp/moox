@@ -24,7 +24,7 @@ class MediaPickerModal extends Component
         'description' => '',
         'internal_note' => '',
         'alt' => '',
-        'mime_type' => ''
+        'mime_type' => '',
     ];
 
     public string $searchQuery = '';
