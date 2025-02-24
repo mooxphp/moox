@@ -29,8 +29,8 @@ class MediaPickerModal extends Component
     public string $searchQuery = '';
 
     public string $fileTypeFilter = '';
-    public string $dateFilter = '';
 
+    public string $dateFilter = '';
 
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
@@ -49,10 +49,10 @@ class MediaPickerModal extends Component
         $this->media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
-                        ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
-                        ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
-                        ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
+                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
+                        ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
+                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
+                        ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
@@ -62,26 +62,26 @@ class MediaPickerModal extends Component
                             'image/jpeg',
                             'image/png',
                             'image/webp',
-                            'image/svg+xml'
+                            'image/svg+xml',
                         ]);
                         break;
                     case 'videos':
                         $query->whereIn('mime_type', [
                             'video/mp4',
-                            'video/webm'
+                            'video/webm',
                         ]);
                         break;
                     case 'audios':
                         $query->whereIn('mime_type', [
                             'audio/mpeg',
-                            'audio/ogg'
+                            'audio/ogg',
                         ]);
                         break;
                     case 'documents':
                         $query->whereIn('mime_type', [
                             'application/pdf',
                             'application/msword',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         ]);
                         break;
                 }
@@ -106,9 +106,6 @@ class MediaPickerModal extends Component
             ->get()
             ->all();
     }
-
-
-
 
     public function toggleMediaSelection(int $mediaId)
     {
@@ -150,7 +147,7 @@ class MediaPickerModal extends Component
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (!$this->multiple) {
+            if (! $this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -158,7 +155,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn($media) => [
+                $selectedMediaData = $selectedMedia->map(fn ($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -199,7 +196,6 @@ class MediaPickerModal extends Component
     {
         $this->refreshMedia();
     }
-
 
     public function render()
     {
