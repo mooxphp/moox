@@ -26,6 +26,8 @@ class MediaPickerModal extends Component
         'alt' => '',
     ];
 
+    public string $searchQuery = '';
+
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
         'mediaUploaded' => 'refreshMedia',
@@ -41,13 +43,11 @@ class MediaPickerModal extends Component
     public function refreshMedia()
     {
         $this->media = Media::query()
-            ->where(function ($query) {
-                $query->whereNull('model_id')
-                    ->whereNull('model_type');
-            })
-            ->orWhere(function ($query) {
-                $query->whereColumn('model_id', 'original_model_id')
-                    ->whereColumn('model_type', 'original_model_type');
+            ->when($this->searchQuery, function ($query) {
+                $query->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
             })
             ->orderBy('created_at', 'desc')
             ->get()
@@ -89,12 +89,13 @@ class MediaPickerModal extends Component
         }
     }
 
+
     public function applySelection()
     {
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -102,7 +103,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -128,6 +129,13 @@ class MediaPickerModal extends Component
             }
         }
     }
+
+    public function updatedSearchQuery()
+    {
+        $this->refreshMedia();
+    }
+
+
 
     public function render()
     {
