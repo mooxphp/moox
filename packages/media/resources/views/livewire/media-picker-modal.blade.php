@@ -45,9 +45,9 @@
                 <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     @foreach ($media as $item)
                         <div wire:click="toggleMediaSelection({{ $item->id }})"
-                            class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer 
-                                            {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                            {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                            class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
+                                                    {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                                    {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
                             <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover rounded-t-lg">
 
                             @if(in_array($item->id, $selectedMediaIds))
@@ -109,6 +109,14 @@
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt"
                                 placeholder="Alt-Text eingeben"
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                        </x-filament::input.wrapper>
+
+                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
+                            File Type
+                        </x-filament-forms::field-wrapper.label>
+                        <x-filament::input.wrapper class="mb-4">
+                            <x-filament::input type="text" disabled wire:model.lazy="selectedMediaMeta.mime_type"
                                 class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
                     </form>

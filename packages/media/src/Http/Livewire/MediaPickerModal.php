@@ -24,6 +24,7 @@ class MediaPickerModal extends Component
         'description' => '',
         'internal_note' => '',
         'alt' => '',
+        'mime_type' => ''
     ];
 
     public string $searchQuery = '';
@@ -129,6 +130,7 @@ class MediaPickerModal extends Component
                 'description' => $media->description ?? '',
                 'internal_note' => $media->internal_note ?? '',
                 'alt' => $media->alt ?? '',
+                'mime_type' => $media->mime_type ?? '',
             ];
         } else {
             $this->selectedMediaMeta = [
@@ -138,6 +140,7 @@ class MediaPickerModal extends Component
                 'description' => '',
                 'internal_note' => '',
                 'alt' => '',
+                'mime_type' => '',
             ];
         }
     }
