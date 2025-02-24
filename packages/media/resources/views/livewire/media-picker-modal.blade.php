@@ -14,12 +14,18 @@
     <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1">
             <x-filament::section>
+                <x-filament::input.wrapper class="mb-4">
+                    <x-filament::input type="text" wire:model.live.debounce.500ms="searchQuery"
+                        placeholder="Suche nach Medien..."
+                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                </x-filament::input.wrapper>
+
                 <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     @foreach ($media as $item)
                         <div wire:click="toggleMediaSelection({{ $item->id }})"
                             class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer 
-                                            {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                            {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                                                    {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                                                    {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
                             <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover rounded-t-lg">
 
                             @if(in_array($item->id, $selectedMediaIds))
@@ -47,36 +53,40 @@
 
                 @if(!empty($selectedMediaMeta['id']))
                     <form wire:submit.prevent="saveMetadata">
-                        <x-filament-forms::field-wrapper.label>
+                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
                             Title
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.title"
-                                placeholder="Titel eingeben" />
+                                placeholder="Titel eingeben"
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
-                        <x-filament-forms::field-wrapper.label>
+                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
                             Description
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.description"
-                                placeholder="Beschreibung eingeben" />
+                                placeholder="Beschreibung eingeben"
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
-                        <x-filament-forms::field-wrapper.label>
+                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
                             Internal Note
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.internal_note"
-                                placeholder="Interne Notiz eingeben" />
+                                placeholder="Interne Notiz eingeben"
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
 
-                        <x-filament-forms::field-wrapper.label>
+                        <x-filament-forms::field-wrapper.label class="block text-sm font-medium text-gray-700 mb-1">
                             Alt
                         </x-filament-forms::field-wrapper.label>
                         <x-filament::input.wrapper class="mb-4">
                             <x-filament::input type="text" wire:model.lazy="selectedMediaMeta.alt"
-                                placeholder="Alt-Text eingeben" />
+                                placeholder="Alt-Text eingeben"
+                                class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         </x-filament::input.wrapper>
                     </form>
                 @else
@@ -85,6 +95,9 @@
             </x-filament::section>
         </div>
     </div>
+
+
+
 
     <x-slot name="footer">
         <x-filament::button wire:click="applySelection" color="primary">
