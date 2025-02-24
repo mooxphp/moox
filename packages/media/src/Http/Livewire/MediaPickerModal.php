@@ -44,10 +44,10 @@ class MediaPickerModal extends Component
     {
         $this->media = Media::query()
             ->when($this->searchQuery, function ($query) {
-                $query->where('file_name', 'like', '%' . $this->searchQuery . '%')
-                    ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
-                    ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
-                    ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
+                $query->where('file_name', 'like', '%'.$this->searchQuery.'%')
+                    ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
+                    ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
+                    ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
             })
             ->orderBy('created_at', 'desc')
             ->get()
@@ -89,13 +89,12 @@ class MediaPickerModal extends Component
         }
     }
 
-
     public function applySelection()
     {
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (!$this->multiple) {
+            if (! $this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -103,7 +102,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn($media) => [
+                $selectedMediaData = $selectedMedia->map(fn ($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -134,8 +133,6 @@ class MediaPickerModal extends Component
     {
         $this->refreshMedia();
     }
-
-
 
     public function render()
     {
