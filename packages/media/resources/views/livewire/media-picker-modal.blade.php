@@ -14,18 +14,40 @@
     <div class="flex flex-col md:flex-row gap-4">
         <div class="flex-1">
             <x-filament::section>
-                <x-filament::input.wrapper class="mb-4">
-                    <x-filament::input type="text" wire:model.live.debounce.500ms="searchQuery"
-                        placeholder="Suche nach Medien..."
-                        class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                </x-filament::input.wrapper>
+                <div class="flex flex-row gap-4 mb-4">
+                    <x-filament::input.wrapper class="w-1/2">
+                        <x-filament::input type="text" wire:model.live.debounce.500ms="searchQuery"
+                            placeholder="Suche nach Medien..."
+                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                    </x-filament::input.wrapper>
+
+                    <x-filament::input.wrapper class="w-1/6">
+                        <x-filament::input.select wire:model.live="fileTypeFilter">
+                            <option value="">Alle Typen</option>
+                            <option value="images">Bilder</option>
+                            <option value="videos">Videos</option>
+                            <option value="audios">Audios</option>
+                            <option value="documents">Dokumente</option>
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
+
+                    <x-filament::input.wrapper class="w-1/6">
+                        <x-filament::input.select wire:model.live="dateFilter">
+                            <option value="">Alle Zeiträume</option>
+                            <option value="today">Heute</option>
+                            <option value="week">7 Tage</option>
+                            <option value="month">Monat</option>
+                            <option value="year">Jahr</option>
+                        </x-filament::input.select>
+                    </x-filament::input.wrapper>
+                </div>
 
                 <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     @foreach ($media as $item)
                         <div wire:click="toggleMediaSelection({{ $item->id }})"
                             class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer 
-                                                                    {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                                                    {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                            {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                            {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
                             <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover rounded-t-lg">
 
                             @if(in_array($item->id, $selectedMediaIds))
@@ -45,6 +67,7 @@
                     @endforeach
                 </x-filament::grid>
             </x-filament::section>
+
         </div>
 
         <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4">
