@@ -8,7 +8,6 @@ use Illuminate\Support\ServiceProvider;
 use Moox\Devlink\Console\Commands\DeployCommand;
 use Moox\Devlink\Console\Commands\LinkCommand;
 use Moox\Devlink\Console\Commands\StatusCommand;
-use Moox\Devlink\Console\Commands\UnlinkCommand;
 
 class DevlinkServiceProvider extends ServiceProvider
 {
@@ -25,9 +24,8 @@ class DevlinkServiceProvider extends ServiceProvider
             ], 'devlink-config');
 
             $this->commands([
-                LinkCommand::class,
                 DeployCommand::class,
-                UnlinkCommand::class,
+                LinkCommand::class,
                 StatusCommand::class,
             ]);
         }

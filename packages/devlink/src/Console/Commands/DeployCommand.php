@@ -4,20 +4,16 @@ namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
 use Moox\Devlink\Console\Traits\Art;
-use Moox\Devlink\Console\Traits\Backup;
 use Moox\Devlink\Console\Traits\Check;
-use Moox\Devlink\Console\Traits\Cleanup;
 use Moox\Devlink\Console\Traits\Deploy;
 use Moox\Devlink\Console\Traits\Finalize;
-use Moox\Devlink\Console\Traits\Restore;
-use Moox\Devlink\Console\Traits\Unlink;
 
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\info;
 
 class DeployCommand extends Command
 {
-    use Art, Backup, Check, Cleanup, Deploy, Finalize, Restore, Unlink;
+    use Art, Check, Deploy, Finalize;
 
     protected $signature = 'devlink:deploy';
 
@@ -37,7 +33,6 @@ class DeployCommand extends Command
     {
         parent::__construct();
 
-        $this->basePaths = config('devlink.base_paths', []);
         $this->packages = config('devlink.packages', []);
         $this->composerJsonPath = base_path('composer.json');
         $this->packagesPath = config('devlink.packages_path', base_path('packages'));
@@ -48,9 +43,7 @@ class DeployCommand extends Command
         $this->art();
         info('Hello, I will prepare your project and composer.json for deployment.');
         $this->check();
-        $this->unlink();
         $this->deploy();
-        $this->cleanup();
         $this->finalize();
 
         if ($this->errorMessage) {

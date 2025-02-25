@@ -9,9 +9,6 @@ trait Check
         $status = 'unknown';
         $message = 'Devlink is in unknown status';
 
-        $composerOriginal = false;
-        $composerDeploy = false;
-
         $packagesArray = [];
         $realPackages = [];
 
@@ -76,40 +73,14 @@ trait Check
             $lasterror = 'composer.json does not exist';
         }
 
-        if (! file_exists(base_path('composer.json'))) {
-            $lasterror = 'composer.json does not exist';
-        }
-
-        if (file_exists(base_path('composer.json-original'))) {
-            $composerOriginal = true;
+        if (file_exists(base_path('composer.json-linked'))) {
+            $status = 'linked';
+            $message = 'Devlink is linked';
         }
 
         if (file_exists(base_path('composer.json-deploy'))) {
-            $composerDeploy = true;
-        }
-
-        if (file_exists(base_path('composer.json-backup'))) {
-            $composerBackup = true;
-        }
-
-        if (! $composerOriginal && ! $composerDeploy) {
-            $status = 'unused';
-            $message = 'Devlink is not active';
-        }
-
-        if (! $composerOriginal && $composerDeploy) {
             $status = 'unlinked';
-            $message = 'Devlink is unlinked, not ready for deployment';
-        }
-
-        if ($composerOriginal && $composerDeploy) {
-            $status = 'linked';
-            $message = 'Devlink is linked, not ready for deployment';
-        }
-
-        if ($composerOriginal && ! $composerDeploy) {
-            $status = 'deployed';
-            $message = 'Devlink is ready for deployment';
+            $message = 'Devlink is unlinked and ready for deployment';
         }
 
         if ($lasterror !== null) {

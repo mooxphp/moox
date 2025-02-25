@@ -15,14 +15,12 @@ trait Show
     {
         $fullStatus = $this->check();
 
-        $headers = ['Package', 'Type', 'Active', 'Link', 'Deploy', 'Valid', 'Linked'];
+        $headers = ['Package', 'Type', 'Active', 'Valid', 'Linked'];
         $rows = array_map(function ($row) {
             return [
                 $row['name'],
                 $row['type'],
                 $row['active'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
-                $row['link'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
-                $row['deploy'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
                 $row['valid'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
                 $row['linked'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
             ];

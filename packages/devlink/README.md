@@ -19,43 +19,36 @@ php artisan vendor:publish --tag="devlink-config"
 
 ```bash
 
-# Ignore all files in packages/ (including symlinks)
+# Devlink
+# ignore symlinks in packages/
 packages/*
-# Allow tracking of real directories inside packages/
 !packages/**/
-# Ensure empty directories can be committed
 !packages/*/.gitkeep
-# for windows
+# and for windows
 /packageslocal/*
 
 ```
 
 2. Configure your paths and packages in the `config/devlink.php` file and change the package path in the `.env` file, if needed (Windows users should set the `DEVLINK_PACKAGES_PATH` variable to `packageslocal`).
 
-3. When running `devlink:status`:
+3. When running `php init.php`
 
-    - Lists all packages that are currently devlinked
-    - Lists all packages that are configured but not devlinked
-    - Lists all packages that are not configured, but devlinked
-    - Shows the configuration and the deploy status of each package
+    - Creates a `.env` file from `.env.example`
+    - Copies `composer.json-deploy` to `composer.json`
+    - Runs `composer install`
 
-4. When running `devlink:link`:
+4. When running `devlink:status`:
+
+    - Shows the configuration and status of each package
+    - Shows the link status (Linked, Unlinked, Deployed)
+    - Shows the update status (Up-to-date, Outdated)
+
+5. When running `devlink:link`:
 
     - Creates the packages folder, if it does not exist
-    - Creates backup of original composer.json → composer.json.original
     - Creates symlinks for all configured packages
     - Updates composer.json with development configuration
     - Creates composer.json-deploy for production use
-    - Asks to run `composer install`
-    - Asks to run `php artisan optimize:clear`
-    - Asks to run `php artisan queue:restart`
-
-5. When running `devlink:unlink`:
-
-    - Removes all symlinks
-    - Deletes the packages folder, if empty
-    - Creates a backup of composer.json to composer.json-backup
-    - Restores original composer.json from composer.json-original
     - Asks to run `composer install`
     - Asks to run `php artisan optimize:clear`
     - Asks to run `php artisan queue:restart`
@@ -64,7 +57,6 @@ packages/*
 
     - Removes all symlinks
     - Deletes the packages folder, if empty
-    - Creates a backup of composer.json to composer.json-backup
     - Restores production-ready composer.json from composer.json-deploy
     - Asks to run `composer install`
     - Asks to run `php artisan optimize:clear`
@@ -73,17 +65,9 @@ packages/*
 7. CI Safety Net - `deploy.sh`:
 
     - If composer.json-deploy exists in the repository:
-        - the script will restore it as composer.json
-        - rename composer.json-original to composer.json-backup
-        - Commit and push the change in GH action
-    - This ensures no development configuration reaches production
-
-## Changing branches
-
-If you need to change the branches for ANY of the involved repositories, you just need to run the command again, it will automatically update the symlinks for the current branch.
-
-> ⚠️ **Important**  
-> If you forget to run the command, when CHANGING BRANCHES ON ANY OF THE REPOS, you will surely run into a 500 error, that drives you nuts.
+        - Remove all symlinks from /packages
+        - rename composer.json-deploy to composer.json
+    - Commit and push the change in your GitHub Action
 
 ## Mac
 
@@ -93,7 +77,7 @@ Mac works out of the box. You can have local packages mixed with the symlinked p
 
 ## Windows
 
-On Windows there are most probably some issues with the symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
+On Windows there are most probably some issues with ignoring symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
 
 ```env
 DEVLINK_PACKAGES_PATH=packageslocal

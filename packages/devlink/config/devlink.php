@@ -21,6 +21,16 @@ $packages_path = env('DEVLINK_PACKAGES_PATH', 'packages');
 $public_base_path = env('DEVLINK_PUBLIC_PATH', '../moox/packages');
 $private_base_path = env('DEVLINK_PRIVATE_PATH', 'disabled');
 
+/*
+|--------------------------------------------------------------------------
+| Private Packages Repo URL
+|--------------------------------------------------------------------------
+|
+| The URL of the Moox package repository. Can be set in the .env file.
+|
+*/
+$private_repo_url = env('DEVLINK_PRIVATE_REPO_URL', 'https://pkg.moox.pro/');
+
 return [
 
     /*
@@ -53,201 +63,153 @@ return [
         // Moox
         'audit' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/audit',
             'type' => 'public',
-            'deploy' => true,
         ],
         'backup-server-ui' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/backup-server-ui',
             'type' => 'public',
-            'deploy' => true,
         ],
         'builder' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/builder',
             'type' => 'public',
-            'deploy' => false,
         ],
         'category' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/category',
             'type' => 'public',
-            'deploy' => true,
         ],
         'core' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/core',
             'type' => 'public',
-            'deploy' => true,
         ],
         'devlink' => [
             'active' => false,
             'linked' => false,
             'path' => $public_base_path.'/devlink',
             'type' => 'public',
-            'deploy' => false,
         ],
         'devops' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/devops',
             'type' => 'public',
-            'deploy' => true,
         ],
         'expiry' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/expiry',
             'type' => 'public',
-            'deploy' => true,
         ],
         'flags' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/flags',
             'type' => 'public',
-            'deploy' => true,
         ],
         'jobs' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/jobs',
             'type' => 'public',
-            'deploy' => true,
         ],
         'login-link' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/login-link',
             'type' => 'public',
-            'deploy' => true,
         ],
         'notifications' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/notifications',
             'type' => 'public',
-            'deploy' => true,
         ],
         'passkey' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/passkey',
             'type' => 'public',
-            'deploy' => true,
         ],
         'press' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/press',
             'type' => 'public',
-            'deploy' => true,
         ],
         'security' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/security',
             'type' => 'public',
-            'deploy' => true,
         ],
         'sync' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/sync',
             'type' => 'public',
-            'deploy' => true,
         ],
         'tag' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/tag',
             'type' => 'public',
-            'deploy' => true,
         ],
         'trainings' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/trainings',
             'type' => 'public',
-            'deploy' => true,
         ],
         'user' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/user',
             'type' => 'public',
-            'deploy' => true,
         ],
         'user-device' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/user-device',
             'type' => 'public',
-            'deploy' => true,
         ],
         'user-session' => [
             'active' => false,
-            'linked' => true,
             'path' => $public_base_path.'/user-session',
             'type' => 'public',
-            'deploy' => true,
         ],
 
         // Moox Pro
         'connect' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/connect',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => true,
         ],
         'creator' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/creator',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => false,
         ],
         'data' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/data',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => true,
         ],
         'localize' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/localize',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => true,
         ],
         'media' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/media',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => true,
         ],
         'page' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/page',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => true,
         ],
         'permission' => [
             'active' => false,
-            'linked' => true,
             'path' => $private_base_path.'/permission',
+            'repo_url' => $private_repo_url,
             'type' => 'private',
-            'deploy' => true,
         ],
     ],
 
