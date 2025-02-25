@@ -46,8 +46,8 @@
                     @foreach ($media as $item)
                         <div wire:click="toggleMediaSelection({{ $item->id }})"
                             class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                        {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                        {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
 
                             @if ($item->mime_type === 'application/pdf')
                                 <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
@@ -58,11 +58,13 @@
                                     </div>
                                 </div>
                             @else
-                                <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover rounded-t-lg" />
+                                <div class="relative w-full h-32">
+                                    <img src="{{ $item->getUrl() }}" class="object-cover w-full h-full rounded-t-lg" />
+                                </div>
                             @endif
 
                             @if(in_array($item->id, $selectedMediaIds))
-                                <div class="absolute top-1">
+                                <div class="absolute top-1 right-1">
                                     <x-filament::icon icon="heroicon-s-check-circle" class="w-6 h-6" fill="#3B82F6" />
                                 </div>
                             @endif
@@ -73,6 +75,9 @@
         </div>
 
         <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4">
+            <x-filament::button wire:click="applySelection" color="primary" class="mb-4 w-full">
+                Auswahl übernehmen
+            </x-filament::button>
             <x-filament::section>
                 <h3 class="text-lg font-semibold mb-4">Metadaten bearbeiten</h3>
 
@@ -133,9 +138,6 @@
 
 
     <x-slot name="footer">
-        <x-filament::button wire:click="applySelection" color="primary">
-            Auswahl übernehmen
-        </x-filament::button>
         <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
             Schließen
         </x-filament::button>
