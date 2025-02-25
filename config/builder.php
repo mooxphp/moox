@@ -1,33 +1,296 @@
 <?php
 
-use App\Builder\Presets\StaticLanguagePreset;
-use Moox\Booking\Models\Booking;
-use Moox\Brand\Forms\RelationCreateForm;
+use Moox\Builder\Blocks\Features\CustomDemo;
+use Moox\Builder\Blocks\Features\SimpleStatus;
+use Moox\Builder\Blocks\Features\SimpleType;
+use Moox\Builder\Blocks\Features\Tabs;
+use Moox\Builder\Blocks\Fields\Boolean;
+use Moox\Builder\Blocks\Fields\Builder;
+use Moox\Builder\Blocks\Fields\CheckboxList;
+use Moox\Builder\Blocks\Fields\ColorPicker;
+use Moox\Builder\Blocks\Fields\Date;
+use Moox\Builder\Blocks\Fields\DateTime;
+use Moox\Builder\Blocks\Fields\FileUpload;
+use Moox\Builder\Blocks\Fields\Hidden;
+use Moox\Builder\Blocks\Fields\Image;
+use Moox\Builder\Blocks\Fields\KeyValue;
+use Moox\Builder\Blocks\Fields\MarkdownEditor;
+use Moox\Builder\Blocks\Fields\MultiSelect;
+use Moox\Builder\Blocks\Fields\Number;
+use Moox\Builder\Blocks\Fields\Radio;
+use Moox\Builder\Blocks\Fields\Relationship;
+use Moox\Builder\Blocks\Fields\Repeater;
+use Moox\Builder\Blocks\Fields\RichEditor;
+use Moox\Builder\Blocks\Fields\Select;
+use Moox\Builder\Blocks\Fields\TagsInput;
+use Moox\Builder\Blocks\Fields\Text;
+use Moox\Builder\Blocks\Fields\TextArea;
+use Moox\Builder\Blocks\Fields\Toggle;
+use Moox\Builder\Blocks\Fields\ToggleButtons;
+use Moox\Builder\Blocks\Sections\SimpleAddressSection;
+use Moox\Builder\Blocks\Singles\Light;
+use Moox\Builder\Blocks\Singles\Simple;
+use Moox\Builder\Blocks\Singles\SoftDelete;
+use Moox\Builder\Generators\Entity\ConfigGenerator;
+use Moox\Builder\Generators\Entity\MigrationGenerator;
+use Moox\Builder\Generators\Entity\ModelGenerator;
+use Moox\Builder\Generators\Entity\PluginGenerator;
+use Moox\Builder\Generators\Entity\ResourceGenerator;
+use Moox\Builder\Generators\Entity\TranslationGenerator;
 use Moox\Builder\Presets\FullItemPreset;
 use Moox\Builder\Presets\LightItemPreset;
 use Moox\Builder\Presets\SimpleItemPreset;
 use Moox\Builder\Presets\SoftDeleteItemPreset;
-use Moox\Category\Forms\TaxonomyCreateForm;
-use Moox\Category\Models\Category;
-use Moox\Room\Models\Room;
-use Moox\Tag\Models\Tag;
-use Moox\User\Models\User;
 
-/*
-|--------------------------------------------------------------------------
-| Moox Configuration
-|--------------------------------------------------------------------------
-|
-| This configuration file uses translatable strings. If you want to
-| translate the strings, you can do so in the language files
-| published from moox_core. Example:
-|
-| 'trans//core::core.all',
-| loads from common.php
-| outputs 'All'
-|
-*/
 return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Blocks
+    |--------------------------------------------------------------------------
+    |
+    | Define the available blocks that can be used to build resources.
+    | Mute existing blocks or add your own blocks as you like.
+    |
+    */
+
+    'blocks' => [
+        'fields' => [
+            'boolean' => Boolean::class,
+            'builder' => Builder::class,
+            'checkbox-list' => CheckboxList::class,
+            'color-picker' => ColorPicker::class,
+            'date' => Date::class,
+            'date-time' => DateTime::class,
+            'file-upload' => FileUpload::class,
+            'hidden' => Hidden::class,
+            'image' => Image::class,
+            'key-value' => KeyValue::class,
+            'markdown-editor' => MarkdownEditor::class,
+            'multi-select' => MultiSelect::class,
+            'number' => Number::class,
+            'radio' => Radio::class,
+            'relationship' => Relationship::class,
+            'repeater' => Repeater::class,
+            'rich-editor' => RichEditor::class,
+            'select' => Select::class,
+            'tags-input' => TagsInput::class,
+            'text' => Text::class,
+            'textarea' => TextArea::class,
+            'toggle' => Toggle::class,
+            'toggle-buttons' => ToggleButtons::class,
+        ],
+        'features' => [
+            'custom-demo' => CustomDemo::class,
+            'simple-status' => SimpleStatus::class,
+            'simple-type' => SimpleType::class,
+            'tabs' => Tabs::class,
+        ],
+        'sections' => [
+            'simple-address' => SimpleAddressSection::class,
+        ],
+        'singles' => [
+            'light' => Light::class,
+            'simple' => Simple::class,
+            'soft-delete' => SoftDelete::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Build Contexts
+    |--------------------------------------------------------------------------
+    |
+    | Define the available build contexts and their configurations.
+    | Each context can have its own path and namespace settings,
+    | template and generator, and also can do migrations.
+    |
+    */
+
+    'contexts' => [
+        'custom' => [
+            'base_path' => app_path('Custom'),
+            'base_namespace' => 'App',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => ResourceGenerator::class,
+                ],
+                'migration' => [
+                    'path' => 'database\migrations',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
+                    'generator' => MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\Filament\Plugins',
+                    'namespace' => '%BaseNamespace%\\Filament\\Plugins',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
+                    'generator' => PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\%locale%\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => ConfigGenerator::class,
+                ],
+            ],
+        ],
+        'app' => [
+            'base_path' => app_path(),
+            'base_namespace' => 'App',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => ResourceGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\Filament\Plugins',
+                    'namespace' => '%BaseNamespace%\\Filament\\Plugins',
+                    'template' => __DIR__.'/../src/Templates/Entity/plugin.php.stub',
+                    'generator' => PluginGenerator::class,
+                ],
+                'migration' => [
+                    'path' => 'database\migrations',
+                    'template' => __DIR__.'/../src/Templates/Entity/migration.php.stub',
+                    'generator' => MigrationGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\%locale%\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\entities',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => ConfigGenerator::class,
+                ],
+            ],
+        ],
+        
+        'package' => [
+            'base_path' => '$PackagePath',
+            'base_namespace' => '$PackageNamespace',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\src\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => base_path('packages/builder/src/Templates/Entity/model.php.stub'),
+                    'generator' => \Moox\Builder\Generators\Entity\ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\src\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => base_path('packages/builder/src/Templates/Entity/resource.php.stub'),
+                    'page_templates' => [
+                        'List' => base_path('packages/builder/src/Templates/Entity/pages/list.php.stub'),
+                        'Create' => base_path('packages/builder/src/Templates/Entity/pages/create.php.stub'),
+                        'Edit' => base_path('packages/builder/src/Templates/Entity/pages/edit.php.stub'),
+                        'View' => base_path('packages/builder/src/Templates/Entity/pages/view.php.stub'),
+                    ],
+                    'generator' => \Moox\Builder\Generators\Entity\ResourceGenerator::class,
+                ],
+                'migration_stub' => [
+                    'path' => '%BasePath%\database\migrations',
+                    'template' => base_path('packages/builder/src/Templates/Entity/migration.php.stub'),
+                    'generator' => \Moox\Builder\Generators\Entity\MigrationGenerator::class,
+                ],
+                'plugin' => [
+                    'path' => '%BasePath%\src',
+                    'namespace' => '%BaseNamespace%',
+                    'template' => base_path('packages/builder/src/Templates/Entity/plugin.php.stub'),
+                    'generator' => \Moox\Builder\Generators\Entity\PluginGenerator::class,
+                ],
+                'translation' => [
+                    'path' => '%BasePath%\resources\lang\entities',
+                    'template' => base_path('packages/builder/src/Templates/Entity/translation.php.stub'),
+                    'generator' => \Moox\Builder\Generators\Entity\TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => '%BasePath%\config\entities',
+                    'template' => base_path('packages/builder/src/Templates/Entity/config.php.stub'),
+                    'generator' => \Moox\Builder\Generators\Entity\ConfigGenerator::class,
+                ],
+            ],
+        ],
+        
+        'preview' => [
+            'base_path' => app_path('Builder'),
+            'base_namespace' => 'App\\Builder',
+            'generators' => [
+                'model' => [
+                    'path' => '%BasePath%\Models',
+                    'namespace' => '%BaseNamespace%\\Models',
+                    'template' => __DIR__.'/../src/Templates/Entity/model.php.stub',
+                    'generator' => ModelGenerator::class,
+                ],
+                'resource' => [
+                    'path' => '%BasePath%\Resources',
+                    'namespace' => '%BaseNamespace%\\Resources',
+                    'template' => __DIR__.'/../src/Templates/Entity/resource.php.stub',
+                    'page_templates' => [
+                        'List' => __DIR__.'/../src/Templates/Entity/pages/list.php.stub',
+                        'Create' => __DIR__.'/../src/Templates/Entity/pages/create.php.stub',
+                        'Edit' => __DIR__.'/../src/Templates/Entity/pages/edit.php.stub',
+                        'View' => __DIR__.'/../src/Templates/Entity/pages/view.php.stub',
+                    ],
+                    'generator' => ResourceGenerator::class,
+                ],
+                'translation' => [
+                    'path' => 'lang\%locale%\previews',
+                    'template' => __DIR__.'/../src/Templates/Entity/translation.php.stub',
+                    'generator' => TranslationGenerator::class,
+                ],
+                'config' => [
+                    'path' => 'config\previews',
+                    'template' => __DIR__.'/../src/Templates/Entity/config.php.stub',
+                    'generator' => ConfigGenerator::class,
+                ],
+            ],
+            'should_migrate' => true,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Presets
+    |--------------------------------------------------------------------------
+    |
+    | Register available presets that can be used to quickly scaffold resources.
+    | Each preset key must match the class name in lowercase without 'Preset'.
+    |
+    */
 
     'presets' => [
         'light-item' => [
@@ -46,585 +309,5 @@ return [
             'class' => FullItemPreset::class,
             'generators' => ['model', 'migration', 'resource'],
         ],
-        'static-language' => [
-            'class' => StaticLanguagePreset::class,
-            'generators' => ['model', 'migration', 'resource'],
-        ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Resources
-    |--------------------------------------------------------------------------
-    |
-    | The following configuration is done per Filament resource.
-    |
-    */
-
-    'resources' => [
-        'item' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//builder::translations.item',
-            'plural' => 'trans//builder::translations.items',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Builder table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => fn () => now(),
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => fn () => now(),
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Taxonomies
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the taxonomies that should be shown.
-            | This is work in progress and not yet fully documented.
-            |
-            */
-
-            'taxonomies' => [
-                'categories' => [
-                    'label' => 'Categories',
-                    'model' => Category::class,
-                    'table' => 'categorizables',
-                    'relationship' => 'categorizable',
-                    'foreignKey' => 'categorizable_id',
-                    'relatedKey' => 'category_id',
-                    'createForm' => TaxonomyCreateForm::class,
-                    'hierarchical' => true,
-                ],
-                'tags' => [
-                    'label' => 'Tags',
-                    'model' => Tag::class,
-                    'table' => 'taggables',
-                    'relationship' => 'taggable',
-                    'foreignKey' => 'taggable_id',
-                    'relatedKey' => 'tag_id',
-                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-                ],
-            ],
-        ],
-        'full-item' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//builder::translations.full-item',
-            'plural' => 'trans//builder::translations.full-items',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Builder table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'published' => [
-                    'label' => 'trans//core::core.published',
-                    'icon' => 'gmdi-check-circle',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '<=',
-                            'value' => fn () => now(),
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'scheduled' => [
-                    'label' => 'trans//core::core.scheduled',
-                    'icon' => 'gmdi-schedule',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '>',
-                            'value' => fn () => now(),
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'draft' => [
-                    'label' => 'trans//core::core.draft',
-                    'icon' => 'gmdi-text-snippet',
-                    'query' => [
-                        [
-                            'field' => 'publish_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Taxonomies
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the taxonomies that should be shown.
-            | This is work in progress and not yet fully documented.
-            |
-            */
-
-            'taxonomies' => [
-                'categories' => [
-                    'label' => 'Categories',
-                    'model' => Category::class,
-                    'table' => 'categorizables',
-                    'relationship' => 'categorizable',
-                    'foreignKey' => 'categorizable_id',
-                    'relatedKey' => 'category_id',
-                    'createForm' => TaxonomyCreateForm::class,
-                    'hierarchical' => true,
-                ],
-                'tags' => [
-                    'label' => 'Tags',
-                    'model' => Tag::class,
-                    'table' => 'taggables',
-                    'relationship' => 'taggable',
-                    'foreignKey' => 'taggable_id',
-                    'relatedKey' => 'tag_id',
-                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-                ],
-            ],
-        ],
-        'simple-item' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//builder::translations.simple-item',
-            'plural' => 'trans//builder::translations.simple-items',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Builder table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Taxonomies
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the taxonomies that should be shown.
-            | This is work in progress and not yet fully documented.
-            |
-            */
-
-            'taxonomies' => [],
-        ],
-        'simple-taxonomy' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//builder::translations.simple-taxonomy',
-            'plural' => 'trans//builder::translations.simple-taxonomies',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Builder table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Taxonomies
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the taxonomies that should be shown.
-            | This is work in progress and not yet fully documented.
-            |
-            */
-
-            'taxonomies' => [
-                'categories' => [
-                    'label' => 'Categories',
-                    'model' => Category::class,
-                    'table' => 'categorizables',
-                    'relationship' => 'categorizable',
-                    'foreignKey' => 'categorizable_id',
-                    'relatedKey' => 'category_id',
-                    'createForm' => TaxonomyCreateForm::class,
-                    'hierarchical' => true,
-                ],
-                'tags' => [
-                    'label' => 'Tags',
-                    'model' => Tag::class,
-                    'table' => 'taggables',
-                    'relationship' => 'taggable',
-                    'foreignKey' => 'taggable_id',
-                    'relatedKey' => 'tag_id',
-                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-                ],
-            ],
-        ],
-        'nested-taxonomy' => [
-
-            /*
-            |--------------------------------------------------------------------------
-            | Title
-            |--------------------------------------------------------------------------
-            |
-            | The translatable title of the Resource in singular and plural.
-            |
-            */
-
-            'single' => 'trans//builder::translations.nested-taxonomy',
-            'plural' => 'trans//builder::translations.nested-taxonomies',
-
-            /*
-            |--------------------------------------------------------------------------
-            | Tabs
-            |--------------------------------------------------------------------------
-            |
-            | Define the tabs for the Builder table. They are optional, but
-            | pretty awesome to filter the table by certain values.
-            | You may simply do a 'tabs' => [], to disable them.
-            |
-            */
-
-            'tabs' => [
-                'all' => [
-                    'label' => 'trans//core::core.all',
-                    'icon' => 'gmdi-filter-list',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-                'deleted' => [
-                    'label' => 'trans//core::core.deleted',
-                    'icon' => 'gmdi-delete',
-                    'query' => [
-                        [
-                            'field' => 'deleted_at',
-                            'operator' => '!=',
-                            'value' => null,
-                        ],
-                    ],
-                ],
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Taxonomies
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the taxonomies that should be shown.
-            | This is work in progress and not yet fully documented.
-            |
-            */
-
-            'taxonomies' => [
-                'categories' => [
-                    'label' => 'Categories',
-                    'model' => Category::class,
-                    'table' => 'categorizables',
-                    'relationship' => 'categorizable',
-                    'foreignKey' => 'categorizable_id',
-                    'relatedKey' => 'category_id',
-                    'createForm' => TaxonomyCreateForm::class,
-                    'hierarchical' => true,
-                ],
-                'tags' => [
-                    'label' => 'Tags',
-                    'model' => Tag::class,
-                    'table' => 'taggables',
-                    'relationship' => 'taggable',
-                    'foreignKey' => 'taggable_id',
-                    'relatedKey' => 'tag_id',
-                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-                ],
-            ],
-
-            /*
-            |--------------------------------------------------------------------------
-            | Relations
-            |--------------------------------------------------------------------------
-            |
-            | This array contains the relations that should be shown.
-            | This is work in progress and not yet fully documented.
-            |
-            */
-
-            'relations' => [
-                'rooms' => [
-                    'label' => 'Rooms',
-                    'model' => Room::class,
-                    'table' => 'roomables',
-                    'type' => 'has-many',
-                    'relationship' => 'roomable',
-                    'foreignKey' => 'roomable_id',
-                    'relatedKey' => 'room_id',
-                    'createForm' => RelationCreateForm::class,
-                    'hierarchical' => true,
-                ],
-                'bookings' => [
-                    'label' => 'Bookings',
-                    'model' => Booking::class,
-                    'table' => 'bookings',
-                    'type' => 'has-many',
-                    'relationship' => 'bookable',
-                    'foreignKey' => 'bookable_id',
-                    'relatedKey' => 'booking_id',
-                    'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-                ],
-            ],
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Navigation Group
-    |--------------------------------------------------------------------------
-    |
-    | The translatable title of the navigation group in the
-    | Filament Admin Panel. Instead of a translatable
-    | string, you may also use a simple string.
-    |
-    */
-
-    'navigation_group' => 'trans//builder::translations.builder',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Navigation Sort
-    |--------------------------------------------------------------------------
-    |
-    | This value is the sort order of the navigation item in the
-    | Filament Admin Panel. If you use a bunch of Moox
-    | plugins, everything should be in order.
-    |
-    */
-
-    'navigation_sort' => 9990,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Item Types
-    |--------------------------------------------------------------------------
-    |
-    | This array contains the types of items entities. You can delete
-    | the types you don't need and add new ones. If you don't need
-    | types, you can empty this array like this: 'types' => [],
-    |
-    */
-
-    'types' => [
-        'post' => 'Post',
-        'page' => 'Page',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Author Model
-    |--------------------------------------------------------------------------
-    |
-    | This sets the user model that can be used as author. It should be an
-    | authenticatable model and support the morph relationship.
-    | It should have fields similar to Moox User or WpUser.
-    |
-    */
-
-    'user_model' => User::class,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Allow Slug Change - WIP
-    |--------------------------------------------------------------------------
-    |
-    | // TODO: Work in progress.
-    |
-    */
-
-    'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
-    'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 ];
