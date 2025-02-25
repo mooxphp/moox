@@ -15,14 +15,12 @@ trait Show
     {
         $fullStatus = $this->check();
 
-        $headers = ['Package', 'Type', 'Active', 'Link', 'Deploy', 'Valid', 'Linked'];
+        $headers = ['Package', 'Type', 'Active', 'Valid', 'Linked'];
         $rows = array_map(function ($row) {
             return [
                 $row['name'],
                 $row['type'],
                 $row['active'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
-                $row['link'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
-                $row['deploy'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
                 $row['valid'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
                 $row['linked'] ? '<fg=green>   '.self::CHECK_MARK.'   </>' : '<fg=red>   '.self::CROSS_MARK.'   </>',
             ];
@@ -31,6 +29,7 @@ trait Show
         table($headers, $rows);
 
         $badge = '<fg=black;bg=yellow;options=bold> ';
+        $updateBadge = '<fg=black;bg=yellow;options=bold> ';
 
         if ($fullStatus['status'] === 'error') {
             $badge = '<fg=black;bg=red;options=bold> ';
@@ -48,7 +47,14 @@ trait Show
             $badge = '<fg=black;bg=green;options=bold> ';
         }
 
+        if ($fullStatus['updated']) {
+            $updateBadge = '<fg=black;bg=green;options=bold> ';
+        } else {
+            $updateBadge = '<fg=black;bg=red;options=bold> ';
+        }
+
         info('  '.$badge.strtoupper($fullStatus['status']).' </> '.$fullStatus['message']);
+        info('  '.$updateBadge.' UPDATE </> '.($fullStatus['updated'] ? 'All packages are in sync with composer.json' : 'You need to run `php artisan devlink:link` to update the packages'));
         info(' ');
     }
 }

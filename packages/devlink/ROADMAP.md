@@ -1,8 +1,13 @@
 # Roadmap
 
+This is the roadmap for the devlink package.
+
 ## Current tasks
 
--   [ ] Private packages are not yet handled (copied and wired with path)
--   [ ] Need to delete private packages in the link and unlink steps then
--   [ ] There is probably an unclear state, because we do not yet use `-backup` yet
--   [ ] For the shell script, we also need to check if `-original` and `-backup` are correct
+We are working on the following tasks from top to bottom. Please don't forget to update the roadmap when a task is completed.
+
+-   [ ] ... no open tasks at the moment ...
+
+## Ideas
+
+-   [ ] Deploy: new feature: last version for all packages instead of \*

@@ -9,6 +9,7 @@ trait Link
 {
     private function link(): void
     {
+        $this->prepare();
         $this->removeSymlinks();
         $this->composerRemovePackages();
         $this->createSymlinks();
@@ -16,9 +17,13 @@ trait Link
         $this->createDeployComposerJson();
     }
 
-    /**
-     * Create symlinks for all configured packages.
-     */
+    private function prepare(): void
+    {
+        if (! is_dir($this->packagesPath)) {
+            mkdir($this->packagesPath, 0755, true);
+        }
+    }
+
     private function createSymlinks(): void
     {
         $linkedPackages = [];
@@ -34,14 +39,9 @@ trait Link
                 continue;
             }
 
-            if (! ($package['linked'] ?? true)) {
-                continue;
-            }
-
-            // Convert target path to absolute path
             $target = realpath($package['path']);
             if (! $target) {
-                $target = $package['path']; // Keep original for error message
+                $target = $package['path'];
             }
 
             $link = "{$this->packagesPath}/$name";
@@ -100,9 +100,6 @@ trait Link
         }
     }
 
-    /**
-     * Remove existing symlinks that are no longer in config.
-     */
     private function removeSymlinks(): void
     {
         $configuredPackages = array_keys(config('devlink.packages', []));
@@ -131,17 +128,15 @@ trait Link
         }
     }
 
-    /**
-     * Remove packages from composer.json.
-     */
     private function composerRemovePackages(): void
     {
         $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
         $removedPackages = [];
         $configuredPackages = config('devlink.packages', []);
+        $packagesBaseName = basename($this->packagesPath);
 
         foreach ($composerJson['repositories'] ?? [] as $key => $repo) {
-            if ($repo['type'] === 'path' && str_starts_with($repo['url'], 'packages/')) {
+            if ($repo['type'] === 'path' && str_starts_with($repo['url'], $packagesBaseName.'/')) {
                 $package = basename($repo['url']);
 
                 if (! isset($configuredPackages[$package]) || ! ($configuredPackages[$package]['active'] ?? false)) {
@@ -198,7 +193,6 @@ trait Link
         $addedRepos = [];
         $addedRequires = [];
 
-        // Debug output
         info("\nChecking packages for composer.json updates:");
 
         foreach (config('devlink.packages', []) as $name => $package) {
@@ -206,19 +200,28 @@ trait Link
                 continue;
             }
 
-            $packagePath = "packages/{$name}";
-            $repoEntry = [
-                'type' => 'path',
-                'url' => $packagePath,
-                'options' => [
-                    'symlink' => true,
-                ],
-            ];
             $packageName = "moox/{$name}";
+            $isPrivate = ($package['type'] ?? 'public') === 'private';
+
+            if ($isPrivate) {
+                $repoEntry = [
+                    'type' => 'vcs',
+                    'url' => $package['repo_url'] ?? config('devlink.private_repo_url'),
+                ];
+            } else {
+                $packagePath = basename($this->packagesPath)."/{$name}";
+                $repoEntry = [
+                    'type' => 'path',
+                    'url' => $packagePath,
+                    'options' => [
+                        'symlink' => true,
+                    ],
+                ];
+            }
 
             $repoExists = false;
             foreach ($repositories as $repo) {
-                if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
+                if (($repo['type'] ?? '') === $repoEntry['type'] && ($repo['url'] ?? '') === $repoEntry['url']) {
                     $repoExists = true;
                     break;
                 }
@@ -226,7 +229,7 @@ trait Link
 
             if (! $repoExists) {
                 $repositories[] = $repoEntry;
-                $addedRepos[] = $name;
+                $addedRepos[] = $name.($isPrivate ? ' (private)' : '');
                 $updated = true;
             }
 
@@ -273,11 +276,9 @@ trait Link
             return;
         }
 
-        // Create a copy without the repositories section
         $deployJson = $composerJson;
         unset($deployJson['repositories']);
 
-        // Write to composer.json-deploy
         $deployPath = dirname($this->composerJsonPath).'/composer.json-deploy';
         file_put_contents(
             $deployPath,

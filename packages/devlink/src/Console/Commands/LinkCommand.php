@@ -4,18 +4,15 @@ namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
 use Moox\Devlink\Console\Traits\Art;
-use Moox\Devlink\Console\Traits\Backup;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Finalize;
 use Moox\Devlink\Console\Traits\Link;
-use Moox\Devlink\Console\Traits\Prepare;
-use Moox\Devlink\Console\Traits\Restore;
 
 use function Laravel\Prompts\info;
 
 class LinkCommand extends Command
 {
-    use Art, Backup, Check, Finalize, Link, Prepare, Restore;
+    use Art, Check, Finalize, Link;
 
     protected $signature = 'devlink:link';
 
@@ -35,7 +32,6 @@ class LinkCommand extends Command
     {
         parent::__construct();
 
-        $this->basePaths = config('devlink.base_paths', []);
         $this->packages = config('devlink.packages', []);
         $this->composerJsonPath = base_path('composer.json');
         $this->packagesPath = config('devlink.packages_path', base_path('packages'));
@@ -46,8 +42,6 @@ class LinkCommand extends Command
         $this->art();
         info('Hello, I will link the configured packages for you.');
         $this->check();
-        $this->backup();
-        $this->prepare();
         $this->link();
         $this->finalize();
         info('Packages linked! Have a nice dev!');
