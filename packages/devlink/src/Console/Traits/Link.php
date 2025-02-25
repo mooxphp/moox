@@ -200,19 +200,28 @@ trait Link
                 continue;
             }
 
-            $packagePath = basename($this->packagesPath)."/{$name}";
-            $repoEntry = [
-                'type' => 'path',
-                'url' => $packagePath,
-                'options' => [
-                    'symlink' => true,
-                ],
-            ];
             $packageName = "moox/{$name}";
+            $isPrivate = ($package['type'] ?? 'public') === 'private';
+
+            if ($isPrivate) {
+                $repoEntry = [
+                    'type' => 'vcs',
+                    'url' => $package['repo_url'] ?? config('devlink.private_repo_url'),
+                ];
+            } else {
+                $packagePath = basename($this->packagesPath)."/{$name}";
+                $repoEntry = [
+                    'type' => 'path',
+                    'url' => $packagePath,
+                    'options' => [
+                        'symlink' => true,
+                    ],
+                ];
+            }
 
             $repoExists = false;
             foreach ($repositories as $repo) {
-                if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
+                if (($repo['type'] ?? '') === $repoEntry['type'] && ($repo['url'] ?? '') === $repoEntry['url']) {
                     $repoExists = true;
                     break;
                 }
@@ -220,7 +229,7 @@ trait Link
 
             if (! $repoExists) {
                 $repositories[] = $repoEntry;
-                $addedRepos[] = $name;
+                $addedRepos[] = $name.($isPrivate ? ' (private)' : '');
                 $updated = true;
             }
 

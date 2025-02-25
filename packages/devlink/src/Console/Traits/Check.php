@@ -7,7 +7,17 @@ trait Check
     private function check(): array
     {
         $status = 'unknown';
-        $message = 'Devlink is in unknown status';
+        $message = 'Devlink is in unknown status, run `php artisan devlink:link` to update';
+        $hasDevlink = file_exists(base_path('composer.json-devlink'));
+        $hasDeploy = file_exists(base_path('composer.json-deploy'));
+
+        if ($hasDevlink && ! $hasDeploy) {
+            $status = 'linked';
+            $message = 'Devlink is linked, happy coding!';
+        } elseif (! $hasDevlink && $hasDeploy) {
+            $status = 'unlinked';
+            $message = 'Devlink is unlinked, ready for deployment!';
+        }
 
         $packagesArray = [];
         $realPackages = [];
@@ -95,9 +105,29 @@ trait Check
             'public_base_path' => $publicBasePath,
             'private_base_path' => $privateBasePath,
             'packages' => $realPackages,
+            'updated' => $this->checkUpdated(),
         ];
 
         return $fullStatus;
+    }
+
+    private function checkUpdated(): bool
+    {
+        $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
+        $devlinkConfig = config('devlink.packages');
+
+        foreach ($devlinkConfig as $package => $config) {
+            if (! ($config['active'] ?? false)) {
+                continue;
+            }
+
+            $packageName = 'moox/'.$package;
+            if (! isset($composerJson['require'][$packageName]) && ! isset($composerJson['require-dev'][$packageName])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function resolvePath(string $path): string
