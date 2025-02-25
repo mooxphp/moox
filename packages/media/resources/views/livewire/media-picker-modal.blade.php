@@ -46,28 +46,30 @@
                     @foreach ($media as $item)
                         <div wire:click="toggleMediaSelection({{ $item->id }})"
                             class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                                    {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                                    {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
-                            <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover rounded-t-lg">
+                                {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
 
-                            @if(in_array($item->id, $selectedMediaIds))
-                                <div class="absolute top-1 right-1 bg-blue-600 rounded-full shadow p-1">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 01.083 1.32l-.083.094L8.707 14.707a1 1 0 01-1.497.083l-.094-.083-4-4a1 1 0 011.32-1.497l.094.083L8 12.584l7.293-7.292a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+                            @if ($item->mime_type === 'application/pdf')
+                                <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
+                                    <x-filament::icon icon="heroicon-o-document-text" class="w-16 h-16 text-gray-600" />
+                                    <div
+                                        class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
+                                        {{ $item->file_name }}
+                                    </div>
                                 </div>
+                            @else
+                                <img src="{{ $item->getUrl() }}" class="w-full h-32 object-cover rounded-t-lg" />
                             @endif
 
-                            <div class="absolute bottom-0 px-2 py-1 text-white text-sm bg-black bg-opacity-50 rounded-b-lg">
-                                {{ $item->name }}
-                            </div>
+                            @if(in_array($item->id, $selectedMediaIds))
+                                <div class="absolute top-1">
+                                    <x-filament::icon icon="heroicon-s-check-circle" class="w-6 h-6" fill="#3B82F6" />
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </x-filament::grid>
             </x-filament::section>
-
         </div>
 
         <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4">

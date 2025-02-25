@@ -40,12 +40,12 @@
         @if ($this instanceof \Filament\Resources\Pages\EditRecord)
             <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
                 x-on:click="
-                    $dispatch('set-media-picker-model', {
-                    modelId: '{{ $getRecord()->id ?? null }}',
-                    modelClass: '{{ addslashes($getRecord()::class) }}'
-                    });
-                    $dispatch('open-modal', { id: 'mediaPickerModal' });
-                    ">
+                        $dispatch('set-media-picker-model', {
+                        modelId: '{{ $getRecord()->id ?? null }}',
+                        modelClass: '{{ addslashes($getRecord()::class) }}'
+                        });
+                        $dispatch('open-modal', { id: 'mediaPickerModal' });
+                        ">
                 <span>Bild auswählen</span>
             </x-filament::button>
         @endif
