@@ -13,6 +13,7 @@
 ) }},
         state: @entangle($getStatePath()),
         isMultiple: {{ $field->isMultiple() ? 'true' : 'false' }},
+        isAvatar: {{ $field->isAvatar() ? 'true' : 'false' }},
         
         isNestedArray: function(data) {
             return Array.isArray(data) && Array.isArray(data[0]);
@@ -40,12 +41,12 @@
         @if ($this instanceof \Filament\Resources\Pages\EditRecord)
             <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
                 x-on:click="
-                        $dispatch('set-media-picker-model', {
-                        modelId: '{{ $getRecord()->id ?? null }}',
-                        modelClass: '{{ addslashes($getRecord()::class) }}'
-                        });
-                        $dispatch('open-modal', { id: 'mediaPickerModal' });
-                        ">
+                                                        $dispatch('set-media-picker-model', {
+                                                        modelId: '{{ $getRecord()->id ?? null }}',
+                                                        modelClass: '{{ addslashes($getRecord()::class) }}'
+                                                        });
+                                                        $dispatch('open-modal', { id: 'mediaPickerModal' });
+                                                        ">
                 <span>Bild auswählen</span>
             </x-filament::button>
         @endif
@@ -55,14 +56,22 @@
             <template x-for="(media, index) in selectedMedia" :key="media . id">
                 <div
                     class="relative group bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300 overflow-hidden border border-gray-200">
-                    <img :src="media . url" :alt="media . name" class="w-full h-32 object-cover rounded-t-lg"
-                        :title="media . name" />
+
+                    <template x-if="isAvatar">
+                        <x-filament::avatar x-bind:src="media.url" x-bind:alt="media.name" size="w-12 h-12" />
+                    </template>
+
+                    <template x-if="!isAvatar">
+                        <img :src="media . url" :alt="media . name" class="w-full h-32 object-cover rounded-t-lg" />
+                    </template>
 
                     @if ($this instanceof \Filament\Resources\Pages\EditRecord)
-                        <x-filament::button color="danger" size="xs" icon="heroicon-o-trash"
-                            class="absolute top-2 right-2 w-8 h-8 bg-white bg-opacity-75 text-gray-600 rounded-full shadow hover:bg-opacity-100 hover:text-red-600 transition duration-300 flex items-center justify-center"
-                            x-on:click="selectedMedia.splice(index, 1); initializeState();">
-                        </x-filament::button>
+                        <div class="absolute top-0 right-0">
+                            <x-filament::button color="danger" size="xs" icon="heroicon-o-x-mark"
+                                x-on:click="selectedMedia.splice(index, 1); initializeState();">
+                            </x-filament::button>
+                        </div>
+
                     @endif
                 </div>
             </template>
