@@ -198,7 +198,7 @@ return [
                 ],
             ],
         ],
-        
+
         'package' => [
             'base_path' => '$PackagePath',
             'base_namespace' => '$PackageNamespace',
@@ -244,7 +244,7 @@ return [
                 ],
             ],
         ],
-        
+
         'preview' => [
             'base_path' => app_path('Builder'),
             'base_namespace' => 'App\\Builder',
