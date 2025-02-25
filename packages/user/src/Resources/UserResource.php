@@ -49,8 +49,7 @@ class UserResource extends Resource
                 Grid::make(['default' => 0])->schema([
 
                     MediaPicker::make('avatar_url')
-                        ->label('Avatar')
-                        ->multiple(),
+                        ->label('Avatar'),
 
                     TextInput::make('name')
                         ->label(__('core::core.name'))
@@ -167,7 +166,7 @@ class UserResource extends Resource
                         ->unique(
                             'users',
                             'email',
-                            fn (?Model $record) => $record
+                            fn(?Model $record) => $record
                         )
                         ->email()
                         ->columnSpan([
@@ -199,7 +198,7 @@ class UserResource extends Resource
                         ->label(__('core::user.password'))
                         ->revealable()
                         ->required()
-                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
                         ->password()
                         ->visibleOn('create')
                         ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
@@ -282,7 +281,7 @@ class UserResource extends Resource
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
                     ->formatStateUsing(function ($state, User $user) {
-                        return $user->first_name.' '.$user->last_name;
+                        return $user->first_name . ' ' . $user->last_name;
                     })
                     ->toggleable()
                     ->sortable()
@@ -300,23 +299,23 @@ class UserResource extends Resource
                     ->sortable()
                     ->alignStart()
                     ->icon(
-                        fn ($record): string => is_null(
+                        fn($record): string => is_null(
                             $record->email_verified_at
                         ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
-                        'success' => fn ($record) => $record->email_verified_at !== null,
-                        'danger' => fn ($record) => $record->email_verified_at === null,
+                        'success' => fn($record) => $record->email_verified_at !== null,
+                        'danger' => fn($record) => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([
-                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'heroicon-o-shield-exclamation' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ])
                     ->colors([
-                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'warning' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([
