@@ -50,10 +50,10 @@ class MediaPickerModal extends Component
         $this->media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
@@ -117,7 +117,11 @@ class MediaPickerModal extends Component
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            $this->selectedMediaIds = [$mediaId];
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+                $this->selectedMediaIds = [];
+            } else {
+                $this->selectedMediaIds = [$mediaId];
+            }
         }
 
         $media = Media::find($mediaId);
@@ -150,7 +154,7 @@ class MediaPickerModal extends Component
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -158,7 +162,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
