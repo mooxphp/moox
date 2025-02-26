@@ -39,6 +39,16 @@ trait Link
                 continue;
             }
 
+            if (($package['type'] ?? '') === 'local') {
+                continue;
+            }
+
+            if (! isset($package['path'])) {
+                $notFoundPackages[] = "$name (no path configured)";
+
+                continue;
+            }
+
             $target = realpath($package['path']);
             if (! $target) {
                 $target = $package['path'];

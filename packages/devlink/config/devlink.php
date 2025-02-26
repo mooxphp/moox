@@ -171,12 +171,30 @@ return [
         ],
 
         // Private
+        'connect' => [
+            'active' => false,
+            'path' => $private_base_path.'/connect',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
+        ],
         'creator' => [
             'active' => false,
             'path' => $private_base_path.'/creator',
             'repo_url' => $private_repo_url,
             'type' => 'private',
             'dev' => true,
+        ],
+        'data' => [
+            'active' => false,
+            'path' => $private_base_path.'/data',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
+        ],
+        'localization' => [
+            'active' => false,
+            'path' => $private_base_path.'/localization',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
         ],
         'media' => [
             'active' => false,
@@ -198,23 +216,7 @@ return [
         ],
 
         // Local
-        'connect' => [
-            'active' => false,
-            'type' => 'local',
-        ],
-        'hecoweb' => [
-            'active' => true,
-            'type' => 'local',
-        ],
-        'myheco' => [
-            'active' => true,
-            'type' => 'local',
-        ],
-        'data' => [
-            'active' => true,
-            'type' => 'local',
-        ],
-        'localization' => [
+        'your-local-package' => [
             'active' => true,
             'type' => 'local',
         ],
