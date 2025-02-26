@@ -29,11 +29,11 @@ This part is currently not well documented. We will cover that soon.
 
 ## Installation
 
-If you want to install Moox Core (normally not necessary, because this package is required by all other Moox packages), you can:
+Moox is installed by the Moox Installer, that includes Moox Core and all other Moox packages, that you previously required.
 
 ```bash
 composer require moox/core
-php artisan mooxcore:install
+php artisan moox:install
 ```
 
 ## Requires

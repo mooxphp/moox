@@ -19,6 +19,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Moox Navigation Groups
+    |--------------------------------------------------------------------------
+    |
+    | This config array registers all known Moox navigation groups. You may
+    | add own groups to this array.
+    |
+    */
+
+    'navigation_groups' => [
+        'main',
+        'content',
+        'users',
+        'settings',
+        'tools',
+        'system',
+        'audit',
+        'metadata',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Moox Packages
     |--------------------------------------------------------------------------
     |
