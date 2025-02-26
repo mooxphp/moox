@@ -169,6 +169,7 @@ return [
         ],
 
         // Moox Pro
+<<<<<<< Updated upstream
         'connect' => [
             'active' => false,
             'path' => $private_base_path.'/connect',
@@ -193,6 +194,8 @@ return [
             'repo_url' => $private_repo_url,
             'type' => 'private',
         ],
+=======
+>>>>>>> Stashed changes
         'media' => [
             'active' => false,
             'path' => $private_base_path.'/media',
@@ -210,6 +213,28 @@ return [
             'path' => $private_base_path.'/permission',
             'repo_url' => $private_repo_url,
             'type' => 'private',
+        ],
+
+        // Local
+        'connect' => [
+            'active' => false,
+            'type' => 'local',
+        ],
+        'hecoweb' => [
+            'active' => true,
+            'type' => 'local',
+        ],
+        'myheco' => [
+            'active' => true,
+            'type' => 'local',
+        ],
+        'data' => [
+            'active' => true,
+            'type' => 'local',
+        ],
+        'localization' => [
+            'active' => true,
+            'type' => 'local',
         ],
     ],
 

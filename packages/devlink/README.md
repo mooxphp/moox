@@ -26,6 +26,8 @@ packages/*
 !packages/*/.gitkeep
 # and for windows
 /packageslocal/*
+# optional:
+composer.json-deploy
 
 ```
 
