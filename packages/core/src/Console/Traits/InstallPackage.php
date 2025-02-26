@@ -18,6 +18,7 @@ trait InstallPackage
 
     public function installPackage(array $package): void
     {
+        $this->info("Checking package {$package['name']}");
         $this->runMigrations($package);
         $this->publishConfig($package);
         $this->runSeeders($package);
@@ -135,8 +136,15 @@ trait InstallPackage
         foreach ($paths as $panelPath) {
             foreach ($plugins as $plugin) {
                 info("Registering plugin {$plugin} to panel {$panelPath}");
-                $this->registerPlugins($panelPath);
+                $this->registerPlugins($panelPath, $package);
             }
         }
+    }
+
+    private function getSeederTable(string $seederClass): ?string
+    {
+        $seeder = new $seederClass;
+
+        return property_exists($seeder, 'table') ? $seeder->table : null;
     }
 }

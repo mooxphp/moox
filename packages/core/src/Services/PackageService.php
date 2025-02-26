@@ -87,7 +87,7 @@ class PackageService
         $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
         $composerData = json_decode(file_get_contents($composerFilePath), true);
 
-        return $composerData['extra']['laravel']['migrations'];
+        return $composerData['extra']['laravel']['migrations'] ?? [];
     }
 
     public function getConfig(array $package): array
@@ -95,7 +95,7 @@ class PackageService
         $composerFilePath = base_path("vendor/{$package['name']}/composer.json");
         $composerData = json_decode(file_get_contents($composerFilePath), true);
 
-        return $composerData['extra']['laravel']['config'];
+        return $composerData['extra']['laravel']['config'] ?? [];
     }
 
     public function getSeeders(array $package): array
@@ -181,5 +181,17 @@ class PackageService
         preg_match_all('/dropColumn\([\'"]([^\'"]+)[\'"]/i', $migrationContent, $matches);
 
         return $matches[1];
+    }
+
+    public function getRequiredSeeders(array $package): array
+    {
+        $providerClass = $package['provider'];
+        $provider = app()->resolveProvider($providerClass);
+
+        if ($provider instanceof \Moox\Core\MooxServiceProvider) {
+            return $provider->mooxInfo()['requiredSeeders'] ?? [];
+        }
+
+        return [];
     }
 }

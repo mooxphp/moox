@@ -25,6 +25,8 @@ abstract class MooxServiceProvider extends PackageServiceProvider
 
                 protected bool $firstPlugin = false;
 
+                protected ?array $requiredSeeders = null;
+
                 protected string $packagePath;
 
                 public function __construct(string $packagePath)
@@ -63,6 +65,18 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                 public function isFirstPlugin(): bool
                 {
                     return $this->firstPlugin;
+                }
+
+                public function mooxRequiredSeeders(array $seeders): self
+                {
+                    $this->requiredSeeders = $seeders;
+
+                    return $this;
+                }
+
+                public function getRequiredSeeders(): array
+                {
+                    return $this->requiredSeeders ?? [];
                 }
             };
         }
