@@ -229,7 +229,13 @@ trait Link
                 continue;
             }
 
-            $packageName = "moox/{$name}";
+            $packageName = $this->getPackageName($name, $package);
+            if (! $packageName) {
+                info("Skipping $name: no composer.json found or invalid");
+
+                continue;
+            }
+
             $isLocal = ($package['type'] ?? '') === 'local';
             $isPrivate = ($package['type'] ?? '') === 'private';
             $isDev = ($package['dev'] ?? false);
@@ -309,6 +315,28 @@ trait Link
         } else {
             info('No changes needed in composer.json');
         }
+    }
+
+    private function getPackageName(string $name, array $package): ?string
+    {
+        $isLocal = ($package['type'] ?? '') === 'local';
+        $path = $isLocal ? "packages/$name" : ($package['path'] ?? '');
+
+        if (! $path || ! is_dir($path)) {
+            return null;
+        }
+
+        $composerJson = "$path/composer.json";
+        if (! file_exists($composerJson)) {
+            return null;
+        }
+
+        $data = json_decode(file_get_contents($composerJson), true);
+        if (! isset($data['name'])) {
+            return null;
+        }
+
+        return $data['name'];
     }
 
     private function createLinkedComposerJson(): void

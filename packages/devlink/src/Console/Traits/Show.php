@@ -24,7 +24,7 @@ trait Show
                 default => $row['type'],
             };
 
-            $version = $this->getInstalledVersion('moox/'.$row['name']);
+            $version = $this->getInstalledVersion($row['name'], $row);
             $path = $this->getShortPath($row);
 
             return [
@@ -70,8 +70,13 @@ trait Show
         info(' ');
     }
 
-    private function getInstalledVersion(string $package): ?string
+    private function getInstalledVersion(string $name, array $package): ?string
     {
+        $packageName = $this->getPackageName($name, $package);
+        if (! $packageName) {
+            return null;
+        }
+
         $composerLock = base_path('composer.lock');
         if (! file_exists($composerLock)) {
             return null;
@@ -80,7 +85,7 @@ trait Show
         $lockData = json_decode(file_get_contents($composerLock), true);
         foreach ([$lockData['packages'] ?? [], $lockData['packages-dev'] ?? []] as $packages) {
             foreach ($packages as $pkg) {
-                if ($pkg['name'] === $package) {
+                if ($pkg['name'] === $packageName) {
                     return $pkg['version'];
                 }
             }
@@ -115,5 +120,27 @@ trait Show
         }
 
         return $path;
+    }
+
+    private function getPackageName(string $name, array $package): ?string
+    {
+        $isLocal = ($package['type'] ?? '') === 'local';
+        $path = $isLocal ? "packages/$name" : ($package['path'] ?? '');
+
+        if (! $path || ! is_dir($path)) {
+            return null;
+        }
+
+        $composerJson = "$path/composer.json";
+        if (! file_exists($composerJson)) {
+            return null;
+        }
+
+        $data = json_decode(file_get_contents($composerJson), true);
+        if (! isset($data['name'])) {
+            return null;
+        }
+
+        return $data['name'];
     }
 }
