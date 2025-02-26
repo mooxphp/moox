@@ -169,33 +169,6 @@ return [
         ],
 
         // Moox Pro
-<<<<<<< Updated upstream
-        'connect' => [
-            'active' => false,
-            'path' => $private_base_path.'/connect',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-        'creator' => [
-            'active' => false,
-            'path' => $private_base_path.'/creator',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-        'data' => [
-            'active' => false,
-            'path' => $private_base_path.'/data',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-        'localize' => [
-            'active' => false,
-            'path' => $private_base_path.'/localize',
-            'repo_url' => $private_repo_url,
-            'type' => 'private',
-        ],
-=======
->>>>>>> Stashed changes
         'media' => [
             'active' => false,
             'path' => $private_base_path.'/media',
