@@ -75,6 +75,7 @@ return [
             'active' => false,
             'path' => $public_base_path.'/builder',
             'type' => 'public',
+            'dev' => true,
         ],
         'category' => [
             'active' => false,
@@ -91,6 +92,7 @@ return [
             'linked' => false,
             'path' => $public_base_path.'/devlink',
             'type' => 'public',
+            'dev' => true,
         ],
         'devops' => [
             'active' => false,
@@ -169,6 +171,13 @@ return [
         ],
 
         // Private
+        'creator' => [
+            'active' => false,
+            'path' => $private_base_path.'/creator',
+            'repo_url' => $private_repo_url,
+            'type' => 'private',
+            'dev' => true,
+        ],
         'media' => [
             'active' => false,
             'path' => $private_base_path.'/media',
