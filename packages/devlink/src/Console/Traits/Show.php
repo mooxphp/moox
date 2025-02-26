@@ -15,7 +15,7 @@ trait Show
     {
         $fullStatus = $this->check();
 
-        $headers = ['Package', 'Type', 'Active', 'Valid', 'Linked', 'Version', 'Path'];
+        $headers = ['Package', 'Type', 'Enabled', 'Valid', 'Active', 'Version', 'Path'];
         $rows = array_map(function ($row) {
             $type = match ($row['type']) {
                 'local' => '<fg=yellow>local</>',
@@ -24,7 +24,7 @@ trait Show
                 default => $row['type'],
             };
 
-            $version = $this->getInstalledVersion($row['name'], $row);
+            $version = $this->getInstalledVersion($row['name'], $row['config']);
             $path = $this->getShortPath($row);
 
             return [
@@ -83,11 +83,26 @@ trait Show
         }
 
         $lockData = json_decode(file_get_contents($composerLock), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            info("Invalid composer.lock JSON for $name");
+
+            return null;
+        }
+
         foreach ([$lockData['packages'] ?? [], $lockData['packages-dev'] ?? []] as $packages) {
             foreach ($packages as $pkg) {
-                if ($pkg['name'] === $packageName) {
-                    return $pkg['version'];
+                if (($pkg['name'] ?? '') === $packageName) {
+                    return $pkg['version'] ?? null;
                 }
+            }
+        }
+
+        // If not found in lock file but composer.json exists, assume dev-main
+        $path = $package['path'] ?? '';
+        if ($path && ! str_contains($path, 'disabled/')) {
+            $composerJson = realpath(base_path($path)).'/composer.json';
+            if (file_exists($composerJson)) {
+                return 'dev-main';
             }
         }
 
@@ -127,8 +142,12 @@ trait Show
         $isLocal = ($package['type'] ?? '') === 'local';
         $path = $isLocal ? "packages/$name" : ($package['path'] ?? '');
 
-        if (! $path || ! is_dir($path)) {
+        if (! $path || str_contains($path, 'disabled/')) {
             return null;
+        }
+
+        if (str_starts_with($path, '../')) {
+            $path = realpath(base_path($path));
         }
 
         $composerJson = "$path/composer.json";
@@ -137,10 +156,7 @@ trait Show
         }
 
         $data = json_decode(file_get_contents($composerJson), true);
-        if (! isset($data['name'])) {
-            return null;
-        }
 
-        return $data['name'];
+        return $data['name'] ?? null;
     }
 }

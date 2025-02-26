@@ -67,6 +67,8 @@ trait Check
                     default => is_dir($package['path'] ?? ''),
                 },
                 'linked' => $isLinked,
+                'path' => $package['path'] ?? null,
+                'config' => $package,
             ];
 
             if (! $isPrivate && isset($package['path']) && str_contains($package['path'], 'disabled')) {
