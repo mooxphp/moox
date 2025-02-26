@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Moox\Core;
 
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\Commands\InstallCommand;
+use Moox\Core\Console\Commands\MooxInstaller;
+use Moox\Core\Console\Commands\PackageServiceCommand;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
@@ -41,7 +42,8 @@ class CoreServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
-            ->hasCommand(InstallCommand::class);
+            ->hasCommand(MooxInstaller::class)
+            ->hasCommand(PackageServiceCommand::class);
     }
 
     protected function getPackageNames(): array
