@@ -42,35 +42,71 @@
                     </x-filament::input.wrapper>
                 </div>
 
+                @php
+                    $mimeTypeLabels = [
+                        'application/pdf' => [
+                            'label' => 'PDF',
+                            'icon' => 'heroicon-o-document-text'
+                        ],
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => [
+                            'label' => 'DOCX',
+                            'icon' => 'heroicon-o-document-text'
+                        ],
+                        'application/msword' => [
+                            'label' => 'DOC',
+                            'icon' => 'heroicon-o-document-text'
+                        ],
+                        'application/vnd.ms-excel' => [
+                            'label' => 'XLS',
+                            'icon' => 'heroicon-o-document-text'
+                        ],
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => [
+                            'label' => 'XLSX',
+                            'icon' => 'heroicon-o-document-text'
+                        ],
+                        'video/mp4' => [
+                            'label' => 'MP4',
+                            'icon' => 'heroicon-o-video-camera'
+                        ],
+                    ];
+                @endphp
+
                 <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     @foreach ($media as $item)
-                        <div wire:click="toggleMediaSelection({{ $item->id }})"
-                            class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                        {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                        {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                        @php
+                                            $mimeType = $item->mime_type;
+                                            $fileData = $mimeTypeLabels[$mimeType] ?? null;
+                                        @endphp
 
-                            @if ($item->mime_type === 'application/pdf')
-                                <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
-                                    <x-filament::icon icon="heroicon-o-document-text" class="w-16 h-16 text-gray-600" />
-                                    <div
-                                        class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
-                                        {{ $item->file_name }}
-                                    </div>
-                                </div>
-                            @else
-                                <div class="relative w-full h-32">
-                                    <img src="{{ $item->getUrl() }}" class="object-cover w-full h-full rounded-t-lg" />
-                                </div>
-                            @endif
+                                        <div wire:click="toggleMediaSelection({{ $item->id }})"
+                                            class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
+                                                {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                                {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
 
-                            @if(in_array($item->id, $selectedMediaIds))
-                                <div class="absolute top-1 right-1">
-                                    <x-filament::icon icon="heroicon-s-check-circle" class="w-6 h-6" fill="#3B82F6" />
-                                </div>
-                            @endif
-                        </div>
+                                            @if ($fileData)
+                                                <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
+                                                    <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16 text-gray-600" />
+                                                    <div
+                                                        class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
+                                                        {{ $item->file_name }}
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="relative w-full h-32">
+                                                    <img src="{{ $item->getUrl() }}" class="object-cover w-full h-full rounded-t-lg" />
+                                                </div>
+                                            @endif
+
+                                            @if(in_array($item->id, $selectedMediaIds))
+                                                <div class="absolute top-1 right-1">
+                                                    <x-filament::icon icon="heroicon-o-check-circle" class="w-6 h-6" fill="#3B82F6" />
+                                                </div>
+                                            @endif
+                                        </div>
                     @endforeach
                 </x-filament::grid>
+
+
             </x-filament::section>
         </div>
 
