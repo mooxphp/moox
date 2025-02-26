@@ -22,9 +22,8 @@ class AuditServiceProvider extends MooxServiceProvider
         $this->getMooxPackage()
             ->mooxPlugins([
                 'audit',
-                'audit-trail',
             ])
-            ->mooxFirstPlugin(true)
-            ->mooxRequiredSeeders(['AuditSeeder']);
+            ->mooxFirstPlugin(true);
+        // ->mooxRequiredSeeders(['AuditSeeder']);
     }
 }
