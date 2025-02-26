@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -f "composer.json-deploy" ]; then
+if [ -f "composer.json-linked" ]; then
     find packages -type l -delete
-    cp composer.json-deploy composer.json
+    cp composer.json-linked composer.json
 fi

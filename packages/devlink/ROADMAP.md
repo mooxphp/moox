@@ -10,4 +10,4 @@ We are working on the following tasks from top to bottom. Please don't forget to
 
 ## Ideas
 
--   [ ] Deploy: new feature: last version for all packages instead of \*
+-   [ ] Deploy feature: last version for all packages instead of \*

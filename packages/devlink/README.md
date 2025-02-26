@@ -36,8 +36,8 @@ composer.json-deploy
 3. When running `php init.php`
 
     - Creates a `.env` file from `.env.example`
-    - Copies `composer.json-deploy` to `composer.json`
-    - Runs `composer install`
+    - Copies `composer.json-linked` to `composer.json`
+    - Runs `composer update`
 
 4. When running `devlink:status`:
 
@@ -50,7 +50,7 @@ composer.json-deploy
     - Creates the packages folder, if it does not exist
     - Creates symlinks for all configured packages
     - Updates composer.json with development configuration
-    - Creates composer.json-deploy for production use
+    - Creates composer.json-linked for production use
     - Asks to run `composer install`
     - Asks to run `php artisan optimize:clear`
     - Asks to run `php artisan queue:restart`
@@ -59,25 +59,23 @@ composer.json-deploy
 
     - Removes all symlinks
     - Deletes the packages folder, if empty
-    - Restores production-ready composer.json from composer.json-deploy
+    - Restores production-ready composer.json from composer.json-linked
     - Asks to run `composer install`
     - Asks to run `php artisan optimize:clear`
     - Asks to run `php artisan queue:restart`
 
 7. CI Safety Net - `deploy.sh`:
 
-    - If composer.json-deploy exists in the repository:
+    - If composer.json-linked exists in the repository:
         - Remove all symlinks from /packages
-        - rename composer.json-deploy to composer.json
+        - rename composer.json-linked to composer.json
     - Commit and push the change in your GitHub Action
 
-## Mac
-
-Mac works out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
+Mac and Linux work out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
 
 ![Moox Devlink](./devlink-mix.jpg)
 
-## Windows
+### Windows
 
 On Windows there are most probably some issues with ignoring symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
 

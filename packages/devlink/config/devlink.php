@@ -38,29 +38,29 @@ return [
     | Packages
     |--------------------------------------------------------------------------
     |
-    | The packages that should be linked into the project.
+    | These packages are symlinked (or if local, just added) into the project.
     |
     | Active:
     | Toggle the package on and off. By default all packages are disabled.
     |
-    | Linked:
-    | Toggle the package off for linking, for example devlink itself.
-    |
     | Path:
     | The path to the package in the packages directory.
     |
+    | Repo-URL:
+    | The URL of the private repository (Satis).
+    |
     | Types:
     | - public = installed from Packagist
-    | - private = copied into the project
+    | - private = installed from Satis
+    | - local = local package
     |
-    | Deploy:
-    | Toggle the package on and off for deployment. Better would be to use
-    | require-dev in composer.json, but this also works.
+    | Dev:
+    | The package is only installed in the dev environment (require-dev).
     |
     */
     'packages' => [
 
-        // Moox
+        // Public
         'audit' => [
             'active' => false,
             'path' => $public_base_path.'/audit',
@@ -68,7 +68,7 @@ return [
         ],
         'backup-server-ui' => [
             'active' => false,
-            'path' => $public_base_path.'/backup-server-ui',
+            'path' => '../moox-server/packages/backup-server-ui',
             'type' => 'public',
         ],
         'builder' => [
@@ -94,7 +94,7 @@ return [
         ],
         'devops' => [
             'active' => false,
-            'path' => $public_base_path.'/devops',
+            'path' => '../moox-server/packages/devops',
             'type' => 'public',
         ],
         'expiry' => [
@@ -168,7 +168,7 @@ return [
             'type' => 'public',
         ],
 
-        // Moox Pro
+        // Private
         'media' => [
             'active' => false,
             'path' => $private_base_path.'/media',

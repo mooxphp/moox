@@ -14,7 +14,7 @@ trait Link
         $this->composerRemovePackages();
         $this->createSymlinks();
         $this->updateComposerJson();
-        $this->createDeployComposerJson();
+        $this->createLinkedComposerJson();
     }
 
     private function prepare(): void
@@ -189,24 +189,45 @@ trait Link
 
         $repositories = $composerJson['repositories'] ?? [];
         $require = $composerJson['require'] ?? [];
+        $requireDev = $composerJson['require-dev'] ?? [];
         $updated = false;
         $addedRepos = [];
         $addedRequires = [];
+        $removedRepos = [];
+        $removedRequires = [];
 
-        info("\nChecking packages for composer.json updates:");
+        // First, remove inactive packages
+        foreach ($repositories as $key => $repo) {
+            if (($repo['type'] ?? '') === 'path') {
+                $name = basename($repo['url']);
+                $package = $this->packages[$name] ?? null;
 
-        foreach (config('devlink.packages', []) as $name => $package) {
+                if (! $package || ! ($package['active'] ?? false)) {
+                    unset($repositories[$key]);
+                    unset($require["moox/$name"]);
+                    unset($requireDev["moox/$name"]);
+                    $removedRepos[] = $name;
+                    $removedRequires[] = "moox/$name";
+                    $updated = true;
+                }
+            }
+        }
+
+        // Then add or update active packages
+        foreach ($this->packages as $name => $package) {
             if (! ($package['active'] ?? false)) {
                 continue;
             }
 
             $packageName = "moox/{$name}";
-            $isPrivate = ($package['type'] ?? 'public') === 'private';
+            $isLocal = ($package['type'] ?? '') === 'local';
+            $isPrivate = ($package['type'] ?? '') === 'private';
+            $isDev = ($package['dev'] ?? false);
 
-            if ($isPrivate) {
+            if ($isLocal) {
                 $repoEntry = [
-                    'type' => 'vcs',
-                    'url' => $package['repo_url'] ?? config('devlink.private_repo_url'),
+                    'type' => 'path',
+                    'url' => "packages/{$name}",
                 ];
             } else {
                 $packagePath = basename($this->packagesPath)."/{$name}";
@@ -229,11 +250,25 @@ trait Link
 
             if (! $repoExists) {
                 $repositories[] = $repoEntry;
-                $addedRepos[] = $name.($isPrivate ? ' (private)' : '');
+                $addedRepos[] = $name;
                 $updated = true;
             }
 
-            if (! isset($require[$packageName])) {
+            // Remove from the other section if it exists
+            if ($isDev && isset($require[$packageName])) {
+                unset($require[$packageName]);
+                $updated = true;
+            } elseif (! $isDev && isset($requireDev[$packageName])) {
+                unset($requireDev[$packageName]);
+                $updated = true;
+            }
+
+            // Add to the correct section if not present
+            if ($isDev && ! isset($requireDev[$packageName])) {
+                $requireDev[$packageName] = '*';
+                $addedRequires[] = $packageName.' (dev)';
+                $updated = true;
+            } elseif (! $isDev && ! isset($require[$packageName])) {
                 $require[$packageName] = '*';
                 $addedRequires[] = $packageName;
                 $updated = true;
@@ -243,11 +278,18 @@ trait Link
         if ($updated) {
             $composerJson['repositories'] = array_values($repositories);
             $composerJson['require'] = $require;
+            $composerJson['require-dev'] = $requireDev;
             file_put_contents(
                 $this->composerJsonPath,
                 json_encode($composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
             );
 
+            if ($removedRepos) {
+                info('Removed repository entries for: '.implode(', ', $removedRepos));
+            }
+            if ($removedRequires) {
+                info('Removed requirements for: '.implode(', ', $removedRequires));
+            }
             if ($addedRepos) {
                 info('Added repository entries for: '.implode(', ', $addedRepos));
             }
@@ -259,7 +301,7 @@ trait Link
         }
     }
 
-    private function createDeployComposerJson(): void
+    private function createLinkedComposerJson(): void
     {
         if (! file_exists($this->composerJsonPath)) {
             $this->error('composer.json not found!');
@@ -276,15 +318,31 @@ trait Link
             return;
         }
 
-        $deployJson = $composerJson;
-        unset($deployJson['repositories']);
+        $linkedJson = $composerJson;
+        $repositories = $linkedJson['repositories'] ?? [];
+        $filteredRepos = [];
 
-        $deployPath = dirname($this->composerJsonPath).'/composer.json-deploy';
+        foreach ($repositories as $repo) {
+            $name = basename($repo['url'] ?? '');
+            $package = $this->packages[$name] ?? null;
+
+            if ($package && ($package['type'] ?? '') === 'local') {
+                $filteredRepos[] = $repo;
+            }
+        }
+
+        if (empty($filteredRepos)) {
+            unset($linkedJson['repositories']);
+        } else {
+            $linkedJson['repositories'] = $filteredRepos;
+        }
+
+        $linkedPath = dirname($this->composerJsonPath).'/composer.json-linked';
         file_put_contents(
-            $deployPath,
-            json_encode($deployJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
+            $linkedPath,
+            json_encode($linkedJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n"
         );
 
-        info('Created composer.json-deploy without repositories section');
+        info('Created composer.json-linked with local package repositories');
     }
 }

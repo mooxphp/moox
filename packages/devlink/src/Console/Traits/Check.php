@@ -35,28 +35,41 @@ trait Check
 
         foreach ($config['packages'] as $name => $package) {
             $packagePath = "packages/{$name}";
+            $isLocal = ($package['type'] ?? '') === 'local';
+            $isPrivate = ($package['type'] ?? '') === 'private';
 
-            // Check if package is in repositories
+            // Check if package is linked
             $isLinked = false;
-            foreach ($repositories as $repo) {
-                if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
-                    $isLinked = true;
-                    break;
+            if ($isLocal) {
+                // Local packages: check for path entry in composer.json
+                foreach ($repositories as $repo) {
+                    if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
+                        $isLinked = true;
+                        break;
+                    }
                 }
+            } else {
+                // Public and Private packages: check for symlink
+                $isLinked = is_link($packagePath);
             }
 
             $packagesArray[$name] = $package;
+
             $realPackages[$name] = [
                 'name' => $name,
                 'type' => $package['type'] ?? 'unknown',
                 'active' => $package['active'] ?? false,
                 'link' => $package['linked'] ?? true,
                 'deploy' => $package['deploy'] ?? false,
-                'valid' => is_dir($package['path']),
+                'valid' => match (true) {
+                    $isLocal => is_dir($packagePath),
+                    $isPrivate => is_dir($package['path'] ?? ''),
+                    default => is_dir($package['path'] ?? ''),
+                },
                 'linked' => $isLinked,
             ];
 
-            if (str_contains($package['path'], 'disabled')) {
+            if (! $isPrivate && isset($package['path']) && str_contains($package['path'], 'disabled')) {
                 unset($realPackages[$name]);
             }
         }

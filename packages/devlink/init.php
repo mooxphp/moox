@@ -17,7 +17,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 file_put_contents('.env', $env);
 
 if (file_exists('composer.json-deploy')) {
-    copy('composer.json-deploy', 'composer.json');
+    copy('composer.json-linked', 'composer.json');
 }
 
-exec('composer install');
+exec('composer update');
