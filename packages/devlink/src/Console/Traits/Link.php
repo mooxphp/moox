@@ -319,28 +319,6 @@ trait Link
         }
     }
 
-    private function getPackageName(string $name, array $package): ?string
-    {
-        $isLocal = ($package['type'] ?? '') === 'local';
-        $path = $isLocal ? "packages/$name" : ($package['path'] ?? '');
-
-        if (! $path || ! is_dir($path)) {
-            return null;
-        }
-
-        $composerJson = "$path/composer.json";
-        if (! file_exists($composerJson)) {
-            return null;
-        }
-
-        $data = json_decode(file_get_contents($composerJson), true);
-        if (! isset($data['name'])) {
-            return null;
-        }
-
-        return $data['name'];
-    }
-
     private function createLinkedComposerJson(): void
     {
         if (! file_exists($this->composerJsonPath)) {

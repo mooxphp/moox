@@ -145,4 +145,139 @@ trait Check
 
         return true;
     }
+
+    private function getInstalledVersion(string $name, array $package): ?string
+    {
+        $packageName = $this->getPackageName($name, $package);
+        if (! $packageName) {
+            return null;
+        }
+
+        $path = $package['path'] ?? '';
+        if ($path && ! str_contains($path, 'disabled/')) {
+            $composerJson = realpath(base_path($path)).'/composer.json';
+            if (file_exists($composerJson)) {
+                $composerData = json_decode(file_get_contents($composerJson), true);
+
+                return $composerData['version'] ?? 'dev-main';
+            }
+        }
+
+        $composerLock = base_path('composer.lock');
+        if (! file_exists($composerLock)) {
+            return null;
+        }
+
+        $lockData = json_decode(file_get_contents($composerLock), true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            info("Invalid composer.lock JSON for $name");
+
+            return null;
+        }
+
+        foreach ([$lockData['packages'] ?? [], $lockData['packages-dev'] ?? []] as $packages) {
+            foreach ($packages as $pkg) {
+                if (($pkg['name'] ?? '') === $packageName) {
+                    return $pkg['version'] ?? null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function getShortPath(array $row): string
+    {
+        if (($row['type'] ?? '') === 'local') {
+            return '-';
+        }
+
+        $privateBasePath = config('devlink.private_base_path');
+        if (($row['type'] ?? '') === 'private' && $privateBasePath === 'disabled') {
+            return '- enable private path in config -';
+        }
+
+        $path = $this->packages[$row['name']]['path'] ?? '';
+        if (empty($path)) {
+            return '-';
+        }
+
+        if (str_starts_with($path, '../')) {
+            return $path;
+        }
+
+        $basePath = base_path();
+        if (str_starts_with($path, $basePath)) {
+            return substr($path, strlen($basePath) + 1);
+        }
+
+        return $path;
+    }
+
+    private function getPackageName(string $name, array $package): ?string
+    {
+        $isLocal = ($package['type'] ?? '') === 'local';
+        $path = $isLocal ? "packages/$name" : ($package['path'] ?? '');
+
+        if (! $path || str_contains($path, 'disabled/')) {
+            return null;
+        }
+
+        if (str_starts_with($path, '../')) {
+            $path = realpath(base_path($path));
+        }
+
+        $composerJson = "$path/composer.json";
+        if (! file_exists($composerJson)) {
+            return null;
+        }
+
+        $data = json_decode(file_get_contents($composerJson), true);
+
+        return $data['name'] ?? null;
+    }
+
+    private function arePackagesInSync(array $packages): bool
+    {
+        $composerJson = base_path('composer.json');
+        if (! file_exists($composerJson)) {
+            return false;
+        }
+
+        $composerData = json_decode(file_get_contents($composerJson), true);
+        if (! $composerData) {
+            return false;
+        }
+
+        $composerRequire = array_merge(
+            $composerData['require'] ?? [],
+            $composerData['require-dev'] ?? []
+        );
+
+        foreach ($packages as $package) {
+            $packageName = $this->getPackageName($package['name'], $package['config']);
+            if (! $packageName) {
+                continue;
+            }
+
+            $expectedPath = $package['config']['path'] ?? '';
+            if (empty($expectedPath)) {
+                continue;
+            }
+
+            if (! isset($composerRequire[$packageName])) {
+                return false;
+            }
+
+            $composerPath = $composerRequire[$packageName];
+            if (str_contains($composerPath, 'path:')) {
+                $composerPath = trim(str_replace('path:', '', $composerPath));
+                if ($composerPath !== $expectedPath) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

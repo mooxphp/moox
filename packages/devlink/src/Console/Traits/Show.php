@@ -11,6 +11,16 @@ trait Show
 
     private const CROSS_MARK = "\u{2718}"; // ✘
 
+    private const STOP = "\u{1F6AB}"; // 🚫
+
+    private const ROCKET = "\u{1F680}"; // 🚀
+
+    private const FIRE = "\u{1F525}"; // 🔥
+
+    private const LINK = "\u{1F517}"; // 🔗
+
+    private const STAR = "\u{2B50}"; // ⭐
+
     private function show(): void
     {
         $fullStatus = $this->check();
@@ -41,164 +51,77 @@ trait Show
 
         table($headers, $rows);
 
-        $badge = '<fg=black;bg=yellow;options=bold> ';
-        $updateBadge = '<fg=black;bg=yellow;options=bold> ';
+        $icon = self::STOP;
+        $badge = '<fg=gray;bg=black;options=bold> ';
+        $updateBadge = '<fg=gray;bg=black;options=bold> ';
 
         if ($fullStatus['status'] === 'error') {
-            $badge = '<fg=black;bg=red;options=bold> ';
+            $icon = self::STOP;
+            $badge = '<fg=red;bg=black;options=bold> ';
         }
 
         if ($fullStatus['status'] === 'deploy') {
-            $badge = '<fg=black;bg=blue;options=bold> ';
+            $icon = self::ROCKET;
+            $badge = '<fg=blue;bg=black;options=bold> ';
         }
 
         if ($fullStatus['status'] === 'linked') {
-            $badge = '<fg=black;bg=green;options=bold> ';
+            $icon = self::LINK;
+            $badge = '<fg=green;bg=black;options=bold> ';
         }
 
         if ($isInSync) {
-            $updateBadge = '<fg=black;bg=green;options=bold> ';
+            $updateIcon = self::STAR;
+            $updateBadge = '<fg=green;bg=black;options=bold> ';
         } else {
-            $updateBadge = '<fg=black;bg=red;options=bold> ';
+            $updateIcon = self::FIRE;
+            $updateBadge = '<fg=red;bg=black;options=bold> ';
         }
 
-        info('  '.$badge.strtoupper($fullStatus['status']).' </> '.$fullStatus['message']);
-        info('  '.$updateBadge.'UPDATE </> '.($isInSync ? 'All packages are in sync with composer.json' : 'You need to run `php artisan devlink:link` to update the packages'));
+        info('  '.$icon.$badge.strtoupper($fullStatus['status']).' </> '.$fullStatus['message']);
+        info('  '.$updateIcon.$updateBadge.'UPDATE </> '.($isInSync ? 'All packages are in sync with composer.json' : 'You need to run `php artisan devlink:link` to update the packages'));
+
+        if (! $isInSync && $this->getOutput()->isVerbose()) {
+            info(' ');
+            info('Detailed sync status:');
+
+            foreach ($fullStatus['packages'] as $package) {
+                $packageName = $this->getPackageName($package['name'], $package['config']);
+                if (! $packageName) {
+                    continue;
+                }
+
+                $expectedPath = $package['config']['path'] ?? '';
+                if (empty($expectedPath)) {
+                    continue;
+                }
+
+                $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
+                $composerRequire = array_merge(
+                    $composerJson['require'] ?? [],
+                    $composerJson['require-dev'] ?? []
+                );
+
+                if (! isset($composerRequire[$packageName])) {
+                    info("  <fg=red>✘</> {$packageName}: Not found in composer.json requirements");
+
+                    continue;
+                }
+
+                $composerPath = $composerRequire[$packageName];
+                if (str_contains($composerPath, 'path:')) {
+                    $composerPath = trim(str_replace('path:', '', $composerPath));
+                    if ($composerPath !== $expectedPath) {
+                        info("  <fg=red>✘</> {$packageName}: Path mismatch");
+                        info("     Expected: {$expectedPath}");
+                        info("     Found: {$composerPath}");
+                    } else {
+                        info("  <fg=green>✓</> {$packageName}: Correctly linked");
+                    }
+                }
+            }
+        }
+
         info(' ');
-    }
-
-    private function getInstalledVersion(string $name, array $package): ?string
-    {
-        $packageName = $this->getPackageName($name, $package);
-        if (! $packageName) {
-            return null;
-        }
-
-        $path = $package['path'] ?? '';
-        if ($path && ! str_contains($path, 'disabled/')) {
-            $composerJson = realpath(base_path($path)).'/composer.json';
-            if (file_exists($composerJson)) {
-                $composerData = json_decode(file_get_contents($composerJson), true);
-
-                return $composerData['version'] ?? 'dev-main';
-            }
-        }
-
-        $composerLock = base_path('composer.lock');
-        if (! file_exists($composerLock)) {
-            return null;
-        }
-
-        $lockData = json_decode(file_get_contents($composerLock), true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            info("Invalid composer.lock JSON for $name");
-
-            return null;
-        }
-
-        foreach ([$lockData['packages'] ?? [], $lockData['packages-dev'] ?? []] as $packages) {
-            foreach ($packages as $pkg) {
-                if (($pkg['name'] ?? '') === $packageName) {
-                    return $pkg['version'] ?? null;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private function getShortPath(array $row): string
-    {
-        if (($row['type'] ?? '') === 'local') {
-            return '-';
-        }
-
-        $privateBasePath = config('devlink.private_base_path');
-        if (($row['type'] ?? '') === 'private' && $privateBasePath === 'disabled') {
-            return '- enable private path in config -';
-        }
-
-        $path = $this->packages[$row['name']]['path'] ?? '';
-        if (empty($path)) {
-            return '-';
-        }
-
-        if (str_starts_with($path, '../')) {
-            return $path;
-        }
-
-        $basePath = base_path();
-        if (str_starts_with($path, $basePath)) {
-            return substr($path, strlen($basePath) + 1);
-        }
-
-        return $path;
-    }
-
-    private function getPackageName(string $name, array $package): ?string
-    {
-        $isLocal = ($package['type'] ?? '') === 'local';
-        $path = $isLocal ? "packages/$name" : ($package['path'] ?? '');
-
-        if (! $path || str_contains($path, 'disabled/')) {
-            return null;
-        }
-
-        if (str_starts_with($path, '../')) {
-            $path = realpath(base_path($path));
-        }
-
-        $composerJson = "$path/composer.json";
-        if (! file_exists($composerJson)) {
-            return null;
-        }
-
-        $data = json_decode(file_get_contents($composerJson), true);
-
-        return $data['name'] ?? null;
-    }
-
-    private function arePackagesInSync(array $packages): bool
-    {
-        $composerJson = base_path('composer.json');
-        if (! file_exists($composerJson)) {
-            return false;
-        }
-
-        $composerData = json_decode(file_get_contents($composerJson), true);
-        if (! $composerData) {
-            return false;
-        }
-
-        $composerRequire = array_merge(
-            $composerData['require'] ?? [],
-            $composerData['require-dev'] ?? []
-        );
-
-        foreach ($packages as $package) {
-            $packageName = $this->getPackageName($package['name'], $package['config']);
-            if (! $packageName) {
-                continue;
-            }
-
-            $expectedPath = $package['config']['path'] ?? '';
-            if (empty($expectedPath)) {
-                continue;
-            }
-
-            if (! isset($composerRequire[$packageName])) {
-                return false;
-            }
-
-            $composerPath = $composerRequire[$packageName];
-            if (str_contains($composerPath, 'path:')) {
-                $composerPath = trim(str_replace('path:', '', $composerPath));
-                if ($composerPath !== $expectedPath) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }
