@@ -9,9 +9,16 @@ composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
 ```
 
-## Screenshot
+## Screenshots
+
+### Link
 
 ![Moox Devlink](./devlink.jpg)
+
+### Status
+
+![Moox Devlink](./devlink-status.jpg)
+![Moox Devlink](./devlink-status2.jpg)
 
 ## How It Works
 
