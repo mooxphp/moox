@@ -27,7 +27,7 @@ class DeployCommand extends Command
 
     protected string $packagesPath;
 
-    protected string $errorMessage;
+    private string $errorMessage = '';
 
     public function __construct()
     {

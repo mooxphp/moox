@@ -38,10 +38,8 @@ trait Check
             $isLocal = ($package['type'] ?? '') === 'local';
             $isPrivate = ($package['type'] ?? '') === 'private';
 
-            // Check if package is linked
             $isLinked = false;
             if ($isLocal) {
-                // Local packages: check for path entry in composer.json
                 foreach ($repositories as $repo) {
                     if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
                         $isLinked = true;
@@ -49,7 +47,6 @@ trait Check
                     }
                 }
             } else {
-                // Public and Private packages: check for symlink
                 $isLinked = is_link($packagePath);
             }
 
