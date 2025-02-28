@@ -255,6 +255,10 @@ trait Check
         );
 
         foreach ($packages as $package) {
+            if (! ($package['linked'] ?? false)) {
+                continue;
+            }
+
             $packageName = $this->getPackageName($package['name'], $package['config']);
             if (! $packageName) {
                 continue;
