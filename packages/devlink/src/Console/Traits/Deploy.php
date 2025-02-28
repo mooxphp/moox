@@ -9,15 +9,12 @@ trait Deploy
 {
     private function deploy(): void
     {
-        $this->unlink();
-        $this->cleanup();
+        $this->removeSymlinks();
+        $this->cleanupDirectory();
         $this->moveComposerFiles();
     }
 
-    /**
-     * Remove all symlinks in the packages directory.
-     */
-    private function unlink(): void
+    private function removeSymlinks(): void
     {
         if (is_dir($this->packagesPath)) {
             $i = 0;
@@ -25,6 +22,7 @@ trait Deploy
                 if ($item !== '.' && $item !== '..' && is_link("$this->packagesPath/$item")) {
                     unlink("$this->packagesPath/$item");
                     $i++;
+                    info("Removed $item");
                 }
             }
 
@@ -32,14 +30,13 @@ trait Deploy
         }
     }
 
-    /**
-     * Remove the packages directory if it is empty.
-     */
-    private function cleanup(): void
+    private function cleanupDirectory(): void
     {
         if (is_dir($this->packagesPath) && count(scandir($this->packagesPath)) === 2) {
             info('Removing packages directory...');
             rmdir($this->packagesPath);
+        } else {
+            info('Packages directory is not empty, skipping cleanup.');
         }
     }
 
@@ -47,6 +44,12 @@ trait Deploy
     {
         $linked = $this->composerJsonPath.'-linked';
         $deploy = $this->composerJsonPath.'-deploy';
+
+        if (! file_exists($linked) && file_exists($deploy)) {
+            info('Project is already in deployment state.');
+
+            return;
+        }
 
         if (! file_exists($linked)) {
             $this->errorMessage = 'composer.json-linked not found!';

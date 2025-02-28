@@ -14,6 +14,7 @@ trait Show
     private function show(): void
     {
         $fullStatus = $this->check();
+        $isInSync = $this->arePackagesInSync($fullStatus['packages']);
 
         $headers = ['Package', 'Type', 'Enabled', 'Valid', 'Active', 'Version', 'Path'];
         $rows = array_map(function ($row) {
@@ -47,26 +48,22 @@ trait Show
             $badge = '<fg=black;bg=red;options=bold> ';
         }
 
-        if ($fullStatus['status'] === 'unlinked') {
-            $badge = '<fg=black;bg=gray;options=bold> ';
+        if ($fullStatus['status'] === 'deploy') {
+            $badge = '<fg=black;bg=blue;options=bold> ';
         }
 
         if ($fullStatus['status'] === 'linked') {
             $badge = '<fg=black;bg=green;options=bold> ';
         }
 
-        if ($fullStatus['status'] === 'deployed') {
-            $badge = '<fg=black;bg=green;options=bold> ';
-        }
-
-        if ($fullStatus['updated']) {
+        if ($isInSync) {
             $updateBadge = '<fg=black;bg=green;options=bold> ';
         } else {
             $updateBadge = '<fg=black;bg=red;options=bold> ';
         }
 
         info('  '.$badge.strtoupper($fullStatus['status']).' </> '.$fullStatus['message']);
-        info('  '.$updateBadge.' UPDATE </> '.($fullStatus['updated'] ? 'All packages are in sync with composer.json' : 'You need to run `php artisan devlink:link` to update the packages'));
+        info('  '.$updateBadge.' UPDATE </> '.($isInSync ? 'All packages are in sync with composer.json' : 'You need to run `php artisan devlink:link` to update the packages'));
         info(' ');
     }
 
@@ -75,6 +72,16 @@ trait Show
         $packageName = $this->getPackageName($name, $package);
         if (! $packageName) {
             return null;
+        }
+
+        $path = $package['path'] ?? '';
+        if ($path && ! str_contains($path, 'disabled/')) {
+            $composerJson = realpath(base_path($path)).'/composer.json';
+            if (file_exists($composerJson)) {
+                $composerData = json_decode(file_get_contents($composerJson), true);
+
+                return $composerData['version'] ?? 'dev-main';
+            }
         }
 
         $composerLock = base_path('composer.lock');
@@ -94,15 +101,6 @@ trait Show
                 if (($pkg['name'] ?? '') === $packageName) {
                     return $pkg['version'] ?? null;
                 }
-            }
-        }
-
-        // If not found in lock file but composer.json exists, assume dev-main
-        $path = $package['path'] ?? '';
-        if ($path && ! str_contains($path, 'disabled/')) {
-            $composerJson = realpath(base_path($path)).'/composer.json';
-            if (file_exists($composerJson)) {
-                return 'dev-main';
             }
         }
 
@@ -158,5 +156,49 @@ trait Show
         $data = json_decode(file_get_contents($composerJson), true);
 
         return $data['name'] ?? null;
+    }
+
+    private function arePackagesInSync(array $packages): bool
+    {
+        $composerJson = base_path('composer.json');
+        if (! file_exists($composerJson)) {
+            return false;
+        }
+
+        $composerData = json_decode(file_get_contents($composerJson), true);
+        if (! $composerData) {
+            return false;
+        }
+
+        $composerRequire = array_merge(
+            $composerData['require'] ?? [],
+            $composerData['require-dev'] ?? []
+        );
+
+        foreach ($packages as $package) {
+            $packageName = $this->getPackageName($package['name'], $package['config']);
+            if (! $packageName) {
+                continue;
+            }
+
+            $expectedPath = $package['config']['path'] ?? '';
+            if (empty($expectedPath)) {
+                continue;
+            }
+
+            if (! isset($composerRequire[$packageName])) {
+                return false;
+            }
+
+            $composerPath = $composerRequire[$packageName];
+            if (str_contains($composerPath, 'path:')) {
+                $composerPath = trim(str_replace('path:', '', $composerPath));
+                if ($composerPath !== $expectedPath) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

@@ -15,7 +15,7 @@ trait Check
             $status = 'linked';
             $message = 'Devlink is linked, happy coding!';
         } elseif (! $hasDevlink && $hasDeploy) {
-            $status = 'unlinked';
+            $status = 'deploy';
             $message = 'Devlink is unlinked, ready for deployment!';
         }
 
@@ -38,10 +38,8 @@ trait Check
             $isLocal = ($package['type'] ?? '') === 'local';
             $isPrivate = ($package['type'] ?? '') === 'private';
 
-            // Check if package is linked
             $isLinked = false;
             if ($isLocal) {
-                // Local packages: check for path entry in composer.json
                 foreach ($repositories as $repo) {
                     if (($repo['type'] ?? '') === 'path' && ($repo['url'] ?? '') === $packagePath) {
                         $isLinked = true;
@@ -49,7 +47,6 @@ trait Check
                     }
                 }
             } else {
-                // Public and Private packages: check for symlink
                 $isLinked = is_link($packagePath);
             }
 
@@ -104,7 +101,7 @@ trait Check
         }
 
         if (file_exists(base_path('composer.json-deploy'))) {
-            $status = 'unlinked';
+            $status = 'deploy';
             $message = 'Devlink is unlinked and ready for deployment';
         }
 
@@ -143,10 +140,5 @@ trait Check
         }
 
         return true;
-    }
-
-    private function resolvePath(string $path): string
-    {
-        return str_starts_with($path, '~/') ? str_replace('~', getenv('HOME'), $path) : rtrim(realpath($path) ?: $path, '/');
     }
 }

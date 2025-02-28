@@ -23,7 +23,7 @@ class StatusCommand extends Command
 
     protected string $packagesPath;
 
-    protected string $errorMessage;
+    protected string $errorMessage = '';
 
     public function __construct()
     {
