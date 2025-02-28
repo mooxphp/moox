@@ -48,15 +48,11 @@ trait Show
             $badge = '<fg=black;bg=red;options=bold> ';
         }
 
-        if ($fullStatus['status'] === 'unlinked') {
-            $badge = '<fg=black;bg=gray;options=bold> ';
+        if ($fullStatus['status'] === 'deploy') {
+            $badge = '<fg=black;bg=blue;options=bold> ';
         }
 
         if ($fullStatus['status'] === 'linked') {
-            $badge = '<fg=black;bg=green;options=bold> ';
-        }
-
-        if ($fullStatus['status'] === 'deployed') {
             $badge = '<fg=black;bg=green;options=bold> ';
         }
 

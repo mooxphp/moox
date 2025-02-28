@@ -15,7 +15,7 @@ trait Check
             $status = 'linked';
             $message = 'Devlink is linked, happy coding!';
         } elseif (! $hasDevlink && $hasDeploy) {
-            $status = 'unlinked';
+            $status = 'deploy';
             $message = 'Devlink is unlinked, ready for deployment!';
         }
 
@@ -101,7 +101,7 @@ trait Check
         }
 
         if (file_exists(base_path('composer.json-deploy'))) {
-            $status = 'unlinked';
+            $status = 'deploy';
             $message = 'Devlink is unlinked and ready for deployment';
         }
 
@@ -140,10 +140,5 @@ trait Check
         }
 
         return true;
-    }
-
-    private function resolvePath(string $path): string
-    {
-        return str_starts_with($path, '~/') ? str_replace('~', getenv('HOME'), $path) : rtrim(realpath($path) ?: $path, '/');
     }
 }
