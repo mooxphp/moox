@@ -255,7 +255,7 @@ trait Check
         );
 
         foreach ($packages as $package) {
-            if (! ($package['linked'] ?? false)) {
+            if (! ($package['active'] ?? false) && ! ($package['linked'] ?? false)) {
                 continue;
             }
 
@@ -269,6 +269,12 @@ trait Check
                 continue;
             }
 
+            // If package is active but not linked, we're out of sync
+            if (($package['active'] ?? false) && ! ($package['linked'] ?? false)) {
+                return false;
+            }
+
+            // If package is linked but not in composer.json, we're out of sync
             if (! isset($composerRequire[$packageName])) {
                 return false;
             }
