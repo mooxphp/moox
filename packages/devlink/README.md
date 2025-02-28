@@ -13,12 +13,16 @@ php artisan vendor:publish --tag="devlink-config"
 
 ### Link
 
-![Moox Devlink](./devlink.jpg)
+![Moox Devlink](./screenshots/devlink.jpg)
 
 ### Status
 
-![Moox Devlink](./devlink-status.jpg)
-![Moox Devlink](./devlink-status2.jpg)
+![Moox Devlink](./screenshots/devlink-status.jpg)
+![Moox Devlink](./screenshots/devlink-status2.jpg)
+
+#### Verbose
+
+![Moox Devlink](./screenshots/devlink-verbose.jpg)
 
 ## How It Works
 
@@ -51,6 +55,7 @@ composer.json-deploy
     - Shows the configuration and status of each package
     - Shows the link status (Linked, Unlinked, Deployed)
     - Shows the update status (Up-to-date, Outdated)
+    - Has a verbose mode `-v` to show more information
 
 5. When running `devlink:link`:
 
@@ -80,7 +85,7 @@ composer.json-deploy
 
 Mac and Linux work out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
 
-![Moox Devlink](./devlink-mix.jpg)
+![Moox Devlink](./screenshots/devlink-mix.jpg)
 
 ### Windows
 
