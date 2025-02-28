@@ -15,6 +15,7 @@ trait Link
         $this->createSymlinks();
         $this->updateComposerJson();
         $this->createLinkedComposerJson();
+        $this->removeDeployComposerJson();
     }
 
     private function prepare(): void
@@ -148,12 +149,14 @@ trait Link
         foreach ($composerJson['repositories'] ?? [] as $key => $repo) {
             if ($repo['type'] === 'path' && str_starts_with($repo['url'], $packagesBaseName.'/')) {
                 $package = basename($repo['url']);
+                $packageName = $this->getPackageName($package, $configuredPackages[$package] ?? []);
 
-                if (! isset($configuredPackages[$package]) || ! ($configuredPackages[$package]['active'] ?? false)) {
+                if (! isset($configuredPackages[$package]) ||
+                    ! ($configuredPackages[$package]['active'] ?? false)) {
                     $removedPackages[] = [
                         'key' => $key,
                         'package' => $package,
-                        'name' => "moox/$package",
+                        'name' => $packageName ?? $package,
                     ];
                 }
             }
@@ -206,7 +209,6 @@ trait Link
         $removedRepos = [];
         $removedRequires = [];
 
-        // First, remove inactive packages
         foreach ($repositories as $key => $repo) {
             if (($repo['type'] ?? '') === 'path') {
                 $name = basename($repo['url']);
@@ -214,16 +216,18 @@ trait Link
 
                 if (! $package || ! ($package['active'] ?? false)) {
                     unset($repositories[$key]);
-                    unset($require["moox/$name"]);
-                    unset($requireDev["moox/$name"]);
-                    $removedRepos[] = $name;
-                    $removedRequires[] = "moox/$name";
-                    $updated = true;
+                    $packageName = $this->getPackageName($name, $package ?? []);
+                    if ($packageName) {
+                        unset($require[$packageName]);
+                        unset($requireDev[$packageName]);
+                        $removedRepos[] = $name;
+                        $removedRequires[] = $packageName;
+                        $updated = true;
+                    }
                 }
             }
         }
 
-        // Then add or update active packages
         foreach ($this->packages as $name => $package) {
             if (! ($package['active'] ?? false)) {
                 continue;
@@ -270,7 +274,6 @@ trait Link
                 $updated = true;
             }
 
-            // Remove from the other section if it exists
             if ($isDev && isset($require[$packageName])) {
                 unset($require[$packageName]);
                 $updated = true;
@@ -279,7 +282,6 @@ trait Link
                 $updated = true;
             }
 
-            // Add to the correct section if not present
             if ($isDev && ! isset($requireDev[$packageName])) {
                 $requireDev[$packageName] = '*';
                 $addedRequires[] = $packageName.' (dev)';
@@ -382,5 +384,14 @@ trait Link
         );
 
         info('Created composer.json-linked with local package repositories');
+    }
+
+    private function removeDeployComposerJson(): void
+    {
+        $deployPath = dirname($this->composerJsonPath).'/composer.json-deploy';
+        if (file_exists($deployPath)) {
+            unlink($deployPath);
+            info('Removed composer.json-deploy');
+        }
     }
 }

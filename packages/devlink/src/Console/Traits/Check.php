@@ -127,14 +127,18 @@ trait Check
     {
         $composerJson = json_decode(file_get_contents($this->composerJsonPath), true);
         $devlinkConfig = config('devlink.packages');
+        $composerRequire = array_merge(
+            $composerJson['require'] ?? [],
+            $composerJson['require-dev'] ?? []
+        );
 
         foreach ($devlinkConfig as $package => $config) {
             if (! ($config['active'] ?? false)) {
                 continue;
             }
 
-            $packageName = 'moox/'.$package;
-            if (! isset($composerJson['require'][$packageName]) && ! isset($composerJson['require-dev'][$packageName])) {
+            $packageName = $this->getPackageName($package, $config);
+            if (! $packageName || ! isset($composerRequire[$packageName])) {
                 return false;
             }
         }
