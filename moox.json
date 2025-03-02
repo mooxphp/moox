@@ -2,87 +2,223 @@
     "packages": [
         {
             "name": "audit",
-            "latest": "3.1.0"
+            "description": "Moox Audit is a Filament and Laravel package that allows to log every detail of your application.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "logging"
         },
         {
             "name": "builder",
-            "latest": "3.1.0"
+            "description": "Moox Builder is a Filament and Laravel package that allows to build your own components.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "development",
+            "current": {
+                "features": [
+                    "This is a feature"
+                ],
+                "fixes": [
+                    "This is a commit message"
+                ]
+            },
+            "classes": [
+                "This is a class"
+            ],
+            "models": [
+                "This is a model"
+            ],
+            "resources": [
+                "This is a resource"
+            ],
+            "routes": [
+                "This is a route"
+            ],
+            "views": [
+                "This is a view"
+            ]
         },
         {
             "name": "category",
-            "latest": "3.1.0"
+            "description": "Moox Category is a Filament and Laravel package that allows to manage your categories.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "taxonomy",
+            "used_for": "single or system wide categories",
+            "template_for": "nested taxonomy",
+            "template_rename": {
+                "Category": "%%Taxonomy%%",
+                "Categories": "%%Taxonomys%%",
+                "category": "%%taxonomy%%",
+                "categories": "%%taxonomys%%"
+            },
+            "current": {
+                "main": [
+                    "This is a feature"
+                ],
+                "features": [
+                    "This is a feature"
+                ],
+                "classes": [
+                    "This is a class"
+                ],
+                "models": [
+                    "This is a model"
+                ],
+                "resources": [
+                    "This is a resource"
+                ],
+                "routes": [
+                    "This is a route"
+                ],
+                "views": [
+                    "This is a view"
+                ]
+            },
+            "next": {
+                "main": [
+                    "This is a feature"
+                ],
+                "features": [
+                    "This is a feature"
+                ],
+                "fixes": [
+                    "This is a commit message"
+                ],
+                "classes": [
+                    "This is a class"
+                ],
+                "models": [
+                    "This is a model"
+                ],
+                "resources": [
+                    "This is a resource"
+                ],
+                "routes": [
+                    "This is a route"
+                ],
+                "views": [
+                    "This is a view"
+                ]
+            }
         },
         {
             "name": "core",
-            "latest": "3.1.0"
+            "description": "Moox Core is a Filament and Laravel package that provides core functionality for your application.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "core"
         },
         {
             "name": "expiry",
-            "latest": "3.1.0"
+            "description": "Moox Expiry is a Filament and Laravel package that allows to manage your expirations.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "tools"
         },
         {
             "name": "flags",
-            "latest": "3.1.0"
+            "description": "Moox Flags is a Filament and Laravel package that allows to manage your flags.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "icons"
         },
         {
             "name": "jobs",
-            "latest": "3.1.0"
-        },
-        {
-            "name": "locate",
-            "latest": "3.1.0"
+            "description": "Moox Jobs is a Filament and Laravel package that allows to manage your job queues.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "tools"
         },
         {
             "name": "login-link",
-            "latest": "3.1.0"
+            "description": "Moox Login Link is a Filament and Laravel package that allows to send login links to your users.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         },
         {
             "name": "notifications",
-            "latest": "3.1.0"
+            "description": "Moox Notifications is a Filament and Laravel package that allows to send notifications to your users.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         },
         {
             "name": "passkey",
-            "latest": "3.1.0"
+            "description": "Moox Passkey is a Filament and Laravel package that allows passkey authentication.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         },
         {
             "name": "permission",
-            "latest": "3.1.0"
+            "description": "Moox Permission is a Filament and Laravel package that allows to manage your permissions.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         },
         {
             "name": "press",
-            "latest": "3.1.0"
+            "description": "Moox Press is a Filament and Laravel package that connects to WordPress.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "press"
         },
         {
             "name": "security",
-            "latest": "3.1.0"
+            "description": "Moox Security is a Filament and Laravel package that allows to manage your security.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "security"
         },
         {
             "name": "skeleton",
-            "latest": "3.1.0"
+            "description": "Moox Skeleton is a GitHub template for building a Laravel package.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "development"
         },
         {
             "name": "sync",
-            "latest": "3.1.0"
+            "description": "Moox Sync is a Filament and Laravel package that allows to sync your data.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "tools"
         },
         {
             "name": "tag",
-            "latest": "3.1.0"
+            "description": "Moox Tag is a Filament and Laravel package that allows to manage your tags.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "taxonomy"
         },
         {
             "name": "trainings",
-            "latest": "3.1.0"
+            "description": "Moox Trainings is a Filament and Laravel package that allows to manage your trainings.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "tools"
         },
         {
             "name": "user",
-            "latest": "3.1.0"
+            "description": "Moox User is a Filament and Laravel package that allows to manage your users.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         },
         {
             "name": "user-device",
-            "latest": "3.1.0"
+            "description": "Moox User Device is a Filament and Laravel package that allows to manage your user devices.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         },
         {
             "name": "user-session",
-            "latest": "3.1.0"
+            "description": "Moox User Session is a Filament and Laravel package that allows to manage your user sessions.",
+            "latest": "3.1.0",
+            "released": true,
+            "category": "users"
         }
     ]
 }
