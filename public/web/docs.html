@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Release Timeline</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+        />
+        <script>
+            tailwind.config = {
+                darkMode: "class",
+            };
+        </script>
+        <script>
+            function updateButtonText() {
+                const isDark =
+                    document.documentElement.classList.contains("dark");
+                const button = document.getElementById("themeToggle");
+                button.textContent = isDark ? "Light" : "Dark";
+            }
+
+            function toggleDarkMode() {
+                const currentTheme =
+                    localStorage.getItem("theme") ||
+                    (window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? "dark"
+                        : "light");
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+                localStorage.setItem("theme", newTheme);
+                document.documentElement.classList.remove("dark", "light");
+                document.documentElement.classList.add(newTheme);
+                updateButtonText();
+            }
+
+            window.onload = function () {
+                const theme =
+                    localStorage.getItem("theme") ||
+                    (window.matchMedia("(prefers-color-scheme: dark)").matches
+                        ? "dark"
+                        : "light");
+                document.documentElement.classList.add(theme);
+                updateButtonText();
+
+                window
+                    .matchMedia("(prefers-color-scheme: dark)")
+                    .addEventListener("change", (e) => {
+                        if (!localStorage.getItem("theme")) {
+                            const newTheme = e.matches ? "dark" : "light";
+                            document.documentElement.classList.remove(
+                                "dark",
+                                "light"
+                            );
+                            document.documentElement.classList.add(newTheme);
+                            updateButtonText();
+                        }
+                    });
+            };
+        </script>
+        <script src="https://unpkg.com/alpinejs" defer></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                font-family: "Exo", sans-serif;
+            }
+        </style>
+    </head>
+    <body
+        style="background: radial-gradient(at right center, #0a10ad, #00051b)"
+        class="text-gray-900 dark:text-gray-100 p-6 bg-white dark:bg-gray-900"
+    >
+        <header class="max-w-6xl mx-auto mt-10 mb-20">
+            <div class="flex justify-between items-center">
+                <img src="../moox-logo.png" alt="Moox Logo" class="h-10" />
+                <nav class="flex justify-end gap-5">
+                    <a class="text-gray-200 px-2 py-1" href="index.html"
+                        >Home</a
+                    >
+                    <a class="text-gray-200 px-2 py-1" href="packages.html"
+                        >Packages</a
+                    >
+                    <a class="text-gray-200 px-2 py-1" href="#">Releases</a>
+                    <a class="text-gray-200 px-2 py-1" href="docs.html">Docs</a>
+                    <a class="text-gray-200 px-2 py-1" href="#">Support</a>
+                    <a
+                        class="bg-transparent border border-pink-500 text-gray-200 px-2 py-1"
+                        href="#"
+                        >Demo</a
+                    >
+                    <a href="#" class="flex items-center h-8 w-8">
+                        <img src="github.png" alt="GitHub" />
+                    </a>
+                    <button
+                        id="themeToggle"
+                        onclick="toggleDarkMode()"
+                        class="text-gray-200 px-2 py-1"
+                    >
+                        Dark
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <div class="max-w-6xl mx-auto my-10">
+            <div class="flex">
+                <div class="w-1/4">
+                    <div class="mr-20 mb-5">
+                        <div class="relative flex items-center gap-2">
+                            <span class="material-icons text-gray-200"
+                                >search</span
+                            >
+                            <input
+                                type="text"
+                                placeholder="Search docs..."
+                                class="w-full py-2 bg-transparent border-b border-pink-500/20 text-gray-200 placeholder-gray-400 focus:outline-none focus:border-pink-500/40"
+                            />
+                        </div>
+                    </div>
+
+                    <div x-data="{ active: 'getting-started' }">
+                        <ul class="mb-10">
+                            <li class="mb-4">
+                                <a
+                                    href="#"
+                                    class="text-gray-200 flex items-center gap-2"
+                                    @click.prevent="active = active === 'getting-started' ? null : 'getting-started'"
+                                >
+                                    <span class="material-icons"
+                                        >rocket_launch</span
+                                    >
+                                    Getting Started
+                                    <span
+                                        class="bg-pink-500/20 text-pink-200 text-xs px-2 py-0.5 rounded-full border border-pink-500/20 ml-auto mr-20"
+                                    >
+                                        <span
+                                            class="material-icons text-sm"
+                                            x-text="active === 'getting-started' ? 'expand_less' : 'expand_more'"
+                                        ></span>
+                                    </span>
+                                </a>
+                                <ul
+                                    class="ml-8 mt-5 mb-7"
+                                    x-show="active === 'getting-started'"
+                                    x-collapse
+                                >
+                                    <li class="my-3">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            Introduction
+                                        </a>
+                                    </li>
+                                    <li class="my-3">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            Installation
+                                        </a>
+                                    </li>
+                                    <li class="my-3">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            Updates
+                                        </a>
+                                    </li>
+                                    <li class="my-3">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            Configuration
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="mb-4">
+                                <a
+                                    href="#"
+                                    class="text-gray-200 flex items-center gap-2"
+                                    @click.prevent="active = active === 'packages' ? null : 'packages'"
+                                >
+                                    <span class="material-icons"
+                                        >inventory</span
+                                    >
+                                    Packages
+                                    <span
+                                        class="bg-pink-500/20 text-pink-200 text-xs px-2 py-0.5 rounded-full border border-pink-500/20 ml-auto mr-20"
+                                    >
+                                        <span
+                                            class="material-icons text-sm"
+                                            x-text="active === 'packages' ? 'expand_less' : 'expand_more'"
+                                        ></span>
+                                    </span>
+                                </a>
+                                <ul
+                                    class="ml-8 mt-2"
+                                    x-show="active === 'packages'"
+                                    x-collapse
+                                >
+                                    <li class="mb-2">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            <span class="material-icons text-sm"
+                                                >schema</span
+                                            >
+                                            Architecture
+                                        </a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            <span class="material-icons text-sm"
+                                                >extension</span
+                                            >
+                                            Plugins
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="mb-4">
+                                <a
+                                    href="#"
+                                    class="text-gray-200 flex items-center gap-2"
+                                    @click.prevent="active = active === 'advanced' ? null : 'advanced'"
+                                >
+                                    <span class="material-icons">code</span>
+                                    Advanced
+                                    <span
+                                        class="bg-pink-500/20 text-pink-200 text-xs px-2 py-0.5 rounded-full border border-pink-500/20 ml-auto mr-20"
+                                    >
+                                        <span
+                                            class="material-icons text-sm"
+                                            x-text="active === 'advanced' ? 'expand_less' : 'expand_more'"
+                                        ></span>
+                                    </span>
+                                </a>
+                                <ul
+                                    class="ml-8 mt-2"
+                                    x-show="active === 'advanced'"
+                                    x-collapse
+                                >
+                                    <li class="mb-2">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            <span class="material-icons text-sm"
+                                                >api</span
+                                            >
+                                            API Reference
+                                        </a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            <span class="material-icons text-sm"
+                                                >terminal</span
+                                            >
+                                            CLI Commands
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="mb-4">
+                                <a
+                                    href="#"
+                                    class="text-gray-200 flex items-center gap-2"
+                                    @click.prevent="active = active === 'support' ? null : 'support'"
+                                >
+                                    <span class="material-icons">help</span>
+                                    Support
+                                    <span
+                                        class="bg-pink-500/20 text-pink-200 text-xs px-2 py-0.5 rounded-full border border-pink-500/20 ml-auto mr-20"
+                                    >
+                                        <span
+                                            class="material-icons text-sm"
+                                            x-text="active === 'support' ? 'expand_less' : 'expand_more'"
+                                        ></span>
+                                    </span>
+                                </a>
+                                <ul
+                                    class="ml-8 mt-2"
+                                    x-show="active === 'support'"
+                                    x-collapse
+                                >
+                                    <li class="mb-3">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            <span class="material-icons text-sm"
+                                                >bug_report</span
+                                            >
+                                            Troubleshooting
+                                        </a>
+                                    </li>
+                                    <li class="mb-3">
+                                        <a
+                                            href="#"
+                                            class="text-gray-400 flex items-center gap-2"
+                                        >
+                                            <span class="material-icons text-sm"
+                                                >contact_support</span
+                                            >
+                                            FAQ
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="w-3/4">
+                    <div
+                        class="bg-slate-100/90 dark:bg-slate-950/60 rounded-lg p-6 mb-6 border border-pink-500/20 shadow-[0px_-4px_15px_-5px_rgba(139,92,246,0.5),0px_4px_15px_-5px_rgba(236,72,153,0.5)]"
+                    >
+                        <h2
+                            class="text-blue-900 dark:text-gray-200 text-2xl font-bold mb-5"
+                        >
+                            Moox Jobs
+                        </h2>
+
+                        <p class="text-blue-900 dark:text-gray-300 mb-10">
+                            Moox Jobs is a job board package for Moox. It allows
+                            you to create a job board and manage your jobs.
+                        </p>
+
+                        <img
+                            src="package.jpg"
+                            alt="Moox Jobs"
+                            class="w-full mb-10"
+                        />
+
+                        <p class="text-blue-900 dark:text-gray-300 mb-10">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit. Sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Lorem ipsum dolor sit amet,
+                            consectetur adipiscing elit. Sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Lorem
+                            ipsum dolor sit amet, consectetur adipiscing elit.
+                            Sed do eiusmod tempor incididunt ut labore et dolore
+                            magna aliqua. Lorem ipsum dolor sit amet,
+                            consectetur adipiscing elit. Sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua.
+                        </p>
+                    </div>
+
+                    <div
+                        class="bg-slate-100/90 dark:bg-slate-950/60 rounded-lg p-6 mb-6 border border-pink-500/20 shadow-[0px_-4px_15px_-5px_rgba(139,92,246,0.5),0px_4px_15px_-5px_rgba(236,72,153,0.5)]"
+                    >
+                        <img
+                            src="https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-jobs.jpg"
+                            alt="Moox Jobs"
+                            class="w-full mb-10"
+                        />
+
+                        <h2
+                            class="text-blue-900 dark:text-gray-200 text-2xl font-bold mb-5"
+                        >
+                            Installation
+                        </h2>
+                        <p class="text-blue-900 dark:text-gray-300 mb-10">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit. Sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Lorem ipsum dolor sit amet,
+                            consectetur adipiscing elit. Sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua. Lorem
+                            ipsum dolor sit amet, consectetur adipiscing elit.
+                            Sed do eiusmod tempor incididunt ut labore et dolore
+                            magna aliqua. Lorem ipsum dolor sit amet,
+                            consectetur adipiscing elit. Sed do eiusmod tempor
+                            incididunt ut labore et dolore magna aliqua.
+                        </p>
+                        <h2
+                            class="text-blue-900 dark:text-gray-200 text-2xl font-bold mb-5"
+                        >
+                            Configuration
+                        </h2>
+                        <p class="text-blue-900 dark:text-gray-300 mb-10">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit. Sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua.
+                        </p>
+                        <h2
+                            class="text-blue-900 dark:text-gray-200 text-2xl font-bold mb-5"
+                        >
+                            Usage
+                        </h2>
+                        <p class="text-blue-900 dark:text-gray-300 mb-10">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit. Sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

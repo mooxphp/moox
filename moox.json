@@ -1,4 +1,12 @@
 {
+    "stats": {
+        "packages": 10,
+        "downloads": 1000,
+        "downloads_packagist": 100,
+        "downloads_vscode": 100,
+        "stargazers": 50,
+        "contributors": 10
+    },
     "packages": [
         {
             "name": "audit",
@@ -41,6 +49,8 @@
             "name": "category",
             "description": "Moox Category is a Filament and Laravel package that allows to manage your categories.",
             "latest": "3.1.0",
+            "stargazers": 50,
+            "downloads": 100,
             "released": true,
             "category": "taxonomy",
             "used_for": "single or system wide categories",

@@ -7,38 +7,30 @@
 
         <title>{{ config('app.name', 'Moox') }}</title>
 
-        <!-- Fonts -->
-        <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-        <!-- Styles -->
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
-        <x-jet-banner />
+        <x-gradient-background/>
 
-        <div class="min-h-screen bg-gray-100">
-            @livewire('navigation-menu')
-
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
+        <div class="min-h-screen">
+            <header class="max-w-6xl mx-auto mt-10 mb-20">
+                <div class="flex justify-between items-center">
+                    <x-logo/>
+                    <x-main-nav/>
+                </div>
+            </header>
 
             <!-- Page Content -->
-            <main>
-                {{ $slot }}
+            <main class="max-w-6xl mx-auto">
+                @yield('content')
             </main>
         </div>
 
         @stack('modals')
-
         @livewireScripts
     </body>
 </html>

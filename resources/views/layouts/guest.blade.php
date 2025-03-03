@@ -1,80 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<head>
-    <title>Moox - Packages for Laravel and Filament</title>
-    <meta charset="utf-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+        <title>{{ config('app.name', 'Moox') }}</title>
 
-    <!-- Fonts -->
-    <link
-        rel="preconnect"
-        href="https://fonts.bunny.net"
-    >
-    <link
-        href="https://fonts.bunny.net/css?family=exo:400,600,800"
-        rel="stylesheet"
-    />
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body
-    class="bg-[#001829] bg-no-repeat bg-right-top text-[#0e9bdc]"
+        @vite(['resources/css/app.css'])
+        @livewireStyles
+        @stack('styles')
+    </head>
+    <body class="text-gray-100 p-6 bg-gray-900"
     style="
-        font-family: 'Exo', sans-serif;
-        background-image: url('{{ asset('img/bg.jpg') }}')"
->
-    <header>
-        <nav class="flex justify-between m-8">
-            <a href="/"><img src="{{ asset('img/logo.png') }}" class="h-10 w-auto"></a>
-            <div class="flex items-center text-3xl">
-                <a
-                    class="px-4 text-lg hover:text-[#69bce2]"
-                    href="/"
-                >Home</a>
-                <a
-                    class="px-4 text-lg hover:text-[#69bce2]"
-                    href="/packages"
-                >Packages</a>
-                <!-- Currently not used
-                <a
-                    class="px-4 text-lg hover:text-[#69bce2]"
-                    href="/custom"
-                >Custom</a>
-                -->
-                <a
-                    class="px-4 text-lg hover:text-[#69bce2]"
-                    href="/demo"
-                >Demo</a>
-                <a
-                    class="has-tooltip"
-                    href="https://github.com/mooxphp/moox"
-                >
-                    <img
-                        class="h-8 px-4"
-                        style="filter: drop-shadow(0px 3px 3px #0C9ADC);"
-                        src="{{ asset('img/octocat.png') }} "
-                        alt="Code on GitHub"
-                    >
-                    <span class='text-xs ml-3 tooltip p-1 rounded bg-sky-900'>GitHub</span>
-                </a>
+    background: radial-gradient(at right center, rgba(10, 16, 173, 0.5), rgba(0, 5, 27, 0.75)), url('{{ asset('web/space.jpg') }}');
+    background-position: center;
+    min-height: 100vh;
+    ">
+        <header class="max-w-6xl mx-auto mt-10 mb-20">
+            <div class="flex justify-between items-center">
+                <x-logo/>
+                <x-main-nav/>
             </div>
-        </nav>
-    </header>
+        </header>
 
-    <div
-        id="content"
-        class="mb-10"
-    >
+        <main class="max-w-6xl mx-auto">
+            @yield('content')
+        </main>
 
-        @yield('content')
+        <footer class="max-w-6xl mx-auto mt-20 mb-10">
+            <x-footer/>
+        </footer>
 
-    </div>
-    <x-impersonate::banner/>
-</body>
-
+        @livewireScripts
+        @vite(['resources/js/app.js'])
+        @stack('scripts')
+    </body>
 </html>

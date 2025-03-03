@@ -213,4 +213,17 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Moox Stats
+    |--------------------------------------------------------------------------
+    |
+    | Used for getting the stats of Moox.
+    |
+    */
+    'github_token' => env('GITHUB_TOKEN'),
+    'github_org' => env('GITHUB_ORG', 'mooxphp'),
+    'packagist_vendor' => env('PACKAGIST_VENDOR', 'moox'),
+    'vscode_extension_id' => env('VSCODE_EXTENSION_ID', 'adrolli.tallui-laravel-livewire-tailwind'),
+
 ];

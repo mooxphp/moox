@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    body {
+        font-family: "Noto Sans", sans-serif;
+    }
+}
+
 .tooltip {
     @apply absolute invisible;
 }
@@ -20,5 +26,35 @@
 
 h1 {
     @apply text-3xl;
-    font-family: "Exo", sans-serif;
+}
+
+.gradient-text-vibrant {
+    background: linear-gradient(to right, #ff1493, #ff69b4, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-text-stroke: 1px #4c1d95;
+}
+
+.gradient-text-default {
+    background: linear-gradient(45deg, #ec4899, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-text-stroke: 1px #4c1d95;
+}
+
+.gradient-text-subtle {
+    background: linear-gradient(
+        to right,
+        #ec4899 20%,
+        #f472b6 40%,
+        #8b5cf6 60%,
+        #ec4899 80%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    -webkit-text-stroke: 1px #4c1d95;
 }
