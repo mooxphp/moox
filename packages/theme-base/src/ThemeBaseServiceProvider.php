@@ -18,15 +18,12 @@ class ThemeBaseServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
+    }
 
-        // optional Moox settings
-        /*
-        $this->getMooxPackage()
-            ->mooxPlugins([
-                'theme-base',
-            ])
-            ->mooxFirstPlugin(true)
-            ->mooxRequiredSeeders(['ThemeBaseSeeder']);
-        */
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'theme-base');
     }
 }

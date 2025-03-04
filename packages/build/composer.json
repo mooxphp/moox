@@ -1,6 +1,6 @@
 {
-    "name": "moox/skeleton",
-    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
+    "name": "moox/build",
+    "description": "Build Laravel Packages and Filament Resources with a single command",
     "keywords": [
         "Moox",
         "Laravel",
@@ -8,7 +8,7 @@
         "Moox package",
         "Laravel package"
     ],
-    "homepage": "https://moox.org/docs/skeleton",
+    "homepage": "https://moox.org/docs/build",
     "license": "MIT",
     "authors": [
         {
@@ -22,13 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Moox\\Skeleton\\": "src",
-            "Moox\\Skeleton\\Database\\Factories\\": "database/factories"
+            "Moox\\Build\\": "src",
+            "Moox\\Build\\Database\\Factories\\": "database/factories"
         }
     },
     "extra": {
         "moox": {
-            "title": "Moox Skeleton",
+            "title": "Moox Build",
             "released": false,
             "stability": "dev",
             "category": "development",
@@ -36,17 +36,17 @@
                 "building new Moox packages, not used as installed package"
             ],
             "template_for": [
-                "creating simple Laravel packages"
+                "we do not know yet"
             ],
             "template_replace": {
                 "Moox Developer": "%%Author%%",
                 "dev@moox.org": "%%AuthorEmail%%",
-                "skeleton.jpg": "made-with-moox.jpg",
-                "Skeleton": "%%PackageName%%",
-                "skeleton": "%%PackageSlug%%",
-                "This template is used for generating Laravel packages, all Moox packages are built with this template.": "%%Description%%",
+                "made-with-moox.jpg": "made-with-moox.jpg",
+                "Build": "%%PackageName%%",
+                "build": "%%PackageSlug%%",
+                "Build Laravel Packages and Filament Resources with a single command": "%%Description%%",
                 "building new Moox packages, not used as installed package": "%%UsedFor%%",
-                "creating simple Laravel packages": "%%TemplateFor%%"
+                "we do not know yet": "%%TemplateFor%%"
             },
             "template_section_replace": {
                 "/<!--shortdesc-->.*<!--\/shortdesc-->/s": "%%Description%%"
@@ -60,7 +60,7 @@
         },
         "laravel": {
             "providers": [
-                "Moox\\Skeleton\\SkeletonServiceProvider"
+                "Moox\\Build\\BuildServiceProvider"
             ]
         }
     },
@@ -75,8 +75,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Moox\\Skeleton\\Tests\\": "tests",
-            "Moox\\Skeleton\\Database\\Factories\\": "database/factories",
+            "Moox\\Build\\Tests\\": "tests",
+            "Moox\\Build\\Database\\Factories\\": "database/factories",
             "Workbench\\App\\": "workbench/app/",
             "Workbench\\Database\\Factories\\": "workbench/database/factories/",
             "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
@@ -87,7 +87,7 @@
             "@clear",
             "@prepare"
         ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "clear": "@php vendor/bin/testbench package:purge-build --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": "@php vendor/bin/testbench workbench:build --ansi",
         "serve": [

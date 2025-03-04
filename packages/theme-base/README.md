@@ -1,8 +1,10 @@
 ![Moox ThemeBase](https://github.com/mooxphp/moox/raw/main/art/banner/made-with-moox.jpg)
 
-# Moox ThemeBase
+# Moox Theme Base
 
-This is my package theme-base Press the Template-Button in GitHub, create your own Laravel package. Learn more about `Moox ThemeBase` at [moox.org/docs/theme-base](https://moox.org/docs/theme-base).
+Our Base Theme uses TailwindCSS and AlpineJS. It is a good starting point for your own theme and the fallback for all Moox themes.
+
+Learn more about `Moox ThemeBase` at [moox.org/docs/theme-base](https://moox.org/docs/theme-base).
 
 ## Requirements
 

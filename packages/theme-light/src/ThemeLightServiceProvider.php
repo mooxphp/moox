@@ -18,15 +18,13 @@ class ThemeLightServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
+    }
 
-        // optional Moox settings
-        /*
-        $this->getMooxPackage()
-            ->mooxPlugins([
-                'theme-light',
-            ])
-            ->mooxFirstPlugin(true)
-            ->mooxRequiredSeeders(['ThemeLightSeeder']);
-        */
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'theme-base');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'theme-light');
     }
 }

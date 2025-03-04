@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Moox\Skeleton;
+namespace Moox\Build;
 
+use Moox\Build\Console\Commands\BuildCommand;
 use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
 
-class SkeletonServiceProvider extends MooxServiceProvider
+class BuildServiceProvider extends MooxServiceProvider
 {
     public function configureMoox(Package $package): void
     {
         $package
-            ->name('skeleton')
+            ->name('build')
             ->hasConfigFile()
             ->hasViews()
             ->hasTranslations()
@@ -23,11 +24,22 @@ class SkeletonServiceProvider extends MooxServiceProvider
         /*
         $this->getMooxPackage()
             ->mooxPlugins([
-                'skeleton',
+                'build',
             ])
             ->mooxFirstPlugin(true)
             ->mooxParentTheme('theme-base')
-            ->mooxRequiredSeeders(['SkeletonSeeder']);
+            ->mooxRequiredSeeders(['BuildSeeder']);
         */
+    }
+
+    public function packageBooted(): void
+    {
+        parent::packageBooted();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                BuildCommand::class,
+            ]);
+        }
     }
 }

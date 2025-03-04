@@ -1,6 +1,6 @@
 {
     "name": "moox/theme-base",
-    "description": "This is my package theme-base",
+    "description": "Our Base Theme uses TailwindCSS and AlpineJS. It is a good starting point for your own theme and the fallback for all Moox themes.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -33,10 +33,10 @@
             "stability": "dev",
             "category": "development",
             "used_for": [
-                "we do not know yet"
+                "base theme and fallback for all Moox themes"
             ],
             "template_for": [
-                "we do not know yet"
+                "basic theme using TailwindCSS and AlpineJS"
             ],
             "template_replace": {
                 "Moox Developer": "%%Author%%",
@@ -45,8 +45,8 @@
                 "ThemeBase": "%%PackageName%%",
                 "theme-base": "%%PackageSlug%%",
                 "This is my package theme-base": "%%Description%%",
-                "we do not know yet": "%%UsedFor%%",
-                "we do not know yet": "%%TemplateFor%%"
+                "base theme and fallback for all Moox themes": "%%UsedFor%%",
+                "basic theme using TailwindCSS and AlpineJS": "%%TemplateFor%%"
             },
             "template_remove": [
                 "build.php"

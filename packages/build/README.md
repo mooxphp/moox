@@ -1,14 +1,10 @@
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton.jpg)
+![Moox Build](https://github.com/mooxphp/moox/raw/main/art/banner/made-with-moox.jpg)
 
-# Moox Skeleton
+# Moox Build
 
-<!--shortdesc-->
+Build Laravel Packages and Filament Resources with a single command.
 
-This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package.
-
-<!--/shortdesc-->
-
-Learn more about `Moox Skeleton` at [moox.org/docs/skeleton](https://moox.org/docs/skeleton).
+Learn more about `Moox Build` at [moox.org/docs/build](https://moox.org/docs/build).
 
 ## Requirements
 
@@ -19,7 +15,7 @@ This package requires Moox Core that cares for the Laravel and Filament dependen
 These two commmands are all you need to install the package:
 
 ```bash
-composer require moox/skeleton
+composer require moox/build
 php artisan moox:install
 ```
 
@@ -27,11 +23,11 @@ Curious what the install command does? See the [installation documentation](http
 
 ## Screenshot
 
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/screenshots/skeleton.jpg)
+![Moox Build](https://github.com/mooxphp/moox/raw/main/art/screenshots/made-with-moox.jpg)
 
 ## Documentation
 
-Extensive [documentation for Moox Skeleton](https://moox.org/docs/skeleton) is available at [moox.org](https://moox.org).
+Extensive [documentation for Moox Build](https://moox.org/docs/build) is available at [moox.org](https://moox.org).
 
 ## Changelog
 

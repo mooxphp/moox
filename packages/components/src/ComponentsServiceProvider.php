@@ -18,15 +18,5 @@ class ComponentsServiceProvider extends MooxServiceProvider
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
-
-        // optional Moox settings
-        /*
-        $this->getMooxPackage()
-            ->mooxPlugins([
-                'components',
-            ])
-            ->mooxFirstPlugin(true)
-            ->mooxRequiredSeeders(['ComponentsSeeder']);
-        */
     }
 }
