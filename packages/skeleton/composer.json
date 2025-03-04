@@ -2,9 +2,10 @@
     "name": "moox/skeleton",
     "description": "This template is used for generating all Moox packages.",
     "keywords": [
+        "Moox",
         "Laravel",
         "Filament",
-        "Filament plugin",
+        "Moox package",
         "Laravel package"
     ],
     "homepage": "https://moox.org/",

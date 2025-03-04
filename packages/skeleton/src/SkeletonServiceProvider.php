@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Skeleton;
 
+use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class SkeletonServiceProvider extends PackageServiceProvider
+class SkeletonServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('skeleton')
@@ -18,5 +18,15 @@ class SkeletonServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
+
+        // optional Moox settings
+        /*
+        $this->getMooxPackage()
+            ->mooxPlugins([
+                'skeleton',
+            ])
+            ->mooxFirstPlugin(true)
+            ->mooxRequiredSeeders(['SkeletonSeeder']);
+        */
     }
 }
