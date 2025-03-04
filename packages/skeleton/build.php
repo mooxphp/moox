@@ -190,6 +190,7 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
+        'skeleton.jpg' => 'made-with-moox.jpg',
         'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
