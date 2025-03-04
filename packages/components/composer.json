@@ -1,0 +1,107 @@
+{
+    "name": "moox/skeleton",
+    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/skeleton",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Skeleton\\": "src",
+            "Moox\\Skeleton\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "extra": {
+        "moox": {
+            "title": "Moox Skeleton",
+            "released": false,
+            "stability": "dev",
+            "category": "development",
+            "used_for": [
+                "not used as installed package, only used as template for new Moox packages"
+            ],
+            "template_for": [
+                "creating simple Laravel packages"
+            ],
+            "template_replace": {
+                "Moox Developer": "%%Author%%",
+                "dev@moox.org": "%%AuthorEmail%%",
+                "skeleton.jpg": "made-with-moox.jpg",
+                "Skeleton": "%%PackageName%%",
+                "skeleton": "%%PackageSlug%%",
+                "This template is used for generating Laravel packages, all Moox packages are built with this template.": "%%Description%%",
+                "not used as installed package, only used as template for new Moox packages": "%%UsedFor%%",
+                "creating simple Laravel packages": "%%TemplateFor%%"
+            },
+            "template_remove": [
+                "build.php"
+            ],
+            "alternate_packages": [
+                "builder"
+            ]
+        },
+        "laravel": {
+            "providers": [
+                "Moox\\Skeleton\\SkeletonServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^9.5",
+        "pestphp/pest": "^3.2",
+        "pestphp/pest-plugin-livewire": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "ryangjchandler/blade-capture-directive": "^1.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Skeleton\\Tests\\": "tests",
+            "Moox\\Skeleton\\Database\\Factories\\": "database/factories",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "lint": [
+            "@php vendor/bin/phpstan analyse --verbose --ansi"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
