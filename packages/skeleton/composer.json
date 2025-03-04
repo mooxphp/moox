@@ -1,6 +1,6 @@
 {
     "name": "moox/skeleton",
-    "description": "This is a Laravel package skeleton, this GitHub template is used for generating all Moox packages.",
+    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
     "keywords": [
         "Moox",
         "Laravel",
@@ -38,13 +38,19 @@
             "template_for": [
                 "creating simple Laravel packages"
             ],
-            "template_rename": {
+            "template_replace": {
                 "Moox Developer": "%%Author%%",
                 "dev@moox.org": "%%AuthorEmail%%",
-                "Skeleton": "%%ClassName%%",
+                "skeleton.jpg": "made-with-moox.jpg",
+                "Skeleton": "%%PackageName%%",
                 "skeleton": "%%PackageSlug%%",
-                "This template is used for generating all Moox packages.": "%%Description%%"
+                "This template is used for generating Laravel packages, all Moox packages are built with this template.": "%%Description%%",
+                "not used as installed package, only used as template for new Moox packages": "%%UsedFor%%",
+                "creating simple Laravel packages": "%%TemplateFor%%"
             },
+            "template_remove": [
+                "build.php"
+            ],
             "alternate_packages": [
                 "builder"
             ]

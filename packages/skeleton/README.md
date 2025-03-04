@@ -1,8 +1,8 @@
-![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton-package.jpg)
+![Moox Skeleton](https://github.com/mooxphp/moox/raw/main/art/banner/skeleton.jpg)
 
 # Moox Skeleton
 
-This template is used for generating Moox packages. Press the Template-Button in GitHub, create your own Laravel and Filament package. Learn more about `Moox Skeleton` at [moox.org/docs/skeleton](https://moox.org/docs/skeleton).
+This template is used for generating Laravel packages, all Moox packages are built with this template. Press the Template-Button in GitHub, create your own Laravel package. Learn more about `Moox Skeleton` at [moox.org/docs/skeleton](https://moox.org/docs/skeleton).
 
 ## Requirements
 

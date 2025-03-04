@@ -194,7 +194,9 @@ foreach ($files as $file) {
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
         'skeleton' => $packageSlug,
-        'This template is used for generating all Moox packages.' => $description,
+        'This template is used for generating Laravel packages, all Moox packages are built with this template.' => $description,
+        'not used as installed package, only used as template for new Moox packages' => 'we do not know yet',
+        'creating simple Laravel packages' => 'we do not know yet',
     ]);
 
     match (true) {
