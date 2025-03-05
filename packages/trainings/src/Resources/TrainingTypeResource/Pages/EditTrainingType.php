@@ -15,7 +15,7 @@ class EditTrainingType extends EditRecord
     protected function getHeaderActions(): array
     {
         return [DeleteAction::make()
-            ->action(function ($record, DeleteAction $action) {
+            ->action(function ($record, DeleteAction $action): void {
                 try {
                     $record->delete();
                     Notification::make()
@@ -23,15 +23,15 @@ class EditTrainingType extends EditRecord
                         ->body('The type was deleted successfully.')
                         ->success()
                         ->send();
-                } catch (QueryException $exception) {
-                    if ($exception->getCode() === '23000') {
+                } catch (QueryException $queryException) {
+                    if ($queryException->getCode() === '23000') {
                         Notification::make()
                             ->title('Cannot Delete Training Type')
                             ->body('One or more type have associated trainings and cannot be deleted.')
                             ->danger()
                             ->send();
                     } else {
-                        throw $exception;
+                        throw $queryException;
                     }
                 }
             }),

@@ -26,7 +26,10 @@ trait SingleSimpleInResource
         return true;
     }
 
-    public static function getTableActions()
+    /**
+     * @return mixed[]
+     */
+    public static function getTableActions(): array
     {
         $actions = [];
 
@@ -41,7 +44,10 @@ trait SingleSimpleInResource
         return $actions;
     }
 
-    public static function getBulkActions()
+    /**
+     * @return mixed[]
+     */
+    public static function getBulkActions(): array
     {
         $actions = [];
 

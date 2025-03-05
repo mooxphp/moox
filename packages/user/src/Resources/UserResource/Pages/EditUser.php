@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
+use Override;
 use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 class EditUser extends EditRecord
@@ -20,6 +21,7 @@ class EditUser extends EditRecord
         return [DeleteAction::make(), Impersonate::make()->record($this->getRecord())];
     }
 
+    #[Override]
     protected function mutateFormDataBeforeSave(array $data): array
     {
         if (filled($data['new_password'])) {
@@ -40,6 +42,7 @@ class EditUser extends EditRecord
         return redirect('moox/users');
     }
 
+    #[Override]
     protected function getSavedNotification(): ?Notification
     {
         return Notification::make()

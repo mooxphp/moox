@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Generators\Entity;
 
+use Illuminate\Console\Command;
+use InvalidArgumentException;
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
 
@@ -21,7 +23,7 @@ class MigrationGenerator extends AbstractGenerator
 
     public function generate(): void
     {
-        if ($this->context->getCommand()) {
+        if ($this->context->getCommand() instanceof Command) {
             $this->context->getCommand()->info('Starting migration generation...');
         }
 
@@ -36,7 +38,7 @@ class MigrationGenerator extends AbstractGenerator
         $content = $this->replaceTemplateVariables($template, $variables);
         $path = $this->context->getPath('migration').'/'.$this->migrationFileName;
 
-        if ($this->context->getCommand()) {
+        if ($this->context->getCommand() instanceof Command) {
             $this->context->getCommand()->info('Migration details:');
             $this->context->getCommand()->info('- File name: '.$this->migrationFileName);
             $this->context->getCommand()->info('- Full path: '.$path);
@@ -45,7 +47,7 @@ class MigrationGenerator extends AbstractGenerator
 
         $this->writeFile($path, $content);
 
-        if ($this->context->getCommand()) {
+        if ($this->context->getCommand() instanceof Command) {
             $this->context->getCommand()->info('Migration file written successfully');
         }
     }
@@ -58,7 +60,7 @@ class MigrationGenerator extends AbstractGenerator
             'app' => date('Y_m_d_His').'_create_'.$tableName.'_table.php',
             'package' => 'create_'.$tableName.'_table.php.stub',
             'preview' => 'preview_'.date('Y_m_d_His').'_create_'.$tableName.'_table.php',
-            default => throw new \InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
+            default => throw new InvalidArgumentException('Invalid context type: '.$this->context->getContextType()),
         };
     }
 
@@ -97,15 +99,16 @@ class MigrationGenerator extends AbstractGenerator
             $migration = $block->migration();
             if (! empty($migration)) {
                 if (is_array($migration)) {
-                    $fields = array_merge($fields, array_map(function ($field) {
-                        return rtrim(trim($field), ';').';';
-                    }, $migration));
+                    $fields = array_merge($fields, array_map(
+                        fn (string $field): string => rtrim(trim($field), ';').';',
+                        $migration
+                    ));
                 } else {
-                    $fields[] = rtrim(trim($migration), ';').';';
+                    $fields[] = rtrim(trim((string) $migration), ';').';';
                 }
             }
         }
 
-        return array_filter($fields);
+        return $fields;
     }
 }

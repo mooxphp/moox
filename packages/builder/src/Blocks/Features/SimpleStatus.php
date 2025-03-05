@@ -29,13 +29,13 @@ class SimpleStatus extends AbstractBlock
             ],
         ];
 
-        $options = '['.implode(', ', array_map(fn ($value) => "'$value' => '$value'", $this->enum)).']';
+        $options = '['.implode(', ', array_map(fn ($value): string => sprintf("'%s' => '%s'", $value, $value), $this->enum)).']';
 
         $this->addSection('status')
             ->asMeta()
             ->hideHeader()
             ->withFields([
-                'Select::make(\''.$this->name.'\')
+                "Select::make('".$this->name.'\')
                     ->label(\''.$this->label.'\')
                     ->placeholder(__(\'core::core.status\'))
                     ->options('.$options.')
@@ -43,14 +43,14 @@ class SimpleStatus extends AbstractBlock
             ]);
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')"
+            sprintf("TextColumn::make('%s')", $this->name)
                 .($this->sortable ? '->sortable()' : '')
                 .($this->searchable ? '->searchable()' : '')
                 .($this->toggleable ? '->toggleable()' : ''),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->enum('{$this->name}', ['".implode("', '", $enum)."'])"
+            sprintf("\$table->enum('%s', ['", $this->name).implode("', '", $enum)."'])"
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
@@ -67,7 +67,7 @@ class SimpleStatus extends AbstractBlock
                 'icon' => 'gmdi-filter-list',
                 'query' => [],
             ],
-            ...array_map(fn ($status) => [
+            ...array_map(fn ($status): array => [
                 'label' => $status,
                 'icon' => 'gmdi-filter-list',
                 'query' => [

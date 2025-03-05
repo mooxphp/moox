@@ -12,34 +12,19 @@ class BuildContext
 {
     public const PREVIEW_PREFIX = 'preview_';
 
-    protected string $contextType;
-
-    protected array $config;
-
-    protected array $blocks;
-
-    protected string $entityName;
-
     protected string $pluralName;
 
     protected ?Command $command = null;
 
-    protected ?string $preset = null;
-
     public function __construct(
-        string $contextType,
-        array $config,
-        array $blocks = [],
-        string $entityName = '',
+        protected string $contextType,
+        protected array $config,
+        protected array $blocks = [],
+        protected string $entityName = '',
         ?string $pluralName = null,
-        ?string $preset = null
+        protected ?string $preset = null
     ) {
-        $this->contextType = $contextType;
-        $this->config = $config;
-        $this->blocks = $blocks;
-        $this->entityName = $entityName;
-        $this->pluralName = $pluralName ?? str($entityName)->plural()->toString();
-        $this->preset = $preset;
+        $this->pluralName = $pluralName ?? str($this->entityName)->plural()->toString();
     }
 
     public function getContextType(): string
@@ -73,16 +58,14 @@ class BuildContext
         $path = $this->config['generators'][$type]['path'] ?? '';
 
         if (empty($path)) {
-            throw new RuntimeException("Path configuration for {$type} not found");
+            throw new RuntimeException(sprintf('Path configuration for %s not found', $type));
         }
 
-        $path = str_replace(
+        return str_replace(
             ['%BasePath%', '%locale%', '\\'],
             [$basePath, config('app.locale', 'en'), '/'],
             $path
         );
-
-        return $path;
     }
 
     public function getNamespace(string $type): string
@@ -91,7 +74,7 @@ class BuildContext
         $namespace = $this->config['generators'][$type]['namespace'] ?? '';
 
         if (empty($namespace)) {
-            throw new RuntimeException("Namespace configuration for {$type} not found");
+            throw new RuntimeException(sprintf('Namespace configuration for %s not found', $type));
         }
 
         return str_replace(
@@ -106,7 +89,7 @@ class BuildContext
         $template = $this->config['generators'][$type]['template'] ?? null;
 
         if (! $template) {
-            throw new RuntimeException("Template configuration for {$type} not found in config");
+            throw new RuntimeException(sprintf('Template configuration for %s not found in config', $type));
         }
 
         return $template;

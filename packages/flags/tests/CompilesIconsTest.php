@@ -6,12 +6,13 @@ namespace Tests;
 
 use BladeUI\Icons\BladeIconsServiceProvider;
 use Moox\Flags\FlagsServiceProvider;
+use Orchestra\Testbench\TestCase;
 
 // TODO: Care for Testbench
-class CompilesIconsTest extends \Orchestra\Testbench\TestCase
+class CompilesIconsTest extends TestCase
 {
     /** @test */
-    public function it_compiles_a_single_anonymous_component()
+    public function it_compiles_a_single_anonymous_component(): void
     {
         $result = svg('flag')->toHtml();
         // Note: the empty class here seems to be a Blade components bug.
@@ -24,7 +25,7 @@ class CompilesIconsTest extends \Orchestra\Testbench\TestCase
     }
 
     /** @test */
-    public function it_can_add_classes_to_icons()
+    public function it_can_add_classes_to_icons(): void
     {
         $result = svg('flag', 'w-6 h-6 text-gray-500')->toHtml();
 
@@ -37,7 +38,7 @@ class CompilesIconsTest extends \Orchestra\Testbench\TestCase
     }
 
     /** @test */
-    public function it_can_add_styles_to_icons()
+    public function it_can_add_styles_to_icons(): void
     {
         $result = svg('flag', ['style' => 'color: #555'])->toHtml();
 

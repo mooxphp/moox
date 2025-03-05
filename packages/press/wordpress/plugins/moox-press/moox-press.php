@@ -39,16 +39,15 @@ if (defined('REDIRECT_AFTER_LOGIN')) {
     $redirectAfterLogin = REDIRECT_AFTER_LOGIN;
 }
 
-function moox_lock_wp_frontend()
+function moox_lock_wp_frontend(): void
 {
     global $lockWp;
 
-    if ($lockWp === 'true') {
-        if (! is_user_logged_in() && $GLOBALS['pagenow'] !== 'wp-login.php') {
-            auth_redirect();
-        }
+    if ($lockWp === 'true' && (! is_user_logged_in() && $GLOBALS['pagenow'] !== 'wp-login.php')) {
+        auth_redirect();
     }
 }
+
 add_action('template_redirect', 'moox_lock_wp_frontend');
 
 /*
@@ -92,7 +91,7 @@ function moox_auth_token()
 add_action('init', 'moox_auth_token');
 */
 
-function moox_redirect_logout()
+function moox_redirect_logout(): void
 {
     global $redirectLogout;
 
@@ -106,11 +105,12 @@ function moox_redirect_logout()
         }
     }
 }
+
 add_action('init', 'moox_redirect_logout');
 
 /* Uses the Moox (Laravel) login page */
 
-function moox_redirect_login()
+function moox_redirect_login(): void
 {
     global $redirectLogin;
     global $adminSlug;
@@ -124,9 +124,10 @@ function moox_redirect_login()
         }
     }
 }
+
 add_action('init', 'moox_redirect_login');
 
-function enqueue_moox_admin_script()
+function enqueue_moox_admin_script(): void
 {
     global $redirectEditor;
 
@@ -140,9 +141,10 @@ function enqueue_moox_admin_script()
         );
     }
 }
+
 add_action('admin_enqueue_scripts', 'enqueue_moox_admin_script');
 
-function decrypt_laravel_data($encryptedData)
+function decrypt_laravel_data($encryptedData): ?string
 {
     $key = defined('LARAVEL_KEY') ? LARAVEL_KEY : null;
     if (! $key) {
@@ -152,13 +154,13 @@ function decrypt_laravel_data($encryptedData)
     }
 
     // Decode the base64 encoded key
-    $key = base64_decode(substr($key, 7));
+    $key = base64_decode(substr((string) $key, 7));
     error_log('Decoded key length: '.strlen($key));
 
     $cipher = 'AES-256-CBC';
     $ivLength = openssl_cipher_iv_length($cipher);
 
-    $data = base64_decode($encryptedData);
+    $data = base64_decode((string) $encryptedData);
     error_log('Base64 decoded data length: '.strlen($data));
 
     $iv = substr($data, 0, $ivLength);
@@ -178,12 +180,13 @@ function decrypt_laravel_data($encryptedData)
     return $decrypted !== false ? $decrypted : null;
 }
 
-function moox_check_laravel_db_session()
+function moox_check_laravel_db_session(): void
 {
     static $already_checked = false;
     if ($already_checked || did_action('moox_session_checked')) {
         return;
     }
+
     $already_checked = true;
     do_action('moox_session_checked');
 
@@ -191,7 +194,7 @@ function moox_check_laravel_db_session()
 
     if (isset($_COOKIE['moox_session'])) {
         $encryptedSession = $_COOKIE['moox_session'];
-        $sessionData = json_decode(base64_decode($encryptedSession), true);
+        $sessionData = json_decode(base64_decode((string) $encryptedSession), true);
 
         error_log('Found moox_session: '.$encryptedSession);
 
@@ -238,7 +241,7 @@ function moox_check_laravel_db_session()
     }
 }
 
-function get_user_id_from_laravel_session($sessionId)
+function get_user_id_from_laravel_session(string $sessionId)
 {
     error_log('Attempting to get user ID for session: '.$sessionId);
 
@@ -249,9 +252,9 @@ function get_user_id_from_laravel_session($sessionId)
     $pass = DB_PASSWORD;
     $charset = DB_CHARSET;
 
-    error_log("Attempting to connect to Laravel database: host=$host, db=$db, user=$user");
+    error_log(sprintf('Attempting to connect to Laravel database: host=%s, db=%s, user=%s', $host, $db, $user));
 
-    $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+    $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s', $host, $db, $charset);
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -268,13 +271,13 @@ function get_user_id_from_laravel_session($sessionId)
         $result = $stmt->fetch();
 
         if ($result) {
-            $payload = unserialize(base64_decode($result['payload']));
+            $payload = unserialize(base64_decode((string) $result['payload']));
             error_log('Session payload: '.print_r($payload, true));
 
             // Look for a key that starts with 'login_press_'
             $loginPressKey = null;
             foreach ($payload as $key => $value) {
-                if (strpos($key, 'login_press_') === 0) {
+                if (str_starts_with((string) $key, 'login_press_')) {
                     $loginPressKey = $key;
                     break;
                 }
@@ -295,8 +298,8 @@ function get_user_id_from_laravel_session($sessionId)
 
             return null;
         }
-    } catch (\PDOException $e) {
-        error_log('Database connection error: '.$e->getMessage());
+    } catch (PDOException $pdoException) {
+        error_log('Database connection error: '.$pdoException->getMessage());
         error_log('DSN: '.$dsn);
 
         return null;

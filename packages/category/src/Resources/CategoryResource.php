@@ -7,6 +7,7 @@ namespace Moox\Category\Resources;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use CodeWithDennis\FilamentSelectTree\SelectTree;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -34,17 +35,20 @@ use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Override;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class CategoryResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = Category::class;
 
     protected static ?string $currentTab = null;
 
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -54,6 +58,7 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-category';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -81,7 +86,7 @@ class CategoryResource extends Resource
                                             )
                                             ->label('Parent Category')
                                             ->searchable()
-                                            ->disabledOptions(fn ($get) => [$get('id')])
+                                            ->disabledOptions(fn ($get): array => [$get('id')])
                                             ->enableBranchNode(),
                                     ]),
                             ])
@@ -91,74 +96,74 @@ class CategoryResource extends Resource
                                 Section::make()
                                     ->schema([
                                         Actions::make([
-                                            Actions\Action::make('restore')
+                                            Action::make('restore')
                                                 ->label(__('core::core.restore'))
                                                 ->color('success')
                                                 ->button()
                                                 ->extraAttributes(['class' => 'w-full'])
                                                 ->action(fn ($record) => $record->restore())
-                                                ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewCategory),
-                                            Actions\Action::make('save')
+                                                ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewCategory),
+                                            Action::make('save')
                                                 ->label(__('core::core.save'))
                                                 ->color('primary')
                                                 ->button()
                                                 ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire) {
+                                                ->action(function ($livewire): void {
                                                     $livewire instanceof CreateCategory ? $livewire->create() : $livewire->save();
                                                 })
-                                                ->visible(fn ($livewire) => $livewire instanceof CreateCategory || $livewire instanceof EditCategory),
-                                            Actions\Action::make('saveAndCreateAnother')
+                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory || $livewire instanceof EditCategory),
+                                            Action::make('saveAndCreateAnother')
                                                 ->label(__('core::core.save_and_create_another'))
                                                 ->color('secondary')
                                                 ->button()
                                                 ->extraAttributes(['class' => 'w-full'])
-                                                ->action(function ($livewire) {
+                                                ->action(function ($livewire): void {
                                                     $livewire->saveAndCreateAnother();
                                                 })
-                                                ->visible(fn ($livewire) => $livewire instanceof CreateCategory),
-                                            Actions\Action::make('cancel')
+                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory),
+                                            Action::make('cancel')
                                                 ->label(__('core::core.cancel'))
                                                 ->color('secondary')
                                                 ->outlined()
                                                 ->extraAttributes(['class' => 'w-full'])
-                                                ->url(fn () => static::getUrl('index'))
-                                                ->visible(fn ($livewire) => $livewire instanceof CreateCategory),
-                                            Actions\Action::make('edit')
+                                                ->url(fn (): string => static::getUrl('index'))
+                                                ->visible(fn ($livewire): bool => $livewire instanceof CreateCategory),
+                                            Action::make('edit')
                                                 ->label(__('core::core.edit'))
                                                 ->color('primary')
                                                 ->button()
                                                 ->extraAttributes(['class' => 'w-full'])
-                                                ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-                                                ->visible(fn ($livewire, $record) => $livewire instanceof ViewCategory && ! $record->trashed()),
-                                            Actions\Action::make('restore')
+                                                ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
+                                                ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewCategory && ! $record->trashed()),
+                                            Action::make('restore')
                                                 ->label(__('core::core.restore'))
                                                 ->color('success')
                                                 ->button()
                                                 ->extraAttributes(['class' => 'w-full'])
                                                 ->action(fn ($record) => $record->restore())
-                                                ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditCategory),
-                                            Actions\Action::make('delete')
+                                                ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditCategory),
+                                            Action::make('delete')
                                                 ->label(__('core::core.delete'))
                                                 ->color('danger')
                                                 ->link()
                                                 ->extraAttributes(['class' => 'w-full'])
                                                 ->action(fn ($record) => $record->delete())
-                                                ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditCategory),
+                                                ->visible(fn ($livewire, $record): bool => $record && ! $record->trashed() && $livewire instanceof EditCategory),
                                         ]),
                                         ColorPicker::make('color'),
                                         TextInput::make('weight'),
                                         TextInput::make('count')
                                             ->disabled()
-                                            ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                         DateTimePicker::make('created_at')
                                             ->disabled()
-                                            ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                         DateTimePicker::make('updated_at')
                                             ->disabled()
-                                            ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
+                                            ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditCategory) || ($record && $livewire instanceof ViewCategory)),
                                         DateTimePicker::make('deleted_at')
                                             ->disabled()
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewCategory),
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewCategory),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 1]),
@@ -167,12 +172,13 @@ class CategoryResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         $currentTab = static::getCurrentTab();
 
         return $table
-            ->query(fn () => static::getEloquentQuery())
+            ->query(fn (): Builder => static::getEloquentQuery())
             ->defaultSort('_lft', 'asc')
             ->columns([
                 ImageColumn::make('featured_image_url')
@@ -187,7 +193,7 @@ class CategoryResource extends Resource
                         $depth = $record->ancestors->count();
                         $prefix = str_repeat('--', $depth);
 
-                        return "{$prefix} {$record->title}";
+                        return sprintf('%s %s', $prefix, $record->title);
                     })
                     ->searchable(),
                 TextColumn::make('slug')
@@ -231,19 +237,11 @@ class CategoryResource extends Resource
             ->defaultSort('slug', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
-                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isHidden;
-                }),
-                RestoreBulkAction::make()->visible(function () use ($currentTab) {
-                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isVisible;
-                }),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 SelectFilter::make('parent_id')
@@ -258,49 +256,37 @@ class CategoryResource extends Resource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(function (Builder $query, array $data) {
-                        return $query->when($data['value'], function ($query, $option) {
-                            switch ($option) {
-                                case '0':
-                                    return $query->doesntHave('children');
-                                case '1-5':
-                                    return $query->has('children', '>=', 1)->has('children', '<=', 5);
-                                case '6-10':
-                                    return $query->has('children', '>=', 6)->has('children', '<=', 10);
-                                case '10+':
-                                    return $query->has('children', '>', 10);
-                            }
-                        });
-                    }),
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                        switch ($option) {
+                            case '0':
+                                return $query->doesntHave('children');
+                            case '1-5':
+                                return $query->has('children', '>=', 1)->has('children', '<=', 5);
+                            case '6-10':
+                                return $query->has('children', '>=', 6)->has('children', '<=', 10);
+                            case '10+':
+                                return $query->has('children', '>', 10);
+                        }
+                    })),
                 SelectFilter::make('depth')
                     ->label('Level')
-                    ->options(fn () => array_combine(range(1, 5), range(1, 5)))
-                    ->query(function (Builder $query, array $data) {
-                        return $query->when($data['value'], function ($query, $depth) {
-                            $query->whereIn('id', function ($subquery) use ($depth) {
-                                $subquery->select('id')
-                                    ->from('categories as c')
-                                    ->whereRaw('(SELECT COUNT(*) FROM categories as ancestors WHERE ancestors._lft < c._lft AND ancestors._rgt > c._rgt) = ?', [$depth - 1]);
-                            });
+                    ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                        $query->whereIn('id', function ($subquery) use ($depth): void {
+                            $subquery->select('id')
+                                ->from('categories as c')
+                                ->whereRaw('(SELECT COUNT(*) FROM categories as ancestors WHERE ancestors._lft < c._lft AND ancestors._rgt > c._rgt) = ?', [$depth - 1]);
                         });
-                    }),
+                    })),
             ])
             ->defaultSort('slug', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
-                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isHidden;
-                }),
-                RestoreBulkAction::make()->visible(function () use ($currentTab) {
-                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isVisible;
-                }),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 SelectFilter::make('parent_id')
@@ -315,35 +301,32 @@ class CategoryResource extends Resource
                         '6-10' => '6-10',
                         '10+' => '10+',
                     ])
-                    ->query(function (Builder $query, array $data) {
-                        return $query->when($data['value'], function ($query, $option) {
-                            switch ($option) {
-                                case '0':
-                                    return $query->doesntHave('children');
-                                case '1-5':
-                                    return $query->has('children', '>=', 1)->has('children', '<=', 5);
-                                case '6-10':
-                                    return $query->has('children', '>=', 6)->has('children', '<=', 10);
-                                case '10+':
-                                    return $query->has('children', '>', 10);
-                            }
-                        });
-                    }),
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $option) {
+                        switch ($option) {
+                            case '0':
+                                return $query->doesntHave('children');
+                            case '1-5':
+                                return $query->has('children', '>=', 1)->has('children', '<=', 5);
+                            case '6-10':
+                                return $query->has('children', '>=', 6)->has('children', '<=', 10);
+                            case '10+':
+                                return $query->has('children', '>', 10);
+                        }
+                    })),
                 SelectFilter::make('depth')
                     ->label('Level')
-                    ->options(fn () => array_combine(range(1, 5), range(1, 5)))
-                    ->query(function (Builder $query, array $data) {
-                        return $query->when($data['value'], function ($query, $depth) {
-                            $query->whereIn('id', function ($subquery) use ($depth) {
-                                $subquery->select('id')
-                                    ->from('categories as c')
-                                    ->whereRaw('(SELECT COUNT(*) FROM categories as ancestors WHERE ancestors._lft < c._lft AND ancestors._rgt > c._rgt) = ?', [$depth - 1]);
-                            });
+                    ->options(fn (): array => array_combine(range(1, 5), range(1, 5)))
+                    ->query(fn (Builder $query, array $data) => $query->when($data['value'], function ($query, $depth): void {
+                        $query->whereIn('id', function ($subquery) use ($depth): void {
+                            $subquery->select('id')
+                                ->from('categories as c')
+                                ->whereRaw('(SELECT COUNT(*) FROM categories as ancestors WHERE ancestors._lft < c._lft AND ancestors._rgt > c._rgt) = ?', [$depth - 1]);
                         });
-                    }),
+                    })),
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -351,6 +334,7 @@ class CategoryResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -361,42 +345,50 @@ class CategoryResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('category.resources.category.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('category.resources.category.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('category.resources.category.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('category.resources.category.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('category.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('category.navigation_sort') + 3;

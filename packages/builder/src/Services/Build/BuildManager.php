@@ -6,6 +6,7 @@ namespace Moox\Builder\Services\Build;
 
 use Moox\Builder\Services\Block\BlockReconstructor;
 use Moox\Builder\Services\ContextAwareService;
+use Override;
 use RuntimeException;
 
 class BuildManager extends ContextAwareService
@@ -56,7 +57,7 @@ class BuildManager extends ContextAwareService
     protected function validateEntityExists(int $entityId): void
     {
         if (! $this->buildRecorder->validateEntityExists($entityId)) {
-            throw new RuntimeException("Entity {$entityId} not found");
+            throw new RuntimeException(sprintf('Entity %d not found', $entityId));
         }
     }
 
@@ -67,20 +68,22 @@ class BuildManager extends ContextAwareService
 
     protected function validateFiles(array $files): void
     {
-        if (empty($files)) {
+        if ($files === []) {
             throw new RuntimeException('No files provided for build recording');
         }
 
         foreach ($files as $type => $typeFiles) {
             if (! is_array($typeFiles)) {
-                throw new RuntimeException("Invalid file structure for type: {$type}");
+                throw new RuntimeException('Invalid file structure for type: '.$type);
             }
+
             foreach ($typeFiles as $path => $content) {
                 if (! is_string($path)) {
-                    throw new RuntimeException("Invalid path in type {$type}");
+                    throw new RuntimeException('Invalid path in type '.$type);
                 }
+
                 if (! is_string($content)) {
-                    throw new RuntimeException("Invalid content for path {$path} in type {$type}");
+                    throw new RuntimeException(sprintf('Invalid content for path %s in type %s', $path, $type));
                 }
             }
         }
@@ -88,7 +91,7 @@ class BuildManager extends ContextAwareService
 
     protected function validateBlocks(array $blocks): void
     {
-        if (empty($blocks)) {
+        if ($blocks === []) {
             throw new RuntimeException('Blocks array cannot be empty');
         }
 
@@ -96,12 +99,14 @@ class BuildManager extends ContextAwareService
             if (! method_exists($block, 'getOptions') || ! method_exists($block, 'getMigrations')) {
                 throw new RuntimeException('Invalid block object: missing required methods');
             }
+
             if (! method_exists($block, 'getTitle') || ! method_exists($block, 'getDescription')) {
                 throw new RuntimeException('Invalid block object: missing title or description methods');
             }
         }
     }
 
+    #[Override]
     protected function validateContextConfig(): void
     {
         $config = $this->context->getConfig();
@@ -109,14 +114,14 @@ class BuildManager extends ContextAwareService
 
         if (! isset($config['base_path'], $config['base_namespace'], $config['generators'])) {
             throw new RuntimeException(
-                "Missing required configuration for context {$contextType}"
+                'Missing required configuration for context '.$contextType
             );
         }
 
         foreach ($config['generators'] as $type => $genConfig) {
             if (! isset($genConfig['path'], $genConfig['namespace'])) {
                 throw new RuntimeException(
-                    "Invalid generator configuration for {$type} in context {$contextType}"
+                    sprintf('Invalid generator configuration for %s in context %s', $type, $contextType)
                 );
             }
         }

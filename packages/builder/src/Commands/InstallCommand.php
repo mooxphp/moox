@@ -34,7 +34,7 @@ class InstallCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->art();
         $this->welcome();
@@ -80,6 +80,7 @@ class InstallCommand extends Command
 
                 return;
             }
+
             warning('The Builder config already exist. The config will not be published.');
         }
     }
@@ -92,6 +93,7 @@ class InstallCommand extends Command
 
                 return;
             }
+
             info('Publishing Items Migrations...');
             $this->call('vendor:publish', ['--tag' => 'builder-migrations']);
         }
@@ -123,9 +125,7 @@ class InstallCommand extends Command
             return;
         }
 
-        $availablePlugins = array_map(function ($file) {
-            return basename($file, '.php');
-        }, $pluginFiles);
+        $availablePlugins = array_map(fn ($file): string => basename((string) $file, '.php'), $pluginFiles);
 
         $pluginsToAdd = multiselect(
             label: 'These plugins will be installed:',
@@ -142,22 +142,22 @@ class InstallCommand extends Command
         foreach ($pluginsToAdd as $plugin) {
             $searchPlugin = '/'.$plugin.'/';
             if (preg_match($searchPlugin, $content)) {
-                warning("$plugin already registered.");
+                warning($plugin.' already registered.');
             } else {
                 $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
             }
         }
 
-        if ($newPlugins) {
+        if ($newPlugins !== '' && $newPlugins !== '0') {
             if (preg_match($pattern, $content)) {
                 info('Plugins section found. Adding new plugins...');
 
-                $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                $replacement = "->plugins([$1\n{$newPlugins}\n            ]);";
                 $newContent = preg_replace($pattern, $replacement, $content);
             } else {
                 info('Plugins section created. Adding new plugins...');
 
-                $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                $pluginsSection = "            ->plugins([\n{$newPlugins}\n            ]);";
                 $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
                 $replacement = "$1\n".$pluginsSection;
                 $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
@@ -195,12 +195,14 @@ class InstallCommand extends Command
             foreach ($providers as $provider) {
                 $providerNames[] = $provider->getBasename();
             }
+
             $providerPath = multiselect(
                 label: 'Which Panel should it be registered',
                 options: [...$providerNames],
                 default: [$providerNames[0]],
             );
         }
+
         if (count($providers) == 1) {
             $providerPath .= '/'.$providers[0]->getBasename();
         }

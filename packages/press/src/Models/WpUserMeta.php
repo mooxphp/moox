@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $user_id
  * @property string $meta_key
- * @property string $meta_value
+ * @property mixed $meta_value
  */
 class WpUserMeta extends Model
 {

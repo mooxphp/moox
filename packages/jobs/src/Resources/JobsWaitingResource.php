@@ -15,6 +15,7 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Jobs\Models\Job;
 use Moox\Jobs\Resources\JobsWaitingResource\Pages\ListJobsWaiting;
 use Moox\Jobs\Resources\JobsWaitingResource\Widgets\JobsWaitingOverview;
+use Override;
 
 class JobsWaitingResource extends Resource
 {
@@ -24,19 +25,17 @@ class JobsWaitingResource extends Resource
 
     protected static ?string $navigationIcon = null;
 
+    #[Override]
     public static function getNavigationIcon(): string
     {
         if (self::$navigationIcon === null) {
-            if (config('core.use_google_icons', true)) {
-                self::$navigationIcon = 'gmdi-pause';
-            } else {
-                self::$navigationIcon = 'heroicon-o-pause';
-            }
+            self::$navigationIcon = config('core.use_google_icons', true) ? 'gmdi-pause' : 'heroicon-o-pause';
         }
 
         return self::$navigationIcon;
     }
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -65,6 +64,7 @@ class JobsWaitingResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -72,7 +72,7 @@ class JobsWaitingResource extends Resource
                 TextColumn::make('status')
                     ->badge()
                     ->label(__('jobs::translations.status'))
-                    ->formatStateUsing(fn (string $state): string => __("jobs::translations.{$state}"))
+                    ->formatStateUsing(fn (string $state): string => __('jobs::translations.'.$state))
                     ->color(fn (string $state): string => match ($state) {
                         'running' => 'primary',
                         'waiting' => 'success',
@@ -103,6 +103,7 @@ class JobsWaitingResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -110,6 +111,7 @@ class JobsWaitingResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -117,6 +119,7 @@ class JobsWaitingResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -124,26 +127,31 @@ class JobsWaitingResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('jobs::translations.jobs_waiting.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('jobs::translations.jobs_waiting.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('jobs::translations.jobs_waiting.navigation_label');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return __('jobs::translations.breadcrumb');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
@@ -154,11 +162,13 @@ class JobsWaitingResource extends Resource
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('jobs::translations.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('jobs.navigation_sort') + 1;

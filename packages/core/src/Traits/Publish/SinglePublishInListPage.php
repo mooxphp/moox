@@ -15,15 +15,13 @@ trait SinglePublishInListPage
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Item {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): Item => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = Item::onlyTrashed()->count();
                     Item::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -33,7 +31,7 @@ trait SinglePublishInListPage
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && Item::onlyTrashed()->exists()),
         ];
     }
 }

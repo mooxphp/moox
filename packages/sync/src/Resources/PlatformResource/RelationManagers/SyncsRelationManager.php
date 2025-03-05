@@ -14,6 +14,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Override;
 
 class SyncsRelationManager extends RelationManager
 {
@@ -21,6 +22,7 @@ class SyncsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'syncable_type';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([

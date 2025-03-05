@@ -6,6 +6,7 @@ namespace Moox\UserSession;
 
 use Moox\UserSession\Commands\InstallCommand;
 use Moox\UserSession\Services\SessionRelationService;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -21,16 +22,16 @@ class UserSessionServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
-    public function register()
+    #[Override]
+    public function register(): void
     {
         parent::register();
 
-        $this->app->singleton(SessionRelationService::class, function ($app) {
-            return new SessionRelationService;
-        });
+        $this->app->singleton(SessionRelationService::class, fn ($app): SessionRelationService => new SessionRelationService);
     }
 
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         parent::boot();
 

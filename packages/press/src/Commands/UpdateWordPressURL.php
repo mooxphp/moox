@@ -11,7 +11,7 @@ class UpdateWordPressURL extends Command
 
     protected $description = 'Update WordPress Site URL in wp_options and all database tables.';
 
-    public function handle()
+    public function handle(): void
     {
         $prefix = config('press.wordpress_prefix');
 
@@ -32,7 +32,7 @@ class UpdateWordPressURL extends Command
         DB::table($prefix.'options')->where('option_name', 'siteurl')->update(['option_value' => $newUrl]);
         DB::table($prefix.'options')->where('option_name', 'home')->update(['option_value' => $newUrl]);
 
-        $this->info("URL in wp_options updated from $oldUrl to $newUrl.");
+        $this->info(sprintf('URL in wp_options updated from %s to %s.', $oldUrl, $newUrl));
 
         $query = "SHOW TABLES LIKE '".$prefix."%'";
         $tables = DB::select($query);
@@ -43,12 +43,12 @@ class UpdateWordPressURL extends Command
 
                 foreach ($columns as $column) {
                     DB::table($tableName)
-                        ->where($column, 'like', "%$oldUrl%")
+                        ->where($column, 'like', sprintf('%%%s%%', $oldUrl))
                         // TODO: Test and improve this query
                         // https://stackoverflow.com/questions/52229588/laravel-eloquent-how-to-query-not-like
-                        ->where($column, 'not like', "%$newUrl%")
+                        ->where($column, 'not like', sprintf('%%%s%%', $newUrl))
                         ->update([
-                            $column => DB::raw("REPLACE($column, '$oldUrl', '$newUrl')"),
+                            $column => DB::raw(sprintf("REPLACE(%s, '%s', '%s')", $column, $oldUrl, $newUrl)),
                         ]);
                 }
             }

@@ -11,6 +11,7 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
+use Override;
 
 class ListTags extends ListRecords
 {
@@ -22,15 +23,13 @@ class ListTags extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Tag {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): Tag => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = Tag::onlyTrashed()->count();
                     Tag::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -40,10 +39,11 @@ class ListTags extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && Tag::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && Tag::onlyTrashed()->exists()),
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('tag.resources.tag.plural');

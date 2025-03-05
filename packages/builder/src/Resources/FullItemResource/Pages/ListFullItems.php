@@ -12,6 +12,7 @@ use Moox\Builder\Models\FullItem;
 use Moox\Builder\Resources\FullItemResource;
 use Moox\Builder\Resources\FullItemResource\Widgets\FullItemWidgets;
 use Moox\Core\Traits\Tabs\TabsInListPage;
+use Override;
 
 class ListFullItems extends ListRecords
 {
@@ -23,15 +24,13 @@ class ListFullItems extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): FullItem {
-                    return $model::create($data);
-                })
-                ->hidden(fn () => $this->activeTab === 'deleted'),
+                ->using(fn (array $data, string $model): FullItem => $model::create($data))
+                ->hidden(fn (): bool => $this->activeTab === 'deleted'),
             Action::make('emptyTrash')
                 ->label(__('core::core.empty_trash'))
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->action(function () {
+                ->action(function (): void {
                     $trashedCount = FullItem::onlyTrashed()->count();
                     FullItem::onlyTrashed()->forceDelete();
                     Notification::make()
@@ -41,10 +40,11 @@ class ListFullItems extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation()
-                ->visible(fn () => $this->activeTab === 'deleted' && FullItem::onlyTrashed()->exists()),
+                ->visible(fn (): bool => $this->activeTab === 'deleted' && FullItem::onlyTrashed()->exists()),
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return config('builder.resources.full-item.plural');
@@ -55,7 +55,8 @@ class ListFullItems extends ListRecords
         return $this->getDynamicTabs('builder.resources.full-item.tabs', FullItem::class);
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             FullItemWidgets::class,

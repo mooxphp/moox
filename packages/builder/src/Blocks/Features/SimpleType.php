@@ -20,7 +20,7 @@ class SimpleType extends AbstractBlock
     ) {
         parent::__construct($name, $label, $description, $nullable);
 
-        $options = '['.implode(', ', array_map(fn ($value) => "'$value' => '$value'", $this->enum)).']';
+        $options = '['.implode(', ', array_map(fn ($value): string => sprintf("'%s' => '%s'", $value, $value), $this->enum)).']';
 
         $this->useStatements['resource'] = [
             'forms' => ['use Filament\Forms\Components\Select;'],
@@ -35,7 +35,7 @@ class SimpleType extends AbstractBlock
             ->asMeta()
             ->hideHeader()
             ->withFields([
-                'Select::make(\''.$this->name.'\')
+                "Select::make('".$this->name.'\')
                     ->label(\''.$this->label.'\')
                     ->placeholder(__(\'core::core.type\'))
                     ->options('.$options.')
@@ -43,14 +43,14 @@ class SimpleType extends AbstractBlock
             ]);
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')"
+            sprintf("TextColumn::make('%s')", $this->name)
                 .($this->sortable ? '->sortable()' : '')
                 .($this->searchable ? '->searchable()' : '')
                 .($this->toggleable ? '->toggleable()' : ''),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->enum('{$this->name}', ['".implode("', '", $enum)."'])"
+            sprintf("\$table->enum('%s', ['", $this->name).implode("', '", $enum)."'])"
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
@@ -67,7 +67,7 @@ class SimpleType extends AbstractBlock
                 'icon' => 'gmdi-filter-list',
                 'query' => [],
             ],
-            ...array_map(fn ($type) => [
+            ...array_map(fn ($type): array => [
                 'label' => $type,
                 'icon' => 'gmdi-filter-list',
                 'query' => [

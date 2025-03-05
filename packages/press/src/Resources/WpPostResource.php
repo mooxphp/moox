@@ -9,20 +9,25 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpPost;
-use Moox\Press\Resources\WpPostResource\Pages;
+use Moox\Press\Resources\WpPostResource\Pages\CreateWpPost;
+use Moox\Press\Resources\WpPostResource\Pages\EditWpPost;
+use Moox\Press\Resources\WpPostResource\Pages\ListWpPosts;
+use Moox\Press\Resources\WpPostResource\Pages\ViewWpPost;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpCommentRelationManager;
 use Moox\Press\Resources\WpPostResource\RelationManagers\WpPostMetaRelationManager;
+use Override;
 
 class WpPostResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpPost::class;
 
@@ -30,6 +35,7 @@ class WpPostResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -272,52 +278,54 @@ class WpPostResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('post_author')
+                TextColumn::make('post_author')
                     ->label(__('core::post.post_author'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_title')
+                TextColumn::make('post_title')
                     ->label(__('core::post.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_status')
+                TextColumn::make('post_status')
                     ->label(__('core::post.post_status'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('post_date')
+                TextColumn::make('post_date')
                     ->label(__('core::post.post_date'))
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('post_modified')
+                TextColumn::make('post_modified')
                     ->label(__('core::post.post_modified'))
                     ->sortable()
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('post_parent')
+                TextColumn::make('post_parent')
                     ->label(__('core::post.post_parent'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('comment_count')
+                TextColumn::make('comment_count')
                     ->label(__('core::comment.comment_count'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn ($record): string => sprintf('/wp/wp-admin/post.php?post=%s&action=edit', $record->ID)),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -326,41 +334,48 @@ class WpPostResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpPosts::route('/'),
-            'create' => Pages\CreateWpPost::route('/create'),
-            'view' => Pages\ViewWpPost::route('/{record}'),
-            'edit' => Pages\EditWpPost::route('/{record}/edit'),
+            'index' => ListWpPosts::route('/'),
+            'create' => CreateWpPost::route('/create'),
+            'view' => ViewWpPost::route('/{record}'),
+            'edit' => EditWpPost::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.post.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.post.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.post.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.post.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.press_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.press_navigation_sort') + 1;

@@ -8,19 +8,24 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Press\Models\WpTermTaxonomy;
-use Moox\Press\Resources\WpTermTaxonomyResource\Pages;
+use Moox\Press\Resources\WpTermTaxonomyResource\Pages\CreateWpTermTaxonomy;
+use Moox\Press\Resources\WpTermTaxonomyResource\Pages\EditWpTermTaxonomy;
+use Moox\Press\Resources\WpTermTaxonomyResource\Pages\ListWpTermTaxonomies;
+use Moox\Press\Resources\WpTermTaxonomyResource\Pages\ViewWpTermTaxonomy;
+use Override;
 
 class WpTermTaxonomyResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpTermTaxonomy::class;
 
@@ -28,6 +33,7 @@ class WpTermTaxonomyResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'taxonomy';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -90,32 +96,33 @@ class WpTermTaxonomyResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('term_id')
+                TextColumn::make('term_id')
                     ->label(__('core::core.term_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('taxonomy')
+                TextColumn::make('taxonomy')
                     ->label(__('core::core.taxonomy'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label(__('core::core.description'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('parent')
+                TextColumn::make('parent')
                     ->label(__('core::core.parent'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('count')
+                TextColumn::make('count')
                     ->label(__('core::core.count'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -125,46 +132,54 @@ class WpTermTaxonomyResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTermTaxonomies::route('/'),
-            'create' => Pages\CreateWpTermTaxonomy::route('/create'),
-            'view' => Pages\ViewWpTermTaxonomy::route('/{record}'),
-            'edit' => Pages\EditWpTermTaxonomy::route('/{record}/edit'),
+            'index' => ListWpTermTaxonomies::route('/'),
+            'create' => CreateWpTermTaxonomy::route('/create'),
+            'view' => ViewWpTermTaxonomy::route('/{record}'),
+            'edit' => EditWpTermTaxonomy::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press.resources.termTaxonomy.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press.resources.termTaxonomy.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press.resources.termTaxonomy.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press.resources.termTaxonomy.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press.meta_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press.meta_navigation_sort') + 6;

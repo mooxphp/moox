@@ -9,6 +9,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Category\Resources\CategoryResource;
+use Override;
 
 class ViewCategory extends ViewRecord
 {
@@ -22,6 +23,7 @@ class ViewCategory extends ViewRecord
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         $title = parent::getTitle();

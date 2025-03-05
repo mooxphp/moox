@@ -6,6 +6,7 @@ namespace Moox\Tag\Resources;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -31,6 +32,7 @@ use Moox\Tag\Resources\TagResource\Pages\CreateTag;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Override;
 
 class TagResource extends Resource
 {
@@ -40,6 +42,7 @@ class TagResource extends Resource
 
     protected static ?string $currentTab = null;
 
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->withoutGlobalScopes();
@@ -49,6 +52,7 @@ class TagResource extends Resource
 
     protected static ?string $authorModel = null;
 
+    #[Override]
     public static function form(Form $form): Form
     {
         static::initUserModel();
@@ -76,74 +80,74 @@ class TagResource extends Resource
                             Section::make()
                                 ->schema([
                                     Actions::make([
-                                        Actions\Action::make('restore')
+                                        Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewTag),
-                                        Actions\Action::make('save')
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
+                                        Action::make('save')
                                             ->label(__('core::core.save'))
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
+                                            ->action(function ($livewire): void {
                                                 $livewire instanceof CreateTag ? $livewire->create() : $livewire->save();
                                             })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateTag || $livewire instanceof EditTag),
-                                        Actions\Action::make('saveAndCreateAnother')
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateTag || $livewire instanceof EditTag),
+                                        Action::make('saveAndCreateAnother')
                                             ->label(__('core::core.save_and_create_another'))
                                             ->color('secondary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(function ($livewire) {
+                                            ->action(function ($livewire): void {
                                                 $livewire->saveAndCreateAnother();
                                             })
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateTag),
-                                        Actions\Action::make('cancel')
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateTag),
+                                        Action::make('cancel')
                                             ->label(__('core::core.cancel'))
                                             ->color('secondary')
                                             ->outlined()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn () => static::getUrl('index'))
-                                            ->visible(fn ($livewire) => $livewire instanceof CreateTag),
-                                        Actions\Action::make('edit')
+                                            ->url(fn (): string => static::getUrl('index'))
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateTag),
+                                        Action::make('edit')
                                             ->label(__('core::core.edit'))
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn ($record) => static::getUrl('edit', ['record' => $record]))
-                                            ->visible(fn ($livewire, $record) => $livewire instanceof ViewTag && ! $record->trashed()),
-                                        Actions\Action::make('restore')
+                                            ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
+                                            ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewTag && ! $record->trashed()),
+                                        Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->restore())
-                                            ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof EditTag),
-                                        Actions\Action::make('delete')
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditTag),
+                                        Action::make('delete')
                                             ->label(__('core::core.delete'))
                                             ->color('danger')
                                             ->link()
                                             ->extraAttributes(['class' => 'w-full'])
                                             ->action(fn ($record) => $record->delete())
-                                            ->visible(fn ($livewire, $record) => $record && ! $record->trashed() && $livewire instanceof EditTag),
+                                            ->visible(fn ($livewire, $record): bool => $record && ! $record->trashed() && $livewire instanceof EditTag),
                                     ]),
                                     ColorPicker::make('color'),
                                     TextInput::make('weight'),
                                     TextInput::make('count')
                                         ->disabled()
-                                        ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                        ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                     DateTimePicker::make('created_at')
                                         ->disabled()
-                                        ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                        ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                     DateTimePicker::make('updated_at')
                                         ->disabled()
-                                        ->visible(fn ($livewire, $record) => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                        ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                     DateTimePicker::make('deleted_at')
                                         ->disabled()
-                                        ->visible(fn ($livewire, $record) => $record && $record->trashed() && $livewire instanceof ViewTag),
+                                        ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 1]),
@@ -152,6 +156,7 @@ class TagResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         static::initUserModel();
@@ -200,22 +205,15 @@ class TagResource extends Resource
             ->defaultSort('slug', 'desc')
             ->actions([
                 ViewAction::make(),
-                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
-                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isHidden;
-                }),
-                RestoreBulkAction::make()->visible(function () use ($currentTab) {
-                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isVisible;
-                }),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -223,6 +221,7 @@ class TagResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -233,36 +232,43 @@ class TagResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('tag.resources.tag.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('tag.resources.tag.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('tag.resources.tag.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('tag.resources.tag.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('tag.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('tag.navigation_sort') + 3;

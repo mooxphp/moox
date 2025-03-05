@@ -20,18 +20,11 @@ class EntityGenerator extends ContextAwareService
 
     protected array $generatedData = [];
 
-    protected array $blocks = [];
-
     protected array $originalBlocks = [];
 
     protected array $generationResult = [];
 
-    public function __construct(
-        private readonly FileManager $fileManager,
-        array $blocks = []
-    ) {
-        $this->blocks = $blocks;
-    }
+    public function __construct(private readonly FileManager $fileManager, protected array $blocks = []) {}
 
     public function setBlocks(array $blocks): void
     {
@@ -56,7 +49,7 @@ class EntityGenerator extends ContextAwareService
     {
         $this->validateContext();
         $contextType = $this->context->getContextType();
-        $contextConfig = config("builder.contexts.{$contextType}");
+        $contextConfig = config('builder.contexts.'.$contextType);
 
         Log::info('EntityGenerator: Initializing generators', [
             'contextType' => $contextType,
@@ -64,12 +57,12 @@ class EntityGenerator extends ContextAwareService
         ]);
 
         if (! isset($contextConfig['generators'])) {
-            throw new RuntimeException("No generators configured for context {$contextType}");
+            throw new RuntimeException('No generators configured for context '.$contextType);
         }
 
         foreach ($contextConfig['generators'] as $name => $config) {
             if (! isset($config['generator'])) {
-                throw new RuntimeException("Generator class not specified for {$name}");
+                throw new RuntimeException('Generator class not specified for '.$name);
             }
 
             $generatorClass = $config['generator'];
@@ -88,7 +81,7 @@ class EntityGenerator extends ContextAwareService
 
     protected function reinitializeGenerators(): void
     {
-        if (! empty($this->generators)) {
+        if ($this->generators !== []) {
             $this->initializeGenerators();
         }
     }
@@ -99,9 +92,9 @@ class EntityGenerator extends ContextAwareService
             'generatorCount' => count($this->generators),
         ]);
 
-        foreach ($this->generators as $name => $generator) {
+        foreach ($this->generators as $generator) {
             Log::info('EntityGenerator: Generating files with generator', [
-                'generator' => get_class($generator),
+                'generator' => $generator::class,
             ]);
 
             $generator->generate();

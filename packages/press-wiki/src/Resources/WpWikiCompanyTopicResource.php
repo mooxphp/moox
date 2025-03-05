@@ -7,19 +7,22 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressWiki\Models\WpWikiCompanyTopic;
 use Moox\PressWiki\Resources\WpWikiCompanyTopicResource\Pages;
+use Moox\PressWiki\Resources\WpWikiCompanyTopicResource\Pages\ListWpWikiCompanyTopics;
+use Override;
 
 class WpWikiCompanyTopicResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpWikiCompanyTopic::class;
 
@@ -27,6 +30,7 @@ class WpWikiCompanyTopicResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -67,22 +71,23 @@ class WpWikiCompanyTopicResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('core::core.name'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('term_group')
+                TextColumn::make('term_group')
                     ->label(__('core::core.term_group'))
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -92,46 +97,54 @@ class WpWikiCompanyTopicResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpWikiCompanyTopics::route('/'),
+            'index' => ListWpWikiCompanyTopics::route('/'),
             // 'create' => Pages\CreateWpWikiCompanyTopic::route('/create'),
             // 'view' => Pages\ViewWpWikiCompanyTopic::route('/{record}'),
             // 'edit' => Pages\EditWpWikiCompanyTopic::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press-wiki.resources.wiki-company-topic.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press-wiki.resources.wiki-company-topic.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press-wiki.resources.wiki-company-topic.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press-wiki.resources.wiki-company-topic.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press-wiki.temp_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press-wiki.temp_navigation_sort') + 3;

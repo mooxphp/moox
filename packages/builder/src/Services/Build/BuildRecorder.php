@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Build;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Blocks\AbstractBlock;
 use RuntimeException;
@@ -12,14 +13,14 @@ class BuildRecorder
 {
     public function record(int $entityId, string $buildContext, array $blocks, array $files): void
     {
-        if (empty($blocks)) {
+        if ($blocks === []) {
             throw new RuntimeException(
                 'Blocks array empty in BuildRecorder. Debug trace: '.
                 json_encode([
                     'entityId' => $entityId,
                     'context' => $buildContext,
                     'blockCount' => count($blocks),
-                    'blockTypes' => array_map(fn ($block) => get_class($block), $blocks),
+                    'blockTypes' => array_map(fn ($block) => $block::class, $blocks),
                     'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5),
                 ])
             );
@@ -30,10 +31,10 @@ class BuildRecorder
             $this->validateFileStructure($files);
             $blockData = $this->serializeBlocks($blocks);
 
-            if (empty($blockData)) {
+            if ($blockData === []) {
                 throw new RuntimeException(
                     'Serialized block data empty. Original blocks: '.
-                    json_encode(array_map(fn ($block) => get_class($block), $blocks))
+                    json_encode(array_map(fn ($block) => $block::class, $blocks))
                 );
             }
 
@@ -42,13 +43,11 @@ class BuildRecorder
             $this->persistBlocks($entityId, $blocks);
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             DB::rollBack();
-            throw new RuntimeException(
-                'Build recording failed: '.$e->getMessage().
-                "\nBlock count: ".count($blocks).
-                "\nBlock types: ".json_encode(array_map(fn ($block) => get_class($block), $blocks))
-            );
+            throw new RuntimeException('Build recording failed: '.$exception->getMessage().
+            "\nBlock count: ".count($blocks).
+            "\nBlock types: ".json_encode(array_map(fn ($block) => $block::class, $blocks)), $exception->getCode(), $exception);
         }
     }
 
@@ -82,8 +81,8 @@ class BuildRecorder
         return [
             'entity_id' => $build->entity_id,
             'build_context' => $build->build_context,
-            'data' => json_decode($build->data, true),
-            'files' => json_decode($build->files, true),
+            'data' => json_decode((string) $build->data, true),
+            'files' => json_decode((string) $build->files, true),
         ];
     }
 
@@ -126,7 +125,7 @@ class BuildRecorder
                 'entity_id' => $entityId,
                 'title' => $block->getTitle(),
                 'description' => $block->getDescription(),
-                'block_class' => get_class($block),
+                'block_class' => $block::class,
                 'options' => json_encode($block->getOptions()),
                 'sort_order' => $index,
                 'created_at' => now(),
@@ -137,19 +136,21 @@ class BuildRecorder
 
     protected function serializeBlocks(array $blocks): array
     {
-        $serialized = array_map(function ($block) {
+        $serialized = array_map(function ($block): array {
             if (! $block instanceof AbstractBlock) {
                 throw new RuntimeException('Invalid block: must be instance of AbstractBlock');
             }
 
             $data = [
-                'type' => get_class($block),
+                'type' => $block::class,
                 'title' => $block->getTitle(),
                 'description' => $block->getDescription(),
                 'options' => $block->getOptions(),
                 'migrations' => $block->getMigrations(),
             ];
 
+            /** @var mixed $block */
+            /** @phpstan-ignore-next-line */
             if (method_exists($block, 'getUseStatements')) {
                 $data['useStatements'] = [
                     'model' => $block->getUseStatements('model'),
@@ -157,6 +158,7 @@ class BuildRecorder
                     'pages' => $block->getUseStatements('pages'),
                 ];
             }
+
             if (method_exists($block, 'getTraits')) {
                 $data['traits'] = [
                     'model' => $block->getTraits('model'),
@@ -164,12 +166,15 @@ class BuildRecorder
                     'pages' => $block->getTraits('pages'),
                 ];
             }
+
             if (method_exists($block, 'getMethods')) {
                 $data['methods'] = $block->getMethods('model');
             }
+
             if (method_exists($block, 'getFormFields')) {
                 $data['formFields'] = $block->getFormFields();
             }
+
             if (method_exists($block, 'getTableColumns')) {
                 $data['tableColumns'] = $block->getTableColumns();
             }
@@ -177,7 +182,7 @@ class BuildRecorder
             return $data;
         }, $blocks);
 
-        if (empty($serialized)) {
+        if ($serialized === []) {
             throw new RuntimeException('Failed to serialize blocks');
         }
 
@@ -188,14 +193,16 @@ class BuildRecorder
     {
         foreach ($files as $type => $typeFiles) {
             if (! is_array($typeFiles)) {
-                throw new RuntimeException("Invalid file structure for type: {$type}");
+                throw new RuntimeException('Invalid file structure for type: '.$type);
             }
+
             foreach ($typeFiles as $path => $content) {
                 if (! is_string($path)) {
-                    throw new RuntimeException("Invalid path in type {$type}");
+                    throw new RuntimeException('Invalid path in type '.$type);
                 }
+
                 if (! is_string($content)) {
-                    throw new RuntimeException("Invalid content for path {$path} in type {$type}");
+                    throw new RuntimeException(sprintf('Invalid content for path %s in type %s', $path, $type));
                 }
             }
         }
@@ -214,7 +221,7 @@ class BuildRecorder
         $build = $query->orderBy('created_at', 'desc')->first();
 
         if (! $build) {
-            throw new RuntimeException("No active build found for entity {$entityId}");
+            throw new RuntimeException('No active build found for entity '.$entityId);
         }
 
         return $build;
@@ -227,7 +234,7 @@ class BuildRecorder
             ->first();
 
         if (! $entity) {
-            throw new RuntimeException("Entity not found with name: {$entityName}");
+            throw new RuntimeException('Entity not found with name: '.$entityName);
         }
 
         return $entity->id;

@@ -28,15 +28,21 @@ use Moox\Core\Traits\Publish\SinglePublishInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
 use Moox\Core\Traits\UserRelation\UserInResource;
+use Override;
 
 class ItemResource extends Resource
 {
-    use BaseInResource, SinglePublishInResource, TabsInResource, TaxonomyInResource, UserInResource;
+    use BaseInResource;
+    use SinglePublishInResource;
+    use TabsInResource;
+    use TaxonomyInResource;
+    use UserInResource;
 
     protected static ?string $model = Item::class;
 
     protected static ?string $navigationIcon = 'gmdi-article';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         static::initUserModel();
@@ -74,7 +80,7 @@ class ItemResource extends Resource
                             Section::make()
                                 ->schema(static::getTaxonomyFields())
                                 ->columns(1)
-                                ->visible(fn () => ! empty(static::getTaxonomyFields())),
+                                ->visible(fn (): bool => static::getTaxonomyFields() !== []),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -82,6 +88,7 @@ class ItemResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         static::initUserModel();
@@ -129,20 +136,12 @@ class ItemResource extends Resource
             ->actions([
                 // SinglePublishInResource - getTableActions
                 ViewAction::make(),
-                EditAction::make()->hidden(fn () => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
                 // SinglePublishInResource - getTableBulkActions
-                DeleteBulkAction::make()->hidden(function () use ($currentTab) {
-                    $isHidden = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isHidden;
-                }),
-                RestoreBulkAction::make()->visible(function () use ($currentTab) {
-                    $isVisible = in_array($currentTab, ['trash', 'deleted']);
-
-                    return $isVisible;
-                }),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ])
             ->filters([
                 ...static::getTableFilters(),
@@ -151,6 +150,7 @@ class ItemResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -161,31 +161,37 @@ class ItemResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('builder.resources.item.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('builder.resources.item.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('builder.resources.item.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('builder.resources.item.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('builder.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('builder.navigation_sort') + 1;

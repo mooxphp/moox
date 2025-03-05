@@ -6,7 +6,7 @@ use Filament\Support\Facades\FilamentIcon;
 
 trait GoogleIcons
 {
-    public function useGoogleIcons()
+    public function useGoogleIcons(): void
     {
         FilamentIcon::register([
             'panels::global-search.field' => 'gmdi-search-o',

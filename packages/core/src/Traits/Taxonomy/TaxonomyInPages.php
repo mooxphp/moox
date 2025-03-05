@@ -42,9 +42,7 @@ trait TaxonomyInPages
 
         foreach ($this->getTaxonomies() as $taxonomy => $settings) {
             if (isset($data[$taxonomy])) {
-                $tagIds = collect($data[$taxonomy])->map(function ($item) {
-                    return is_array($item) ? $item['id'] : $item;
-                })->toArray();
+                $tagIds = collect($data[$taxonomy])->map(fn ($item): mixed => is_array($item) ? $item['id'] : $item)->toArray();
                 $record->$taxonomy()->sync($tagIds);
             }
         }
@@ -69,9 +67,9 @@ trait TaxonomyInPages
             $modelTable = $model->getTable();
 
             $tags = DB::table($table)
-                ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
-                ->where("{$table}.{$foreignKey}", $this->record->getKey())
-                ->pluck("{$modelTable}.id")
+                ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
+                ->where(sprintf('%s.%s', $table, $foreignKey), $this->record->getKey())
+                ->pluck($modelTable.'.id')
                 ->toArray();
 
             $data[$taxonomy] = $tags;
@@ -139,7 +137,7 @@ trait TaxonomyInPages
                 if ($label === null) {
                     $taxonomies = $this->getTaxonomies();
                     foreach ($taxonomies as $taxonomy => $settings) {
-                        if ($statePath === "data.{$taxonomy}") {
+                        if ($statePath === 'data.'.$taxonomy) {
                             $modelClass = $this->getTaxonomyModel($taxonomy);
                             $model = app($modelClass)::find($value);
                             if ($model) {
@@ -216,6 +214,7 @@ trait TaxonomyInPages
 
     public function refreshFormData(array $attributes = []): void
     {
+        /** @phpstan-ignore-next-line */
         if (method_exists($this, 'fillForm')) {
             $this->fillForm();
         }

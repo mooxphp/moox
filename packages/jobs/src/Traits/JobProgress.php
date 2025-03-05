@@ -31,6 +31,7 @@ trait JobProgress
      */
     protected function getJobMonitor(): ?JobManager
     {
+        /** @phpstan-ignore-next-line */
         if (! property_exists($this, 'job')) {
             return null;
         }

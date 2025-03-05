@@ -32,7 +32,7 @@ class InstallCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $this->art();
         $this->welcome();
@@ -78,6 +78,7 @@ class InstallCommand extends Command
 
                 return;
             }
+
             warning('The User config already exist. The config will not be published.');
         }
     }
@@ -100,42 +101,6 @@ class InstallCommand extends Command
             info('Running User Migrations...');
             $this->callSilent('migrate');
         }
-    }
-
-    public function customizeFilament(): void
-    {
-        info('Customizing Filament Shield translations...');
-
-        $translationPath = resource_path('lang/vendor/filament-shield');
-
-        if (! File::exists($translationPath)) {
-            $this->call('vendor:publish', [
-                '--provider' => 'BezhanSalleh\FilamentShield\FilamentShieldServiceProvider',
-                '--tag' => 'translations',
-            ]);
-
-            info('Filament Shield translations published.');
-
-            return;
-        }
-
-        $locales = File::directories($translationPath);
-
-        foreach ($locales as $localePath) {
-            $files = File::files($localePath);
-            foreach ($files as $file) {
-                $translations = include $file->getPathname();
-                if (isset($translations['nav']['group'])) {
-                    $translations['nav']['group'] = 'Moox User';
-                    $outputPath = $file->getPathname();
-                    $content = "<?php\n\nreturn ".print_r($translations, true).";\n";
-                    File::put($outputPath, $content);
-                    $this->info("Updated {$file->getFilename()} in {$localePath}");
-                }
-            }
-        }
-
-        info('Filament Shield translations customization complete.');
     }
 
     public function registerPlugins(string $providerPath): void
@@ -161,22 +126,22 @@ class InstallCommand extends Command
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    warning("$plugin already registered.");
+                    warning($plugin.' already registered.');
                 } else {
                     $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }
             }
 
-            if ($newPlugins) {
+            if ($newPlugins !== '' && $newPlugins !== '0') {
                 if (preg_match($pattern, $content)) {
                     info('Plugins section found. Adding new plugins...');
 
-                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                    $replacement = "->plugins([$1\n{$newPlugins}\n            ]);";
                     $newContent = preg_replace($pattern, $replacement, $content);
                 } else {
                     info('Plugins section created. Adding new plugins...');
 
-                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                    $pluginsSection = "            ->plugins([\n{$newPlugins}\n            ]);";
                     $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
                     $replacement = "$1\n".$pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
@@ -217,12 +182,14 @@ class InstallCommand extends Command
             foreach ($providers as $provider) {
                 $providerNames[] = $provider->getBasename();
             }
+
             $providerPath = multiselect(
                 label: 'Which Panel should it be registered',
                 options: [...$providerNames],
                 default: [$providerNames[0]],
             );
         }
+
         if (count($providers) == 1) {
             $providerPath .= '/'.$providers[0]->getBasename();
         }

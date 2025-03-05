@@ -24,7 +24,7 @@ class Hidden extends AbstractBlock
         ];
 
         $this->formFields['resource'] = [
-            "Hidden::make('{$this->name}')",
+            sprintf("Hidden::make('%s')", $this->name),
         ];
 
         $this->tableColumns['resource'] = [
@@ -33,12 +33,12 @@ class Hidden extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->string('{$this->name}')"
+            sprintf("\$table->string('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->word()',
+            $this->name => 'fake()->word()',
         ];
     }
 }

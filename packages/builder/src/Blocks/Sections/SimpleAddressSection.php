@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Moox\Builder\Blocks\Sections;
 
 use Moox\Builder\Blocks\AbstractBlock;
+use Override;
 
 final class SimpleAddressSection extends AbstractBlock
 {
@@ -33,17 +34,18 @@ final class SimpleAddressSection extends AbstractBlock
             ]);
 
         $this->migrations['fields'] = [
-            "\$table->string('street', {$this->length})"
+            sprintf("\$table->string('street', %d)", $this->length)
                 .($this->nullable ? '->nullable()' : ''),
-            "\$table->string('city', {$this->length})"
+            sprintf("\$table->string('city', %d)", $this->length)
                 .($this->nullable ? '->nullable()' : ''),
-            "\$table->string('postal_code', {$this->length})"
+            sprintf("\$table->string('postal_code', %d)", $this->length)
                 .($this->nullable ? '->nullable()' : ''),
-            "\$table->string('country', {$this->length})"
+            sprintf("\$table->string('country', %d)", $this->length)
                 .($this->nullable ? '->nullable()' : ''),
         ];
     }
 
+    #[Override]
     public function getFillableFields(): array
     {
         return [

@@ -2,7 +2,7 @@
 
 namespace Moox\Training\Resources\TrainingTypeResource\RelationManagers;
 
-use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
@@ -10,14 +10,16 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class TrainingsRelationManager extends RelationManager
 {
@@ -25,6 +27,7 @@ class TrainingsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([
@@ -141,51 +144,49 @@ class TrainingsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->limit(50),
-                Tables\Columns\TextColumn::make('slug')->limit(50),
-                Tables\Columns\TextColumn::make('description')->limit(50),
-                Tables\Columns\TextColumn::make('duration'),
-                Tables\Columns\TextColumn::make('link')->limit(50),
-                Tables\Columns\TextColumn::make('due_at')->dateTime(),
-                Tables\Columns\TextColumn::make('cycle'),
-                Tables\Columns\TextColumn::make('source_id')->limit(50),
-                Tables\Columns\TextColumn::make('trainingType.title')->limit(
+                TextColumn::make('title')->limit(50),
+                TextColumn::make('slug')->limit(50),
+                TextColumn::make('description')->limit(50),
+                TextColumn::make('duration'),
+                TextColumn::make('link')->limit(50),
+                TextColumn::make('due_at')->dateTime(),
+                TextColumn::make('cycle'),
+                TextColumn::make('source_id')->limit(50),
+                TextColumn::make('trainingType.title')->limit(
                     50
                 ),
-                Tables\Columns\TextColumn::make('trainingable_id')->limit(50),
-                Tables\Columns\TextColumn::make('trainingable_type')->limit(50),
+                TextColumn::make('trainingable_id')->limit(50),
+                TextColumn::make('trainingable_type')->limit(50),
             ])
             ->filters([
-                Tables\Filters\Filter::make('created_at')
+                Filter::make('created_at')
                     ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
                     ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '>=',
-                                    $date
-                                )
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when(
+                            $data['created_from'],
+                            fn (
+                                Builder $query,
+                                $date
+                            ): Builder => $query->whereDate(
+                                'created_at',
+                                '>=',
+                                $date
                             )
-                            ->when(
-                                $data['created_until'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '<=',
-                                    $date
-                                )
-                            );
-                    }),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (
+                                Builder $query,
+                                $date
+                            ): Builder => $query->whereDate(
+                                'created_at',
+                                '<=',
+                                $date
+                            )
+                        )),
 
                 SelectFilter::make('training_type_id')
                     ->multiple()

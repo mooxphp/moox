@@ -15,28 +15,35 @@ use Moox\Training\Models\TrainingInvitation;
 
 class SendInvitations implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use JobProgress;
+    use Queueable;
+    use SerializesModels;
 
-    public $tries;
+    /**
+     * @var int
+     */
+    public $tries = 3;
 
-    public $timeout;
+    /**
+     * @var int
+     */
+    public $timeout = 300;
 
-    public $maxExceptions;
+    /**
+     * @var int
+     */
+    public $maxExceptions = 1;
 
-    public $backoff;
+    /**
+     * @var int
+     */
+    public $backoff = 350;
 
-    public $invitationId;
+    public function __construct(public $invitationId) {}
 
-    public function __construct($invitationId)
-    {
-        $this->tries = 3;
-        $this->timeout = 300;
-        $this->maxExceptions = 1;
-        $this->backoff = 350;
-        $this->invitationId = $invitationId;
-    }
-
-    public function handle()
+    public function handle(): void
     {
         $this->setProgress(1);
 
@@ -48,7 +55,7 @@ class SendInvitations implements ShouldQueue
         $invitation->trainingDates()
             ->whereNull('sent_at')
             ->get()
-            ->each(function ($trainingDate) {
+            ->each(function ($trainingDate): void {
                 $trainingDates[] = $trainingDate;
                 $trainingDate->update(['sent_at' => now()]);
             });

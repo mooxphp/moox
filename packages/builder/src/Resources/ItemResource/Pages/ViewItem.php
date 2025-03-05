@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\Eloquent\Model;
 use Moox\Builder\Resources\ItemResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class ViewItem extends ViewRecord
 {
@@ -15,6 +16,7 @@ class ViewItem extends ViewRecord
 
     protected static string $resource = ItemResource::class;
 
+    #[Override]
     public function mount($record): void
     {
         $this->record = $this->resolveRecord($record);
@@ -24,6 +26,7 @@ class ViewItem extends ViewRecord
         $this->fillForm();
     }
 
+    #[Override]
     public function getTitle(): string
     {
         $title = parent::getTitle();

@@ -9,19 +9,25 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\PressTrainings\Models\WpTraining;
-use Moox\PressTrainings\Resources\WpTrainingResource\Pages;
-use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\CreateWpTraining;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\EditWpTraining;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\ListWpTrainings;
+use Moox\PressTrainings\Resources\WpTrainingResource\Pages\ViewWpTraining;
+use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers\WpCommentRelationManager;
+use Moox\PressTrainings\Resources\WpTrainingResource\RelationManagers\WpTrainingMetaRelationManager;
+use Override;
 
 class WpTrainingResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = WpTraining::class;
 
@@ -29,6 +35,7 @@ class WpTrainingResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'post_title';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -270,76 +277,85 @@ class WpTrainingResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('post_title')
+                TextColumn::make('post_title')
                     ->label(__('core::post.post_title'))
                     ->toggleable()
                     ->searchable()
                     ->limit(50),
 
-                Tables\Columns\TextColumn::make('trainingsTopic.name')
+                TextColumn::make('trainingsTopic.name')
                     ->label('Schulung Rubrik')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('post_date')
+                TextColumn::make('post_date')
                     ->label(__('core::post.post_date'))
                     ->toggleable()
                     ->dateTime(),
             ])
             ->actions([
-                Action::make('Edit')->url(fn ($record): string => "/wp/wp-admin/post.php?post={$record->ID}&action=edit"),
+                Action::make('Edit')->url(fn ($record): string => sprintf('/wp/wp-admin/post.php?post=%s&action=edit', $record->ID)),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
-            RelationManagers\WpTrainingMetaRelationManager::class,
-            RelationManagers\WpCommentRelationManager::class,
+            WpTrainingMetaRelationManager::class,
+            WpCommentRelationManager::class,
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWpTrainings::route('/'),
-            'create' => Pages\CreateWpTraining::route('/create'),
-            'view' => Pages\ViewWpTraining::route('/{record}'),
-            'edit' => Pages\EditWpTraining::route('/{record}/edit'),
+            'index' => ListWpTrainings::route('/'),
+            'create' => CreateWpTraining::route('/create'),
+            'view' => ViewWpTraining::route('/{record}'),
+            'edit' => EditWpTraining::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('press-trainings.resources.trainings.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('press-trainings.resources.trainings.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('press-trainings.resources.trainings.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('press-trainings.resources.trainings.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('press-trainings.temp_navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('press-trainings.temp_navigation_sort') + 4;

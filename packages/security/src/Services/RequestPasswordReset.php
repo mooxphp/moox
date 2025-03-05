@@ -4,7 +4,6 @@ namespace Moox\Security\Services;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
-use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Facades\Filament;
@@ -19,6 +18,7 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Password;
 use Moox\Security\Notifications\Passwords\PasswordResetNotification;
+use Override;
 
 /**
  * @property Form $form
@@ -51,15 +51,15 @@ class RequestPasswordReset extends SimplePage
     {
         try {
             $this->rateLimit(2);
-        } catch (TooManyRequestsException $exception) {
+        } catch (TooManyRequestsException $tooManyRequestsException) {
             Notification::make()
                 ->title(__('filament-panels::pages/auth/password-reset/request-password-reset.notifications.throttled.title', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                    'seconds' => $tooManyRequestsException->secondsUntilAvailable,
+                    'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                 ]))
                 ->body(array_key_exists('body', __('filament-panels::pages/auth/password-reset/request-password-reset.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/password-reset/request-password-reset.notifications.throttled.body', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                    'seconds' => $tooManyRequestsException->secondsUntilAvailable,
+                    'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                 ]) : null)
                 ->danger()
                 ->send();
@@ -72,12 +72,6 @@ class RequestPasswordReset extends SimplePage
         $status = Password::broker(Filament::getAuthPasswordBroker())->sendResetLink(
             $data,
             function (CanResetPassword $user, string $token): void {
-                if (! method_exists($user, 'notify')) {
-                    $userClass = $user::class;
-
-                    throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
-                }
-
                 $notification = new PasswordResetNotification($token);
 
                 $user->notify($notification);
@@ -144,11 +138,13 @@ class RequestPasswordReset extends SimplePage
             ->url(filament()->getLoginUrl());
     }
 
+    #[Override]
     public function getTitle(): string|Htmlable
     {
         return __('filament-panels::pages/auth/password-reset/request-password-reset.title');
     }
 
+    #[Override]
     public function getHeading(): string|Htmlable
     {
         return __('filament-panels::pages/auth/password-reset/request-password-reset.heading');

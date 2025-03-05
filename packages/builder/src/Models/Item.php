@@ -13,7 +13,11 @@ use Moox\Core\Traits\UserRelation\UserInModel;
 
 class Item extends Model
 {
-    use HasFactory, SinglePublishInModel, SoftDeletes, TaxonomyInModel, UserInModel;
+    use HasFactory;
+    use SinglePublishInModel;
+    use SoftDeletes;
+    use TaxonomyInModel;
+    use UserInModel;
 
     protected $table = 'items';
 

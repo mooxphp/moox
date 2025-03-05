@@ -12,13 +12,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Moox\Press\QueryBuilder\UserQueryBuilder;
+use Override;
 
 /**
  * @property string $user_email
  */
 class WpUser extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Mutable, Notifiable;
+    use HasFactory;
+    use Mutable;
+    use Notifiable;
 
     protected $fillable = [
         'user_login',
@@ -46,7 +49,7 @@ class WpUser extends Authenticatable implements FilamentUser
 
     protected $table;
 
-    protected $metatable;
+    protected string $metatable;
 
     protected $primaryKey = 'ID';
 
@@ -69,30 +72,31 @@ class WpUser extends Authenticatable implements FilamentUser
         $this->initializeMetaFields();
     }
 
+    #[Override]
     protected static function boot()
     {
         parent::boot();
 
-        static::created(function ($model) {
+        static::created(function ($model): void {
             $model->addOrUpdateMeta('created_at', now()->toDateTimeString());
         });
 
-        static::saving(function ($post) {
+        static::saving(function ($post): void {
             // Überprüfe, ob das Datum ungültig ist, und setze es auf NULL oder ein Standarddatum
             if ($post->post_modified == '0000-00-00 00:00:00') {
                 $post->post_modified = null; // oder ein anderes gültiges Datum wie '1970-01-01 00:00:00'
             }
         });
 
-        static::updated(function ($model) {
+        static::updated(function ($model): void {
             $model->addOrUpdateMeta('updated_at', now()->toDateTimeString());
         });
 
-        static::deleted(function ($model) {
+        static::deleted(function ($model): void {
             $model->userMeta()->delete();
         });
 
-        static::addGlobalScope('addAttributes', function (Builder $builder) {
+        static::addGlobalScope('addAttributes', function (Builder $builder): void {
             $builder->addSelect([
                 'ID',
                 'ID as id',
@@ -146,6 +150,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this;
     }
 
+    #[Override]
     public function toArray()
     {
         $attributes = parent::toArray();
@@ -159,6 +164,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $attributes;
     }
 
+    #[Override]
     public function toJson($options = 0)
     {
         return json_encode($this->toArray(), $options);
@@ -170,12 +176,15 @@ class WpUser extends Authenticatable implements FilamentUser
             $this->load('userMeta');
         }
 
-        $meta = $this->userMeta->where('meta_key', $key)->first();
+        /** @var \Illuminate\Database\Eloquent\Collection<\Moox\Press\Models\WpUserMeta> $userMeta */
+        $userMeta = $this->userMeta;
+        /** @var ?\Moox\Press\Models\WpUserMeta $meta */
+        $meta = $userMeta->where('meta_key', $key)->first();
 
         return $meta ? $meta->meta_value : null;
     }
 
-    public function addOrUpdateMeta($key, $value)
+    public function addOrUpdateMeta($key, $value): void
     {
         WpUserMeta::updateOrCreate(
             ['user_id' => $this->ID, 'meta_key' => $key],
@@ -193,6 +202,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->belongsTo(WpMedia::class, 'mm_sua_attachment_id', 'ID');
     }
 
+    #[Override]
     protected function newBaseQueryBuilder()
     {
         $connection = $this->getConnection();
@@ -202,12 +212,15 @@ class WpUser extends Authenticatable implements FilamentUser
         return new UserQueryBuilder($connection, $grammar, $processor);
     }
 
-    protected function isMetaField($key)
+    protected function isMetaField($key): bool
     {
         return array_key_exists($key, config('press.default_user_meta', []));
     }
 
-    public function getAllMetaAttributes()
+    /**
+     * @return mixed[]
+     */
+    public function getAllMetaAttributes(): array
     {
         $metaFields = config('press.default_user_meta', []);
         $attributes = [];
@@ -239,7 +252,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->getAttribute('user_email');
     }
 
-    public function setEmailAttribute($value)
+    public function setEmailAttribute($value): void
     {
         $this->setAttribute('user_email', $value);
     }
@@ -249,7 +262,7 @@ class WpUser extends Authenticatable implements FilamentUser
         return $this->getAttribute('user_pass');
     }
 
-    public function setPasswordAttribute($value)
+    public function setPasswordAttribute($value): void
     {
         $this->setAttribute('user_pass', $value);
     }

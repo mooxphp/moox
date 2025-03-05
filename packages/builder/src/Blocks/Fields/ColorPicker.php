@@ -31,16 +31,16 @@ class ColorPicker extends AbstractBlock
             ]);
 
         $this->tableColumns['resource'] = [
-            "ColorColumn::make('{$this->name}')",
+            sprintf("ColorColumn::make('%s')", $this->name),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->string('{$this->name}', 7)"
+            sprintf("\$table->string('%s', 7)", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->hexColor()',
+            $this->name => 'fake()->hexColor()',
         ];
     }
 }

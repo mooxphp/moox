@@ -73,6 +73,7 @@ class InstallCommand extends Command
 
                 return;
             }
+
             warning('The Jobs config already exist. The config will not be published.');
         }
     }
@@ -87,6 +88,7 @@ class InstallCommand extends Command
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-batch-migration']);
             }
         }
+
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('job_queue_workers')) {
                 warning('The job_queue_workers table already exists. The migrations will not be published.');
@@ -95,6 +97,7 @@ class InstallCommand extends Command
                 $this->callSilent('vendor:publish', ['--tag' => 'jobs-queue-migration']);
             }
         }
+
         if (confirm('Do you wish to publish the migrations?', true)) {
             if (Schema::hasTable('job_manager')) {
                 warning('The job_manager table already exists. The migrations will not be published.');
@@ -156,7 +159,7 @@ class InstallCommand extends Command
             $intend = '                ';
             $namespace = "\Moox\Jobs";
 
-            if ($queueDriver != 'database') {
+            if ($queueDriver !== 'database') {
                 warning('The queue driver is not set to database. Jobs waiting will not be installed.');
 
                 $pluginsToAdd = multiselect(
@@ -180,26 +183,27 @@ class InstallCommand extends Command
             foreach ($pluginsToAdd as $plugin) {
                 $searchPlugin = '/'.$plugin.'/';
                 if (preg_match($searchPlugin, $content)) {
-                    warning("$plugin already registered.");
+                    warning($plugin.' already registered.');
                 } else {
                     $newPlugins .= $intend.$namespace.'\\'.$plugin.$function."\n";
                 }
             }
 
-            if ($newPlugins) {
+            if ($newPlugins !== '' && $newPlugins !== '0') {
                 if (preg_match($pattern, $content)) {
                     info('Plugins section found. Adding new plugins...');
 
-                    $replacement = "->plugins([$1\n$newPlugins\n            ]);";
+                    $replacement = "->plugins([$1\n{$newPlugins}\n            ]);";
                     $newContent = preg_replace($pattern, $replacement, $content);
                 } else {
                     info('Plugins section created. Adding new plugins...');
 
-                    $pluginsSection = "            ->plugins([\n$newPlugins\n            ]);";
+                    $pluginsSection = "            ->plugins([\n{$newPlugins}\n            ]);";
                     $placeholderPattern = '/(\->authMiddleware\(\[.*?\]\))\s*\;/s';
                     $replacement = "$1\n".$pluginsSection;
                     $newContent = preg_replace($placeholderPattern, $replacement, $content, 1);
                 }
+
                 File::put($providerPath, $newContent);
             } else {
                 alert('There are no new plugins detected.');
@@ -235,12 +239,14 @@ class InstallCommand extends Command
             foreach ($providers as $provider) {
                 $providerNames[] = $provider->getBasename();
             }
+
             $providerPath = multiselect(
                 label: 'Which Panel should it be registered',
                 options: [...$providerNames],
                 default: [$providerNames[0]],
             );
         }
+
         if (count($providers) == 1) {
             $providerPath .= '/'.$providers[0]->getBasename();
         }

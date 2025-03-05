@@ -14,25 +14,19 @@ class SectionBuilder
 
     private array $sections;
 
-    private string $name;
-
-    private int $order;
-
     private bool $hideHeader = false;
 
     public function __construct(
         array &$sections,
-        string $name,
-        int $order = 0
+        private readonly string $name,
+        private int $order = 0
     ) {
         $this->sections = &$sections;
-        $this->name = $name;
-        $this->order = $order;
 
-        if (isset($this->sections[$name])) {
-            $this->isMeta = $this->sections[$name]['isMeta'] ?? false;
-            $this->fields = $this->sections[$name]['fields'] ?? [];
-            $this->order = $this->sections[$name]['order'] ?? 0;
+        if (isset($this->sections[$this->name])) {
+            $this->isMeta = $this->sections[$this->name]['isMeta'] ?? false;
+            $this->fields = $this->sections[$this->name]['fields'] ?? [];
+            $this->order = $this->sections[$this->name]['order'] ?? 0;
         }
     }
 

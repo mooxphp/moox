@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Services\Block;
 
+use ReflectionClass;
+
 class BlockFactory
 {
     public function createFromBuild(string $blockClass, int $entityId): ?object
@@ -13,7 +15,7 @@ class BlockFactory
 
     public function create(string $blockClass, array $options = []): object
     {
-        $reflection = new \ReflectionClass($blockClass);
+        $reflection = new ReflectionClass($blockClass);
         $constructor = $reflection->getConstructor();
 
         if (! $constructor) {

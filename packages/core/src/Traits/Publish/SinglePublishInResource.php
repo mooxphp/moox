@@ -64,7 +64,7 @@ trait SinglePublishInResource
                     'published' => __('core::core.published'),
                 ])
                 ->label(__('core::core.status'))
-                ->query(function (Builder $query, array $data) {
+                ->query(function (Builder $query, array $data): void {
                     $status = $data['value'];
                     if ($status) {
                         static::applyStatusFilter($query, $status);
@@ -97,15 +97,16 @@ trait SinglePublishInResource
             ->color('success')
             ->button()
             ->extraAttributes(['class' => 'w-full'])
-            ->action(function ($livewire) {
+            ->action(function ($livewire): void {
                 $data = $livewire->form->getState();
                 if (! $data['publish_at']) {
                     $data['publish_at'] = now();
                 }
+
                 $livewire->form->fill($data);
                 $livewire instanceof CreateFullItem ? $livewire->create() : $livewire->save();
             })
-            ->hidden(fn ($livewire, $record) => $record && $record->trashed());
+            ->hidden(fn ($livewire, $record): bool => $record && $record->trashed());
     }
 
     public static function getFormActions(): Actions

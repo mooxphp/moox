@@ -10,6 +10,7 @@ use Moox\Press\Commands\InstallWordPress;
 use Moox\Press\Commands\UpdateWordPressPlugin;
 use Moox\Press\Commands\UpdateWordPressURL;
 use Moox\Press\Providers\WordPressUserProvider;
+use Override;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -31,12 +32,11 @@ class PressServiceProvider extends PackageServiceProvider
             );
     }
 
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         parent::boot();
 
-        Auth::provider('wpuser-provider', function ($app, array $config) {
-            return new WordPressUserProvider($app['hash'], $config['model']);
-        });
+        Auth::provider('wpuser-provider', fn ($app, array $config): WordPressUserProvider => new WordPressUserProvider($app['hash'], $config['model']));
     }
 }

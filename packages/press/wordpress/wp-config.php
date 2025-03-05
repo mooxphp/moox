@@ -6,7 +6,7 @@ require __DIR__.'/../vendor/autoload.php';
 $dotenv = Dotenv::createImmutable(__DIR__.'/../../');
 $dotenv->load();
 
-$isCli = (php_sapi_name() == 'cli');
+$isCli = (PHP_SAPI === 'cli');
 
 if ($isCli) {
     $env = [
@@ -107,23 +107,23 @@ define('NONCE_SALT', $env['WP_NONCE_SALT']);
 define('MOOX_HASH', $env['MOOX_HASH']);
 define('ADMIN_SLUG', $env['ADMIN_SLUG']);
 
-define('LOCK_WP', isset($env['LOCK_WP']) ? $env['LOCK_WP'] : false);
-define('AUTH_WP', isset($env['AUTH_WP']) ? $env['AUTH_WP'] : false);
-define('REDIRECT_AFTER_LOGIN', isset($env['REDIRECT_AFTER_LOGIN']) ? $env['REDIRECT_AFTER_LOGIN'] : 'wp-admin');
-define('REDIRECT_INDEX', isset($env['REDIRECT_INDEX']) ? $env['REDIRECT_INDEX'] : false);
-define('REDIRECT_TO_WP', isset($env['REDIRECT_TO_WP']) ? $env['REDIRECT_TO_WP'] : false);
-define('REDIRECT_LOGIN', isset($env['REDIRECT_LOGIN']) ? $env['REDIRECT_LOGIN'] : false);
-define('REDIRECT_LOGOUT', isset($env['REDIRECT_LOGOUT']) ? $env['REDIRECT_LOGOUT'] : false);
-define('FORGOT_PASSWORD', isset($env['FORGOT_PASSWORD']) ? $env['FORGOT_PASSWORD'] : false);
-define('REDIRECT_EDITOR', isset($env['REDIRECT_EDITOR']) ? $env['REDIRECT_EDITOR'] : false);
-define('REGISTRATION', isset($env['REGISTRATION']) ? $env['REGISTRATION'] : false);
-define('ENABLE_MFA', isset($env['ENABLE_MFA']) ? $env['ENABLE_MFA'] : false);
+define('LOCK_WP', $env['LOCK_WP'] ?? false);
+define('AUTH_WP', $env['AUTH_WP'] ?? false);
+define('REDIRECT_AFTER_LOGIN', $env['REDIRECT_AFTER_LOGIN'] ?? 'wp-admin');
+define('REDIRECT_INDEX', $env['REDIRECT_INDEX'] ?? false);
+define('REDIRECT_TO_WP', $env['REDIRECT_TO_WP'] ?? false);
+define('REDIRECT_LOGIN', $env['REDIRECT_LOGIN'] ?? false);
+define('REDIRECT_LOGOUT', $env['REDIRECT_LOGOUT'] ?? false);
+define('FORGOT_PASSWORD', $env['FORGOT_PASSWORD'] ?? false);
+define('REDIRECT_EDITOR', $env['REDIRECT_EDITOR'] ?? false);
+define('REGISTRATION', $env['REGISTRATION'] ?? false);
+define('ENABLE_MFA', $env['ENABLE_MFA'] ?? false);
 
-define('WP_DEBUG', ($env['WP_DEBUG'] === 'true' ? true : false));
-define('WP_DEBUG_LOG', ($env['WP_DEBUG_LOG'] === 'true' ? true : false));
-define('WP_DEBUG_DISPLAY', ($env['WP_DEBUG_DISPLAY'] === 'true' ? true : false));
+define('WP_DEBUG', ($env['WP_DEBUG'] === 'true'));
+define('WP_DEBUG_LOG', ($env['WP_DEBUG_LOG'] === 'true'));
+define('WP_DEBUG_DISPLAY', ($env['WP_DEBUG_DISPLAY'] === 'true'));
 
-define('WP_MEMORY_LIMIT', ($env['WP_MEMORY_LIMIT'] ? $env['WP_MEMORY_LIMIT'] : '512M'));
+define('WP_MEMORY_LIMIT', ($env['WP_MEMORY_LIMIT'] ?: '512M'));
 
 if (! defined('ABSPATH')) {
     define('ABSPATH', __DIR__.'/');

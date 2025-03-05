@@ -7,6 +7,7 @@ namespace Moox\Builder\Resources\FullItemResource\Pages;
 use Filament\Resources\Pages\EditRecord;
 use Moox\Builder\Resources\FullItemResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class EditFullItem extends EditRecord
 {
@@ -14,6 +15,7 @@ class EditFullItem extends EditRecord
 
     protected static string $resource = FullItemResource::class;
 
+    #[Override]
     public function mount($record): void
     {
         $this->record = $this->resolveRecord($record);
@@ -28,6 +30,7 @@ class EditFullItem extends EditRecord
         return [];
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

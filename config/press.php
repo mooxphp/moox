@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Validation\Rules\Password;
+use Moox\Press\Models\WpUser;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +17,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -1257,7 +1259,7 @@ return [
     |
     */
 
-    'wpModel' => Moox\Press\Models\WpUser::class,
+    'wpModel' => WpUser::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -1272,7 +1274,7 @@ return [
 
     'password' => [
         'validation' => [
-            'rules' => Illuminate\Validation\Rules\Password::min(20)
+            'rules' => Password::min(20)
                 ->max(64)
                 ->mixedCase()
                 ->numbers()

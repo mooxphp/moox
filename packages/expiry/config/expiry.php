@@ -1,5 +1,9 @@
 <?php
 
+use Moox\Expiry\Actions\CustomExpiryAction;
+use Moox\Expiry\Jobs\CollectExpiries;
+use Moox\Press\Models\WpUser;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +18,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -68,9 +71,7 @@ return [
                             'value' => 'Documents',
                         ],
                     ],
-                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
-                        config('app.url'),
-                    ]),
+                    'visible' => rtrim((string) env('APP_URL'), '/') == config('app.url'),
                 ],
                 'articles' => [
                     'label' => 'trans//core::core.articles',
@@ -82,9 +83,7 @@ return [
                             'value' => 'Articles',
                         ],
                     ],
-                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
-                        config('app.url'),
-                    ]),
+                    'visible' => rtrim((string) env('APP_URL'), '/') == config('app.url'),
                 ],
                 'tasks' => [
                     'label' => 'trans//core::core.tasks',
@@ -96,9 +95,7 @@ return [
                             'value' => 'Tasks',
                         ],
                     ],
-                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
-                        config('app.url'),
-                    ]),
+                    'visible' => rtrim((string) env('APP_URL'), '/') == config('app.url'),
                 ],
                 'no-user' => [
                     'label' => 'trans//core::expiry.no_assignee',
@@ -110,9 +107,7 @@ return [
                             'value' => 'No assignee',
                         ],
                     ],
-                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
-                        config('app.url'),
-                    ]),
+                    'visible' => rtrim((string) env('APP_URL'), '/') == config('app.url'),
                 ],
                 'no-date' => [
                     'label' => 'trans//core::expiry.no_expiry_date',
@@ -186,7 +181,7 @@ return [
     |
     */
 
-    'user_model' => \Moox\Press\Models\WpUser::class,
+    'user_model' => WpUser::class,
     'default_notified_to' => 1,
 
     /*
@@ -251,7 +246,7 @@ return [
     */
 
     'collect_expiries_jobs' => [
-        Moox\Expiry\Jobs\CollectExpiries::class,
+        CollectExpiries::class,
         // Add more jobs here if needed.
     ],
 
@@ -266,7 +261,7 @@ return [
     |
     */
 
-    'expiry_action' => Moox\Expiry\Actions\CustomExpiryAction::class,
+    'expiry_action' => CustomExpiryAction::class,
     'expiry_action_enable' => false,
     'expiry_action_name' => 'Custom Expiry Action',
     'expiry_view_action_color' => 'primary',

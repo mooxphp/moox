@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
+use Override;
 
 class Tag extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'tags';
 
@@ -52,9 +54,10 @@ class Tag extends Model
         DB::table('taggables')->where('tag_id', $this->id)->delete();
     }
 
+    #[Override]
     protected static function booted(): void
     {
-        static::deleting(function (Tag $tag) {
+        static::deleting(function (Tag $tag): void {
             $tag->detachAllTaggables();
         });
     }

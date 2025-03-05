@@ -9,16 +9,20 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingDate;
-use Moox\Training\Resources\TrainingDateResource\Pages;
+use Moox\Training\Resources\TrainingDateResource\Pages\CreateTrainingDate;
+use Moox\Training\Resources\TrainingDateResource\Pages\EditTrainingDate;
+use Moox\Training\Resources\TrainingDateResource\Pages\ListTrainingDates;
+use Moox\Training\Resources\TrainingDateResource\Pages\ViewTrainingDate;
+use Override;
 
 class TrainingDateResource extends Resource
 {
@@ -32,6 +36,7 @@ class TrainingDateResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'link';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -142,38 +147,39 @@ class TrainingDateResource extends Resource
         ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('trainingInvitation.title')
+                TextColumn::make('trainingInvitation.title')
                     ->toggleable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('begin')
+                TextColumn::make('begin')
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('end')
+                TextColumn::make('end')
                     ->toggleable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->toggleable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('link')
+                TextColumn::make('link')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('location')
+                TextColumn::make('location')
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('min_participants')
+                TextColumn::make('min_participants')
                     ->toggleable()
                     ->searchable(true, null, true),
-                Tables\Columns\TextColumn::make('max_participants')
+                TextColumn::make('max_participants')
                     ->toggleable()
                     ->searchable(true, null, true),
-                Tables\Columns\TextColumn::make('sent_at')
+                TextColumn::make('sent_at')
                     ->toggleable()
                     ->dateTime(),
             ])
@@ -190,21 +196,24 @@ class TrainingDateResource extends Resource
             ->bulkActions([DeleteBulkAction::make()]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTrainingDates::route('/'),
-            'create' => Pages\CreateTrainingDate::route('/create'),
-            'view' => Pages\ViewTrainingDate::route('/{record}'),
-            'edit' => Pages\EditTrainingDate::route('/{record}/edit'),
+            'index' => ListTrainingDates::route('/'),
+            'create' => CreateTrainingDate::route('/create'),
+            'view' => ViewTrainingDate::route('/{record}'),
+            'edit' => EditTrainingDate::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('trainings.navigation_sort') + 2;

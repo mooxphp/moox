@@ -2,6 +2,7 @@
 
 namespace Moox\Press\Resources\WpUserResource\Pages;
 
+use Exception;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -27,24 +28,24 @@ class CreateWpUser extends CreateRecord
             $mimeType = $mimeTypes->guessMimeType(storage_path('app/'.$temporaryFilePath));
 
             if (! in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])) {
-                throw new \Exception('The file must be an image of type: jpeg, png, gif, webp. or svg.');
+                throw new Exception('The file must be an image of type: jpeg, png, gif, webp. or svg.');
             }
 
             $currentYear = now()->year;
             $currentMonth = sprintf('%02d', now()->month);
-            $relativeDirectory = "{$currentYear}/{$currentMonth}";
+            $relativeDirectory = sprintf('%d/%s', $currentYear, $currentMonth);
 
-            $filenameWithoutExtension = pathinfo($originalName, PATHINFO_FILENAME);
-            $extension = pathinfo($originalName, PATHINFO_EXTENSION);
-            $filename = "{$filenameWithoutExtension}.{$extension}";
+            $filenameWithoutExtension = pathinfo((string) $originalName, PATHINFO_FILENAME);
+            $extension = pathinfo((string) $originalName, PATHINFO_EXTENSION);
+            $filename = sprintf('%s.%s', $filenameWithoutExtension, $extension);
 
             $disk = Storage::disk('press');
-            $newPath = "{$relativeDirectory}/{$filename}";
+            $newPath = sprintf('%s/%s', $relativeDirectory, $filename);
 
             $fileSize = $disk->size($newPath);
             $imageSize = getimagesize($disk->path($newPath));
             $imageMeta = [
-                'file' => "{$relativeDirectory}/{$filename}",
+                'file' => sprintf('%s/%s', $relativeDirectory, $filename),
                 'width' => $imageSize[0],
                 'height' => $imageSize[1],
                 'filesize' => $fileSize,
@@ -90,10 +91,8 @@ class CreateWpUser extends CreateRecord
         foreach ($metaDataConfig as $metaKey => $defaultValue) {
             $metaValue = $this->data[$metaKey] ?? $defaultValue;
 
-            if ($metaKey === 'mm_sua_attachment_id') {
-                if ($temporaryFilePath) {
-                    $metaValue = $attachmentId;
-                }
+            if ($metaKey === 'mm_sua_attachment_id' && $temporaryFilePath) {
+                $metaValue = $attachmentId;
             }
 
             if ($this->record instanceof WpUser) {

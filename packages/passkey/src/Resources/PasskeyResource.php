@@ -18,15 +18,18 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
+use Override;
 
 class PasskeyResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = Passkey::class;
 
     protected static ?string $navigationIcon = 'gmdi-fingerprint-o';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -44,13 +47,13 @@ class PasskeyResource extends Resource
                     ->required(),
                 Select::make('user_type')
                     ->label(__('core::user.user_type'))
-                    ->options(function () {
+                    ->options(function (): array {
                         $models = Config::get('login-link.user_models', []);
 
                         return array_flip($models);
                     })
                     ->reactive()
-                    ->afterStateUpdated(function (Set $set, $state) {
+                    ->afterStateUpdated(function (Set $set, $state): void {
                         $set('user_id', null);
                     })
                     ->required(),
@@ -75,6 +78,7 @@ class PasskeyResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -95,9 +99,7 @@ class PasskeyResource extends Resource
                     ->sortable(),
                 TextColumn::make('user_id')
                     ->label(__('core::user.user_id'))
-                    ->getStateUsing(function ($record) {
-                        return optional($record->user)->name ?? 'unknown';
-                    })
+                    ->getStateUsing(fn ($record) => optional($record->user)->name ?? 'unknown')
                     ->sortable(),
                 TextColumn::make('device_id')
                     ->label(__('core::session.device_id'))
@@ -115,6 +117,7 @@ class PasskeyResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -122,6 +125,7 @@ class PasskeyResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -129,6 +133,7 @@ class PasskeyResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -136,36 +141,43 @@ class PasskeyResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('passkey.resources.passkey.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('passkey.resources.passkey.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('passkey.resources.passkey.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('passkey.resources.passkey.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('passkey.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('passkey.navigation_sort') + 6;

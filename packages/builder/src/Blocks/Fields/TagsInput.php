@@ -31,7 +31,7 @@ class TagsInput extends AbstractBlock
                 ->label('{$this->label}')"
                 .($this->nullable ? '' : '->required()')
                 .($this->suggestions ? '->suggestions('.var_export($this->suggestions, true).')' : '')
-                .($this->separator ? "->separator('{$this->separator}')" : ''),
+                .($this->separator ? sprintf("->separator('%s')", $this->separator) : ''),
         ];
 
         $this->tableColumns['resource'] = [
@@ -40,23 +40,23 @@ class TagsInput extends AbstractBlock
         ];
 
         $this->filters['resource'] = [
-            "MultiSelectFilter::make('{$this->name}')"
+            sprintf("MultiSelectFilter::make('%s')", $this->name)
                 .($this->suggestions ? '->options('.var_export($this->suggestions, true).')' : ''),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->json('{$this->name}')"
+            sprintf("\$table->json('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => $this->suggestions
+            $this->name => $this->suggestions
                 ? 'fake()->randomElements('.var_export($this->suggestions, true).', 2)'
                 : '[fake()->word(), fake()->word()]',
         ];
 
         $this->casts['model'] = [
-            "'{$this->name}' => 'array'",
+            sprintf("'%s' => 'array'", $this->name),
         ];
     }
 }

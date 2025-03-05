@@ -33,7 +33,7 @@ class TaxonomyCreateForm
                 )
                 ->label('Parent Category')
                 ->searchable()
-                ->disabledOptions(fn ($get) => [$get('id')])
+                ->disabledOptions(fn ($get): array => [$get('id')])
                 ->enableBranchNode(),
             Grid::make(2)
                 ->schema([

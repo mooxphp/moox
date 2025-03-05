@@ -12,7 +12,7 @@ trait ValidatesEntity
     protected function validateEntityExists(int $entityId): void
     {
         if (! DB::table('builder_entities')->where('id', $entityId)->exists()) {
-            throw new RuntimeException("Entity {$entityId} not found");
+            throw new RuntimeException(sprintf('Entity %d not found', $entityId));
         }
     }
 
@@ -24,7 +24,7 @@ trait ValidatesEntity
             ->where('is_active', true)
             ->exists()
         ) {
-            throw new RuntimeException("No active build found for entity {$entityId} in context {$buildContext}");
+            throw new RuntimeException(sprintf('No active build found for entity %d in context %s', $entityId, $buildContext));
         }
     }
 }

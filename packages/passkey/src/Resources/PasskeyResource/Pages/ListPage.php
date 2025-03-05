@@ -8,6 +8,7 @@ use Moox\Core\Traits\Tabs\TabsInListPage;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -15,18 +16,20 @@ class ListPage extends ListRecords
 
     public static string $resource = PasskeyResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             // PasskeyWidgets::class,
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('passkey::translations.title');
@@ -36,9 +39,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Passkey {
-                    return $model::create($data);
-                }),
+                ->using(fn (array $data, string $model): Passkey => $model::create($data)),
         ];
     }
 

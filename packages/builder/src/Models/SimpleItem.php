@@ -10,7 +10,8 @@ use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
 
 class SimpleItem extends Model
 {
-    use HasFactory, TaxonomyInModel;
+    use HasFactory;
+    use TaxonomyInModel;
 
     protected $table = 'simple_items';
 

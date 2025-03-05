@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Eloquent\Model;
+
 arch()
     ->expect('Moox\Slug')
     ->toUseStrictTypes()
@@ -8,7 +10,7 @@ arch()
 arch()
     ->expect('Moox\Slug\Models')
     ->toBeClasses()
-    ->toExtend('Illuminate\Database\Eloquent\Model')
+    ->toExtend(Model::class)
     ->toOnlyBeUsedIn('Moox\Slug');
 
 arch()->preset()->php();

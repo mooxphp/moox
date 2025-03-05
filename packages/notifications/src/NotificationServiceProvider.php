@@ -23,7 +23,7 @@ class NotificationServiceProvider extends PackageServiceProvider
             ->hasCommand(InstallCommand::class);
     }
 
-    public function packageRegistered()
+    public function packageRegistered(): void
     {
         if (config('notifications.api')) {
             Route::get('/api/notifications/user/{user}/notificationBell', [NotificationController::class, 'getView']);

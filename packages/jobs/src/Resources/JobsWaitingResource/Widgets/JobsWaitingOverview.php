@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\DB;
 use Moox\Jobs\Models\Job;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Traits\FormatSeconds;
+use Override;
 
 class JobsWaitingOverview extends BaseWidget
 {
     use FormatSeconds;
 
+    #[Override]
     protected function getCards(): array
     {
         $jobsWaiting = Job::query()

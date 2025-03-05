@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Locked;
 use Moox\Security\Helper\PasswordHash;
+use Override;
 
 /**
  * @property Form $form
@@ -64,15 +65,15 @@ class ResetPassword extends SimplePage
     {
         try {
             $this->rateLimit(2);
-        } catch (TooManyRequestsException $exception) {
+        } catch (TooManyRequestsException $tooManyRequestsException) {
             Notification::make()
                 ->title(__('filament-panels::pages/auth/password-reset/reset-password.notifications.throttled.title', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                    'seconds' => $tooManyRequestsException->secondsUntilAvailable,
+                    'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                 ]))
                 ->body(array_key_exists('body', __('filament-panels::pages/auth/password-reset/reset-password.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/password-reset/reset-password.notifications.throttled.body', [
-                    'seconds' => $exception->secondsUntilAvailable,
-                    'minutes' => ceil($exception->secondsUntilAvailable / 60),
+                    'seconds' => $tooManyRequestsException->secondsUntilAvailable,
+                    'minutes' => ceil($tooManyRequestsException->secondsUntilAvailable / 60),
                 ]) : null)
                 ->danger()
                 ->send();
@@ -87,7 +88,7 @@ class ResetPassword extends SimplePage
 
         $status = Password::broker(Filament::getAuthPasswordBroker())->reset(
             $data,
-            function (CanResetPassword|Model|Authenticatable $user) use ($data) {
+            function (CanResetPassword|Model|Authenticatable $user) use ($data): void {
                 $passwordHash = new PasswordHash(8, true);
                 $user->forceFill([
                     'user_pass' => $passwordHash->HashPassword($data['password']),
@@ -156,11 +157,13 @@ class ResetPassword extends SimplePage
             ->dehydrated(false);
     }
 
+    #[Override]
     public function getTitle(): string|Htmlable
     {
         return __('filament-panels::pages/auth/password-reset/reset-password.title');
     }
 
+    #[Override]
     public function getHeading(): string|Htmlable
     {
         return __('filament-panels::pages/auth/password-reset/reset-password.heading');

@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,31 +15,15 @@ use Moox\Sync\Models\Platform;
 
 class FileSyncJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, LogLevel, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use LogLevel;
+    use Queueable;
+    use SerializesModels;
 
-    protected $modelClass;
+    public function __construct(protected $modelClass, protected $modelId, protected $field, protected $fileData, protected Platform $sourcePlatform, protected Platform $targetPlatform) {}
 
-    protected $modelId;
-
-    protected $field;
-
-    protected $fileData;
-
-    protected $sourcePlatform;
-
-    protected $targetPlatform;
-
-    public function __construct($modelClass, $modelId, $field, $fileData, Platform $sourcePlatform, Platform $targetPlatform)
-    {
-        $this->modelClass = $modelClass;
-        $this->modelId = $modelId;
-        $this->field = $field;
-        $this->fileData = $fileData;
-        $this->sourcePlatform = $sourcePlatform;
-        $this->targetPlatform = $targetPlatform;
-    }
-
-    public function handle()
+    public function handle(): void
     {
         try {
             if (! $this->validateFile()) {
@@ -56,21 +41,21 @@ class FileSyncJob implements ShouldQueue
             }
 
             $this->syncFile();
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             Log::error('File sync failed', [
                 'model_class' => $this->modelClass,
                 'model_id' => $this->modelId,
                 'field' => $this->field,
-                'error' => $e->getMessage(),
+                'error' => $exception->getMessage(),
             ]);
-            throw $e;
+            throw $exception;
         }
     }
 
     protected function validateFile(): bool
     {
         $allowedExtensions = config('sync.file_sync_allowed_extensions', []);
-        $extension = pathinfo($this->fileData['path'], PATHINFO_EXTENSION);
+        $extension = pathinfo((string) $this->fileData['path'], PATHINFO_EXTENSION);
 
         return in_array(strtolower($extension), $allowedExtensions);
     }
@@ -97,7 +82,7 @@ class FileSyncJob implements ShouldQueue
 
     protected function syncFile()
     {
-        $chunkSize = config('sync.file_sync_chunk_size_http', 1 * 1024 * 1024); // Default to 1MB
+        $chunkSize = config('sync.file_sync_chunk_size_http', 1024 * 1024); // Default to 1MB
         $fileSize = $this->fileData['size'];
         $filePath = $this->fileData['path'];
 
@@ -113,9 +98,9 @@ class FileSyncJob implements ShouldQueue
         $this->finalizeFileSync();
     }
 
-    protected function sendChunk($chunk, $chunkIndex, $totalChunks)
+    protected function sendChunk($chunk, string $chunkIndex, $totalChunks)
     {
-        $url = "https://{$this->targetPlatform->domain}/api/file-sync/chunk";
+        $url = sprintf('https://%s/api/file-sync/chunk', $this->targetPlatform->domain);
 
         $response = Http::withHeaders([
             'X-Platform-Token' => $this->targetPlatform->api_token,
@@ -125,17 +110,17 @@ class FileSyncJob implements ShouldQueue
             'field' => $this->field,
             'chunk_index' => $chunkIndex,
             'total_chunks' => $totalChunks,
-            'chunk' => base64_encode($chunk),
+            'chunk' => base64_encode((string) $chunk),
         ]);
 
         if (! $response->successful()) {
-            throw new \Exception("Failed to send chunk {$chunkIndex}");
+            throw new Exception('Failed to send chunk '.$chunkIndex);
         }
     }
 
     protected function finalizeFileSync()
     {
-        $url = "https://{$this->targetPlatform->domain}/api/file-sync/finalize";
+        $url = sprintf('https://%s/api/file-sync/finalize', $this->targetPlatform->domain);
 
         $response = Http::withHeaders([
             'X-Platform-Token' => $this->targetPlatform->api_token,
@@ -147,13 +132,13 @@ class FileSyncJob implements ShouldQueue
         ]);
 
         if (! $response->successful()) {
-            throw new \Exception('Failed to finalize file sync');
+            throw new Exception('Failed to finalize file sync');
         }
     }
 
     protected function checkTargetFileExists(): bool
     {
-        $url = "https://{$this->targetPlatform->domain}/api/file-sync/check";
+        $url = sprintf('https://%s/api/file-sync/check', $this->targetPlatform->domain);
 
         $response = Http::withHeaders([
             'X-Platform-Token' => $this->targetPlatform->api_token,
@@ -168,7 +153,7 @@ class FileSyncJob implements ShouldQueue
 
     protected function getTargetFileSize(): int
     {
-        $url = "https://{$this->targetPlatform->domain}/api/file-sync/size";
+        $url = sprintf('https://%s/api/file-sync/size', $this->targetPlatform->domain);
 
         $response = Http::withHeaders([
             'X-Platform-Token' => $this->targetPlatform->api_token,
@@ -188,7 +173,7 @@ class FileSyncJob implements ShouldQueue
 
     protected function getTargetFileHash(): string
     {
-        $url = "https://{$this->targetPlatform->domain}/api/file-sync/hash";
+        $url = sprintf('https://%s/api/file-sync/hash', $this->targetPlatform->domain);
 
         $response = Http::withHeaders([
             'X-Platform-Token' => $this->targetPlatform->api_token,

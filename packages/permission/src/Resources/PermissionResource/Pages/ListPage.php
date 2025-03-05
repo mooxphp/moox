@@ -7,23 +7,26 @@ use Filament\Resources\Pages\ListRecords;
 use Moox\Permission\Models\Permission;
 use Moox\Permission\Resources\PermissionResource;
 use Moox\Permission\Resources\PermissionResource\Widgets\PermissionWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
     public static string $resource = PermissionResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             PermissionWidgets::class,
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('permission::translations.title');
@@ -33,9 +36,7 @@ class ListPage extends ListRecords
     {
         return [
             CreateAction::make()
-                ->using(function (array $data, string $model): Permission {
-                    return $model::create($data);
-                }),
+                ->using(fn (array $data, string $model): Permission => $model::create($data)),
         ];
     }
 }

@@ -6,6 +6,7 @@ namespace Moox\Builder\Generators\Entity;
 
 use Moox\Builder\Contexts\BuildContext;
 use Moox\Builder\Services\File\FileManager;
+use Override;
 
 class PluginGenerator extends AbstractGenerator
 {
@@ -32,7 +33,9 @@ class PluginGenerator extends AbstractGenerator
         ];
 
         $content = $this->replaceTemplateVariables($template, $variables);
-        $this->writeFile($this->context->getPath('plugin'), $content);
+        $path = $this->context->getPath('plugin').'/'.
+            $this->context->getEntityName().'Plugin.php';
+        $this->writeFile($path, $content);
     }
 
     protected function getResources(): string
@@ -50,14 +53,13 @@ class PluginGenerator extends AbstractGenerator
         return 'plugin';
     }
 
+    #[Override]
     protected function formatUseStatements(): string
     {
         $statements = [
             'use '.$this->context->getNamespace('resource').'\\'.$this->context->getEntityName().'Resource;',
         ];
 
-        return implode("\n", array_map(function ($statement) {
-            return rtrim($statement, ';').';';
-        }, array_unique($statements)));
+        return implode("\n", array_map(fn ($statement): string => rtrim($statement, ';').';', array_unique($statements)));
     }
 }

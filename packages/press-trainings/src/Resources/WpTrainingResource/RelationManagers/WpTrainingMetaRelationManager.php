@@ -8,11 +8,12 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Override;
 
 class WpTrainingMetaRelationManager extends RelationManager
 {
@@ -20,6 +21,7 @@ class WpTrainingMetaRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[Override]
     public function form(Form $form): Form
     {
         return $form->schema([
@@ -65,17 +67,17 @@ class WpTrainingMetaRelationManager extends RelationManager
         return $table
             ->poll('60s')
             ->columns([
-                Tables\Columns\TextColumn::make('post_id')
+                TextColumn::make('post_id')
                     ->label(__('core::post.post_id'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_key')
+                TextColumn::make('meta_key')
                     ->label(__('core::core.meta_key'))
                     ->toggleable()
                     ->searchable(true, null, true)
                     ->limit(50),
-                Tables\Columns\TextColumn::make('meta_value')
+                TextColumn::make('meta_value')
                     ->label(__('core::core.meta_value'))
                     ->toggleable()
                     ->searchable()

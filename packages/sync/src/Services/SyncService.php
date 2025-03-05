@@ -2,6 +2,7 @@
 
 namespace Moox\Sync\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\LogLevel;
 use Moox\Sync\Models\Platform;
@@ -10,30 +11,23 @@ class SyncService
 {
     use LogLevel;
 
-    protected $platformRelationService;
+    public function __construct(protected PlatformRelationService $platformRelationService) {}
 
-    public function __construct(PlatformRelationService $platformRelationService)
-    {
-        $this->platformRelationService = $platformRelationService;
-    }
-
-    public function performSync($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, ?Platform $targetPlatform = null)
+    public function performSync($modelClass, array $modelData, string $eventType, Platform $sourcePlatform, ?Platform $targetPlatform = null): void
     {
         $this->logDebug('performSync method entered', [
             'modelClass' => $modelClass,
             'eventType' => $eventType,
             'sourcePlatform' => $sourcePlatform->id,
-            'targetPlatform' => $targetPlatform ? $targetPlatform->id : 'all',
+            'targetPlatform' => $targetPlatform instanceof Platform ? $targetPlatform->id : 'all',
         ]);
 
         if ($modelClass === Platform::class) {
             $this->syncPlatform($modelData, $eventType, $targetPlatform);
+        } elseif ($targetPlatform instanceof Platform) {
+            $this->syncToSinglePlatform($modelClass, $modelData, $eventType, $sourcePlatform, $targetPlatform);
         } else {
-            if ($targetPlatform) {
-                $this->syncToSinglePlatform($modelClass, $modelData, $eventType, $sourcePlatform, $targetPlatform);
-            } else {
-                $this->syncToAllPlatforms($modelClass, $modelData, $eventType, $sourcePlatform);
-            }
+            $this->syncToAllPlatforms($modelClass, $modelData, $eventType, $sourcePlatform);
         }
 
         $this->logDebug('performSync method finished');
@@ -41,7 +35,7 @@ class SyncService
 
     protected function syncPlatform(array $platformData, string $eventType, ?Platform $targetPlatform = null)
     {
-        if ($targetPlatform) {
+        if ($targetPlatform instanceof Platform) {
             $this->updatePlatform($platformData, $targetPlatform);
         } else {
             $allPlatforms = Platform::where('id', '!=', $platformData['id'])->get();
@@ -117,7 +111,7 @@ class SyncService
             }
         }
 
-        throw new \Exception('Unable to determine model identifier');
+        throw new Exception('Unable to determine model identifier');
     }
 
     protected function processSyncEvent($modelClass, array $modelData, string $eventType, Platform $targetPlatform, $sync)
@@ -129,17 +123,11 @@ class SyncService
         ]);
 
         if ($this->shouldSyncModel($modelClass, $modelData, $targetPlatform, $sync)) {
-            switch ($eventType) {
-                case 'created':
-                case 'updated':
-                    $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform);
-                    break;
-                case 'deleted':
-                    $this->deleteModel($modelClass, $modelData, $targetPlatform);
-                    break;
-                default:
-                    $this->logDebug('Unknown event type', ['eventType' => $eventType]);
-            }
+            match ($eventType) {
+                'created', 'updated' => $this->createOrUpdateModel($modelClass, $modelData, $targetPlatform),
+                'deleted' => $this->deleteModel($modelClass, $modelData, $targetPlatform),
+                default => $this->logDebug('Unknown event type', ['eventType' => $eventType]),
+            };
         } elseif ($sync->use_platform_relations && $eventType !== 'deleted') {
             // If the model should not be synced but exists on the target, delete it
             $this->deleteModelIfExists($modelClass, $modelData, $targetPlatform);
@@ -161,7 +149,7 @@ class SyncService
         }
     }
 
-    protected function createOrUpdateModel($modelClass, array $modelData, Platform $targetPlatform)
+    protected function createOrUpdateModel(string $modelClass, array $modelData, Platform $targetPlatform)
     {
         $uniqueFields = config('sync.unique_identifier_fields', ['ulid', 'uuid', 'slug', 'name', 'title']);
         $uniqueIdentifier = null;
@@ -174,7 +162,7 @@ class SyncService
         }
 
         if (! $uniqueIdentifier) {
-            throw new \Exception("No unique identifier found for model {$modelClass}");
+            throw new Exception('No unique identifier found for model '.$modelClass);
         }
 
         $model = $modelClass::updateOrCreate(

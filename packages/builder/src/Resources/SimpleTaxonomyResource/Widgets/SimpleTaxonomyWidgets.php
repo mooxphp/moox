@@ -8,9 +8,11 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Builder\Models\SimpleTaxonomy;
+use Override;
 
 class SimpleTaxonomyWidgets extends BaseWidget
 {
+    #[Override]
     protected function getStats(): array
     {
         $aggregationColumns = [

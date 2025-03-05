@@ -9,6 +9,7 @@ use Moox\Security\Models\ResetPassword;
 use Moox\Security\Models\Security;
 use Moox\Security\Resources\ResetPasswordResource;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
+use Override;
 
 class ListPage extends ListRecords
 {
@@ -16,18 +17,20 @@ class ListPage extends ListRecords
 
     public static string $resource = ResetPasswordResource::class;
 
-    public function getActions(): array
+    protected function getActions(): array
     {
         return [];
     }
 
-    public function getHeaderWidgets(): array
+    #[Override]
+    protected function getHeaderWidgets(): array
     {
         return [
             ResetPasswordWidgets::class,
         ];
     }
 
+    #[Override]
     public function getTitle(): string
     {
         return __('security::translations.title');

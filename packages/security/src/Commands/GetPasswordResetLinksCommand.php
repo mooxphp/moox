@@ -16,7 +16,7 @@ class GetPasswordResetLinksCommand extends Command
         parent::__construct();
     }
 
-    public function handle()
+    public function handle(): void
     {
         $this->info('Starting Sending Reset Password Links');
 

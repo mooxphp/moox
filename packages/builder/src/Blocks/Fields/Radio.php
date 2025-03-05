@@ -35,7 +35,7 @@ class Radio extends AbstractBlock
         ];
 
         $this->tableColumns['resource'] = [
-            "TextColumn::make('{$this->name}')",
+            sprintf("TextColumn::make('%s')", $this->name),
         ];
 
         $this->filters['resource'] = [
@@ -44,12 +44,12 @@ class Radio extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->string('{$this->name}')"
+            sprintf("\$table->string('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->randomElement('.var_export(array_keys($this->options), true).')',
+            $this->name => 'fake()->randomElement('.var_export(array_keys($this->options), true).')',
         ];
     }
 }

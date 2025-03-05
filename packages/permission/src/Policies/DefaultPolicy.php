@@ -2,6 +2,7 @@
 
 namespace Moox\Permission\Policies;
 
+use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class DefaultPolicy
@@ -10,12 +11,12 @@ class DefaultPolicy
 
     public function __construct($guard = null)
     {
-        $guard = $guard ?? Auth::getDefaultDriver();
+        $guard ??= Auth::getDefaultDriver();
 
         $this->user = Auth::guard($guard)->user();
 
         if (! method_exists($this->user, 'hasPermissionTo')) {
-            throw new \Exception("The user object does not have the method 'hasPermissionTo'.");
+            throw new Exception("The user object does not have the method 'hasPermissionTo'.");
         }
     }
 
@@ -54,22 +55,22 @@ class DefaultPolicy
         return $this->hasPermission('publish');
     }
 
-    public function viewOwn($model)
+    public function viewOwn($model): bool
     {
         return $this->hasPermission('view own') && $model->user_id === $this->user->id;
     }
 
-    public function editOwn($model)
+    public function editOwn($model): bool
     {
         return $this->hasPermission('edit own') && $model->user_id === $this->user->id;
     }
 
-    public function deleteOwn($model)
+    public function deleteOwn($model): bool
     {
         return $this->hasPermission('delete own') && $model->user_id === $this->user->id;
     }
 
-    public function publishOwn($model)
+    public function publishOwn($model): bool
     {
         return $this->hasPermission('publish own') && $model->user_id === $this->user->id;
     }

@@ -2,9 +2,9 @@
 
 namespace Moox\Expiry\Widgets;
 
-use Filament\Tables;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -12,6 +12,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
 use Livewire\WithPagination;
 use Moox\Expiry\Models\Expiry;
+use Override;
 
 class MyExpiry extends BaseWidget
 {
@@ -26,12 +27,12 @@ class MyExpiry extends BaseWidget
         'lg' => 2,      // full width for large screens
     ];
 
-    public function mount()
+    public function mount(): void
     {
         $this->activeTab = request('activeTab', 'all');
     }
 
-    public function switchTab($tab)
+    public function switchTab($tab): void
     {
         $this->activeTab = $tab;
         $this->resetPage();
@@ -50,26 +51,26 @@ class MyExpiry extends BaseWidget
         return $table
             ->query($query)
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->toggleable()
                     ->searchable()
                     ->sortable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('expired_at')
+                TextColumn::make('expired_at')
                     ->toggleable()
                     ->sortable()
                     ->since(),
-                Tables\Columns\TextColumn::make('expiry_job')
+                TextColumn::make('expiry_job')
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('category')
+                TextColumn::make('category')
                     ->toggleable()
                     ->sortable()
                     ->searchable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -89,7 +90,7 @@ class MyExpiry extends BaseWidget
                     ->options(Expiry::getExpiryStatusOptions()),
             ])
             ->actions([
-                ViewAction::make()->url(fn ($record): string => "{$record->link}")
+                ViewAction::make()->url(fn ($record): string => $record->link)
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([DeleteBulkAction::make()]);
@@ -105,6 +106,7 @@ class MyExpiry extends BaseWidget
             if ($tabConfig['value'] !== '') {
                 $query = $query->where($tabConfig['field'], $tabConfig['value']);
             }
+
             $badgeCount = $query->count();
             $tabs[$key] = (object) [
                 'label' => $tabConfig['label'],
@@ -117,6 +119,7 @@ class MyExpiry extends BaseWidget
         return $tabs;
     }
 
+    #[Override]
     public function render(): View
     {
         return view('expiry::widgets.my-expiry', [

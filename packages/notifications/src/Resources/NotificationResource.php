@@ -18,15 +18,18 @@ use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;
 use Moox\Notification\Resources\NotificationResource\Pages\ListNotifications;
 use Moox\Notification\Resources\NotificationResource\Pages\ViewNotification;
 use Moox\Notification\Resources\NotificationResource\Widgets\NotificationWidgets;
+use Override;
 
 class NotificationResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $model = Notification::class;
 
     protected static ?string $navigationIcon = 'gmdi-notifications';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -45,6 +48,7 @@ class NotificationResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -71,6 +75,7 @@ class NotificationResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -78,6 +83,7 @@ class NotificationResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -88,6 +94,7 @@ class NotificationResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -95,26 +102,31 @@ class NotificationResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('notifications.resources.notifications.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('notifications.resources.notifications.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('notifications.resources.notifications.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('notifications.resources.notifications.single');
     }
 
+    #[Override]
     public static function shouldRegisterNavigation(): bool
     {
         return true;
@@ -125,11 +137,13 @@ class NotificationResource extends Resource
         return number_format(static::getModel()::count());
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('notifications.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('notifications.navigation_sort') + 2;

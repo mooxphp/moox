@@ -7,6 +7,7 @@ namespace Moox\Builder\Resources\ItemResource\Pages;
 use Filament\Resources\Pages\CreateRecord;
 use Moox\Builder\Resources\ItemResource;
 use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Override;
 
 class CreateItem extends CreateRecord
 {
@@ -14,6 +15,7 @@ class CreateItem extends CreateRecord
 
     protected static string $resource = ItemResource::class;
 
+    #[Override]
     protected function getFormActions(): array
     {
         return [];

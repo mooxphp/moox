@@ -6,9 +6,11 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
 use Moox\Page\Models\Page;
+use Override;
 
 class PageWidgets extends BaseWidget
 {
+    #[Override]
     protected function getCards(): array
     {
         $aggregationColumns = [

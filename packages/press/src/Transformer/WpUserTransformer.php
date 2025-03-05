@@ -5,12 +5,13 @@ namespace Moox\Press\Transformer;
 use Moox\Core\Traits\LogLevel;
 use Moox\Press\Models\WpUser;
 use Moox\Sync\Transformer\AbstractTransformer;
+use Override;
 
 class WpUserTransformer extends AbstractTransformer
 {
     use LogLevel;
 
-    protected $wpUser;
+    protected WpUser $wpUser;
 
     public function __construct(WpUser $wpUser)
     {
@@ -43,7 +44,7 @@ class WpUserTransformer extends AbstractTransformer
         $metaFields = $this->getMetaFields();
         foreach ($metaFields as $metaKey) {
             if (! isset($data[$metaKey])) {
-                $data[$metaKey] = $this->wpUser->getMeta($metaKey) ?? config("press.default_user_meta.{$metaKey}", '');
+                $data[$metaKey] = $this->wpUser->getMeta($metaKey) ?? config('press.default_user_meta.'.$metaKey, '');
             }
         }
 
@@ -63,16 +64,19 @@ class WpUserTransformer extends AbstractTransformer
         ];
     }
 
+    #[Override]
     protected function getMetaFields(): array
     {
         return array_keys(config('press.default_user_meta', []));
     }
 
+    #[Override]
     public function getDelay(): int
     {
         return 1;
     }
 
+    #[Override]
     public function transform(): array
     {
         $this->logDebug('WpUserTransformer: Starting transformation', ['user_id' => $this->wpUser->ID]);

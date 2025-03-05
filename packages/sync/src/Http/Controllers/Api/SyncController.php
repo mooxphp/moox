@@ -16,21 +16,21 @@ class SyncController extends Controller
         return SyncResource::collection($syncs);
     }
 
-    public function show($id)
+    public function show($id): SyncResource
     {
         $sync = Sync::findOrFail($id);
 
         return new SyncResource($sync);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): SyncResource
     {
         $sync = Sync::create($request->all());
 
         return new SyncResource($sync);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): SyncResource
     {
         $sync = Sync::findOrFail($id);
         $sync->update($request->all());

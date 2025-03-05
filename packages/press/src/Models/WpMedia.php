@@ -5,7 +5,14 @@ namespace Moox\Press\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Override;
 
+/**
+ * @property string $image_url
+ * @property mixed $attachment
+ * @property array $image_sizes
+ * @property string $asset
+ */
 class WpMedia extends WpBasePost
 {
     use HasFactory;
@@ -23,15 +30,17 @@ class WpMedia extends WpBasePost
         $this->table = $this->wpPrefix.'posts';
     }
 
-    public static function boot()
+    #[Override]
+    protected static function boot()
     {
         parent::boot();
 
-        static::addGlobalScope('media', function (Builder $builder) {
+        static::addGlobalScope('media', function (Builder $builder): void {
             $builder->where('post_type', 'attachment');
         });
     }
 
+    #[Override]
     public function postMeta(): HasMany
     {
         return $this->hasMany(WpPostMeta::class, 'post_id', 'ID');
@@ -47,27 +56,25 @@ class WpMedia extends WpBasePost
         $file = $this->image_url;
 
         $wpslug = config('press.wordpress_slug');
-        $wpslug = ltrim($wpslug, $wpslug[0]);
-
-        // TODO: Check if the file is an image
-        // TODO: Read wp-config.php to get the upload path
+        $wpslug = ltrim((string) $wpslug, $wpslug[0]);
 
         return $file ? asset($wpslug.'/wp-content/uploads/'.$file) : '';
     }
 
     public function getImageSizesAttribute()
     {
-        $sizes = $this->postMeta()->where('meta_key', '_wp_attachment_metadata')->first()->meta_value;
+        /** @var ?WpPostMeta $metadata */
+        $metadata = $this->postMeta()->where('meta_key', '_wp_attachment_metadata')->first();
 
-        return $sizes ? unserialize($sizes)['sizes'] : [];
+        return $metadata ? unserialize($metadata->meta_value)['sizes'] : [];
     }
 
-    public function setImageUrlAttribute($value)
+    public function setImageUrlAttribute($value): void
     {
         $this->postMeta()->updateOrCreate(['meta_key' => '_wp_attached_file'], ['meta_value' => $value]);
     }
 
-    public function setImageSizesAttribute($value)
+    public function setImageSizesAttribute($value): void
     {
         $this->postMeta()->updateOrCreate(['meta_key' => '_wp_attachment_metadata'], ['meta_value' => serialize($value)]);
     }

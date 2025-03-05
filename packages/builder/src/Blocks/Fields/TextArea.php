@@ -31,8 +31,8 @@ class TextArea extends AbstractBlock
             ->withFields(["Textarea::make('{$this->name}')
                 ->label('{$this->label}')"
                 .($this->nullable ? '' : '->required()')
-                .($this->maxLength ? "->maxLength({$this->maxLength})" : '')
-                .($this->rows ? "->rows({$this->rows})" : ''),
+                .($this->maxLength ? sprintf('->maxLength(%s)', $this->maxLength) : '')
+                .($this->rows ? sprintf('->rows(%s)', $this->rows) : ''),
             ]);
 
         $this->tableColumns['resource'] = [
@@ -43,12 +43,12 @@ class TextArea extends AbstractBlock
         ];
 
         $this->migrations['fields'] = [
-            "\$table->text('{$this->name}')"
+            sprintf("\$table->text('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => 'fake()->paragraphs(2, true)',
+            $this->name => 'fake()->paragraphs(2, true)',
         ];
     }
 }

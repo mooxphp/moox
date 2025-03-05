@@ -32,7 +32,7 @@ trait TaxonomyInResource
         $taxonomyService = static::getTaxonomyService();
 
         return collect($taxonomyService->getTaxonomies())
-            ->map(fn ($settings, $taxonomy) => static::createTaxonomyField($taxonomy, $settings, $taxonomyService))
+            ->map(fn ($settings, $taxonomy): Select|SelectTree => static::createTaxonomyField($taxonomy, $settings, $taxonomyService))
             ->toArray();
     }
 
@@ -81,7 +81,7 @@ trait TaxonomyInResource
             ->multiple()
             ->options(fn () => app($modelClass)::pluck('title', 'id')->toArray())
             ->getSearchResultsUsing(
-                fn (string $search) => app($modelClass)::where('title', 'like', "%{$search}%")
+                fn (string $search) => app($modelClass)::where('title', 'like', sprintf('%%%s%%', $search))
                     ->limit(50)
                     ->pluck('title', 'id')
                     ->toArray()
@@ -99,7 +99,7 @@ trait TaxonomyInResource
         $resourceModel = static::getModel();
         $resourceTable = app($resourceModel)->getTable();
 
-        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService, $resourceTable) {
+        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService, $resourceTable): SelectFilter {
             $taxonomyModel = $taxonomyService->getTaxonomyModel($taxonomy);
             $pivotTable = $taxonomyService->getTaxonomyTable($taxonomy);
             $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
@@ -110,14 +110,14 @@ trait TaxonomyInResource
                 ->label($settings['label'] ?? ucfirst($taxonomy))
                 ->multiple()
                 ->options(fn () => $taxonomyModel::pluck('title', 'id')->toArray())
-                ->query(function (Builder $query, array $data) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable) {
+                ->query(function (Builder $query, array $data) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable): void {
                     $selectedIds = $data['values'] ?? [];
                     if (! empty($selectedIds)) {
-                        $query->whereExists(function ($subQuery) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable, $selectedIds) {
+                        $query->whereExists(function ($subQuery) use ($pivotTable, $foreignKey, $relatedKey, $resourceTable, $selectedIds): void {
                             $subQuery->select(DB::raw(1))
                                 ->from($pivotTable)
-                                ->whereColumn("{$pivotTable}.{$foreignKey}", "{$resourceTable}.id")
-                                ->whereIn("{$pivotTable}.{$relatedKey}", $selectedIds);
+                                ->whereColumn(sprintf('%s.%s', $pivotTable, $foreignKey), $resourceTable.'.id')
+                                ->whereIn(sprintf('%s.%s', $pivotTable, $relatedKey), $selectedIds);
                         });
                     }
                 });
@@ -129,37 +129,33 @@ trait TaxonomyInResource
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-        return collect($taxonomies)->map(function ($settings, $taxonomy) use ($taxonomyService) {
-            return TagsColumn::make($taxonomy)
-                ->label($settings['label'] ?? ucfirst($taxonomy))
-                ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
-                    $relationshipName = $settings['relationship'] ?? $taxonomy;
-                    $table = $taxonomyService->getTaxonomyTable($taxonomy);
-                    $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
-                    $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
-                    $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
+        return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
+            ->label($settings['label'] ?? ucfirst((string) $taxonomy))
+            ->getStateUsing(function ($record) use ($taxonomy, $taxonomyService, $settings) {
+                $relationshipName = $settings['relationship'] ?? $taxonomy;
+                $table = $taxonomyService->getTaxonomyTable($taxonomy);
+                $foreignKey = $taxonomyService->getTaxonomyForeignKey($taxonomy);
+                $relatedKey = $taxonomyService->getTaxonomyRelatedKey($taxonomy);
+                $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
 
-                    $model = app($modelClass);
-                    $modelTable = $model->getTable();
+                $model = app($modelClass);
+                $modelTable = $model->getTable();
 
-                    $tags = DB::table($table)
-                        ->join($modelTable, "{$table}.{$relatedKey}", '=', "{$modelTable}.id")
-                        ->where("{$table}.{$foreignKey}", $record->id)
-                        ->pluck("{$modelTable}.title")
-                        ->toArray();
-
-                    return $tags;
-                })
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->separator(',')
-                ->searchable();
-        })->toArray();
+                return DB::table($table)
+                    ->join($modelTable, sprintf('%s.%s', $table, $relatedKey), '=', $modelTable.'.id')
+                    ->where(sprintf('%s.%s', $table, $foreignKey), $record->id)
+                    ->pluck($modelTable.'.title')
+                    ->toArray();
+            })
+            ->toggleable(isToggledHiddenByDefault: true)
+            ->separator(',')
+            ->searchable())->toArray();
     }
 
     protected static function handleTaxonomies(Model $record, array $data): void
     {
         $taxonomyService = static::getTaxonomyService();
-        foreach ($taxonomyService->getTaxonomies() as $taxonomy => $settings) {
+        foreach (array_keys($taxonomyService->getTaxonomies()) as $taxonomy) {
             if (isset($data[$taxonomy])) {
                 $record->$taxonomy()->sync($data[$taxonomy]);
             }
@@ -171,7 +167,7 @@ trait TaxonomyInResource
         $taxonomyService = static::getTaxonomyService();
         $taxonomies = $taxonomyService->getTaxonomies();
 
-        foreach ($taxonomies as $taxonomy => $settings) {
+        foreach (array_keys($taxonomies) as $taxonomy) {
             $relationshipName = $taxonomyService->getTaxonomyRelationship($taxonomy);
 
             if (method_exists($query->getModel(), $relationshipName)) {

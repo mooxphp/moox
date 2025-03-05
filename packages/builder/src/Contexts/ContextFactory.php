@@ -39,7 +39,7 @@ class ContextFactory
             $contextConfig = array_merge(
                 $contexts[$contextType] ?? [],
                 [
-                    'base_path' => base_path("packages/{$packagePath}"),
+                    'base_path' => base_path('packages/'.$packagePath),
                     'base_namespace' => $packageNamespace,
                     'package' => $config['package'],
                 ],
@@ -54,7 +54,7 @@ class ContextFactory
         }
 
         if (! isset($contexts[$contextType])) {
-            throw new InvalidArgumentException("Invalid context type: {$contextType}");
+            throw new InvalidArgumentException('Invalid context type: '.$contextType);
         }
 
         return new BuildContext(

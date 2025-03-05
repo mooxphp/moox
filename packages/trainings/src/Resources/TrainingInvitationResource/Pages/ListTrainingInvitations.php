@@ -23,7 +23,7 @@ class ListTrainingInvitations extends ListRecords
         return [
             Action::make('collectInvitations')
                 ->label('Collect Invitations')
-                ->action(function () {
+                ->action(function (): void {
                     SendInvitationRequests::dispatch();
                 })
                 ->requiresConfirmation()

@@ -3,6 +3,8 @@
 namespace Moox\Sync\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
+use Override;
 
 /**
  * @property int $id
@@ -21,10 +23,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property bool $has_errors
  * @property string $error_message
  * @property int $interval
- * @property \Illuminate\Support\Carbon $last_sync
+ * @property Carbon $last_sync
  */
 class SyncResource extends JsonResource
 {
+    #[Override]
     public function toArray($request)
     {
         return [

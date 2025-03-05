@@ -38,17 +38,17 @@ class Boolean extends AbstractBlock
         ];
 
         $this->filters['resource'] = [
-            "BooleanFilter::make('{$this->name}')",
+            sprintf("BooleanFilter::make('%s')", $this->name),
         ];
 
         $this->migrations['fields'] = [
-            "\$table->boolean('{$this->name}')"
+            sprintf("\$table->boolean('%s')", $this->name)
                 .($this->nullable ? '->nullable()' : '')
                 .($this->default ? '->default(true)' : ''),
         ];
 
         $this->factories['model']['definitions'] = [
-            "{$this->name}" => $this->default ? 'true' : 'fake()->boolean()',
+            $this->name => $this->default ? 'true' : 'fake()->boolean()',
         ];
     }
 }

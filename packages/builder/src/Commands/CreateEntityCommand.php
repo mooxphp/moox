@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Moox\Builder\Commands;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Moox\Builder\Contexts\BuildContext;
@@ -12,6 +13,7 @@ use Moox\Builder\PresetRegistry;
 use Moox\Builder\Services\Build\BuildStateManager;
 use Moox\Builder\Services\Entity\EntityCreator;
 use Moox\Builder\Services\Preview\PreviewTableManager;
+use Override;
 
 class CreateEntityCommand extends AbstractBuilderCommand
 {
@@ -62,8 +64,8 @@ class CreateEntityCommand extends AbstractBuilderCommand
             $context = $this->createContext($name, $package, $preview);
             $blocks = PresetRegistry::getPresetBlocks($presetName);
 
-            if (empty($blocks)) {
-                $this->error("Preset '{$presetName}' returned no blocks");
+            if ($blocks === []) {
+                $this->error(sprintf("Preset '%s' returned no blocks", $presetName));
 
                 return self::FAILURE;
             }
@@ -78,7 +80,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
             $this->entityCreator->setEntityData([
                 'singular' => $name,
                 'plural' => $plural,
-                'description' => "A {$name} entity generated with Moox Builder",
+                'description' => sprintf('A %s entity generated with Moox Builder', $name),
             ]);
 
             Log::info('Executing entity creation');
@@ -94,20 +96,21 @@ class CreateEntityCommand extends AbstractBuilderCommand
 
             $this->entityCreator->execute();
 
-            $this->info("Entity {$name} created successfully in {$context->getContextType()} context");
+            $this->info(sprintf('Entity %s created successfully in %s context', $name, $context->getContextType()));
 
             return self::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             Log::error('Entity creation failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
             ]);
-            $this->error("Failed to create entity: {$e->getMessage()}");
+            $this->error('Failed to create entity: '.$exception->getMessage());
 
             return self::FAILURE;
         }
     }
 
+    #[Override]
     protected function createContext(
         string $entityName,
         ?string $package = null,
@@ -122,6 +125,7 @@ class CreateEntityCommand extends AbstractBuilderCommand
         );
     }
 
+    #[Override]
     protected function getBuildContext(?bool $preview = false, ?bool $app = false, ?string $package = null): string
     {
         if ($context = $this->option('context')) {

@@ -12,10 +12,12 @@ use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Security\Models\ResetPassword;
 use Moox\Security\Resources\ResetPasswordResource\Pages\ListPage;
 use Moox\Security\Resources\ResetPasswordResource\Widgets\ResetPasswordWidgets;
+use Override;
 
 class ResetPasswordResource extends Resource
 {
-    use BaseInResource, TabsInResource;
+    use BaseInResource;
+    use TabsInResource;
 
     protected static ?string $modelLabel = 'Reset Tokens';
 
@@ -23,6 +25,7 @@ class ResetPasswordResource extends Resource
 
     protected static ?string $navigationIcon = 'gmdi-token';
 
+    #[Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -31,6 +34,7 @@ class ResetPasswordResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -54,6 +58,7 @@ class ResetPasswordResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -61,6 +66,7 @@ class ResetPasswordResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [
@@ -68,6 +74,7 @@ class ResetPasswordResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getWidgets(): array
     {
         return [
@@ -75,31 +82,37 @@ class ResetPasswordResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return config('security.resources.security.single');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return config('security.resources.security.plural');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return config('security.resources.security.plural');
     }
 
+    #[Override]
     public static function getBreadcrumb(): string
     {
         return config('security.resources.security.single');
     }
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return config('security.navigation_group');
     }
 
+    #[Override]
     public static function getNavigationSort(): ?int
     {
         return config('security.navigation_sort') + 5;

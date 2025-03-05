@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -14,7 +16,6 @@
 | outputs 'All'
 |
 */
-
 return [
 
     /*
@@ -132,7 +133,7 @@ return [
     |
     */
 
-    'user_model' => \App\Models\User::class,
+    'user_model' => User::class,
 
     /*
     |--------------------------------------------------------------------------

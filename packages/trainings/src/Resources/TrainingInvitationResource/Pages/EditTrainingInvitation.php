@@ -21,7 +21,7 @@ class EditTrainingInvitation extends EditRecord
         if (config('trainings.send_invitations_action') !== false) {
             $actions[] = Action::make('sendInvitations')
                 ->label('Send Invitations')
-                ->action(function () {
+                ->action(function (): void {
                     SendInvitations::dispatch($this->record->getKey());
                 })
                 ->requiresConfirmation()
@@ -29,7 +29,7 @@ class EditTrainingInvitation extends EditRecord
         }
 
         $actions[] = DeleteAction::make()
-            ->action(function ($record) {
+            ->action(function ($record): void {
                 try {
                     $record->delete();
                     Notification::make()
@@ -37,15 +37,15 @@ class EditTrainingInvitation extends EditRecord
                         ->body('The training was deleted successfully.')
                         ->success()
                         ->send();
-                } catch (QueryException $exception) {
-                    if ($exception->getCode() === '23000') {
+                } catch (QueryException $queryException) {
+                    if ($queryException->getCode() === '23000') {
                         Notification::make()
                             ->title('Cannot Delete Training')
                             ->body('The training has associated invitations and cannot be deleted.')
                             ->danger()
                             ->send();
                     } else {
-                        throw $exception;
+                        throw $queryException;
                     }
                 }
             });
