@@ -5,23 +5,31 @@ use Illuminate\Support\Facades\View;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/custom', function () {
-    return view('custom.overview');
-});
+})->name('home');
 
 Route::get('/packages', function () {
-    return view('packages.overview');
-});
+    return view('packages');
+})->name('packages');
 
-Route::get('/components', function () {
-    return view('components.overview');
-});
+Route::get('/license', function () {
+    return view('license');
+})->name('license');
 
 Route::get('/demo', function () {
-    return view('demo.overview');
-});
+    return view('demo');
+})->name('demo');
+
+Route::get('/docs', function () {
+    return view('docs');
+})->name('docs');
+
+Route::get('/docsingle', function () {
+    return view('doc_single');
+})->name('docsingle');
+
+Route::get('/support', function () {
+    return view('support');
+})->name('support');
 
 $custom_parts = config('moox.custom_views');
 if (is_array($custom_parts)) {
