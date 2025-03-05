@@ -6,9 +6,17 @@ namespace Moox\Tag\Models;
 
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 use Astrotomic\Translatable\Translatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Moox\Tag\Database\Factories\TagFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\InteractsWithMedia;
+class Tag extends Model implements HasMedia
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
@@ -16,9 +24,7 @@ use Override;
 
 class Tag extends Model implements TranslatableContract
 {
-    use HasFactory;
-    use SoftDeletes;
-    use Translatable;
+    use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $table = 'tags';
 
@@ -62,5 +68,23 @@ class Tag extends Model implements TranslatableContract
         static::deleting(function (Tag $tag): void {
             $tag->detachAllTaggables();
         });
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
+    }
+
+    public function mediaThroughUsables()
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'media_usables',
+            'media_usable_id',
+            'media_id'
+        )->where('media_usables.media_usable_type', '=', static::class);
     }
 }

@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
@@ -113,6 +114,13 @@ class TagResource extends Resource
                                             return $state;
                                         }),
                                     FileUpload::make('featured_image_url')
+                                    TitleWithSlugInput::make(
+                                        fieldTitle: 'title',
+                                        fieldSlug: 'slug',
+                                    ),
+                                    // FileUpload::make('featured_image_url')
+                                    //     ->label(__('core::core.featured_image_url')),
+                                    MediaPicker::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
                                         ->label(__('core::core.content'))
