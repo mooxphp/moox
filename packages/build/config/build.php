@@ -250,4 +250,6 @@ return [
     'default_namespace' => 'Moox',
 
     'default_packagist' => 'moox',
+
+    'package_path' => 'packages',
 ];

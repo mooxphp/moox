@@ -125,7 +125,7 @@ class BuildCommand extends Command
 
     protected function findAvailableMooxPackages(): array
     {
-        $packagesPath = base_path('packages');
+        $packagesPath = config('build.packages_path', base_path('packages'));
         $packages = [];
 
         if (! is_dir($packagesPath)) {
@@ -135,6 +135,12 @@ class BuildCommand extends Command
         $directories = glob($packagesPath.'/*', GLOB_ONLYDIR);
 
         foreach ($directories as $directory) {
+            $packageName = basename($directory);
+
+            if ($packageName === 'skeleton') {
+                continue;
+            }
+
             $serviceProviderFiles = glob($directory.'/src/*ServiceProvider.php');
 
             foreach ($serviceProviderFiles as $file) {
@@ -142,11 +148,9 @@ class BuildCommand extends Command
 
                 if (strpos($content, 'extends MooxServiceProvider') !== false ||
                     strpos($content, 'extends \Moox\Core\Providers\MooxServiceProvider') !== false) {
-                    $packageName = basename($directory);
-
                     $displayName = $this->formatPackageNameForDisplay($packageName);
-
                     $packages[$packageName] = $displayName;
+                    break;
                 }
             }
         }
