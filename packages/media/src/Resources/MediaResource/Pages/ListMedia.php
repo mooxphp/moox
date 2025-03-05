@@ -3,10 +3,10 @@
 namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
-use Moox\Media\Models\Media;
-use Moox\Media\Resources\MediaResource;
 use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Media\Models\Media;
+use Moox\Media\Resources\MediaResource;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
 class ListMedia extends ListRecords
@@ -15,7 +15,6 @@ class ListMedia extends ListRecords
 
     public function getHeaderActions(): array
     {
-
         return [
 
             Action::make('upload')
@@ -39,20 +38,16 @@ class ListMedia extends ListRecords
                         ->live()
 
                         ->afterStateUpdated(function ($state) {
-
-                            if (!$state) {
-
+                            if (! $state) {
                                 return;
-
                             }
 
-                            $model = new Media();
+                            $model = new Media;
                             $model->save();
 
                             $fileAdder = app(FileAdderFactory::class)->create($model, $state);
 
                             $media = $fileAdder->toMediaCollection('default');
-
 
                             $title = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
 
@@ -65,13 +60,10 @@ class ListMedia extends ListRecords
                             $media->model_id = $model->id;
 
                             $media->save();
-
                         }),
 
                 ]),
 
         ];
-
     }
-
 }
