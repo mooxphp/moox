@@ -47,6 +47,8 @@ class BuildCommand extends Command
 
     protected $type;
 
+    protected $path;
+
     protected $motivation;
 
     protected $sentence;
@@ -67,6 +69,8 @@ class BuildCommand extends Command
 
     protected $packageDescription;
 
+    protected $website;
+
     public function handle()
     {
         $this->art();
@@ -84,12 +88,12 @@ class BuildCommand extends Command
             $this->askForPackageName();
             $this->askForPackageDescription();
         }
-        if ($this->subject === 'Package') {
+        if ($this->subject === 'Package' || $this->subject === 'Theme') {
             $this->buildPackage();
         } else {
             $this->askForEntityName();
             if ($this->existingPackage) {
-                $this->buildEntity();
+                $this->copyAndBuildEntity();
             } else {
                 $this->buildPackageWithEntity();
             }
@@ -184,7 +188,9 @@ class BuildCommand extends Command
 
         $this->subject = $selectedTemplate['subject'];
         $this->motivation = $selectedTemplate['motivation'];
-
+        $this->sentence = $selectedTemplate['sentence'];
+        $this->name = $selectedTemplate['name'];
+        $this->path = $selectedTemplate['path'];
         $this->emoji = $this->{$selectedTemplate['emoji']};
 
         switch ($this->emoji) {
@@ -205,12 +211,12 @@ class BuildCommand extends Command
                 break;
         }
 
-        $this->sentence = $selectedTemplate['sentence'];
-
-        $this->name = $selectedTemplate['name'];
-
         info('  '.$this->motivation.' '.$this->emoji);
         info('  Let\'s build a Moox '.$this->subject.' '.$this->sentence);
+
+        $this->website = $selectedTemplate['website'];
+
+        info('  See '.$this->website.' for docs.');
     }
 
     protected function askForAuthorName(): void
@@ -279,11 +285,10 @@ class BuildCommand extends Command
         note('  '.$this->namespace.'\\'.$this->getNamespaceFromPackageName($this->packageName));
         info('  composer require '.$this->packagist.'/'.$this->getComposerNameFromPackageName($this->packageName).' will be the way.');
 
-        $templates = config('build.package_templates');
-        $templatePath = $templates[$this->name]['path'] ?? null;
+        $templatePath = $this->path;
 
         if (! $templatePath || ! is_dir(base_path($templatePath))) {
-            error('Template path not found: '.$templatePath);
+            error('  Template path not found: '.$templatePath);
             exit;
         }
 
@@ -301,6 +306,48 @@ class BuildCommand extends Command
         }
 
         info('  Package files copied successfully to: '.$targetPath);
+
+        // Get template configuration
+        $templates = config('build.package_templates');
+        $templateConfig = $templates[$this->name] ?? null;
+
+        if (! $templateConfig) {
+            error('Template configuration not found');
+            exit;
+        }
+
+        // Process file renaming
+        if (isset($templateConfig['rename_files']) && is_array($templateConfig['rename_files'])) {
+            foreach ($templateConfig['rename_files'] as $oldPath => $newPath) {
+                $oldPath = $this->replacePlaceholders($oldPath, $packageSlug);
+                $newPath = $this->replacePlaceholders($newPath, $packageSlug);
+
+                $oldFullPath = $targetPath.'/'.$oldPath;
+                $newFullPath = $targetPath.'/'.$newPath;
+
+                if (file_exists($oldFullPath)) {
+                    $dirName = dirname($newFullPath);
+                    if (! is_dir($dirName)) {
+                        mkdir($dirName, 0755, true);
+                    }
+
+                    rename($oldFullPath, $newFullPath);
+                    info('  Renamed: '.$oldPath.' to '.$newPath);
+                }
+            }
+        }
+
+        // Process string replacements
+        if (isset($templateConfig['replace_strings']) && is_array($templateConfig['replace_strings'])) {
+            $this->processStringReplacements($targetPath, $templateConfig['replace_strings'], $packageSlug);
+        }
+
+        // Process section replacements
+        if (isset($templateConfig['replace_sections']) && is_array($templateConfig['replace_sections'])) {
+            $this->processSectionReplacements($targetPath, $templateConfig['replace_sections'], $packageSlug);
+        }
+
+        info('  Package build completed successfully!');
     }
 
     protected function copyDirectory(string $source, string $destination): bool
@@ -352,22 +399,88 @@ class BuildCommand extends Command
         return strtolower(str_replace(' ', '-', $packageName));
     }
 
+    protected function copyAndBuildEntity(): void
+    {
+        // TODO: Here we need to copy single files as in config
+        // TODO: Call the buildEntity method, I guess
+    }
+
     protected function buildEntity(): void
     {
-        $this->info('  Building entity... '.$this->emojiRocket);
+        error('  Building entity... '.$this->emojiError);
 
         info('  Whew! A new entity has landed! '.$this->emojiParty);
         note('  '.$this->namespace.'\\'.$this->getNamespaceFromPackageName($this->packageName).'\\'.$this->entityName);
 
-        // Build entity, means copy the defined entity files and do the replacements
-        // Show built files so that the user can review them
+        // TODO: Build entity, means copy the defined entity files and do the replacements
+        // TODO: Show built files so that the user can review them
     }
 
     protected function buildPackageWithEntity(): void
     {
-        $this->info('  Building package with entity... '.$this->emojiRocket);
+        error('  Building package with entity... '.$this->emojiError);
 
         $this->buildPackage();
         $this->buildEntity();
+    }
+
+    protected function replacePlaceholders(string $string, string $packageSlug): string
+    {
+        $replacements = [
+            '%%packageName%%' => $this->packageName,
+            '%%packageSlug%%' => $packageSlug,
+            '%%authorName%%' => $this->authorName,
+            '%%authorEmail%%' => $this->authorEmail,
+            '%%namespace%%' => $this->namespace,
+            '%%description%%' => $this->packageDescription,
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $string);
+    }
+
+    protected function processStringReplacements(string $directory, array $replacements, string $packageSlug): void
+    {
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+
+        foreach ($files as $file) {
+            if ($file->isFile()) {
+                $content = file_get_contents($file->getPathname());
+                $originalContent = $content;
+
+                foreach ($replacements as $search => $replace) {
+                    $replace = $this->replacePlaceholders($replace, $packageSlug);
+                    $content = str_replace($search, $replace, $content);
+                }
+
+                if ($content !== $originalContent) {
+                    file_put_contents($file->getPathname(), $content);
+                    info('  Updated: '.$file->getPathname());
+                }
+            }
+        }
+    }
+
+    protected function processSectionReplacements(string $directory, array $replacements, string $packageSlug): void
+    {
+        foreach ($replacements as $filePath => $patterns) {
+            $fullPath = $directory.'/'.$filePath;
+
+            if (file_exists($fullPath)) {
+                $content = file_get_contents($fullPath);
+                $originalContent = $content;
+
+                foreach ($patterns as $pattern => $replacement) {
+                    $replacement = $this->replacePlaceholders($replacement, $packageSlug);
+                    $content = preg_replace($pattern, $replacement, $content);
+                }
+
+                if ($content !== $originalContent) {
+                    file_put_contents($fullPath, $content);
+                    info('  Updated sections in: '.$filePath);
+                }
+            }
+        }
     }
 }
