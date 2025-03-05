@@ -1,20 +1,28 @@
 # Moox Devlink
 
-This package is only for internal use.
-
-It is used to link the packages from the `moox` monorepo into a project. It runs on MacOS, Linux and Windows.
+Moox Devlink is used to link packages a monorepo into any project and to deploy a production-ready composer.json. That allows us to develop Moox packages in any project. It runs on MacOS and Linux, Windows with special configuration.
 
 ## Installation
 
 ```bash
-cp .env.example .env
 composer require moox/devlink
 php artisan vendor:publish --tag="devlink-config"
 ```
 
-## Screenshot
+## Screenshots
 
-![Moox Devlink](./devlink.jpg)
+### Link
+
+![Moox Devlink](./screenshots/devlink.jpg)
+
+### Status
+
+![Moox Devlink](./screenshots/devlink-status.jpg)
+![Moox Devlink](./screenshots/devlink-status2.jpg)
+
+#### Verbose
+
+![Moox Devlink](./screenshots/devlink-verbose.jpg)
 
 ## How It Works
 
@@ -22,76 +30,84 @@ php artisan vendor:publish --tag="devlink-config"
 
 ```bash
 
-# Ignore all files in packages/ (including symlinks)
+# Devlink
+# ignore symlinks in packages/
 packages/*
-# Allow tracking of real directories inside packages/
 !packages/**/
-# Ensure empty directories can be committed
 !packages/*/.gitkeep
-# for windows
+# and for windows
 /packageslocal/*
+# optional:
+composer.json-deploy
 
 ```
 
-2. Configure your paths and packages in the `config/devlink.php` file and the `.env` file, if needed (Windows users for example).
+2. Configure your paths and packages in the `config/devlink.php` file and change the package path in the `.env` file, if needed (Windows users should set the `DEVLINK_PACKAGES_PATH` variable to `packageslocal`).
 
-3. When running `devlink:link`:
+3. When running `php init.php`
 
-    - Creates backup of original composer.json → composer.json.original
+    - Creates a `.env` file from `.env.example`
+    - Copies `composer.json-linked` to `composer.json`
+    - Runs `composer update`
+
+4. When running `devlink:status`:
+
+    - Shows the configuration and status of each package
+    - Shows the link status (Linked, Unlinked, Deployed)
+    - Shows the update status (Up-to-date, Outdated)
+    - Has a verbose mode `-v` to show more information
+
+5. When running `devlink:link`:
+
+    - Creates the packages folder, if it does not exist
     - Creates symlinks for all configured packages
     - Updates composer.json with development configuration
-    - Creates composer.json-deploy for production use
+    - Creates composer.json-linked for production use
     - Asks to run `composer install`
     - Asks to run `php artisan optimize:clear`
     - Asks to run `php artisan queue:restart`
 
-4. When running `devlink:deploy`:
+6. When running `devlink:deploy`:
 
     - Removes all symlinks
     - Deletes the packages folder, if empty
-    - Restores production-ready composer.json from composer.json-deploy
+    - Restores production-ready composer.json from composer.json-linked
+    - Asks to run `composer install`
+    - Asks to run `php artisan optimize:clear`
+    - Asks to run `php artisan queue:restart`
 
-5. CI Safety Net - `deploy.sh`:
-    - If composer.json-deploy exists in the repository:
-        - The script will restore it as composer.json
-        - Commit and push the change in GH action
-    - This ensures no development configuration reaches production
+7. CI Safety Net - `deploy.sh`:
 
-## Changing branches
+    - If composer.json-linked exists in the repository:
+        - Remove all symlinks from /packages
+        - rename composer.json-linked to composer.json
+    - Commit and push the change in your GitHub Action
 
-If you need to change the branches for ANY of the involved repositories, you just need to run the command again, it will automatically update the symlinks for the current branch.
+Mac and Linux work out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
 
-> ⚠️ **Important**  
-> If you forget to run the command, when CHANGING BRANCHES ON ANY OF THE REPOS, you will surely run into a 500 error, that drives you nuts.
+![Moox Devlink](./screenshots/devlink-mix.jpg)
 
-## Mac
+### Windows
 
-Mac works out of the box. You can have local packages mixed with the symlinked packages in your `/packages` folder.
+On Windows there are most probably some issues with ignoring symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
 
-![Moox Devlink](./devlink-mix.jpg)
-
-## Windows
-
-On Windows there are most probably some issues with the symlinks. If you run into issues, you can either globally or project-wise disable the symlinks or do the following:
-
-```php
-
-    'packages_path' => 'packages-linked',
-
+```env
+DEVLINK_PACKAGES_PATH=packageslocal
 ```
 
-Devlink will then link the packages into the `packages-linked` folder.
+Devlink will then link the packages into the `packageslocal` folder instead of mixing them into packages.
+
+## Classes
+
+Please see the [CLASSES.md](./CLASSES.md) file for a quick class overview.
 
 ## Roadmap
 
--   [ ] Test on Mac
--   [ ] Test on Windows
--   [ ] Test Deployment on Mac
--   [ ] Test Deployment on Windows
--   [ ] Implement automatic Deployment
--   [ ] Implement all 3 types of packages
--   [ ] If package is a symlink itself, ...?
--   [ ] If package is in multiple base paths...?
+Please see the [ROADMAP.md](./ROADMAP.md) file for what is planned.
+
+## Changelog
+
+Please see the [CHANGELOG.md](./CHANGELOG.md) file for what has changed.
 
 ## Security Vulnerabilities
 
