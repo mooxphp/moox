@@ -1,63 +1,94 @@
 # Core
 
-The core package is the foundation of the Moox framework. It contains the basic functionality that is used by all other packages.
+Moox Core ships with the basic functionality that is used by all other Moox Packages.
 
-## Entity Structure
+Moox is built with Laravel and Filament, it is about to become a modular framework to build a Laravel App, Website or Intranet.
 
-All Moox Entities follow the same file and folder structure.
+While Moox Core itself does not ship any Entities, it contains the Services and Traits that power Moox.
+
+## Moox Entity
+
+A Moox Entity consists of a Migration, Model, Filament Resource including pages, a configuration file and translation files.
+
+Depending on the type and purpose of the Entity, it ships with additional files.
+
+There are three types of Moox Entities:
+
+### Item
+
+The Moox Item is a Filament Resource and Model that has the ability to build dynamic relations, to be extended by a Module and to have one or more Taxonomies. It can ship a Frontend.
+
+### Taxonomy
+
+The Moox Taxonomy is a Filament Resource and Model, that can be easily attached to an Item. It can have one or more Items.
+
+### Module
+
+The Moox Module is a Filament Resource and Model, that can be easily attached to an Moox Item or Taxonomy. It's fields are rendered in a Tab on the Item or Taxonomy.
+
+## Moox Package
+
+A Moox Package is a package that contains Moox Entities. It's Service Provider extends the Moox Service Provider.
+
+Moox Packages follow the Laravel Naming Conventions, so Jobs are named like `ExampleJob`, Listeners are named like `ExampleListener` and so on, and the reside in the `/Jobs`, `/Listeners` and `/Console/Commands` folders.
+
+Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if they are CLI related.
+
+Moox Entities follow this file structure:
 
 ```plaintext
 📦 package/
   |
-  └── 📂 config/
+  |── 📂 config/
   |   └── 📂 entities/
-  |       └── 📜 entity.php
+  |       └── 📜 example.php
   |
-  └── 📂 resources/
+  |── 📂 resources/
   |   └── 📂 lang/
   |   |   └── 📂 en/
   |   |       └── 📂 entities/
-  |   |           └── 📜 entity.php
+  |   |           └── 📜 example.php
   |   └── 📂 views/
   |       └── 📂 entities/
-  |           └── 📂 entity/
-  |               ├── 📜 card.blade.php
-  |               ├── 📜 row.blade.php
-  |               ├── 📜 table.blade.php
-  |               ├── 📜 form.blade.php
-  |               ├── 📜 index.blade.php
-  |               ├── 📜 show.blade.php
-  |               ├── 📜 create.blade.php
-  |               ├── 📜 edit.blade.php
-  |
+  |           └── 📂 example/
+  |               ├── 📜 view.blade.php
+  |               └── 📜 more-views.blade.php
   └── 📂 src/
       └── 📂 Moox/
          └── 📂 Entities/
           |  └── 📂 Items/
           |   |   └── 📜 ExampleItem.php
           |   |   └── 📂 ExampleItem/
-          |   |   ├── 📂 Pages/
-          |   |   ├── 📂 Widgets/
-          |   |       ├── 📂 RelationManagers/
-          |   |       ├── 📂 Relation/
-          |   └── 📂 Taxonomies/
+          |   |        ├── 📂 Relation/
+          |   |        ├── 📂 Widgets/
+          |   |        ├── 📂 RelationManagers/
+          |   |        └── 📂 Pages/
+          |   |           ├── 📜 CreateExample.php
+          |   |           ├── 📜 EditExample.php
+          |   |           ├── 📜 ListExamples.php
+          |   |           └── 📜 ShowExample.php
+          |   |
+          |   |── 📂 Taxonomies/
           |   |   └── 📜 ExampleTaxonomy.php
           |   |   └── 📂 ExampleTaxonomy/
           |   |       ├── 📂 Pages/
           |   |       ├── 📂 Widgets/
           |   |       ├── 📂 RelationManagers/
           |   |       ├── 📂 Relation/
-          |   |       ├── 📂 Forms/
-          |   └── 📂 Modules/
+          |   |       └── 📂 Forms/
+          |   |
+          |   |── 📂 Modules/
           |   |   └── 📜 ExampleModule.php
           |   |   └── 📂 ExampleModule/
           |   |       ├── 📂 Widgets/
-          |   |       ├── 📂 Extender/
-          └── 📂 Panels/
-          |   └── 📜 PackagePanel.php
-          └── 📂 Plugins/
-          |   ├── 📜 PackagePlugin.php
-          |   ├── 📜 EntityPlugin.php
+          |   |       └── 📂 Extender/
+          |   |
+          |   |── 📂 Panels/
+          |   |    └──📜 PackagePanel.php
+          |   └── 📂 Plugins/
+          |       └── 📜 PackagePlugin.php
+          |       └── 📜 EntityPlugin.php
+          |
           └── 📜 PackageServiceProvider.php (extends MooxServiceProvider)
 ```
 
@@ -158,17 +189,16 @@ All Moox Entities follow the same file and folder structure.
 
 -   `php artisan moox:install` to install or update Moox packages
 -   `php artisan moox:status` to show the status of Moox, including installed packages and entities
+-   `php artisan moox:wire` to wire Moox Entities, Taxonomies and Modules
 
 ### Moox Build
 
 -   `php artisan moox:build` to build a Moox package or Entity
--   `php artisan moox:entity` to apply fields to a Moox Entity
--   `php artisan moox:wire` to wire Moox Entities, Taxonomies and Modules
 
 ### Moox Devlink
 
--   `php artisan moox:link` to symlink or locally wire packages for development
--   `php artisan moox:unlink` to unlink local packages and prepare for deployment
+-   `php artisan moox:devlink` to symlink or locally wire packages for development
+-   `php artisan moox:deploy` to unlink local packages and prepare for deployment
 
 ## Video
 
