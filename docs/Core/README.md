@@ -70,14 +70,14 @@ A **Moox Taxonomy** consists of:
 
 There are two main **Moox Taxonomies**:
 
--   [Moox Category](https://github.com/mooxphp/moox-category)
--   [Moox Tag](https://github.com/mooxphp/moox-tag)
+-   [Moox Category](https://github.com/mooxphp/moox-category) - Nested Set Taxonomy
+-   [Moox Tag](https://github.com/mooxphp/moox-tag) - Flat Taxonomy
 
 Both are used as Global System Taxonomies, and by the `php artisan moox:build` command of Moox Build to create a new flat or nested **Moox Taxonomy**.
 
 For managing flexible Global System Taxonomies, there is also the
 
--   [Moox Taxonomy](https://github.com/mooxphp/moox-taxonomy)
+-   [Moox Taxonomy](https://github.com/mooxphp/moox-taxonomy) - Flexible Taxonomy
 
 that consists of **Terms** and **Taxonomies**, simply extensible, like WordPress does, with known limitations in nesting and performance.
 
@@ -85,8 +85,8 @@ While **Moox Taxonomy** offers flexibility in one simple package, you might find
 
 There are a lot of those dedicated taxonomies:
 
--   [Moox Shop Category](https://github.com/mooxphp/shop-category)
--   [Moox Shop Tag](https://github.com/mooxphp/shop-tag)
+-   [Moox Shop Category](https://github.com/mooxphp/shop-category) - Shop Category Taxonomy
+-   [Moox Shop Tag](https://github.com/mooxphp/shop-tag) - Shop Tag Taxonomy
 
 and it is easy to create your own dedicated taxonomies using the `php artisan moox:build` command of **Moox Build**.
 
@@ -106,11 +106,11 @@ A **Moox Module** consists of:
 
 There are a **Moox Modules** like
 
--   [Moox SEO](https://github.com/mooxphp/seo)
+-   [Moox SEO](https://github.com/mooxphp/seo) - Moox Module for SEO
 
 and there is a **Moox Module Template**:
 
--   [Moox Module](https://github.com/mooxphp/module)
+-   [Moox Module](https://github.com/mooxphp/module) - Moox Module Template
 
 you can use the `php artisan moox:build` command of **Moox Build** to create a new **Moox Module** and just attach it to an **Moox Item** or **Moox Taxonomy** in the configuration file of the Entity.
 
@@ -241,7 +241,7 @@ The package **Moox Frontend** is used to wire all needed parts together to gener
 
 The package **Moox Components** is used by **Moox Frontend** to build the base component layer:
 
--   [Moox Components](https://github.com/mooxphp/components)
+-   [Moox Components](https://github.com/mooxphp/components) - Renderless Blade Components
 
 Renderless means that the components do not contain any styles or scripts, but only a definition of the component and its props.
 
@@ -249,7 +249,7 @@ Renderless means that the components do not contain any styles or scripts, but o
 
 The package **Moox Navigation** is used by **Moox Frontend** to build the navigation layer:
 
--   [Moox Navigation](https://github.com/mooxphp/navigation)
+-   [Moox Navigation](https://github.com/mooxphp/navigation) - Build Navigations for your website
 
 ### Moox Theme
 
@@ -276,13 +276,17 @@ It is possible to change the theme inheritance in your Service Provider, if need
 
 The package **Moox Slug** is used by **Moox Frontend** to manage slugs and redirects for your entities:
 
--   [Moox Slug](https://github.com/mooxphp/slug)
+-   [Moox Slug](https://github.com/mooxphp/slug) - Manage slugs and redirects for your entities
 
 Moox Slug integrates in Moox Entities to create and manage slugs and redirects directly when creating or updating an entity.
 
 ### Moox Build
 
-The package **Moox Build** is used to build **Moox Packages** and **Moox Entities** using just one command:
+The package **Moox Build**
+
+-   [Moox Build](https://github.com/mooxphp/build) - Build Moox Packages, Entities and Themes
+
+is used to build **Moox Packages** with **Moox Entities** or a **Moox Theme** using a single command:
 
 ```bash
 php artisan moox:build
@@ -297,7 +301,7 @@ The command will then guide you through the process of building an empty **Moox 
 ### Moox Core
 
 -   `php artisan moox:install` to install or update Moox packages
--   `php artisan moox:status` to show the status of Moox, including installed packages and entities
+-   `php artisan moox:status` to show the status of Moox
 -   `php artisan moox:wire` to wire Moox Entities, Taxonomies and Modules
 
 ### Moox Build

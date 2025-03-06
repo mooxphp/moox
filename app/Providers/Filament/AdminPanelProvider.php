@@ -101,12 +101,12 @@ class AdminPanelProvider extends PanelProvider
                 // \Moox\Locate\LanguagePlugin::make(),
                 // \Moox\Locate\TimezonePlugin::make(),
 
-                // Builder plugin
-                SimpleTaxonomyPlugin::make(),
-                NestedTaxonomyPlugin::make(),
-                ItemPlugin::make(),
-                FullItemPlugin::make(),
-                SimpleItemPlugin::make(),
+                // Builder plugin - missing config, will be removed completely
+                // SimpleTaxonomyPlugin::make(),
+                // NestedTaxonomyPlugin::make(),
+                // ItemPlugin::make(),
+                // FullItemPlugin::make(),
+                // SimpleItemPlugin::make(),
 
                 // CMS plugin
                 PagePlugin::make(),
@@ -115,9 +115,6 @@ class AdminPanelProvider extends PanelProvider
 
                 // Notification plugin
                 NotificationPlugin::make(),
-
-                // Audit plugin
-                AuditPlugin::make(),
 
                 // Jobs plugins
                 JobsPlugin::make(),
@@ -145,10 +142,6 @@ class AdminPanelProvider extends PanelProvider
                 TrainingInvitationPlugin::make(),
                 TrainingDatePlugin::make(),
                 TrainingTypePlugin::make(),
-
-                // Builder plugin
-                ItemPlugin::make(),
-
             ]);
     }
 }

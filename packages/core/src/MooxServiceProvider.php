@@ -21,6 +21,8 @@ abstract class MooxServiceProvider extends PackageServiceProvider
 
             $this->mooxPackage = new class($packagePath)
             {
+                protected string $title;
+
                 protected ?array $plugins = null;
 
                 protected bool $firstPlugin = false;
@@ -29,9 +31,61 @@ abstract class MooxServiceProvider extends PackageServiceProvider
 
                 protected string $packagePath;
 
+                protected bool $released = false;
+
+                protected string $stability = 'dev';
+
+                protected string $category = 'unsorted';
+
+                protected ?string $parentTheme = null;
+
+                protected array $staticSeeders = [];
+
+                protected array $usedFor = [];
+
+                protected array $templateFor = [];
+
+                protected array $templateReplace = [];
+
+                protected array $templateRename = [];
+
+                protected array $templateSectionReplace = [];
+
+                protected array $templateRemove = [];
+
+                protected array $alternatePackages = [];
+
                 public function __construct(string $packagePath)
                 {
                     $this->packagePath = $packagePath;
+                }
+
+                public function title(string $title): self
+                {
+                    $this->title = $title;
+
+                    return $this;
+                }
+
+                public function released(bool $released): self
+                {
+                    $this->released = $released;
+
+                    return $this;
+                }
+
+                public function stability(string $stability): self
+                {
+                    $this->stability = $stability;
+
+                    return $this;
+                }
+
+                public function category(string $category): self
+                {
+                    $this->category = $category;
+
+                    return $this;
                 }
 
                 public function mooxPlugins(array $plugins): self
@@ -67,6 +121,114 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                     return $this->firstPlugin;
                 }
 
+                public function parentTheme(string $theme): self
+                {
+                    $this->parentTheme = $theme;
+
+                    return $this;
+                }
+
+                public function getParentTheme(): ?string
+                {
+                    return $this->parentTheme;
+                }
+
+                public function staticSeeders(array $seeders): self
+                {
+                    $this->staticSeeders = $seeders;
+
+                    return $this;
+                }
+
+                public function getStaticSeeders(): array
+                {
+                    return $this->staticSeeders;
+                }
+
+                public function usedFor(array $purposes): self
+                {
+                    $this->usedFor = $purposes;
+
+                    return $this;
+                }
+
+                public function getUsedFor(): array
+                {
+                    return $this->usedFor;
+                }
+
+                public function templateFor(array $purposes): self
+                {
+                    $this->templateFor = $purposes;
+
+                    return $this;
+                }
+
+                public function getTemplateFor(): array
+                {
+                    return $this->templateFor;
+                }
+
+                public function templateReplace(array $replacements): self
+                {
+                    $this->templateReplace = $replacements;
+
+                    return $this;
+                }
+
+                public function getTemplateReplace(): array
+                {
+                    return $this->templateReplace;
+                }
+
+                public function templateRename(array $renames): self
+                {
+                    $this->templateRename = $renames;
+
+                    return $this;
+                }
+
+                public function getTemplateRename(): array
+                {
+                    return $this->templateRename;
+                }
+
+                public function templateSectionReplace(array $replacements): self
+                {
+                    $this->templateSectionReplace = $replacements;
+
+                    return $this;
+                }
+
+                public function getTemplateSectionReplace(): array
+                {
+                    return $this->templateSectionReplace;
+                }
+
+                public function templateRemove(array $files): self
+                {
+                    $this->templateRemove = $files;
+
+                    return $this;
+                }
+
+                public function getTemplateRemove(): array
+                {
+                    return $this->templateRemove;
+                }
+
+                public function alternatePackages(array $packages): self
+                {
+                    $this->alternatePackages = $packages;
+
+                    return $this;
+                }
+
+                public function getAlternatePackages(): array
+                {
+                    return $this->alternatePackages;
+                }
+
                 public function mooxRequiredSeeders(array $seeders): self
                 {
                     $this->requiredSeeders = $seeders;
@@ -82,34 +244,6 @@ abstract class MooxServiceProvider extends PackageServiceProvider
         }
 
         return $this->mooxPackage;
-    }
-
-    protected function registerCommand(string $commandClassName): void
-    {
-        $this->app->bind($commandClassName, function () use ($commandClassName) {
-            $command = new $commandClassName;
-            $command->setVerbosity(env('VERBOSITY_LEVEL', 'v'));
-
-            return $command;
-        });
-
-        $this->commands([$commandClassName]);
-    }
-
-    public function hasCommand(string $commandClassName): Package
-    {
-        $this->registerCommand($commandClassName);
-
-        return $this->package;
-    }
-
-    public function hasCommands(array $commandClassNames): Package
-    {
-        foreach ($commandClassNames as $commandClassName) {
-            $this->registerCommand($commandClassName);
-        }
-
-        return $this->package;
     }
 
     abstract public function configureMoox(Package $package): void;

@@ -91,4 +91,32 @@ class CoreServiceProvider extends PackageServiceProvider
 
         Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
     }
+
+    public function hasCommand(string $commandClassName): Package
+    {
+        $this->registerCommand($commandClassName);
+
+        return $this->package;
+    }
+
+    public function hasCommands(array $commandClassNames): Package
+    {
+        foreach ($commandClassNames as $commandClassName) {
+            $this->registerCommand($commandClassName);
+        }
+
+        return $this->package;
+    }
+
+    protected function registerCommand(string $commandClassName): void
+    {
+        $this->app->bind($commandClassName, function () use ($commandClassName) {
+            $command = new $commandClassName;
+            $command->setVerbosity(env('VERBOSITY_LEVEL', 'v'));
+
+            return $command;
+        });
+
+        $this->commands([$commandClassName]);
+    }
 }
