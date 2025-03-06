@@ -94,10 +94,10 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
 
                 // Development
-                // GravatarPlugin::make(),
+                // GravatarPlugin::make(), <- Remove!
                 AuditPlugin::make(),
-                AreaPlugin::make(),
-                // \Moox\Locate\CountryPlugin::make(),
+                // AreaPlugin::make(), <- Remove!
+                // \Moox\Locate\CountryPlugin::make(), <- Remove!
                 // \Moox\Locate\LanguagePlugin::make(),
                 // \Moox\Locate\TimezonePlugin::make(),
 
