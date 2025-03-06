@@ -1,12 +1,14 @@
 # Core
 
-Moox Core ships with the basic functionality that is used by all other Moox Packages.
+Moox Core provides the foundational functionality used by all other Moox Packages.
 
-Moox is built with Laravel and Filament, it is about to become a modular framework to build a Laravel App, Website or Intranet.
+Moox is built with Laravel and Filament, aiming to become a modular framework for building Laravel applications, websites, or intranet solutions.
 
-While Moox Core itself does not ship any Entities, it contains the Services and Traits that power Moox.
+While Moox Core itself does not ship with any entities, it contains the essential services and traits that power Moox.
 
-## Moox Entity
+## Core Concepts
+
+### Moox Entity
 
 A Moox Entity consists of a Migration, Model, Filament Resource including pages, a configuration file and translation files.
 
@@ -14,17 +16,61 @@ Depending on the type and purpose of the Entity, it ships with additional files.
 
 There are three types of Moox Entities:
 
-### Item
+#### Moox Item
 
-The Moox Item is a Filament Resource and Model that has the ability to build dynamic relations, to be extended by a Module and to have one or more Taxonomies. It can ship a Frontend.
+The Moox Item is a Filament Resource and Model that has the ability to build dynamic relations, to be extended by a Module and to have one or more Taxonomies.
 
-### Taxonomy
+A Moox Item consists of:
 
-The Moox Taxonomy is a Filament Resource and Model, that can be easily attached to an Item. It can have one or more Items.
+-   Migration
+-   Model
+-   Filament Resource (including pages)
+-   Configuration file
+-   Translation files
+-   Frontend (optional)
+-   Widgets (optional)
+-   Relation Managers (optional)
+-   Relation (optional)
 
-### Module
+There are a lot of Moox Items like `Page`, `Post`, `Product`, etc., and there are some ready-made templates:
+
+-   Moox Item
+-   Moox Record
+-   Moox Publish
+-   Moox Draft
+
+Those templates are used by the `moox:build` command of Moox Build to create a new Moox Item.
+
+#### Moox Taxonomy
+
+The Moox Taxonomy is a Filament Resource and Model, that can be easily attached to an Item. It can have one or more Items. It can be extended by a Module.
+
+A Moox Taxonomy consists of:
+
+-   Migration
+-   Model
+-   Filament Resource (including pages)
+-   Configuration file
+-   Translation files
+-   Frontend (optional)
+-   Widgets (optional)
+-   Relation Managers (optional)
+-   Relation (optional)
+-   TaxonomyCreateForm (optional)
+
+#### Moox Module
 
 The Moox Module is a Filament Resource and Model, that can be easily attached to an Moox Item or Taxonomy. It's fields are rendered in a Tab on the Item or Taxonomy.
+
+A Moox Module consists of:
+
+-   Migration
+-   Model
+-   Filament Resource Extender
+-   Configuration file
+-   Translation files
+-   Frontend (optional)
+-   Widgets (optional)
 
 ## Moox Package
 
@@ -46,8 +92,11 @@ Moox Entities follow this file structure:
   |── 📂 resources/
   |   └── 📂 lang/
   |   |   └── 📂 en/
-  |   |       └── 📂 entities/
-  |   |           └── 📜 example.php
+  |   |       |── 📜 example.php
+  |   |       |── 📜 fields.php
+  |   |       └── 📂 enums/
+  |   |           └── 📜 enun-name.php
+  |   |
   |   └── 📂 views/
   |       └── 📂 entities/
   |           └── 📂 example/
@@ -85,9 +134,10 @@ Moox Entities follow this file structure:
           |   |
           |   |── 📂 Panels/
           |   |    └──📜 PackagePanel.php
+          |   |
           |   └── 📂 Plugins/
-          |       └── 📜 PackagePlugin.php
-          |       └── 📜 EntityPlugin.php
+          |        └── 📜 PackagePlugin.php
+          |        └── 📜 EntityPlugin.php
           |
           └── 📜 PackageServiceProvider.php (extends MooxServiceProvider)
 ```
