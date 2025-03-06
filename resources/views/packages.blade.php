@@ -104,6 +104,10 @@
                         </h2>
                         <p class="text-gray-300 mb-10">
                             Moox Core is the core package for Moox. It provides the core functionality for Moox.
+                            <br>
+                            <br>
+                            Package Registry: Stability, Ships (Entity Type, Theme),
+                            Category, Downloads, Stars, Alternate, Update.
                         </p>
                         <div class="flex gap-5">
                             <a href="#" class="text-gray-200 border px-2 py-1 border-pink-700">Learn More</a>

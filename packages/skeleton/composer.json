@@ -27,37 +27,6 @@
         }
     },
     "extra": {
-        "moox": {
-            "title": "Moox Skeleton",
-            "released": false,
-            "stability": "dev",
-            "category": "development",
-            "used_for": [
-                "building new Moox packages, not used as installed package"
-            ],
-            "template_for": [
-                "creating simple Laravel packages"
-            ],
-            "template_replace": {
-                "Moox Developer": "%%Author%%",
-                "dev@moox.org": "%%AuthorEmail%%",
-                "skeleton.jpg": "made-with-moox.jpg",
-                "Skeleton": "%%PackageName%%",
-                "skeleton": "%%PackageSlug%%",
-                "This template is used for generating Laravel packages, all Moox packages are built with this template.": "%%Description%%",
-                "building new Moox packages, not used as installed package": "%%UsedFor%%",
-                "creating simple Laravel packages": "%%TemplateFor%%"
-            },
-            "template_section_replace": {
-                "/<!--shortdesc-->.*<!--\/shortdesc-->/s": "%%Description%%"
-            },
-            "template_remove": [
-                "build.php"
-            ],
-            "alternate_packages": [
-                "builder"
-            ]
-        },
         "laravel": {
             "providers": [
                 "Moox\\Skeleton\\SkeletonServiceProvider"

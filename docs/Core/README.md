@@ -125,63 +125,85 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
 **Moox Entities** follow this file structure:
 
 ```plaintext
-📦 package/
-  |
-  |── 📂 config/
-  |   └── 📂 entities/
-  |       └── 📜 example.php
-  |
-  |── 📂 resources/
-  |   └── 📂 lang/
-  |   |   └── 📂 en/
-  |   |       |── 📜 example.php
-  |   |       |── 📜 fields.php
-  |   |       └── 📂 enums/
-  |   |           └── 📜 enun-name.php
-  |   |
-  |   └── 📂 views/
-  |       └── 📂 entities/
-  |           └── 📂 example/
-  |               ├── 📜 view.blade.php
-  |               └── 📜 more-views.blade.php
-  └── 📂 src/
-      └── 📂 Moox/
-         └── 📂 Entities/
-          |  └── 📂 Items/
-          |   |   └── 📜 ExampleItem.php
-          |   |   └── 📂 ExampleItem/
-          |   |        ├── 📂 Relation/
-          |   |        ├── 📂 Widgets/
-          |   |        ├── 📂 RelationManagers/
-          |   |        └── 📂 Pages/
-          |   |           ├── 📜 CreateExample.php
-          |   |           ├── 📜 EditExample.php
-          |   |           ├── 📜 ListExamples.php
-          |   |           └── 📜 ShowExample.php
-          |   |
-          |   |── 📂 Taxonomies/
-          |   |   └── 📜 ExampleTaxonomy.php
-          |   |   └── 📂 ExampleTaxonomy/
-          |   |       ├── 📂 Pages/
-          |   |       ├── 📂 Widgets/
-          |   |       ├── 📂 RelationManagers/
-          |   |       ├── 📂 Relation/
-          |   |       └── 📂 Forms/
-          |   |
-          |   |── 📂 Modules/
-          |   |   └── 📜 ExampleModule.php
-          |   |   └── 📂 ExampleModule/
-          |   |       ├── 📂 Widgets/
-          |   |       └── 📂 Extender/
-          |   |
-          |   |── 📂 Panels/
-          |   |    └──📜 PackagePanel.php
-          |   |
-          |   └── 📂 Plugins/
-          |        └── 📜 PackagePlugin.php
-          |        └── 📜 EntityPlugin.php
-          |
-          └── 📜 PackageServiceProvider.php (extends MooxServiceProvider)
+
+    📦 package/
+    |
+    |── 📂 config/
+    |   └── 📂 entities/
+    |       └── 📜 example.php
+    |
+    |── 📂 resources/
+    |   └── 📂 lang/
+    |   |   └── 📂 en/
+    |   |       |── 📜 example.php
+    |   |       |── 📜 fields.php
+    |   |       └── 📂 enums/
+    |   |           └── 📜 enun-name.php
+    |   |
+    |   └── 📂 views/
+    |       └── 📂 entities/
+    |           └── 📂 example/
+    |               ├── 📜 view.blade.php
+    |               └── 📜 more-views.blade.php
+    |
+    |── 📂 database/
+    |   |── 📂 migrations/
+    |   |   └── 📜 2025_03_06_000000_create_example_table.php
+    |   └── 📂 seeders/
+    |       └── 📜 ExampleSeeder.php
+    |
+    |── 📂 src/
+    |   └── 📂 Moox/
+    |       └── 📂 Entities/
+    |       |  └── 📂 Items/
+    |       |   |   └── 📜 ExampleItem.php
+    |       |   |   └── 📂 ExampleItem/
+    |       |   |        ├── 📂 Relation/
+    |       |   |        │   └── 📜 ExampleRelation.php
+    |       |   |        ├── 📂 Widgets/
+    |       |   |        │   └── 📜 ExampleWidget.php
+    |       |   |        ├── 📂 RelationManagers/
+    |       |   |        |   ├── 📜 ExampleRelationManager.php
+    |       |   |        |
+    |       |   |        └── 📂 Pages/
+    |       |   |            ├── 📜 CreateExample.php
+    |       |   |            ├── 📜 EditExample.php
+    |       |   |            ├── 📜 ListExamples.php
+    |       |   |            └── 📜 ShowExample.php
+    |       |   |
+    |       |   |── 📂 Taxonomies/
+    |       |   |   └── 📜 ExampleTaxonomy.php
+    |       |   |   └── 📂 ExampleTaxonomy/
+    |       |   |       ├── 📂 Pages/
+    |       |   |       ├── 📂 Widgets/
+    |       |   |       ├── 📂 RelationManagers/
+    |       |   |       ├── 📂 Relation/
+    |       |   |       └── 📂 Forms/
+    |       |   |            └── 📜 TaxonomyCreateForm.php
+    |       |   |
+    |       |   └── 📂 Modules/
+    |       |       └── 📜 ExampleModule.php
+    |       |       └── 📂 ExampleModule/
+    |       |           ├── 📂 Widgets/
+    |       |           └── 📂 Extender/
+    |       |               └── 📜 ModuleExtender.php
+    |       |
+    |       |── 📂 Panels/
+    |       |    └──📜 PackagePanel.php
+    |       |
+    |       |── 📂 Plugins/
+    |       |    └── 📜 PackagePlugin.php
+    |       |    └── 📜 EntityPlugin.php
+    |       |
+    |       └── 📂 Models/
+    |            └── 📜 ExampleModel.php
+    |
+    |── 📂 tests/
+    |   └── 📂 Feature/
+    |       └── 📜 ExampleTest.php
+    |
+    └── 📜 PackageServiceProvider.php (extends MooxServiceProvider)
+
 ```
 
 ### Moox Installer
@@ -208,8 +230,8 @@ That is the intended way to install **Moox** as a whole. The installer will then
 
 The package **Moox Frontend** is used to wire all needed parts together to generate a website:
 
--   **Moox Entities** - Entities like Page, Post deliver the content
--   **Moox SEO** - Modules like SEO add additional content
+-   **Moox Entities** - Entities like Page, Post deliver the content and views
+-   **Moox SEO** - Modules like SEO add additional content and views
 -   **Moox Components** - Renderless blade components
 -   **Moox Navigation** - Navigations are dynamically rendered
 -   **Moox Slug** - Slugs (permalinks) for all entities
@@ -282,7 +304,98 @@ The command will then guide you through the process of building an empty **Moox 
 
 -   `php artisan moox:build` to build a Moox package or Entity
 
-### Moox Devlink
+## Technical Details
 
--   `php artisan moox:devlink` to symlink or locally wire packages for development
--   `php artisan moox:deploy` to unlink local packages and prepare for deployment
+### Moox Service Provider
+
+The **Moox Service Provider** is the central service provider for all Moox packages. It is responsible for loading all Moox packages and entities.
+
+It is primarily used to register Moox packages and entities, and to make them available to the **Moox Installer** and the **Moox Build Command**.
+
+The following example shows the minimal code needed to register a Moox package:
+
+```php
+
+<?php
+
+declare(strict_types=1);
+
+namespace Moox\Skeleton;
+
+use Moox\Core\MooxServiceProvider;
+use Spatie\LaravelPackageTools\Package;
+
+class SkeletonServiceProvider extends MooxServiceProvider
+{
+    public function configureMoox(Package $package): void
+    {
+        // Spatie Package Tools
+        $package
+            ->name('skeleton')
+            ->hasConfigFile()
+            ->hasViews()
+            ->hasTranslations()
+            ->hasMigrations()
+            ->hasCommands();
+
+        $this->getMooxPackage()
+            ->title('Moox Skeleton')            // title
+            ->released(false)                   // released, default false
+            ->stability('dev')                  // stability, default dev
+            ->category('development')           // category, default unsorted
+            // plugins, auto-detected if empty
+            ->plugins([
+                'skeleton',
+            ])
+            ->firstPlugin(false)                // first plugin, default false
+            ->parentTheme('theme-moox')         // only if it ships with a theme
+            ->staticSeeders(['SkeletonSeeder']) // only if it ships with static data
+            // purpose, empty if template
+            ->usedFor([
+                'building new Moox packages, not used as installed package',
+            ])
+            // if the package is a template
+            ->templateFor([
+                'creating simple Laravel packages',
+            ])
+            // if the package is a template
+            ->templateReplace([
+                'Skeleton' => '%%PackageName%%',
+                'skeleton' => '%%PackageSlug%%',
+                'This template is used for generating Laravel packages.' => '%%Description%%',
+                'building new Moox packages, not used as installed package' => '%%UsedFor%%',
+                'creating simple Laravel packages' => '%%TemplateFor%%',
+                '->category('development')' => '->category('unsorted')',
+            ])
+            // if the package is a template
+            ->templateRename([
+                'Skeleton' => '%%PackageName%%',
+                'skeleton' => '%%PackageSlug%%',
+            ])
+            // if the package is a template
+            ->templateSectionReplace([
+                "/<!--shortdesc-->.*<!--\/shortdesc-->/s" => '%%Description%%',
+            ])
+            // if the package is a template
+            ->templateRemove([
+                'build.php',
+            ])
+            // alternate packages, otherwise none
+            ->alternatePackages([
+                'builder',
+            ]);
+    }
+}
+```
+
+-   Extend the Moox Service Provider
+-   Implement the `configureMoox` method
+-   Use the `Package` class to configure the package, see [Spatie Package Tools](https://spatie.be/docs/laravel-package-tools/v6/installation-laravel) for more information
+
+For the Moox Package all information is optional. Moox will use sane defaults or autodetect the needed information, feel free to override it. For the plugins array for example, use it to sort your navigation. As the build command also uses sane defaults, you can just leave everything as it is for your own Moox Package.
+
+Yes, you're right, you don't even need to care about the technical implementation details, just use the `php artisan moox:build` command to create your Moox Package and let Moox do the rest.
+
+### ... to be continued ...
+
+The other parts are in the old docs.
