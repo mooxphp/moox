@@ -2,9 +2,9 @@
 
 namespace Moox\Tag\Resources\TagTranslationResource\Pages;
 
-use Moox\Tag\Resources\TagTranslationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Tag\Resources\TagTranslationResource;
 
 class ListTagTranslations extends ListRecords
 {

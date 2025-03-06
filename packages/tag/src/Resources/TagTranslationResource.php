@@ -2,13 +2,12 @@
 
 namespace Moox\Tag\Resources;
 
-use Filament\Tables;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Tables\Grouping\Group;
-use Moox\Tag\Resources\TagTranslationResource\Pages;
 use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Moox\Tag\Models\TagTranslation;
+use Moox\Tag\Resources\TagTranslationResource\Pages;
 
 class TagTranslationResource extends Resource
 {
@@ -43,14 +42,14 @@ class TagTranslationResource extends Resource
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->label('Slug')
-                    ->searchable() 
+                    ->searchable()
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('content')
                     ->label('Content')
                     ->searchable()
                     ->limit(50)
-                    ->toggleable()
+                    ->toggleable(),
                 //
             ])
             ->filters([
@@ -58,12 +57,12 @@ class TagTranslationResource extends Resource
                     ->label('Language')
                     ->options([
                         'en' => 'English',
-                        'fr' => 'French', 
+                        'fr' => 'French',
                         'es' => 'Spanish',
                         'de' => 'German',
-                        'it' => 'Italian'
+                        'it' => 'Italian',
                     ])
-                    ->multiple()
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -2,8 +2,8 @@
 
 namespace Moox\Tag\Resources\TagTranslationResource\Pages;
 
-use Moox\Tag\Resources\TagTranslationResource;
 use Filament\Resources\Pages\CreateRecord;
+use Moox\Tag\Resources\TagTranslationResource;
 
 class CreateTagTranslation extends CreateRecord
 {

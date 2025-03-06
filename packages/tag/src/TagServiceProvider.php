@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Moox\Tag;
 
+use Filament\Support\Facades\FilamentView;
+use Filament\Tables\View\TablesRenderHook;
+use Illuminate\Support\Facades\Blade;
 use Moox\Tag\Commands\InstallCommand;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Illuminate\Support\Facades\Blade;
-use Filament\Support\Facades\FilamentView;
-use Filament\Tables\View\TablesRenderHook;
 
 class TagServiceProvider extends PackageServiceProvider
 {

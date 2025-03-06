@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Override;
-use Filament\Forms\Form;
-use Moox\Tag\Models\Tag;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ViewTag;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Moox\Tag\Resources\TagResource\Pages\EditTag;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Override;
 
 class TagResource extends Resource
 {
@@ -73,26 +73,27 @@ class TagResource extends Resource
                                             if ($lang && $component->getRecord()) {
                                                 $component->state([
                                                     'title' => $component->getRecord()->getTranslation('title', $lang),
-                                                    'slug' => $component->getRecord()->getTranslation('slug', $lang)
+                                                    'slug' => $component->getRecord()->getTranslation('slug', $lang),
                                                 ]);
                                             }
                                         })
-                                    ->afterStateHydrated(function ($component) {
-                                        $lang = request()->get('lang');
-                                        if ($lang && $component->getRecord()) {
-                                            $component->state([
-                                                'title' => $component->getRecord()->getTranslation('title', $lang),
-                                                'slug' => $component->getRecord()->getTranslation('slug', $lang)
-                                            ]);
-                                        }
-                                    })
-                                    ->dehydrateStateUsing(function ($state) {
-                                        $lang = request()->get('lang');
-                                        return [
-                                            'title' => [$lang => $state['title']],
-                                            'slug' => [$lang => $state['slug']]
-                                        ];
-                                    }),
+                                        ->afterStateHydrated(function ($component) {
+                                            $lang = request()->get('lang');
+                                            if ($lang && $component->getRecord()) {
+                                                $component->state([
+                                                    'title' => $component->getRecord()->getTranslation('title', $lang),
+                                                    'slug' => $component->getRecord()->getTranslation('slug', $lang),
+                                                ]);
+                                            }
+                                        })
+                                        ->dehydrateStateUsing(function ($state) {
+                                            $lang = request()->get('lang');
+
+                                            return [
+                                                'title' => [$lang => $state['title']],
+                                                'slug' => [$lang => $state['slug']],
+                                            ];
+                                        }),
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
@@ -215,6 +216,7 @@ class TagResource extends Resource
                         if ($lang && $record->hasTranslation($lang)) {
                             return $record->translate($lang)->title;
                         }
+
                         return $record->title;
                     }),
                 TextColumn::make('slug')
@@ -227,6 +229,7 @@ class TagResource extends Resource
                         if ($lang && $record->hasTranslation($lang)) {
                             return $record->translate($lang)->title;
                         }
+
                         return $record->title;
                     }),
                 TextColumn::make('content')
@@ -240,6 +243,7 @@ class TagResource extends Resource
                         if ($lang && $record->hasTranslation($lang)) {
                             return $record->translate($lang)->title;
                         }
+
                         return $record->title;
                     }),
                 TextColumn::make('count')
@@ -256,14 +260,12 @@ class TagResource extends Resource
                     ->toggleable(),
             ])
             ->actions([
-                ViewAction::make()->url(fn ($record) => 
-                    request()->has('lang') 
+                ViewAction::make()->url(fn ($record) => request()->has('lang')
                         ? route('filament.admin.resources.tags.view', ['record' => $record, 'lang' => request()->get('lang')])
                         : route('filament.admin.resources.tags.view', $record)
                 ),
                 EditAction::make()
-                    ->url(fn ($record) => 
-                        request()->has('lang')
+                    ->url(fn ($record) => request()->has('lang')
                             ? route('filament.admin.resources.tags.edit', ['record' => $record, 'lang' => request()->get('lang')])
                             : route('filament.admin.resources.tags.edit', $record)
                     )
