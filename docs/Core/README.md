@@ -1,26 +1,26 @@
-# Core
+# Moox Core
 
-Moox Core provides the foundational functionality used by all other Moox Packages.
+**Moox Core** provides the foundational functionality used by all other **Moox Packages**.
 
-Moox is built with Laravel and Filament, aiming to become a modular framework for building Laravel applications, websites, or intranet solutions.
+**Moox** is built with Laravel and Filament, aiming to become a modular framework for building Laravel applications, websites, or intranet solutions.
 
-While Moox Core itself does not ship with any entities, it contains the essential services and traits that power Moox.
+While **Moox Core** itself does not ship with any entities, it contains the essential services and traits that power **Moox**.
 
 ## Core Concepts
 
 ### Moox Entity
 
-A Moox Entity consists of a Migration, Model, Filament Resource including pages, a configuration file and translation files.
+A **Moox Entity** consists of a Migration, Model, Filament Resource including pages, a configuration file and translation files.
 
 Depending on the type and purpose of the Entity, it ships with additional files.
 
-There are three types of Moox Entities:
+There are three types of **Moox Entities**:
 
 #### Moox Item
 
-The Moox Item is a Filament Resource and Model that has the ability to build dynamic relations, to be extended by a Module and to have one or more Taxonomies.
+The **Moox Item** is a Filament Resource and Model that has the ability to build dynamic relations, to be extended by a **Moox Module** and to have one or more **Moox Taxonomies**.
 
-A Moox Item consists of:
+A **Moox Item** consists of:
 
 -   Migration
 -   Model
@@ -32,20 +32,30 @@ A Moox Item consists of:
 -   Relation Managers (optional)
 -   Relation (optional)
 
-There are a lot of Moox Items like `Page`, `Post`, `Product`, etc., and there are some ready-made templates:
+There are a lot of **Moox Items** like
 
--   Moox Item
--   Moox Record
--   Moox Publish
--   Moox Draft
+-   [Moox Page](https://github.com/mooxphp/page)
+-   [Moox Post](https://github.com/mooxphp/post)
+-   [Moox Product](https://github.com/mooxphp/product)
 
-Those templates are used by the `moox:build` command of Moox Build to create a new Moox Item.
+and there are some ready-made **Moox Item Templates**:
+
+-   [Moox Item](https://github.com/mooxphp/item)
+-   [Moox Record](https://github.com/mooxphp/record)
+-   [Moox Publish](https://github.com/mooxphp/publish)
+-   [Moox Draft](https://github.com/mooxphp/draft)
+
+These templates are used by the `php artisan moox:build` command of
+
+-   [Moox Build](https://github.com/mooxphp/build)
+
+to create a new **Moox Item**.
 
 #### Moox Taxonomy
 
-The Moox Taxonomy is a Filament Resource and Model, that can be easily attached to an Item. It can have one or more Items. It can be extended by a Module.
+The **Moox Taxonomy** is a Filament Resource and Model, that can be easily attached to an Item. It can have one or more Items. It can be extended by a **Moox Module**.
 
-A Moox Taxonomy consists of:
+A **Moox Taxonomy** consists of:
 
 -   Migration
 -   Model
@@ -58,11 +68,33 @@ A Moox Taxonomy consists of:
 -   Relation (optional)
 -   TaxonomyCreateForm (optional)
 
+There are two main **Moox Taxonomies**:
+
+-   [Moox Category](https://github.com/mooxphp/moox-category)
+-   [Moox Tag](https://github.com/mooxphp/moox-tag)
+
+Both are used as Global System Taxonomies, and by the `php artisan moox:build` command of Moox Build to create a new flat or nested **Moox Taxonomy**.
+
+For managing flexible Global System Taxonomies, there is also the
+
+-   [Moox Taxonomy](https://github.com/mooxphp/moox-taxonomy)
+
+that consists of **Terms** and **Taxonomies**, simply extensible, like WordPress does, with known limitations in nesting and performance.
+
+While **Moox Taxonomy** offers flexibility in one simple package, you might find dedicated taxonomies like **Moox Category** and **Moox Tag** useful, specially when using the Nested Set feature with thousands of entries in combination with nesting and filtering.
+
+There are a lot of those dedicated taxonomies:
+
+-   [Moox Shop Category](https://github.com/mooxphp/shop-category)
+-   [Moox Shop Tag](https://github.com/mooxphp/shop-tag)
+
+and it is easy to create your own dedicated taxonomies using the `php artisan moox:build` command of **Moox Build**.
+
 #### Moox Module
 
-The Moox Module is a Filament Resource and Model, that can be easily attached to an Moox Item or Taxonomy. It's fields are rendered in a Tab on the Item or Taxonomy.
+The **Moox Module** is a Filament Resource and Model, that can be easily attached to an **Moox Item** or **Moox Taxonomy**. It's fields can be rendered in a tab of the edit form of the Item or Taxonomy, and on the Frontend.
 
-A Moox Module consists of:
+A **Moox Module** consists of:
 
 -   Migration
 -   Model
@@ -72,15 +104,25 @@ A Moox Module consists of:
 -   Frontend (optional)
 -   Widgets (optional)
 
-## Moox Package
+There are a **Moox Modules** like
 
-A Moox Package is a package that contains Moox Entities. It's Service Provider extends the Moox Service Provider.
+-   [Moox SEO](https://github.com/mooxphp/seo)
 
-Moox Packages follow the Laravel Naming Conventions, so Jobs are named like `ExampleJob`, Listeners are named like `ExampleListener` and so on, and the reside in the `/Jobs`, `/Listeners` and `/Console/Commands` folders.
+and there is a **Moox Module Template**:
+
+-   [Moox Module](https://github.com/mooxphp/module)
+
+you can use the `php artisan moox:build` command of **Moox Build** to create a new **Moox Module** and just attach it to an **Moox Item** or **Moox Taxonomy** in the configuration file of the Entity.
+
+### Moox Package
+
+A **Moox Package** is a package that contains **Moox Entities**. It's Service Provider extends the **Moox Service Provider**.
+
+**Moox Packages** follow the Laravel Naming Conventions, so Jobs are named like `ExampleJob`, Listeners are named like `ExampleListener` and so on, and the reside in the `/Jobs`, `/Listeners` and `/Console/Commands` folders.
 
 Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if they are CLI related.
 
-Moox Entities follow this file structure:
+**Moox Entities** follow this file structure:
 
 ```plaintext
 📦 package/
@@ -142,96 +184,91 @@ Moox Entities follow this file structure:
           └── 📜 PackageServiceProvider.php (extends MooxServiceProvider)
 ```
 
-## Moox Models
+### Moox Installer
 
-```plaintext
-        +-------------------------------------+
-        | 🧑 User                             |
-        +-------------------------------------+
-        | id: int                             |
-        | name: str                           |
-        | email: str                          |
-        +-------------------------------------+
-        | posts(): HasMany                    |
-        +-------------------------------------+
+**Moox Packages** can be installed using Composer:
 
-        +-------------------------------------+
-        | 📝 Item                             |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
-
-        +-------------------------------------+
-        | 🏷️ Taxonomy                         |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
-
-        +-------------------------------------+
-        | 🧩 Modules                          |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
-
-        +-------------------------------------+
-        | 📜 Log                              |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
-
-        +-------------------------------------+
-        | 🌐 Api Data                         |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
-
-        +-------------------------------------+
-        | 🗄️ Others                           |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
-
-        +-------------------------------------+
-        | 🔄 Pivot                            |
-        +-------------------------------------+
-        | id: int                             |
-        | title: str                          |
-        | body: text                          |
-        | user_id: fk                         |
-        +-------------------------------------+
-        | user(): BelongsTo                   |
-        +-------------------------------------+
+```bash
+composer require moox/tag
+php artisan moox:install
 ```
+
+That is completely fine, if you want to install a single package, but - as the one and only drawback of modularity - you have to do this for dozens of packages to get a fully working application.
+
+That's why there is **Moox Installer**:
+
+```bash
+composer require moox/core
+php artisan moox:install
+```
+
+That is the intended way to install **Moox** as a whole. The installer will then guide you through the process of installing all necessary packages for your purpose.
+
+### Moox Frontend
+
+The package **Moox Frontend** is used to wire all needed parts together to generate a website:
+
+-   **Moox Entities** - Entities like Page, Post deliver the content
+-   **Moox SEO** - Modules like SEO add additional content
+-   **Moox Components** - Renderless blade components
+-   **Moox Navigation** - Navigations are dynamically rendered
+-   **Moox Slug** - Slugs (permalinks) for all entities
+-   **Moox Theme** - All layout and styling is done in themes
+
+### Moox Components
+
+The package **Moox Components** is used by **Moox Frontend** to build the base component layer:
+
+-   [Moox Components](https://github.com/mooxphp/components)
+
+Renderless means that the components do not contain any styles or scripts, but only a definition of the component and its props.
+
+### Moox Navigation
+
+The package **Moox Navigation** is used by **Moox Frontend** to build the navigation layer:
+
+-   [Moox Navigation](https://github.com/mooxphp/navigation)
+
+### Moox Theme
+
+Theming your website is done in themes based on our
+
+-   [Moox Theme Base](https://github.com/mooxphp/theme-base) - reduced to only functional styles
+-   [Moox Theme](https://github.com/mooxphp/theme) - default theme with a modern and clean design
+
+Means both themes are available for you to
+
+-   use directly with your project
+-   use them as parent or fallback theme when implementing your own
+-   use them as starting point for your own theme
+
+For example:
+
+1. Use the `moox:build` command to create a new **Moox Theme**
+2. That newly created theme already uses the **Moox Theme**
+3. You can now extend the theme and add your own styles and scripts
+
+It is possible to change the theme inheritance in your Service Provider, if needed.
+
+### Moox Slug
+
+The package **Moox Slug** is used by **Moox Frontend** to manage slugs and redirects for your entities:
+
+-   [Moox Slug](https://github.com/mooxphp/slug)
+
+Moox Slug integrates in Moox Entities to create and manage slugs and redirects directly when creating or updating an entity.
+
+### Moox Build
+
+The package **Moox Build** is used to build **Moox Packages** and **Moox Entities** using just one command:
+
+```bash
+php artisan moox:build
+```
+
+The command will then guide you through the process of building an empty **Moox Package**, a package with a **Moox Item**, **Moox Taxonomy**, **Moox Module** or a **Moox Theme**.
+
+![Moox](../../art/video/test-cli-video.gif?raw=true)
 
 ## Moox Commands
 
@@ -249,49 +286,3 @@ Moox Entities follow this file structure:
 
 -   `php artisan moox:devlink` to symlink or locally wire packages for development
 -   `php artisan moox:deploy` to unlink local packages and prepare for deployment
-
-## Video
-
-Use GIFs from the `art/video` folder. This is an example of a CLI video:
-
-![Moox](../../art/video/test-cli-video.gif?raw=true)
-
-It is 75% sized of the original video and compressed with [Squoosh](https://squoosh.app/) or [FreeConvert](https://www.freeconvert.com/gif-compressor), so 15 seconds of video are under 1MB.
-
-```applescript
-tell application "iTerm"
-	activate
-	tell the first window
-		set bounds to {100, 100, 1200, 900}
-		tell current session
-			write text "cd ~/Herd/moox"
-			write text "clear"
-		end tell
-	end tell
-end tell
-```
-
-💡 This ensures that iTerm always launches at the exact size you want.
-
-```applescript
-tell application "Safari"
-	if (count of windows) = 0 then
-		make new document
-	end if
-	set bounds of front window to {100, 100, 1400, 900}
-    set URL of front document to "https://www.moox.org"
-end tell
-```
-
-> [!TIP]
-> This ensures that Safari always launches at the exact size you want.
-> Same possible for "Google Chrome", but we use Safari.
-
-# We discuss docs here
-
--   https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
--   Doing Screenshots
--   Adding Data and Images (Seeding) - use addMedia in the Factory
-    -   https://thispersondoesnotexist.com/
-    -   https://picsum.photos/
-    -   https://unsplash.com/
