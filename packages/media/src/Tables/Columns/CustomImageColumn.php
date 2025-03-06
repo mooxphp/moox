@@ -8,11 +8,12 @@ use Moox\Media\Models\MediaUsable;
 
 class CustomImageColumn extends ImageColumn
 {
+
     public function getState(): mixed
     {
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 
@@ -41,7 +42,7 @@ class CustomImageColumn extends ImageColumn
     {
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 
@@ -59,7 +60,7 @@ class CustomImageColumn extends ImageColumn
 
             ->value('media.id');
 
-        if (! $mediaId) {
+        if (!$mediaId) {
             return null;
         }
 
