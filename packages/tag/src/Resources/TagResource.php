@@ -4,35 +4,35 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
+use Override;
 use Filament\Forms\Form;
+use Moox\Tag\Models\Tag;
+use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Tag\Models\Tag;
-use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
-use Override;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
 
 class TagResource extends Resource
 {
@@ -67,11 +67,44 @@ class TagResource extends Resource
                                     TitleWithSlugInput::make(
                                         fieldTitle: 'title',
                                         fieldSlug: 'slug',
-                                    ),
+                                    )
+                                        ->afterStateHydrated(function ($component) {
+                                            $lang = request()->get('lang');
+                                            if ($lang && $component->getRecord()) {
+                                                $component->state([
+                                                    'title' => $component->getRecord()->getTranslation('title', $lang),
+                                                    'slug' => $component->getRecord()->getTranslation('slug', $lang)
+                                                ]);
+                                            }
+                                        })
+                                    ->afterStateHydrated(function ($component) {
+                                        $lang = request()->get('lang');
+                                        if ($lang && $component->getRecord()) {
+                                            $component->state([
+                                                'title' => $component->getRecord()->getTranslation('title', $lang),
+                                                'slug' => $component->getRecord()->getTranslation('slug', $lang)
+                                            ]);
+                                        }
+                                    })
+                                    ->dehydrateStateUsing(function ($state) {
+                                        $lang = request()->get('lang');
+                                        return [
+                                            'title' => [$lang => $state['title']],
+                                            'slug' => [$lang => $state['slug']]
+                                        ];
+                                    }),
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
-                                        ->label(__('core::core.content')),
+                                        ->label(__('core::core.content'))
+                                        ->afterStateHydrated(function (MarkdownEditor $component) {
+                                            $lang = request()->get('lang');
+                                            if ($lang && $component->getRecord()->hasTranslation($lang)) {
+                                                $component->state($component->getRecord()->translate($lang)->content);
+                                            } else {
+                                                $component->state($component->getRecord()->translate($lang)->content);
+                                            }
+                                        }),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -176,18 +209,39 @@ class TagResource extends Resource
                     ->searchable()
                     ->limit(30)
                     ->toggleable()
-                    ->sortable(),
+                    ->sortable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->title;
+                        }
+                        return $record->title;
+                    }),
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->sortable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->title;
+                        }
+                        return $record->title;
+                    }),
                 TextColumn::make('content')
                     ->label(__('core::core.content'))
                     ->sortable()
                     ->limit(30)
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->state(function ($record) {
+                        $lang = request()->get('lang');
+                        if ($lang && $record->hasTranslation($lang)) {
+                            return $record->translate($lang)->title;
+                        }
+                        return $record->title;
+                    }),
                 TextColumn::make('count')
                     ->label(__('core::core.count'))
                     ->sortable()
@@ -200,12 +254,20 @@ class TagResource extends Resource
                     ->label(__('tag::translations.color'))
                     ->sortable()
                     ->toggleable(),
-
             ])
-            ->defaultSort('slug', 'desc')
             ->actions([
-                ViewAction::make(),
-                EditAction::make()->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                ViewAction::make()->url(fn ($record) => 
+                    request()->has('lang') 
+                        ? route('filament.admin.resources.tags.view', ['record' => $record, 'lang' => request()->get('lang')])
+                        : route('filament.admin.resources.tags.view', $record)
+                ),
+                EditAction::make()
+                    ->url(fn ($record) => 
+                        request()->has('lang')
+                            ? route('filament.admin.resources.tags.edit', ['record' => $record, 'lang' => request()->get('lang')])
+                            : route('filament.admin.resources.tags.edit', $record)
+                    )
+                    ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
                 DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),

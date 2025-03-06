@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
-use Moox\Tag\Database\Factories\TagFactory;
 use Override;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Astrotomic\Translatable\Translatable;
+use Moox\Tag\Database\Factories\TagFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
-class Tag extends Model
+class Tag extends Model implements TranslatableContract
 {
     use HasFactory;
     use SoftDeletes;
+    use Translatable;
 
     protected $table = 'tags';
 
+    public $translatedAttributes = ['title', 'slug', 'content'];
+
     protected $fillable = [
-        'title',
-        'slug',
-        'content',
         'color',
         'weight',
         'count',
@@ -61,4 +63,5 @@ class Tag extends Model
             $tag->detachAllTaggables();
         });
     }
+
 }

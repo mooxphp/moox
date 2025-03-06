@@ -13,10 +13,7 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('slug')->unique();
             $table->string('featured_image_url')->nullable();
-            $table->text('content')->nullable();
             $table->integer('weight')->nullable();
             $table->integer('count')->nullable();
             $table->string('color')->nullable();
