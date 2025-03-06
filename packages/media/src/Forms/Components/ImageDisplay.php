@@ -2,8 +2,6 @@
 
 namespace Moox\Media\Forms\Components;
 
-use Moox\Media\Models\Media;
-use Moox\Media\Models\MediaUsable;
 use Filament\Forms\Components\Field;
 
 class ImageDisplay extends Field
@@ -21,7 +19,7 @@ class ImageDisplay extends Field
     {
         $record = $this->getRecord();
 
-        if (!$record) {
+        if (! $record) {
             return null;
         }
 

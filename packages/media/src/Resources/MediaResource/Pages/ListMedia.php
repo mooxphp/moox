@@ -30,7 +30,7 @@ class ListMedia extends ListRecords
                         ->required()
                         ->live()
                         ->afterStateUpdated(function ($state) {
-                            if (!$state) {
+                            if (! $state) {
                                 return;
                             }
 
