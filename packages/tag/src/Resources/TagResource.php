@@ -21,13 +21,14 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
@@ -65,7 +66,8 @@ class TagResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-
+                                    MediaPicker::make('featured_image_url')
+                                        ->label(__('core::core.featured_image_url')),
                                     TextInput::make('title')
                                         ->live(onBlur: true)
                                         ->label(__('core::core.title'))
@@ -230,12 +232,10 @@ class TagResource extends Resource
 
         return $table
             ->columns([
-                ImageColumn::make('featured_image_url')
+                CustomImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
                     ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
-                    ->alignment('center')
-                    ->square()
-                    ->toggleable(),
+                    ->alignment('center'),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->searchable()
@@ -291,14 +291,16 @@ class TagResource extends Resource
                     ->toggleable(),
             ])
             ->actions([
-                ViewAction::make()->url(fn ($record) => request()->has('lang')
-                        ? route('filament.admin.resources.tags.view', ['record' => $record, 'lang' => request()->get('lang')])
-                        : route('filament.admin.resources.tags.view', $record)
+                ViewAction::make()->url(
+                    fn ($record) => request()->has('lang')
+                    ? route('filament.admin.resources.tags.view', ['record' => $record, 'lang' => request()->get('lang')])
+                    : route('filament.admin.resources.tags.view', $record)
                 ),
                 EditAction::make()
-                    ->url(fn ($record) => request()->has('lang')
-                            ? route('filament.admin.resources.tags.edit', ['record' => $record, 'lang' => request()->get('lang')])
-                            : route('filament.admin.resources.tags.edit', $record)
+                    ->url(
+                        fn ($record) => request()->has('lang')
+                        ? route('filament.admin.resources.tags.edit', ['record' => $record, 'lang' => request()->get('lang')])
+                        : route('filament.admin.resources.tags.edit', $record)
                     )
                     ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])

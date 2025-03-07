@@ -45,10 +45,6 @@ use Moox\Passkey\PasskeyPlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\Services\RequestPasswordReset;
 use Moox\Tag\TagPlugin;
-use Moox\Training\TrainingDatePlugin;
-use Moox\Training\TrainingInvitationPlugin;
-use Moox\Training\TrainingPlugin;
-use Moox\Training\TrainingTypePlugin;
 use Moox\User\Services\Login;
 use Moox\User\UserPlugin;
 use Moox\UserDevice\UserDevicePlugin;
@@ -144,6 +140,11 @@ class AdminPanelProvider extends PanelProvider
                 ExpiryPlugin::make(),
 
                 // Training plugins
+
+                // Builder plugin
+                // \Moox\Builder\ItemPlugin::make(),
+                \Moox\Media\MediaPlugin::make(),
+
                 TrainingPlugin::make(),
                 TrainingInvitationPlugin::make(),
                 TrainingDatePlugin::make(),

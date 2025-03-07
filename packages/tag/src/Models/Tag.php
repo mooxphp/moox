@@ -13,12 +13,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Moox\Tag\Database\Factories\TagFactory;
 use Override;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Tag extends Model implements TranslatableContract
+class Tag extends Model implements HasMedia, TranslatableContract
 {
-    use HasFactory;
-    use SoftDeletes;
-    use Translatable;
+    use HasFactory, InteractsWithMedia, SoftDeletes, Translatable;
 
     protected $table = 'tags';
 
@@ -62,5 +64,23 @@ class Tag extends Model implements TranslatableContract
         static::deleting(function (Tag $tag): void {
             $tag->detachAllTaggables();
         });
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
+    }
+
+    public function mediaThroughUsables()
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'media_usables',
+            'media_usable_id',
+            'media_id'
+        )->where('media_usables.media_usable_type', '=', static::class);
     }
 }

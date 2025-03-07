@@ -2,7 +2,6 @@
 
 namespace Moox\User\Resources;
 
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
@@ -14,7 +13,6 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -23,13 +21,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
 use Moox\User\Resources\UserResource\Pages\ListUsers;
 use Moox\User\Resources\UserResource\Pages\ViewUser;
-use Override;
 
 class UserResource extends Resource
 {
@@ -49,9 +48,9 @@ class UserResource extends Resource
             Section::make()->schema([
                 Grid::make(['default' => 0])->schema([
 
-                    FileUpload::make('avatar_url')
-                        ->label(__('core::user.avatar_url'))
-                        ->avatar(),
+                    MediaPicker::make('avatar_url')
+                        ->label('Avatar')
+                        ->multiple(),
 
                     TextInput::make('name')
                         ->label(__('core::core.name'))
@@ -231,7 +230,7 @@ class UserResource extends Resource
                 ]),
             ])->visibleOn('edit'),
 
-        ]);
+        ])->statePath('data');
     }
 
     #[Override]
@@ -240,12 +239,8 @@ class UserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                ImageColumn::make('avatar_url')
-                    ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
-                    ->circular()
-                    ->label(__('core::user.avatar'))
-                    ->toggleable()
-                    ->size(50),
+
+                CustomImageColumn::make('avatar_url'),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
                     ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
@@ -266,7 +261,8 @@ class UserResource extends Resource
                     ->alignStart()
                     ->icon(
                         fn ($record): string => is_null(
-                            $record->email_verified_at) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
+                            $record->email_verified_at
+                        ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
                         'success' => fn ($record): bool => $record->email_verified_at !== null,
