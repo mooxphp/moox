@@ -20,7 +20,6 @@ jobs:
           - audit
           - builder
           - category
-          - connect
           - core
           - data
           - devlink
