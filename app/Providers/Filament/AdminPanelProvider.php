@@ -26,11 +26,17 @@ use Moox\Builder\NestedTaxonomyPlugin;
 use Moox\Builder\SimpleItemPlugin;
 use Moox\Builder\SimpleTaxonomyPlugin;
 use Moox\Category\CategoryPlugin;
+use Moox\Data\Filament\Plugins\StaticCountryPlugin;
+use Moox\Data\Filament\Plugins\StaticCurrencyPlugin;
+use Moox\Data\Filament\Plugins\StaticLanguagePlugin;
+use Moox\Data\Filament\Plugins\StaticLocalePlugin;
+use Moox\Data\Filament\Plugins\StaticTimezonePlugin;
 use Moox\Expiry\ExpiryPlugin;
 use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
+use Moox\Localization\Filament\Plugins\LocalizationPlugin;
 use Moox\Locate\AreaPlugin;
 use Moox\LoginLink\LoginLinkPlugin;
 use Moox\Notification\NotificationPlugin;
@@ -134,15 +140,26 @@ class AdminPanelProvider extends PanelProvider
                 ExpiryPlugin::make(),
 
                 // Training plugins
-                \Moox\Training\TrainingPlugin::make(),
-                \Moox\Training\TrainingInvitationPlugin::make(),
-                \Moox\Training\TrainingDatePlugin::make(),
-                \Moox\Training\TrainingTypePlugin::make(),
+
+                
 
                 // Builder plugin
                 // \Moox\Builder\ItemPlugin::make(),
                 \Moox\Media\MediaPlugin::make(),
 
+
+                TrainingPlugin::make(),
+                TrainingInvitationPlugin::make(),
+                TrainingDatePlugin::make(),
+                TrainingTypePlugin::make(),
+
+                // Localization plugin
+                LocalizationPlugin::make(),
+                StaticLocalePlugin::make(),
+                StaticCountryPlugin::make(),
+                StaticLanguagePlugin::make(),
+                StaticTimezonePlugin::make(),
+                StaticCurrencyPlugin::make(),
             ]);
     }
 }

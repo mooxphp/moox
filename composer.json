@@ -30,7 +30,6 @@
         "moox/flags": "*",
         "moox/frontend": "*",
         "moox/jobs": "*",
-        "moox/locate": "*",
         "moox/login-link": "*",
         "moox/media": "*",
         "moox/notifications": "*",
@@ -54,6 +53,7 @@
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
+        "moox/build": "*",
         "moox/devlink": "*",
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^3.0",
