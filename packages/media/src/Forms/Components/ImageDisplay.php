@@ -19,10 +19,12 @@ class ImageDisplay extends Field
     {
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 
-        return $record->getFirstMediaUrl('default');
+        $collection = $record->collection_name ?? 'default';
+
+        return $record->getFirstMediaUrl($collection);
     }
 }

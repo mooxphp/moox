@@ -16,7 +16,6 @@ class ListMedia extends ListRecords
     public function getHeaderActions(): array
     {
         return [
-
             Action::make('upload')
                 ->label('Datei hochladen')
                 ->form([
@@ -30,7 +29,7 @@ class ListMedia extends ListRecords
                         ->required()
                         ->live()
                         ->afterStateUpdated(function ($state) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 
@@ -48,10 +47,18 @@ class ListMedia extends ListRecords
                             $media->original_model_id = $media->id;
                             $media->model_id = $media->id;
                             $media->model_type = Media::class;
+
+                            if (str_starts_with($media->mime_type, 'image/')) {
+                                [$width, $height] = getimagesize($media->getPath());
+                                $media->setCustomProperty('dimensions', [
+                                    'width' => $width,
+                                    'height' => $height
+                                ]);
+                            }
+
                             $media->save();
                         }),
                 ])->modalSubmitAction(false),
-
         ];
     }
 }
