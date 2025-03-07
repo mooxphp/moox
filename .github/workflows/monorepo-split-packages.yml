@@ -19,7 +19,7 @@ jobs:
         package:
           - audit
           - backup-server
-          - base
+          - base-theme
           - build
           - cart
           - category
@@ -31,6 +31,7 @@ jobs:
           - devops
           - draft
           - expiry
+          - featherlight
           - file-icons
           - flags
           - forge
@@ -68,7 +69,6 @@ jobs:
           - slug
           - tag
           - taxonomy
-          - theme
           - trainings
           - user
           - user-device

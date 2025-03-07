@@ -62,8 +62,8 @@ A temporary list of packages to fill in the docs (75 packages):
 58. [Sync](https://moox.org/docs/sync) - [READ-ONLY] Sync Data across platforms with Laravel and Filament
 59. [Tag](https://moox.org/docs/tag) - [READ-ONLY] Simple taxonomy
 60. [Taxonomy](https://moox.org/docs/taxonomy) - [READ-ONLY] Dynamic Taxonomies for Laravel and Filament
-61. [Theme Base](https://moox.org/docs/theme-base) - [READ-ONLY] Base Theme for Laravel and Filament
-62. [Theme Moox](https://moox.org/docs/theme-moox) - [READ-ONLY] Default Theme for Laravel and Filament
+61. [Base Theme](https://moox.org/docs/base-theme) - [READ-ONLY] Base Theme for Laravel and Filament
+62. [Featherlight](https://moox.org/docs/featherlight) - [READ-ONLY] The default Theme for Laravel and Filament
 63. [Training](https://moox.org/docs/training) - [READ-ONLY] Training Management for Laravel and Filament
 64. [User](https://moox.org/docs/user) - [READ-ONLY] User Management for Laravel and Filament
 65. [User Device](https://moox.org/docs/user-device) - [READ-ONLY] User Device Management for Laravel and Filament
