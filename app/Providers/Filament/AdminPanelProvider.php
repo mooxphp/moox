@@ -141,12 +141,9 @@ class AdminPanelProvider extends PanelProvider
 
                 // Training plugins
 
-                
-
                 // Builder plugin
                 // \Moox\Builder\ItemPlugin::make(),
                 \Moox\Media\MediaPlugin::make(),
-
 
                 TrainingPlugin::make(),
                 TrainingInvitationPlugin::make(),
