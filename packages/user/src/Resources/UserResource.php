@@ -24,6 +24,7 @@ use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Tabs\TabsInResource;
 use Moox\Media\Forms\Components\MediaPicker;
+use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
 use Moox\Sync\Models\Platform;
 use Moox\User\Models\User;
@@ -241,14 +242,8 @@ class UserResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                SpatieMediaLibraryImageColumn::make('avatar_url')
-                    ->circular(),
-                // ImageColumn::make('avatar_url')
-                //     ->defaultImageUrl(fn ($record): string => 'https://ui-avatars.com/api/?name='.$record->name)
-                //     ->circular()
-                //     ->label(__('core::user.avatar'))
-                //     ->toggleable()
-                //     ->size(50),
+
+                CustomImageColumn::make('avatar_url'),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
                     ->formatStateUsing(fn($state, User $user): string => $user->first_name . ' ' . $user->last_name)

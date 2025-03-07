@@ -51,15 +51,6 @@ use Moox\UserSession\UserSessionPlugin;
 class AdminPanelProvider extends PanelProvider
 {
 
-    public function boot(): void
-    {
-        FilamentAsset::register([
-            Js::make('filepond-js', asset('vendor/livewire-filepond/filepond.js')),
-            Css::make('filepond-css', asset('vendor/livewire-filepond/filepond.css')),
-        ]);
-    }
-
-
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -154,13 +145,10 @@ class AdminPanelProvider extends PanelProvider
                 \Moox\Training\TrainingTypePlugin::make(),
 
                 // Builder plugin
-                \Moox\Builder\ItemPlugin::make(),
+                // \Moox\Builder\ItemPlugin::make(),
                 \Moox\Media\MediaPlugin::make(),
 
-                TrainingPlugin::make(),
-                TrainingInvitationPlugin::make(),
-                TrainingDatePlugin::make(),
-                TrainingTypePlugin::make(),
+
             ]);
     }
 }
