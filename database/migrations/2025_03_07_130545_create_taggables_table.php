@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('taggables', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tag_id')->constrained()->onDelete('cascade'); //????????
+            $table->foreignId('tag_id')->constrained()->onDelete('cascade'); // ????????
             $table->morphs('taggable');
             $table->timestamps();
         });
@@ -23,7 +23,6 @@ return new class extends Migration
      * Reverse the migrations.
      */
     public function down(): void
-
     {
         Schema::dropIfExists('taggables');
     }
