@@ -20,13 +20,17 @@ jobs:
           - audit
           - builder
           - category
+          - connect
           - core
+          - data
           - devlink
           - expiry
           - flags
+          - item
           - jobs
-          - locate
           - login-link
+          - localization
+          - media
           - notifications
           - passkey
           - permission
