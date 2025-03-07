@@ -1,3 +1,0 @@
-# Requirements
-
--   spatie/laravel-activitlog
