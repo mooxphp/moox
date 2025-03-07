@@ -2,7 +2,7 @@
 
 # Moox Media
 
-This is my package media
+This is my package media!
 
 ## Quick Installation
 
