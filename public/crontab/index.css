@@ -1,0 +1,199 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+::-moz-selection {
+  background-color: rgba(255, 255, 128, 0.2);
+}
+::selection {
+  background-color: rgba(255, 255, 128, 0.2);
+}
+html {
+  color: #cccccc;
+  background-color: #1a1a1a;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.3em;
+}
+body {
+  max-width: 1200px;
+  margin: 4.5em auto;
+  padding: 0 1em;
+}
+a,
+a:visited,
+a.active {
+  color: #cccccc;
+}
+.text-highlight {
+  color: #ffff80;
+  font-size: 75%;
+  margin-bottom: 10px;
+  margin-top: 25px;
+}
+.text-highlight a {
+  color: #ffff80;
+}
+table {
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  border-top: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  width: 100%;
+  max-width: 400px;
+}
+table th,
+table td {
+  border-top: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+}
+table th {
+  width: 13em;
+  text-align: right;
+  padding: 0.2em 1em 0.2em 0;
+}
+table td {
+  text-align: left;
+  padding: 0.2em 0 0.2em 1em;
+}
+.blurb {
+  font-size: 75%;
+  margin-top: 10px;
+  color: #fff !important;
+}
+.blurb a {
+  color: #fff;
+}
+#content {
+  min-height: 500px;
+  max-width: 1000px !important;
+  margin: 0 auto;
+}
+div.warning {
+  color: saddlebrown;
+  font-size: 75%;
+  height: 0;
+}
+.text-editor input {
+  font-family: "Courier New", Courier, monospace;
+  text-align: center;
+  font-size: 250%;
+  width: 100%;
+  background-color: #333333;
+  border: 1px solid #cccccc;
+  color: #ffffff;
+  padding-top: 0.075rem;
+}
+.text-editor input.invalid {
+  border: 1px solid darkred;
+}
+.text-editor input.warning {
+  border: 1px solid saddlebrown;
+}
+.text-editor input:focus {
+  outline: none;
+}
+.text-editor input::-ms-clear {
+  width: 0;
+  height: 0;
+}
+.text-editor input::-moz-selection {
+  color: #ffff80;
+  background-color: rgba(255, 255, 128, 0.2);
+}
+.text-editor input::selection {
+  color: #ffff80;
+  background-color: rgba(255, 255, 128, 0.2);
+}
+.clickable {
+  text-decoration: underline;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.part-explanation {
+  font-size: 75%;
+  color: #a8a8a8;
+  height: 24em;
+}
+.part-explanation div {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 1em 0 0;
+}
+.part-explanation .active {
+  color: #ffff80;
+}
+.part-explanation .invalid {
+  background-color: darkred;
+}
+.part-explanation .warning {
+  background-color: saddlebrown;
+}
+.part-explanation .clickable {
+  border-radius: 1em;
+  padding: 0.1em 0.36em;
+}
+.part-explanation .clickable:last-child {
+  margin: 0;
+}
+.human-readable {
+  font-size: 200%;
+  font-family: Georgia, serif;
+  min-height: 2.2em;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+  -ms-flex-line-pack: end;
+  align-content: flex-end;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  margin-bottom: 0.2em;
+  margin-top: 0.9em;
+}
+.human-readable .active {
+  color: #ffff80;
+}
+.next-date {
+  font-size: 75%;
+  margin-left: 0.5em;
+}
+.tips {
+  font-size: 75%;
+  text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  margin-bottom: 3em;
+}
+.tips .title {
+  font-weight: bold;
+}
+.example {
+  text-align: right;
+  font-size: 75%;
+  margin-top: -1em;
+  margin-bottom: 7px;
+}
+@media screen and (max-width: 400px) {
+  .text-editor input {
+    font-size: 200%;
+  }
+  .example {
+    display: none;
+  }
+  .part-explanation .clickable {
+    padding: 0.1em 0.01em;
+    margin: 0 0.2em 0 0;
+  }
+  table {
+    max-width: 360px;
+  }
+  table th {
+    width: 7em;
+  }
+}

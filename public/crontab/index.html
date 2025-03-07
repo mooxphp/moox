@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
+
+  <link href="index.css" rel="stylesheet" type="text/css">
+  <title>Crontab</title>
+</head>
+<body cz-shortcut-listen="true">
+
+<div id="content"><div>
+    <div id="hr" class="human-readable" style="">
+        <i>
+          “<span>At</span> <span class="">02</span>:<span class="">30</span> <span class="">on</span><span></span><span class=""></span> <span class="">Saturday</span><span>.</span>”
+        </i>
+    </div>
+    <div class="next-date">
+        <div>
+          <span class="clickable">next</span> at 2024-02-02 02:30:00
+        </div>
+    </div>
+    <div class="text-editor">
+        <input id="input" type="text" value="30 2 * * 6" class="fi-input block w-full border-none py-1.5 text-base text-gray-950 transition duration-75 placeholder:text-gray-400 focus:ring-0 disabled:text-gray-500 disabled:[-webkit-text-fill-color:theme(colors.gray.500)] disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.400)] sm:text-sm sm:leading-6 dark:text-white dark:placeholder:text-gray-500 dark:disabled:text-gray-400 dark:disabled:[-webkit-text-fill-color:theme(colors.gray.400)] dark:disabled:placeholder:[-webkit-text-fill-color:theme(colors.gray.500)] bg-white/0 ps-3 pe-3">
+    </div>
+    <div class="warning"></div>
+    <div class="part-explanation">
+      <p class="cron-parts">
+        <div>
+          <span class="clickable">minute</span></div><div><span class="clickable">hour</span></div><div><span class="clickable">day</span><br>(month)</div><div><span class="clickable">month</span></div><div><span class="clickable">day</span><br>(week)</div>
+      </p>
+      <table>
+        <tbody>
+          <tr><th>*</th><td>any value</td></tr>
+          <tr><th>,</th><td>value list separator</td></tr>
+          <tr><th>-</th><td>range of values</td></tr>
+          <tr><th>/</th><td>step values</td></tr>
+        </tbody>
+        <tbody style="">
+          <tr><th>@yearly</th><td>(non-standard)</td></tr>
+          <tr><th>@annually</th><td>(non-standard)</td></tr>
+          <tr><th>@monthly</th><td>(non-standard)</td></tr>
+          <tr><th>@weekly</th><td>(non-standard)</td></tr>
+          <tr><th>@daily</th><td>(non-standard)</td></tr>
+          <tr><th>@hourly</th><td>(non-standard)</td></tr>
+          <tr><th>@reboot</th><td>(non-standard)</td></tr>
+        </tbody>
+        <tbody style="display: none">
+          <tr><th>0-59</th><td>allowed values</td></tr>
+        </tbody>
+        <tbody style="display: none">
+          <tr><th>0-23</th><td>allowed values</td></tr>
+        </tbody>
+        <tbody style="display: none">
+          <tr><th>1-31</th><td>allowed values</td></tr>
+        </tbody>
+        <tbody style="display: none">
+          <tr><th>1-12</th><td>allowed values</td></tr>
+          <tr><th>JAN-DEC</th><td>alternative single values</td></tr>
+        </tbody>
+        <tbody style="display: none">
+          <tr><th>0-6</th><td>allowed values</td></tr>
+          <tr><th>SUN-SAT</th><td>alternative single values</td></tr>
+          <tr><th>7</th><td>sunday (non-standard)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div></div>
+
+<script src="index.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', window.main);
+</script>
+
+</body></html>

@@ -19,31 +19,62 @@ jobs:
         package:
           - audit
           - backup-server
-          - builder
+          - build
+          - cart
           - category
+          - components
           - core
+          - customer
           - data
           - devlink
           - devops
+          - draft
           - expiry
+          - file-icons
           - flags
+          - forge
+          - frontend
+          - github
+          - google-icons
+          - impersonate
           - item
           - jobs
-          - login-link
+          - json
+          - laravel-icons
           - localization
+          - login-link
+          - markdown
           - media
+          - module
+          - news
           - notifications
+          - package-registry
+          - packages
+          - packagist
+          - page
           - passkey
           - permission
+          - post
           - press
+          - product
+          - progress
+          - publish
+          - record
           - restore
           - security
+          - seo
           - skeleton
+          - slug
           - tag
+          - taxonomy
+          - theme-base
+          - theme-moox
           - trainings
           - user
           - user-device
           - user-session
+          - website
+          - wishlist
 
     steps:
       - uses: actions/checkout@v4
