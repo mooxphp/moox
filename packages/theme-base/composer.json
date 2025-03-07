@@ -1,0 +1,107 @@
+{
+    "name": "moox/theme-base",
+    "description": "Our Base Theme uses TailwindCSS and AlpineJS. It is a good starting point for your own theme and the fallback for all Moox themes.",
+    "keywords": [
+        "Moox",
+        "Laravel",
+        "Filament",
+        "Moox package",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/docs/theme-base",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\ThemeBase\\": "src",
+            "Moox\\ThemeBase\\Database\\Factories\\": "database/factories"
+        }
+    },
+    "extra": {
+        "moox": {
+            "title": "Moox ThemeBase",
+            "released": false,
+            "stability": "dev",
+            "category": "development",
+            "used_for": [
+                "base theme and fallback for all Moox themes"
+            ],
+            "template_for": [
+                "basic theme using TailwindCSS and AlpineJS"
+            ],
+            "template_replace": {
+                "Moox Developer": "%%Author%%",
+                "dev@moox.org": "%%AuthorEmail%%",
+                "made-with-moox.jpg": "made-with-moox.jpg",
+                "ThemeBase": "%%PackageName%%",
+                "theme-base": "%%PackageSlug%%",
+                "This is my package theme-base": "%%Description%%",
+                "base theme and fallback for all Moox themes": "%%UsedFor%%",
+                "basic theme using TailwindCSS and AlpineJS": "%%TemplateFor%%"
+            },
+            "template_remove": [
+                "build.php"
+            ],
+            "alternate_packages": [
+                "builder"
+            ]
+        },
+        "laravel": {
+            "providers": [
+                "Moox\\ThemeBase\\ThemeBaseServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^9.5",
+        "pestphp/pest": "^3.2",
+        "pestphp/pest-plugin-livewire": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "ryangjchandler/blade-capture-directive": "^1.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\ThemeBase\\Tests\\": "tests",
+            "Moox\\ThemeBase\\Database\\Factories\\": "database/factories",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-theme-base --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "lint": [
+            "@php vendor/bin/phpstan analyse --verbose --ansi"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

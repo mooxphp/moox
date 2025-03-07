@@ -190,11 +190,14 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
+        'skeleton.jpg' => 'made-with-moox.jpg',
         'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
         'Skeleton' => $className,
         'skeleton' => $packageSlug,
-        'This template is used for generating all Moox packages.' => $description,
+        'This template is used for generating Laravel packages, all Moox packages are built with this template.' => $description,
+        'not used as installed package, only used as template for new Moox packages' => 'we do not know yet',
+        'creating simple Laravel packages' => 'we do not know yet',
     ]);
 
     match (true) {

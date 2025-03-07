@@ -3,7 +3,7 @@
 namespace Moox\Devlink\Console\Commands;
 
 use Illuminate\Console\Command;
-use Moox\Devlink\Console\Traits\Art;
+use Moox\Core\Console\Traits\Art;
 use Moox\Devlink\Console\Traits\Check;
 use Moox\Devlink\Console\Traits\Finalize;
 use Moox\Devlink\Console\Traits\Link;

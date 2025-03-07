@@ -1,13 +1,14 @@
 {
     "name": "moox/skeleton",
-    "description": "This template is used for generating all Moox packages.",
+    "description": "This template is used for generating Laravel packages, all Moox packages are built with this template.",
     "keywords": [
+        "Moox",
         "Laravel",
         "Filament",
-        "Filament plugin",
+        "Moox package",
         "Laravel package"
     ],
-    "homepage": "https://moox.org/",
+    "homepage": "https://moox.org/docs/skeleton",
     "license": "MIT",
     "authors": [
         {

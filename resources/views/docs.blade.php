@@ -124,11 +124,11 @@
                 </a>
 
                 <div class="p-10">
-                    <h2 class="text-gray-200 text-2xl font-bold mb-5">Moox Jobs</h2>
-                    <p class="text-gray-300 mb-10">
+                    <h2 class="text-slate-300 text-2xl font-bold mb-5">Moox Jobs</h2>
+                    <p class="text-slate-300 mb-10">
                         Moox Jobs is a job board package for Moox. It allows you to create a job board and manage your jobs.
                     </p>
-                    <p class="text-gray-300 mb-10">
+                    <p class="text-slate-300 mb-10">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -136,18 +136,18 @@
                     </p>
                 <img src="https://github.com/mooxphp/moox/raw/main/art/screenshot/jobs-jobs.jpg" alt="Moox Jobs" class="w-full mb-10">
 
-                <h2 class="text-gray-200 text-2xl font-bold mb-5">Installation</h2>
-                <p class="text-gray-300 mb-10">
+                <h2 class="text-slate-300 text-2xl font-bold mb-5">Installation</h2>
+                <p class="text-slate-300 mb-10">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
 
-                <h2 class="text-gray-200 text-2xl font-bold mb-5">Configuration</h2>
-                <p class="text-gray-300 mb-10">
+                <h2 class="text-slate-300 text-2xl font-bold mb-5">Configuration</h2>
+                <p class="text-slate-300 mb-10">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
 
-                <h2 class="text-gray-200 text-2xl font-bold mb-5">Usage</h2>
-                <p class="text-gray-300 mb-10">
+                <h2 class="text-slate-300 text-2xl font-bold mb-5">Usage</h2>
+                <p class="text-slate-300 mb-10">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
             </div>

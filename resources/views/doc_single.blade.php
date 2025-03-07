@@ -119,9 +119,11 @@
             <div class="bg-slate-950/60 rounded-lg mb-6 border border-pink-500/20 shadow-[0px_-4px_15px_-5px_rgba(139,92,246,0.5),0px_4px_15px_-5px_rgba(236,72,153,0.5)]">
 
                 <div class="flex items-center gap-2 ml-10 mt-5 -mb-3">
-                    <a href="{{ route('docs') }}" class="text-slate-500">Moox Jobs</a>
+                    <a href="{{ route('docs') }}" class="text-slate-500">Docs</a>
                     <span class="material-symbols-rounded text-slate-500">chevron_right</span>
-                    <a href="{{ route('docsingle', ['package' => 'job-monitor']) }}" class="text-slate-500">Job Monitor</a>
+                    <a href="{{ route('docs') }}" class="text-slate-500">System</a>
+                    <span class="material-symbols-rounded text-slate-500">chevron_right</span>
+                    <a href="{{ route('docs') }}" class="text-slate-500">Moox Jobs</a>
                 </div>
                 <div class="p-10">
 

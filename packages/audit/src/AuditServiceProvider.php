@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Moox\Audit;
 
 use Moox\Audit\Commands\InstallCommand;
+use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class AuditServiceProvider extends PackageServiceProvider
+class AuditServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('audit')
@@ -18,5 +18,12 @@ class AuditServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigrations(['create_activity_log_table'])
             ->hasCommand(InstallCommand::class);
+
+        $this->getMooxPackage()
+            ->mooxPlugins([
+                'audit',
+            ])
+            ->mooxFirstPlugin(true);
+        // ->mooxRequiredSeeders(['AuditSeeder']);
     }
 }

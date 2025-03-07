@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Moox\Core;
 
 use Illuminate\Support\Facades\Gate;
-use Moox\Core\Commands\InstallCommand;
+use Moox\Core\Console\Commands\MooxInstaller;
+use Moox\Core\Console\Commands\PackageServiceCommand;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
@@ -41,7 +42,8 @@ class CoreServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasRoutes(['api', 'web'])
-            ->hasCommand(InstallCommand::class);
+            ->hasCommand(MooxInstaller::class)
+            ->hasCommand(PackageServiceCommand::class);
     }
 
     protected function getPackageNames(): array
@@ -88,5 +90,33 @@ class CoreServiceProvider extends PackageServiceProvider
         }
 
         Gate::guessPolicyNamesUsing(fn ($modelClass): string => DefaultPolicy::class);
+    }
+
+    public function hasCommand(string $commandClassName): Package
+    {
+        $this->registerCommand($commandClassName);
+
+        return $this->package;
+    }
+
+    public function hasCommands(array $commandClassNames): Package
+    {
+        foreach ($commandClassNames as $commandClassName) {
+            $this->registerCommand($commandClassName);
+        }
+
+        return $this->package;
+    }
+
+    protected function registerCommand(string $commandClassName): void
+    {
+        $this->app->bind($commandClassName, function () use ($commandClassName) {
+            $command = new $commandClassName;
+            $command->setVerbosity(env('VERBOSITY_LEVEL', 'v'));
+
+            return $command;
+        });
+
+        $this->commands([$commandClassName]);
     }
 }
