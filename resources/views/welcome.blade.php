@@ -139,7 +139,7 @@ function copyToClipboard(elementId) {
             </div>
             <div class="bg-slate-950/60 rounded-lg p-6 border border-pink-500/20 shadow-[0px_-4px_15px_-5px_rgba(139,92,246,0.5),0px_4px_15px_-5px_rgba(236,72,153,0.5)]">
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-gray-200 mb-3">28 323</div>
+                    <div class="text-3xl font-bold text-gray-200 mb-3">102k</div>
                     <div class="text-gray-400 text-sm">
                         <div class="text-xl font-bold gradient-text-default">downloads</div>
                         <div>and counting</div>
@@ -148,7 +148,7 @@ function copyToClipboard(elementId) {
             </div>
             <div class="bg-slate-950/60 rounded-lg p-6 border border-pink-500/20 shadow-[0px_-4px_15px_-5px_rgba(139,92,246,0.5),0px_4px_15px_-5px_rgba(236,72,153,0.5)]">
                 <div class="text-center">
-                    <div class="text-3xl font-bold text-gray-200 mb-3">198</div>
+                    <div class="text-3xl font-bold text-gray-200 mb-3">398</div>
                     <div class="text-gray-400 text-sm">
                         <div class="text-xl mb-1 font-bold gradient-text-default">stargazers</div>
                         <div>on GitHub</div>

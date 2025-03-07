@@ -4,7 +4,8 @@
 
 @layer base {
     body {
-        font-family: "Noto Sans", sans-serif;
+        font-family: "Exo 2", sans-serif;
+        font-size: 1.125rem;
     }
 }
 
@@ -22,10 +23,6 @@
 
 [x-cloak] {
     display: none !important;
-}
-
-h1 {
-    @apply text-3xl;
 }
 
 .gradient-text-vibrant {
