@@ -37,7 +37,11 @@ class BuildCommand extends Command
 
     protected $emojiError = '❌';
 
+    protected $emojiNoSee = '🙈';
+
     protected $emojiWarning = '⚠️';
+
+    protected $emojiLink = '🔗';
 
     protected $emoji;
 
@@ -75,7 +79,12 @@ class BuildCommand extends Command
     {
         $this->art();
         $this->info('  Welcome to the Moox Build Command!  '.$this->emojiRocket);
-        $this->info(' ');
+        $this->newLine();
+        $this->info('  This command helps you build Moox Packages and Entities.');
+        $this->newLine();
+        $this->info('  '.$this->emojiLink.' <fg=blue;href=https://moox.org/docs/build>https://moox.dev/docs/build</>');
+        $this->newLine();
+        $this->newLine();
         $this->askForWhatToBuild();
         $this->askForPackageType();
         if ($this->type === 'Entity') {
@@ -98,7 +107,6 @@ class BuildCommand extends Command
                 $this->buildPackageWithEntity();
             }
         }
-        note('  '.$this->emojiRocket.'  Build completed successfully! '.$this->emojiRocket);
     }
 
     protected function askForWhatToBuild(): void
@@ -220,7 +228,8 @@ class BuildCommand extends Command
 
         $this->website = $selectedTemplate['website'];
 
-        info('  See '.$this->website.' for docs.');
+        info('  '.$this->emojiLink.' <fg=blue;href='.$this->website.'>'.$this->website.'</>');
+        $this->newLine();
     }
 
     protected function askForAuthorName(): void
@@ -234,7 +243,7 @@ class BuildCommand extends Command
     {
         $this->authorEmail = text('What is your email?', default: config('build.default_author.email'));
 
-        info('  Great! '.$this->authorEmail.', now I can spam you.');
+        info('  Great! '.$this->authorEmail.', now I can spam you. '.$this->emojiCool);
     }
 
     protected function askForNamespace(): void
@@ -252,7 +261,7 @@ class BuildCommand extends Command
         $this->packageName = text('What is the name of the package?', placeholder: 'Awesome '.$this->subject);
 
         if (empty($this->packageName)) {
-            error('  Please provide a valid package name.');
+            error('  Please provide a valid package name. '.$this->emojiNoSee);
             $this->askForPackageName();
         }
     }
@@ -264,7 +273,7 @@ class BuildCommand extends Command
         $this->packageDescription = text('What is the description of the package?', placeholder: $this->packageDescription);
 
         if (empty($this->packageDescription)) {
-            error('  Please provide a valid package description.');
+            error('  Please provide a valid package description. '.$this->emojiNoSee);
             $this->askForPackageDescription();
         }
     }
@@ -278,17 +287,13 @@ class BuildCommand extends Command
         }
 
         if (empty($this->entityName)) {
-            error('  Please provide a valid entity name.');
+            error('  Please provide a valid entity name. '.$this->emojiNoSee);
             $this->askForEntityName();
         }
     }
 
     protected function buildPackage(): void
     {
-        info('  Whew! A new package is on the way! '.$this->emojiRocket);
-        note('  '.$this->namespace.'\\'.$this->getNamespaceFromPackageName($this->packageName));
-        info('  composer require '.$this->packagist.'/'.$this->getComposerNameFromPackageName($this->packageName).' will be the way.');
-
         $templatePath = $this->path;
 
         if (! $templatePath || ! is_dir(base_path($templatePath))) {
@@ -300,27 +305,38 @@ class BuildCommand extends Command
         $targetPath = base_path('packages/'.$packageSlug);
 
         if (is_dir($targetPath)) {
-            error('Package already exists: '.$packageSlug);
-            exit;
+            error('  Package already exists: '.$packageSlug);
+
+            $overwrite = select('What would you like to do?', [
+                'delete' => 'Delete the existing package and continue',
+                'exit' => 'Exit without making changes',
+            ]);
+
+            if ($overwrite === 'delete') {
+                $this->deleteDirectory($targetPath);
+            } else {
+                exit;
+            }
         }
 
         if (! $this->copyDirectory(base_path($templatePath), $targetPath)) {
-            error('Failed to copy package template');
+            error('  Failed to copy package template');
             exit;
         }
 
-        info('  Package files copied successfully to: '.$targetPath);
-
         // Get template configuration
         $templates = config('build.package_templates');
-        $templateConfig = $templates[$this->name] ?? null;
+
+        // name is not the key, it's the value
+        $templateConfig = collect($templates)->firstWhere('name', $this->name);
 
         if (! $templateConfig) {
-            error('Template configuration not found');
+            error('  Template configuration not found');
             exit;
         }
 
         // Process file renaming
+        $processedFiles = [];
         if (isset($templateConfig['rename_files']) && is_array($templateConfig['rename_files'])) {
             foreach ($templateConfig['rename_files'] as $oldPath => $newPath) {
                 $oldPath = $this->replacePlaceholders($oldPath, $packageSlug);
@@ -336,22 +352,61 @@ class BuildCommand extends Command
                     }
 
                     rename($oldFullPath, $newFullPath);
-                    info('  Renamed: '.$oldPath.' to '.$newPath);
+                    $processedFiles[] = $newPath;
                 }
             }
         }
 
         // Process string replacements
         if (isset($templateConfig['replace_strings']) && is_array($templateConfig['replace_strings'])) {
-            $this->processStringReplacements($targetPath, $templateConfig['replace_strings'], $packageSlug);
+            $replacedFiles = $this->processStringReplacements($targetPath, $templateConfig['replace_strings'], $packageSlug);
+            $processedFiles = array_merge($processedFiles, $replacedFiles);
         }
 
         // Process section replacements
         if (isset($templateConfig['replace_sections']) && is_array($templateConfig['replace_sections'])) {
-            $this->processSectionReplacements($targetPath, $templateConfig['replace_sections'], $packageSlug);
+            $replacedSections = $this->processSectionReplacements($targetPath, $templateConfig['replace_sections'], $packageSlug);
+            $processedFiles = array_merge($processedFiles, $replacedSections);
         }
 
-        info('  Package build completed successfully!');
+        // Format and display the output
+        $this->displayBuildSummary($packageSlug, $targetPath, $processedFiles);
+    }
+
+    protected function displayBuildSummary(string $packageSlug, string $targetPath, array $processedFiles): void
+    {
+        $this->newLine();
+        note('  '.$this->emojiStar.'  Whew! A new package is on the way! '.$this->emojiParty.'  '.$this->emojiParty.'  '.$this->emojiParty);
+        $this->newLine();
+
+        $packageNamespace = $this->namespace.'\\'.$this->getNamespaceFromPackageName($this->packageName);
+        $composerRequire = $this->packagist.'/'.$packageSlug;
+
+        $this->line('       <fg=white>Package Name:      </><fg=green>'.$this->packageName.'</>');
+        $this->line('       <fg=white>Namespace:         </><fg=green>'.$packageNamespace.'</>');
+        $this->line('       <fg=white>Author:            </><fg=green>'.$this->authorName.'</>');
+        $this->line('       <fg=white>E-Mail:            </><fg=green>'.$this->authorEmail.'</>');
+        $this->line('       <fg=white>Composer:          </><fg=green>composer require '.$composerRequire.'</>');
+        $this->newLine();
+
+        $relativePath = str_replace(base_path().'/', '', $targetPath);
+        $this->line('       <fg=white>Package Path:      </><fg=blue;href=file://'.$targetPath.'>'.$relativePath.'</>');
+        $this->line('       <fg=white>Package Files:</>');
+
+        // Sort and display processed files - remove duplicates
+        $uniqueFiles = array_unique($processedFiles);
+        sort($uniqueFiles);
+        foreach ($uniqueFiles as $file) {
+            $filePath = $targetPath.'/'.$file;
+            $relativeFilePath = $relativePath.'/'.$file;
+            $this->line('       <fg=blue;href=file://'.$filePath.'>'.$relativeFilePath.'</>');
+        }
+
+        $this->newLine();
+        $this->newLine();
+        note('  '.$this->emojiRocket.'  Moox Build completed successfully! '.$this->emojiRocket.'  '.$this->emojiRocket.'  '.$this->emojiRocket);
+        $this->newLine();
+        $this->newLine();
     }
 
     protected function copyDirectory(string $source, string $destination): bool
@@ -382,7 +437,7 @@ class BuildCommand extends Command
 
             return true;
         } catch (\Exception $e) {
-            error('Error copying directory: '.$e->getMessage());
+            error('  Error copying directory: '.$e->getMessage().' '.$this->emojiNoSee);
 
             return false;
         }
@@ -411,7 +466,7 @@ class BuildCommand extends Command
 
     protected function buildEntity(): void
     {
-        error('  Building entity... '.$this->emojiError);
+        error(message: '  '.$this->emojiError.'  Building entity...');
 
         info('  Whew! A new entity has landed! '.$this->emojiParty);
         note('  '.$this->namespace.'\\'.$this->getNamespaceFromPackageName($this->packageName).'\\'.$this->entityName);
@@ -422,7 +477,7 @@ class BuildCommand extends Command
 
     protected function buildPackageWithEntity(): void
     {
-        error('  Building package with entity... '.$this->emojiError);
+        error(message: '  '.$this->emojiError.'  Building package with entity...');
 
         $this->buildPackage();
         $this->buildEntity();
@@ -442,8 +497,9 @@ class BuildCommand extends Command
         return str_replace(array_keys($replacements), array_values($replacements), $string);
     }
 
-    protected function processStringReplacements(string $directory, array $replacements, string $packageSlug): void
+    protected function processStringReplacements(string $directory, array $replacements, string $packageSlug): array
     {
+        $processedFiles = [];
         $files = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
@@ -460,14 +516,19 @@ class BuildCommand extends Command
 
                 if ($content !== $originalContent) {
                     file_put_contents($file->getPathname(), $content);
-                    info('  Updated: '.$file->getPathname());
+                    $relativePath = str_replace($directory.'/', '', $file->getPathname());
+                    $processedFiles[] = $relativePath;
                 }
             }
         }
+
+        return $processedFiles;
     }
 
-    protected function processSectionReplacements(string $directory, array $replacements, string $packageSlug): void
+    protected function processSectionReplacements(string $directory, array $replacements, string $packageSlug): array
     {
+        $processedFiles = [];
+
         foreach ($replacements as $filePath => $patterns) {
             $fullPath = $directory.'/'.$filePath;
 
@@ -482,9 +543,34 @@ class BuildCommand extends Command
 
                 if ($content !== $originalContent) {
                     file_put_contents($fullPath, $content);
-                    info('  Updated sections in: '.$filePath);
+                    $processedFiles[] = $filePath;
                 }
             }
         }
+
+        return $processedFiles;
+    }
+
+    protected function deleteDirectory(string $dir): bool
+    {
+        if (! file_exists($dir)) {
+            return true;
+        }
+
+        if (! is_dir($dir)) {
+            return unlink($dir);
+        }
+
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+
+            if (! $this->deleteDirectory($dir.DIRECTORY_SEPARATOR.$item)) {
+                return false;
+            }
+        }
+
+        return rmdir($dir);
     }
 }
