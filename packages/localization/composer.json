@@ -1,0 +1,81 @@
+{
+    "name": "moox/localization",
+    "description": "This is my package localization",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "*",
+        "moox/data": "*",
+        "astrotomic/laravel-translatable": "^11.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Localization\\": "src",
+            "Moox\\Localization\\Database\\Factories\\": "database/factories",
+            "Moox\\Localization\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Localization\\LocalizationServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^9.5",
+        "pestphp/pest": "^3.2",
+        "pestphp/pest-plugin-livewire": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "ryangjchandler/blade-capture-directive": "^1.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Moox\\Localization\\Tests\\": "tests",
+            "Moox\\Localization\\Database\\Factories\\": "database/factories",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-localization --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ],
+        "lint": [
+            "@php vendor/bin/phpstan analyse --verbose --ansi"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
