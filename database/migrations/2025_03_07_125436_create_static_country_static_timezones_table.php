@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('taggables', function (Blueprint $table) {
+        Schema::create('static_countries_static_timezones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tag_id')->constrained()->onDelete('cascade'); // ????????
-            $table->morphs('taggable');
+            $table->foreignId('country_id')->constrained('static_countries')->onDelete('cascade');
+            $table->foreignId('timezone_id')->constrained('static_timezones')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('taggables');
+        Schema::dropIfExists('static_countries_static_timezones');
     }
 };

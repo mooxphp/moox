@@ -29,7 +29,6 @@
         "moox/flags": "*",
         "moox/frontend": "*",
         "moox/jobs": "*",
-        "moox/locate": "*",
         "moox/login-link": "*",
         "moox/notifications": "*",
         "moox/page": "*",
@@ -45,11 +44,11 @@
         "moox/user": "*",
         "moox/user-device": "*",
         "moox/user-session": "*",
-        "moox/build": "*",
         "resend/resend-laravel": "^1.0@dev",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
+        "moox/build": "*",
         "moox/devlink": "*",
         "fakerphp/faker": "^1.23.1",
         "larastan/larastan": "^3.0",
