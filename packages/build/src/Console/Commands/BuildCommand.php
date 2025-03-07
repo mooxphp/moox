@@ -31,15 +31,7 @@ class BuildCommand extends Command
 
     protected $emojiRainbow = '🌈';
 
-    protected $emojiCheck = '✅';
-
-    protected $emojiIdea = '💡';
-
-    protected $emojiError = '❌';
-
     protected $emojiNoSee = '🙈';
-
-    protected $emojiWarning = '⚠️';
 
     protected $emojiLink = '🔗';
 
@@ -82,7 +74,7 @@ class BuildCommand extends Command
         $this->newLine();
         $this->info('  This command helps you build Moox Packages and Entities.');
         $this->newLine();
-        $this->info('  '.$this->emojiLink.' <fg=blue;href=https://moox.org/docs/build>https://moox.dev/docs/build</>');
+        $this->info('  '.$this->emojiLink.' <fg=blue;href=https://moox.org/docs/build>https://moox.org/docs/build</>');
         $this->newLine();
         $this->newLine();
         $this->askForWhatToBuild();
@@ -236,6 +228,11 @@ class BuildCommand extends Command
     {
         $this->authorName = text('What is your name?', default: config('build.default_author.name'));
 
+        if (empty($this->authorName)) {
+            error('  Please provide a valid author name. '.$this->emojiNoSee);
+            $this->askForAuthorName();
+        }
+
         info('  Hello '.$this->authorName.'! Nice to meet you. '.$this->emojiSmile);
     }
 
@@ -243,17 +240,32 @@ class BuildCommand extends Command
     {
         $this->authorEmail = text('What is your email?', default: config('build.default_author.email'));
 
+        if (empty($this->authorEmail)) {
+            error('  Please provide a valid email. '.$this->emojiNoSee);
+            $this->askForAuthorEmail();
+        }
+
         info('  Great! '.$this->authorEmail.', now I can spam you. '.$this->emojiCool);
     }
 
     protected function askForNamespace(): void
     {
         $this->namespace = text('What is the namespace of the package?', default: config('build.default_namespace'));
+
+        if (empty($this->namespace)) {
+            error('  Please provide a valid namespace. '.$this->emojiNoSee);
+            $this->askForNamespace();
+        }
     }
 
     protected function askForPackagist(): void
     {
         $this->packagist = text('What is the packagist name of the package?', default: config('build.default_packagist'));
+
+        if (empty($this->packagist)) {
+            error('  Please provide a valid packagist name. '.$this->emojiNoSee);
+            $this->askForPackagist();
+        }
     }
 
     protected function askForPackageName(): void
@@ -270,7 +282,7 @@ class BuildCommand extends Command
     {
         $this->packageDescription = $this->packageName.' is a Moox '.$this->subject.' '.$this->sentence;
 
-        $this->packageDescription = text('What is the description of the package?', placeholder: $this->packageDescription);
+        $this->packageDescription = text('What is the description of the package?', default: $this->packageDescription);
 
         if (empty($this->packageDescription)) {
             error('  Please provide a valid package description. '.$this->emojiNoSee);
@@ -466,18 +478,18 @@ class BuildCommand extends Command
 
     protected function buildEntity(): void
     {
-        error(message: '  '.$this->emojiError.'  Building entity...');
+        error(message: '  '.$this->emojiNoSee.'  Building entity...');
 
         info('  Whew! A new entity has landed! '.$this->emojiParty);
         note('  '.$this->namespace.'\\'.$this->getNamespaceFromPackageName($this->packageName).'\\'.$this->entityName);
 
-        // TODO: Build entity, means copy the defined entity files and do the replacements
+        // TODO: Build entity, means copy the defined entity files into the given package and do the replacements
         // TODO: Show built files so that the user can review them
     }
 
     protected function buildPackageWithEntity(): void
     {
-        error(message: '  '.$this->emojiError.'  Building package with entity...');
+        error(message: '  '.$this->emojiNoSee.'  Building package with entity...');
 
         $this->buildPackage();
         $this->buildEntity();
