@@ -37,8 +37,4 @@ return [
     'backup-created-at' => 'Backup From',
     'message' => 'Message',
 
-
-
-
-
 ];

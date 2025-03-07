@@ -3,19 +3,18 @@
 namespace Moox\Restore\Jobs;
 
 use Exception;
-
-use Illuminate\Support\Facades\File;
+use Illuminate\Bus\Batchable;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Bus\Queueable;
-use Moox\Jobs\Traits\JobProgress;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Bus\Batchable;
+use Illuminate\Support\Facades\File;
+use Moox\Jobs\Traits\JobProgress;
 
 class CheckBackupQualityJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels, Batchable;
+    use Batchable, Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
 
     protected string $backupPath;
 
@@ -26,11 +25,11 @@ class CheckBackupQualityJob implements ShouldQueue
 
     public function handle()
     {
-        $dumpFilePath = $this->backupPath . 'dump.sql';
+        $dumpFilePath = $this->backupPath.'dump.sql';
         $dumpFileContent = File::get($dumpFilePath);
 
         if (strpos($dumpFileContent, '--dump completed') === false) {
-            throw new Exception("Backup is not completed or the dump file is corrupted.");
+            throw new Exception('Backup is not completed or the dump file is corrupted.');
         }
     }
 }

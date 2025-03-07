@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Models;
 
-use Illuminate\Support\Facades\Crypt;
-use Spatie\BackupServer\Models\Source;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 use Moox\Restore\Database\Factories\RestoreDestinationFactory;
+use Spatie\BackupServer\Models\Source;
 
 class RestoreDestination extends Model
 {
@@ -20,7 +20,7 @@ class RestoreDestination extends Model
     protected $fillable = [
         'host',
         'source_id',
-        'env_data'
+        'env_data',
     ];
 
     protected $casts = [

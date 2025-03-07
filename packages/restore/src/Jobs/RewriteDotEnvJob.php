@@ -5,22 +5,19 @@ namespace Moox\Restore\Jobs;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Moox\Jobs\Traits\JobProgress;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Queue\SerializesModels;
-use Moox\Restore\Models\RestoreBackup;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use Moox\Jobs\Traits\JobProgress;
 use Moox\Restore\Events\RestoreFailedEvent;
-use Moox\Restore\Events\RestoreStartedEvent;
+use Moox\Restore\Models\RestoreBackup;
 
 class RewriteDotEnvJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels, Batchable;
-
+    use Batchable, Dispatchable, InteractsWithQueue, JobProgress, Queueable, SerializesModels;
 
     public $tries;
 
@@ -32,7 +29,6 @@ class RewriteDotEnvJob implements ShouldQueue
 
     protected $restoreBackup;
 
-
     public function __construct(int $restoreBackupId)
     {
         $this->tries = 3;
@@ -42,7 +38,6 @@ class RewriteDotEnvJob implements ShouldQueue
 
         $this->restoreBackup = RestoreBackup::find($restoreBackupId);
     }
-
 
     /**
      * Execute the job.
@@ -54,37 +49,35 @@ class RewriteDotEnvJob implements ShouldQueue
         try {
             $restoreDestination = $this->restoreBackup->restoreDestination;
             $data = $this->restoreBackup->restoreDestination->env_data;
-            $envPath = str_replace(env('BACKUP_HOST'), $restoreDestination->host, base_path()) . '/.env';
+            $envPath = str_replace(env('BACKUP_HOST'), $restoreDestination->host, base_path()).'/.env';
 
             $contents = File::get($envPath);
 
-            if (!$contents) {
-                RestoreFailedEvent::dispatch($this->restoreBackup->id, new Exception("File .env not found!"));
-                throw new Exception("File .env not found!");
+            if (! $contents) {
+                RestoreFailedEvent::dispatch($this->restoreBackup->id, new Exception('File .env not found!'));
+                throw new Exception('File .env not found!');
             }
             $lines = explode("\n", $contents);
 
             foreach ($lines as &$line) {
-                if (empty($line) || str_starts_with($line, "#")) {
+                if (empty($line) || str_starts_with($line, '#')) {
                     continue;
                 }
 
-
-                $parts = explode("=", $line, 2);
+                $parts = explode('=', $line, 2);
                 $key = $parts[0];
 
                 if (array_key_exists($key, $data)) {
-
-                    $line = $key . "=" . $data[$key];
+                    $line = $key.'='.$data[$key];
                     unset($data[$key]);
                 }
             }
 
             // Append any new keys that were not present in the original file
             foreach ($data as $key => $value) {
-                $lines[] = $key . "=" . $value;
+                $lines[] = $key.'='.$value;
                 if (config('restore.debug_mode')) {
-                    Log::info('added .env key: ' . $key . "=" . $value);
+                    Log::info('added .env key: '.$key.'='.$value);
                 }
             }
 
@@ -92,7 +85,6 @@ class RewriteDotEnvJob implements ShouldQueue
 
             File::put($envPath, $updatedContents);
         } catch (\Exception $e) {
-
             RestoreFailedEvent::dispatch($this->restoreBackup->id, $e);
             throw new Exception($e->getMessage());
         }

@@ -24,13 +24,13 @@ it('can list RestorDestinations', function () {
         ->assertCanSeeTableRecords($restore_destination);
 });
 
-//it('can edit an item', function () {
+// it('can edit an item', function () {
 //    $item = RestorDestination::factory()->create();
 //
 //    livewire(ListRestorDestinations::class)
 //       ->call('edit', $item->id)
 //        ->assertRedirectTo(RestorDestinationResource::getUrl('edit', ['record' => $item->id]));
-//});
+// });
 
 /*
 it('can render all tabs', function () {

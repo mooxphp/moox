@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Moox\Restore\Resources;
 
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Moox\Restore\Models\RestoreBackup;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Support\Facades\Artisan;
 use Filament\Support\Enums\IconPosition;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Artisan;
+use Moox\Restore\Models\RestoreBackup;
 use Moox\Restore\Resources\RestoreBackupResource\Pages;
 
-//use Moox\Core\Forms\Components\TitleWithSlugInput;
+// use Moox\Core\Forms\Components\TitleWithSlugInput;
 
 class RestoreBackupResource extends Resource
 {
@@ -57,8 +57,8 @@ class RestoreBackupResource extends Resource
                     ->limit(50)
                     ->badge()
                     ->sortable()
-                    ->formatStateUsing(fn(string $state): string => $state)
-                    ->color(fn(string $state): string => match ($state) {
+                    ->formatStateUsing(fn (string $state): string => $state)
+                    ->color(fn (string $state): string => match ($state) {
                         'completed' => 'success',
                         'failed' => 'danger',
                         'in progress' => 'warning',
@@ -83,6 +83,7 @@ class RestoreBackupResource extends Resource
                     ->toggleable()
                     ->url(function ($record) {
                         $host = $record->restoreDestination->host;
+
                         return "https://$host";
                     })
                     ->openUrlInNewTab()
@@ -101,7 +102,7 @@ class RestoreBackupResource extends Resource
                     ->requiresConfirmation()
                     ->action(function (RestoreBackup $record): void {
                         Artisan::call('mooxrestore:restore', [
-                            'restoreBackup' => $record->id
+                            'restoreBackup' => $record->id,
                         ]);
                     }),
             ])
@@ -118,11 +119,10 @@ class RestoreBackupResource extends Resource
                 }),
             ])
             ->filters([
-                /*SelectFilter::make('type')
+            /*SelectFilter::make('type')
                     ->options(static::getModel()::getTypeOptions())
                     ->label(__('core::core.type')),*/])
-            ->defaultSort('created_at', 'desc')
-        ;
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
@@ -142,7 +142,7 @@ class RestoreBackupResource extends Resource
     public static function getWidgets(): array
     {
         return [
-            //RestoreBackupWidgets::class,
+            // RestoreBackupWidgets::class,
         ];
     }
 
@@ -170,8 +170,6 @@ class RestoreBackupResource extends Resource
     {
         return true;
     }
-
-
 
     public static function getNavigationGroup(): ?string
     {

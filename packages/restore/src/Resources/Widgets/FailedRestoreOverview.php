@@ -9,12 +9,12 @@ use Moox\Restore\Models\RestoreBackup;
 class FailedRestoreOverview extends BaseWidget
 {
     protected static ?string $heading = 'Failed Restores';
+
     protected int|string|array $columnSpan = [
         'sm' => 3,
         'md' => 6,
         'xl' => 12,
     ];
-
 
     public function table(Table $table): Table
     {
@@ -23,7 +23,7 @@ class FailedRestoreOverview extends BaseWidget
             ->columns([
                 \Filament\Tables\Columns\IconColumn::make('status')
                     ->label(__('restore::translations.status'))
-                    ->icon(fn(string $state): string => match ($state) {
+                    ->icon(fn (string $state): string => match ($state) {
                         'heroicon-o-question-mark-circle',
                         'failed' => 'heroicon-o-x-circle',
                     })

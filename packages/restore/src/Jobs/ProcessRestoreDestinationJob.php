@@ -2,20 +2,19 @@
 
 namespace Moox\Restore\Jobs;
 
-
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Moox\Restore\Models\RestoreBackup;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Artisan;
+use Moox\Restore\Models\RestoreBackup;
 use Moox\Restore\Models\RestoreDestination;
 
 class ProcessRestoreDestinationJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $destination;
 
@@ -35,7 +34,7 @@ class ProcessRestoreDestinationJob implements ShouldQueue
         $latestBackup = $this->destination->source->backups()->orderBy('completed_at', 'desc')->first();
 
         if ($latestBackup) {
-            $newRestoreBackup = new RestoreBackup();
+            $newRestoreBackup = new RestoreBackup;
             $newRestoreBackup->backup_id = $latestBackup->id;
             $newRestoreBackup->restore_destination_id = $this->destination->id;
             $newRestoreBackup->save();

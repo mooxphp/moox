@@ -2,9 +2,9 @@
 
 namespace Moox\Restore\Resources\RestoreDestinationResource\Pages;
 
-use Moox\Restore\Resources\RestoreDestinationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Moox\Restore\Resources\RestoreDestinationResource;
 
 class EditRestoreDestination extends EditRecord
 {

@@ -1,6 +1,5 @@
 <?php
 
-
 /*
 |--------------------------------------------------------------------------
 | Moox Configuration
@@ -54,7 +53,7 @@ return [
             */
 
             'tabs' => [
-                /*'all' => [
+            /*'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
                     'query' => [
@@ -92,7 +91,7 @@ return [
             */
 
             'tabs' => [
-                /*'all' => [
+            /*'all' => [
                     'label' => 'trans//core::core.all',
                     'icon' => 'gmdi-filter-list',
                     'query' => [
@@ -144,7 +143,7 @@ return [
     */
 
     'types' => [
-        /*'post' => 'Post',
+    /*'post' => 'Post',
         'page' => 'Page',*/],
 
     /*
@@ -158,7 +157,7 @@ return [
     |
     */
 
-    //'author_model' => \App\Models\User::class,
+    // 'author_model' => \App\Models\User::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -169,9 +168,8 @@ return [
     |
     */
 
-    //'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
-    //'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
-
+    // 'allow_slug_change_after_saved' => env('ALLOW_SLUG_CHANGE_AFTER_SAVED', true),
+    // 'allow_slug_change_after_publish' => env('ALLOW_SLUG_CHANGE_AFTER_PUBLISH', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -188,7 +186,6 @@ return [
     'old_domain' => 'test.com',
     'new_domain' => 'test.eu',
 
-
     /*
     |--------------------------------------------------------------------------
     | Debug mode
@@ -198,8 +195,6 @@ return [
     */
 
     'debug_mode' => false,
-
-
 
     /*
     |--------------------------------------------------------------------------
@@ -213,7 +208,6 @@ return [
     */
 
     'queue_connection' => env('QUEUE_CONNECTION', 'redis'),
-    'queue' =>  'backup-restore',
-
+    'queue' => 'backup-restore',
 
 ];

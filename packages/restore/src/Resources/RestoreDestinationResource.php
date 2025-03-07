@@ -2,23 +2,17 @@
 
 namespace Moox\Restore\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Select;
-use Illuminate\Support\Facades\Crypt;
-use Spatie\BackupServer\Models\Source;
-use Filament\Forms\Components\KeyValue;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
 use Filament\Support\Enums\IconPosition;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Moox\Restore\Models\RestoreDestination;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Moox\Restore\Resources\RestoreDestinationResource\Pages;
+use Spatie\BackupServer\Models\Source;
 
 class RestoreDestinationResource extends Resource
 {
@@ -133,6 +127,7 @@ class RestoreDestinationResource extends Resource
                     ->toggleable()
                     ->url(function ($record) {
                         $host = $record->host;
+
                         return "https://$host";
                     })
                     ->openUrlInNewTab()
@@ -175,6 +170,7 @@ class RestoreDestinationResource extends Resource
             'edit' => Pages\EditRestoreDestination::route('/{record}/edit'),
         ];
     }
+
     public static function getModelLabel(): string
     {
         return config('restore.resources.destination.single');

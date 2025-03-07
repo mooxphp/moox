@@ -6,19 +6,18 @@ namespace Moox\Restore;
 
 use Illuminate\Support\Facades\Event;
 use Moox\Restore\Commands\DispatchRestoreCommand;
-use Spatie\LaravelPackageTools\Package;
 use Moox\Restore\Commands\InstallCommand;
 use Moox\Restore\Commands\RestoreCommand;
 use Moox\Restore\Commands\ServerSummaryCommand;
+use Moox\Restore\Events\RestoreCompletedEvent;
 use Moox\Restore\Events\RestoreFailedEvent;
 use Moox\Restore\Events\RestoreStartedEvent;
-use Moox\Restore\Events\RestoreCompletedEvent;
 use Moox\Restore\Listeners\RestoreBackupListener;
+use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class RestoreServiceProvider extends PackageServiceProvider
 {
-
     public function configurePackage(Package $package): void
     {
         $package

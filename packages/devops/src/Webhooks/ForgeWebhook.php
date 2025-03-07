@@ -54,7 +54,6 @@ class ForgeWebhook extends Controller
                 'lock_deployments' => false,
                 'last_deployment' => now(),
             ]);
-
         } else {
             logger()->error('Failed to update project: Site ID not found', ['site_id' => $data['site']['id']]);
 

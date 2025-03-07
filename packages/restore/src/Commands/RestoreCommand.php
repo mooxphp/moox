@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Commands;
 
-use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
-use Moox\Restore\Models\RestoreBackup;
-use Moox\Restore\Jobs\RewriteDotEnvJob;
-use Moox\Restore\Jobs\ImportDatabaseJob;
-use Moox\Restore\Jobs\ReplaceDomainInSqlFileJob;
 use Moox\Restore\Jobs\DeleteFilesOnDestinationJob;
+use Moox\Restore\Jobs\ImportDatabaseJob;
 use Moox\Restore\Jobs\MoveFilesToRestoreDestinationJob;
+use Moox\Restore\Jobs\ReplaceDomainInSqlFileJob;
+use Moox\Restore\Jobs\RewriteDotEnvJob;
+use Moox\Restore\Models\RestoreBackup;
 
 class RestoreCommand extends Command
 {
@@ -37,7 +36,7 @@ class RestoreCommand extends Command
     public function handle()
     {
         $restoreBackup = RestoreBackup::findOrFail($this->argument('restoreBackup'));
-        $sqlFilePath = str_replace(config('restore.backup_host'), $restoreBackup->restoreDestination->host, base_path()) . config('sql_file_name');
+        $sqlFilePath = str_replace(config('restore.backup_host'), $restoreBackup->restoreDestination->host, base_path()).config('sql_file_name');
         if (config('restore.debug_mode')) {
             Log::info($sqlFilePath);
         }
@@ -49,11 +48,11 @@ class RestoreCommand extends Command
                     new RewriteDotEnvJob($restoreBackup->id),
                     new ReplaceDomainInSqlFileJob($restoreBackup->id, $sqlFilePath),
                     new ImportDatabaseJob($restoreBackup->id, $sqlFilePath),
-                ]
+                ],
             ])
                 ->onConnection(config('restore.queue_connection'))
                 ->onQueue(config('restore.queue'))
-                ->name('Restore Backup ' . $restoreBackup->restoreDestination->host)
+                ->name('Restore Backup '.$restoreBackup->restoreDestination->host)
                 ->then(function () use ($restoreBackup) {
                     return $restoreBackup;
                 })

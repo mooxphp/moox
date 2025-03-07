@@ -9,13 +9,11 @@ use Spatie\BackupServer\Models\Backup;
 
 class RestoreBackup extends Model
 {
-
     public const STATUS_IN_PROGRESS = 'in progress';
 
     public const STATUS_COMPLETED = 'completed';
 
     public const STATUS_FAILED = 'failed';
-
 
     // The table name, in case it's not the default plural of the model name
     protected $table = 'restore_backups';
@@ -55,7 +53,6 @@ class RestoreBackup extends Model
 
     public function markAsCompleted(): self
     {
-
         $this->update([
             'status' => self::STATUS_COMPLETED,
         ]);

@@ -4,28 +4,25 @@ declare(strict_types=1);
 
 namespace Moox\Restore\Resources\RestoreBackupResource\Pages;
 
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
-use Moox\Restore\Models\RestoreBackup;
-use Spatie\BackupServer\Models\Backup;
-use Illuminate\Support\Facades\Artisan;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Artisan;
+use Moox\Restore\Models\RestoreBackup;
 use Moox\Restore\Models\RestoreDestination;
 use Moox\Restore\Resources\RestoreBackupResource;
+use Spatie\BackupServer\Models\Backup;
 
 class ListRestoreBackups extends ListRecords
 {
-
     public static string $resource = RestoreBackupResource::class;
 
     public function mount(): void
     {
         parent::mount();
     }
-
 
     protected function getHeaderActions(): array
     {
@@ -39,7 +36,7 @@ class ListRestoreBackups extends ListRecords
                         ->options(RestoreDestination::all()->pluck('host', 'id'))
                         ->required()
                         ->placeholder(__('Select a destination'))
-                        ->afterStateUpdated(fn(Set $set) => $set('backupId', null))
+                        ->afterStateUpdated(fn (Set $set) => $set('backupId', null))
                         ->reactive(),
 
                     Select::make('backupId')
@@ -51,15 +48,17 @@ class ListRestoreBackups extends ListRecords
                                 $formattedBackups = $backups->mapWithKeys(function ($date, $id) {
                                     return [$id => \Carbon\Carbon::parse($date)->format('d.m.Y H:i:s')];
                                 });
+
                                 return $formattedBackups;
                             }
+
                             return [];
                         })
                         ->searchable()
                         ->required()
                         ->placeholder(__('Select Backup'))
                         ->hidden(function (Get $get) {
-                            return !$get('restoreDestinationId');
+                            return ! $get('restoreDestinationId');
                         }),
 
                 ])
@@ -70,11 +69,11 @@ class ListRestoreBackups extends ListRecords
                         $restoreBackup = RestoreBackup::create([
                             'backup_id' => $backup->id,
                             'restore_destination_id' => $restoreDestination->id,
-                            'status' => 'created'
+                            'status' => 'created',
                         ]);
                     }
                     Artisan::call('moox-restore:restore', [
-                        'restoreBackup' => $restoreBackup->id
+                        'restoreBackup' => $restoreBackup->id,
                     ]);
                 }),
             Action::make('dispatch_restore')
@@ -82,7 +81,7 @@ class ListRestoreBackups extends ListRecords
                 ->icon('gmdi-refresh')
                 ->action(function (): void {
                     Artisan::call('moox-restore:dispatch-restore');
-                })
+                }),
 
         ];
     }

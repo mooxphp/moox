@@ -2,9 +2,9 @@
 
 namespace Moox\Restore\Resources\Widgets;
 
+use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;
-use Filament\Widgets\ChartWidget;
 use Spatie\BackupServer\Models\Backup;
 
 class BackupChart extends ChartWidget
@@ -27,10 +27,10 @@ class BackupChart extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Blog posts',
-                    'data' => $data->map(fn(TrendValue $value) => $value->aggregate),
+                    'data' => $data->map(fn (TrendValue $value) => $value->aggregate),
                 ],
             ],
-            'labels' => $data->map(fn(TrendValue $value) => $value->date),
+            'labels' => $data->map(fn (TrendValue $value) => $value->date),
         ];
     }
 

@@ -19,11 +19,11 @@ class RestoreDestinationFactory extends Factory
             'source_id' => $this->faker->numberBetween(1, 100),
             'host' => $this->faker->domainName,
             'env_data' => [
-                "APP_URL" => "\"https://" . $this->faker->domainName . "\"",
-                "APP_NAME" => "\"" . $this->faker->company . "\"",
-                "DB_DATABASE" => $this->faker->word,
-                "DB_PASSWORD" => "\"" . $this->faker->password . "\"",
-                "DB_USERNAME" => $this->faker->userName,
+                'APP_URL' => '"https://'.$this->faker->domainName.'"',
+                'APP_NAME' => '"'.$this->faker->company.'"',
+                'DB_DATABASE' => $this->faker->word,
+                'DB_PASSWORD' => '"'.$this->faker->password.'"',
+                'DB_USERNAME' => $this->faker->userName,
             ],
         ];
     }

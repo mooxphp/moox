@@ -50,7 +50,6 @@ class SyncForgeData extends Command
                 $projects = json_decode($projectsResponse->getBody()->getContents(), true);
 
                 foreach ($projects['sites'] as $projectData) {
-
                     $project = MooxProject::updateOrCreate(
                         ['site_id' => $projectData['id']],
                         [

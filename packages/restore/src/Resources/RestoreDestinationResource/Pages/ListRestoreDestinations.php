@@ -2,9 +2,9 @@
 
 namespace Moox\Restore\Resources\RestoreDestinationResource\Pages;
 
-use Moox\Restore\Resources\RestoreDestinationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use Moox\Restore\Resources\RestoreDestinationResource;
 
 class ListRestoreDestinations extends ListRecords
 {

@@ -32,11 +32,9 @@ class ListBackups extends ListRecords
                         ->placeholder('Source'),
                 ])
                 ->action(function (array $data): void {
-
                     $sourceName = Source::where('id', $data['source_id'])->pluck('name')->first();
 
                     $this->manualBackup($sourceName);
-
                 }),
         ];
     }

@@ -12,6 +12,7 @@ class RestoreFailedEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $restoreBackupId;
+
     public $errorMessage;
 
     public function __construct($restoreBackupId, $e)

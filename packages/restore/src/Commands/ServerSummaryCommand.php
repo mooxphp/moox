@@ -2,13 +2,13 @@
 
 namespace Moox\Restore\Commands;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Moox\Restore\Mail\SummaryBackupMail;
 use Moox\Restore\Models\RestoreBackup;
 use Spatie\BackupServer\Models\Backup;
-use Moox\Restore\Mail\SummaryBackupMail;
-use Illuminate\Database\Eloquent\Builder;
 use Spatie\BackupServer\Tasks\Summary\Actions\CreateServerSummaryAction;
 
 class ServerSummaryCommand extends Command
