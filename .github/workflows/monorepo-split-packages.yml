@@ -36,7 +36,6 @@ jobs:
           - press
           - security
           - skeleton
-          - sync
           - tag
           - trainings
           - user
