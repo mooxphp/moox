@@ -4,38 +4,37 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Override;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Moox\Tag\Models\Tag;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Section;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
-use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Forms\Components\ColorPicker;
-use Moox\Media\Forms\Components\MediaPicker;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
-use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ViewTag;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Moox\Tag\Resources\TagResource\Pages\EditTag;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Override;
 
 class TagResource extends Resource
 {
@@ -81,9 +80,9 @@ class TagResource extends Resource
                                                 $component->state($component->getRecord()->title ?? '');
                                             }
                                         })
-                                        ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                                         ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (!$livewire->selectedLang) {
+                                            if (! $livewire->selectedLang) {
                                                 $record->title = $state;
 
                                                 return $state;
@@ -105,7 +104,7 @@ class TagResource extends Resource
                                             }
                                         })
                                         ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (!$livewire->selectedLang) {
+                                            if (! $livewire->selectedLang) {
                                                 $record->slug = $state;
 
                                                 return $state;
@@ -129,7 +128,7 @@ class TagResource extends Resource
                                             }
                                         })
                                         ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (!$livewire->selectedLang) {
+                                            if (! $livewire->selectedLang) {
                                                 $record->content = $state;
 
                                                 return $state;
@@ -153,8 +152,8 @@ class TagResource extends Resource
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn($record) => $record->restore())
-                                            ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
+                                            ->action(fn ($record) => $record->restore())
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
                                         Action::make('save')
                                             ->label(__('core::core.save'))
                                             ->color('primary')
@@ -163,7 +162,7 @@ class TagResource extends Resource
                                             ->action(function ($livewire): void {
                                                 $livewire instanceof CreateTag ? $livewire->create() : $livewire->save();
                                             })
-                                            ->visible(fn($livewire): bool => $livewire instanceof CreateTag || $livewire instanceof EditTag),
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateTag || $livewire instanceof EditTag),
                                         Action::make('saveAndCreateAnother')
                                             ->label(__('core::core.save_and_create_another'))
                                             ->color('secondary')
@@ -172,50 +171,50 @@ class TagResource extends Resource
                                             ->action(function ($livewire): void {
                                                 $livewire->saveAndCreateAnother();
                                             })
-                                            ->visible(fn($livewire): bool => $livewire instanceof CreateTag),
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateTag),
                                         Action::make('cancel')
                                             ->label(__('core::core.cancel'))
                                             ->color('secondary')
                                             ->outlined()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn(): string => static::getUrl('index'))
-                                            ->visible(fn($livewire): bool => $livewire instanceof CreateTag),
+                                            ->url(fn (): string => static::getUrl('index'))
+                                            ->visible(fn ($livewire): bool => $livewire instanceof CreateTag),
                                         Action::make('edit')
                                             ->label(__('core::core.edit'))
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn($record): string => static::getUrl('edit', ['record' => $record]))
-                                            ->visible(fn($livewire, $record): bool => $livewire instanceof ViewTag && !$record->trashed()),
+                                            ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
+                                            ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewTag && ! $record->trashed()),
                                         Action::make('restore')
                                             ->label(__('core::core.restore'))
                                             ->color('success')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn($record) => $record->restore())
-                                            ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditTag),
+                                            ->action(fn ($record) => $record->restore())
+                                            ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof EditTag),
                                         Action::make('delete')
                                             ->label(__('core::core.delete'))
                                             ->color('danger')
                                             ->link()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->action(fn($record) => $record->delete())
-                                            ->visible(fn($livewire, $record): bool => $record && !$record->trashed() && $livewire instanceof EditTag),
+                                            ->action(fn ($record) => $record->delete())
+                                            ->visible(fn ($livewire, $record): bool => $record && ! $record->trashed() && $livewire instanceof EditTag),
                                     ]),
                                     ColorPicker::make('color'),
                                     TextInput::make('weight'),
                                     TextInput::make('count')
                                         ->disabled()
-                                        ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                        ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                     DateTimePicker::make('created_at')
                                         ->disabled()
-                                        ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                        ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                     DateTimePicker::make('updated_at')
                                         ->disabled()
-                                        ->visible(fn($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
+                                        ->visible(fn ($livewire, $record): bool => ($record && $livewire instanceof EditTag) || ($record && $livewire instanceof ViewTag)),
                                     DateTimePicker::make('deleted_at')
                                         ->disabled()
-                                        ->visible(fn($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
+                                        ->visible(fn ($livewire, $record): bool => $record && $record->trashed() && $livewire instanceof ViewTag),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 1]),
@@ -293,21 +292,21 @@ class TagResource extends Resource
             ])
             ->actions([
                 ViewAction::make()->url(
-                    fn($record) => request()->has('lang')
+                    fn ($record) => request()->has('lang')
                     ? route('filament.admin.resources.tags.view', ['record' => $record, 'lang' => request()->get('lang')])
                     : route('filament.admin.resources.tags.view', $record)
                 ),
                 EditAction::make()
                     ->url(
-                        fn($record) => request()->has('lang')
+                        fn ($record) => request()->has('lang')
                         ? route('filament.admin.resources.tags.edit', ['record' => $record, 'lang' => request()->get('lang')])
                         : route('filament.admin.resources.tags.edit', $record)
                     )
-                    ->hidden(fn(): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
+                    ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
             ->bulkActions([
-                DeleteBulkAction::make()->hidden(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
-                RestoreBulkAction::make()->visible(fn(): bool => in_array($currentTab, ['trash', 'deleted'])),
+                DeleteBulkAction::make()->hidden(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
+                RestoreBulkAction::make()->visible(fn (): bool => in_array($currentTab, ['trash', 'deleted'])),
             ]);
     }
 

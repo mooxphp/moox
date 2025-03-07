@@ -39,10 +39,6 @@ use Moox\Passkey\PasskeyPlugin;
 use Moox\Security\ResetPasswordPlugin;
 use Moox\Security\Services\RequestPasswordReset;
 use Moox\Tag\TagPlugin;
-use Moox\Training\TrainingDatePlugin;
-use Moox\Training\TrainingInvitationPlugin;
-use Moox\Training\TrainingPlugin;
-use Moox\Training\TrainingTypePlugin;
 use Moox\User\Services\Login;
 use Moox\User\UserPlugin;
 use Moox\UserDevice\UserDevicePlugin;
@@ -50,7 +46,6 @@ use Moox\UserSession\UserSessionPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
-
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -147,7 +142,6 @@ class AdminPanelProvider extends PanelProvider
                 // Builder plugin
                 // \Moox\Builder\ItemPlugin::make(),
                 \Moox\Media\MediaPlugin::make(),
-
 
             ]);
     }

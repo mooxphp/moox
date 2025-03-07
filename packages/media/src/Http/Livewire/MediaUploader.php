@@ -2,9 +2,9 @@
 
 namespace Moox\Media\Http\Livewire;
 
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 use Moox\Media\Models\Media;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\LivewireFilepond\WithFilePond;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
@@ -27,14 +27,14 @@ class MediaUploader extends Component
         if ($modelClass) {
             $modelClass = str_replace('\\\\', '\\', $modelClass);
 
-            if (!class_exists($modelClass)) {
+            if (! class_exists($modelClass)) {
                 throw new \Exception("Die Klasse {$modelClass} existiert nicht.");
             }
 
             if ($modelId) {
                 $this->model = app($modelClass)::find($modelId);
 
-                if (!$this->model) {
+                if (! $this->model) {
                     throw new \Exception("Modell mit ID {$modelId} nicht gefunden.");
                 }
 
@@ -53,11 +53,11 @@ class MediaUploader extends Component
 
     public function updatedFile()
     {
-        if (!$this->file) {
+        if (! $this->file) {
             return;
         }
 
-        if (!$this->modelId || !$this->modelClass) {
+        if (! $this->modelId || ! $this->modelClass) {
             throw new \Exception('Kein Modell angegeben für den Upload.');
         }
 

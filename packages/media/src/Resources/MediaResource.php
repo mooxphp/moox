@@ -2,25 +2,22 @@
 
 namespace Moox\Media\Resources;
 
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Moox\Media\Models\Media;
-use Filament\Resources\Resource;
-use Filament\Actions\StaticAction;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
-use Filament\Tables\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\Actions\Action;
 use Moox\Media\Forms\Components\ImageDisplay;
+use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages;
-use Filament\Forms\Components\Actions\Alignment;
 use Moox\Media\Tables\Columns\CustomImageColumn;
-use Filament\Notifications\Notification;
 
 class MediaResource extends Resource
 {
@@ -50,35 +47,35 @@ class MediaResource extends Resource
                 ->schema([
                     Placeholder::make('mime_type')
                         ->label('Dateityp')
-                        ->content(fn($record) => $record->mime_type),
+                        ->content(fn ($record) => $record->mime_type),
 
                     Placeholder::make('size')
                         ->label('Dateigröße')
-                        ->content(fn($record) => number_format($record->size / 1024, 2) . ' KB'),
+                        ->content(fn ($record) => number_format($record->size / 1024, 2).' KB'),
 
                     Placeholder::make('file_name')
                         ->label('Originaldateiname')
-                        ->content(fn($record) => $record->file_name),
+                        ->content(fn ($record) => $record->file_name),
 
                     Placeholder::make('created_at')
                         ->label('Hochgeladen am')
-                        ->content(fn($record) => $record->created_at?->format('d.m.Y H:i')),
+                        ->content(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('updated_at')
                         ->label('Zuletzt bearbeitet')
-                        ->content(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
+                        ->content(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('dimensions')
                         ->label('Abmessungen')
                         ->content(function ($record) {
                             $dimensions = $record->getCustomProperty('dimensions');
-                            if (!$dimensions) {
+                            if (! $dimensions) {
                                 return '-';
                             }
 
                             return "{$dimensions['width']} × {$dimensions['height']} Pixel";
                         })
-                        ->visible(fn($record) => str_starts_with($record->mime_type, 'image/')),
+                        ->visible(fn ($record) => str_starts_with($record->mime_type, 'image/')),
 
                 ])
                 ->columns(2),
@@ -120,12 +117,13 @@ class MediaResource extends Resource
                     ->color('danger')
                     ->icon('heroicon-m-trash')
                     ->requiresConfirmation()
-                    ->modalHeading(fn($record) => 'Bild "' . ($record->title ?: $record->name) . '" löschen')
+                    ->modalHeading(fn ($record) => 'Bild "'.($record->title ?: $record->name).'" löschen')
                     ->modalDescription('Sind Sie sicher, dass Sie dieses Bild löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')
                     ->modalSubmitActionLabel('Ja, löschen')
                     ->modalCancelActionLabel('Abbrechen')
                     ->action(function ($record, $livewire) {
                         Media::where('id', $record->id)->delete(); // Direkt per Query löschen
+
                         return redirect(static::getUrl('index'));
                     }),
             ])->columnSpanFull(),
@@ -143,7 +141,7 @@ class MediaResource extends Resource
                         ->extraImgAttributes([
                             'class' => 'rounded-lg object-cover w-full h-full hover:scale-[1.02] transition-transform duration-200',
                         ])
-                        ->tooltip(fn($record) => $record->title ?? 'Kein Titel'),
+                        ->tooltip(fn ($record) => $record->title ?? 'Kein Titel'),
                 ]),
             ])
             ->actions([
@@ -152,7 +150,7 @@ class MediaResource extends Resource
                     ->extraAttributes([
                         'style' => 'visibility: hidden;',
                     ])
-                    ->modalSubmitAction(false)
+                    ->modalSubmitAction(false),
             ])
             ->contentGrid([
                 'md' => 2,

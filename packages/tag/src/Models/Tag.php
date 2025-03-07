@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Models;
 
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Astrotomic\Translatable\Translatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Moox\Tag\Database\Factories\TagFactory;
 use Override;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
-use Astrotomic\Translatable\Translatable;
-use Moox\Tag\Database\Factories\TagFactory;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
-
-
-
-class Tag extends Model implements TranslatableContract, HasMedia
+class Tag extends Model implements HasMedia, TranslatableContract
 {
     use HasFactory, InteractsWithMedia, SoftDeletes, Translatable;
 
