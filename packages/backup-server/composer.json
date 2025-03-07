@@ -1,0 +1,36 @@
+{
+    "name": "moox/backup-server",
+    "description": "Filament UI for Spatie Laravel Backup Server.",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "^3.0.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\BackupServerUi\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\BackupServerUi\\BackupServerUiServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

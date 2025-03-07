@@ -1,0 +1,36 @@
+{
+    "name": "moox/devops",
+    "description": "This is my package devops",
+    "keywords": [
+        "Laravel",
+        "Filament",
+        "Filament plugin",
+        "Laravel package"
+    ],
+    "homepage": "https://moox.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Moox Developer",
+            "email": "dev@moox.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "moox/core": "^3.0.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Moox\\Devops\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Moox\\Devops\\DevopsServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
