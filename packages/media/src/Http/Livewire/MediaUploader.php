@@ -2,8 +2,9 @@
 
 namespace Moox\Media\Http\Livewire;
 
-use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
+use Moox\Media\Models\Media;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\LivewireFilepond\WithFilePond;
 use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
@@ -23,33 +24,40 @@ class MediaUploader extends Component
 
     public function mount(?int $modelId = null, ?string $modelClass = null)
     {
-        if ($modelId && $modelClass) {
+        if ($modelClass) {
             $modelClass = str_replace('\\\\', '\\', $modelClass);
 
-            if (! class_exists($modelClass)) {
+            if (!class_exists($modelClass)) {
                 throw new \Exception("Die Klasse {$modelClass} existiert nicht.");
             }
 
-            $this->model = app($modelClass)::find($modelId);
+            if ($modelId) {
+                $this->model = app($modelClass)::find($modelId);
 
-            if (! $this->model) {
-                throw new \Exception("Modell mit ID {$modelId} nicht gefunden.");
+                if (!$this->model) {
+                    throw new \Exception("Modell mit ID {$modelId} nicht gefunden.");
+                }
+
+                $this->modelId = $this->model->getKey();
+            } else {
+                // Für neue Einträge erstellen wir eine neue Instanz
+                $this->model = new $modelClass;
+                $this->modelId = 0;
             }
 
-            $this->modelId = $this->model->getKey();
-            $this->modelClass = get_class($this->model);
+            $this->modelClass = $modelClass;
         } else {
-            throw new \Exception('Es wurde kein gültiges Modell angegeben.');
+            throw new \Exception('Es wurde keine gültige Modell-Klasse angegeben.');
         }
     }
 
     public function updatedFile()
     {
-        if (! $this->file) {
+        if (!$this->file) {
             return;
         }
 
-        if (! $this->modelId || ! $this->modelClass) {
+        if (!$this->modelId || !$this->modelClass) {
             throw new \Exception('Kein Modell angegeben für den Upload.');
         }
 
@@ -62,8 +70,8 @@ class MediaUploader extends Component
         $media->original_model_type = $this->modelClass;
         $media->original_model_id = $this->modelId;
 
-        $media->model_id = $this->modelId;
-        $media->model_type = $this->modelClass;
+        $media->model_id = $media->id;
+        $media->model_type = Media::class;
 
         $media->title = $title;
         $media->description = null;

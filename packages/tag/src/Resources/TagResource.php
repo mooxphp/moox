@@ -18,20 +18,26 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Moox\Core\Traits\Tabs\TabsInResource;
+use Filament\Forms\Components\ColorPicker;
 use Moox\Media\Forms\Components\MediaPicker;
-use Moox\Tag\Models\Tag;
-use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
+use Moox\Tag\Resources\TagResource\Pages\ViewTag;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
 use Override;
@@ -118,8 +124,6 @@ class TagResource extends Resource
                                         fieldTitle: 'title',
                                         fieldSlug: 'slug',
                                     ),
-                                    // FileUpload::make('featured_image_url')
-                                    //     ->label(__('core::core.featured_image_url')),
                                     MediaPicker::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
@@ -238,7 +242,7 @@ class TagResource extends Resource
 
         return $table
             ->columns([
-                ImageColumn::make('featured_image_url')
+                CustomImageColumn::make('featured_image_url')
                     ->label(__('core::core.image'))
                     ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
                     ->alignment('center')
