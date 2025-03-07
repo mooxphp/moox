@@ -18,11 +18,13 @@ jobs:
       matrix:
         package:
           - audit
+          - backup-server
           - builder
           - category
           - core
           - data
           - devlink
+          - devops
           - expiry
           - flags
           - item
@@ -34,6 +36,7 @@ jobs:
           - passkey
           - permission
           - press
+          - restore
           - security
           - skeleton
           - tag
