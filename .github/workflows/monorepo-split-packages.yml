@@ -19,6 +19,7 @@ jobs:
         package:
           - audit
           - backup-server
+          - base
           - build
           - cart
           - category
@@ -67,8 +68,7 @@ jobs:
           - slug
           - tag
           - taxonomy
-          - theme-base
-          - theme-moox
+          - theme
           - trainings
           - user
           - user-device
