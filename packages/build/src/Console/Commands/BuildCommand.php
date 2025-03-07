@@ -398,7 +398,7 @@ class BuildCommand extends Command
         $this->line('       <fg=white>Namespace:         </><fg=green>'.$packageNamespace.'</>');
         $this->line('       <fg=white>Author:            </><fg=green>'.$this->authorName.'</>');
         $this->line('       <fg=white>E-Mail:            </><fg=green>'.$this->authorEmail.'</>');
-        $this->line('       <fg=white>Composer:          </><fg=green>composer require '.$composerRequire.'</>');
+        $this->line('       <fg=white>Composer:          </><fg=green>'.$composerRequire.'</>');
         $this->newLine();
 
         $relativePath = str_replace(base_path().'/', '', $targetPath);
