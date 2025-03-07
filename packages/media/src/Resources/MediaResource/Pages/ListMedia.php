@@ -29,7 +29,7 @@ class ListMedia extends ListRecords
                         ->required()
                         ->live()
                         ->afterStateUpdated(function ($state) {
-                            if (!$state) {
+                            if (! $state) {
                                 return;
                             }
 
@@ -52,7 +52,7 @@ class ListMedia extends ListRecords
                                 [$width, $height] = getimagesize($media->getPath());
                                 $media->setCustomProperty('dimensions', [
                                     'width' => $width,
-                                    'height' => $height
+                                    'height' => $height,
                                 ]);
                             }
 
