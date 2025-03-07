@@ -12,6 +12,14 @@ class EditTag extends EditRecord
 {
     protected static string $resource = TagResource::class;
 
+    public ?string $selectedLang = null;
+
+    public function mount($record): void
+    {
+        parent::mount($record);
+        $this->selectedLang = request()->get('lang');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

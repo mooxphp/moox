@@ -4,35 +4,37 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\TextInput;
+use Override;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
+use Moox\Tag\Models\Tag;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Traits\Tabs\TabsInResource;
-use Moox\Tag\Models\Tag;
-use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Filament\Tables\Actions\RestoreBulkAction;
 use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
-use Override;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\CreateTag;
+use Camya\Filament\Forms\Components\TitleWithSlugInput;
 
 class TagResource extends Resource
 {
@@ -64,48 +66,72 @@ class TagResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                    TitleWithSlugInput::make(
-                                        fieldTitle: 'title',
-                                        fieldSlug: 'slug',
-                                    )
-                                        ->afterStateHydrated(function ($component) {
+                                   
+                                    TextInput::make('title')
+                                        ->live(onBlur: true)
+                                        ->label(__('core::core.title'))
+                                        ->required()
+                                        ->afterStateHydrated(function (TextInput $component) {
                                             $lang = request()->get('lang');
-                                            if ($lang && $component->getRecord()) {
-                                                $component->state([
-                                                    'title' => $component->getRecord()->getTranslation('title', $lang),
-                                                    'slug' => $component->getRecord()->getTranslation('slug', $lang),
-                                                ]);
+                                            if ($lang && $component->getRecord()->hasTranslation($lang)) {
+                                                $component->state($component->getRecord()->translateOrNew($lang)->title);
+                                            } else {
+                                                $component->state($component->getRecord()->title ?? '');
                                             }
                                         })
-                                        ->afterStateHydrated(function ($component) {
+                                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                                        ->dehydrateStateUsing(function (string $state, $record, $livewire) {
+                                            if (!$livewire->selectedLang) {
+                                                $record->title = $state;
+                                                return $state;
+                                            }
+                                            
+                                            $record->translateOrNew($livewire->selectedLang)->title = $state;
+                                            return $state;
+                                        }),
+                                    TextInput::make('slug')
+                                        ->label(__('core::core.slug'))
+                                        ->required()
+                                        ->afterStateHydrated(function (TextInput $component) {
                                             $lang = request()->get('lang');
-                                            if ($lang && $component->getRecord()) {
-                                                $component->state([
-                                                    'title' => $component->getRecord()->getTranslation('title', $lang),
-                                                    'slug' => $component->getRecord()->getTranslation('slug', $lang),
-                                                ]);
+                                            if ($lang && $component->getRecord()->hasTranslation($lang)) {
+                                                $component->state($component->getRecord()->translateOrNew($lang)->slug);
+                                            } else {
+                                                $component->state($component->getRecord()->slug ?? '');
                                             }
                                         })
-                                        ->dehydrateStateUsing(function ($state) {
-                                            $lang = request()->get('lang');
-
-                                            return [
-                                                'title' => [$lang => $state['title']],
-                                                'slug' => [$lang => $state['slug']],
-                                            ];
+                                        ->dehydrateStateUsing(function (string $state, $record, $livewire) {
+                                            if (!$livewire->selectedLang) {
+                                                $record->slug = $state;
+                                                return $state;
+                                            }
+                                            
+                                            $record->translateOrNew($livewire->selectedLang)->slug = $state;
+                                            return $state;
                                         }),
                                     FileUpload::make('featured_image_url')
                                         ->label(__('core::core.featured_image_url')),
                                     MarkdownEditor::make('content')
                                         ->label(__('core::core.content'))
+                                        ->required()
                                         ->afterStateHydrated(function (MarkdownEditor $component) {
                                             $lang = request()->get('lang');
                                             if ($lang && $component->getRecord()->hasTranslation($lang)) {
-                                                $component->state($component->getRecord()->translate($lang)->content);
+                                                $component->state($component->getRecord()->translateOrNew($lang)->content);
                                             } else {
-                                                $component->state($component->getRecord()->translate($lang)->content);
+                                                $component->state($component->getRecord()->content ?? '');
                                             }
+                                        })
+                                        ->dehydrateStateUsing(function (string $state, $record, $livewire) {
+                                            if (!$livewire->selectedLang) {
+                                                $record->content = $state;
+                                                return $state;
+                                            }
+                                            
+                                            $record->translateOrNew($livewire->selectedLang)->content = $state;
+                                            return $state;
                                         }),
+
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
