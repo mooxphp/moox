@@ -4,37 +4,36 @@ declare(strict_types=1);
 
 namespace Moox\Tag\Resources;
 
-use Override;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
-use Moox\Tag\Models\Tag;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Traits\Tabs\TabsInResource;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Filament\Tables\Actions\RestoreBulkAction;
-use Moox\Tag\Resources\TagResource\Pages\EditTag;
-use Moox\Tag\Resources\TagResource\Pages\ViewTag;
-use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Illuminate\Support\Str;
+use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource\Pages\CreateTag;
-use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Moox\Tag\Resources\TagResource\Pages\EditTag;
+use Moox\Tag\Resources\TagResource\Pages\ListTags;
+use Moox\Tag\Resources\TagResource\Pages\ViewTag;
+use Override;
 
 class TagResource extends Resource
 {
@@ -66,7 +65,7 @@ class TagResource extends Resource
                         ->schema([
                             Section::make()
                                 ->schema([
-                                   
+
                                     TextInput::make('title')
                                         ->live(onBlur: true)
                                         ->label(__('core::core.title'))
@@ -81,12 +80,14 @@ class TagResource extends Resource
                                         })
                                         ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
                                         ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (!$livewire->selectedLang) {
+                                            if (! $livewire->selectedLang) {
                                                 $record->title = $state;
+
                                                 return $state;
                                             }
-                                            
+
                                             $record->translateOrNew($livewire->selectedLang)->title = $state;
+
                                             return $state;
                                         }),
                                     TextInput::make('slug')
@@ -101,12 +102,14 @@ class TagResource extends Resource
                                             }
                                         })
                                         ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (!$livewire->selectedLang) {
+                                            if (! $livewire->selectedLang) {
                                                 $record->slug = $state;
+
                                                 return $state;
                                             }
-                                            
+
                                             $record->translateOrNew($livewire->selectedLang)->slug = $state;
+
                                             return $state;
                                         }),
                                     FileUpload::make('featured_image_url')
@@ -123,12 +126,14 @@ class TagResource extends Resource
                                             }
                                         })
                                         ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (!$livewire->selectedLang) {
+                                            if (! $livewire->selectedLang) {
                                                 $record->content = $state;
+
                                                 return $state;
                                             }
-                                            
+
                                             $record->translateOrNew($livewire->selectedLang)->content = $state;
+
                                             return $state;
                                         }),
 
