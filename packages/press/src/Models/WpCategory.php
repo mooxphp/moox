@@ -3,6 +3,7 @@
 namespace Moox\Press\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Override;
 
 class WpCategory extends WpTerm
@@ -19,5 +20,10 @@ class WpCategory extends WpTerm
                 $query->where('taxonomy', 'category');
             });
         });
+    }
+
+    public function termTaxonomy(): HasOne
+    {
+        return $this->hasOne(WpTermTaxonomy::class, 'term_id', 'term_id');
     }
 }
