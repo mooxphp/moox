@@ -13,6 +13,7 @@ parameters:
         - 'packages/press/src/Handlers'
         - 'packages/press/src/Transformer'
         - 'packages/press/src/Resolver'
+        - 'packages/backup-server'
         - 'packages/*/tests/*'
     tmpDir: build/phpstan
     ignoreErrors:
