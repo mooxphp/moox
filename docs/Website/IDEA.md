@@ -4,9 +4,6 @@ This is about the website of Moox on moox.org.
 
 ## Footer Links
 
--   https://moox.test
--   https://shared.moox.de
-
 -   https://moox.org - Website
 -   https://github.com/mooxphp - GitHub
 -   https://x.com/mooxphp - X
