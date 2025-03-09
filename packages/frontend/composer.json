@@ -1,13 +1,14 @@
 {
     "name": "moox/frontend",
-    "description": "A modular Frontend for Laravel and Filament",
+    "description": "Frontend is a Moox Package using Moox Skeleton.",
     "keywords": [
+        "Moox",
         "Laravel",
         "Filament",
-        "Filament plugin",
+        "Moox package",
         "Laravel package"
     ],
-    "homepage": "https://moox.org/",
+    "homepage": "https://moox.org/docs/frontend",
     "license": "MIT",
     "authors": [
         {

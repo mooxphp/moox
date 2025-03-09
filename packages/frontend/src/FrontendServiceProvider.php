@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Moox\Frontend;
 
+use Moox\Core\MooxServiceProvider;
 use Spatie\LaravelPackageTools\Package;
-use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class FrontendServiceProvider extends PackageServiceProvider
+class FrontendServiceProvider extends MooxServiceProvider
 {
-    public function configurePackage(Package $package): void
+    public function configureMoox(Package $package): void
     {
         $package
             ->name('frontend')
@@ -18,5 +18,26 @@ class FrontendServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasMigrations()
             ->hasCommands();
+
+        $this->getMooxPackage()
+            ->title('Moox Frontend')
+            ->released(false)
+            ->stability('stable')
+            ->category('development')
+            ->usedFor([
+                '%%UsedFor%%',
+            ])
+            ->alternatePackages([
+                '', // optional alternative package (e.g. moox/post)
+            ])
+            ->templateFor([
+                'creating simple Laravel packages',
+            ])
+            
+            
+            
+            ->templateRemove([
+                'build.php',
+            ]);
     }
 }

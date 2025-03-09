@@ -22,6 +22,7 @@ That is the rest of the old config:
 ],
 ```
 
+-   [ ] Implement Frontend class, abstract? See Frontend/Idea.md
 -   [ ] Build Skeleton -> Item
 -   [ ] Refactor core traits to base classes
 -   [ ] Create Item

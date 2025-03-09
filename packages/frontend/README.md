@@ -1,54 +1,64 @@
-![Moox Frontend](https://github.com/mooxphp/moox/raw/main/art/banner/frontend-package.jpg)
+![Moox Frontend](https://github.com/mooxphp/moox/raw/main/art/banner/frontend.jpg)
 
 # Moox Frontend
 
-Moox Frontend is a package that provides a modular frontend for a CMS, Shop, Blog or any other Laravel and Filament project, that needs a frontend. Moox Frontend provides
+Frontend is a Moox Package using Moox Skeleton.
 
--   Frontend routing for resources (items including taxonomies)
--   Resolving URL conflicts between resources
--   Theme support, using Moox Themes
--   A preview feature for unpublished or soft-deleted resources
+## Features
 
-And the Pro version adds:
+<!--features-->
 
--   Caching, static HTML and using a CDN
+-   Feature 1
+-   Feature 2
+-   Feature 3
 
-## Quick Installation
+<!--/features-->
 
-These two commmands are all you need to install the package:
+## Requirements
+
+See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
+
+## Installation
 
 ```bash
 composer require moox/frontend
-php artisan frontend:install
+php artisan moox:install
 ```
 
-Curious what the install command does? See manual installation below.
+Curious what the install command does? See [Installation](https://github.com/mooxphp/moox/blob/main/docs/Installation.md).
 
-## Manual Installation
+## Screenshot
 
-Instead of using the install-command `php artisan frontend:install` you are able to install this package manually step by step:
+![Moox Frontend](https://github.com/mooxphp/moox/raw/main/art/screenshots/frontend.jpg)
 
-```bash
-// Publish and run the migrations:
-php artisan vendor:publish --tag="frontend-migrations"
-php artisan migrate
+## Get Started
 
-// Publish the config file with:
-php artisan vendor:publish --tag="frontend-config"
-```
+See [Get Started](docs/GetStarted.md).
+
+## User Guide
+
+See [User Guide](docs/UserGuide.md).
+
+## Integration
+
+See [Integration](docs/Integration.md).
 
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Security Vulnerabilities
+## Roadmap
+
+Please see [ROADMAP](ROADMAP.md) for more information on what is planned for this package.
+
+## Security
 
 Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
--   [All Contributors](../../contributors)
+Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to this package.
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
