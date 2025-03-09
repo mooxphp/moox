@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use Awcodes\FilamentGravatar\GravatarPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -20,11 +19,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Moox\Audit\AuditPlugin;
-use Moox\Builder\FullItemPlugin;
-use Moox\Builder\ItemPlugin;
-use Moox\Builder\NestedTaxonomyPlugin;
-use Moox\Builder\SimpleItemPlugin;
-use Moox\Builder\SimpleTaxonomyPlugin;
 use Moox\Category\CategoryPlugin;
 use Moox\Data\Filament\Plugins\StaticCountryPlugin;
 use Moox\Data\Filament\Plugins\StaticCurrencyPlugin;
@@ -32,13 +26,14 @@ use Moox\Data\Filament\Plugins\StaticLanguagePlugin;
 use Moox\Data\Filament\Plugins\StaticLocalePlugin;
 use Moox\Data\Filament\Plugins\StaticTimezonePlugin;
 use Moox\Expiry\ExpiryPlugin;
+use Moox\Item\Moox\Plugins\ItemPlugin;
 use Moox\Jobs\JobsBatchesPlugin;
 use Moox\Jobs\JobsFailedPlugin;
 use Moox\Jobs\JobsPlugin;
 use Moox\Jobs\JobsWaitingPlugin;
 use Moox\Localization\Filament\Plugins\LocalizationPlugin;
-use Moox\Locate\AreaPlugin;
 use Moox\LoginLink\LoginLinkPlugin;
+use Moox\Media\MediaPlugin;
 use Moox\Notification\NotificationPlugin;
 use Moox\Page\PagePlugin;
 use Moox\Passkey\PasskeyPlugin;
@@ -99,40 +94,20 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->plugins([
 
-                // Development
-                // GravatarPlugin::make(), <- Remove!
+                ItemPlugin::make(),
                 AuditPlugin::make(),
-                // AreaPlugin::make(), <- Remove!
-                // \Moox\Locate\CountryPlugin::make(), <- Remove!
-                // \Moox\Locate\LanguagePlugin::make(),
-                // \Moox\Locate\TimezonePlugin::make(),
 
-                // Builder plugin - missing config, will be removed completely
-                // SimpleTaxonomyPlugin::make(),
-                // NestedTaxonomyPlugin::make(),
-                // ItemPlugin::make(),
-                // FullItemPlugin::make(),
-                // SimpleItemPlugin::make(),
-
-                // CMS plugin
                 PagePlugin::make(),
                 CategoryPlugin::make(),
                 TagPlugin::make(),
 
-                // Notification plugin
                 NotificationPlugin::make(),
 
-                // Jobs plugins
                 JobsPlugin::make(),
                 JobsWaitingPlugin::make(),
                 JobsFailedPlugin::make(),
                 JobsBatchesPlugin::make(),
 
-                // Sync Plugins
-                // \Moox\Sync\SyncPlugin::make(),
-                // \Moox\Sync\PlatformPlugin::make(),
-
-                // User plugins
                 UserPlugin::make(),
                 UserDevicePlugin::make(),
                 LoginLinkPlugin::make(),
@@ -140,21 +115,14 @@ class AdminPanelProvider extends PanelProvider
                 PasskeyPlugin::make(),
                 ResetPasswordPlugin::make(),
 
-                // Expiry plugin
                 ExpiryPlugin::make(),
-
-                // Training plugins
-
-                // Builder plugin
-                // \Moox\Builder\ItemPlugin::make(),
-                \Moox\Media\MediaPlugin::make(),
+                MediaPlugin::make(),
 
                 TrainingPlugin::make(),
                 TrainingInvitationPlugin::make(),
                 TrainingDatePlugin::make(),
                 TrainingTypePlugin::make(),
 
-                // Localization plugin
                 LocalizationPlugin::make(),
                 StaticLocalePlugin::make(),
                 StaticCountryPlugin::make(),

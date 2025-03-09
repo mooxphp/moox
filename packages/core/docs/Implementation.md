@@ -13,61 +13,64 @@ The Item Entity is implemented in our Single Entity Package [Moox Item](https://
 #### Item Model
 
 ```php
-use Moox\Core\Entities\Items\Item\MooxModel;
+use Moox\Core\Entities\Items\Item\ItemModel;
 
-class Item extends MooxModel {}
+class Log extends ItemModel {
+    // Your model
+}
 ```
 
 ### Item Resource
 
 ```php
-use Moox\Core\Entities\BaseResource;
+use Moox\Core\Entities\Items\Item\ItemResource;
+use Illuminate\Database\Eloquent\Builder;
 
-class ItemResource extends Resource
+class LogResource extends ItemResource
 {
-    // your resource
+    // Your resource
 }
 ```
 
 ### Item Pages
 
 ```php
-use Moox\Core\Entities\Items\Item\Pages\MooxCreatePage;
-use Moox\Item\Moox\Entities\Items\ItemResource;
+use Moox\Core\Entities\Items\Item\Pages\ItemCreatePage;
+use App\Filament\Resources\LogResource;
 
-class CreatePage extends MooxCreatePage
+class CreatePage extends ItemCreatePage
 {
-    protected static string $resource = ItemResource::class;
+    // Your create page
 }
 ```
 
 ```php
-use Moox\Core\Entities\Items\Item\Pages\MooxEditPage;
-use Moox\Item\Moox\Entities\Items\ItemResource;
+use Moox\Core\Entities\Items\Item\Pages\ItemEditPage;
+use App\Filament\Resources\LogResource;
 
-class EditPage extends MooxEditPage
+class EditPage extends ItemEditPage
 {
-    protected static string $resource = ItemResource::class;
+    // Your edit page
 }
 ```
 
 ```php
-use Moox\Core\Entities\Items\Item\Pages\MooxListPage;
-use Moox\Item\Moox\Entities\Items\ItemResource;
+use Moox\Core\Entities\Items\Item\Pages\ItemListPage;
+use App\Filament\Resources\LogResource;
 
-class ListPage extends MooxListPage
+class ListPage extends ItemListPage
 {
-    protected static string $resource = ItemResource::class;
+    // Your list page
 }
 ```
 
 ```php
-use Moox\Core\Entities\Items\Item\Pages\MooxViewPage;
-use Moox\Item\Moox\Entities\Items\ItemResource;
+use Moox\Core\Entities\Items\Item\Pages\ItemViewPage;
+use App\Filament\Resources\LogResource;
 
-class ViewPage extends MooxViewPage
+class ViewPage extends ItemViewPage
 {
-    protected static string $resource = ItemResource::class;
+    // Your view page
 }
 ```
 
@@ -75,6 +78,18 @@ class ViewPage extends MooxViewPage
 
 Moox Core ships with multiple traits that can be used to add functionality to entities:
 
-### Has Tabs
+### Tabs
 
-### Has Taxonomy
+The `HasTabs` trait can be used to add configurable tabs to a resource.
+
+### Taxonomy
+
+The `HasTaxonomy` trait can be used to add one or more taxonomies to a resource.
+
+```php
+// TODO: remove this boilerplate from models
+protected function getResourceName(): string
+{
+    return 'log';
+}
+```

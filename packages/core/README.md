@@ -153,10 +153,10 @@ A pretty basic example:
 The `visible`-option is not necessary, as it defaults to true. But if you want to toggle the visibility of a Tab, you can use a Closure like this:
 
 ```php
-										'visible' => in_array(rtrim(env('APP_URL'), '/'), [
-												'https://visible.test',
-                        'http://localhost',
-                    ]),
+                    'visible' => in_array(rtrim(env('APP_URL'), '/'), [
+                    'https://visible.test',
+                    'http://localhost',
+                ]),
 ```
 
 #### Queries

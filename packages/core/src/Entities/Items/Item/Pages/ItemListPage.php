@@ -3,14 +3,14 @@
 namespace Moox\Core\Entities\Items\Item\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Entities\Items\Item\MooxResource;
+use Moox\Core\Entities\Items\Item\ItemResource;
+use Moox\Core\Traits\ResolveResourceClass;
 use Moox\Core\Traits\Tabs\HasListPageTabs;
 
 abstract class ItemListPage extends ListRecords
 {
     use HasListPageTabs;
-
-    protected static string $resource = MooxResource::class;
+    use ResolveResourceClass;
 
     public function mount(): void
     {
@@ -20,6 +20,6 @@ abstract class ItemListPage extends ListRecords
 
     public function getTabs(): array
     {
-        return $this->getDynamicTabs('previews.simple-item.tabs', MooxResource::class);
+        return $this->getDynamicTabs('previews.simple-item.tabs', ItemResource::class);
     }
 }

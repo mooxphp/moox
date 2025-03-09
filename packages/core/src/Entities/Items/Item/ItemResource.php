@@ -3,6 +3,7 @@
 namespace Moox\Core\Entities\Items\Item;
 
 use Filament\Forms\Components\Actions;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 
@@ -82,5 +83,10 @@ class ItemResource extends BaseResource
         }
 
         return Actions::make($actions);
+    }
+
+    public static function query(): Builder
+    {
+        return parent::getEloquentQuery();
     }
 }

@@ -2,6 +2,13 @@
 
 ## Todo
 
+-   [ ] Implement Item Entity
+    -   [x] Item Model
+    -   [x] Item migration
+    -   [x] Item Resource
+    -   [x] Item Pages
+    -   [ ] Item Frontend
+
 Build now uses the new API from SP:
 That is the rest of the old config:
 
@@ -150,17 +157,6 @@ return [
 
 ## Items
 
--   Item
-    1. ID
-    2. Active - Bool
-    3. Simple Status
-    4. Title - String
-    5. Slug - String
-    6. Image - Media
-    7. Description - Editor
-    8. Data - JSON
-    9. created_at
-    10. updated_at
 -   Archive Item from item
     1. ID
     2. Title - String

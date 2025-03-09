@@ -2,15 +2,27 @@
 
 # Moox Item
 
-Item is a Moox Package using Moox Skeleton.
+Item is a simple Moox Entity, that can be used to create and manage simple entries, like logs.
 
 ## Features
 
 <!--features-->
 
--   Feature 1
--   Feature 2
--   Feature 3
+-   Title with Slug
+-   Active (Toggle)
+-   Description (Editor)
+-   Content (Markdown)
+-   Data (JSON)
+-   Image (Media)
+-   Author (User)
+-   Type (Select)
+-   DateTime (DateTime)
+-   Color
+-   UUID
+-   ULID
+-   Taxonomies
+-   Relation
+-   Section
 
 <!--/features-->
 
@@ -34,14 +46,6 @@ Curious what the install command does? See [Installation](https://github.com/moo
 ## Get Started
 
 See [Get Started](docs/GetStarted.md).
-
-## User Guide
-
-See [User Guide](docs/UserGuide.md).
-
-## Integration
-
-See [Integration](docs/Integration.md).
 
 ## Changelog
 

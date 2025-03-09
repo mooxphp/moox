@@ -1,8 +1,7 @@
 <?php
 
-namespace Moox\Item\Moox\Entities\Items;
+namespace Moox\Item\Moox\Entities\Items\Item;
 
-use App\Builder\Resources\SimpleItemResource\Pages;
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -15,45 +14,46 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\Items\Item\ItemResource;
+use Moox\Core\Entities\Items\Item\ItemResource as ItemBaseResource;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
+use Moox\Item\Models\Item;
 
-class ItemResource extends ItemResource
+class ItemResource extends ItemBaseResource
 {
-    use HasResourceTaxonomy;
+    // use HasResourceTaxonomy;
 
-    protected static ?string $model = \App\Builder\Models\SimpleItem::class;
+    protected static ?string $model = Item::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getModelLabel(): string
     {
-        return config('previews.simple-item.single');
+        return config('item.single');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return config('previews.simple-item.plural');
+        return config('item.plural');
     }
 
     public static function getNavigationLabel(): string
     {
-        return config('previews.simple-item.plural');
+        return config('item.plural');
     }
 
     public static function getBreadcrumb(): string
     {
-        return config('previews.simple-item.single');
+        return config('item.single');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return config('previews.navigation_group');
+        return config('item.navigation_group');
     }
 
     public static function getNavigationSort(): ?int
     {
-        return config('previews.navigation_sort') + 1;
+        return config('item.navigation_sort') + 1;
     }
 
     public static function form(Form $form): Form
@@ -103,8 +103,8 @@ class ItemResource extends ItemResource
                                         ->options(['Post' => 'Post', 'Page' => 'Page'])
                                         ->required(),
                                 ]),
-                            Section::make('')
-                                ->schema(static::getTaxonomyFields()),
+                            // Section::make('')
+                            //     ->schema(static::getTaxonomyFields()),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -124,8 +124,7 @@ class ItemResource extends ItemResource
                     ->sortable(),
                 TextColumn::make('content')
                     ->limit(50),
-                ...static::getTaxonomyColumns(),
-                ...static::getTaxonomyColumns(),
+                // ...static::getTaxonomyColumns(),
                 TextColumn::make('status')->sortable()->searchable()->toggleable(),
                 TextColumn::make('type')->sortable()->searchable()->toggleable(),
             ])
@@ -185,10 +184,10 @@ class ItemResource extends ItemResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSimpleItems::route('/'),
-            'create' => Pages\CreateSimpleItem::route('/create'),
-            'edit' => Pages\EditSimpleItem::route('/{record}/edit'),
-            'view' => Pages\ViewSimpleItem::route('/{record}'),
+            'index' => Pages\ListPage::route('/'),
+            'create' => Pages\CreatePage::route('/create'),
+            'edit' => Pages\EditPage::route('/{record}/edit'),
+            'view' => Pages\ViewPage::route('/{record}'),
         ];
     }
 }

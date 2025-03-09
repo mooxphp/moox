@@ -2,9 +2,32 @@
 
 namespace Moox\Item\Models;
 
-use Moox\Core\Entities\Items\Item\MooxModel;
+use Moox\Core\Entities\Items\Item\ItemModel;
 
-class Item extends MooxModel
+class Item extends ItemModel
 {
-    // nothing for now
+    protected $fillable = [
+        'title',
+        'slug',
+        'content',
+        'tabs',
+        'taxonomy',
+        'taxonomy',
+        'street',
+        'city',
+        'postal_code',
+        'country',
+        'status',
+        'type',
+    ];
+
+    protected $casts = [
+        'slug' => 'string',
+        'title' => 'string',
+    ];
+
+    // protected function getResourceName(): string
+    // {
+    //     return 'item';
+    // }
 }
