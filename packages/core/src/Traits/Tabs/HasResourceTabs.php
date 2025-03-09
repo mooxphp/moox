@@ -4,7 +4,7 @@ namespace Moox\Core\Traits\Tabs;
 
 use Illuminate\Database\Eloquent\Builder;
 
-trait TabsInResource
+trait HasResourceTabs
 {
     protected static ?string $currentTab = null;
 

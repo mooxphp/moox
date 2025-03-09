@@ -4,7 +4,7 @@ namespace Moox\Passkey\Resources\PasskeyResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
@@ -12,7 +12,7 @@ use Override;
 
 class ListPage extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     public static string $resource = PasskeyResource::class;
 

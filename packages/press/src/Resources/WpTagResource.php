@@ -14,7 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpTerm;
 use Moox\Press\Resources\WpTagResource\Pages\CreateWpTag;
 use Moox\Press\Resources\WpTagResource\Pages\EditWpTag;
@@ -25,7 +25,7 @@ use Override;
 class WpTagResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpTerm::class;
 

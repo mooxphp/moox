@@ -14,7 +14,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpOption;
 use Moox\Press\Resources\WpOptionResource\Pages\CreateWpOption;
 use Moox\Press\Resources\WpOptionResource\Pages\EditWpOption;
@@ -25,7 +25,7 @@ use Override;
 class WpOptionResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpOption::class;
 

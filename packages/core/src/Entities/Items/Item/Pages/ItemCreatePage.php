@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-abstract class MooxCreatePage extends CreateRecord
+abstract class ItemCreatePage extends CreateRecord
 {
     protected function resolveRecord($key): Model
     {

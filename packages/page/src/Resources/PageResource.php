@@ -11,7 +11,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Page\Models\Page;
 use Moox\Page\Resources\PageResource\Pages\ListPage;
 use Moox\Page\Resources\PageResource\Widgets\PageWidgets;
@@ -19,7 +19,7 @@ use Override;
 
 class PageResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = Page::class;
 

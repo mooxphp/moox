@@ -13,7 +13,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\PressWiki\Models\WpWikiDepartmentTopic;
 use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages;
 use Moox\PressWiki\Resources\WpWikiDepartmentTopicResource\Pages\ListWpWikiDepartmentTopics;
@@ -22,7 +22,7 @@ use Override;
 class WpWikiDepartmentTopicResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpWikiDepartmentTopic::class;
 

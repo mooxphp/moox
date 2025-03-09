@@ -17,7 +17,7 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpMedia;
 use Moox\Press\Resources\WpMediaResource\Pages\CreateWpPost;
 use Moox\Press\Resources\WpMediaResource\Pages\EditWpPost;
@@ -29,7 +29,7 @@ use Override;
 class WpMediaResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpMedia::class;
 

@@ -3,7 +3,7 @@
 namespace Moox\UserSession\Resources\UserSessionResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource;
 use Moox\UserSession\Resources\UserSessionResource\Widgets\UserSessionWidgets;
@@ -11,7 +11,7 @@ use Override;
 
 class ListPage extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     public static string $resource = UserSessionResource::class;
 

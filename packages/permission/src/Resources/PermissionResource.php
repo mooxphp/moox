@@ -11,7 +11,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Permission\Models\Permission;
 use Moox\Permission\Resources\PermissionResource\Pages\ListPage;
 use Moox\Permission\Resources\PermissionResource\Widgets\PermissionWidgets;
@@ -19,7 +19,7 @@ use Override;
 
 class PermissionResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = Permission::class;
 

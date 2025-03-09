@@ -15,7 +15,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingDate;
 use Moox\Training\Resources\TrainingDateResource\Pages\CreateTrainingDate;
@@ -26,7 +26,7 @@ use Override;
 
 class TrainingDateResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = TrainingDate::class;
 

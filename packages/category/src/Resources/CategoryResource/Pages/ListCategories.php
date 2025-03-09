@@ -10,12 +10,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Category\Models\Category;
 use Moox\Category\Resources\CategoryResource;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Override;
 
 class ListCategories extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     public static string $resource = CategoryResource::class;
 

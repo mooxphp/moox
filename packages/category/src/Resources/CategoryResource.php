@@ -34,7 +34,7 @@ use Moox\Category\Resources\CategoryResource\Pages\EditCategory;
 use Moox\Category\Resources\CategoryResource\Pages\ListCategories;
 use Moox\Category\Resources\CategoryResource\Pages\ViewCategory;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Override;
 
 // use Moox\Core\Forms\Components\TitleWithSlugInput;
@@ -42,7 +42,7 @@ use Override;
 class CategoryResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = Category::class;
 

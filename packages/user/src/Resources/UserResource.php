@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
@@ -33,7 +33,7 @@ use Moox\User\Resources\UserResource\Pages\ViewUser;
 class UserResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = User::class;
 

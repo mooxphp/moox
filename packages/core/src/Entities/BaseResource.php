@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-abstract class MooxBaseResource extends Resource
+abstract class BaseResource extends Resource
 {
     protected static function modifyEloquentQuery(Builder $query): Builder
     {

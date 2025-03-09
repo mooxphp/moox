@@ -12,7 +12,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\PressWiki\Models\WpTopic;
 use Moox\PressWiki\Resources\WpTopicResource\Pages\CreateWpTopic;
 use Moox\PressWiki\Resources\WpTopicResource\Pages\EditWpTopic;
@@ -22,7 +22,7 @@ use Override;
 
 class WpTopicResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpTopic::class;
 

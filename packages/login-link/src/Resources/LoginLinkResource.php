@@ -15,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\LoginLink\Models\LoginLink;
 use Moox\LoginLink\Resources\LoginLinkResource\Pages\ListPage;
 use Moox\LoginLink\Resources\LoginLinkResource\Widgets\LoginLinkWidgets;
@@ -24,7 +24,7 @@ use Override;
 class LoginLinkResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = LoginLink::class;
 

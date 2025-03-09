@@ -14,7 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Passkey\Models\Passkey;
 use Moox\Passkey\Resources\PasskeyResource\Pages\ListPage;
 use Moox\Passkey\Resources\PasskeyResource\Widgets\PasskeyWidgets;
@@ -23,7 +23,7 @@ use Override;
 class PasskeyResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = Passkey::class;
 

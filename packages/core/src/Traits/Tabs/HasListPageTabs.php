@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\QueriesInConfig;
 
-trait TabsInListPage
+trait HasListPageTabs
 {
     use QueriesInConfig;
 
-    public function mountTabsInListPage(): void
+    public function mountHasListPageTabs(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
     }

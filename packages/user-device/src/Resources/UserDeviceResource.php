@@ -16,7 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Config;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ListPage;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
@@ -26,7 +26,7 @@ use Override;
 class UserDeviceResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = UserDevice::class;
 

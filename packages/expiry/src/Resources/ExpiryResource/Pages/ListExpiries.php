@@ -6,14 +6,14 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInListPage;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource;
 
 class ListExpiries extends ListRecords
 {
+    use HasListPageTabs;
     use SingleSoftDeleteInListPage;
-    use TabsInListPage;
 
     protected static string $resource = ExpiryResource::class;
 

@@ -47,7 +47,7 @@ Moox Core requires these packages:
 
 ## Traits
 
-### TabsInListPage
+### HasListPageTabs
 
 This trait provides functionality for creating dynamic tabs in Filament resources.
 
@@ -60,11 +60,11 @@ This trait provides functionality for creating dynamic tabs in Filament resource
 The DynamicTabs trait is already implemented in all Moox packages including Moox Builder. If you want to implement this feature in your existing package:
 
 ```php
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 
 class ListItems extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     public function getTabs(): array
     {
@@ -345,7 +345,7 @@ And finally the most-known mistake, throws "Cannot access offset of type string 
 
 So don't forget to put the query in an extra array, even if it is a single query.
 
-As mentioned, the QueriesInConfig trait is used in TabsInListPage, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
+As mentioned, the QueriesInConfig trait is used in HasListPageTabs, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
 
 ### TranslatableConfig
 
@@ -447,7 +447,7 @@ As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) p
 
 You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
 
-### TaxonomyInModel
+### HasModelTaxonomy
 
 This trait provides functionality for models to work with dynamic taxonomies.
 
@@ -459,11 +459,11 @@ This trait provides functionality for models to work with dynamic taxonomies.
 #### Usage
 
 ```php
-use Moox\Core\Traits\Taxonomy\TaxonomyInModel;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
 class YourItem extends Model
 {
-    use TaxonomyInModel;
+    use HasModelTaxonomy;
 
     protected function getResourceName(): string
     {
@@ -499,7 +499,7 @@ class YourItem extends Model
 > We do not soft-delete the polymorphics, so if you restore a Taxonomy, these are lost.
 ```
 
-### TaxonomyInResource
+### HasResourceTaxonomy
 
 This trait provides methods for generating Filament form fields, table columns, and filters for dynamic taxonomies.
 
@@ -513,11 +513,11 @@ This trait provides methods for generating Filament form fields, table columns, 
 #### Usage
 
 ```php
-use Moox\Core\Traits\Taxonomy\TaxonomyInResource;
+use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 
 class YourResource extends Resource
 {
-    use TaxonomyInResource;
+    use HasResourceTaxonomy;
 
     public static function form(Form $form): Form
     {
@@ -542,7 +542,7 @@ class YourResource extends Resource
 }
 ```
 
-### TaxonomyInPages
+### HasPagesTaxonomy
 
 This trait provides methods for handling dynamic taxonomies in Filament resource pages.
 
@@ -555,11 +555,11 @@ This trait provides methods for handling dynamic taxonomies in Filament resource
 #### Usage
 
 ```php
-use Moox\Core\Traits\Taxonomy\TaxonomyInPages;
+use Moox\Core\Traits\Taxonomy\HasPagesTaxonomy;
 
 class EditYourModel extends EditRecord
 {
-    use TaxonomyInPages;
+    use HasPagesTaxonomy;
 
     // ... other page code ...
 }

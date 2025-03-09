@@ -12,7 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\SoftDelete\SingleSoftDeleteInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Expiry\Actions\CustomExpiryAction;
 use Moox\Expiry\Models\Expiry;
 use Moox\Expiry\Resources\ExpiryResource\Pages\CreateExpiry;
@@ -24,8 +24,8 @@ use Override;
 class ExpiryResource extends Resource
 {
     use BaseInResource;
+    use HasResourceTabs;
     use SingleSoftDeleteInResource;
-    use TabsInResource;
 
     protected static ?string $model = Expiry::class;
 

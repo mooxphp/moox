@@ -8,14 +8,14 @@ use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Tag\Models\Tag;
 use Moox\Tag\Resources\TagResource;
 use Override;
 
 class ListTags extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     public static string $resource = TagResource::class;
 

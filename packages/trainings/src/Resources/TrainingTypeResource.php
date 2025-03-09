@@ -15,7 +15,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingType;
 use Moox\Training\Resources\TrainingTypeResource\Pages\CreateTrainingType;
@@ -27,7 +27,7 @@ use Override;
 
 class TrainingTypeResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = TrainingType::class;
 

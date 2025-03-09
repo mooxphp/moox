@@ -7,18 +7,18 @@ namespace Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource\P
 use Filament\Resources\Pages\ListRecords;
 use Moox\Core\Traits\Base\BaseInListPage;
 use Moox\Core\Traits\Simple\SingleSimpleInListPage;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 
 class ListStaticCountriesStaticCurrencies extends ListRecords
 {
-    use BaseInListPage, SingleSimpleInListPage, TabsInListPage;
+    use BaseInListPage, HasListPageTabs, SingleSimpleInListPage;
 
     protected static string $resource = \Moox\Data\Filament\Resources\StaticCountriesStaticCurrenciesResource::class;
 
     public function mount(): void
     {
         parent::mount();
-        $this->mountTabsInListPage();
+        $this->mountHasListPageTabs();
     }
 
     public function getTabs(): array

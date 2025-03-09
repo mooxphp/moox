@@ -3,12 +3,12 @@
 namespace Moox\Core\Entities\Items\Item;
 
 use Filament\Forms\Components\Actions;
-use Moox\Core\Entities\MooxBaseResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Entities\BaseResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 
-abstract class MooxResource extends MooxBaseResource
+class ItemResource extends BaseResource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     public static function enableCreate(): bool
     {

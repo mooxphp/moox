@@ -15,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\UserDevice\Resources\UserDeviceResource\Pages\ViewPage;
 use Moox\UserSession\Models\UserSession;
 use Moox\UserSession\Resources\UserSessionResource\Pages\ListPage;
@@ -25,7 +25,7 @@ use Override;
 class UserSessionResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = UserSession::class;
 

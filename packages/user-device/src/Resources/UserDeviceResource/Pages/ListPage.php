@@ -3,7 +3,7 @@
 namespace Moox\UserDevice\Resources\UserDeviceResource\Pages;
 
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\UserDevice\Models\UserDevice;
 use Moox\UserDevice\Resources\UserDeviceResource;
 use Moox\UserDevice\Resources\UserDeviceResource\Widgets\UserDeviceWidgets;
@@ -11,7 +11,7 @@ use Override;
 
 class ListPage extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     public static string $resource = UserDeviceResource::class;
 

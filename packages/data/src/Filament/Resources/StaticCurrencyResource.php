@@ -16,13 +16,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Data\Filament\Resources\StaticCurrencyResource\Pages;
 use Moox\Data\Filament\Resources\StaticCurrencyResource\RelationManagers\StaticCountryRelationManager;
 
 class StaticCurrencyResource extends Resource
 {
-    use BaseInResource, SingleSimpleInResource, TabsInResource;
+    use BaseInResource, HasResourceTabs, SingleSimpleInResource;
 
     protected static ?string $model = \Moox\Data\Models\StaticCurrency::class;
 

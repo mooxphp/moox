@@ -18,7 +18,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Moox\Core\Services\TaxonomyService;
 
-trait TaxonomyInPages
+trait HasPagesTaxonomy
 {
     protected function getTaxonomyService(): TaxonomyService
     {

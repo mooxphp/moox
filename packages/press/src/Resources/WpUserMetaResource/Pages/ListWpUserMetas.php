@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpUserMetaResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Press\Models\WpUserMeta;
 use Moox\Press\Resources\WpUserMetaResource;
 
 class ListWpUserMetas extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     protected static string $resource = WpUserMetaResource::class;
 

@@ -18,7 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Validation\Rules\Password;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpUser;
 use Moox\Press\Resources\WpUserResource\Pages\CreateWpUser;
 use Moox\Press\Resources\WpUserResource\Pages\EditWpUser;
@@ -32,7 +32,7 @@ use Override;
 class WpUserResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpUser::class;
 

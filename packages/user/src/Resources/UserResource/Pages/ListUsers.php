@@ -4,13 +4,13 @@ namespace Moox\User\Resources\UserResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource;
 
 class ListUsers extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     protected static string $resource = UserResource::class;
 

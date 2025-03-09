@@ -4,13 +4,13 @@ namespace Moox\Press\Resources\WpCategoryResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Moox\Core\Traits\Tabs\TabsInListPage;
+use Moox\Core\Traits\Tabs\HasListPageTabs;
 use Moox\Press\Models\WpCategory;
 use Moox\Press\Resources\WpCategoryResource;
 
 class ListWpCategories extends ListRecords
 {
-    use TabsInListPage;
+    use HasListPageTabs;
 
     protected static string $resource = WpCategoryResource::class;
 

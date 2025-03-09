@@ -25,7 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Tag\Models\Tag;
@@ -37,7 +37,7 @@ use Override;
 
 class TagResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = Tag::class;
 

@@ -14,7 +14,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Press\Models\WpPost;
 use Moox\Press\Resources\WpPostResource\Pages\CreateWpPost;
 use Moox\Press\Resources\WpPostResource\Pages\EditWpPost;
@@ -27,7 +27,7 @@ use Override;
 class WpPostResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpPost::class;
 

@@ -11,7 +11,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Notification\Models\Notification;
 use Moox\Notification\Resources\NotificationResource\Pages\CreateNotification;
 use Moox\Notification\Resources\NotificationResource\Pages\EditNotification;
@@ -23,7 +23,7 @@ use Override;
 class NotificationResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = Notification::class;
 

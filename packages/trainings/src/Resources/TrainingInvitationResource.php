@@ -16,7 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Training\Filters\DateRangeFilter;
 use Moox\Training\Models\TrainingInvitation;
 use Moox\Training\Resources\TrainingInvitationResource\Pages\CreateTrainingInvitation;
@@ -29,7 +29,7 @@ use Override;
 
 class TrainingInvitationResource extends Resource
 {
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = TrainingInvitation::class;
 

@@ -14,7 +14,7 @@ use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Moox\Core\Traits\Base\BaseInResource;
-use Moox\Core\Traits\Tabs\TabsInResource;
+use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\PressTrainings\Models\WpTraining;
 use Moox\PressTrainings\Resources\WpTrainingResource\Pages\CreateWpTraining;
 use Moox\PressTrainings\Resources\WpTrainingResource\Pages\EditWpTraining;
@@ -27,7 +27,7 @@ use Override;
 class WpTrainingResource extends Resource
 {
     use BaseInResource;
-    use TabsInResource;
+    use HasResourceTabs;
 
     protected static ?string $model = WpTraining::class;
 
