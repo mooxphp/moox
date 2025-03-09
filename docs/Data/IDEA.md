@@ -1066,3 +1066,30 @@ https://filamentphp.com/plugins/pelmered-money-field
 -   https://www.sanktionslisten-screening.one/
 -   https://www.sanctionsmap.eu/#/main
 -   https://data.europa.eu/data/datasets/consolidated-list-of-persons-groups-and-entities-subject-to-eu-financial-sanctions?locale=en
+
+## Static Data for Salutation
+
+-   Moox Data Core
+
+    -   Gender (Title, Slug, Icon, Active)
+        -   Neutral
+    -   Salutation
+
+        -   None
+        -   Ms.
+        -   Mr.
+        -   Mx.
+
+    -   Honorific Title (Title, Slug, Icon, Active) - languages?
+        -   Dr.
+        -   Prof.
+        -   Sir
+        -   Dame
+        -   Hon.
+        -   Rev.
+
+Salutation config
+
+if ($salutation == 'none') {
+$greeting = 'Dear ' . $firstname . " " . $lastname;
+}
