@@ -158,7 +158,7 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
     |   └── 📂 Moox/
     |       └── 📂 Entities/
     |       |  └── 📂 Items/
-    |       |   |   └── 📜 ExampleItem.php
+    |       |   |   └── 📜 ExampleResource.php
     |       |   |   └── 📂 ExampleItem/
     |       |   |        ├── 📂 Relation/
     |       |   |        │   └── 📜 ExampleRelation.php
@@ -174,7 +174,7 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
     |       |   |            └── 📜 ShowExample.php
     |       |   |
     |       |   |── 📂 Taxonomies/
-    |       |   |   └── 📜 ExampleTaxonomy.php
+    |       |   |   └── 📜 ExampleResource.php
     |       |   |   └── 📂 ExampleTaxonomy/
     |       |   |       ├── 📂 Pages/
     |       |   |       ├── 📂 Widgets/
