@@ -33,12 +33,12 @@ class ItemServiceProvider extends MooxServiceProvider
             ->templateReplace([
                 'Item' => '%%PackageName%%',
                 'item' => '%%PackageSlug%%',
-                'Item is a Moox Package using Moox Skeleton.' => '%%Description%%',
+                'Item is a Moox Entity, Laravel Model and Filament Resource' => '%%Description%%',
                 'building new Moox packages, not used as installed package' => '%%UsedFor%%',
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
                 'category(development)' => 'category(unknown)',
-
+                '\'moox/builder\',' => '// optional alternative package (e.g. moox/builder)',
             ])
             ->templateRename([
                 'Item' => '%%PackageName%%',
@@ -51,7 +51,7 @@ class ItemServiceProvider extends MooxServiceProvider
                 'build.php',
             ])
             ->alternatePackages([
-                'builder',
+                'moox/builder',
             ]);
     }
 }

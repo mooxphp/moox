@@ -2,6 +2,27 @@
 
 ## Todo
 
+-   [ ] Build
+    -   [ ] Make Slug, Plural ...?
+    -   [ ] Copy a SEP or entity
+    -   [ ] Ask category, must be an enum in core, I guess
+    -   [ ] Ask parent-theme, must use package service, only for themes
+    -   [ ] Remove from MooxPackage in SP
+        -   [ ] templateFor
+        -   [ ] templateReplace
+        -   [ ] templateRename
+        -   [ ] templateSectionReplace
+        -   [ ] templateRemove
+        -   [ ] alternatePackage
+    -   [ ] Do not copy composer.lock, vendor or build.php
+    -   [ ] Do all in config, try first to port skeleton
+    -   [ ] then simple and nested taxonomy
+    -   [ ] then create items with relation
+    -   [ ] then create module
+    -   [ ] then copy theme
+    -   [ ] find MSP only in /packages, not Skeleton
+    -   [ ] Wire locally
+    -   [ ] Finalize
 -   [ ] Build Skeleton -> Item
 -   [ ] Refactor core traits to base classes
 -   [ ] Create Item
@@ -35,27 +56,6 @@
 -   [ ] Fork: https://github.com/ryangjchandler/filament-progress-column -> Moox Progress
 -   [ ] Fork: codeat3/blade-google-material-design-icons -> Moox Icons
 -   [ ] Fork: adrolli/slug -> Moox Slug
--   [ ] Build
-    -   [ ] Make Slug, Plural ...?
-    -   [ ] Copy a SEP or entity
-    -   [ ] Ask category, must be an enum in core, I guess
-    -   [ ] Ask parent-theme, must use package service, only for themes
-    -   [ ] Remove from MooxPackage in SP
-        -   [ ] templateFor
-        -   [ ] templateReplace
-        -   [ ] templateRename
-        -   [ ] templateSectionReplace
-        -   [ ] templateRemove
-        -   [ ] alternatePackage
-    -   [ ] Do not copy composer.lock, vendor or build.php
-    -   [ ] Do all in config, try first to port skeleton
-    -   [ ] then simple and nested taxonomy
-    -   [ ] then create items with relation
-    -   [ ] then create module
-    -   [ ] then copy theme
-    -   [ ] find MSP only in /packages, not Skeleton
-    -   [ ] Wire locally
-    -   [ ] Finalize
 -   [ ] Build iteration
     -   [ ] Delete Fields
         -   [ ] ID, Title, Slug are needed

@@ -38,7 +38,7 @@ class SkeletonServiceProvider extends MooxServiceProvider
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
                 'category(development)' => 'category(unknown)',
-
+                '\'moox/builder\',' => '// optional alternative package (e.g. moox/post)',
             ])
             ->templateRename([
                 'Skeleton' => '%%PackageName%%',
@@ -51,7 +51,7 @@ class SkeletonServiceProvider extends MooxServiceProvider
                 'build.php',
             ])
             ->alternatePackages([
-                'builder',
+                'moox/builder',
             ]);
     }
 }

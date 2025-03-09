@@ -1,6 +1,6 @@
 {
     "name": "moox/item",
-    "description": "Item is a Moox Package using Moox Skeleton.",
+    "description": "Item is a Moox Entity, Laravel Model and Filament Resource",
     "keywords": [
         "Moox",
         "Laravel",

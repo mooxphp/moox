@@ -2,32 +2,46 @@
 
 # Moox Item
 
-Item is a Moox Package using Moox Skeleton.
+Item is a Moox Entity, Laravel Model and Filament Resource
 
-Learn more about `Moox Item` at [moox.org/docs/item](https://moox.org/docs/item).
+## Features
+
+<!--features-->
+
+-   Feature 1
+-   Feature 2
+-   Feature 3
+
+<!--/features-->
 
 ## Requirements
 
-This package requires Moox Core that cares for the Laravel and Filament dependencies. See [Requirements](https://moox.org/docs/requirements) for more information.
+See [Requirements](https://github.com/mooxphp/moox/blob/main/docs/Requirements.md).
 
 ## Installation
-
-These two commmands are all you need to install the package:
 
 ```bash
 composer require moox/item
 php artisan moox:install
 ```
 
-Curious what the install command does? See the [installation documentation](https://moox.org/docs/installation).
+Curious what the install command does? See [Installation](https://github.com/mooxphp/moox/blob/main/docs/Installation.md).
 
 ## Screenshot
 
 ![Moox Item](https://github.com/mooxphp/moox/raw/main/art/screenshots/made-with-moox.jpg)
 
-## Documentation
+## Get Started
 
-Extensive [documentation for Moox Item](https://moox.org/docs/item) is available at [moox.org](https://moox.org).
+See [Get Started](docs/GetStarted.md).
+
+## User Guide
+
+See [User Guide](docs/UserGuide.md).
+
+## Integration
+
+See [Integration](docs/Integration.md).
 
 ## Changelog
 
@@ -39,12 +53,12 @@ Please see [ROADMAP](ROADMAP.md) for more information on what is planned for thi
 
 ## Security
 
-Please review [our security policy](https://moox.org/docs/security) on how to report security vulnerabilities.
+Please review [our security policy](https://github.com/mooxphp/moox/security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
-Thanks to so many [people for their contributions](https://moox.org/docs/credits) to this package.
+Thanks to so many [people for their contributions](https://github.com/mooxphp/moox#contributors) to this package.
 
 ## License
 
-The MIT License (MIT). Please see [our license and copyright information](https://moox.org/docs/license) for more information.
+The MIT License (MIT). Please see [our license and copyright information](https://github.com/mooxphp/moox/blob/main/LICENSE.md) for more information.
