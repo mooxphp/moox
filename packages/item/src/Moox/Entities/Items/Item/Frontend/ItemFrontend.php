@@ -4,7 +4,7 @@ namespace Moox\Item\Frontend;
 
 use Moox\Frontend\Frontend;
 
-class Item extends Frontend
+class ItemFrontend extends Frontend
 {
     public function getTemplate(): string
     {
