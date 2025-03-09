@@ -33,9 +33,7 @@ class ItemServiceProvider extends MooxServiceProvider
             ->templateFor([
                 'creating simple Laravel packages',
             ])
-            
-            
-            
+
             ->templateRemove([
                 'build.php',
             ]);
