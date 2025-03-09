@@ -14,46 +14,46 @@ abstract class MooxServiceProvider extends PackageServiceProvider
         $this->configureMoox($package);
     }
 
-    protected function getMooxPackage(): object
+    public function getMooxPackage(): object
     {
         if ($this->mooxPackage === null) {
             $packagePath = dirname((new \ReflectionClass(static::class))->getFileName());
 
             $this->mooxPackage = new class($packagePath)
             {
-                protected string $title;
+                public string $title;
 
-                protected ?array $plugins = null;
+                public ?array $plugins = null;
 
-                protected bool $firstPlugin = false;
+                public bool $firstPlugin = false;
 
-                protected ?array $requiredSeeders = null;
+                public ?array $requiredSeeders = null;
 
-                protected string $packagePath;
+                public string $packagePath;
 
-                protected bool $released = false;
+                public bool $released = false;
 
-                protected string $stability = 'dev';
+                public string $stability = 'dev';
 
-                protected string $category = 'unsorted';
+                public string $category = 'unsorted';
 
-                protected ?string $parentTheme = null;
+                public ?string $parentTheme = null;
 
-                protected array $staticSeeders = [];
+                public array $staticSeeders = [];
 
-                protected array $usedFor = [];
+                public array $usedFor = [];
 
-                protected array $templateFor = [];
+                public array $templateFor = [];
 
-                protected array $templateReplace = [];
+                public array $templateReplace = [];
 
-                protected array $templateRename = [];
+                public array $templateRename = [];
 
-                protected array $templateSectionReplace = [];
+                public array $templateSectionReplace = [];
 
-                protected array $templateRemove = [];
+                public array $templateRemove = [];
 
-                protected array $alternatePackages = [];
+                public array $alternatePackages = [];
 
                 public function __construct(string $packagePath)
                 {

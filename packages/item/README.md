@@ -1,8 +1,8 @@
-![Moox Item](https://github.com/mooxphp/moox/raw/main/art/banner/made-with-moox.jpg)
+![Moox Item](https://github.com/mooxphp/moox/raw/main/art/banner/item.jpg)
 
 # Moox Item
 
-Item is a Moox Entity, Laravel Model and Filament Resource
+Item is a Moox Package using Moox Skeleton.
 
 ## Features
 
@@ -29,7 +29,7 @@ Curious what the install command does? See [Installation](https://github.com/moo
 
 ## Screenshot
 
-![Moox Item](https://github.com/mooxphp/moox/raw/main/art/screenshots/made-with-moox.jpg)
+![Moox Item](https://github.com/mooxphp/moox/raw/main/art/screenshots/item.jpg)
 
 ## Get Started
 

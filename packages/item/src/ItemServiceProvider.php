@@ -21,37 +21,23 @@ class ItemServiceProvider extends MooxServiceProvider
 
         $this->getMooxPackage()
             ->title('Moox Item')
-            ->released(true)
+            ->released(false)
             ->stability('stable')
             ->category('development')
             ->usedFor([
-                'building new Moox packages, not used as installed package',
-            ])
-            ->templateFor([
-                'we do not know yet',
-            ])
-            ->templateReplace([
-                'Item' => '%%PackageName%%',
-                'item' => '%%PackageSlug%%',
-                'Item is a Moox Entity, Laravel Model and Filament Resource' => '%%Description%%',
-                'building new Moox packages, not used as installed package' => '%%UsedFor%%',
-                'released(true)' => 'released(false)',
-                'stability(stable)' => 'stability(dev)',
-                'category(development)' => 'category(unknown)',
-                '\'moox/builder\',' => '// optional alternative package (e.g. moox/builder)',
-            ])
-            ->templateRename([
-                'Item' => '%%PackageName%%',
-                'item' => '%%PackageSlug%%',
-            ])
-            ->templateSectionReplace([
-                "/<!--shortdesc-->.*<!--\/shortdesc-->/s" => '%%Description%%',
-            ])
-            ->templateRemove([
-                'build.php',
+                '%%UsedFor%%',
             ])
             ->alternatePackages([
-                'moox/builder',
+                '', // optional alternative package (e.g. moox/post)
+            ])
+            ->templateFor([
+                'creating simple Laravel packages',
+            ])
+            
+            
+            
+            ->templateRemove([
+                'build.php',
             ]);
     }
 }

@@ -2,18 +2,36 @@
 
 ## Todo
 
--   [ ] Build
-    -   [ ] Make Slug, Plural ...?
-    -   [ ] Copy a SEP or entity
+Build now uses the new API from SP:
+That is the rest of the old config:
+
+```php
+'entity_files' => [
+    'config/publish-item.php',
+    'database/factories/PublishItemFactory.php',
+    'database/migrations/create_publish_items_table.php.stub',
+    'resources/lang/*/translations.php',
+    'src/PublishItemPlugin.php',
+    'src/Models/PublishItem.php',
+    'src/Resources/PublishItemResource.php',
+    'src/Resources/PublishItemResource\Pages\CreatePublishItem.php',
+    'src/Resources/PublishItemResource\Pages\EditPublishItem.php',
+    'src/Resources/PublishItemResource\Pages\ListPublishItems.php',
+    'src/Resources/PublishItemResource\Pages\ViewPublishItem.php',
+    // TODO: Add RelationManager, if exists
+],
+```
+
+-   [ ] Build Skeleton -> Item
+-   [ ] Refactor core traits to base classes
+-   [ ] Create Item
+    -   [ ] with new base classes
+    -   [ ] Implement Relations class
+    -   [ ] Implement Module class
+    -   [ ] Implement Frontend class
+-   [ ] Build ...
     -   [ ] Ask category, must be an enum in core, I guess
     -   [ ] Ask parent-theme, must use package service, only for themes
-    -   [ ] Remove from MooxPackage in SP
-        -   [ ] templateFor
-        -   [ ] templateReplace
-        -   [ ] templateRename
-        -   [ ] templateSectionReplace
-        -   [ ] templateRemove
-        -   [ ] alternatePackage
     -   [ ] Do not copy composer.lock, vendor or build.php
     -   [ ] Do all in config, try first to port skeleton
     -   [ ] then simple and nested taxonomy
@@ -23,13 +41,6 @@
     -   [ ] find MSP only in /packages, not Skeleton
     -   [ ] Wire locally
     -   [ ] Finalize
--   [ ] Build Skeleton -> Item
--   [ ] Refactor core traits to base classes
--   [ ] Create Item
-    -   [ ] with new base classes
-    -   [ ] Implement Relations class
-    -   [ ] Implement Module class
-    -   [ ] Implement Frontend class
 -   [ ] Web: Skipping data: no composer.json found or invalid
 -   [ ] Web: Skipping localization: no composer.json found or invalid
 -   [ ] See Lunar and Filament before doing commands

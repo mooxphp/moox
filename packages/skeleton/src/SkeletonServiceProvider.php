@@ -27,6 +27,9 @@ class SkeletonServiceProvider extends MooxServiceProvider
             ->usedFor([
                 'building new Moox packages, not used as installed package',
             ])
+            ->alternatePackages([
+                'moox/builder', // optional alternative package (e.g. moox/post)
+            ])
             ->templateFor([
                 'creating simple Laravel packages',
             ])
@@ -38,7 +41,7 @@ class SkeletonServiceProvider extends MooxServiceProvider
                 'released(true)' => 'released(false)',
                 'stability(stable)' => 'stability(dev)',
                 'category(development)' => 'category(unknown)',
-                '\'moox/builder\',' => '// optional alternative package (e.g. moox/post)',
+                'moox/builder' => '',
             ])
             ->templateRename([
                 'Skeleton' => '%%PackageName%%',
@@ -49,9 +52,6 @@ class SkeletonServiceProvider extends MooxServiceProvider
             ])
             ->templateRemove([
                 'build.php',
-            ])
-            ->alternatePackages([
-                'moox/builder',
             ]);
     }
 }

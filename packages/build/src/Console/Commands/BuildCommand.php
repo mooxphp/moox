@@ -336,53 +336,246 @@ class BuildCommand extends Command
             exit;
         }
 
-        // Get template configuration
-        $templates = config('build.package_templates');
+        // Get the service provider from the template package
+        $templatePackageName = basename($templatePath);
+        $serviceProvider = $this->getServiceProviderFromPackage($templatePackageName);
 
-        // name is not the key, it's the value
-        $templateConfig = collect($templates)->firstWhere('name', $this->name);
-
-        if (! $templateConfig) {
-            error('  Template configuration not found');
+        if (! $serviceProvider) {
+            error('  Service provider not found for template: '.$templatePackageName);
             exit;
         }
 
-        // Process file renaming
+        // Initialize the service provider
+        $serviceProvider->register();
+        $serviceProvider->boot();
+
+        // Get the MooxPackage
+        $mooxPackage = $serviceProvider->getMooxPackage();
+
+        // Process file renaming from service provider
         $processedFiles = [];
-        if (isset($templateConfig['rename_files']) && is_array($templateConfig['rename_files'])) {
-            foreach ($templateConfig['rename_files'] as $oldPath => $newPath) {
-                $oldPath = $this->replacePlaceholders($oldPath, $packageSlug);
-                $newPath = $this->replacePlaceholders($newPath, $packageSlug);
 
-                $oldFullPath = $targetPath.'/'.$oldPath;
-                $newFullPath = $targetPath.'/'.$newPath;
+        // Get rename configuration from MooxPackage
+        $renameConfig = $mooxPackage->getTemplateRename();
 
-                if (file_exists($oldFullPath)) {
-                    $dirName = dirname($newFullPath);
-                    if (! is_dir($dirName)) {
-                        mkdir($dirName, 0755, true);
-                    }
-
-                    rename($oldFullPath, $newFullPath);
-                    $processedFiles[] = $newPath;
-                }
+        if (! empty($renameConfig)) {
+            foreach ($renameConfig as $pattern => $replacement) {
+                $renamedFiles = $this->processFileRenaming($targetPath, $pattern, $replacement, $packageSlug);
+                $processedFiles = array_merge($processedFiles, $renamedFiles);
             }
         }
 
-        // Process string replacements
-        if (isset($templateConfig['replace_strings']) && is_array($templateConfig['replace_strings'])) {
-            $replacedFiles = $this->processStringReplacements($targetPath, $templateConfig['replace_strings'], $packageSlug);
+        // Get string replacements from MooxPackage
+        $replacements = $mooxPackage->getTemplateReplace();
+
+        if (! empty($replacements)) {
+            $replacedFiles = $this->processStringReplacements($targetPath, $replacements, $packageSlug);
             $processedFiles = array_merge($processedFiles, $replacedFiles);
         }
 
-        // Process section replacements
-        if (isset($templateConfig['replace_sections']) && is_array($templateConfig['replace_sections'])) {
-            $replacedSections = $this->processSectionReplacements($targetPath, $templateConfig['replace_sections'], $packageSlug);
+        // Get section replacements from MooxPackage
+        $sectionReplacements = $mooxPackage->getTemplateSectionReplace();
+
+        if (! empty($sectionReplacements)) {
+            $replacedSections = $this->processSectionReplacements($targetPath, $sectionReplacements, $packageSlug);
             $processedFiles = array_merge($processedFiles, $replacedSections);
         }
 
         // Format and display the output
         $this->displayBuildSummary($packageSlug, $targetPath, $processedFiles);
+
+        // Remove template configuration from the new package's service provider
+        $this->removeTemplateConfigFromServiceProvider($targetPath);
+    }
+
+    protected function getServiceProviderFromPackage(string $packageName): ?object
+    {
+        $serviceProviderFiles = glob(base_path('packages/'.$packageName.'/src/*ServiceProvider.php'));
+
+        foreach ($serviceProviderFiles as $file) {
+            $content = file_get_contents($file);
+            $namespace = $this->extractNamespace($content);
+            $className = $this->extractClassName($file);
+
+            if (empty($namespace) || empty($className)) {
+                continue;
+            }
+
+            $fullyQualifiedClassName = $namespace.'\\'.$className;
+
+            try {
+                if (! class_exists($fullyQualifiedClassName)) {
+                    require_once $file;
+                }
+
+                return new $fullyQualifiedClassName(app());
+            } catch (\Throwable $e) {
+                $this->line('Debug: Error loading provider: '.$e->getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    protected function getTemplateRenameFromProvider(object $provider): array
+    {
+        if (method_exists($provider, 'getMooxPackage')) {
+            $mooxPackage = $provider->getMooxPackage();
+
+            // If we have a mooxPackage, check if it has a getTemplateRename method
+            if ($mooxPackage && method_exists($mooxPackage, 'getTemplateRename')) {
+                $renameConfig = $mooxPackage->getTemplateRename();
+
+                return $renameConfig;
+            }
+        }
+
+        // If we couldn't get the config through methods, try reflection
+        try {
+            $reflection = new \ReflectionClass($provider);
+
+            // Try to find a method that returns the templateRename configuration
+            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            foreach ($methods as $method) {
+                $methodName = $method->getName();
+                if (strpos($methodName, 'getTemplateRename') === 0) {
+                    return $provider->$methodName();
+                }
+            }
+
+            // If no method found, try to access the property directly
+            if ($reflection->hasProperty('mooxPackage')) {
+                $mooxPackageProperty = $reflection->getProperty('mooxPackage');
+                $mooxPackageProperty->setAccessible(true);
+                $mooxPackage = $mooxPackageProperty->getValue($provider);
+
+                if ($mooxPackage) {
+                    $mooxPackageReflection = new \ReflectionClass($mooxPackage);
+                    if ($mooxPackageReflection->hasProperty('templateRename')) {
+                        $templateRenameProperty = $mooxPackageReflection->getProperty('templateRename');
+                        $templateRenameProperty->setAccessible(true);
+
+                        return $templateRenameProperty->getValue($mooxPackage) ?? [];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->line('Debug: Reflection error: '.$e->getMessage());
+        }
+
+        return [];
+    }
+
+    protected function getTemplateReplacementsFromProvider(object $provider): array
+    {
+        // Check if the provider has a getMooxPackage method
+        if (method_exists($provider, 'getMooxPackage')) {
+            $mooxPackage = $provider->getMooxPackage();
+
+            // If we have a mooxPackage, check if it has a getTemplateReplace method
+            if ($mooxPackage && method_exists($mooxPackage, 'getTemplateReplace')) {
+                return $mooxPackage->getTemplateReplace();
+            }
+        }
+
+        // If we couldn't get the config through methods, try reflection
+        try {
+            $reflection = new \ReflectionClass($provider);
+
+            // Try to find a method that returns the templateReplace configuration
+            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            foreach ($methods as $method) {
+                $methodName = $method->getName();
+                if (strpos($methodName, 'getTemplateReplace') === 0) {
+                    return $provider->$methodName();
+                }
+            }
+
+            // If no method found, try to access the property directly
+            if ($reflection->hasProperty('mooxPackage')) {
+                $mooxPackageProperty = $reflection->getProperty('mooxPackage');
+                $mooxPackageProperty->setAccessible(true);
+                $mooxPackage = $mooxPackageProperty->getValue($provider);
+
+                if ($mooxPackage) {
+                    $mooxPackageReflection = new \ReflectionClass($mooxPackage);
+                    if ($mooxPackageReflection->hasProperty('templateReplace')) {
+                        $templateReplaceProperty = $mooxPackageReflection->getProperty('templateReplace');
+                        $templateReplaceProperty->setAccessible(true);
+
+                        return $templateReplaceProperty->getValue($mooxPackage) ?? [];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->line('Debug: Reflection error: '.$e->getMessage());
+        }
+
+        return [];
+    }
+
+    protected function getTemplateSectionReplacementsFromProvider(object $provider): array
+    {
+        // Check if the provider has a getMooxPackage method
+        if (method_exists($provider, 'getMooxPackage')) {
+            $mooxPackage = $provider->getMooxPackage();
+
+            // If we have a mooxPackage, check if it has a getTemplateSectionReplace method
+            if ($mooxPackage && method_exists($mooxPackage, 'getTemplateSectionReplace')) {
+                return $mooxPackage->getTemplateSectionReplace();
+            }
+        }
+
+        // If we couldn't get the config through methods, try reflection
+        try {
+            $reflection = new \ReflectionClass($provider);
+
+            // Try to find a method that returns the templateSectionReplace configuration
+            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            foreach ($methods as $method) {
+                $methodName = $method->getName();
+                if (strpos($methodName, 'getTemplateSectionReplace') === 0) {
+                    return $provider->$methodName();
+                }
+            }
+
+            // If no method found, try to access the property directly
+            if ($reflection->hasProperty('mooxPackage')) {
+                $mooxPackageProperty = $reflection->getProperty('mooxPackage');
+                $mooxPackageProperty->setAccessible(true);
+                $mooxPackage = $mooxPackageProperty->getValue($provider);
+
+                if ($mooxPackage) {
+                    $mooxPackageReflection = new \ReflectionClass($mooxPackage);
+                    if ($mooxPackageReflection->hasProperty('templateSectionReplace')) {
+                        $templateSectionReplaceProperty = $mooxPackageReflection->getProperty('templateSectionReplace');
+                        $templateSectionReplaceProperty->setAccessible(true);
+
+                        return $templateSectionReplaceProperty->getValue($mooxPackage) ?? [];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->line('Debug: Reflection error: '.$e->getMessage());
+        }
+
+        return [];
+    }
+
+    protected function extractNamespace(string $content): string
+    {
+        if (preg_match('/namespace\s+([^;]+);/', $content, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
+    }
+
+    protected function extractClassName(string $file): string
+    {
+        $filename = basename($file);
+
+        return pathinfo($filename, PATHINFO_FILENAME);
     }
 
     protected function displayBuildSummary(string $packageSlug, string $targetPath, array $processedFiles): void
@@ -402,22 +595,30 @@ class BuildCommand extends Command
         $this->newLine();
 
         $relativePath = str_replace(base_path().'/', '', $targetPath);
-        $this->line('       <fg=white>Package Path:      </><fg=blue;href=file://'.$targetPath.'>'.$relativePath.'</>');
-        $this->line('       <fg=white>Package Files:</>');
+        $this->line('       <fg=white>Package Path:      </><fg=green>'.$relativePath.'</>');
+        $this->line('       <fg=white>Package Files:     </><fg=green></>');
 
-        // Sort and display processed files - remove duplicates
-        $uniqueFiles = array_unique($processedFiles);
-        sort($uniqueFiles);
-        foreach ($uniqueFiles as $file) {
-            $filePath = $targetPath.'/'.$file;
-            $relativeFilePath = $relativePath.'/'.$file;
-            $this->line('       <fg=blue;href=file://'.$filePath.'>'.$relativeFilePath.'</>');
+        // Extract file paths from processed files array
+        $uniqueFilePaths = [];
+        foreach ($processedFiles as $processedFile) {
+            if (isset($processedFile['file'])) {
+                $uniqueFilePaths[] = $processedFile['file'];
+            } elseif (isset($processedFile['new'])) {
+                $uniqueFilePaths[] = $processedFile['new'];
+            }
         }
 
-        $this->newLine();
-        $this->newLine();
+        // Remove duplicates and sort
+        $uniqueFilePaths = array_unique($uniqueFilePaths);
+        sort($uniqueFilePaths);
+
+        // Display files
+        foreach ($uniqueFilePaths as $filePath) {
+            $relativeFilePath = str_replace($targetPath.'/', '', $filePath);
+            $this->line('       <fg=white>                   </><fg=green>'.$relativeFilePath.'</>');
+        }
+
         note('  '.$this->emojiRocket.'  Moox Build completed successfully! '.$this->emojiRocket.'  '.$this->emojiRocket.'  '.$this->emojiRocket);
-        $this->newLine();
         $this->newLine();
     }
 
@@ -495,41 +696,34 @@ class BuildCommand extends Command
         $this->buildEntity();
     }
 
-    protected function replacePlaceholders(string $string, string $packageSlug): string
-    {
-        $replacements = [
-            '%%packageName%%' => $this->packageName,
-            '%%packageSlug%%' => $packageSlug,
-            '%%authorName%%' => $this->authorName,
-            '%%authorEmail%%' => $this->authorEmail,
-            '%%namespace%%' => $this->namespace,
-            '%%description%%' => $this->packageDescription,
-        ];
-
-        return str_replace(array_keys($replacements), array_values($replacements), $string);
-    }
-
-    protected function processStringReplacements(string $directory, array $replacements, string $packageSlug): array
+    protected function processFileRenaming(string $targetPath, string $pattern, string $replacement, string $packageSlug): array
     {
         $processedFiles = [];
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS)
-        );
+
+        // Replace placeholders in the replacement string
+        $replacement = $this->replacePlaceholders($replacement, $packageSlug);
+
+        // Find all files in the target directory
+        $files = $this->findAllFiles($targetPath);
 
         foreach ($files as $file) {
-            if ($file->isFile()) {
-                $content = file_get_contents($file->getPathname());
-                $originalContent = $content;
+            $originalName = $file;
+            $newName = str_replace($pattern, $replacement, $originalName);
 
-                foreach ($replacements as $search => $replace) {
-                    $replace = $this->replacePlaceholders($replace, $packageSlug);
-                    $content = str_replace($search, $replace, $content);
+            if ($originalName !== $newName) {
+                // Create the directory if it doesn't exist
+                $newDir = dirname($newName);
+                if (! is_dir($newDir)) {
+                    mkdir($newDir, 0755, true);
                 }
 
-                if ($content !== $originalContent) {
-                    file_put_contents($file->getPathname(), $content);
-                    $relativePath = str_replace($directory.'/', '', $file->getPathname());
-                    $processedFiles[] = $relativePath;
+                // Rename the file
+                if (rename($originalName, $newName)) {
+                    $processedFiles[] = [
+                        'type' => 'rename',
+                        'original' => $originalName,
+                        'new' => $newName,
+                    ];
                 }
             }
         }
@@ -537,30 +731,126 @@ class BuildCommand extends Command
         return $processedFiles;
     }
 
-    protected function processSectionReplacements(string $directory, array $replacements, string $packageSlug): array
+    protected function processStringReplacements(string $targetPath, array $replacements, string $packageSlug): array
     {
         $processedFiles = [];
 
-        foreach ($replacements as $filePath => $patterns) {
-            $fullPath = $directory.'/'.$filePath;
+        // Find all files in the target directory
+        $files = $this->findAllFiles($targetPath);
 
-            if (file_exists($fullPath)) {
-                $content = file_get_contents($fullPath);
-                $originalContent = $content;
+        foreach ($files as $file) {
+            // Skip binary files
+            if ($this->isBinaryFile($file)) {
+                continue;
+            }
 
-                foreach ($patterns as $pattern => $replacement) {
-                    $replacement = $this->replacePlaceholders($replacement, $packageSlug);
-                    $content = preg_replace($pattern, $replacement, $content);
-                }
+            $content = file_get_contents($file);
+            $originalContent = $content;
 
-                if ($content !== $originalContent) {
-                    file_put_contents($fullPath, $content);
-                    $processedFiles[] = $filePath;
-                }
+            foreach ($replacements as $search => $replace) {
+                // Replace placeholders in the replacement string
+                $replace = $this->replacePlaceholders($replace, $packageSlug);
+
+                // Perform the replacement
+                $content = str_replace($search, $replace, $content);
+            }
+
+            if ($content !== $originalContent) {
+                file_put_contents($file, $content);
+                $processedFiles[] = [
+                    'type' => 'replace',
+                    'file' => $file,
+                ];
             }
         }
 
         return $processedFiles;
+    }
+
+    protected function processSectionReplacements(string $targetPath, array $sectionReplacements, string $packageSlug): array
+    {
+        $processedFiles = [];
+
+        // Find all files in the target directory
+        $files = $this->findAllFiles($targetPath);
+
+        foreach ($files as $file) {
+            // Skip binary files
+            if ($this->isBinaryFile($file)) {
+                continue;
+            }
+
+            $content = file_get_contents($file);
+            $originalContent = $content;
+
+            foreach ($sectionReplacements as $pattern => $replacement) {
+                // Replace placeholders in the replacement string
+                $replacement = $this->replacePlaceholders($replacement, $packageSlug);
+
+                // Perform the replacement using regex
+                $content = preg_replace($pattern, $replacement, $content);
+            }
+
+            if ($content !== $originalContent) {
+                file_put_contents($file, $content);
+                $processedFiles[] = [
+                    'type' => 'section_replace',
+                    'file' => $file,
+                ];
+            }
+        }
+
+        return $processedFiles;
+    }
+
+    protected function findAllFiles(string $directory): array
+    {
+        $files = [];
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $files[] = $file->getPathname();
+            }
+        }
+
+        return $files;
+    }
+
+    protected function isBinaryFile(string $file): bool
+    {
+        // Check file extension
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
+        $binaryExtensions = ['png', 'jpg', 'jpeg', 'gif', 'ico', 'zip', 'pdf', 'exe', 'dll'];
+
+        if (in_array(strtolower($extension), $binaryExtensions)) {
+            return true;
+        }
+
+        // Check file content
+        $finfo = new \finfo(FILEINFO_MIME);
+        $mime = $finfo->file($file);
+
+        return strpos($mime, 'text/') !== 0 && strpos($mime, 'application/json') !== 0;
+    }
+
+    protected function replacePlaceholders(string $text, string $packageSlug): string
+    {
+        $replacements = [
+            '%%PackageName%%' => $this->packageName,
+            '%%PackageSlug%%' => $packageSlug,
+            '%%Description%%' => $this->packageDescription,
+            '%%AuthorName%%' => $this->authorName,
+            '%%AuthorEmail%%' => $this->authorEmail,
+            '%%Namespace%%' => $this->namespace,
+            '%%Packagist%%' => $this->packagist,
+        ];
+
+        return str_replace(array_keys($replacements), array_values($replacements), $text);
     }
 
     protected function deleteDirectory(string $dir): bool
@@ -584,5 +874,36 @@ class BuildCommand extends Command
         }
 
         return rmdir($dir);
+    }
+
+    protected function removeTemplateConfigFromServiceProvider(string $packagePath): void
+    {
+        $serviceProviderFiles = glob($packagePath.'/src/*ServiceProvider.php');
+
+        foreach ($serviceProviderFiles as $file) {
+            $content = file_get_contents($file);
+
+            // Remove template configuration methods
+            $patterns = [
+                // Remove templateRename calls
+                '/->templateRename\(\s*\[.*?\]\s*\)/s' => '',
+
+                // Remove templateReplace calls
+                '/->templateReplace\(\s*\[.*?\]\s*\)/s' => '',
+
+                // Remove templateSectionReplace calls
+                '/->templateSectionReplace\(\s*\[.*?\]\s*\)/s' => '',
+
+                // Remove any empty chain calls that might be left (e.g., "->->")
+                '/->->/s' => '->',
+            ];
+
+            $newContent = preg_replace(array_keys($patterns), array_values($patterns), $content);
+
+            // Write the updated content back to the file
+            if ($newContent !== $content) {
+                file_put_contents($file, $newContent);
+            }
+        }
     }
 }

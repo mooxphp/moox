@@ -148,7 +148,7 @@ writeln(' ');
 writeln('This script will guide you through the process of building your own Moox package.');
 writeln(' ');
 
-$authorName = ask('Author name', 'Moox');
+$authorName = ask('Author name', 'Moox Developer');
 
 $authorEmail = ask('Author email', 'dev@moox.org');
 
@@ -190,14 +190,14 @@ $files = (str_starts_with(strtoupper(PHP_OS), 'WIN') ? replaceForWindows() : rep
 
 foreach ($files as $file) {
     replace_in_file($file, [
-        'made-with-moox.jpg' => 'made-with-moox.jpg',
-        'Moox' => $authorName,
+        'item.jpg' => 'made-with-moox.jpg',
+        'Moox Developer' => $authorName,
         'dev@moox.org' => $authorEmail,
         'Item' => $className,
         'item' => $packageSlug,
-        'Item is a Moox Entity, Laravel Model and Filament Resource' => $description,
-        'we do not know yet' => 'we do not know yet',
-        'we do not know yet' => 'we do not know yet',
+        'Item is a Moox Package using Moox Skeleton.' => $description,
+        'not used as installed package, only used as template for new Moox packages' => 'we do not know yet',
+        'creating simple Laravel packages' => 'we do not know yet',
     ]);
 
     match (true) {
