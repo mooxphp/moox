@@ -33,9 +33,7 @@ class FrontendServiceProvider extends MooxServiceProvider
             ->templateFor([
                 'creating simple Laravel packages',
             ])
-            
-            
-            
+
             ->templateRemove([
                 'build.php',
             ]);
