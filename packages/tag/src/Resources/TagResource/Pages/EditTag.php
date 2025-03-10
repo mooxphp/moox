@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\Tag\Resources\TagResource\Pages;
 
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Tag\Resources\TagResource;
 use Override;
-use Illuminate\Database\Eloquent\Model;
 
 class EditTag extends EditRecord
 {
@@ -26,13 +26,14 @@ class EditTag extends EditRecord
     {
         if ($this->selectedLang && $this->record->hasTranslation($this->selectedLang)) {
             $translation = $this->record->translate($this->selectedLang);
+
             return array_merge($data, [
                 'title' => $translation->title,
                 'slug' => $translation->slug,
                 'content' => $translation->content,
             ]);
         }
-        
+
         return $data;
     }
 
@@ -43,19 +44,19 @@ class EditTag extends EditRecord
         $translatableAttributes = ['title', 'slug', 'content'];
         $translationData = array_intersect_key($data, array_flip($translatableAttributes));
         $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
-        
+
         // Update non-translatable data
         $record->fill($nonTranslatableData);
-        
+
         // Handle translations
         if ($this->selectedLang) {
             $record->translateOrNew($this->selectedLang)->fill($translationData);
         } else {
             $record->translateOrNew(app()->getLocale())->fill($translationData);
         }
-        
+
         $record->save();
-        
+
         return $record;
     }
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Moox\Tag\Resources\TagResource\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 use Moox\Tag\Resources\TagResource;
 use Override;
-use Illuminate\Database\Eloquent\Model;
 
 class CreateTag extends CreateRecord
 {
@@ -27,13 +27,13 @@ class CreateTag extends CreateRecord
     {
         $model = static::getModel();
         // Create new record instance
-        $record = new $model();
-        
+        $record = new $model;
+
         // Get translatable attributes
         $translatableAttributes = ['title', 'slug', 'content'];
         $translationData = array_intersect_key($data, array_flip($translatableAttributes));
         $nonTranslatableData = array_diff_key($data, array_flip($translatableAttributes));
-        
+
         // Fill non-translatable data
         $record->fill($nonTranslatableData);
         $record->save();
@@ -43,9 +43,9 @@ class CreateTag extends CreateRecord
         } else {
             $record->translateOrNew(app()->getLocale())->fill($translationData);
         }
-        
+
         $record->save();
-        
+
         return $record;
     }
 

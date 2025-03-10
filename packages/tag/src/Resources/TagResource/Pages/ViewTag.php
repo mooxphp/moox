@@ -28,13 +28,14 @@ class ViewTag extends ViewRecord
     {
         if ($this->selectedLang && $this->record->hasTranslation($this->selectedLang)) {
             $translation = $this->record->translate($this->selectedLang);
+
             return array_merge($data, [
                 'title' => $translation->title,
                 'slug' => $translation->slug,
                 'content' => $translation->content,
             ]);
         }
-        
+
         return $data;
     }
 
@@ -62,5 +63,4 @@ class ViewTag extends ViewRecord
     {
         return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
     }
-
 }

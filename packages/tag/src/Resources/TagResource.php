@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
@@ -34,7 +35,6 @@ use Moox\Tag\Resources\TagResource\Pages\EditTag;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
 use Override;
-use Illuminate\Validation\Rules\Unique;
 
 class TagResource extends Resource
 {
@@ -72,8 +72,7 @@ class TagResource extends Resource
                                         ->live(onBlur: true)
                                         ->label(__('core::core.title'))
                                         ->required()
-                                        ->afterStateUpdated(fn (Set $set, ?string $state) => 
-                                            $set('slug', Str::slug($state))
+                                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))
                                         ),
                                     TextInput::make('slug')
                                         ->label(__('core::core.slug'))
@@ -230,6 +229,7 @@ class TagResource extends Resource
                         if ($lang && $record->hasTranslation($lang)) {
                             return $record->translate($lang)->content;
                         }
+
                         return $record->content;
                     }),
                 TextColumn::make('count')
