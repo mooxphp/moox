@@ -1,11 +1,11 @@
 <?php
 
-namespace Moox\Core\Entities\Items\Item\Pages;
+namespace Moox\Core\Entities\Items\Record\Pages;
 
 use Filament\Resources\Pages\EditRecord;
 use Moox\Core\Traits\ResolveResourceClass;
 
-abstract class ItemEditPage extends EditRecord
+abstract class BaseEditRecord extends EditRecord
 {
     use ResolveResourceClass;
 }

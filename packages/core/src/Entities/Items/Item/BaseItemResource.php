@@ -7,7 +7,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Moox\Core\Entities\BaseResource;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 
-class ItemResource extends BaseResource
+class BaseItemResource extends BaseResource
 {
     use HasResourceTabs;
 

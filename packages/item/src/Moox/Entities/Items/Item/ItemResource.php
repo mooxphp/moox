@@ -14,11 +14,11 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Core\Entities\Items\Item\ItemResource as ItemBaseResource;
+use Moox\Core\Entities\Items\Item\BaseItemResource;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Item\Models\Item;
 
-class ItemResource extends ItemBaseResource
+class ItemResource extends BaseItemResource
 {
     // use HasResourceTaxonomy;
 
@@ -184,10 +184,10 @@ class ItemResource extends ItemBaseResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPage::route('/'),
-            'create' => Pages\CreatePage::route('/create'),
-            'edit' => Pages\EditPage::route('/{record}/edit'),
-            'view' => Pages\ViewPage::route('/{record}'),
+            'index' => Pages\ListItems::route('/'),
+            'create' => Pages\CreateItem::route('/create'),
+            'edit' => Pages\EditItem::route('/{record}/edit'),
+            'view' => Pages\ViewItem::route('/{record}'),
         ];
     }
 }

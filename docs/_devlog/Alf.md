@@ -7,28 +7,15 @@
     -   [x] Item migration
     -   [x] Item Resource
     -   [x] Item Pages
+    -   [ ] Item Factory
     -   [ ] Item Frontend
-
-Build now uses the new API from SP:
-That is the rest of the old config:
-
-```php
-'entity_files' => [
-    'config/publish-item.php',
-    'database/factories/PublishItemFactory.php',
-    'database/migrations/create_publish_items_table.php.stub',
-    'resources/lang/*/translations.php',
-    'src/PublishItemPlugin.php',
-    'src/Models/PublishItem.php',
-    'src/Resources/PublishItemResource.php',
-    'src/Resources/PublishItemResource\Pages\CreatePublishItem.php',
-    'src/Resources/PublishItemResource\Pages\EditPublishItem.php',
-    'src/Resources/PublishItemResource\Pages\ListPublishItems.php',
-    'src/Resources/PublishItemResource\Pages\ViewPublishItem.php',
-    // TODO: Add RelationManager, if exists
-],
-```
-
+    -   [ ] Item Fields (see Item README)
+-   [ ] Implement Record Entity
+    -   [ ] Base with SoftDeletes
+    -   [ ] Generate package
+    -   [ ] Add fields
+-   [ ] Build should replace with variables, not the placeholders
+-   [ ] Build must use the entity files for entity generation
 -   [ ] Implement Frontend class, abstract? See Frontend/Idea.md
 -   [ ] Build Skeleton -> Item
 -   [ ] Refactor core traits to base classes

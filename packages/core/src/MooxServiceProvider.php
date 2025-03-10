@@ -53,6 +53,8 @@ abstract class MooxServiceProvider extends PackageServiceProvider
 
                 public array $templateRemove = [];
 
+                public array $templateEntityFiles = [];
+
                 public array $alternatePackages = [];
 
                 public function __construct(string $packagePath)
@@ -215,6 +217,18 @@ abstract class MooxServiceProvider extends PackageServiceProvider
                 public function getTemplateRemove(): array
                 {
                     return $this->templateRemove;
+                }
+
+                public function templateEntityFiles(array $files): self
+                {
+                    $this->templateEntityFiles = $files;
+
+                    return $this;
+                }
+
+                public function getTemplateEntityFiles(): array
+                {
+                    return $this->templateEntityFiles;
                 }
 
                 public function alternatePackages(array $packages): self

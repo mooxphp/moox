@@ -2,9 +2,9 @@
 
 namespace Moox\Item\Models;
 
-use Moox\Core\Entities\Items\Item\ItemModel;
+use Moox\Core\Entities\Items\Item\BaseItemModel;
 
-class Item extends ItemModel
+class Item extends BaseItemModel
 {
     protected $fillable = [
         'title',
