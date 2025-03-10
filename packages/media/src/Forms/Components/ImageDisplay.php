@@ -19,7 +19,7 @@ class ImageDisplay extends Field
     {
         $record = $this->getRecord();
 
-        if (! $record) {
+        if (!$record) {
             return null;
         }
 

@@ -8,9 +8,7 @@
             <livewire:media-uploader :model-id="$modelId" :model-class="$modelClass" collection="default" />
         @endif
 
-        <!-- Media Browser/Grid hier -->
         <div class="mt-4">
-            <!-- Ihre bestehende Media-Browser-Logik -->
         </div>
     </div>
 
@@ -83,8 +81,8 @@
 
                                         <div wire:click="toggleMediaSelection({{ $item->id }})"
                                             class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                                                                                                                                                        {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                                                                                                                                                        {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                                                                                                                                                                            {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                                                                                                                                                                            {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
 
                                             @if ($fileData)
                                                 <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
