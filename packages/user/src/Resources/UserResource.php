@@ -24,7 +24,6 @@ use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Media\Forms\Components\MediaPicker;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 use Moox\Security\FilamentActions\Passwords\SendPasswordResetLinksBulkAction;
-use Moox\Sync\Models\Platform;
 use Moox\User\Models\User;
 use Moox\User\Resources\UserResource\Pages\CreateUser;
 use Moox\User\Resources\UserResource\Pages\EditUser;
@@ -136,7 +135,7 @@ class UserResource extends Resource
                         ->unique(
                             'users',
                             'email',
-                            fn(?Model $record): ?Model => $record
+                            fn (?Model $record): ?Model => $record
                         )
                         ->email()
                         ->columnSpan([
@@ -168,7 +167,7 @@ class UserResource extends Resource
                         ->label(__('core::user.password'))
                         ->revealable()
                         ->required()
-                        ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                        ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                         ->password()
                         ->visibleOn('create')
                         ->rule(Password::min(8)->mixedCase()->numbers()->symbols())
@@ -244,7 +243,7 @@ class UserResource extends Resource
                     ->circular(),
                 TextColumn::make('name')
                     ->label(__('core::user.name'))
-                    ->formatStateUsing(fn($state, User $user): string => $user->first_name . ' ' . $user->last_name)
+                    ->formatStateUsing(fn ($state, User $user): string => $user->first_name.' '.$user->last_name)
                     ->toggleable()
                     ->sortable()
                     ->searchable()
@@ -261,23 +260,23 @@ class UserResource extends Resource
                     ->sortable()
                     ->alignStart()
                     ->icon(
-                        fn($record): string => is_null(
+                        fn ($record): string => is_null(
                             $record->email_verified_at
                         ) ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle'
                     )
                     ->colors([
-                        'success' => fn($record): bool => $record->email_verified_at !== null,
-                        'danger' => fn($record): bool => $record->email_verified_at === null,
+                        'success' => fn ($record): bool => $record->email_verified_at !== null,
+                        'danger' => fn ($record): bool => $record->email_verified_at === null,
                     ]),
                 IconColumn::make('roles.name')
                     ->label(__('core::user.roles'))
                     ->sortable()
                     ->alignCenter()
                     ->icons([
-                        'heroicon-o-shield-exclamation' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'heroicon-o-shield-exclamation' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ])
                     ->colors([
-                        'warning' => fn($record) => $record->roles->pluck('name')->contains('super_admin'),
+                        'warning' => fn ($record) => $record->roles->pluck('name')->contains('super_admin'),
                     ]),
             ])
             ->filters([

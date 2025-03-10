@@ -4,7 +4,6 @@ namespace Moox\Media\Resources\MediaResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Resources\Pages\ListRecords;
 use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource;
@@ -33,7 +32,7 @@ class ListMedia extends ListRecords
                         ->maxSize(10240)
                         ->required()
                         ->afterStateUpdated(function ($state) {
-                            if (!$state) {
+                            if (! $state) {
                                 return;
                             }
 
