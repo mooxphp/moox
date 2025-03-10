@@ -4,7 +4,12 @@ namespace Moox\Core\Entities\Items\Item;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BaseItemModel extends Model
+abstract class BaseItemModel extends Model
 {
-    // nothing for now
+    public static function getResourceName(): string
+    {
+        $className = class_basename(static::class);
+
+        return strtolower($className);
+    }
 }

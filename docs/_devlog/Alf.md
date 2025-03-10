@@ -7,11 +7,16 @@
     -   [x] Item migration
     -   [x] Item Resource
     -   [x] Item Pages
+    -   [ ] Item Fields (see Item README)
     -   [ ] Item Factory
     -   [ ] Item Frontend
-    -   [ ] Item Fields (see Item README)
+    -   [x] Item Plugin
+    -   [ ] Taxonomies
+    -   [ ] Relations
+    -   [ ] Sections
+    -   [ ] Modules
 -   [ ] Implement Record Entity
-    -   [ ] Base with SoftDeletes
+    -   [ ] Base Record with SoftDeletes
     -   [ ] Generate package
     -   [ ] Add fields
 -   [ ] Build should replace with variables, not the placeholders

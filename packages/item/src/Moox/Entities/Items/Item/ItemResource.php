@@ -3,15 +3,25 @@
 namespace Moox\Item\Moox\Entities\Items\Item;
 
 use Camya\Filament\Forms\Components\TitleWithSlugInput;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
@@ -20,7 +30,7 @@ use Moox\Item\Models\Item;
 
 class ItemResource extends BaseItemResource
 {
-    // use HasResourceTaxonomy;
+    use HasResourceTaxonomy;
 
     protected static ?string $model = Item::class;
 
@@ -69,15 +79,18 @@ class ItemResource extends BaseItemResource
                                         fieldTitle: 'title',
                                         fieldSlug: 'slug',
                                     ),
-                                    Textarea::make('content')
-                                        ->label('Content')->required(),
-                                ]),
-                            Section::make('Address')
-                                ->schema([
-                                    TextInput::make('street'),
-                                    TextInput::make('city'),
-                                    TextInput::make('postal_code'),
-                                    TextInput::make('country'),
+                                    Toggle::make('is_active')
+                                        ->label('Active'),
+                                    RichEditor::make('description')
+                                        ->label('Description'),
+                                    MarkdownEditor::make('content')
+                                        ->label('Content'),
+                                    KeyValue::make('data')
+                                        ->label('Data (JSON)'),
+                                    FileUpload::make('image')
+                                        ->label('Image')
+                                        ->directory('items')
+                                        ->image(),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -89,22 +102,48 @@ class ItemResource extends BaseItemResource
                                 ]),
                             Section::make('')
                                 ->schema([
+                                    Select::make('type')
+                                        ->label('Type')
+                                        ->options(['Post' => 'Post', 'Page' => 'Page']),
+
                                     Select::make('status')
                                         ->label('Status')
                                         ->placeholder(__('core::core.status'))
-                                        ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe'])
-                                        ->required(),
+                                        ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
+                                ]),
+                            Section::make('')
+                                ->schema(static::getTaxonomyFields()),
+                            Section::make('')
+                                ->schema([
+                                    Select::make('author_id')
+                                        ->label('Author')
+                                        ->relationship('author', 'name'),
+                                    DateTimePicker::make('due_at')
+                                        ->label('Due'),
+                                    ColorPicker::make('color')
+                                        ->label('Color'),
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    Select::make('type')
-                                        ->label('Type')
-                                        ->placeholder(__('core::core.type'))
-                                        ->options(['Post' => 'Post', 'Page' => 'Page'])
-                                        ->required(),
-                                ]),
-                            // Section::make('')
-                            //     ->schema(static::getTaxonomyFields()),
+                                    Placeholder::make('id')
+                                        ->label('ID')
+                                        ->content(fn ($record): string => $record->id ?? '-'),
+                                    Placeholder::make('uuid')
+                                        ->label('UUID')
+                                        ->content(fn ($record): string => $record->uuid ?? '-'),
+                                    Placeholder::make('ulid')
+                                        ->label('ULID')
+                                        ->content(fn ($record): string => $record->ulid ?? '-'),
+                                    Placeholder::make('created_at')
+                                        ->label('Created')
+                                        ->content(fn ($record): string => $record->created_at ?
+                                            $record->created_at.' ('.$record->created_at->diffForHumans().')' : ''),
+                                    Placeholder::make('updated_at')
+                                        ->label('Last Updated')
+                                        ->content(fn ($record): string => $record->updated_at ?
+                                            $record->updated_at.' ('.$record->updated_at->diffForHumans().')' : ''),
+                                ])
+                                ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
@@ -119,19 +158,51 @@ class ItemResource extends BaseItemResource
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
+                IconColumn::make('is_active')
+                    ->boolean()
+                    ->label('Active')
+                    ->sortable(),
                 TextColumn::make('slug')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('description')
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('content')
-                    ->limit(50),
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('author.name')
+                    ->label('Author')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('type')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('published_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+                ColorColumn::make('color')
+                    ->toggleable(),
+                TextColumn::make('uuid')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('ulid')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('section')
+                    ->sortable()
+                    ->toggleable(),
                 // ...static::getTaxonomyColumns(),
-                TextColumn::make('status')->sortable()->searchable()->toggleable(),
-                TextColumn::make('type')->sortable()->searchable()->toggleable(),
+                TextColumn::make('status')
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(),
             ])
             ->defaultSort('title', 'desc')
             ->actions([...static::getTableActions()])
             ->bulkActions([...static::getBulkActions()])
             ->filters([
+                TernaryFilter::make('is_active')
+                    ->label('Active'),
                 Filter::make('title')
                     ->form([
                         TextInput::make('title')
@@ -151,25 +222,6 @@ class ItemResource extends BaseItemResource
 
                         return 'Title: '.$data['title'];
                     }),
-                Filter::make('slug')
-                    ->form([
-                        TextInput::make('slug')
-                            ->label(__('core::core.slug'))
-                            ->placeholder(__('core::core.filter').' Title'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query->when(
-                            $data['slug'],
-                            fn (Builder $query, $value): Builder => $query->where('slug', 'like', "%{$value}%"),
-                        );
-                    })
-                    ->indicateUsing(function (array $data): ?string {
-                        if (! $data['slug']) {
-                            return null;
-                        }
-
-                        return __('core::core.slug').': '.$data['slug'];
-                    }),
                 SelectFilter::make('status')
                     ->label('Status')
                     ->placeholder(__('core::core.filter').' Status')
@@ -178,6 +230,10 @@ class ItemResource extends BaseItemResource
                     ->label('Type')
                     ->placeholder(__('core::core.filter').' Type')
                     ->options(['Post' => 'Post', 'Page' => 'Page']),
+                SelectFilter::make('section')
+                    ->label('Section')
+                    ->placeholder(__('core::core.filter').' Section')
+                    ->options(['Header' => 'Header', 'Main' => 'Main', 'Footer' => 'Footer']),
             ]);
     }
 

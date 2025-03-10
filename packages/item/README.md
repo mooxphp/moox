@@ -12,11 +12,11 @@ Item is a simple Moox Entity, that can be used to create and manage simple entri
 -   Active (Toggle)
 -   Description (Editor)
 -   Content (Markdown)
--   Data (JSON)
+-   Data (Key-Value)
 -   Image (Media)
 -   Author (User)
 -   Type (Select)
--   DateTime (DateTime)
+-   Due (DateTime)
 -   Color
 -   UUID
 -   ULID
