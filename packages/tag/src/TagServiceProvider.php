@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Blade;
 use Moox\Tag\Commands\InstallCommand;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Spatie\LaravelPackageTools\Package;
-use Moox\Localization\Models\Locale;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class TagServiceProvider extends PackageServiceProvider
