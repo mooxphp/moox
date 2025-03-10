@@ -17,12 +17,28 @@ class ViewTag extends ViewRecord
 
     public ?string $selectedLang = null;
 
+    #[Override]
     public function mount($record): void
     {
+        $this->selectedLang = request()->query('lang');
         parent::mount($record);
-        $this->selectedLang = request()->get('lang');
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        if ($this->selectedLang && $this->record->hasTranslation($this->selectedLang)) {
+            $translation = $this->record->translate($this->selectedLang);
+            return array_merge($data, [
+                'title' => $translation->title,
+                'slug' => $translation->slug,
+                'content' => $translation->content,
+            ]);
+        }
+        
+        return $data;
+    }
+
+    #[Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -46,4 +62,5 @@ class ViewTag extends ViewRecord
     {
         return $this->record instanceof Model && method_exists($this->record, 'trashed') && $this->record->trashed();
     }
+
 }

@@ -34,6 +34,7 @@ use Moox\Tag\Resources\TagResource\Pages\EditTag;
 use Moox\Tag\Resources\TagResource\Pages\ListTags;
 use Moox\Tag\Resources\TagResource\Pages\ViewTag;
 use Override;
+use Illuminate\Validation\Rules\Unique;
 
 class TagResource extends Resource
 {
@@ -71,71 +72,28 @@ class TagResource extends Resource
                                         ->live(onBlur: true)
                                         ->label(__('core::core.title'))
                                         ->required()
-                                        ->afterStateHydrated(function (TextInput $component) {
-                                            $lang = request()->get('lang');
-                                            if ($lang && $component->getRecord()->hasTranslation($lang)) {
-                                                $component->state($component->getRecord()->translateOrNew($lang)->title);
-                                            } else {
-                                                $component->state($component->getRecord()->title ?? '');
-                                            }
-                                        })
-                                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state)))
-                                        ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (! $livewire->selectedLang) {
-                                                $record->title = $state;
-
-                                                return $state;
-                                            }
-
-                                            $record->translateOrNew($livewire->selectedLang)->title = $state;
-
-                                            return $state;
-                                        }),
+                                        ->afterStateUpdated(fn (Set $set, ?string $state) => 
+                                            $set('slug', Str::slug($state))
+                                        ),
                                     TextInput::make('slug')
                                         ->label(__('core::core.slug'))
                                         ->required()
-                                        ->afterStateHydrated(function (TextInput $component) {
-                                            $lang = request()->get('lang');
-                                            if ($lang && $component->getRecord()->hasTranslation($lang)) {
-                                                $component->state($component->getRecord()->translateOrNew($lang)->slug);
-                                            } else {
-                                                $component->state($component->getRecord()->slug ?? '');
-                                            }
-                                        })
-                                        ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (! $livewire->selectedLang) {
-                                                $record->slug = $state;
-
-                                                return $state;
-                                            }
-
-                                            $record->translateOrNew($livewire->selectedLang)->slug = $state;
-
-                                            return $state;
-                                        }),
+                                        ->unique(
+                                            modifyRuleUsing: function (Unique $rule) {
+                                                return $rule
+                                                    ->where('locale', request()->query('lang', app()->getLocale()))
+                                                    ->whereNull('tag_translations.tag_id');
+                                            },
+                                            table: 'tag_translations',
+                                            column: 'slug',
+                                            ignoreRecord: true,
+                                            ignorable: fn ($record) => $record?->translations()
+                                                ->where('locale', request()->query('lang', app()->getLocale()))
+                                                ->first()
+                                        ),
                                     MarkdownEditor::make('content')
                                         ->label(__('core::core.content'))
-                                        ->required()
-                                        ->afterStateHydrated(function (MarkdownEditor $component) {
-                                            $lang = request()->get('lang');
-                                            if ($lang && $component->getRecord()->hasTranslation($lang)) {
-                                                $component->state($component->getRecord()->translateOrNew($lang)->content);
-                                            } else {
-                                                $component->state($component->getRecord()->content ?? '');
-                                            }
-                                        })
-                                        ->dehydrateStateUsing(function (string $state, $record, $livewire) {
-                                            if (! $livewire->selectedLang) {
-                                                $record->content = $state;
-
-                                                return $state;
-                                            }
-
-                                            $record->translateOrNew($livewire->selectedLang)->content = $state;
-
-                                            return $state;
-                                        }),
-
+                                        ->required(),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -181,7 +139,7 @@ class TagResource extends Resource
                                             ->color('primary')
                                             ->button()
                                             ->extraAttributes(['class' => 'w-full'])
-                                            ->url(fn ($record): string => static::getUrl('edit', ['record' => $record]))
+                                            ->url(fn ($record): string => static::getUrl('edit', ['record' => $record, 'lang' => request()->get('lang')]))
                                             ->visible(fn ($livewire, $record): bool => $livewire instanceof ViewTag && ! $record->trashed()),
                                         Action::make('restore')
                                             ->label(__('core::core.restore'))
@@ -233,6 +191,7 @@ class TagResource extends Resource
                     ->label(__('core::core.image'))
                     ->defaultImageUrl(url('/moox/core/assets/noimage.svg'))
                     ->alignment('center'),
+                TextColumn::make('translations.locale'),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
                     ->searchable()
@@ -255,10 +214,10 @@ class TagResource extends Resource
                     ->state(function ($record) {
                         $lang = request()->get('lang');
                         if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->title;
+                            return $record->translate($lang)->slug;
                         }
 
-                        return $record->title;
+                        return $record->slug;
                     }),
                 TextColumn::make('content')
                     ->label(__('core::core.content'))
@@ -269,10 +228,9 @@ class TagResource extends Resource
                     ->state(function ($record) {
                         $lang = request()->get('lang');
                         if ($lang && $record->hasTranslation($lang)) {
-                            return $record->translate($lang)->title;
+                            return $record->translate($lang)->content;
                         }
-
-                        return $record->title;
+                        return $record->content;
                     }),
                 TextColumn::make('count')
                     ->label(__('core::core.count'))
@@ -288,16 +246,14 @@ class TagResource extends Resource
                     ->toggleable(),
             ])
             ->actions([
-                ViewAction::make()->url(
-                    fn ($record) => request()->has('lang')
-                    ? route('filament.admin.resources.tags.view', ['record' => $record, 'lang' => request()->get('lang')])
-                    : route('filament.admin.resources.tags.view', $record)
+                ViewAction::make()->url(fn ($record) => request()->has('lang')
+                    ? static::getUrl('view', ['record' => $record, 'lang' => request()->get('lang')])
+                    : static::getUrl('view', ['record' => $record])
                 ),
                 EditAction::make()
-                    ->url(
-                        fn ($record) => request()->has('lang')
-                        ? route('filament.admin.resources.tags.edit', ['record' => $record, 'lang' => request()->get('lang')])
-                        : route('filament.admin.resources.tags.edit', $record)
+                    ->url(fn ($record) => request()->has('lang')
+                        ? static::getUrl('edit', ['record' => $record, 'lang' => request()->get('lang')])
+                        : static::getUrl('edit', ['record' => $record])
                     )
                     ->hidden(fn (): bool => in_array(static::getCurrentTab(), ['trash', 'deleted'])),
             ])
