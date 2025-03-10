@@ -194,7 +194,6 @@ class TagResource extends Resource
                 TextColumn::make('translations.locale'),
                 TextColumn::make('title')
                     ->label(__('core::core.title'))
-                    ->searchable()
                     ->limit(30)
                     ->toggleable()
                     ->sortable()
@@ -208,7 +207,6 @@ class TagResource extends Resource
                     }),
                 TextColumn::make('slug')
                     ->label(__('core::core.slug'))
-                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable()
                     ->state(function ($record) {
@@ -223,7 +221,6 @@ class TagResource extends Resource
                     ->label(__('core::core.content'))
                     ->sortable()
                     ->limit(30)
-                    ->searchable()
                     ->toggleable()
                     ->state(function ($record) {
                         $lang = request()->get('lang');
