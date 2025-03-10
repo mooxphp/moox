@@ -68,6 +68,32 @@ class ItemResource extends BaseItemResource
 
     public static function form(Form $form): Form
     {
+        // Add direct logging
+        \Log::channel('daily')->info('=== ITEM RESOURCE FORM METHOD CALLED ===');
+
+        // Debug the taxonomy fields
+        $taxonomyFields = static::getTaxonomyFields();
+        \Log::channel('daily')->info('Taxonomy fields count: '.count($taxonomyFields));
+        \Log::channel('daily')->info('Taxonomy fields: '.json_encode($taxonomyFields));
+
+        // Debug the trait methods
+        \Log::channel('daily')->info('Has trait: '.(in_array('Moox\Core\Traits\Taxonomy\HasResourceTaxonomy', class_uses_recursive(static::class)) ? 'Yes' : 'No'));
+
+        // Debug the model
+        $model = static::getModel();
+        \Log::channel('daily')->info('Model: '.$model);
+
+        // Try to get resource name
+        try {
+            $resourceName = $model::getResourceName();
+            \Log::channel('daily')->info('Resource name: '.$resourceName);
+        } catch (\Exception $e) {
+            \Log::channel('daily')->info('Error getting resource name: '.$e->getMessage());
+        }
+
+        // Debug config
+        \Log::channel('daily')->info('Config item.taxonomies: '.json_encode(config('item.taxonomies')));
+
         return $form->schema([
             Grid::make(2)
                 ->schema([
@@ -111,8 +137,8 @@ class ItemResource extends BaseItemResource
                                         ->placeholder(__('core::core.status'))
                                         ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                                 ]),
-                            Section::make('')
-                                ->schema(static::getTaxonomyFields()),
+                            Section::make('Taxonomies')
+                                ->schema($taxonomyFields),
                             Section::make('')
                                 ->schema([
                                     Select::make('author_id')
@@ -127,13 +153,13 @@ class ItemResource extends BaseItemResource
                                 ->schema([
                                     Placeholder::make('id')
                                         ->label('ID')
-                                        ->content(fn ($record): string => $record->id ?? '-'),
+                                        ->content(fn ($record): string => $record->id ?? ''),
                                     Placeholder::make('uuid')
                                         ->label('UUID')
-                                        ->content(fn ($record): string => $record->uuid ?? '-'),
+                                        ->content(fn ($record): string => $record->uuid ?? ''),
                                     Placeholder::make('ulid')
                                         ->label('ULID')
-                                        ->content(fn ($record): string => $record->ulid ?? '-'),
+                                        ->content(fn ($record): string => $record->ulid ?? ''),
                                     Placeholder::make('created_at')
                                         ->label('Created')
                                         ->content(fn ($record): string => $record->created_at ?
@@ -191,7 +217,7 @@ class ItemResource extends BaseItemResource
                 TextColumn::make('section')
                     ->sortable()
                     ->toggleable(),
-                // ...static::getTaxonomyColumns(),
+                ...static::getTaxonomyColumns(),
                 TextColumn::make('status')
                     ->sortable()
                     ->searchable()

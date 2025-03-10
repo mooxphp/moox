@@ -15,7 +15,8 @@ The Item Entity is implemented in our Single Entity Package [Moox Item](https://
 ```php
 use Moox\Core\Entities\Items\Item\ItemModel;
 
-class Log extends ItemModel {
+class Log extends ItemModel
+{
     // Your model
 }
 ```

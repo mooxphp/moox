@@ -136,23 +136,19 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
     |
     |── 📂 resources/
     |   └── 📂 lang/
-    |   |   └── 📂 en/
-    |   |       |── 📜 example.php
-    |   |       |── 📜 fields.php
-    |   |       └── 📂 enums/
-    |   |           └── 📜 enun-name.php
-    |   |
-    |   └── 📂 views/
-    |       └── 📂 entities/
-    |           └── 📂 example/
-    |               ├── 📜 view.blade.php
-    |               └── 📜 more-views.blade.php
+    |       └── 📂 en/
+    |           |── 📜 example.php
+    |           |── 📜 fields.php
+    |           └── 📂 enums/
+    |               └── 📜 enun-name.php
     |
     |── 📂 database/
     |   |── 📂 migrations/
     |   |   └── 📜 2025_03_06_000000_create_example_table.php
-    |   └── 📂 seeders/
-    |       └── 📜 ExampleSeeder.php
+    |   |── 📂 seeders/
+    |   |   └── 📜 ExampleSeeder.php
+    |   └── 📂 factories/
+    |       └── 📜 ExampleFactory.php
     |
     |── 📂 src/
     |   └── 📂 Moox/
@@ -165,8 +161,9 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
     |       |   |        ├── 📂 Widgets/
     |       |   |        │   └── 📜 ExampleWidget.php
     |       |   |        ├── 📂 RelationManagers/
-    |       |   |        |   ├── 📜 ExampleRelationManager.php
-    |       |   |        |
+    |       |   |        |   └── 📜 ExampleRelationManager.php
+    |       |   |        ├── 📂 Frontend/
+    |       |   |        |   └── 📜 ExampleFrontend.php
     |       |   |        └── 📂 Pages/
     |       |   |            ├── 📜 CreateExample.php
     |       |   |            ├── 📜 EditExample.php
@@ -180,6 +177,7 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
     |       |   |       ├── 📂 Widgets/
     |       |   |       ├── 📂 RelationManagers/
     |       |   |       ├── 📂 Relation/
+    |       |   |       ├── 📂 Frontend/
     |       |   |       └── 📂 Forms/
     |       |   |            └── 📜 TaxonomyCreateForm.php
     |       |   |
@@ -187,6 +185,7 @@ Traits can be in the `/Traits` folder, or in the `/Console/Traits` folder, if th
     |       |       └── 📜 ExampleModule.php
     |       |       └── 📂 ExampleModule/
     |       |           ├── 📂 Widgets/
+    |       |           ├── 📂 Frontend/
     |       |           └── 📂 Extender/
     |       |               └── 📜 ModuleExtender.php
     |       |

@@ -2,7 +2,7 @@
 
 namespace Moox\Core\Services;
 
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -29,10 +29,13 @@ class TaxonomyService
 
     public function getTaxonomies(): array
     {
-        $this->ensureResourceIsSet();
+        $resourceName = $this->getCurrentResource();
+        Log::info("Getting taxonomies for resource: {$resourceName}");
 
-        return Config::get(sprintf('previews.%s.taxonomies', $this->currentResource), [])
-            ?: Config::get(sprintf('builder.resources.%s.taxonomies', $this->currentResource), []);
+        $taxonomies = config("{$resourceName}.taxonomies", []);
+        Log::info('Taxonomies found: '.json_encode($taxonomies));
+
+        return $taxonomies;
     }
 
     public function getTaxonomyModel(string $taxonomy): ?string

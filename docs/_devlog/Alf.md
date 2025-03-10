@@ -7,14 +7,16 @@
     -   [x] Item migration
     -   [x] Item Resource
     -   [x] Item Pages
-    -   [ ] Item Fields (see Item README)
+    -   [x] Item Fields (see Item README)
+    -   [ ] Media field, column
     -   [ ] Item Factory
     -   [ ] Item Frontend
     -   [x] Item Plugin
-    -   [ ] Taxonomies
+    -   [ ] Translation Bier Rakete
+    -   [x] Taxonomies
     -   [ ] Relations
     -   [ ] Sections
-    -   [ ] Modules
+    -   [ ] SP: merge config
 -   [ ] Implement Record Entity
     -   [ ] Base Record with SoftDeletes
     -   [ ] Generate package

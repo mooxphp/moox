@@ -60,15 +60,5 @@ return [
             'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
-        'tag' => [
-            'label' => 'Tags',
-            'model' => \Moox\Tag\Models\Tag::class,
-            'table' => 'taggables',
-            'relationship' => 'taggable',
-            'foreignKey' => 'taggable_id',
-            'relatedKey' => 'tag_id',
-            'createForm' => \Moox\Tag\Forms\TaxonomyCreateForm::class,
-            'hierarchical' => false,
-        ],
     ],
 ];

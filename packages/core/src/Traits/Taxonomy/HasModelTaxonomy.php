@@ -21,7 +21,7 @@ trait HasModelTaxonomy
         return $this->taxonomyService;
     }
 
-    protected function getResourceName(): string
+    public static function getResourceName(): string
     {
         return static::getModel()::getResourceName();
     }

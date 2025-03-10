@@ -170,9 +170,7 @@ Another potential solution is **static HTML generation**, allowing requests to b
 
 ### Develop feature
 
-Lastly, Moox Frontend should ship a development smart login (just a simple passphrase, set in config)
-
-to hide the frontend while developing the hottest shit. That should also switch to an unfriendly robots.txt etc.
+Lastly, Moox Frontend should ship a development smart login (just a simple passphrase, set in config) to hide the frontend while developing the hottest shit. That should also switch to an unfriendly robots.txt etc.
 
 ## Moox Search
 

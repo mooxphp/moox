@@ -5,9 +5,12 @@ namespace Moox\Item\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Moox\Core\Entities\Items\Item\BaseItemModel;
+use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 
 class Item extends BaseItemModel
 {
+    use HasModelTaxonomy;
+
     protected $fillable = [
         'title',
         'slug',
@@ -48,5 +51,20 @@ class Item extends BaseItemModel
             $model->uuid = (string) \Illuminate\Support\Str::uuid();
             $model->ulid = (string) \Illuminate\Support\Str::ulid();
         });
+    }
+
+    public function getUlidAttribute(): string
+    {
+        return $this->ulid ?? (string) \Illuminate\Support\Str::ulid();
+    }
+
+    public function getUuidAttribute(): string
+    {
+        return $this->uuid ?? (string) \Illuminate\Support\Str::uuid();
+    }
+
+    public static function getResourceName(): string
+    {
+        return 'item';
     }
 }
