@@ -1,9 +1,9 @@
-<x-filament::modal id="mediaPickerModal" width="max-w-7xl">
+<x-filament::modal id="mediaPickerModal" width="7xl">
     <x-slot name="header">
         <h2 class="text-lg font-bold">Upload & Select Media</h2>
     </x-slot>
 
-    <div>
+    <div class="min-w-[1000px]">
         @if($modelId)
             <livewire:media-uploader :model-id="$modelId" :model-class="$modelClass" collection="default" />
         @endif
@@ -73,48 +73,49 @@
                 @endphp
 
                 <x-filament::grid class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    @foreach ($media as $item)
-                                        @php
-                                            $mimeType = $item->mime_type;
-                                            $fileData = $mimeTypeLabels[$mimeType] ?? null;
-                                        @endphp
+                    @if($mediaItems)
+                                    @foreach ($mediaItems as $item)
+                                                    @php
+                                                        $mimeType = $item['mime_type'];
+                                                        $fileData = $mimeTypeLabels[$mimeType] ?? null;
+                                                    @endphp
 
-                                        <div wire:click="toggleMediaSelection({{ $item->id }})"
-                                            class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
-                                                                                                                                                                                            {{ in_array($item->id, $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
-                                                                                                                                                                                            {{ $selectedMediaMeta['id'] == $item->id ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                                    <div wire:click="toggleMediaSelection({{ $item['id'] }})"
+                                                        class="relative rounded-lg shadow-md overflow-hidden bg-gray-100 hover:shadow-lg transition cursor-pointer
+                                                                                                                                                                                                                                                {{ in_array($item['id'], $selectedMediaIds) ? 'ring-2 ring-blue-600' : 'border border-gray-200' }}
+                                                                                                                                                                                                                                                {{ $selectedMediaMeta['id'] == $item['id'] ? 'ring-4 ring-blue-700 border-2 border-blue-700' : '' }}">
+                                                        @if ($fileData)
+                                                            <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
+                                                                <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16 text-gray-600" />
+                                                                <div
+                                                                    class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
+                                                                    {{ $item['file_name'] }}
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <div class="relative w-full h-32">
+                                                                <img src="{{ $item['original_url'] }}" class="object-cover w-full h-full rounded-t-lg" />
+                                                            </div>
+                                                        @endif
 
-                                            @if ($fileData)
-                                                <div class="flex flex-col justify-between items-center w-full h-32 bg-gray-200">
-                                                    <x-filament::icon icon="{{ $fileData['icon'] }}" class="w-16 h-16 text-gray-600" />
-                                                    <div
-                                                        class="text-xs text-gray-700 w-full mt-2 overflow-hidden text-ellipsis whitespace-normal break-words px-2">
-                                                        {{ $item->file_name }}
+                                                        @if(in_array($item['id'], $selectedMediaIds))
+                                                            <div class="absolute top-1 right-1">
+                                                                <x-filament::icon icon="heroicon-o-check-circle" class="w-6 h-6" fill="#3B82F6" />
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                </div>
-                                            @else
-                                                <div class="relative w-full h-32">
-                                                    <img src="{{ $item->getUrl() }}" class="object-cover w-full h-full rounded-t-lg" />
-                                                </div>
-                                            @endif
-
-                                            @if(in_array($item->id, $selectedMediaIds))
-                                                <div class="absolute top-1 right-1">
-                                                    <x-filament::icon icon="heroicon-o-check-circle" class="w-6 h-6" fill="#3B82F6" />
-                                                </div>
-                                            @endif
-                                        </div>
-                    @endforeach
+                                    @endforeach
+                    @endif
                 </x-filament::grid>
 
+                <div class="pt-4 mt-4">
+                    <x-filament::pagination :paginator="$mediaItems" />
+                </div>
 
             </x-filament::section>
         </div>
 
         <div class="w-full md:w-2/5 lg:w-1/3 max-w-md flex-shrink-0 border-l pl-4">
-            <x-filament::button wire:click="applySelection" color="primary" class="mb-4 w-full">
-                Auswahl übernehmen
-            </x-filament::button>
             <x-filament::section>
                 <h3 class="text-lg font-semibold mb-4">Metadaten bearbeiten</h3>
 
@@ -171,10 +172,10 @@
         </div>
     </div>
 
-
-
-
     <x-slot name="footer">
+        <x-filament::button wire:click="applySelection" color="primary" class="mb-4">
+            Auswahl übernehmen
+        </x-filament::button>
         <x-filament::button wire:click="$dispatch('close-modal', { id: 'mediaPickerModal' })">
             Schließen
         </x-filament::button>

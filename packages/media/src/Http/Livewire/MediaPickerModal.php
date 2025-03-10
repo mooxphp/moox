@@ -3,15 +3,19 @@
 namespace Moox\Media\Http\Livewire;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use Moox\Media\Models\Media;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class MediaPickerModal extends Component
 {
+    use WithPagination;
+
     public ?int $modelId = null;
 
     public ?string $modelClass = null;
 
-    public array $media = [];
+    public $media;
 
     public array $selectedMediaIds = [];
 
@@ -47,13 +51,114 @@ class MediaPickerModal extends Component
 
     public function refreshMedia()
     {
-        $this->media = Media::query()
+        $this->render();
+    }
+
+    public function toggleMediaSelection(int $mediaId)
+    {
+        if ($this->multiple) {
+            if (in_array($mediaId, $this->selectedMediaIds)) {
+                $this->selectedMediaIds = array_diff($this->selectedMediaIds, [$mediaId]);
+            } else {
+                $this->selectedMediaIds[] = $mediaId;
+            }
+        } else {
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+                $this->selectedMediaIds = [];
+            } else {
+                $this->selectedMediaIds = [$mediaId];
+            }
+        }
+
+        $media = Media::find($mediaId);
+
+        if ($media) {
+            $this->selectedMediaMeta = [
+                'id' => $media->id,
+                'file_name' => $media->file_name,
+                'title' => $media->title ?? '',
+                'description' => $media->description ?? '',
+                'internal_note' => $media->internal_note ?? '',
+                'alt' => $media->alt ?? '',
+                'mime_type' => $media->mime_type ?? '',
+            ];
+        } else {
+            $this->selectedMediaMeta = [
+                'id' => null,
+                'file_name' => '',
+                'title' => '',
+                'description' => '',
+                'internal_note' => '',
+                'alt' => '',
+                'mime_type' => '',
+            ];
+        }
+    }
+
+    public function applySelection()
+    {
+        $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
+
+        if ($selectedMedia->isNotEmpty()) {
+            if (!$this->multiple) {
+                $media = $selectedMedia->first();
+                $this->dispatch('mediaSelected', [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                    'file_name' => $media->file_name,
+                ]);
+            } else {
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
+                    'id' => $media->id,
+                    'url' => $media->getUrl(),
+                    'file_name' => $media->file_name,
+                ])->toArray();
+
+                $this->dispatch('mediaSelected', $selectedMediaData);
+            }
+        } else {
+            $this->dispatch('mediaSelected', []);
+        }
+
+        $this->dispatch('close-modal', id: 'mediaPickerModal');
+    }
+
+    public function updatedSelectedMediaMeta($value, $field)
+    {
+        if ($this->selectedMediaMeta['id']) {
+            $media = Media::find($this->selectedMediaMeta['id']);
+
+            if (in_array($field, ['title', 'description', 'internal_note', 'alt'])) {
+                $media->$field = $value;
+                $media->save();
+            }
+        }
+    }
+
+    public function updatingSearchQuery()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFileTypeFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function render()
+    {
+        $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
@@ -104,110 +209,10 @@ class MediaPickerModal extends Component
                 }
             })
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->all();
-    }
+            ->paginate(18);
 
-    public function toggleMediaSelection(int $mediaId)
-    {
-        if ($this->multiple) {
-            if (in_array($mediaId, $this->selectedMediaIds)) {
-                $this->selectedMediaIds = array_diff($this->selectedMediaIds, [$mediaId]);
-            } else {
-                $this->selectedMediaIds[] = $mediaId;
-            }
-        } else {
-            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
-                $this->selectedMediaIds = [];
-            } else {
-                $this->selectedMediaIds = [$mediaId];
-            }
-        }
-
-        $media = Media::find($mediaId);
-
-        if ($media) {
-            $this->selectedMediaMeta = [
-                'id' => $media->id,
-                'file_name' => $media->file_name,
-                'title' => $media->title ?? '',
-                'description' => $media->description ?? '',
-                'internal_note' => $media->internal_note ?? '',
-                'alt' => $media->alt ?? '',
-                'mime_type' => $media->mime_type ?? '',
-            ];
-        } else {
-            $this->selectedMediaMeta = [
-                'id' => null,
-                'file_name' => '',
-                'title' => '',
-                'description' => '',
-                'internal_note' => '',
-                'alt' => '',
-                'mime_type' => '',
-            ];
-        }
-    }
-
-    public function applySelection()
-    {
-        $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
-
-        if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
-                $media = $selectedMedia->first();
-                $this->dispatch('mediaSelected', [
-                    'id' => $media->id,
-                    'url' => $media->getUrl(),
-                    'file_name' => $media->file_name,
-                ]);
-            } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
-                    'id' => $media->id,
-                    'url' => $media->getUrl(),
-                    'file_name' => $media->file_name,
-                ])->toArray();
-
-                $this->dispatch('mediaSelected', $selectedMediaData);
-            }
-        } else {
-            $this->dispatch('mediaSelected', []);
-        }
-
-        $this->dispatch('close-modal', id: 'mediaPickerModal');
-    }
-
-    public function updatedSelectedMediaMeta($value, $field)
-    {
-        if ($this->selectedMediaMeta['id']) {
-            $media = Media::find($this->selectedMediaMeta['id']);
-
-            if (in_array($field, ['title', 'description', 'internal_note', 'alt'])) {
-                $media->$field = $value;
-                $media->save();
-            }
-        }
-    }
-
-    public function updatedSearchQuery()
-    {
-        $this->refreshMedia();
-    }
-
-    public function updatedFileTypeFilter()
-    {
-        $this->refreshMedia();
-    }
-
-    public function updatedDateFilter()
-    {
-        $this->refreshMedia();
-    }
-
-    public function render()
-    {
         return view('media::livewire.media-picker-modal', [
-            'media' => $this->media,
+            'mediaItems' => $media,
         ]);
     }
 }
