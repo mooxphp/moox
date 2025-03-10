@@ -2,6 +2,9 @@
 
 ## Todo
 
+-   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
+-   [ ] remove debug code
+-   [ ] remove boilerplate code taxonomy
 -   [ ] Implement Item Entity
     -   [x] Item Model
     -   [x] Item migration
@@ -12,25 +15,27 @@
     -   [ ] Item Factory
     -   [ ] Item Frontend
     -   [x] Item Plugin
-    -   [ ] Translation Bier Rakete
+    -   [ ] Translation (Fields)
     -   [x] Taxonomies
     -   [ ] Relations
+    -   [ ] Modules
     -   [ ] Sections
     -   [ ] SP: merge config
+    -   [ ] Extract Clipboard to a package
 -   [ ] Implement Record Entity
     -   [ ] Base Record with SoftDeletes
     -   [ ] Generate package
     -   [ ] Add fields
+-   [ ] Implement Publish Entity
+    -   [ ] Base Publish with SoftDeletes and Publishable
+    -   [ ] Generate package
+    -   [ ] Add fields
+    -   [ ] Localization
 -   [ ] Build should replace with variables, not the placeholders
 -   [ ] Build must use the entity files for entity generation
 -   [ ] Implement Frontend class, abstract? See Frontend/Idea.md
 -   [ ] Build Skeleton -> Item
 -   [ ] Refactor core traits to base classes
--   [ ] Create Item
-    -   [ ] with new base classes
-    -   [ ] Implement Relations class
-    -   [ ] Implement Module class
-    -   [ ] Implement Frontend class
 -   [ ] Build ...
     -   [ ] Ask category, must be an enum in core, I guess
     -   [ ] Ask parent-theme, must use package service, only for themes
@@ -43,8 +48,7 @@
     -   [ ] find MSP only in /packages, not Skeleton
     -   [ ] Wire locally
     -   [ ] Finalize
--   [ ] Web: Skipping data: no composer.json found or invalid
--   [ ] Web: Skipping localization: no composer.json found or invalid
+-   [ ] Module with Localization
 -   [ ] See Lunar and Filament before doing commands
     -   [ ] Refactor traits to Has and Can, see Filament
     -   [ ] Install filament with our own user, see Lunar
@@ -148,46 +152,6 @@ return [
 ];
 
 ```
-
-## Items
-
--   Archive Item from item
-    1. ID
-    2. Title - String
-    3. Slug - String
-    4. Image - Media
-    5. Abstract - Text
-    6. Description - Editor
-    7. Open - Bool
-    8. Data - JSON
-    9. Select Example
-    10. Radio Example
-    11. Checkbox Example
-    12. ULID
-    13. created_at
-    14. updated_at
-    15. deleted_at
--   Publish Item - from publish item
-    1. ID
-    2. Simple Status
-    3. Title - String
-    4. Slug - String
-    5. Image - Media
-    6. Abstract - Text
-    7. Description - Editor
-    8. Open - Bool
-    9. Markdown
-    10. Color
-    11. Select Example
-    12. Radio Example
-    13. Checkbox Example
-    14. Data - JSON
-    15. UUID
-    16. ULID
-    17. created_at
-    18. updated_at
-    19. deleted_at
-    20. published_at
 
 ## Installer
 

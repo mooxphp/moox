@@ -119,7 +119,6 @@ abstract class BaseResource extends Resource
     {
         return Action::make('save')
             ->label(__('core::core.save'))
-            ->extraAttributes(attributes: ['class' => 'w-full'])
             ->keyBindings(['command+s', 'ctrl+s'])
             ->color('success')
             ->action(function ($livewire): void {
@@ -134,7 +133,6 @@ abstract class BaseResource extends Resource
             ->label(__('core::core.save_and_create_another'))
             ->color('secondary')
             ->button()
-            ->extraAttributes(['class' => 'w-full'])
             ->action(function ($livewire): void {
                 $livewire instanceof CreateRecord ? $livewire->create() : $livewire->save();
                 $livewire->redirect(static::getUrl('create'));
@@ -145,13 +143,12 @@ abstract class BaseResource extends Resource
     public static function getCancelAction(): Action
     {
         return Action::make('cancel')
-            ->extraAttributes(attributes: ['class' => 'w-full'])
             ->label(__('core::core.cancel'))
             ->keyBindings(['escape'])
             ->color('secondary')
             ->outlined()
-            ->url(fn () => static::getUrl('index'))
-            ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
+            ->url(fn () => static::getUrl('index'));
+        // ->visible(fn ($livewire): bool => $livewire instanceof CreateRecord);
     }
 
     public static function getDeleteAction(): Action

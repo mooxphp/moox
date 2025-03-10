@@ -143,9 +143,11 @@ This is done by supporting custom packages in the development app of our Monorep
 
 -   Do `npm run build` before committing because automated tests on GitHub needs a working vite-manifest
 -   Do `php artisan migrate --database=sqlite` to reflect changes to the test-database
--   Use https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind with VS Code
+-   Use our [VS Code Extension Pack](https://marketplace.visualstudio.com/items?itemName=adrolli.tallui-laravel-livewire-tailwind) with VS Code or Cursor
 -   Use https://github.com/mooxphp/builder to create your own packages
+-   Use the installed Debugbar and [Telescope](https://moox.test/telescope/) to debug,
 -   Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+-   Use our [Devlink package](https://github.com/mooxphp/devlink) to link package into your project
 
 ## Branching
 

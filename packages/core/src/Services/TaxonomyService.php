@@ -10,6 +10,8 @@ class TaxonomyService
 {
     private ?string $currentResource = null;
 
+    private array $cachedTaxonomies = [];
+
     public function setCurrentResource(string $resource): void
     {
         $this->currentResource = $resource;
@@ -30,10 +32,17 @@ class TaxonomyService
     public function getTaxonomies(): array
     {
         $resourceName = $this->getCurrentResource();
+
+        if (isset($this->cachedTaxonomies[$resourceName])) {
+            return $this->cachedTaxonomies[$resourceName];
+        }
+
         Log::info("Getting taxonomies for resource: {$resourceName}");
 
         $taxonomies = config("{$resourceName}.taxonomies", []);
         Log::info('Taxonomies found: '.json_encode($taxonomies));
+
+        $this->cachedTaxonomies[$resourceName] = $taxonomies;
 
         return $taxonomies;
     }

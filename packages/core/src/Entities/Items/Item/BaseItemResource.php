@@ -66,23 +66,31 @@ class BaseItemResource extends BaseResource
     public static function getFormActions(): Actions
     {
         $actions = [
-            static::getSaveAction(),
-            static::getCancelAction(),
+            static::getSaveAction()->extraAttributes(attributes: ['class' => 'w-full']),
+            static::getCancelAction()->extraAttributes(attributes: ['class' => 'w-full']),
         ];
 
         if (static::enableCreate()) {
-            $actions[] = static::getSaveAndCreateAnotherAction();
+            $actions[] = static::getSaveAndCreateAnotherAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
 
         if (static::enableDelete()) {
-            $actions[] = static::getDeleteAction();
+            $actions[] = static::getDeleteAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
 
         if (static::enableEdit()) {
-            $actions[] = static::getEditAction();
+            $actions[] = static::getEditAction()->extraAttributes(attributes: ['class' => 'w-full']);
         }
 
         return Actions::make($actions);
+    }
+
+    public static function getFooterActions(): Actions
+    {
+        return Actions::make([
+            static::getSaveAction(),
+            static::getCancelAction(),
+        ]);
     }
 
     public static function query(): Builder

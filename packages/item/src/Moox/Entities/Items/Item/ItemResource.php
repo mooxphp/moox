@@ -68,33 +68,9 @@ class ItemResource extends BaseItemResource
 
     public static function form(Form $form): Form
     {
-        // Add direct logging
-        \Log::channel('daily')->info('=== ITEM RESOURCE FORM METHOD CALLED ===');
-
-        // Debug the taxonomy fields
         $taxonomyFields = static::getTaxonomyFields();
-        \Log::channel('daily')->info('Taxonomy fields count: '.count($taxonomyFields));
-        \Log::channel('daily')->info('Taxonomy fields: '.json_encode($taxonomyFields));
 
-        // Debug the trait methods
-        \Log::channel('daily')->info('Has trait: '.(in_array('Moox\Core\Traits\Taxonomy\HasResourceTaxonomy', class_uses_recursive(static::class)) ? 'Yes' : 'No'));
-
-        // Debug the model
-        $model = static::getModel();
-        \Log::channel('daily')->info('Model: '.$model);
-
-        // Try to get resource name
-        try {
-            $resourceName = $model::getResourceName();
-            \Log::channel('daily')->info('Resource name: '.$resourceName);
-        } catch (\Exception $e) {
-            \Log::channel('daily')->info('Error getting resource name: '.$e->getMessage());
-        }
-
-        // Debug config
-        \Log::channel('daily')->info('Config item.taxonomies: '.json_encode(config('item.taxonomies')));
-
-        return $form->schema([
+        $schema = [
             Grid::make(2)
                 ->schema([
                     Grid::make()
@@ -117,6 +93,12 @@ class ItemResource extends BaseItemResource
                                         ->label('Image')
                                         ->directory('items')
                                         ->image(),
+                                ]),
+                            Grid::make(2)
+                                ->schema([
+                                    // TODO: exactly same as getFormActions(), why?
+                                    /** @phpstan-ignore-next-line */
+                                    static::getFooterActions()->columnSpan(1),
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
@@ -151,30 +133,149 @@ class ItemResource extends BaseItemResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    Placeholder::make('id')
+                                    TextInput::make('id')
                                         ->label('ID')
-                                        ->content(fn ($record): string => $record->id ?? ''),
-                                    Placeholder::make('uuid')
+                                        ->default(fn ($record): string => $record->id ?? '')
+                                        ->disabled()
+                                        ->suffixAction(
+                                            \Filament\Forms\Components\Actions\Action::make('copyId')
+                                                ->icon('heroicon-s-clipboard')
+                                                ->action(function ($livewire, $state) {
+                                                    $livewire->dispatch('copy-to-clipboard-id', text: $state);
+                                                })
+                                        )
+                                        ->extraAttributes([
+                                            'x-data' => '{
+                                                copyToClipboard(text) {
+                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                        navigator.clipboard.writeText(text).then(() => {
+                                                            $tooltip("ID copied to clipboard", { timeout: 1500 });
+                                                        }).catch(() => {
+                                                            $tooltip("Failed to copy", { timeout: 1500 });
+                                                        });
+                                                    } else {
+                                                        const textArea = document.createElement("textarea");
+                                                        textArea.value = text;
+                                                        textArea.style.position = "fixed";
+                                                        textArea.style.opacity = "0";
+                                                        document.body.appendChild(textArea);
+                                                        textArea.select();
+                                                        try {
+                                                            document.execCommand("copy");
+                                                            $tooltip("ID copied to clipboard", { timeout: 1500 });
+                                                        } catch (err) {
+                                                            $tooltip("Failed to copy", { timeout: 1500 });
+                                                        }
+                                                        document.body.removeChild(textArea);
+                                                    }
+                                                }
+                                            }',
+                                            'x-on:copy-to-clipboard-id.window' => 'copyToClipboard($event.detail.text)',
+                                        ]),
+                                    TextInput::make('uuid')
                                         ->label('UUID')
-                                        ->content(fn ($record): string => $record->uuid ?? ''),
-                                    Placeholder::make('ulid')
+                                        ->default(fn ($record): string => $record->uuid ?? '')
+                                        ->disabled()
+                                        ->suffixAction(
+                                            \Filament\Forms\Components\Actions\Action::make('copyUuid')
+                                                ->icon('heroicon-s-clipboard')
+                                                ->action(function ($livewire, $state) {
+                                                    $livewire->dispatch('copy-to-clipboard-uuid', text: $state);
+                                                })
+                                        )
+                                        ->extraAttributes([
+                                            'class' => 'font-mono',
+                                            'x-data' => '{
+                                                copyToClipboard(text) {
+                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                        navigator.clipboard.writeText(text).then(() => {
+                                                            $tooltip("UUID copied to clipboard", { timeout: 1500 });
+                                                        }).catch(() => {
+                                                            $tooltip("Failed to copy", { timeout: 1500 });
+                                                        });
+                                                    } else {
+                                                        const textArea = document.createElement("textarea");
+                                                        textArea.value = text;
+                                                        textArea.style.position = "fixed";
+                                                        textArea.style.opacity = "0";
+                                                        document.body.appendChild(textArea);
+                                                        textArea.select();
+                                                        try {
+                                                            document.execCommand("copy");
+                                                            $tooltip("UUID copied to clipboard", { timeout: 1500 });
+                                                        } catch (err) {
+                                                            $tooltip("Failed to copy", { timeout: 1500 });
+                                                        }
+                                                        document.body.removeChild(textArea);
+                                                    }
+                                                }
+                                            }',
+                                            'x-on:copy-to-clipboard-uuid.window' => 'copyToClipboard($event.detail.text)',
+                                        ]),
+                                    TextInput::make('ulid')
                                         ->label('ULID')
-                                        ->content(fn ($record): string => $record->ulid ?? ''),
-                                    Placeholder::make('created_at')
-                                        ->label('Created')
-                                        ->content(fn ($record): string => $record->created_at ?
-                                            $record->created_at.' ('.$record->created_at->diffForHumans().')' : ''),
-                                    Placeholder::make('updated_at')
-                                        ->label('Last Updated')
-                                        ->content(fn ($record): string => $record->updated_at ?
-                                            $record->updated_at.' ('.$record->updated_at->diffForHumans().')' : ''),
+                                        ->default(fn ($record): string => $record->ulid ?? '')
+                                        ->disabled()
+                                        ->suffixAction(
+                                            \Filament\Forms\Components\Actions\Action::make('copyUlid')
+                                                ->icon('heroicon-s-clipboard')
+                                                ->action(function ($livewire, $state) {
+                                                    $livewire->dispatch('copy-to-clipboard-ulid', text: $state);
+                                                })
+                                        )
+                                        ->extraAttributes([
+                                            'class' => 'font-mono',
+                                            'x-data' => '{
+                                                copyToClipboard(text) {
+                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                        navigator.clipboard.writeText(text).then(() => {
+                                                            $tooltip("ULID copied to clipboard", { timeout: 1500 });
+                                                        }).catch(() => {
+                                                            $tooltip("Failed to copy", { timeout: 1500 });
+                                                        });
+                                                    } else {
+                                                        const textArea = document.createElement("textarea");
+                                                        textArea.value = text;
+                                                        textArea.style.position = "fixed";
+                                                        textArea.style.opacity = "0";
+                                                        document.body.appendChild(textArea);
+                                                        textArea.select();
+                                                        try {
+                                                            document.execCommand("copy");
+                                                            $tooltip("ULID copied to clipboard", { timeout: 1500 });
+                                                        } catch (err) {
+                                                            $tooltip("Failed to copy", { timeout: 1500 });
+                                                        }
+                                                        document.body.removeChild(textArea);
+                                                    }
+                                                }
+                                            }',
+                                            'x-on:copy-to-clipboard-ulid.window' => 'copyToClipboard($event.detail.text)',
+                                        ]),
+
+                                    Section::make('')
+                                        ->schema([
+                                            Placeholder::make('created_at')
+                                                ->label('Created')
+                                                ->content(fn ($record): string => $record->created_at ?
+                                                    $record->created_at.' - '.$record->created_at->diffForHumans() : '')
+                                                ->extraAttributes(['class' => 'font-mono']),
+                                            Placeholder::make('updated_at')
+                                                ->label('Last Updated')
+                                                ->content(fn ($record): string => $record->updated_at ?
+                                                    $record->updated_at.' - '.$record->updated_at->diffForHumans() : '')
+                                                ->extraAttributes(['class' => 'font-mono']),
+                                        ]),
                                 ])
                                 ->hidden(fn ($record) => $record === null),
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
                 ->columns(['lg' => 3]),
-        ]);
+        ];
+
+        return $form
+            ->schema($schema);
     }
 
     public static function table(Table $table): Table
