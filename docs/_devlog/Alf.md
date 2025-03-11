@@ -4,7 +4,7 @@
 
 -   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
 -   [ ] remove debug code
--   [ ] remove boilerplate code taxonomy
+-   [ ] remove boilerplate code taxonomy, finish core implementation
 -   [ ] Implement Item Entity
     -   [x] Item Model
     -   [x] Item migration
@@ -104,6 +104,7 @@
     -   [ ] moox:scaffold - change fields of an entity by a config or JSON
     -   [ ] moox:release or UI - auto release, see notes
         -   [ ] We need to see if we use moox.json, DB or both.
+    -   [ ] Website: add https://creativecommons.org/licenses/by-sa/4.0/ for our graphics, assets, docs, website and themes.
 
 ## Relations
 
@@ -249,10 +250,6 @@ The result is collected into a json file:
 -   press
     -   ...
 
-## Localization
-
-https://github.com/mcamara/laravel-localization
-
 ```
 https://www.example.com:8080/some/page?search=apple#section2
 \______/ \___________/ \__/\______/ \_________/ \_________/
@@ -326,7 +323,7 @@ https://www.example.com:8080/some/page?search=apple#section2
 	{slug} // the current item's slug
 	{item.slug} // the related item's slug
 	{year}/{month}/{day} // date related
-	{parent.slug} // the parent item's slug
+	{parent.slug} // the parent item's slugxx
 	{category.slug} // refers to a category's slug
 	{post.slug} // refers to a post's slug
 

@@ -25,6 +25,7 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Entities\Items\Item\BaseItemResource;
+use Moox\Core\Forms\Components\CopyableField;
 use Moox\Core\Traits\Taxonomy\HasResourceTaxonomy;
 use Moox\Item\Models\Item;
 
@@ -119,7 +120,7 @@ class ItemResource extends BaseItemResource
                                         ->placeholder(__('core::core.status'))
                                         ->options(['Probably' => 'Probably', 'Never' => 'Never', 'Done' => 'Done', 'Maybe' => 'Maybe']),
                                 ]),
-                            Section::make('Taxonomies')
+                            Section::make('')
                                 ->schema($taxonomyFields),
                             Section::make('')
                                 ->schema([
@@ -133,125 +134,15 @@ class ItemResource extends BaseItemResource
                                 ]),
                             Section::make('')
                                 ->schema([
-                                    TextInput::make('id')
+                                    CopyableField::make('id')
                                         ->label('ID')
-                                        ->default(fn ($record): string => $record->id ?? '')
-                                        ->disabled()
-                                        ->suffixAction(
-                                            \Filament\Forms\Components\Actions\Action::make('copyId')
-                                                ->icon('heroicon-s-clipboard')
-                                                ->action(function ($livewire, $state) {
-                                                    $livewire->dispatch('copy-to-clipboard-id', text: $state);
-                                                })
-                                        )
-                                        ->extraAttributes([
-                                            'x-data' => '{
-                                                copyToClipboard(text) {
-                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                                                        navigator.clipboard.writeText(text).then(() => {
-                                                            $tooltip("ID copied to clipboard", { timeout: 1500 });
-                                                        }).catch(() => {
-                                                            $tooltip("Failed to copy", { timeout: 1500 });
-                                                        });
-                                                    } else {
-                                                        const textArea = document.createElement("textarea");
-                                                        textArea.value = text;
-                                                        textArea.style.position = "fixed";
-                                                        textArea.style.opacity = "0";
-                                                        document.body.appendChild(textArea);
-                                                        textArea.select();
-                                                        try {
-                                                            document.execCommand("copy");
-                                                            $tooltip("ID copied to clipboard", { timeout: 1500 });
-                                                        } catch (err) {
-                                                            $tooltip("Failed to copy", { timeout: 1500 });
-                                                        }
-                                                        document.body.removeChild(textArea);
-                                                    }
-                                                }
-                                            }',
-                                            'x-on:copy-to-clipboard-id.window' => 'copyToClipboard($event.detail.text)',
-                                        ]),
-                                    TextInput::make('uuid')
+                                        ->defaultValue(fn ($record): string => $record->id ?? ''),
+                                    CopyableField::make('uuid')
                                         ->label('UUID')
-                                        ->default(fn ($record): string => $record->uuid ?? '')
-                                        ->disabled()
-                                        ->suffixAction(
-                                            \Filament\Forms\Components\Actions\Action::make('copyUuid')
-                                                ->icon('heroicon-s-clipboard')
-                                                ->action(function ($livewire, $state) {
-                                                    $livewire->dispatch('copy-to-clipboard-uuid', text: $state);
-                                                })
-                                        )
-                                        ->extraAttributes([
-                                            'class' => 'font-mono',
-                                            'x-data' => '{
-                                                copyToClipboard(text) {
-                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                                                        navigator.clipboard.writeText(text).then(() => {
-                                                            $tooltip("UUID copied to clipboard", { timeout: 1500 });
-                                                        }).catch(() => {
-                                                            $tooltip("Failed to copy", { timeout: 1500 });
-                                                        });
-                                                    } else {
-                                                        const textArea = document.createElement("textarea");
-                                                        textArea.value = text;
-                                                        textArea.style.position = "fixed";
-                                                        textArea.style.opacity = "0";
-                                                        document.body.appendChild(textArea);
-                                                        textArea.select();
-                                                        try {
-                                                            document.execCommand("copy");
-                                                            $tooltip("UUID copied to clipboard", { timeout: 1500 });
-                                                        } catch (err) {
-                                                            $tooltip("Failed to copy", { timeout: 1500 });
-                                                        }
-                                                        document.body.removeChild(textArea);
-                                                    }
-                                                }
-                                            }',
-                                            'x-on:copy-to-clipboard-uuid.window' => 'copyToClipboard($event.detail.text)',
-                                        ]),
-                                    TextInput::make('ulid')
+                                        ->defaultValue(fn ($record): string => $record->uuid ?? ''),
+                                    CopyableField::make('ulid')
                                         ->label('ULID')
-                                        ->default(fn ($record): string => $record->ulid ?? '')
-                                        ->disabled()
-                                        ->suffixAction(
-                                            \Filament\Forms\Components\Actions\Action::make('copyUlid')
-                                                ->icon('heroicon-s-clipboard')
-                                                ->action(function ($livewire, $state) {
-                                                    $livewire->dispatch('copy-to-clipboard-ulid', text: $state);
-                                                })
-                                        )
-                                        ->extraAttributes([
-                                            'class' => 'font-mono',
-                                            'x-data' => '{
-                                                copyToClipboard(text) {
-                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                                                        navigator.clipboard.writeText(text).then(() => {
-                                                            $tooltip("ULID copied to clipboard", { timeout: 1500 });
-                                                        }).catch(() => {
-                                                            $tooltip("Failed to copy", { timeout: 1500 });
-                                                        });
-                                                    } else {
-                                                        const textArea = document.createElement("textarea");
-                                                        textArea.value = text;
-                                                        textArea.style.position = "fixed";
-                                                        textArea.style.opacity = "0";
-                                                        document.body.appendChild(textArea);
-                                                        textArea.select();
-                                                        try {
-                                                            document.execCommand("copy");
-                                                            $tooltip("ULID copied to clipboard", { timeout: 1500 });
-                                                        } catch (err) {
-                                                            $tooltip("Failed to copy", { timeout: 1500 });
-                                                        }
-                                                        document.body.removeChild(textArea);
-                                                    }
-                                                }
-                                            }',
-                                            'x-on:copy-to-clipboard-ulid.window' => 'copyToClipboard($event.detail.text)',
-                                        ]),
+                                        ->defaultValue(fn ($record): string => $record->ulid ?? ''),
 
                                     Section::make('')
                                         ->schema([
