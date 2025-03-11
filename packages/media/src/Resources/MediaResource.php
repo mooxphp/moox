@@ -2,24 +2,25 @@
 
 namespace Moox\Media\Resources;
 
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Support\RawJs;
+use Illuminate\Support\Str;
+use Moox\Media\Models\Media;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Placeholder;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Support\RawJs;
 use Filament\Tables\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Str;
 use Moox\Core\Traits\Base\BaseInResource;
+use Filament\Forms\Components\Placeholder;
+use Filament\Support\Facades\FilamentIcon;
 use Moox\Media\Forms\Components\ImageDisplay;
-use Moox\Media\Models\Media;
 use Moox\Media\Resources\MediaResource\Pages;
 use Moox\Media\Tables\Columns\CustomImageColumn;
 
@@ -55,35 +56,35 @@ class MediaResource extends Resource
                 ->schema([
                     Placeholder::make('mime_type')
                         ->label('Dateityp')
-                        ->content(fn ($record) => $record->mime_type),
+                        ->content(fn($record) => $record->getReadableMimeType()),
 
                     Placeholder::make('size')
                         ->label('Dateigröße')
-                        ->content(fn ($record) => number_format($record->size / 1024, 2).' KB'),
+                        ->content(fn($record) => number_format($record->size / 1024, 2) . ' KB'),
 
                     Placeholder::make('file_name')
                         ->label('Originaldateiname')
-                        ->content(fn ($record) => $record->file_name),
+                        ->content(fn($record) => $record->file_name),
 
                     Placeholder::make('dimensions')
                         ->label('Abmessungen')
                         ->content(function ($record) {
                             $dimensions = $record->getCustomProperty('dimensions');
-                            if (! $dimensions) {
+                            if (!$dimensions) {
                                 return '-';
                             }
 
                             return "{$dimensions['width']} × {$dimensions['height']} Pixel";
                         })
-                        ->visible(fn ($record) => str_starts_with($record->mime_type, 'image/')),
+                        ->visible(fn($record) => str_starts_with($record->mime_type, 'image/')),
 
                     Placeholder::make('created_at')
                         ->label('Hochgeladen am')
-                        ->content(fn ($record) => $record->created_at?->format('d.m.Y H:i')),
+                        ->content(fn($record) => $record->created_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('updated_at')
                         ->label('Zuletzt bearbeitet')
-                        ->content(fn ($record) => $record->updated_at?->format('d.m.Y H:i')),
+                        ->content(fn($record) => $record->updated_at?->format('d.m.Y H:i')),
 
                     Placeholder::make('usage')
                         ->label('Verwendet in')
@@ -98,7 +99,7 @@ class MediaResource extends Resource
 
                             $links = $usages->map(function ($usage) {
                                 $type = Str::plural(strtolower(class_basename($usage->media_usable_type)));
-                                $url = Filament::getCurrentPanel()->getUrl().'/'.$type.'/'.$usage->media_usable_id;
+                                $url = Filament::getCurrentPanel()->getUrl() . '/' . $type . '/' . $usage->media_usable_id;
 
                                 return Blade::render('<a href="{{ $url }}" target="_blank" class="text-primary underline">{{ $url }}</a>', [
                                     'url' => $url,
@@ -153,7 +154,7 @@ class MediaResource extends Resource
                             'class' => 'rounded-lg',
                             'style' => 'width: 100%; height: auto; min-width: 150px; max-width: 250px; aspect-ratio: 1/1; object-fit: cover;',
                         ])
-                        ->tooltip(fn ($record) => $record->title ?? 'Kein Titel')
+                        ->tooltip(fn($record) => $record->title ?? 'Kein Titel')
                         ->searchable(['name', 'title', 'description', 'alt', 'internal_note']),
                 ]),
             ])
@@ -170,7 +171,7 @@ class MediaResource extends Resource
                             ->color('danger')
                             ->icon('heroicon-m-trash')
                             ->requiresConfirmation()
-                            ->modalHeading(fn ($record) => 'Bild "'.($record->title ?: $record->name).'" löschen')
+                            ->modalHeading(fn($record) => 'Bild "' . ($record->title ?: $record->name) . '" löschen')
                             ->modalDescription('Sind Sie sicher, dass Sie dieses Bild löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.')
                             ->modalSubmitActionLabel('Ja, löschen')
                             ->modalCancelActionLabel('Abbrechen')
@@ -191,7 +192,7 @@ class MediaResource extends Resource
                         'documents' => 'Dokumente',
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
@@ -236,7 +237,7 @@ class MediaResource extends Resource
                         'year' => 'Dieses Jahr',
                     ])
                     ->query(function (Builder $query, array $data) {
-                        if (! $data['value']) {
+                        if (!$data['value']) {
                             return $query;
                         }
 
