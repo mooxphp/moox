@@ -162,6 +162,10 @@ or override only specific sections:
 
 The core of the frontend system, integrating entities, themes, and routes.
 
+### Localization
+
+Localization is a core feature of Moox. It is implemented in the `Localization` package. To help implement automatic routing, we might use https://github.com/mcamara/laravel-localization.
+
 ### Performance Optimization
 
 Initially, Moox Frontend will use standard Laravel routes. Future optimizations may include cached permalinks (`Cache::put('moox_slugs', $array)`) for high-speed lookups, JSON-based caching for ultra-fast retrieval, or static route file generation for extreme performance.

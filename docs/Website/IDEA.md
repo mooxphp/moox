@@ -121,3 +121,93 @@ A temporary list of packages to fill in the docs (75 packages):
 -   deploy@moox.org
 -   admin@moox.org
 -   alf@moox.org
+
+### Homepage
+
+Use ready made packages and install a CMS in minutes. Multilingual, SEO friendly, extremely fast, simple to extend with a lot of Moox packages or other Filament and Laravel packages.
+
+-- Video Install Command --
+
+-   `php artisan moox:install --demo --preset=cms`
+-   Explain preset, packages while installing
+-   `--demo` is seeded including admin user
+-   `--preset=cms` is fast, preset for a CMS
+-   direct links to frontend and admin
+-   fast login as admin prefilled user and pass
+-   show the backend, publish a page, show the frontend
+
+Or build your own CMS or any other application you want. Use the Build Command to create own packages with powerful Moox Entities, Taxonomies, Modules and Themes.
+
+-- Video Build Command --
+
+-   `php artisan moox:build --demo`
+-   `--demo` is seeded
+-   direct links to files (Code Editor)
+-   direct links to frontend and admin
+-   show the backend, publish a ???, show the frontend
+-   click to open resource, model, migration, factory and frontend
+-   shoot a prompt to add and remove some fields
+
+Or simply pick just one or some of our packages. Moox is extremely modular and can be used in any Filament project.
+
+-- Most Popular Packages --
+
+Help us grow Moox
+
+-   Tell -> https://moox.org/tell
+-   Star us -> https://github.com/mooxphp/moox
+-   Sponsor us -> https://github.com/sponsors/mooxphp
+-   Contribute code -> https://moox.org/docs/contribute
+-   Translate to a language -> https://moox.org/docs/translate
+
+### Tell
+
+-   `Tell` a Friend - send a notification or use social media.
+-   Show & `Tell` - what have you built with Moox? Screenshot or Link.
+-   `Tell` us more - what do you think about Moox? What do you miss?
+
+Basically three forms 1) Social Media 2) On Moox.org 3) Private Message
+
+### License and Copyright
+
+Moox is an Open Source project with additional commercial offerings. On this page, we want to explain all used licenses and the copyrights of the Moox project.
+
+#### MIT License
+
+All freely available Moox packages are licensed under the `MIT License`, except Themes and the Moox.org website.
+
+-   You are free to:
+
+    -   Use the software for any purpose
+    -   Modify the software
+    -   Distribute the software
+    -   Sublicense the software
+    -   Use the software privately or commercially
+
+-   Under the following terms:
+
+    -   Include the original copyright notice and license text in any copy or substantial portion of the software
+
+See [MIT License](https://opensource.org/licenses/MIT) for details.
+
+### CC-BY-SA 4.0
+
+Moox Themes, the Moox.org website and the Moox Documentation are licensed under `CC-BY-SA 4.0`.
+
+-   You are free to:
+
+    -   Share — copy and redistribute the material in any medium or format
+    -   Adapt — remix, transform, and build upon the material for any purpose, even commercially.
+
+-   Under the following terms:
+
+    -   Attribution — You must give appropriate credit, please leave our footer link intact.
+    -   ShareAlike — If build upon the theme, you must distribute that under CC-BY-SA 4.0, too.
+
+See [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) for details.
+
+### Pay to Open
+
+Moox Pro packages and themes are licensed under the `Pay to Open License`, our Open Source friendly commercial license.
+
+See [Pay to Open](https://moox.org/pay-to-open) for details.
