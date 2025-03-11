@@ -7,6 +7,7 @@ namespace Moox\Core;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
+use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
 use Moox\Core\Traits\GoogleIcons;
 use Moox\Core\Traits\TranslatableConfig;
@@ -25,6 +26,7 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
+        $this->app->singleton(TabStateManager::class);
         $this->app->singleton(TaxonomyService::class);
 
         if (config('core.use_google_icons', true)) {

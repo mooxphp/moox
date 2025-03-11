@@ -26,6 +26,7 @@
         "moox/audit": "*",
         "moox/build": "*",
         "moox/category": "*",
+        "moox/draft": "*",
         "moox/expiry": "*",
         "moox/flags": "*",
         "moox/frontend": "*",

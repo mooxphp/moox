@@ -4,7 +4,8 @@
 
 -   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
 -   [ ] remove debug code
--   [ ] remove boilerplate code taxonomy, finish core implementation
+-   [ ] remove boilerplate code taxonomy
+-   [ ] finish core implementation docs
 -   [ ] Implement Item Entity
     -   [x] Item Model
     -   [x] Item migration

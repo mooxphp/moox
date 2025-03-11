@@ -25,6 +25,7 @@ use Moox\Data\Filament\Plugins\StaticCurrencyPlugin;
 use Moox\Data\Filament\Plugins\StaticLanguagePlugin;
 use Moox\Data\Filament\Plugins\StaticLocalePlugin;
 use Moox\Data\Filament\Plugins\StaticTimezonePlugin;
+use Moox\Draft\Moox\Plugins\DraftPlugin;
 use Moox\Expiry\ExpiryPlugin;
 use Moox\Item\Moox\Plugins\ItemPlugin;
 use Moox\Jobs\JobsBatchesPlugin;
@@ -94,6 +95,7 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->plugins([
 
+                DraftPlugin::make(),
                 ItemPlugin::make(),
                 AuditPlugin::make(),
 
