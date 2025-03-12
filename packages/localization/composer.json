@@ -19,7 +19,7 @@
     "require": {
         "moox/core": "*",
         "moox/data": "*",
-        "astrotomic/laravel-translatable": "^11.1"
+        "adrolli/laravel-translatable": "*"
     },
     "autoload": {
         "psr-4": {

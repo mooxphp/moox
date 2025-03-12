@@ -82,6 +82,13 @@ class InstallWordPress extends Command
         }
 
         info('.env file found, checking for required variables...');
+
+        $env = file_get_contents(base_path('.env'));
+
+        if (strpos($env, 'WP_PREFIX') === false) {
+            alert('No WP_PREFIX found in .env file. Please add it and rerun this command.');
+            exit(1);
+        }
     }
 
     public function getDotenv(): array
@@ -116,12 +123,12 @@ class InstallWordPress extends Command
         $envVariables = [];
 
         foreach ($requiredVariables as $variable) {
-            $value = config($variable);
+            /** @phpstan-ignore-next-line */
+            $value = env($variable);
 
             if ($value === null) {
                 $missingVariables[] = $variable;
             } else {
-                // Convert string 'true'/'false' to actual booleans
                 if ($value === 'false') {
                     $value = false;
                 } elseif ($value === 'true') {
@@ -135,7 +142,7 @@ class InstallWordPress extends Command
         if ($missingVariables !== []) {
             warning('The following required variables are missing from your .env file:');
             foreach ($missingVariables as $variable) {
-                $this->line('- '.$variable);
+                $this->line(' '.$variable);
             }
 
             warning('Please add the missing variables to your .env file and rerun this command.');

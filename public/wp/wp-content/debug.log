@@ -1,0 +1,4 @@
+[12-Mar-2025 15:41:51 UTC] Checking laravel db session
+[12-Mar-2025 15:41:51 UTC] No moox_session cookie found
+[12-Mar-2025 15:41:51 UTC] PHP Deprecated:  Mustache_Engine::loadSource(): Implicitly marking parameter $cache as nullable is deprecated, the explicit nullable type must be used instead in phar:///usr/local/bin/wp/vendor/mustache/mustache/src/Mustache/Engine.php on line 727
+[12-Mar-2025 15:41:51 UTC] PHP Deprecated:  Mustache_Parser::buildTree(): Implicitly marking parameter $parent as nullable is deprecated, the explicit nullable type must be used instead in phar:///usr/local/bin/wp/vendor/mustache/mustache/src/Mustache/Parser.php on line 73

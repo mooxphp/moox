@@ -20,7 +20,7 @@
     "license": "MIT",
     "require": {
         "filament/spatie-laravel-media-library-plugin": "3.x-dev",
-        "laravel/framework": "^11.0",
+        "laravel/framework": "^12.0",
         "laravel/telescope": "5.x-dev",
         "laravel/tinker": "^2.8",
         "moox/audit": "*",

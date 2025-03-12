@@ -18,7 +18,7 @@
     ],
     "require": {
         "moox/core": "*",
-        "awobaz/eloquent-mutators": "^1.0"
+        "adrolli/eloquent-mutators": "*"
     },
     "autoload": {
         "psr-4": {
