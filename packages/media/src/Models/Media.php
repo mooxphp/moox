@@ -7,14 +7,17 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
+use Astrotomic\Translatable\Translatable;
+use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 
-class Media extends SpatieMedia implements HasMedia
+class Media extends BaseMedia implements HasMedia, TranslatableContract
 {
-    use InteractsWithMedia;
+    use InteractsWithMedia, Translatable;
+
+    public $translatedAttributes = ['name', 'title', 'alt', 'description', 'internal_note'];
 
     protected $fillable = [
-        'name',
         'file_name',
         'disk',
         'mime_type',
@@ -24,10 +27,6 @@ class Media extends SpatieMedia implements HasMedia
         'model_id',
         'model_type',
         'collection_name',
-        'title',
-        'alt',
-        'description',
-        'internal_note',
         'original_model_id',
         'original_model_type',
         'write_protected',
