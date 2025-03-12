@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
@@ -40,12 +42,20 @@ class CoreServiceProvider extends PackageServiceProvider
         });
     }
 
+    public function packageBooted(): void
+    {
+        FilamentAsset::register([
+            Css::make('core-progress', __DIR__.'/../resources/dist/progress.css'),
+        ], 'moox/core');
+    }
+
     public function configurePackage(Package $package): void
     {
         $package
             ->name('core')
             ->hasConfigFile()
             ->hasTranslations()
+            ->hasViews()
             ->hasRoutes(['api', 'web'])
             ->hasCommand(MooxInstaller::class)
             ->hasCommand(PackageServiceCommand::class);
