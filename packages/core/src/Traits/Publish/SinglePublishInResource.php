@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated Use Base classes in Entities instead.
+ */
+
 declare(strict_types=1);
 
 namespace Moox\Core\Traits\Publish;
@@ -10,7 +14,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Moox\Builder\Resources\FullItemResource\Pages\CreateFullItem;
+use Moox\Item\Moox\Entities\Items\Item\Pages\CreateItem;
 
 trait SinglePublishInResource
 {
@@ -104,7 +108,7 @@ trait SinglePublishInResource
                 }
 
                 $livewire->form->fill($data);
-                $livewire instanceof CreateFullItem ? $livewire->create() : $livewire->save();
+                $livewire instanceof CreateItem ? $livewire->create() : $livewire->save();
             })
             ->hidden(fn ($livewire, $record): bool => $record && $record->trashed());
     }

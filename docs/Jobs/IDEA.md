@@ -16,37 +16,6 @@ So first the Redis problems. There are two:
 -   running Moox Jobs on DB works fine for small installations, but when heavy load apps use Moox Jobs, the DB gets in trouble. Using Redis should solve this problem.
 -   Moox Jobs is currently able to get the state of the job correct, when running on db driver, on redis, sync and most probably all other drivers it never get's the job 'done'
 
-Installer:
-
--   Filament installer then register OK
--   Plugin section missing FAIL
--   Plugin section already there FAIL
-
-Updater:
-
--   labels should be lowercased
-
--   [ ] Installer updater must require moox core
--   [ ] moox core dev-main is good for dev, but not for prod
--   [ ] UI see https://demo.filamentphp.com/shop/orders
--   [ ] DailyStats Entity
-    -   [ ] day
-    -   [ ] total_jobs (displaying jobs per day/hour/minute)
-    -   [ ] total_batches (displaying batches per)
-    -   [ ] jobs_succeeded
-    -   [ ] jobs_failed
-    -   [ ] average_execution_time
-    -   [ ] average_waiting_time
-
-## Fast start
-
--   https://github.com/mooxphp/jobs
--   https://moox.test/moox/
--   https://laraver.se/admin
--   http://49.12.191.84/admin
--   https://chat.openai.com/c/7ba19fdf-22f3-4664-b586-358a2fbec5a6
--   https://laravel.com/docs/10.x/queues
-
 ## Links
 
 -   [romanzipp/Laravel-Queue-Monitor](https://github.com/romanzipp/Laravel-Queue-Monitor/)
@@ -62,3 +31,107 @@ Updater:
 -   https://github.com/stephenjude/filament-debugger
 -   AWS SDK for PHP
 -   Beanstalkd package (see readme)
+
+## Invoke from Frontend
+
+Moox Jobs allows to automatically invoke Jobs, without the need of a scheduler task or cron. We use Frontend requests for this. Like WordPress does, but with a much more robust system, the Laravel Job System.
+
+That feature needs requests, that means:
+
+-   When nobody uses the website, app or API, no Jobs will run
+-   You cannot guarantee that a Job will run after a certain time
+
+If both is no problem, you can use the following config to activate this feature:
+
+```php
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Invoke scheduled tasks from frontend
+    |--------------------------------------------------------------------------
+    |
+    | Moox Jobs allows to automatically invoke Jobs, without the need of a
+    | scheduler task or cron. We use Frontend requests for this. Like WP
+    | does, but with a much more robust system, the Laravel Job System.
+    |
+    */
+    'invoke_scheduled_tasks_from_frontend' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Invoke only from dedicated URL
+    |--------------------------------------------------------------------------
+    |
+    | If you want to invoke scheduled tasks only from a dedicated URL,
+    | you can set this to true. You may use a Ping service then.
+    | By default, every request will trigger the jobs.
+    |
+    */
+    'invoke_only_from_dedicated_url' => false,
+    'dedicated_url' => '/moox/heartbeat',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scheduled jobs
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define which jobs should be invoked at
+    | certain intervals. The key is the job class and
+    | the value is the interval in minutes.
+    |
+    */
+    'scheduled_jobs' => [
+        \App\Jobs\ProcessScheduledDeletions::class => 60, // Every 60 minutes
+        \App\Jobs\SyncExternalData::class => 30, // Every 30 minutes
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Atomic lock
+    |--------------------------------------------------------------------------
+    |
+    | Specially on high load systems, you may want to invoke scheduled tasks
+    | with an atomic lock. This will prevent that multiple instances
+    | of the scheduled task will run at the same time.
+    |
+    */
+    'invoke_atomic_lock' => true,
+    'invoke_atomic_lock_timeout' => 60, // 60 seconds
+
+];
+```
+
+```php
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+
+class InvokeScheduledJobs
+{
+    public function handle($request, Closure $next)
+    {
+        if (!Config::get('moox.invoke_scheduled_tasks_from_frontend')) {
+            return $next($request);
+        }
+
+        $scheduledJobs = Config::get('moox.scheduled_jobs', []);
+
+        foreach ($scheduledJobs as $jobClass => $interval) {
+            $cacheKey = 'moox_scheduled_job_' . md5($jobClass);
+
+            $lock = Cache::lock($cacheKey, $interval * 60);
+
+            if ($lock->get()) {
+                dispatch(new $jobClass());
+
+                $lock->release();
+            }
+        }
+
+        return $next($request);
+    }
+}
+```

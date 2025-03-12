@@ -86,7 +86,7 @@ class UpdateWordPressPlugin extends Command
         $envVariables = [];
 
         foreach ($requiredVariables as $variable) {
-            $value = env($variable);
+            $value = config($variable);
 
             if ($value === null) {
                 $missingVariables[] = $variable;
@@ -120,7 +120,7 @@ class UpdateWordPressPlugin extends Command
     {
         info('Updating the Moox Press plugin...');
 
-        $wpPath = env('WP_PATH', '/public/wp');
+        $wpPath = config('press.wordpress_path', '/public/wp');
         $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         $pluginsPath = $fullWpPath.'/wp-content/plugins';
@@ -146,7 +146,7 @@ class UpdateWordPressPlugin extends Command
     {
         info('Updating the wp-config.php file...');
 
-        $wpPath = env('WP_PATH', '/public/wp');
+        $wpPath = config('press.wordpress_path', '/public/wp');
         $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         $wpconfigPath = $fullWpPath.'/wp-config.php';

@@ -167,7 +167,7 @@ See [Queries in Config](#queriesinconfig) on how to use the query feature.
 
 See [Translatable Config](#translatableconfig) on how to use the trans feature.
 
-### QueriesInConfig
+### HasQueriesInConfig
 
 This trait allows building complex queries from configuration arrays.
 
@@ -178,11 +178,11 @@ This trait allows building complex queries from configuration arrays.
 #### Usage
 
 ```php
-use Moox\Core\Traits\QueriesInConfig;
+use Moox\Core\Traits\HasQueriesInConfig;
 
 class YourClass
 {
-    use QueriesInConfig;
+    use HasQueriesInConfig;
 
     public function someMethod()
     {
@@ -196,7 +196,7 @@ class YourClass
 
 #### Configuration
 
-Dynamic Tabs uses the QueriesInConfig Trait, that means you can build queries like this:
+Dynamic Tabs uses the HasQueriesInConfig Trait, that means you can build queries like this:
 
 The simplest query is for the All tab, of course:
 
@@ -345,11 +345,13 @@ And finally the most-known mistake, throws "Cannot access offset of type string 
 
 So don't forget to put the query in an extra array, even if it is a single query.
 
-As mentioned, the QueriesInConfig trait is used in HasListPageTabs, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
+As mentioned, the HasQueriesInConfig trait is used in HasListPageTabs, another Trait in Moox Core. Please code dive there, to see how to implement the Feature from outside Moox.
 
-### TranslatableConfig
+### HasTranslatableConfig
 
 This trait provides functionality for translating configuration values.
+
+This trait is already loaded in Moox Core. If your package requires Moox Core, you should not use this trait.
 
 #### Key Methods
 
@@ -357,12 +359,14 @@ This trait provides functionality for translating configuration values.
 
 #### Usage
 
+Do not use this trait, if your package requires Moox Core!
+
 ```php
-use Moox\Core\Traits\TranslatableConfig;
+use Moox\Core\Traits\HasTranslatableConfig;
 
 class YourServiceProvider extends ServiceProvider
 {
-    use TranslatableConfig;
+    use HasTranslatableConfig;
 
     public function boot()
     {
@@ -419,7 +423,7 @@ class WpTerm extends Model
 }
 ```
 
-### GoogleIcons
+### HasGoogleIcons
 
 This trait provides methods for using Google Material Design Icons in your application.
 
@@ -430,20 +434,20 @@ This trait provides methods for using Google Material Design Icons in your appli
 #### Usage
 
 ```php
-use Moox\Core\Traits\GoogleIcons;
+use Moox\Core\Traits\HasGoogleIcons;
 
 class YourServiceProvider extends ServiceProvider
 {
-    use GoogleIcons;
+    use HasGoogleIcons;
 
     public function boot()
     {
-        $this->useGoogleIcons();
+        $this->useHasGoogleIcons();
     }
 }
 ```
 
-As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The GoogleIcons Trait changes the default Filament Icons, too. It is used in the CoreServiceProvider like this:
+As [Google Material Design Icons](https://blade-ui-kit.com/blade-icons?set=20) provides one of the largest sets of high quality icons, we decided to use them as default for Moox. The HasGoogleIcons Trait changes the default Filament Icons, too. It is used in the CoreServiceProvider like this:
 
 You can disable Google Icons and use the Filament default icons instead, see [config](#Config).
 

@@ -5,13 +5,13 @@ namespace Moox\Core\Traits\Tabs;
 use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
-use Moox\Core\Traits\QueriesInConfig;
+use Moox\Core\Traits\HasQueriesInConfig;
 
 trait HasListPageTabs
 {
-    use QueriesInConfig;
+    use HasQueriesInConfig;
 
-    public function mountHasListPageTabs(): void
+    public function mountTabsInListPage(): void
     {
         static::getResource()::setCurrentTab($this->activeTab);
     }

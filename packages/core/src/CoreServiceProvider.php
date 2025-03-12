@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Moox\Core;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
-use Moox\Core\Traits\GoogleIcons;
-use Moox\Core\Traits\TranslatableConfig;
+use Moox\Core\Traits\HasGoogleIcons;
+use Moox\Core\Traits\HasTranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
 use Override;
 use Spatie\LaravelPackageTools\Package;
@@ -18,8 +20,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class CoreServiceProvider extends PackageServiceProvider
 {
-    use GoogleIcons;
-    use TranslatableConfig;
+    use HasGoogleIcons;
+    use HasTranslatableConfig;
 
     #[Override]
     public function boot(): void
@@ -40,12 +42,20 @@ class CoreServiceProvider extends PackageServiceProvider
         });
     }
 
+    public function packageBooted(): void
+    {
+        FilamentAsset::register([
+            Css::make('core-progress', __DIR__.'/../resources/dist/progress.css'),
+        ], 'moox/core');
+    }
+
     public function configurePackage(Package $package): void
     {
         $package
             ->name('core')
             ->hasConfigFile()
             ->hasTranslations()
+            ->hasViews()
             ->hasRoutes(['api', 'web'])
             ->hasCommand(MooxInstaller::class)
             ->hasCommand(PackageServiceCommand::class);
@@ -117,7 +127,7 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         $this->app->bind($commandClassName, function () use ($commandClassName) {
             $command = new $commandClassName;
-            $command->setVerbosity(env('VERBOSITY_LEVEL', 'v'));
+            $command->setVerbosity(config('core.verbosity_level', 'v'));
 
             return $command;
         });

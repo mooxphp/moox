@@ -10,16 +10,11 @@ parameters:
     excludePaths:
         - 'packages/*/vendor/*'
         - 'packages/press/wordpress/*'
-        - 'packages/press/src/Handlers'
-        - 'packages/press/src/Transformer'
-        - 'packages/press/src/Resolver'
-        - 'packages/backup-server'
-        - 'packages/devops'
-        - 'packages/restore'
-        - 'packages/press-wiki'
-        - 'packages/press-trainings'
         - 'packages/*/tests/*'
+        - 'packages/expiry/*'
+        - 'packages/restore/*'
     tmpDir: build/phpstan
     ignoreErrors:
-        - "#Called 'env' outside of the config directory which returns null when the config is cached, use 'config'#"
-        - "#Trait .+ is used zero times and is not analysed.#"
+        -
+            message: "#Called 'env' outside of the config directory which returns null when the config is cached, use 'config'#"
+            path: packages/*/config/*

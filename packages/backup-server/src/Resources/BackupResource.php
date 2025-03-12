@@ -211,7 +211,7 @@ class BackupResource extends Resource
                     ->limit(50),
                 TextColumn::make('size_in_kb')
                     ->state(function (Backup $record): ?string {
-                        return ReadableSize($record->size_in_kb * 1024);
+                        return $record->size_in_kb ? round($record->size_in_kb / 1024, 2).' MB' : null;
                     })
                     ->label('Size')
                     ->toggleable()
@@ -219,7 +219,7 @@ class BackupResource extends Resource
                     ->limit(50),
                 TextColumn::make('real_size_in_kb')
                     ->state(function (Backup $record): ?string {
-                        return ReadableSize($record->real_size_in_kb * 1024);
+                        return $record->real_size_in_kb ? round($record->real_size_in_kb / 1024, 2).' MB' : null;
                     })
                     ->label('Real Size')
                     ->toggleable()

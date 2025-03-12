@@ -64,8 +64,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasMedia
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300)
-            ->nonQueued();
+            ->fit(Fit::Contain, 300, 300);
     }
 
     public function mediaThroughUsables()

@@ -95,7 +95,7 @@ class MooxServerResource extends Resource
                 Action::make('reboot')
                     ->label('Reboot')
                     ->action(function ($record) {
-                        RebootServerJob::dispatch($record, auth()->user());
+                        RebootServerJob::dispatch($record, auth()->user(), null);
                         Notification::make()
                             ->title('Booting server '.$record->name)
                             ->success()
@@ -111,7 +111,7 @@ class MooxServerResource extends Resource
                     ->requiresConfirmation()
                     ->action(
                         fn (Collection $records) => $records->each(
-                            fn ($record) => RebootServerJob::dispatch($record, auth()->user()))),
+                            fn ($record) => RebootServerJob::dispatch(MooxServer::find($record->getKey()), auth()->user(), null))),
             ]);
     }
 

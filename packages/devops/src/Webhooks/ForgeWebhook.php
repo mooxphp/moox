@@ -18,7 +18,10 @@ class ForgeWebhook extends Controller
         $project = MooxProject::where('site_id', $data['site']['id'])->first();
 
         if ($project) {
-            $user = User::where('id', $project->deployed_by_user_id)->first();
+            $user = null;
+            if (isset($project->deployed_by_user_id)) {
+                $user = User::where('id', $project->deployed_by_user_id)->first();
+            }
 
             if ($data['status'] == 'success') {
                 Notification::make()

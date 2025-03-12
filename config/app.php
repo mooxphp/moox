@@ -3,6 +3,7 @@
 use App\Providers\AppServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\Filament\AdminPanelProvider;
+use App\Providers\Filament\DevopsPanelProvider;
 use App\Providers\Filament\PressPanelProvider;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\AuthServiceProvider;
@@ -222,6 +223,7 @@ return [
         EventServiceProvider::class,
         AdminPanelProvider::class,
         PressPanelProvider::class,
+        DevopsPanelProvider::class,
         RouteServiceProvider::class,
     ],
 

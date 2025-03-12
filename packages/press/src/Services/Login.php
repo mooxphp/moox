@@ -164,7 +164,7 @@ class Login extends SimplePage
             && config('press.auth_wordpress') === true
         ) {
             $payload = base64_encode($user->ID);
-            $signature = hash_hmac('sha256', $payload, (string) env('APP_KEY'));
+            $signature = hash_hmac('sha256', $payload, (string) config('app.key'));
             $token = sprintf('%s.%s', $payload, $signature);
 
             $redirectTarget = config('press.redirect_after_login', 'wp-admin');

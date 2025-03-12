@@ -6,11 +6,11 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Moox\Core\Traits\ResolveResourceClass;
+use Moox\Core\Traits\CanResolveResourceClass;
 
 abstract class BaseCreateItem extends CreateRecord
 {
-    use ResolveResourceClass;
+    use CanResolveResourceClass;
 
     protected function resolveRecord($key): Model
     {

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Request;
 
 trait RequestInModel
 {
+    /**
+     * Get the request data.
+     */
     public function getRequestData(string $key)
     {
         $components = Request::input('components', []);

@@ -16,25 +16,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Moox\Core\Services\TaxonomyService;
 
 trait HasPagesTaxonomy
 {
-    protected function getTaxonomyService(): TaxonomyService
-    {
-        $service = app(TaxonomyService::class);
-        $service->setCurrentResource($this->getResourceName());
+    use HasTaxonomyService;
 
-        return $service;
-    }
-
-    protected function getResourceName(): string
-    {
-        $model = static::getModel();
-
-        return method_exists($model, 'getResourceName') ? $model::getResourceName() : class_basename($model);
-    }
-
+    /**
+     * Handle the taxonomies.
+     */
     protected function handleTaxonomies(): void
     {
         $record = $this->record;
@@ -48,6 +37,9 @@ trait HasPagesTaxonomy
         }
     }
 
+    /**
+     * Mutate the form data before fill.
+     */
     protected function mutateFormDataBeforeFill(array $data): array
     {
         if (! $this->record) {
@@ -78,6 +70,9 @@ trait HasPagesTaxonomy
         return $data;
     }
 
+    /**
+     * Mutate the form data before fill with taxonomies.
+     */
     protected function mutateFormDataBeforeFillWithTaxonomies(array $data): array
     {
         $taxonomies = $this->getTaxonomyService()->getTaxonomies();
@@ -90,21 +85,33 @@ trait HasPagesTaxonomy
         return $data;
     }
 
+    /**
+     * Mutate the form data before save.
+     */
     protected function mutateFormDataBeforeSave(array $data): array
     {
         return $data;
     }
 
+    /**
+     * Mutate the form data before create.
+     */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $data;
     }
 
+    /**
+     * Get the taxonomy attributes.
+     */
     protected function getTaxonomyAttributes(): array
     {
         return array_keys($this->getTaxonomies());
     }
 
+    /**
+     * Get the form select option labels.
+     */
     public function getFormSelectOptionLabels(string $statePath): array
     {
         $select = Arr::get($this->getCachedForms(), $statePath);
@@ -157,47 +164,74 @@ trait HasPagesTaxonomy
         return $labels;
     }
 
+    /**
+     * Get the taxonomies.
+     */
     protected function getTaxonomies(): array
     {
         return $this->getTaxonomyService()->getTaxonomies();
     }
 
+    /**
+     * Get the taxonomy model.
+     */
     protected function getTaxonomyModel(string $taxonomy): ?string
     {
         return $this->getTaxonomyService()->getTaxonomyModel($taxonomy);
     }
 
+    /**
+     * Validate the taxonomy.
+     */
     protected function validateTaxonomy(string $taxonomy): void
     {
         $this->getTaxonomyService()->validateTaxonomy($taxonomy);
     }
 
+    /**
+     * Get the taxonomy relationship.
+     */
     protected function getTaxonomyRelationship(string $taxonomy): string
     {
         return $this->getTaxonomyService()->getTaxonomyRelationship($taxonomy);
     }
 
+    /**
+     * Get the taxonomy table.
+     */
     protected function getTaxonomyTable(string $taxonomy): string
     {
         return $this->getTaxonomyService()->getTaxonomyTable($taxonomy);
     }
 
+    /**
+     * Get the taxonomy foreign key.
+     */
     protected function getTaxonomyForeignKey(string $taxonomy): string
     {
         return $this->getTaxonomyService()->getTaxonomyForeignKey($taxonomy);
     }
 
+    /**
+     * Get the taxonomy related key.
+     */
     protected function getTaxonomyRelatedKey(string $taxonomy): string
     {
         return $this->getTaxonomyService()->getTaxonomyRelatedKey($taxonomy);
     }
 
+    /**
+     * After create.
+     */
     protected function afterCreate(): void
     {
         $this->record->refresh();
         $this->handleTaxonomies();
     }
 
+    /**
+     * After save.
+     */
     protected function afterSave(): void
     {
         $this->record->refresh();
@@ -205,6 +239,9 @@ trait HasPagesTaxonomy
         $this->refreshTaxonomyFormData();
     }
 
+    /**
+     * Refresh the taxonomy form data.
+     */
     protected function refreshTaxonomyFormData(): void
     {
         if ($this instanceof EditRecord) {
@@ -212,6 +249,9 @@ trait HasPagesTaxonomy
         }
     }
 
+    /**
+     * Refresh the form data.
+     */
     public function refreshFormData(array $attributes = []): void
     {
         /** @phpstan-ignore-next-line */
@@ -220,6 +260,9 @@ trait HasPagesTaxonomy
         }
     }
 
+    /**
+     * Get the related taxonomy ids.
+     */
     protected function getRelatedTaxonomyIds(string $relationshipName): array
     {
         if (! method_exists($this->record, $relationshipName)) {
@@ -235,6 +278,9 @@ trait HasPagesTaxonomy
         return $relation->pluck('id')->toArray();
     }
 
+    /**
+     * Fill the form.
+     */
     protected function fillForm(): void
     {
         $this->callHook('beforeFill');
@@ -248,6 +294,9 @@ trait HasPagesTaxonomy
         $this->callHook('afterFill');
     }
 
+    /**
+     * Handle the record update.
+     */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $record->update($data);
@@ -257,6 +306,9 @@ trait HasPagesTaxonomy
         return $record;
     }
 
+    /**
+     * Get the model.
+     */
     public function getModel(): string
     {
         return static::getResource()::getModel();

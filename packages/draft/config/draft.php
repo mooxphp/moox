@@ -60,5 +60,6 @@ return [
             'createForm' => \Moox\Category\Forms\TaxonomyCreateForm::class,
             'hierarchical' => true,
         ],
+
     ],
 ];

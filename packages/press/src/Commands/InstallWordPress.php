@@ -116,7 +116,7 @@ class InstallWordPress extends Command
         $envVariables = [];
 
         foreach ($requiredVariables as $variable) {
-            $value = env($variable);
+            $value = config($variable);
 
             if ($value === null) {
                 $missingVariables[] = $variable;
@@ -207,7 +207,7 @@ class InstallWordPress extends Command
     {
         info('Preparing wp-config.php file...');
 
-        $wpPath = env('WP_PATH', '/public/wp');
+        $wpPath = config('press.wordpress_path', '/public/wp');
         $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         if (! File::exists($fullWpPath)) {
@@ -419,7 +419,7 @@ class InstallWordPress extends Command
     {
         info('Installing the Moox Press plugin...');
 
-        $wpPath = env('WP_PATH', '/public/wp');
+        $wpPath = config('press.wordpress_path', '/public/wp');
         $fullWpPath = base_path(trim((string) $wpPath, '/'));
 
         $pluginsPath = $fullWpPath.'/wp-content/plugins';

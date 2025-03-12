@@ -11,12 +11,12 @@ use Filament\Resources\Resource;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Moox\Core\Forms\Components\ProgressColumn;
 use Moox\Core\Traits\Tabs\HasResourceTabs;
 use Moox\Jobs\Models\JobManager;
 use Moox\Jobs\Resources\JobsResource\Pages\ListJobs;
 use Moox\Jobs\Resources\JobsResource\Widgets\JobStatsOverview;
 use Override;
-use RyanChandler\FilamentProgressColumn\ProgressColumn;
 
 class JobsResource extends Resource
 {
