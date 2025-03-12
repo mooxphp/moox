@@ -13,5 +13,6 @@ class EditTranslateItem extends EditRecord
 {
     use BaseInEditPage;
     use SingleSimpleInEditPage;
+
     protected static string $resource = TranslateItemResource::class;
 }

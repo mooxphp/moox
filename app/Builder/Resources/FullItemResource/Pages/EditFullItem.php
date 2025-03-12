@@ -13,5 +13,6 @@ class EditFullItem extends EditRecord
 {
     use BaseInEditPage;
     use SingleSimpleInEditPage;
+
     protected static string $resource = FullItemResource::class;
 }

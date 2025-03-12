@@ -12,6 +12,7 @@ class SoftItem extends Model
 {
     use BaseInModel;
     use SingleSoftDeleteInModel;
+
     protected $table = 'preview_soft_items';
 
     protected $fillable = [

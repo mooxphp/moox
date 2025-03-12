@@ -13,5 +13,6 @@ class ViewStaticLanguage extends ViewRecord
 {
     use BaseInViewPage;
     use SingleSimpleInViewPage;
+
     protected static string $resource = StaticLanguageResource::class;
 }

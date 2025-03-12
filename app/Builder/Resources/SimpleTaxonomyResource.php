@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Builder\Resources;
 
 use App\Builder\Models\SimpleTaxonomy;
-use Override;
-use App\Builder\Resources\SimpleTaxonomyResource\Pages\ListSimpleTaxonomies;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\CreateSimpleTaxonomy;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\EditSimpleTaxonomy;
+use App\Builder\Resources\SimpleTaxonomyResource\Pages\ListSimpleTaxonomies;
 use App\Builder\Resources\SimpleTaxonomyResource\Pages\ViewSimpleTaxonomy;
-use App\Builder\Resources\SimpleTaxonomyResource\Pages;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -21,6 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Override;
 
 class SimpleTaxonomyResource extends Resource
 {
@@ -117,7 +116,7 @@ class SimpleTaxonomyResource extends Resource
                             ->label('Title')
                             ->placeholder(__('core::core.search')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['title'],
                         fn (Builder $query, $value): Builder => $query->where('title', 'like', sprintf('%%%s%%', $value)),
                     ))
@@ -134,7 +133,7 @@ class SimpleTaxonomyResource extends Resource
                             ->label('Slug')
                             ->placeholder(__('core::core.search')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['slug'],
                         fn (Builder $query, $value): Builder => $query->where('slug', 'like', sprintf('%%%s%%', $value)),
                     ))

@@ -13,5 +13,6 @@ class CreateStaticLanguage extends CreateRecord
 {
     use BaseInCreatePage;
     use SingleSimpleInCreatePage;
+
     protected static string $resource = StaticLanguageResource::class;
 }

@@ -13,5 +13,6 @@ class ListNestedTaxonomies extends ListRecords
 {
     use BaseInListPage;
     use SingleSimpleInListPage;
+
     protected static string $resource = NestedTaxonomyResource::class;
 }

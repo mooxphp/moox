@@ -13,5 +13,6 @@ class CreateSoftItem extends CreateRecord
 {
     use BaseInCreatePage;
     use SingleSoftDeleteInCreatePage;
+
     protected static string $resource = SoftItemResource::class;
 }

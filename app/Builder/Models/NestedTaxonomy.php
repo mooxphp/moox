@@ -12,6 +12,7 @@ class NestedTaxonomy extends Model
 {
     use BaseInModel;
     use SingleSimpleInModel;
+
     protected $table = 'preview_nested_taxonomies';
 
     protected $fillable = [

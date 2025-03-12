@@ -13,5 +13,6 @@ class CreateNestedTaxonomy extends CreateRecord
 {
     use BaseInCreatePage;
     use SingleSimpleInCreatePage;
+
     protected static string $resource = NestedTaxonomyResource::class;
 }

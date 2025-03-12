@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Builder\Resources;
 
 use App\Builder\Models\NestedTaxonomy;
-use Override;
-use App\Builder\Resources\NestedTaxonomyResource\Pages\ListNestedTaxonomies;
 use App\Builder\Resources\NestedTaxonomyResource\Pages\CreateNestedTaxonomy;
 use App\Builder\Resources\NestedTaxonomyResource\Pages\EditNestedTaxonomy;
+use App\Builder\Resources\NestedTaxonomyResource\Pages\ListNestedTaxonomies;
 use App\Builder\Resources\NestedTaxonomyResource\Pages\ViewNestedTaxonomy;
-use App\Builder\Resources\NestedTaxonomyResource\Pages;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Textarea;
@@ -23,11 +21,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Moox\Core\Traits\Base\BaseInResource;
 use Moox\Core\Traits\Simple\SingleSimpleInResource;
+use Override;
 
 class NestedTaxonomyResource extends Resource
 {
     use BaseInResource;
     use SingleSimpleInResource;
+
     protected static ?string $model = NestedTaxonomy::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
@@ -122,7 +122,7 @@ class NestedTaxonomyResource extends Resource
                             ->label('Title')
                             ->placeholder(__('core::core.search')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['title'],
                         fn (Builder $query, $value): Builder => $query->where('title', 'like', sprintf('%%%s%%', $value)),
                     ))
@@ -139,7 +139,7 @@ class NestedTaxonomyResource extends Resource
                             ->label('Slug')
                             ->placeholder(__('core::core.search')),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $query->when(
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
                         $data['slug'],
                         fn (Builder $query, $value): Builder => $query->where('slug', 'like', sprintf('%%%s%%', $value)),
                     ))

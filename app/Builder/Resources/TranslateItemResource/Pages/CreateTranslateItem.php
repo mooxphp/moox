@@ -13,5 +13,6 @@ class CreateTranslateItem extends CreateRecord
 {
     use BaseInCreatePage;
     use SingleSimpleInCreatePage;
+
     protected static string $resource = TranslateItemResource::class;
 }

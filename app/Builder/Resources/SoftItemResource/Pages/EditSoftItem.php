@@ -13,5 +13,6 @@ class EditSoftItem extends EditRecord
 {
     use BaseInEditPage;
     use SingleSoftDeleteInEditPage;
+
     protected static string $resource = SoftItemResource::class;
 }

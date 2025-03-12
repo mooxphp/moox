@@ -12,6 +12,7 @@ class FullItem extends Model
 {
     use BaseInModel;
     use SingleSimpleInModel;
+
     protected $table = 'preview_full_items';
 
     protected $fillable = [

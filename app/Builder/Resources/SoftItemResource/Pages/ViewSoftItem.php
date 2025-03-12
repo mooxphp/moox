@@ -13,5 +13,6 @@ class ViewSoftItem extends ViewRecord
 {
     use BaseInViewPage;
     use SingleSoftDeleteInViewPage;
+
     protected static string $resource = SoftItemResource::class;
 }

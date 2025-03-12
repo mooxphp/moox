@@ -12,6 +12,7 @@ class StaticLanguage extends Model
 {
     use BaseInModel;
     use SingleSimpleInModel;
+
     protected $table = 'preview_static_languages';
 
     protected $fillable = [

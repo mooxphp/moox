@@ -13,5 +13,6 @@ class ViewFullItem extends ViewRecord
 {
     use BaseInViewPage;
     use SingleSimpleInViewPage;
+
     protected static string $resource = FullItemResource::class;
 }

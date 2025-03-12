@@ -13,5 +13,6 @@ class EditStaticLanguage extends EditRecord
 {
     use BaseInEditPage;
     use SingleSimpleInEditPage;
+
     protected static string $resource = StaticLanguageResource::class;
 }

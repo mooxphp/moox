@@ -13,5 +13,6 @@ class ListTranslateItems extends ListRecords
 {
     use BaseInListPage;
     use SingleSimpleInListPage;
+
     protected static string $resource = TranslateItemResource::class;
 }
