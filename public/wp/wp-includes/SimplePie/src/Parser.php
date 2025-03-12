@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -51,27 +52,39 @@ use SimplePie\XML\Declaration\Parser as DeclarationParser;
  *
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_parser_class()}
- *
- * @package SimplePie
- * @subpackage Parsing
  */
 class Parser implements RegistryAware
 {
     public $error_code;
+
     public $error_string;
+
     public $current_line;
+
     public $current_column;
+
     public $current_byte;
+
     public $separator = ' ';
+
     public $namespace = [''];
+
     public $element = [''];
+
     public $xml_base = [''];
+
     public $xml_base_explicit = [false];
+
     public $xml_lang = [''];
+
     public $data = [];
+
     public $datas = [[]];
+
     public $current_xhtml_construct = -1;
+
     public $encoding;
+
     protected $registry;
 
     public function set_registry(\SimplePie\Registry $registry)/* : void */
@@ -82,7 +95,7 @@ class Parser implements RegistryAware
     public function parse(&$data, $encoding, $url = '')
     {
         if (class_exists('DOMXpath') && function_exists('Mf2\parse')) {
-            $doc = new \DOMDocument();
+            $doc = new \DOMDocument;
             @$doc->loadHTML($data);
             $xpath = new \DOMXpath($doc);
             // Check for both h-feed and h-entry, as both a feed with no entries
@@ -128,9 +141,10 @@ class Parser implements RegistryAware
             $declaration = $this->registry->create(DeclarationParser::class, [substr($data, 5, $pos - 5)]);
             if ($declaration->parse()) {
                 $data = substr($data, $pos + 2);
-                $data = '<?xml version="' . $declaration->version . '" encoding="' . $encoding . '" standalone="' . (($declaration->standalone) ? 'yes' : 'no') . '"?>' ."\n". $this->declare_html_entities() . $data;
+                $data = '<?xml version="'.$declaration->version.'" encoding="'.$encoding.'" standalone="'.(($declaration->standalone) ? 'yes' : 'no').'"?>'."\n".$this->declare_html_entities().$data;
             } else {
                 $this->error_string = 'SimplePie bug! Please report this!';
+
                 return false;
             }
         }
@@ -158,16 +172,16 @@ class Parser implements RegistryAware
             if (($stream = fopen($wrapper, 'r+')) &&
                 fwrite($stream, $data) &&
                 rewind($stream)) {
-                //Parse by chunks not to use too much memory
+                // Parse by chunks not to use too much memory
                 do {
                     $stream_data = fread($stream, 1048576);
-                    if (!xml_parse($xml, $stream_data === false ? '' : $stream_data, feof($stream))) {
+                    if (! xml_parse($xml, $stream_data === false ? '' : $stream_data, feof($stream))) {
                         $this->error_code = xml_get_error_code($xml);
                         $this->error_string = xml_error_string($this->error_code);
                         $return = false;
                         break;
                     }
-                } while (!feof($stream));
+                } while (! feof($stream));
                 fclose($stream);
             } else {
                 $return = false;
@@ -177,17 +191,18 @@ class Parser implements RegistryAware
             $this->current_column = xml_get_current_column_number($xml);
             $this->current_byte = xml_get_current_byte_index($xml);
             xml_parser_free($xml);
+
             return $return;
         }
 
         libxml_clear_errors();
-        $xml = new \XMLReader();
+        $xml = new \XMLReader;
         $xml->xml($data);
         while (@$xml->read()) {
             switch ($xml->nodeType) {
                 case constant('XMLReader::END_ELEMENT'):
                     if ($xml->namespaceURI !== '') {
-                        $tagName = $xml->namespaceURI . $this->separator . $xml->localName;
+                        $tagName = $xml->namespaceURI.$this->separator.$xml->localName;
                     } else {
                         $tagName = $xml->localName;
                     }
@@ -196,14 +211,14 @@ class Parser implements RegistryAware
                 case constant('XMLReader::ELEMENT'):
                     $empty = $xml->isEmptyElement;
                     if ($xml->namespaceURI !== '') {
-                        $tagName = $xml->namespaceURI . $this->separator . $xml->localName;
+                        $tagName = $xml->namespaceURI.$this->separator.$xml->localName;
                     } else {
                         $tagName = $xml->localName;
                     }
                     $attributes = [];
                     while ($xml->moveToNextAttribute()) {
                         if ($xml->namespaceURI !== '') {
-                            $attrName = $xml->namespaceURI . $this->separator . $xml->localName;
+                            $attrName = $xml->namespaceURI.$this->separator.$xml->localName;
                         } else {
                             $attrName = $xml->localName;
                         }
@@ -226,6 +241,7 @@ class Parser implements RegistryAware
             $this->error_string = $error->message;
             $this->current_line = $error->line;
             $this->current_column = $error->column;
+
             return false;
         }
 
@@ -292,10 +308,10 @@ class Parser implements RegistryAware
         if ($this->current_xhtml_construct >= 0) {
             $this->current_xhtml_construct++;
             if (end($this->namespace) === \SimplePie\SimplePie::NAMESPACE_XHTML) {
-                $this->data['data'] .= '<' . end($this->element);
+                $this->data['data'] .= '<'.end($this->element);
                 if (isset($attribs[''])) {
                     foreach ($attribs[''] as $name => $value) {
-                        $this->data['data'] .= ' ' . $name . '="' . htmlspecialchars($value, ENT_COMPAT, $this->encoding) . '"';
+                        $this->data['data'] .= ' '.$name.'="'.htmlspecialchars($value, ENT_COMPAT, $this->encoding).'"';
                     }
                 }
                 $this->data['data'] .= '>';
@@ -327,8 +343,8 @@ class Parser implements RegistryAware
     {
         if ($this->current_xhtml_construct >= 0) {
             $this->current_xhtml_construct--;
-            if (end($this->namespace) === \SimplePie\SimplePie::NAMESPACE_XHTML && !in_array(end($this->element), ['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img', 'input', 'isindex', 'link', 'meta', 'param'])) {
-                $this->data['data'] .= '</' . end($this->element) . '>';
+            if (end($this->namespace) === \SimplePie\SimplePie::NAMESPACE_XHTML && ! in_array(end($this->element), ['area', 'base', 'basefont', 'br', 'col', 'frame', 'hr', 'img', 'input', 'isindex', 'link', 'meta', 'param'])) {
+                $this->data['data'] .= '</'.end($this->element).'>';
             }
         }
         if ($this->current_xhtml_construct === -1) {
@@ -346,10 +362,10 @@ class Parser implements RegistryAware
     public function split_ns($string)
     {
         static $cache = [];
-        if (!isset($cache[$string])) {
+        if (! isset($cache[$string])) {
             if ($pos = strpos($string, $this->separator)) {
                 static $separator_length;
-                if (!$separator_length) {
+                if (! $separator_length) {
                     $separator_length = strlen($this->separator);
                 }
                 $namespace = substr($string, 0, $pos);
@@ -371,6 +387,7 @@ class Parser implements RegistryAware
                 $cache[$string] = ['', $string];
             }
         }
+
         return $cache[$string];
     }
 
@@ -392,9 +409,11 @@ class Parser implements RegistryAware
                     $name = str_replace(',', '', $name);
                 }
                 $person_tag = $category ? '<span class="person-tag"></span>' : '';
+
                 return '<a class="h-card" href="'.$link.'">'.$person_tag.$name.'</a>';
             }
         }
+
         return $data['value'] ?? '';
     }
 
@@ -414,7 +433,7 @@ class Parser implements RegistryAware
                 break;
             }
             // Also look for h-feed or h-entry in the children of each top level item.
-            if (!isset($mf_item['children'][0]['type'])) {
+            if (! isset($mf_item['children'][0]['type'])) {
                 continue;
             }
             if (in_array('h-feed', $mf_item['children'][0]['type'])) {
@@ -479,7 +498,7 @@ class Parser implements RegistryAware
                     // If it's plain text it can also be a url that should be followed to
                     // get the actual h-card.
                     $author = $entry['properties']['author'][0] ?? $feed_author;
-                    if (!is_string($author)) {
+                    if (! is_string($author)) {
                         $author = $this->parse_hcard($author);
                     } elseif (strpos($author, 'http') === 0) {
                         if (isset($author_cache[$author])) {
@@ -488,12 +507,12 @@ class Parser implements RegistryAware
                             $mf = \Mf2\fetch($author);
                             foreach ($mf['items'] as $hcard) {
                                 // Only interested in an h-card by itself in this case.
-                                if (!in_array('h-card', $hcard['type'])) {
+                                if (! in_array('h-card', $hcard['type'])) {
                                     continue;
                                 }
                                 // It must have a url property matching what we fetched.
-                                if (!isset($hcard['properties']['url']) ||
-                                        !(in_array($author, $hcard['properties']['url']))) {
+                                if (! isset($hcard['properties']['url']) ||
+                                        ! (in_array($author, $hcard['properties']['url']))) {
                                     continue;
                                 }
                                 // Save parse_hcard the trouble of finding the correct url.
@@ -516,7 +535,7 @@ class Parser implements RegistryAware
                     $photo_list = [];
                     for ($j = 0; $j < count($entry['properties']['photo']); $j++) {
                         $photo = $entry['properties']['photo'][$j];
-                        if (!empty($photo) && strpos($content, $photo) === false) {
+                        if (! empty($photo) && strpos($content, $photo) === false) {
                             $photo_list[] = $photo;
                         }
                     }
@@ -594,10 +613,9 @@ class Parser implements RegistryAware
         // Mimic RSS data format when storing microformats.
         $link = [['data' => $url]];
         $image = '';
-        if (!is_string($feed_author) &&
+        if (! is_string($feed_author) &&
                 isset($feed_author['properties']['photo'][0])) {
-            $image = [['child' => ['' => ['url' =>
-                [['data' => $feed_author['properties']['photo'][0]]]]]]];
+            $image = [['child' => ['' => ['url' => [['data' => $feed_author['properties']['photo'][0]]]]]]];
         }
         // Use the name given for the h-feed, or get the title from the html.
         if ($feed_title !== '') {
@@ -610,12 +628,12 @@ class Parser implements RegistryAware
                 $feed_title = [['data' => htmlspecialchars($matches[1])]];
             }
         }
-        $channel = ['channel' => [['child' => ['' =>
-            ['link' => $link, 'image' => $image, 'title' => $feed_title,
-                  'item' => $items]]]]];
+        $channel = ['channel' => [['child' => ['' => ['link' => $link, 'image' => $image, 'title' => $feed_title,
+            'item' => $items]]]]];
         $rss = [['attribs' => ['' => ['version' => '2.0']],
-                           'child' => ['' => $channel]]];
+            'child' => ['' => $channel]]];
         $this->data = ['child' => ['' => ['rss' => $rss]]];
+
         return true;
     }
 

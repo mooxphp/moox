@@ -1,10 +1,10 @@
 <?php
+
 /**
  * WordPress Version
  *
  * Contains version information for the current WordPress release.
  *
- * @package WordPress
  * @since 1.2.0
  */
 

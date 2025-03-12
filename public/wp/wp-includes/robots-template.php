@@ -1,9 +1,8 @@
 <?php
+
 /**
  * Robots template functions.
  *
- * @package WordPress
- * @subpackage Robots
  * @since 5.7.0
  */
 
@@ -17,36 +16,37 @@
  * @since 5.7.0
  * @since 5.7.1 No longer prevents specific directives to occur together.
  */
-function wp_robots() {
-	/**
-	 * Filters the directives to be included in the 'robots' meta tag.
-	 *
-	 * The meta tag will only be included as necessary.
-	 *
-	 * @since 5.7.0
-	 *
-	 * @param array $robots Associative array of directives. Every key must be the name of the directive, and the
-	 *                      corresponding value must either be a string to provide as value for the directive or a
-	 *                      boolean `true` if it is a boolean directive, i.e. without a value.
-	 */
-	$robots = apply_filters( 'wp_robots', array() );
+function wp_robots()
+{
+    /**
+     * Filters the directives to be included in the 'robots' meta tag.
+     *
+     * The meta tag will only be included as necessary.
+     *
+     * @since 5.7.0
+     *
+     * @param  array  $robots  Associative array of directives. Every key must be the name of the directive, and the
+     *                         corresponding value must either be a string to provide as value for the directive or a
+     *                         boolean `true` if it is a boolean directive, i.e. without a value.
+     */
+    $robots = apply_filters('wp_robots', []);
 
-	$robots_strings = array();
-	foreach ( $robots as $directive => $value ) {
-		if ( is_string( $value ) ) {
-			// If a string value, include it as value for the directive.
-			$robots_strings[] = "{$directive}:{$value}";
-		} elseif ( $value ) {
-			// Otherwise, include the directive if it is truthy.
-			$robots_strings[] = $directive;
-		}
-	}
+    $robots_strings = [];
+    foreach ($robots as $directive => $value) {
+        if (is_string($value)) {
+            // If a string value, include it as value for the directive.
+            $robots_strings[] = "{$directive}:{$value}";
+        } elseif ($value) {
+            // Otherwise, include the directive if it is truthy.
+            $robots_strings[] = $directive;
+        }
+    }
 
-	if ( empty( $robots_strings ) ) {
-		return;
-	}
+    if (empty($robots_strings)) {
+        return;
+    }
 
-	echo "<meta name='robots' content='" . esc_attr( implode( ', ', $robots_strings ) ) . "' />\n";
+    echo "<meta name='robots' content='".esc_attr(implode(', ', $robots_strings))."' />\n";
 }
 
 /**
@@ -61,18 +61,18 @@ function wp_robots() {
  *     add_filter( 'wp_robots', 'wp_robots_noindex' );
  *
  * @since 5.7.0
- *
  * @see wp_robots_no_robots()
  *
- * @param array $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
-function wp_robots_noindex( array $robots ) {
-	if ( ! get_option( 'blog_public' ) ) {
-		return wp_robots_no_robots( $robots );
-	}
+function wp_robots_noindex(array $robots)
+{
+    if (! get_option('blog_public')) {
+        return wp_robots_no_robots($robots);
+    }
 
-	return $robots;
+    return $robots;
 }
 
 /**
@@ -83,18 +83,18 @@ function wp_robots_noindex( array $robots ) {
  *     add_filter( 'wp_robots', 'wp_robots_noindex_embeds' );
  *
  * @since 5.7.0
- *
  * @see wp_robots_no_robots()
  *
- * @param array $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
-function wp_robots_noindex_embeds( array $robots ) {
-	if ( is_embed() ) {
-		return wp_robots_no_robots( $robots );
-	}
+function wp_robots_noindex_embeds(array $robots)
+{
+    if (is_embed()) {
+        return wp_robots_no_robots($robots);
+    }
 
-	return $robots;
+    return $robots;
 }
 
 /**
@@ -109,18 +109,18 @@ function wp_robots_noindex_embeds( array $robots ) {
  *     add_filter( 'wp_robots', 'wp_robots_noindex_search' );
  *
  * @since 5.7.0
- *
  * @see wp_robots_no_robots()
  *
- * @param array $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
-function wp_robots_noindex_search( array $robots ) {
-	if ( is_search() ) {
-		return wp_robots_no_robots( $robots );
-	}
+function wp_robots_noindex_search(array $robots)
+{
+    if (is_search()) {
+        return wp_robots_no_robots($robots);
+    }
 
-	return $robots;
+    return $robots;
 }
 
 /**
@@ -134,19 +134,20 @@ function wp_robots_noindex_search( array $robots ) {
  *
  * @since 5.7.0
  *
- * @param array $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
-function wp_robots_no_robots( array $robots ) {
-	$robots['noindex'] = true;
+function wp_robots_no_robots(array $robots)
+{
+    $robots['noindex'] = true;
 
-	if ( get_option( 'blog_public' ) ) {
-		$robots['follow'] = true;
-	} else {
-		$robots['nofollow'] = true;
-	}
+    if (get_option('blog_public')) {
+        $robots['follow'] = true;
+    } else {
+        $robots['nofollow'] = true;
+    }
 
-	return $robots;
+    return $robots;
 }
 
 /**
@@ -161,13 +162,15 @@ function wp_robots_no_robots( array $robots ) {
  *
  * @since 5.7.0
  *
- * @param array $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
-function wp_robots_sensitive_page( array $robots ) {
-	$robots['noindex']   = true;
-	$robots['noarchive'] = true;
-	return $robots;
+function wp_robots_sensitive_page(array $robots)
+{
+    $robots['noindex'] = true;
+    $robots['noarchive'] = true;
+
+    return $robots;
 }
 
 /**
@@ -182,12 +185,14 @@ function wp_robots_sensitive_page( array $robots ) {
  *
  * @since 5.7.0
  *
- * @param array $robots Associative array of robots directives.
+ * @param  array  $robots  Associative array of robots directives.
  * @return array Filtered robots directives.
  */
-function wp_robots_max_image_preview_large( array $robots ) {
-	if ( get_option( 'blog_public' ) ) {
-		$robots['max-image-preview'] = 'large';
-	}
-	return $robots;
+function wp_robots_max_image_preview_large(array $robots)
+{
+    if (get_option('blog_public')) {
+        $robots['max-image-preview'] = 'large';
+    }
+
+    return $robots;
 }

@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -50,16 +51,12 @@ namespace SimplePie;
  * Used by {@see \SimplePie\SimplePie::get_item()} and {@see \SimplePie\SimplePie::get_items()}
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_item_class()}
- *
- * @package \SimplePie\SimplePie
- * @subpackage API
  */
 class Item implements RegistryAware
 {
     /**
      * Parent feed
      *
-     * @access private
      * @var \SimplePie\SimplePie
      */
     public $feed;
@@ -67,7 +64,6 @@ class Item implements RegistryAware
     /**
      * Raw data
      *
-     * @access private
      * @var array
      */
     public $data = [];
@@ -76,6 +72,7 @@ class Item implements RegistryAware
      * Registry object
      *
      * @see set_registry
+     *
      * @var \SimplePie\Registry
      */
     protected $registry;
@@ -86,8 +83,8 @@ class Item implements RegistryAware
      * This is usually used by {@see \SimplePie\SimplePie::get_items} and
      * {@see \SimplePie\SimplePie::get_item}. Avoid creating this manually.
      *
-     * @param \SimplePie\SimplePie $feed Parent feed
-     * @param array $data Raw data
+     * @param  \SimplePie\SimplePie  $feed  Parent feed
+     * @param  array  $data  Raw data
      */
     public function __construct($feed, $data)
     {
@@ -101,7 +98,6 @@ class Item implements RegistryAware
      * This is usually used by {@see \SimplePie\Registry::create}
      *
      * @since 1.3
-     * @param \SimplePie\Registry $registry
      */
     public function set_registry(\SimplePie\Registry $registry)/* : void */
     {
@@ -123,7 +119,7 @@ class Item implements RegistryAware
      */
     public function __destruct()
     {
-        if (!gc_enabled()) {
+        if (! gc_enabled()) {
             unset($this->feed);
         }
     }
@@ -138,8 +134,9 @@ class Item implements RegistryAware
      *
      * @since 1.0
      * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
-     * @param string $namespace The URL of the XML namespace of the elements you're trying to access
-     * @param string $tag Tag name
+     *
+     * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+     * @param  string  $tag  Tag name
      * @return array
      */
     public function get_item_tags($namespace, $tag)
@@ -155,29 +152,30 @@ class Item implements RegistryAware
      * Get the base URL value.
      * Uses `<xml:base>`, or item link, or feed base URL.
      *
-     * @param array $element
+     * @param  array  $element
      * @return string
      */
     public function get_base($element = [])
     {
-        if (!empty($element['xml_base_explicit']) && isset($element['xml_base'])) {
+        if (! empty($element['xml_base_explicit']) && isset($element['xml_base'])) {
             return $element['xml_base'];
         }
         $link = $this->get_permalink();
         if ($link != null) {
             return $link;
         }
+
         return $this->feed->get_base($element);
     }
 
     /**
      * Sanitize feed data
      *
-     * @access private
      * @see \SimplePie\SimplePie::sanitize()
-     * @param string $data Data to sanitize
-     * @param int $type One of the \SimplePie\SimplePie::CONSTRUCT_* constants
-     * @param string $base Base URL to resolve URLs against
+     *
+     * @param  string  $data  Data to sanitize
+     * @param  int  $type  One of the \SimplePie\SimplePie::CONSTRUCT_* constants
+     * @param  string  $base  Base URL to resolve URLs against
      * @return string Sanitized data
      */
     public function sanitize($data, $type, $base = '')
@@ -192,6 +190,7 @@ class Item implements RegistryAware
      *
      * @link http://simplepie.org/faq/typical_multifeed_gotchas#missing_data_from_feed
      * @since 1.0
+     *
      * @return \SimplePie\SimplePie
      */
     public function get_feed()
@@ -209,13 +208,14 @@ class Item implements RegistryAware
      * MD5 hash based on the permalink, title and content.
      *
      * @since Beta 2
-     * @param boolean $hash Should we force using a hash instead of the supplied ID?
-     * @param string|false $fn User-supplied function to generate an hash
+     *
+     * @param  bool  $hash  Should we force using a hash instead of the supplied ID?
+     * @param  string|false  $fn  User-supplied function to generate an hash
      * @return string|null
      */
     public function get_id($hash = false, $fn = 'md5')
     {
-        if (!$hash) {
+        if (! $hash) {
             if ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'id')) {
                 return $this->sanitize($return[0]['data'], \SimplePie\SimplePie::CONSTRUCT_TEXT);
             } elseif ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_03, 'id')) {
@@ -232,10 +232,11 @@ class Item implements RegistryAware
         }
         if ($fn === false) {
             return null;
-        } elseif (!is_callable($fn)) {
+        } elseif (! is_callable($fn)) {
             trigger_error('User-supplied function $fn must be callable', E_USER_WARNING);
             $fn = 'md5';
         }
+
         return call_user_func(
             $fn,
             $this->get_permalink().$this->get_title().$this->get_content()
@@ -248,11 +249,12 @@ class Item implements RegistryAware
      * Uses `<atom:title>`, `<title>` or `<dc:title>`
      *
      * @since Beta 2 (previously called `get_item_title` since 0.8)
+     *
      * @return string|null
      */
     public function get_title()
     {
-        if (!isset($this->data['title'])) {
+        if (! isset($this->data['title'])) {
             if ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'title')) {
                 $this->data['title'] = $this->sanitize($return[0]['data'], $this->registry->call(Misc::class, 'atom_10_construct_type', [$return[0]['attribs']]), $this->get_base($return[0]));
             } elseif ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_03, 'title')) {
@@ -271,6 +273,7 @@ class Item implements RegistryAware
                 $this->data['title'] = null;
             }
         }
+
         return $this->data['title'];
     }
 
@@ -286,7 +289,8 @@ class Item implements RegistryAware
      * `<itunes:subtitle>`
      *
      * @since 0.8
-     * @param boolean $description_only Should we avoid falling back to the content?
+     *
+     * @param  bool  $description_only  Should we avoid falling back to the content?
      * @return string|null
      */
     public function get_description($description_only = false)
@@ -318,7 +322,7 @@ class Item implements RegistryAware
         } elseif (($tags = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_RSS_090, 'description')) &&
                 ($return = $this->sanitize($tags[0]['data'], \SimplePie\SimplePie::CONSTRUCT_HTML))) {
             return $return;
-        } elseif (!$description_only) {
+        } elseif (! $description_only) {
             return $this->get_content(true);
         }
 
@@ -336,7 +340,8 @@ class Item implements RegistryAware
      * Uses `<atom:content>` or `<content:encoded>` (RSS 1.0 Content Module)
      *
      * @since 1.0
-     * @param boolean $content_only Should we avoid falling back to the description?
+     *
+     * @param  bool  $content_only  Should we avoid falling back to the description?
      * @return string|null
      */
     public function get_content($content_only = false)
@@ -350,7 +355,7 @@ class Item implements RegistryAware
         } elseif (($tags = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_RSS_10_MODULES_CONTENT, 'encoded')) &&
                 ($return = $this->sanitize($tags[0]['data'], \SimplePie\SimplePie::CONSTRUCT_HTML, $this->get_base($tags[0])))) {
             return $return;
-        } elseif (!$content_only) {
+        } elseif (! $content_only) {
             return $this->get_description(true);
         }
 
@@ -367,7 +372,7 @@ class Item implements RegistryAware
      */
     public function get_thumbnail()
     {
-        if (!isset($this->data['thumbnail'])) {
+        if (! isset($this->data['thumbnail'])) {
             if ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_MEDIARSS, 'thumbnail')) {
                 $thumbnail = $return[0]['attribs'][''];
                 if (empty($thumbnail['url'])) {
@@ -380,6 +385,7 @@ class Item implements RegistryAware
                 $this->data['thumbnail'] = null;
             }
         }
+
         return $this->data['thumbnail'];
     }
 
@@ -387,7 +393,8 @@ class Item implements RegistryAware
      * Get a category for the item
      *
      * @since Beta 3 (previously called `get_categories()` since Beta 2)
-     * @param int $key The category that you want to return.  Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The category that you want to return.  Remember that arrays begin with 0, not 1
      * @return \SimplePie\Category|null
      */
     public function get_category($key = 0)
@@ -406,6 +413,7 @@ class Item implements RegistryAware
      * Uses `<atom:category>`, `<category>` or `<dc:subject>`
      *
      * @since Beta 3
+     *
      * @return \SimplePie\Category[]|null List of {@see \SimplePie\Category} objects
      */
     public function get_categories()
@@ -448,7 +456,7 @@ class Item implements RegistryAware
             $categories[] = $this->registry->create(Category::class, [$this->sanitize($category['data'], \SimplePie\SimplePie::CONSTRUCT_TEXT), null, null, $type]);
         }
 
-        if (!empty($categories)) {
+        if (! empty($categories)) {
             return array_unique($categories);
         }
 
@@ -459,7 +467,8 @@ class Item implements RegistryAware
      * Get an author for the item
      *
      * @since Beta 2
-     * @param int $key The author that you want to return.  Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The author that you want to return.  Remember that arrays begin with 0, not 1
      * @return \SimplePie\Author|null
      */
     public function get_author($key = 0)
@@ -476,7 +485,8 @@ class Item implements RegistryAware
      * Get a contributor for the item
      *
      * @since 1.1
-     * @param int $key The contrbutor that you want to return.  Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The contrbutor that you want to return.  Remember that arrays begin with 0, not 1
      * @return \SimplePie\Author|null
      */
     public function get_contributor($key = 0)
@@ -495,6 +505,7 @@ class Item implements RegistryAware
      * Uses `<atom:contributor>`
      *
      * @since 1.1
+     *
      * @return \SimplePie\Author[]|null List of {@see \SimplePie\Author} objects
      */
     public function get_contributors()
@@ -535,7 +546,7 @@ class Item implements RegistryAware
             }
         }
 
-        if (!empty($contributors)) {
+        if (! empty($contributors)) {
             return array_unique($contributors);
         }
 
@@ -548,6 +559,7 @@ class Item implements RegistryAware
      * Uses `<atom:author>`, `<author>`, `<dc:creator>` or `<itunes:author>`
      *
      * @since Beta 2
+     *
      * @return \SimplePie\Author[]|null List of {@see \SimplePie\Author} objects
      */
     public function get_authors()
@@ -600,7 +612,7 @@ class Item implements RegistryAware
             $authors[] = $this->registry->create(Author::class, [$this->sanitize($author['data'], \SimplePie\SimplePie::CONSTRUCT_TEXT), null, null]);
         }
 
-        if (!empty($authors)) {
+        if (! empty($authors)) {
             return array_unique($authors);
         } elseif (($source = $this->get_source()) && ($authors = $source->get_authors())) {
             return $authors;
@@ -617,6 +629,7 @@ class Item implements RegistryAware
      * Uses `<atom:rights>` or `<dc:rights>`
      *
      * @since 1.1
+     *
      * @return string
      */
     public function get_copyright()
@@ -643,12 +656,12 @@ class Item implements RegistryAware
      *
      * @since Beta 2 (previously called `get_item_date` since 0.8)
      *
-     * @param string $date_format Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
      * @return int|string|null
      */
     public function get_date($date_format = 'j F Y, g:i a')
     {
-        if (!isset($this->data['date'])) {
+        if (! isset($this->data['date'])) {
             if ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'published')) {
                 $this->data['date']['raw'] = $return[0]['data'];
             } elseif ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_RSS_20, 'pubDate')) {
@@ -667,7 +680,7 @@ class Item implements RegistryAware
                 $this->data['date']['raw'] = $return[0]['data'];
             }
 
-            if (!empty($this->data['date']['raw'])) {
+            if (! empty($this->data['date']['raw'])) {
                 $parser = $this->registry->call(Parse\Date::class, 'get');
                 $this->data['date']['parsed'] = $parser->parse($this->data['date']['raw']) ?: null;
             } else {
@@ -699,17 +712,17 @@ class Item implements RegistryAware
      * Note: obeys PHP's timezone setting. To get a UTC date/time, use
      * {@see get_gmdate}
      *
-     * @param string $date_format Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date} (empty for the raw data)
      * @return int|string|null
      */
     public function get_updated_date($date_format = 'j F Y, g:i a')
     {
-        if (!isset($this->data['updated'])) {
+        if (! isset($this->data['updated'])) {
             if ($return = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'updated')) {
                 $this->data['updated']['raw'] = $return[0]['data'];
             }
 
-            if (!empty($this->data['updated']['raw'])) {
+            if (! empty($this->data['updated']['raw'])) {
                 $parser = $this->registry->call(Parse\Date::class, 'get');
                 $this->data['updated']['parsed'] = $parser->parse($this->data['updated']['raw']) ?: null;
             } else {
@@ -743,12 +756,12 @@ class Item implements RegistryAware
      *
      * @since 1.0
      *
-     * @param string $date_format Supports any PHP date format from {@see http://php.net/strftime} (empty for the raw data)
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/strftime} (empty for the raw data)
      * @return int|string|null
      */
     public function get_local_date($date_format = '%c')
     {
-        if (!$date_format) {
+        if (! $date_format) {
             return $this->sanitize($this->get_date(''), \SimplePie\SimplePie::CONSTRUCT_TEXT);
         } elseif (($date = $this->get_date('U')) !== null && $date !== false) {
             return strftime($date_format, $date);
@@ -761,7 +774,8 @@ class Item implements RegistryAware
      * Get the posting date/time for the item (UTC time)
      *
      * @see get_date
-     * @param string $date_format Supports any PHP date format from {@see http://php.net/date}
+     *
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date}
      * @return int|string|null
      */
     public function get_gmdate($date_format = 'j F Y, g:i a')
@@ -778,7 +792,8 @@ class Item implements RegistryAware
      * Get the update date/time for the item (UTC time)
      *
      * @see get_updated_date
-     * @param string $date_format Supports any PHP date format from {@see http://php.net/date}
+     *
+     * @param  string  $date_format  Supports any PHP date format from {@see http://php.net/date}
      * @return int|string|null
      */
     public function get_updated_gmdate($date_format = 'j F Y, g:i a')
@@ -799,6 +814,7 @@ class Item implements RegistryAware
      *
      * @see get_link
      * @since 0.8
+     *
      * @return string|null Permalink URL
      */
     public function get_permalink()
@@ -818,8 +834,9 @@ class Item implements RegistryAware
      * Get a single link for the item
      *
      * @since Beta 3
-     * @param int $key The link that you want to return.  Remember that arrays begin with 0, not 1
-     * @param string $rel The relationship of the link to return
+     *
+     * @param  int  $key  The link that you want to return.  Remember that arrays begin with 0, not 1
+     * @param  string  $rel  The relationship of the link to return
      * @return string|null Link URL
      */
     public function get_link($key = 0, $rel = 'alternate')
@@ -838,12 +855,13 @@ class Item implements RegistryAware
      * Uses `<atom:link>`, `<link>` or `<guid>`
      *
      * @since Beta 2
-     * @param string $rel The relationship of links to return
+     *
+     * @param  string  $rel  The relationship of links to return
      * @return array|null Links found for the item (strings)
      */
     public function get_links($rel = 'alternate')
     {
-        if (!isset($this->data['links'])) {
+        if (! isset($this->data['links'])) {
             $this->data['links'] = [];
             foreach ((array) $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'link') as $link) {
                 if (isset($link['attribs']['']['href'])) {
@@ -867,7 +885,7 @@ class Item implements RegistryAware
                 $this->data['links']['alternate'][] = $this->sanitize($links[0]['data'], \SimplePie\SimplePie::CONSTRUCT_IRI, $this->get_base($links[0]));
             }
             if ($links = $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_RSS_20, 'guid')) {
-                if (!isset($links[0]['attribs']['']['isPermaLink']) || strtolower(trim($links[0]['attribs']['']['isPermaLink'])) === 'true') {
+                if (! isset($links[0]['attribs']['']['isPermaLink']) || strtolower(trim($links[0]['attribs']['']['isPermaLink'])) === 'true') {
                     $this->data['links']['alternate'][] = $this->sanitize($links[0]['data'], \SimplePie\SimplePie::CONSTRUCT_IRI, $this->get_base($links[0]));
                 }
             }
@@ -875,11 +893,11 @@ class Item implements RegistryAware
             $keys = array_keys($this->data['links']);
             foreach ($keys as $key) {
                 if ($this->registry->call(Misc::class, 'is_isegment_nz_nc', [$key])) {
-                    if (isset($this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key])) {
-                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key] = array_merge($this->data['links'][$key], $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key]);
-                        $this->data['links'][$key] = &$this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key];
+                    if (isset($this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key])) {
+                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key] = array_merge($this->data['links'][$key], $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key]);
+                        $this->data['links'][$key] = &$this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key];
                     } else {
-                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key] = &$this->data['links'][$key];
+                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key] = &$this->data['links'][$key];
                     }
                 } elseif (substr($key, 0, 41) === \SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY) {
                     $this->data['links'][substr($key, 41)] = &$this->data['links'][$key];
@@ -900,8 +918,10 @@ class Item implements RegistryAware
      * Supports the <enclosure> RSS tag, as well as Media RSS and iTunes RSS.
      *
      * @since Beta 2
+     *
      * @todo Add ability to prefer one type of content over another (in a media group).
-     * @param int $key The enclosure that you want to return.  Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The enclosure that you want to return.  Remember that arrays begin with 0, not 1
      * @return \SimplePie\Enclosure|null
      */
     public function get_enclosure($key = 0, $prefer = null)
@@ -924,13 +944,15 @@ class Item implements RegistryAware
      * properly support.
      *
      * @since Beta 2
+     *
      * @todo Add support for end-user defined sorting of enclosures by type/handler (so we can prefer the faster-loading FLV over MP4).
      * @todo If an element exists at a level, but its value is empty, we should fall back to the value from the parent (if it exists).
+     *
      * @return \SimplePie\Enclosure[]|null List of \SimplePie\Enclosure items
      */
     public function get_enclosures()
     {
-        if (!isset($this->data['enclosures'])) {
+        if (! isset($this->data['enclosures'])) {
             $this->data['enclosures'] = [];
 
             // Elements
@@ -1145,14 +1167,14 @@ class Item implements RegistryAware
                 $hours = null;
                 if (isset($duration_parent[0]['data'])) {
                     $temp = explode(':', $this->sanitize($duration_parent[0]['data'], \SimplePie\SimplePie::CONSTRUCT_TEXT));
-                    if (sizeof($temp) > 0) {
+                    if (count($temp) > 0) {
                         $seconds = (int) array_pop($temp);
                     }
-                    if (sizeof($temp) > 0) {
+                    if (count($temp) > 0) {
                         $minutes = (int) array_pop($temp);
                         $seconds += $minutes * 60;
                     }
-                    if (sizeof($temp) > 0) {
+                    if (count($temp) > 0) {
                         $hours = (int) array_pop($temp);
                         $seconds += $hours * 3600;
                     }
@@ -2180,7 +2202,7 @@ class Item implements RegistryAware
             }
 
             foreach ((array) $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'link') as $link) {
-                if (isset($link['attribs']['']['href']) && !empty($link['attribs']['']['rel']) && $link['attribs']['']['rel'] === 'enclosure') {
+                if (isset($link['attribs']['']['href']) && ! empty($link['attribs']['']['rel']) && $link['attribs']['']['rel'] === 'enclosure') {
                     // Attributes
                     $bitrate = null;
                     $channels = null;
@@ -2216,7 +2238,7 @@ class Item implements RegistryAware
             }
 
             foreach ((array) $this->get_item_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_03, 'link') as $link) {
-                if (isset($link['attribs']['']['href']) && !empty($link['attribs']['']['rel']) && $link['attribs']['']['rel'] === 'enclosure') {
+                if (isset($link['attribs']['']['href']) && ! empty($link['attribs']['']['rel']) && $link['attribs']['']['rel'] === 'enclosure') {
                     // Attributes
                     $bitrate = null;
                     $channels = null;
@@ -2278,14 +2300,14 @@ class Item implements RegistryAware
                 }
             }
 
-            if (sizeof($this->data['enclosures']) === 0 && ($url || $type || $length || $bitrate || $captions_parent || $categories_parent || $channels || $copyrights_parent || $credits_parent || $description_parent || $duration_parent || $expression || $framerate || $hashes_parent || $height || $keywords_parent || $lang || $medium || $player_parent || $ratings_parent || $restrictions_parent || $samplingrate || $thumbnails_parent || $title_parent || $width)) {
+            if (count($this->data['enclosures']) === 0 && ($url || $type || $length || $bitrate || $captions_parent || $categories_parent || $channels || $copyrights_parent || $credits_parent || $description_parent || $duration_parent || $expression || $framerate || $hashes_parent || $height || $keywords_parent || $lang || $medium || $player_parent || $ratings_parent || $restrictions_parent || $samplingrate || $thumbnails_parent || $title_parent || $width)) {
                 // Since we don't have group or content for these, we'll just pass the '*_parent' variables directly to the constructor
                 $this->data['enclosures'][] = $this->registry->create(Enclosure::class, [$url, $type, $length, null, $bitrate, $captions_parent, $categories_parent, $channels, $copyrights_parent, $credits_parent, $description_parent, $duration_parent, $expression, $framerate, $hashes_parent, $height, $keywords_parent, $lang, $medium, $player_parent, $ratings_parent, $restrictions_parent, $samplingrate, $thumbnails_parent, $title_parent, $width]);
             }
 
             $this->data['enclosures'] = array_values(array_unique($this->data['enclosures']));
         }
-        if (!empty($this->data['enclosures'])) {
+        if (! empty($this->data['enclosures'])) {
             return $this->data['enclosures'];
         }
 
@@ -2302,6 +2324,7 @@ class Item implements RegistryAware
      * @since 1.0
      * @link http://www.w3.org/2003/01/geo/ W3C WGS84 Basic Geo
      * @link http://www.georss.org/ GeoRSS
+     *
      * @return string|null
      */
     public function get_latitude()
@@ -2325,6 +2348,7 @@ class Item implements RegistryAware
      * @since 1.0
      * @link http://www.w3.org/2003/01/geo/ W3C WGS84 Basic Geo
      * @link http://www.georss.org/ GeoRSS
+     *
      * @return string|null
      */
     public function get_longitude()
@@ -2344,6 +2368,7 @@ class Item implements RegistryAware
      * Get the `<atom:source>` for the item
      *
      * @since 1.1
+     *
      * @return \SimplePie\Source|null
      */
     public function get_source()

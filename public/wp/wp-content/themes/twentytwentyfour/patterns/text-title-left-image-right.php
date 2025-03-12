@@ -18,21 +18,21 @@
 			<div class="wp-block-group" style="min-height:100%">
 
 				<!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.2"}},"fontSize":"x-large","fontFamily":"heading"} -->
-				<p class="has-heading-font-family has-x-large-font-size" style="line-height:1.2"><?php echo esc_html_x( 'Études offers comprehensive consulting, management, design, and research solutions. Every architectural endeavor is an opportunity to shape the future.', 'Headline for the About pattern', 'twentytwentyfour' ); ?></p>
+				<p class="has-heading-font-family has-x-large-font-size" style="line-height:1.2"><?php echo esc_html_x('Études offers comprehensive consulting, management, design, and research solutions. Every architectural endeavor is an opportunity to shape the future.', 'Headline for the About pattern', 'twentytwentyfour'); ?></p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:group {"layout":{"type":"constrained","contentSize":"300px","justifyContent":"left"}} -->
 				<div class="wp-block-group">
 
 					<!-- wp:paragraph {"style":{"layout":{"selfStretch":"fixed","flexSize":"50%"}}} -->
-					<p><?php echo esc_html_x( 'Leaving an indelible mark on the landscape of tomorrow.', 'Description for the About pattern', 'twentytwentyfour' ); ?></p>
+					<p><?php echo esc_html_x('Leaving an indelible mark on the landscape of tomorrow.', 'Description for the About pattern', 'twentytwentyfour'); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:buttons -->
 					<div class="wp-block-buttons">
 						<!-- wp:button -->
 						<div class="wp-block-button">
-							<a class="wp-block-button__link wp-element-button"><?php echo esc_html_x( 'About us', 'Call to Action button text', 'twentytwentyfour' ); ?></a>
+							<a class="wp-block-button__link wp-element-button"><?php echo esc_html_x('About us', 'Call to Action button text', 'twentytwentyfour'); ?></a>
 						</div>
 						<!-- /wp:button -->
 					</div>
@@ -48,7 +48,7 @@
 		<div class="wp-block-column is-vertically-aligned-center" style="flex-basis:50%">
 			<!-- wp:image {"aspectRatio":"3/4","scale":"cover","sizeSlug":"large","linkDestination":"none","className":"is-style-rounded"} -->
 			<figure class="wp-block-image size-large is-style-rounded">
-				<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/museum.webp" alt="<?php esc_attr_e( 'A ramp along a curved wall in the Kiasma Museu, Helsinki, Finland', 'twentytwentyfour' ); ?>" style="aspect-ratio:3/4;object-fit:cover" />
+				<img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/museum.webp" alt="<?php esc_attr_e('A ramp along a curved wall in the Kiasma Museu, Helsinki, Finland', 'twentytwentyfour'); ?>" style="aspect-ratio:3/4;object-fit:cover" />
 			</figure>
 			<!-- /wp:image -->
 		</div>

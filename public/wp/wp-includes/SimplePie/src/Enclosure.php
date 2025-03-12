@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -50,170 +51,194 @@ namespace SimplePie;
  * Used by {@see \SimplePie\Item::get_enclosure()} and {@see \SimplePie\Item::get_enclosures()}
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_enclosure_class()}
- *
- * @package SimplePie
- * @subpackage API
  */
 class Enclosure
 {
     /**
      * @var string
+     *
      * @see get_bitrate()
      */
     public $bitrate;
 
     /**
      * @var array
+     *
      * @see get_captions()
      */
     public $captions;
 
     /**
      * @var array
+     *
      * @see get_categories()
      */
     public $categories;
 
     /**
      * @var int
+     *
      * @see get_channels()
      */
     public $channels;
 
     /**
      * @var \SimplePie\Copyright
+     *
      * @see get_copyright()
      */
     public $copyright;
 
     /**
      * @var array
+     *
      * @see get_credits()
      */
     public $credits;
 
     /**
      * @var string
+     *
      * @see get_description()
      */
     public $description;
 
     /**
      * @var int
+     *
      * @see get_duration()
      */
     public $duration;
 
     /**
      * @var string
+     *
      * @see get_expression()
      */
     public $expression;
 
     /**
      * @var string
+     *
      * @see get_framerate()
      */
     public $framerate;
 
     /**
      * @var string
+     *
      * @see get_handler()
      */
     public $handler;
 
     /**
      * @var array
+     *
      * @see get_hashes()
      */
     public $hashes;
 
     /**
      * @var string
+     *
      * @see get_height()
      */
     public $height;
 
     /**
      * @deprecated
+     *
      * @var null
      */
     public $javascript;
 
     /**
      * @var array
+     *
      * @see get_keywords()
      */
     public $keywords;
 
     /**
      * @var string
+     *
      * @see get_language()
      */
     public $lang;
 
     /**
      * @var string
+     *
      * @see get_length()
      */
     public $length;
 
     /**
      * @var string
+     *
      * @see get_link()
      */
     public $link;
 
     /**
      * @var string
+     *
      * @see get_medium()
      */
     public $medium;
 
     /**
      * @var string
+     *
      * @see get_player()
      */
     public $player;
 
     /**
      * @var array
+     *
      * @see get_ratings()
      */
     public $ratings;
 
     /**
      * @var array
+     *
      * @see get_restrictions()
      */
     public $restrictions;
 
     /**
      * @var string
+     *
      * @see get_sampling_rate()
      */
     public $samplingrate;
 
     /**
      * @var array
+     *
      * @see get_thumbnails()
      */
     public $thumbnails;
 
     /**
      * @var string
+     *
      * @see get_title()
      */
     public $title;
 
     /**
      * @var string
+     *
      * @see get_type()
      */
     public $type;
 
     /**
      * @var string
+     *
      * @see get_width()
      */
     public $width;
@@ -255,7 +280,7 @@ class Enclosure
         $this->width = $width;
 
         if (class_exists('idna_convert')) {
-            $idn = new \idna_convert();
+            $idn = new \idna_convert;
             $parsed = \SimplePie\Misc::parse_url($link);
             $this->link = \SimplePie\Misc::compress_parse_url($parsed['scheme'], $idn->encode($parsed['authority']), $parsed['path'], $parsed['query'], $parsed['fragment']);
         }
@@ -290,7 +315,7 @@ class Enclosure
     /**
      * Get a single caption
      *
-     * @param int $key
+     * @param  int  $key
      * @return \SimplePie\Caption|null
      */
     public function get_caption($key = 0)
@@ -320,7 +345,7 @@ class Enclosure
     /**
      * Get a single category
      *
-     * @param int $key
+     * @param  int  $key
      * @return \SimplePie\Category|null
      */
     public function get_category($key = 0)
@@ -378,7 +403,7 @@ class Enclosure
     /**
      * Get a single credit
      *
-     * @param int $key
+     * @param  int  $key
      * @return \SimplePie\Credit|null
      */
     public function get_credit($key = 0)
@@ -422,7 +447,7 @@ class Enclosure
     /**
      * Get the duration of the enclosure
      *
-     * @param bool $convert Convert seconds into hh:mm:ss
+     * @param  bool  $convert  Convert seconds into hh:mm:ss
      * @return string|int|null 'hh:mm:ss' string if `$convert` was specified, otherwise integer (or null if none found)
      */
     public function get_duration($convert = false)
@@ -430,6 +455,7 @@ class Enclosure
         if ($this->duration !== null) {
             if ($convert) {
                 $time = \SimplePie\Misc::time_hms($this->duration);
+
                 return $time;
             }
 
@@ -466,6 +492,7 @@ class Enclosure
                 return pathinfo($url['path'], PATHINFO_EXTENSION);
             }
         }
+
         return null;
     }
 
@@ -497,7 +524,8 @@ class Enclosure
      * Get a single hash
      *
      * @link http://www.rssboard.org/media-rss#media-hash
-     * @param int $key
+     *
+     * @param  int  $key
      * @return string|null Hash as per `media:hash`, prefixed with "$algo:"
      */
     public function get_hash($key = 0)
@@ -542,6 +570,7 @@ class Enclosure
      * Get the language
      *
      * @link http://tools.ietf.org/html/rfc3066
+     *
      * @return string|null Language code as per RFC 3066
      */
     public function get_language()
@@ -556,7 +585,7 @@ class Enclosure
     /**
      * Get a single keyword
      *
-     * @param int $key
+     * @param  int  $key
      * @return string|null
      */
     public function get_keyword($key = 0)
@@ -615,6 +644,7 @@ class Enclosure
      * Get the medium
      *
      * @link http://www.rssboard.org/media-rss#media-content
+     *
      * @return string|null Should be one of 'image', 'audio', 'video', 'document', 'executable'
      */
     public function get_medium()
@@ -630,6 +660,7 @@ class Enclosure
      * Get the player URL
      *
      * Typically the same as {@see get_permalink()}
+     *
      * @return string|null Player URL
      */
     public function get_player()
@@ -644,7 +675,7 @@ class Enclosure
     /**
      * Get a single rating
      *
-     * @param int $key
+     * @param  int  $key
      * @return \SimplePie\Rating|null
      */
     public function get_rating($key = 0)
@@ -674,7 +705,7 @@ class Enclosure
     /**
      * Get a single restriction
      *
-     * @param int $key
+     * @param  int  $key
      * @return \SimplePie\Restriction|null
      */
     public function get_restriction($key = 0)
@@ -733,7 +764,7 @@ class Enclosure
     /**
      * Get a single thumbnail
      *
-     * @param int $key
+     * @param  int  $key
      * @return string|null Thumbnail URL
      */
     public function get_thumbnail($key = 0)
@@ -778,6 +809,7 @@ class Enclosure
      * Get mimetype of the enclosure
      *
      * @see get_real_type()
+     *
      * @return string|null MIME type
      */
     public function get_type()
@@ -808,7 +840,7 @@ class Enclosure
      *
      * @deprecated Use the second parameter to {@see embed} instead
      *
-     * @param array|string $options See first parameter to {@see embed}
+     * @param  array|string  $options  See first parameter to {@see embed}
      * @return string HTML string to output
      */
     public function native_embed($options = '')
@@ -857,8 +889,9 @@ class Enclosure
      * `width` and `height` set to `auto` will default to 480x270 video resolution.
      *
      * @todo If the dimensions for media:content are defined, use them when width/height are set to 'auto'.
-     * @param array|string $options Comma-separated key:value list, or array
-     * @param bool $native Use `<embed>`
+     *
+     * @param  array|string  $options  Comma-separated key:value list, or array
+     * @param  bool  $native  Use `<embed>`
      * @return string HTML string to output
      */
     public function embed($options = '', $native = false)
@@ -985,9 +1018,9 @@ class Enclosure
         // Flash
         if ($handler === 'flash') {
             if ($native) {
-                $embed .= "<embed src=\"" . $this->get_link() . "\" pluginspage=\"http://adobe.com/go/getflashplayer\" type=\"$type\" quality=\"high\" width=\"$width\" height=\"$height\" bgcolor=\"$bgcolor\" loop=\"$loop\"></embed>";
+                $embed .= '<embed src="'.$this->get_link()."\" pluginspage=\"http://adobe.com/go/getflashplayer\" type=\"$type\" quality=\"high\" width=\"$width\" height=\"$height\" bgcolor=\"$bgcolor\" loop=\"$loop\"></embed>";
             } else {
-                $embed .= "<script type='text/javascript'>embed_flash('$bgcolor', '$width', '$height', '" . $this->get_link() . "', '$loop', '$type');</script>";
+                $embed .= "<script type='text/javascript'>embed_flash('$bgcolor', '$width', '$height', '".$this->get_link()."', '$loop', '$type');</script>";
             }
         }
 
@@ -996,9 +1029,9 @@ class Enclosure
         elseif ($handler === 'fmedia' || ($handler === 'mp3' && $mediaplayer !== '')) {
             $height += 20;
             if ($native) {
-                $embed .= "<embed src=\"$mediaplayer\" pluginspage=\"http://adobe.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" quality=\"high\" width=\"$width\" height=\"$height\" wmode=\"transparent\" flashvars=\"file=" . rawurlencode($this->get_link().'?file_extension=.'.$this->get_extension()) . "&autostart=false&repeat=$loop&showdigits=true&showfsbutton=false\"></embed>";
+                $embed .= "<embed src=\"$mediaplayer\" pluginspage=\"http://adobe.com/go/getflashplayer\" type=\"application/x-shockwave-flash\" quality=\"high\" width=\"$width\" height=\"$height\" wmode=\"transparent\" flashvars=\"file=".rawurlencode($this->get_link().'?file_extension=.'.$this->get_extension())."&autostart=false&repeat=$loop&showdigits=true&showfsbutton=false\"></embed>";
             } else {
-                $embed .= "<script type='text/javascript'>embed_flv('$width', '$height', '" . rawurlencode($this->get_link().'?file_extension=.'.$this->get_extension()) . "', '$placeholder', '$loop', '$mediaplayer');</script>";
+                $embed .= "<script type='text/javascript'>embed_flv('$width', '$height', '".rawurlencode($this->get_link().'?file_extension=.'.$this->get_extension())."', '$placeholder', '$loop', '$mediaplayer');</script>";
             }
         }
 
@@ -1008,12 +1041,12 @@ class Enclosure
             $height += 16;
             if ($native) {
                 if ($placeholder !== '') {
-                    $embed .= "<embed type=\"$type\" style=\"cursor:hand; cursor:pointer;\" href=\"" . $this->get_link() . "\" src=\"$placeholder\" width=\"$width\" height=\"$height\" autoplay=\"false\" target=\"myself\" controller=\"false\" loop=\"$loop\" scale=\"aspect\" bgcolor=\"$bgcolor\" pluginspage=\"http://apple.com/quicktime/download/\"></embed>";
+                    $embed .= "<embed type=\"$type\" style=\"cursor:hand; cursor:pointer;\" href=\"".$this->get_link()."\" src=\"$placeholder\" width=\"$width\" height=\"$height\" autoplay=\"false\" target=\"myself\" controller=\"false\" loop=\"$loop\" scale=\"aspect\" bgcolor=\"$bgcolor\" pluginspage=\"http://apple.com/quicktime/download/\"></embed>";
                 } else {
-                    $embed .= "<embed type=\"$type\" style=\"cursor:hand; cursor:pointer;\" src=\"" . $this->get_link() . "\" width=\"$width\" height=\"$height\" autoplay=\"false\" target=\"myself\" controller=\"true\" loop=\"$loop\" scale=\"aspect\" bgcolor=\"$bgcolor\" pluginspage=\"http://apple.com/quicktime/download/\"></embed>";
+                    $embed .= "<embed type=\"$type\" style=\"cursor:hand; cursor:pointer;\" src=\"".$this->get_link()."\" width=\"$width\" height=\"$height\" autoplay=\"false\" target=\"myself\" controller=\"true\" loop=\"$loop\" scale=\"aspect\" bgcolor=\"$bgcolor\" pluginspage=\"http://apple.com/quicktime/download/\"></embed>";
                 }
             } else {
-                $embed .= "<script type='text/javascript'>embed_quicktime('$type', '$bgcolor', '$width', '$height', '" . $this->get_link() . "', '$placeholder', '$loop');</script>";
+                $embed .= "<script type='text/javascript'>embed_quicktime('$type', '$bgcolor', '$width', '$height', '".$this->get_link()."', '$placeholder', '$loop');</script>";
             }
         }
 
@@ -1021,15 +1054,15 @@ class Enclosure
         elseif ($handler === 'wmedia') {
             $height += 45;
             if ($native) {
-                $embed .= "<embed type=\"application/x-mplayer2\" src=\"" . $this->get_link() . "\" autosize=\"1\" width=\"$width\" height=\"$height\" showcontrols=\"1\" showstatusbar=\"0\" showdisplay=\"0\" autostart=\"0\"></embed>";
+                $embed .= '<embed type="application/x-mplayer2" src="'.$this->get_link()."\" autosize=\"1\" width=\"$width\" height=\"$height\" showcontrols=\"1\" showstatusbar=\"0\" showdisplay=\"0\" autostart=\"0\"></embed>";
             } else {
-                $embed .= "<script type='text/javascript'>embed_wmedia('$width', '$height', '" . $this->get_link() . "');</script>";
+                $embed .= "<script type='text/javascript'>embed_wmedia('$width', '$height', '".$this->get_link()."');</script>";
             }
         }
 
         // Everything else
         else {
-            $embed .= '<a href="' . $this->get_link() . '" class="' . $altclass . '">' . $alt . '</a>';
+            $embed .= '<a href="'.$this->get_link().'" class="'.$altclass.'">'.$alt.'</a>';
         }
 
         return $embed;
@@ -1043,14 +1076,15 @@ class Enclosure
      * extension
      *
      * @see get_type()
-     * @param bool $find_handler Internal use only, use {@see get_handler()} instead
+     *
+     * @param  bool  $find_handler  Internal use only, use {@see get_handler()} instead
      * @return string MIME type
      */
     public function get_real_type($find_handler = false)
     {
         // Mime-types by handler.
         $types_flash = ['application/x-shockwave-flash', 'application/futuresplash']; // Flash
-        $types_fmedia = ['video/flv', 'video/x-flv','flv-application/octet-stream']; // Flash Media Player
+        $types_fmedia = ['video/flv', 'video/x-flv', 'flv-application/octet-stream']; // Flash Media Player
         $types_quicktime = ['audio/3gpp', 'audio/3gpp2', 'audio/aac', 'audio/x-aac', 'audio/aiff', 'audio/x-aiff', 'audio/mid', 'audio/midi', 'audio/x-midi', 'audio/mp4', 'audio/m4a', 'audio/x-m4a', 'audio/wav', 'audio/x-wav', 'video/3gpp', 'video/3gpp2', 'video/m4v', 'video/x-m4v', 'video/mp4', 'video/mpeg', 'video/x-mpeg', 'video/quicktime', 'video/sd-video']; // QuickTime
         $types_wmedia = ['application/asx', 'application/x-mplayer2', 'audio/x-ms-wma', 'audio/x-ms-wax', 'video/x-ms-asf-plugin', 'video/x-ms-asf', 'video/x-ms-wm', 'video/x-ms-wmv', 'video/x-ms-wvx']; // Windows Media
         $types_mp3 = ['audio/mp3', 'audio/x-mp3', 'audio/mpeg', 'audio/x-mpeg']; // MP3
@@ -1062,7 +1096,7 @@ class Enclosure
         }
 
         // If we encounter an unsupported mime-type, check the file extension and guess intelligently.
-        if (!in_array($type, array_merge($types_flash, $types_fmedia, $types_quicktime, $types_wmedia, $types_mp3))) {
+        if (! in_array($type, array_merge($types_flash, $types_fmedia, $types_quicktime, $types_wmedia, $types_mp3))) {
             $extension = $this->get_extension();
             if ($extension === null) {
                 return null;

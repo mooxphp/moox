@@ -38,17 +38,17 @@
 				<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 				<div class="wp-block-group">
 					<!-- wp:heading {"level":2,"style":{"typography":{"fontStyle":"normal","fontWeight":"600"}},"fontFamily":"body"} -->
-					<h2 class="wp-block-heading has-medium-font-size has-body-font-family" style="font-style:normal;font-weight:600"><?php esc_html_e( 'About', 'twentytwentyfour' ); ?></h2>
+					<h2 class="wp-block-heading has-medium-font-size has-body-font-family" style="font-style:normal;font-weight:600"><?php esc_html_e('About', 'twentytwentyfour'); ?></h2>
 					<!-- /wp:heading -->
 
 					<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical"}} -->
 					<div class="wp-block-group">
 
-						<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"small","ariaLabel":"<?php esc_attr_e( 'About', 'twentytwentyfour' ); ?>"} -->
+						<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"small","ariaLabel":"<?php esc_attr_e('About', 'twentytwentyfour'); ?>"} -->
 
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Team', 'twentytwentyfour' ); ?>","url":"#"} /-->
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'History', 'twentytwentyfour' ); ?>","url":"#"} /-->
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Careers', 'twentytwentyfour' ); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Team', 'twentytwentyfour'); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('History', 'twentytwentyfour'); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Careers', 'twentytwentyfour'); ?>","url":"#"} /-->
 
 						<!-- /wp:navigation -->
 
@@ -61,17 +61,17 @@
 				<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 				<div class="wp-block-group">
 					<!-- wp:heading {"level":2,"style":{"typography":{"fontStyle":"normal","fontWeight":"600"}},"fontFamily":"body"} -->
-					<h2 class="wp-block-heading has-medium-font-size has-body-font-family" style="font-style:normal;font-weight:600"><?php esc_html_e( 'Privacy', 'twentytwentyfour' ); ?></h2>
+					<h2 class="wp-block-heading has-medium-font-size has-body-font-family" style="font-style:normal;font-weight:600"><?php esc_html_e('Privacy', 'twentytwentyfour'); ?></h2>
 					<!-- /wp:heading -->
 
 					<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical"}} -->
 					<div class="wp-block-group">
 
-						<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"small","ariaLabel":"<?php esc_attr_e( 'Privacy', 'twentytwentyfour' ); ?>"} -->
+						<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"small","ariaLabel":"<?php esc_attr_e('Privacy', 'twentytwentyfour'); ?>"} -->
 
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Privacy Policy', 'twentytwentyfour' ); ?>","url":"#"} /-->
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Terms and Conditions', 'twentytwentyfour' ); ?>","url":"#"} /-->
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Contact Us', 'twentytwentyfour' ); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Privacy Policy', 'twentytwentyfour'); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Terms and Conditions', 'twentytwentyfour'); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Contact Us', 'twentytwentyfour'); ?>","url":"#"} /-->
 
 						<!-- /wp:navigation -->
 
@@ -83,17 +83,17 @@
 				<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 				<div class="wp-block-group">
 					<!-- wp:heading {"level":2,"style":{"typography":{"fontStyle":"normal","fontWeight":"600"}},"fontFamily":"body"} -->
-					<h2 class="wp-block-heading has-medium-font-size has-body-font-family" style="font-style:normal;font-weight:600"><?php esc_html_e( 'Social', 'twentytwentyfour' ); ?></h2>
+					<h2 class="wp-block-heading has-medium-font-size has-body-font-family" style="font-style:normal;font-weight:600"><?php esc_html_e('Social', 'twentytwentyfour'); ?></h2>
 					<!-- /wp:heading -->
 
 					<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","orientation":"vertical"}} -->
 					<div class="wp-block-group">
 
-						<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"small","ariaLabel":"<?php esc_attr_e( 'Social Media', 'twentytwentyfour' ); ?>"} -->
+						<!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"},"style":{"typography":{"fontStyle":"normal","fontWeight":"400"},"spacing":{"blockGap":"var:preset|spacing|10"}},"fontSize":"small","ariaLabel":"<?php esc_attr_e('Social Media', 'twentytwentyfour'); ?>"} -->
 
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Facebook', 'twentytwentyfour' ); ?>","url":"#"} /-->
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Instagram', 'twentytwentyfour' ); ?>","url":"#"} /-->
-						<!-- wp:navigation-link {"label":"<?php esc_html_e( 'Twitter/X', 'twentytwentyfour' ); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Facebook', 'twentytwentyfour'); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Instagram', 'twentytwentyfour'); ?>","url":"#"} /-->
+						<!-- wp:navigation-link {"label":"<?php esc_html_e('Twitter/X', 'twentytwentyfour'); ?>","url":"#"} /-->
 
 						<!-- /wp:navigation -->
 
@@ -113,14 +113,14 @@
 		<!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|contrast"}}}},"textColor":"contrast-2","fontSize":"small"} -->
 		<p class="has-contrast-2-color has-text-color has-link-color has-small-font-size">
 		<?php
-			/* Translators: WordPress link. */
-			$wordpress_link = '<a href="' . esc_url( __( 'https://wordpress.org', 'twentytwentyfour' ) ) . '" rel="nofollow">WordPress</a>';
-			echo sprintf(
-				/* Translators: Designed with WordPress */
-				esc_html__( 'Designed with %1$s', 'twentytwentyfour' ),
-				$wordpress_link
-			);
-			?>
+            /* Translators: WordPress link. */
+            $wordpress_link = '<a href="'.esc_url(__('https://wordpress.org', 'twentytwentyfour')).'" rel="nofollow">WordPress</a>';
+echo sprintf(
+    /* Translators: Designed with WordPress */
+    esc_html__('Designed with %1$s', 'twentytwentyfour'),
+    $wordpress_link
+);
+?>
 		</p>
 		<!-- /wp:paragraph -->
 	</div>

@@ -1,22 +1,19 @@
 <?php
 /**
  * Tools Administration Screen.
- *
- * @package WordPress
- * @subpackage Administration
  */
 
 /** WordPress Administration Bootstrap */
-require_once __DIR__ . '/admin.php';
+require_once __DIR__.'/admin.php';
 
-$action = ! empty( $_REQUEST['action'] ) ? sanitize_text_field( $_REQUEST['action'] ) : '';
+$action = ! empty($_REQUEST['action']) ? sanitize_text_field($_REQUEST['action']) : '';
 
-$tabs = array(
-	/* translators: Tab heading for Site Health Status page. */
-	''      => _x( 'Status', 'Site Health' ),
-	/* translators: Tab heading for Site Health Info page. */
-	'debug' => _x( 'Info', 'Site Health' ),
-);
+$tabs = [
+    /* translators: Tab heading for Site Health Status page. */
+    '' => _x('Status', 'Site Health'),
+    /* translators: Tab heading for Site Health Info page. */
+    'debug' => _x('Info', 'Site Health'),
+];
 
 /**
  * Filters the extra tabs for the Site Health navigation bar.
@@ -26,105 +23,104 @@ $tabs = array(
  *
  * @since 5.8.0
  *
- * @param string[] $tabs An associative array of tab labels keyed by their slug.
+ * @param  string[]  $tabs  An associative array of tab labels keyed by their slug.
  */
-$tabs = apply_filters( 'site_health_navigation_tabs', $tabs );
+$tabs = apply_filters('site_health_navigation_tabs', $tabs);
 
-$wrapper_classes = array(
-	'health-check-tabs-wrapper',
-	'hide-if-no-js',
-	'tab-count-' . count( $tabs ),
-);
+$wrapper_classes = [
+    'health-check-tabs-wrapper',
+    'hide-if-no-js',
+    'tab-count-'.count($tabs),
+];
 
-$current_tab = ( isset( $_GET['tab'] ) ? $_GET['tab'] : '' );
+$current_tab = (isset($_GET['tab']) ? $_GET['tab'] : '');
 
 $title = sprintf(
-	// translators: %s: The currently displayed tab.
-	__( 'Site Health - %s' ),
-	( isset( $tabs[ $current_tab ] ) ? esc_html( $tabs[ $current_tab ] ) : esc_html( reset( $tabs ) ) )
+    // translators: %s: The currently displayed tab.
+    __('Site Health - %s'),
+    (isset($tabs[$current_tab]) ? esc_html($tabs[$current_tab]) : esc_html(reset($tabs)))
 );
 
-if ( ! current_user_can( 'view_site_health_checks' ) ) {
-	wp_die( __( 'Sorry, you are not allowed to access site health information.' ), '', 403 );
+if (! current_user_can('view_site_health_checks')) {
+    wp_die(__('Sorry, you are not allowed to access site health information.'), '', 403);
 }
 
-wp_enqueue_style( 'site-health' );
-wp_enqueue_script( 'site-health' );
+wp_enqueue_style('site-health');
+wp_enqueue_script('site-health');
 
-if ( ! class_exists( 'WP_Site_Health' ) ) {
-	require_once ABSPATH . 'wp-admin/includes/class-wp-site-health.php';
+if (! class_exists('WP_Site_Health')) {
+    require_once ABSPATH.'wp-admin/includes/class-wp-site-health.php';
 }
 
-if ( 'update_https' === $action ) {
-	check_admin_referer( 'wp_update_https' );
+if ($action === 'update_https') {
+    check_admin_referer('wp_update_https');
 
-	if ( ! current_user_can( 'update_https' ) ) {
-		wp_die( __( 'Sorry, you are not allowed to update this site to HTTPS.' ), 403 );
-	}
+    if (! current_user_can('update_https')) {
+        wp_die(__('Sorry, you are not allowed to update this site to HTTPS.'), 403);
+    }
 
-	if ( ! wp_is_https_supported() ) {
-		wp_die( __( 'It looks like HTTPS is not supported for your website at this point.' ) );
-	}
+    if (! wp_is_https_supported()) {
+        wp_die(__('It looks like HTTPS is not supported for your website at this point.'));
+    }
 
-	$result = wp_update_urls_to_https();
+    $result = wp_update_urls_to_https();
 
-	wp_redirect( add_query_arg( 'https_updated', (int) $result, wp_get_referer() ) );
-	exit;
+    wp_redirect(add_query_arg('https_updated', (int) $result, wp_get_referer()));
+    exit;
 }
 
 $health_check_site_status = WP_Site_Health::get_instance();
 
 get_current_screen()->add_help_tab(
-	array(
-		'id'      => 'overview',
-		'title'   => __( 'Overview' ),
-		'content' =>
-				'<p>' . __( 'This screen allows you to obtain a health diagnosis of your site, and displays an overall rating of the status of your installation.' ) . '</p>' .
-				'<p>' . __( 'In the Status tab, you can see critical information about your WordPress configuration, along with anything else that requires your attention.' ) . '</p>' .
-				'<p>' . __( 'In the Info tab, you will find all the details about the configuration of your WordPress site, server, and database. There is also an export feature that allows you to copy all of the information about your site to the clipboard, to help solve problems on your site when obtaining support.' ) . '</p>',
-	)
+    [
+        'id' => 'overview',
+        'title' => __('Overview'),
+        'content' => '<p>'.__('This screen allows you to obtain a health diagnosis of your site, and displays an overall rating of the status of your installation.').'</p>'.
+                '<p>'.__('In the Status tab, you can see critical information about your WordPress configuration, along with anything else that requires your attention.').'</p>'.
+                '<p>'.__('In the Info tab, you will find all the details about the configuration of your WordPress site, server, and database. There is also an export feature that allows you to copy all of the information about your site to the clipboard, to help solve problems on your site when obtaining support.').'</p>',
+    ]
 );
 
 get_current_screen()->set_help_sidebar(
-	'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
-	'<p>' . __( '<a href="https://wordpress.org/documentation/article/site-health-screen/">Documentation on Site Health tool</a>' ) . '</p>'
+    '<p><strong>'.__('For more information:').'</strong></p>'.
+    '<p>'.__('<a href="https://wordpress.org/documentation/article/site-health-screen/">Documentation on Site Health tool</a>').'</p>'
 );
 
 // Start by checking if this is a special request checking for the existence of certain filters.
 $health_check_site_status->check_wp_version_check_exists();
 
-require_once ABSPATH . 'wp-admin/admin-header.php';
+require_once ABSPATH.'wp-admin/admin-header.php';
 ?>
 <div class="health-check-header">
 	<div class="health-check-title-section">
 		<h1>
-			<?php _e( 'Site Health' ); ?>
+			<?php _e('Site Health'); ?>
 		</h1>
 	</div>
 
 	<?php
-	if ( isset( $_GET['https_updated'] ) ) {
-		if ( $_GET['https_updated'] ) {
-			wp_admin_notice(
-				__( 'Site URLs switched to HTTPS.' ),
-				array(
-					'type'        => 'success',
-					'id'          => 'message',
-					'dismissible' => true,
-				)
-			);
-		} else {
-			wp_admin_notice(
-				__( 'Site URLs could not be switched to HTTPS.' ),
-				array(
-					'type'        => 'error',
-					'id'          => 'message',
-					'dismissible' => true,
-				)
-			);
-		}
-	}
-	?>
+    if (isset($_GET['https_updated'])) {
+        if ($_GET['https_updated']) {
+            wp_admin_notice(
+                __('Site URLs switched to HTTPS.'),
+                [
+                    'type' => 'success',
+                    'id' => 'message',
+                    'dismissible' => true,
+                ]
+            );
+        } else {
+            wp_admin_notice(
+                __('Site URLs could not be switched to HTTPS.'),
+                [
+                    'type' => 'error',
+                    'id' => 'message',
+                    'dismissible' => true,
+                ]
+            );
+        }
+    }
+?>
 
 	<div class="health-check-title-section site-health-progress-wrapper loading hide-if-no-js">
 		<div class="site-health-progress">
@@ -134,102 +130,103 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 			</svg>
 		</div>
 		<div class="site-health-progress-label">
-			<?php _e( 'Results are still loading&hellip;' ); ?>
+			<?php _e('Results are still loading&hellip;'); ?>
 		</div>
 	</div>
 
-	<nav class="<?php echo implode( ' ', $wrapper_classes ); ?>" aria-label="<?php esc_attr_e( 'Secondary menu' ); ?>">
+	<nav class="<?php echo implode(' ', $wrapper_classes); ?>" aria-label="<?php esc_attr_e('Secondary menu'); ?>">
 		<?php
-		$tabs_slice = $tabs;
+    $tabs_slice = $tabs;
 
-		/*
-		 * If there are more than 4 tabs, only output the first 3 inline,
-		 * the remaining links will be added to a sub-navigation.
-		 */
-		if ( count( $tabs ) > 4 ) {
-			$tabs_slice = array_slice( $tabs, 0, 3 );
-		}
+/*
+ * If there are more than 4 tabs, only output the first 3 inline,
+ * the remaining links will be added to a sub-navigation.
+ */
+if (count($tabs) > 4) {
+    $tabs_slice = array_slice($tabs, 0, 3);
+}
 
-		foreach ( $tabs_slice as $slug => $label ) {
-			printf(
-				'<a href="%s" class="health-check-tab %s">%s</a>',
-				esc_url(
-					add_query_arg(
-						array(
-							'tab' => $slug,
-						),
-						admin_url( 'site-health.php' )
-					)
-				),
-				( $current_tab === $slug ? 'active' : '' ),
-				esc_html( $label )
-			);
-		}
-		?>
+foreach ($tabs_slice as $slug => $label) {
+    printf(
+        '<a href="%s" class="health-check-tab %s">%s</a>',
+        esc_url(
+            add_query_arg(
+                [
+                    'tab' => $slug,
+                ],
+                admin_url('site-health.php')
+            )
+        ),
+        ($current_tab === $slug ? 'active' : ''),
+        esc_html($label)
+    );
+}
+?>
 
-		<?php if ( count( $tabs ) > 4 ) : ?>
+		<?php if (count($tabs) > 4) { ?>
 			<button type="button" class="health-check-tab health-check-offscreen-nav-wrapper" aria-haspopup="true">
 				<span class="dashicons dashicons-ellipsis"></span>
 				<span class="screen-reader-text">
 					<?php
-					/* translators: Hidden accessibility text. */
-					_e( 'Toggle extra menu items' );
-					?>
+            /* translators: Hidden accessibility text. */
+            _e('Toggle extra menu items');
+		    ?>
 				</span>
 
 				<div class="health-check-offscreen-nav">
 					<?php
-					// Remove the first few entries from the array as being already output.
-					$tabs_slice = array_slice( $tabs, 3 );
-					foreach ( $tabs_slice as $slug => $label ) {
-						printf(
-							'<a href="%s" class="health-check-tab %s">%s</a>',
-							esc_url(
-								add_query_arg(
-									array(
-										'tab' => $slug,
-									),
-									admin_url( 'site-health.php' )
-								)
-							),
-							( isset( $_GET['tab'] ) && $_GET['tab'] === $slug ? 'active' : '' ),
-							esc_html( $label )
-						);
-					}
-					?>
+		    // Remove the first few entries from the array as being already output.
+		    $tabs_slice = array_slice($tabs, 3);
+		    foreach ($tabs_slice as $slug => $label) {
+		        printf(
+		            '<a href="%s" class="health-check-tab %s">%s</a>',
+		            esc_url(
+		                add_query_arg(
+		                    [
+		                        'tab' => $slug,
+		                    ],
+		                    admin_url('site-health.php')
+		                )
+		            ),
+		            (isset($_GET['tab']) && $_GET['tab'] === $slug ? 'active' : ''),
+		            esc_html($label)
+		        );
+		    }
+		    ?>
 				</div>
 			</button>
-		<?php endif; ?>
+		<?php } ?>
 	</nav>
 </div>
 
 <hr class="wp-header-end">
 
 <?php
-if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
-	/**
-	 * Fires when outputting the content of a custom Site Health tab.
-	 *
-	 * This action fires right after the Site Health header, and users are still subject to
-	 * the capability checks for the Site Health page to view any custom tabs and their contents.
-	 *
-	 * @since 5.8.0
-	 *
-	 * @param string $tab The slug of the tab that was requested.
-	 */
-	do_action( 'site_health_tab_content', $_GET['tab'] );
+if (isset($_GET['tab']) && ! empty($_GET['tab'])) {
+    /**
+     * Fires when outputting the content of a custom Site Health tab.
+     *
+     * This action fires right after the Site Health header, and users are still subject to
+     * the capability checks for the Site Health page to view any custom tabs and their contents.
+     *
+     * @since 5.8.0
+     *
+     * @param  string  $tab  The slug of the tab that was requested.
+     */
+    do_action('site_health_tab_content', $_GET['tab']);
 
-	require_once ABSPATH . 'wp-admin/admin-footer.php';
-	return;
+    require_once ABSPATH.'wp-admin/admin-footer.php';
+
+    return;
 } else {
-	wp_admin_notice(
-		__( 'The Site Health check requires JavaScript.' ),
-		array(
-			'type'               => 'error',
-			'additional_classes' => array( 'hide-if-js' ),
-		)
-	);
-	?>
+    wp_admin_notice(
+        __('The Site Health check requires JavaScript.'),
+        [
+            'type' => 'error',
+            'additional_classes' => ['hide-if-js'],
+        ]
+    );
+    ?>
 
 <div class="health-check-body health-check-status-tab hide-if-no-js">
 	<div class="site-status-all-clear hide">
@@ -238,30 +235,30 @@ if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
 		</p>
 
 		<p class="encouragement">
-			<?php _e( 'Great job!' ); ?>
+			<?php _e('Great job!'); ?>
 		</p>
 
 		<p>
-			<?php _e( 'Everything is running smoothly here.' ); ?>
+			<?php _e('Everything is running smoothly here.'); ?>
 		</p>
 	</div>
 
 	<div class="site-status-has-issues">
 		<h2>
-			<?php _e( 'Site Health Status' ); ?>
+			<?php _e('Site Health Status'); ?>
 		</h2>
 
-		<p><?php _e( 'The site health check shows information about your WordPress configuration and items that may need your attention.' ); ?></p>
+		<p><?php _e('The site health check shows information about your WordPress configuration and items that may need your attention.'); ?></p>
 
 		<div class="site-health-issues-wrapper hidden" id="health-check-issues-critical">
 			<h3 class="site-health-issue-count-title">
 				<?php
-					/* translators: %s: Number of critical issues found. */
-					printf( _n( '%s critical issue', '%s critical issues', 0 ), '<span class="issue-count">0</span>' );
-				?>
+                    /* translators: %s: Number of critical issues found. */
+                    printf(_n('%s critical issue', '%s critical issues', 0), '<span class="issue-count">0</span>');
+    ?>
 			</h3>
 
-			<p><?php _e( 'Critical issues are items that may have a high impact on your sites performance or security, and resolving these issues should be prioritized.' ); ?></p>
+			<p><?php _e('Critical issues are items that may have a high impact on your sites performance or security, and resolving these issues should be prioritized.'); ?></p>
 
 			<div id="health-check-site-status-critical" class="health-check-accordion issues"></div>
 		</div>
@@ -269,12 +266,12 @@ if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
 		<div class="site-health-issues-wrapper hidden" id="health-check-issues-recommended">
 			<h3 class="site-health-issue-count-title">
 				<?php
-					/* translators: %s: Number of recommended improvements. */
-					printf( _n( '%s recommended improvement', '%s recommended improvements', 0 ), '<span class="issue-count">0</span>' );
-				?>
+        /* translators: %s: Number of recommended improvements. */
+        printf(_n('%s recommended improvement', '%s recommended improvements', 0), '<span class="issue-count">0</span>');
+    ?>
 			</h3>
 
-			<p><?php _e( 'Recommended items are considered beneficial to your site, although not as important to prioritize as a critical issue, they may include improvements to things such as; Performance, user experience, and more.' ); ?></p>
+			<p><?php _e('Recommended items are considered beneficial to your site, although not as important to prioritize as a critical issue, they may include improvements to things such as; Performance, user experience, and more.'); ?></p>
 
 			<div id="health-check-site-status-recommended" class="health-check-accordion issues"></div>
 		</div>
@@ -282,7 +279,7 @@ if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
 
 	<div class="site-health-view-more">
 		<button type="button" class="button site-health-view-passed" aria-expanded="false" aria-controls="health-check-issues-good">
-			<?php _e( 'Passed tests' ); ?>
+			<?php _e('Passed tests'); ?>
 			<span class="icon"></span>
 		</button>
 	</div>
@@ -290,9 +287,9 @@ if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
 	<div class="site-health-issues-wrapper hidden" id="health-check-issues-good">
 		<h3 class="site-health-issue-count-title">
 			<?php
-				/* translators: %s: Number of items with no issues. */
-				printf( _n( '%s item with no issues detected', '%s items with no issues detected', 0 ), '<span class="issue-count">0</span>' );
-			?>
+    /* translators: %s: Number of items with no issues. */
+    printf(_n('%s item with no issues detected', '%s items with no issues detected', 0), '<span class="issue-count">0</span>');
+    ?>
 		</h3>
 
 		<div id="health-check-site-status-good" class="health-check-accordion issues"></div>
@@ -321,4 +318,4 @@ if ( isset( $_GET['tab'] ) && ! empty( $_GET['tab'] ) ) {
 
 	<?php
 }
-require_once ABSPATH . 'wp-admin/admin-footer.php';
+require_once ABSPATH.'wp-admin/admin-footer.php';

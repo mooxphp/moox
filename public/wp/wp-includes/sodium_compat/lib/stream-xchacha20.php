@@ -1,12 +1,14 @@
 <?php
 
-if (!is_callable('sodium_crypto_stream_xchacha20')) {
+if (! is_callable('sodium_crypto_stream_xchacha20')) {
     /**
      * @see ParagonIE_Sodium_Compat::crypto_stream_xchacha20()
-     * @param int $len
-     * @param string $nonce
-     * @param string $key
+     *
+     * @param  int  $len
+     * @param  string  $nonce
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -19,10 +21,12 @@ if (!is_callable('sodium_crypto_stream_xchacha20')) {
         return ParagonIE_Sodium_Compat::crypto_stream_xchacha20($len, $nonce, $key, true);
     }
 }
-if (!is_callable('sodium_crypto_stream_xchacha20_keygen')) {
+if (! is_callable('sodium_crypto_stream_xchacha20_keygen')) {
     /**
      * @see ParagonIE_Sodium_Compat::crypto_stream_xchacha20_keygen()
+     *
      * @return string
+     *
      * @throws Exception
      */
     function sodium_crypto_stream_xchacha20_keygen()
@@ -30,13 +34,15 @@ if (!is_callable('sodium_crypto_stream_xchacha20_keygen')) {
         return ParagonIE_Sodium_Compat::crypto_stream_xchacha20_keygen();
     }
 }
-if (!is_callable('sodium_crypto_stream_xchacha20_xor')) {
+if (! is_callable('sodium_crypto_stream_xchacha20_xor')) {
     /**
      * @see ParagonIE_Sodium_Compat::crypto_stream_xchacha20_xor()
-     * @param string $message
-     * @param string $nonce
-     * @param string $key
+     *
+     * @param  string  $message
+     * @param  string  $nonce
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -50,14 +56,16 @@ if (!is_callable('sodium_crypto_stream_xchacha20_xor')) {
         return ParagonIE_Sodium_Compat::crypto_stream_xchacha20_xor($message, $nonce, $key, true);
     }
 }
-if (!is_callable('sodium_crypto_stream_xchacha20_xor_ic')) {
+if (! is_callable('sodium_crypto_stream_xchacha20_xor_ic')) {
     /**
      * @see ParagonIE_Sodium_Compat::crypto_stream_xchacha20_xor_ic()
-     * @param string $message
-     * @param string $nonce
-     * @param int $counter
-     * @param string $key
+     *
+     * @param  string  $message
+     * @param  string  $nonce
+     * @param  int  $counter
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */

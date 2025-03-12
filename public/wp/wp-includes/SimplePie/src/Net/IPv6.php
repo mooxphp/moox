@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -47,11 +48,11 @@ namespace SimplePie\Net;
 /**
  * Class to validate and to work with IPv6 addresses.
  *
- * @package SimplePie
- * @subpackage HTTP
  * @copyright 2003-2005 The PHP Group
  * @license http://www.opensource.org/licenses/bsd-license.php
+ *
  * @link http://pear.php.net/package/Net_IPv6
+ *
  * @author Alexander Merz <alexander.merz@web.de>
  * @author elfrink at introweb dot nl
  * @author Josh Peck <jmp at joshpeck dot org>
@@ -74,7 +75,8 @@ class IPv6
      * @author Josh Peck <jmp at joshpeck dot org>
      * @copyright 2003-2005 The PHP Group
      * @license http://www.opensource.org/licenses/bsd-license.php
-     * @param string $ip An IPv6 address
+     *
+     * @param  string  $ip  An IPv6 address
      * @return string The uncompressed IPv6 address
      */
     public static function uncompress($ip)
@@ -112,10 +114,11 @@ class IPv6
             }
             // xxx::xxx
             else {
-                $fill = ':' . str_repeat('0:', 6 - $c2 - $c1);
+                $fill = ':'.str_repeat('0:', 6 - $c2 - $c1);
                 $ip = str_replace('::', $fill, $ip);
             }
         }
+
         return $ip;
     }
 
@@ -130,7 +133,8 @@ class IPv6
      *           0:0:0:0:0:0:0:1        ->  ::1
      *
      * @see uncompress()
-     * @param string $ip An IPv6 address
+     *
+     * @param  string  $ip  An IPv6 address
      * @return string The compressed IPv6 address
      */
     public static function compress($ip)
@@ -172,7 +176,7 @@ class IPv6
      * Example:  0:0:0:0:0:0:13.1.68.3
      *           0:0:0:0:0:FFFF:129.144.52.38
      *
-     * @param string $ip An IPv6 address
+     * @param  string  $ip  An IPv6 address
      * @return array [0] contains the IPv6 represented part, and [1] the IPv4 represented part
      */
     private static function split_v6_v4($ip)
@@ -181,6 +185,7 @@ class IPv6
             $pos = strrpos($ip, ':');
             $ipv6_part = substr($ip, 0, $pos);
             $ipv4_part = substr($ip, $pos + 1);
+
             return [$ipv6_part, $ipv4_part];
         }
 
@@ -192,7 +197,7 @@ class IPv6
      *
      * Checks if the given IP is a valid IPv6 address
      *
-     * @param string $ip An IPv6 address
+     * @param  string  $ip  An IPv6 address
      * @return bool true if $ip is a valid IPv6 address
      */
     public static function check_ipv6($ip)
@@ -233,6 +238,7 @@ class IPv6
                     }
                 }
             }
+
             return true;
         }
 
@@ -243,9 +249,11 @@ class IPv6
      * Checks if the given IP is a valid IPv6 address
      *
      * @codeCoverageIgnore
+     *
      * @deprecated Use {@see IPv6::check_ipv6()} instead
      * @see check_ipv6
-     * @param string $ip An IPv6 address
+     *
+     * @param  string  $ip  An IPv6 address
      * @return bool true if $ip is a valid IPv6 address
      */
     public static function checkIPv6($ip)

@@ -1,8 +1,8 @@
 <?php
+
 /**
  * Error Protection API: Functions
  *
- * @package WordPress
  * @since 5.2.0
  */
 
@@ -11,14 +11,15 @@
  *
  * @return WP_Paused_Extensions_Storage
  */
-function wp_paused_plugins() {
-	static $storage = null;
+function wp_paused_plugins()
+{
+    static $storage = null;
 
-	if ( null === $storage ) {
-		$storage = new WP_Paused_Extensions_Storage( 'plugin' );
-	}
+    if ($storage === null) {
+        $storage = new WP_Paused_Extensions_Storage('plugin');
+    }
 
-	return $storage;
+    return $storage;
 }
 
 /**
@@ -26,14 +27,15 @@ function wp_paused_plugins() {
  *
  * @return WP_Paused_Extensions_Storage
  */
-function wp_paused_themes() {
-	static $storage = null;
+function wp_paused_themes()
+{
+    static $storage = null;
 
-	if ( null === $storage ) {
-		$storage = new WP_Paused_Extensions_Storage( 'theme' );
-	}
+    if ($storage === null) {
+        $storage = new WP_Paused_Extensions_Storage('theme');
+    }
 
-	return $storage;
+    return $storage;
 }
 
 /**
@@ -41,34 +43,35 @@ function wp_paused_themes() {
  *
  * @since 5.2.0
  *
- * @param array $error Error details from `error_get_last()`.
+ * @param  array  $error  Error details from `error_get_last()`.
  * @return string Formatted error description.
  */
-function wp_get_extension_error_description( $error ) {
-	$constants   = get_defined_constants( true );
-	$constants   = isset( $constants['Core'] ) ? $constants['Core'] : $constants['internal'];
-	$core_errors = array();
+function wp_get_extension_error_description($error)
+{
+    $constants = get_defined_constants(true);
+    $constants = isset($constants['Core']) ? $constants['Core'] : $constants['internal'];
+    $core_errors = [];
 
-	foreach ( $constants as $constant => $value ) {
-		if ( str_starts_with( $constant, 'E_' ) ) {
-			$core_errors[ $value ] = $constant;
-		}
-	}
+    foreach ($constants as $constant => $value) {
+        if (str_starts_with($constant, 'E_')) {
+            $core_errors[$value] = $constant;
+        }
+    }
 
-	if ( isset( $core_errors[ $error['type'] ] ) ) {
-		$error['type'] = $core_errors[ $error['type'] ];
-	}
+    if (isset($core_errors[$error['type']])) {
+        $error['type'] = $core_errors[$error['type']];
+    }
 
-	/* translators: 1: Error type, 2: Error line number, 3: Error file name, 4: Error message. */
-	$error_message = __( 'An error of type %1$s was caused in line %2$s of the file %3$s. Error message: %4$s' );
+    /* translators: 1: Error type, 2: Error line number, 3: Error file name, 4: Error message. */
+    $error_message = __('An error of type %1$s was caused in line %2$s of the file %3$s. Error message: %4$s');
 
-	return sprintf(
-		$error_message,
-		"<code>{$error['type']}</code>",
-		"<code>{$error['line']}</code>",
-		"<code>{$error['file']}</code>",
-		"<code>{$error['message']}</code>"
-	);
+    return sprintf(
+        $error_message,
+        "<code>{$error['type']}</code>",
+        "<code>{$error['line']}</code>",
+        "<code>{$error['file']}</code>",
+        "<code>{$error['message']}</code>"
+    );
 }
 
 /**
@@ -78,21 +81,22 @@ function wp_get_extension_error_description( $error ) {
  *
  * @since 5.2.0
  */
-function wp_register_fatal_error_handler() {
-	if ( ! wp_is_fatal_error_handler_enabled() ) {
-		return;
-	}
+function wp_register_fatal_error_handler()
+{
+    if (! wp_is_fatal_error_handler_enabled()) {
+        return;
+    }
 
-	$handler = null;
-	if ( defined( 'WP_CONTENT_DIR' ) && is_readable( WP_CONTENT_DIR . '/fatal-error-handler.php' ) ) {
-		$handler = include WP_CONTENT_DIR . '/fatal-error-handler.php';
-	}
+    $handler = null;
+    if (defined('WP_CONTENT_DIR') && is_readable(WP_CONTENT_DIR.'/fatal-error-handler.php')) {
+        $handler = include WP_CONTENT_DIR.'/fatal-error-handler.php';
+    }
 
-	if ( ! is_object( $handler ) || ! is_callable( array( $handler, 'handle' ) ) ) {
-		$handler = new WP_Fatal_Error_Handler();
-	}
+    if (! is_object($handler) || ! is_callable([$handler, 'handle'])) {
+        $handler = new WP_Fatal_Error_Handler;
+    }
 
-	register_shutdown_function( array( $handler, 'handle' ) );
+    register_shutdown_function([$handler, 'handle']);
 }
 
 /**
@@ -105,38 +109,39 @@ function wp_register_fatal_error_handler() {
  *
  * @return bool True if the fatal error handler is enabled, false otherwise.
  */
-function wp_is_fatal_error_handler_enabled() {
-	$enabled = ! defined( 'WP_DISABLE_FATAL_ERROR_HANDLER' ) || ! WP_DISABLE_FATAL_ERROR_HANDLER;
+function wp_is_fatal_error_handler_enabled()
+{
+    $enabled = ! defined('WP_DISABLE_FATAL_ERROR_HANDLER') || ! WP_DISABLE_FATAL_ERROR_HANDLER;
 
-	/**
-	 * Filters whether the fatal error handler is enabled.
-	 *
-	 * **Important:** This filter runs before it can be used by plugins. It cannot
-	 * be used by plugins, mu-plugins, or themes. To use this filter you must define
-	 * a `$wp_filter` global before WordPress loads, usually in `wp-config.php`.
-	 *
-	 * Example:
-	 *
-	 *     $GLOBALS['wp_filter'] = array(
-	 *         'wp_fatal_error_handler_enabled' => array(
-	 *             10 => array(
-	 *                 array(
-	 *                     'accepted_args' => 0,
-	 *                     'function'      => function() {
-	 *                         return false;
-	 *                     },
-	 *                 ),
-	 *             ),
-	 *         ),
-	 *     );
-	 *
-	 * Alternatively you can use the `WP_DISABLE_FATAL_ERROR_HANDLER` constant.
-	 *
-	 * @since 5.2.0
-	 *
-	 * @param bool $enabled True if the fatal error handler is enabled, false otherwise.
-	 */
-	return apply_filters( 'wp_fatal_error_handler_enabled', $enabled );
+    /**
+     * Filters whether the fatal error handler is enabled.
+     *
+     * **Important:** This filter runs before it can be used by plugins. It cannot
+     * be used by plugins, mu-plugins, or themes. To use this filter you must define
+     * a `$wp_filter` global before WordPress loads, usually in `wp-config.php`.
+     *
+     * Example:
+     *
+     *     $GLOBALS['wp_filter'] = array(
+     *         'wp_fatal_error_handler_enabled' => array(
+     *             10 => array(
+     *                 array(
+     *                     'accepted_args' => 0,
+     *                     'function'      => function() {
+     *                         return false;
+     *                     },
+     *                 ),
+     *             ),
+     *         ),
+     *     );
+     *
+     * Alternatively you can use the `WP_DISABLE_FATAL_ERROR_HANDLER` constant.
+     *
+     * @since 5.2.0
+     *
+     * @param  bool  $enabled  True if the fatal error handler is enabled, false otherwise.
+     */
+    return apply_filters('wp_fatal_error_handler_enabled', $enabled);
 }
 
 /**
@@ -146,12 +151,13 @@ function wp_is_fatal_error_handler_enabled() {
  *
  * @return WP_Recovery_Mode
  */
-function wp_recovery_mode() {
-	static $wp_recovery_mode;
+function wp_recovery_mode()
+{
+    static $wp_recovery_mode;
 
-	if ( ! $wp_recovery_mode ) {
-		$wp_recovery_mode = new WP_Recovery_Mode();
-	}
+    if (! $wp_recovery_mode) {
+        $wp_recovery_mode = new WP_Recovery_Mode;
+    }
 
-	return $wp_recovery_mode;
+    return $wp_recovery_mode;
 }

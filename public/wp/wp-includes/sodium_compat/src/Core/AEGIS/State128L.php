@@ -4,17 +4,18 @@ if (class_exists('ParagonIE_Sodium_Core_AEGIS_State128L', false)) {
     return;
 }
 
-if (!defined('SODIUM_COMPAT_AEGIS_C0')) {
+if (! defined('SODIUM_COMPAT_AEGIS_C0')) {
     define('SODIUM_COMPAT_AEGIS_C0', "\x00\x01\x01\x02\x03\x05\x08\x0d\x15\x22\x37\x59\x90\xe9\x79\x62");
 }
-if (!defined('SODIUM_COMPAT_AEGIS_C1')) {
+if (! defined('SODIUM_COMPAT_AEGIS_C1')) {
     define('SODIUM_COMPAT_AEGIS_C1', "\xdb\x3d\x18\x55\x6d\xc2\x2f\xf1\x20\x11\x31\x42\x73\xb5\x28\xdd");
 }
 
 class ParagonIE_Sodium_Core_AEGIS_State128L
 {
-    /** @var array<int, string> $state */
+    /** @var array<int, string> */
     protected $state;
+
     public function __construct()
     {
         $this->state = array_fill(0, 8, '');
@@ -22,6 +23,7 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
 
     /**
      * @internal Only use this for unit tests!
+     *
      * @return string[]
      */
     public function getState()
@@ -30,8 +32,8 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
     }
 
     /**
-     * @param array $input
      * @return self
+     *
      * @throws SodiumException
      *
      * @internal Only for unit tests
@@ -41,21 +43,22 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         if (count($input) < 8) {
             throw new SodiumException('invalid input');
         }
-        $state = new self();
-        for ($i = 0; $i < 8; ++$i) {
+        $state = new self;
+        for ($i = 0; $i < 8; $i++) {
             $state->state[$i] = $input[$i];
         }
+
         return $state;
     }
 
     /**
-     * @param string $key
-     * @param string $nonce
+     * @param  string  $key
+     * @param  string  $nonce
      * @return self
      */
     public static function init($key, $nonce)
     {
-        $state = new self();
+        $state = new self;
 
         // S0 = key ^ nonce
         $state->state[0] = $key ^ $nonce;
@@ -75,14 +78,15 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         $state->state[7] = $key ^ SODIUM_COMPAT_AEGIS_C0;
 
         // Repeat(10, Update(nonce, key))
-        for ($i = 0; $i < 10; ++$i) {
+        for ($i = 0; $i < 10; $i++) {
             $state->update($nonce, $key);
         }
+
         return $state;
     }
 
     /**
-     * @param string $ai
+     * @param  string  $ai
      * @return self
      */
     public function absorb($ai)
@@ -92,13 +96,14 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         }
         $t0 = ParagonIE_Sodium_Core_Util::substr($ai, 0, 16);
         $t1 = ParagonIE_Sodium_Core_Util::substr($ai, 16, 16);
+
         return $this->update($t0, $t1);
     }
 
-
     /**
-     * @param string $ci
+     * @param  string  $ci
      * @return string
+     *
      * @throws SodiumException
      */
     public function dec($ci)
@@ -128,11 +133,12 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         // Update(out0, out1)
         // xi = out0 || out1
         $this->update($out0, $out1);
-        return $out0 . $out1;
+
+        return $out0.$out1;
     }
 
     /**
-     * @param string $cn
+     * @param  string  $cn
      * @return string
      */
     public function decPartial($cn)
@@ -158,7 +164,7 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         $out1 = $t1 ^ $z1;
 
         // xn = Truncate(out0 || out1, |cn|)
-        $xn = ParagonIE_Sodium_Core_Util::substr($out0 . $out1, 0, $len);
+        $xn = ParagonIE_Sodium_Core_Util::substr($out0.$out1, 0, $len);
 
         // v0, v1 = Split(ZeroPad(xn, 256), 128)
         $padded = str_pad($xn, 32, "\0", STR_PAD_RIGHT);
@@ -172,8 +178,9 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
     }
 
     /**
-     * @param string $xi
+     * @param  string  $xi
      * @return string
+     *
      * @throws SodiumException
      */
     public function enc($xi)
@@ -205,29 +212,30 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         $this->update($t0, $t1);
 
         // return ci
-        return $out0 . $out1;
+        return $out0.$out1;
     }
 
     /**
-     * @param int $ad_len_bits
-     * @param int $msg_len_bits
+     * @param  int  $ad_len_bits
+     * @param  int  $msg_len_bits
      * @return string
      */
     public function finalize($ad_len_bits, $msg_len_bits)
     {
-        $encoded = ParagonIE_Sodium_Core_Util::store64_le($ad_len_bits) .
+        $encoded = ParagonIE_Sodium_Core_Util::store64_le($ad_len_bits).
             ParagonIE_Sodium_Core_Util::store64_le($msg_len_bits);
         $t = $this->state[2] ^ $encoded;
-        for ($i = 0; $i < 7; ++$i) {
+        for ($i = 0; $i < 7; $i++) {
             $this->update($t, $t);
         }
-        return ($this->state[0] ^ $this->state[1] ^ $this->state[2] ^ $this->state[3]) .
+
+        return ($this->state[0] ^ $this->state[1] ^ $this->state[2] ^ $this->state[3]).
             ($this->state[4] ^ $this->state[5] ^ $this->state[6] ^ $this->state[7]);
     }
 
     /**
-     * @param string $m0
-     * @param string $m1
+     * @param  string  $m0
+     * @param  string  $m1
      * @return self
      */
     public function update($m0, $m1)
@@ -242,21 +250,21 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
            S'6 = AESRound(S5, S6)
            S'7 = AESRound(S6, S7)
          */
-        list($s_0, $s_1) = ParagonIE_Sodium_Core_AES::doubleRound(
+        [$s_0, $s_1] = ParagonIE_Sodium_Core_AES::doubleRound(
             $this->state[7], $this->state[0] ^ $m0,
             $this->state[0], $this->state[1]
         );
 
-        list($s_2, $s_3) = ParagonIE_Sodium_Core_AES::doubleRound(
+        [$s_2, $s_3] = ParagonIE_Sodium_Core_AES::doubleRound(
             $this->state[1], $this->state[2],
             $this->state[2], $this->state[3]
         );
 
-        list($s_4, $s_5) = ParagonIE_Sodium_Core_AES::doubleRound(
+        [$s_4, $s_5] = ParagonIE_Sodium_Core_AES::doubleRound(
             $this->state[3], $this->state[4] ^ $m1,
             $this->state[4], $this->state[5]
         );
-        list($s_6, $s_7) = ParagonIE_Sodium_Core_AES::doubleRound(
+        [$s_6, $s_7] = ParagonIE_Sodium_Core_AES::doubleRound(
             $this->state[5], $this->state[6],
             $this->state[6], $this->state[7]
         );
@@ -279,6 +287,7 @@ class ParagonIE_Sodium_Core_AEGIS_State128L
         $this->state[5] = $s_5;
         $this->state[6] = $s_6;
         $this->state[7] = $s_7;
+
         return $this;
     }
 }

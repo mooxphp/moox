@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -54,9 +55,6 @@ namespace SimplePie\Content\Type;
  *
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_content_type_sniffer_class()}
- *
- * @package SimplePie
- * @subpackage HTTP
  */
 class Sniffer
 {
@@ -70,7 +68,7 @@ class Sniffer
     /**
      * Create an instance of the class with the input file
      *
-     * @param Sniffer $file Input file
+     * @param  Sniffer  $file  Input file
      */
     public function __construct($file)
     {
@@ -85,7 +83,7 @@ class Sniffer
     public function get_type()
     {
         if (isset($this->file->headers['content-type'])) {
-            if (!isset($this->file->headers['content-encoding'])
+            if (! isset($this->file->headers['content-encoding'])
                 && ($this->file->headers['content-type'] === 'text/plain'
                     || $this->file->headers['content-type'] === 'text/plain; charset=ISO-8859-1'
                     || $this->file->headers['content-type'] === 'text/plain; charset=iso-8859-1'
@@ -214,6 +212,7 @@ class Sniffer
                 case "\x0D":
                 case "\x20":
                     $pos += strspn($this->file->body, "\x09\x0A\x0D\x20", $pos);
+
                     continue 2;
 
                 case '<':

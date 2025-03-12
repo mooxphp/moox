@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -32,15 +33,15 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-
 
 /**
  * PSR-4 implementation for SimplePie.
@@ -51,16 +52,15 @@
  *
  *      new \SimplePie\SimplePie();
  *
- * @param string $class The fully-qualified class name.
+ * @param  string  $class  The fully-qualified class name.
  * @return void
  */
 spl_autoload_register(function ($class) {
-
     // project-specific namespace prefix
     $prefix = 'SimplePie\\';
 
     // base directory for the namespace prefix
-    $base_dir = __DIR__ . '/src/';
+    $base_dir = __DIR__.'/src/';
 
     // does the class use the namespace prefix?
     $len = strlen($prefix);
@@ -75,7 +75,7 @@ spl_autoload_register(function ($class) {
     // replace the namespace prefix with the base directory, replace namespace
     // separators with directory separators in the relative class name, append
     // with .php
-    $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+    $file = $base_dir.str_replace('\\', '/', $relative_class).'.php';
 
     // if the file exists, require it
     if (file_exists($file)) {
@@ -84,45 +84,40 @@ spl_autoload_register(function ($class) {
 });
 
 // autoloader
-spl_autoload_register(array(new SimplePie_Autoloader(), 'autoload'));
+spl_autoload_register([new SimplePie_Autoloader, 'autoload']);
 
-if (!class_exists('SimplePie'))
-{
-	exit('Autoloader not registered properly');
+if (! class_exists('SimplePie')) {
+    exit('Autoloader not registered properly');
 }
 
 /**
  * Autoloader class
- *
- * @package SimplePie
- * @subpackage API
  */
 class SimplePie_Autoloader
 {
-	protected $path;
+    protected $path;
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->path = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'library';
-	}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->path = dirname(__FILE__).DIRECTORY_SEPARATOR.'library';
+    }
 
-	/**
-	 * Autoloader
-	 *
-	 * @param string $class The name of the class to attempt to load.
-	 */
-	public function autoload($class)
-	{
-		// Only load the class if it starts with "SimplePie"
-		if (strpos($class, 'SimplePie') !== 0)
-		{
-			return;
-		}
+    /**
+     * Autoloader
+     *
+     * @param  string  $class  The name of the class to attempt to load.
+     */
+    public function autoload($class)
+    {
+        // Only load the class if it starts with "SimplePie"
+        if (strpos($class, 'SimplePie') !== 0) {
+            return;
+        }
 
-		$filename = $this->path . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-		include $filename;
-	}
+        $filename = $this->path.DIRECTORY_SEPARATOR.str_replace('_', DIRECTORY_SEPARATOR, $class).'.php';
+        include $filename;
+    }
 }

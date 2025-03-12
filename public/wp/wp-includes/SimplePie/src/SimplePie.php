@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -56,9 +57,6 @@ use SimplePie\Content\Type\Sniffer;
 
 /**
  * SimplePie
- *
- * @package SimplePie
- * @subpackage API
  */
 class SimplePie
 {
@@ -80,46 +78,53 @@ class SimplePie
     /**
      * SimplePie Linkback
      */
-    public const LINKBACK = '<a href="' . self::URL . '" title="' . self::NAME . ' ' . self::VERSION . '">' . self::NAME . '</a>';
+    public const LINKBACK = '<a href="'.self::URL.'" title="'.self::NAME.' '.self::VERSION.'">'.self::NAME.'</a>';
 
     /**
      * No Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_NONE = 0;
 
     /**
      * Feed Link Element Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_AUTODISCOVERY = 1;
 
     /**
      * Local Feed Extension Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_LOCAL_EXTENSION = 2;
 
     /**
      * Local Feed Body Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_LOCAL_BODY = 4;
 
     /**
      * Remote Feed Extension Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_REMOTE_EXTENSION = 8;
 
     /**
      * Remote Feed Body Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_REMOTE_BODY = 16;
 
     /**
      * All Feed Autodiscovery
+     *
      * @see SimplePie::set_autodiscovery_level()
      */
     public const LOCATOR_ALL = 31;
@@ -412,169 +417,169 @@ class SimplePie
 
     /**
      * @var array Raw data
-     * @access private
      */
     public $data = [];
 
     /**
      * @var mixed Error string
-     * @access private
      */
     public $error;
 
     /**
      * @var int HTTP status code
+     *
      * @see SimplePie::status_code()
-     * @access private
      */
     public $status_code = 0;
 
     /**
      * @var object Instance of \SimplePie\Sanitize (or other class)
+     *
      * @see SimplePie::set_sanitize_class()
-     * @access private
      */
     public $sanitize;
 
     /**
      * @var string SimplePie Useragent
+     *
      * @see SimplePie::set_useragent()
-     * @access private
      */
     public $useragent = '';
 
     /**
      * @var string Feed URL
+     *
      * @see SimplePie::set_feed_url()
-     * @access private
      */
     public $feed_url;
 
     /**
      * @var string Original feed URL, or new feed URL iff HTTP 301 Moved Permanently
+     *
      * @see SimplePie::subscribe_url()
-     * @access private
      */
     public $permanent_url = null;
 
     /**
      * @var object Instance of \SimplePie\File to use as a feed
+     *
      * @see SimplePie::set_file()
-     * @access private
      */
     public $file;
 
     /**
      * @var string Raw feed data
+     *
      * @see SimplePie::set_raw_data()
-     * @access private
      */
     public $raw_data;
 
     /**
      * @var int Timeout for fetching remote files
+     *
      * @see SimplePie::set_timeout()
-     * @access private
      */
     public $timeout = 10;
 
     /**
      * @var array Custom curl options
+     *
      * @see SimplePie::set_curl_options()
-     * @access private
      */
     public $curl_options = [];
 
     /**
      * @var bool Forces fsockopen() to be used for remote files instead
-     * of cURL, even if a new enough version is installed
+     *           of cURL, even if a new enough version is installed
+     *
      * @see SimplePie::force_fsockopen()
-     * @access private
      */
     public $force_fsockopen = false;
 
     /**
      * @var bool Force the given data/URL to be treated as a feed no matter what
-     * it appears like
+     *           it appears like
+     *
      * @see SimplePie::force_feed()
-     * @access private
      */
     public $force_feed = false;
 
     /**
      * @var bool Enable/Disable Caching
+     *
      * @see SimplePie::enable_cache()
-     * @access private
      */
     private $enable_cache = true;
 
     /**
      * @var DataCache|null
+     *
      * @see SimplePie::set_cache()
      */
     private $cache = null;
 
     /**
      * @var NameFilter
+     *
      * @see SimplePie::set_cache_namefilter()
      */
     private $cache_namefilter;
 
     /**
      * @var bool Force SimplePie to fallback to expired cache, if enabled,
-     * when feed is unavailable.
+     *           when feed is unavailable.
+     *
      * @see SimplePie::force_cache_fallback()
-     * @access private
      */
     public $force_cache_fallback = false;
 
     /**
      * @var int Cache duration (in seconds)
+     *
      * @see SimplePie::set_cache_duration()
-     * @access private
      */
     public $cache_duration = 3600;
 
     /**
      * @var int Auto-discovery cache duration (in seconds)
+     *
      * @see SimplePie::set_autodiscovery_cache_duration()
-     * @access private
      */
     public $autodiscovery_cache_duration = 604800; // 7 Days.
 
     /**
      * @var string Cache location (relative to executing script)
+     *
      * @see SimplePie::set_cache_location()
-     * @access private
      */
     public $cache_location = './cache';
 
     /**
      * @var string Function that creates the cache filename
+     *
      * @see SimplePie::set_cache_name_function()
-     * @access private
      */
     public $cache_name_function = 'md5';
 
     /**
      * @var bool Reorder feed by date descending
+     *
      * @see SimplePie::enable_order_by_date()
-     * @access private
      */
     public $order_by_date = true;
 
     /**
      * @var mixed Force input encoding to be set to the follow value
-     * (false, or anything type-cast to false, disables this feature)
+     *            (false, or anything type-cast to false, disables this feature)
+     *
      * @see SimplePie::set_input_encoding()
-     * @access private
      */
     public $input_encoding = false;
 
     /**
      * @var int Feed Autodiscovery Level
+     *
      * @see SimplePie::set_autodiscovery_level()
-     * @access private
      */
     public $autodiscovery = self::LOCATOR_ALL;
 
@@ -587,89 +592,87 @@ class SimplePie
 
     /**
      * @var int Maximum number of feeds to check with autodiscovery
+     *
      * @see SimplePie::set_max_checked_feeds()
-     * @access private
      */
     public $max_checked_feeds = 10;
 
     /**
      * @var array All the feeds found during the autodiscovery process
+     *
      * @see SimplePie::get_all_discovered_feeds()
-     * @access private
      */
     public $all_discovered_feeds = [];
 
     /**
      * @var string Web-accessible path to the handler_image.php file.
+     *
      * @see SimplePie::set_image_handler()
-     * @access private
      */
     public $image_handler = '';
 
     /**
      * @var array Stores the URLs when multiple feeds are being initialized.
+     *
      * @see SimplePie::set_feed_url()
-     * @access private
      */
     public $multifeed_url = [];
 
     /**
      * @var array Stores SimplePie objects when multiple feeds initialized.
-     * @access private
      */
     public $multifeed_objects = [];
 
     /**
      * @var array Stores the get_object_vars() array for use with multifeeds.
+     *
      * @see SimplePie::set_feed_url()
-     * @access private
      */
     public $config_settings = null;
 
     /**
-     * @var integer Stores the number of items to return per-feed with multifeeds.
+     * @var int Stores the number of items to return per-feed with multifeeds.
+     *
      * @see SimplePie::set_item_limit()
-     * @access private
      */
     public $item_limit = 0;
 
     /**
      * @var bool Stores if last-modified and/or etag headers were sent with the
-     * request when checking a feed.
+     *           request when checking a feed.
      */
     public $check_modified = false;
 
     /**
      * @var array Stores the default attributes to be stripped by strip_attributes().
+     *
      * @see SimplePie::strip_attributes()
-     * @access private
      */
     public $strip_attributes = ['bgsound', 'class', 'expr', 'id', 'style', 'onclick', 'onerror', 'onfinish', 'onmouseover', 'onmouseout', 'onfocus', 'onblur', 'lowsrc', 'dynsrc'];
 
     /**
      * @var array Stores the default attributes to add to different tags by add_attributes().
+     *
      * @see SimplePie::add_attributes()
-     * @access private
      */
     public $add_attributes = ['audio' => ['preload' => 'none'], 'iframe' => ['sandbox' => 'allow-scripts allow-same-origin'], 'video' => ['preload' => 'none']];
 
     /**
      * @var array Stores the default tags to be stripped by strip_htmltags().
+     *
      * @see SimplePie::strip_htmltags()
-     * @access private
      */
     public $strip_htmltags = ['base', 'blink', 'body', 'doctype', 'embed', 'font', 'form', 'frame', 'frameset', 'html', 'iframe', 'input', 'marquee', 'meta', 'noscript', 'object', 'param', 'script', 'style'];
 
     /**
      * @var array Stores the default attributes to be renamed by rename_attributes().
+     *
      * @see SimplePie::rename_attributes()
-     * @access private
      */
     public $rename_attributes = [];
 
     /**
      * @var bool Should we throw exceptions, or use the old-style error property?
-     * @access private
      */
     public $enable_exceptions = false;
 
@@ -698,8 +701,8 @@ class SimplePie
         $this->set_cache_namefilter(new CallableNameFilter($this->cache_name_function));
 
         // Other objects, instances created here so we can set options on them
-        $this->sanitize = new \SimplePie\Sanitize();
-        $this->registry = new \SimplePie\Registry();
+        $this->sanitize = new \SimplePie\Sanitize;
+        $this->registry = new \SimplePie\Registry;
 
         if (func_num_args() > 0) {
             trigger_error('Passing parameters to the constructor is no longer supported. Please use set_feed_url(), set_cache_location(), and set_cache_duration() directly.', \E_USER_DEPRECATED);
@@ -732,14 +735,14 @@ class SimplePie
      */
     public function __destruct()
     {
-        if (!gc_enabled()) {
-            if (!empty($this->data['items'])) {
+        if (! gc_enabled()) {
+            if (! empty($this->data['items'])) {
                 foreach ($this->data['items'] as $item) {
                     $item->__destruct();
                 }
                 unset($item, $this->data['items']);
             }
-            if (!empty($this->data['ordered_items'])) {
+            if (! empty($this->data['ordered_items'])) {
                 foreach ($this->data['ordered_items'] as $item) {
                     $item->__destruct();
                 }
@@ -755,7 +758,8 @@ class SimplePie
      * Be careful when using this option, as it will also disable autodiscovery.
      *
      * @since 1.1
-     * @param bool $enable Force the given data/URL to be treated as a feed
+     *
+     * @param  bool  $enable  Force the given data/URL to be treated as a feed
      */
     public function force_feed($enable = false)
     {
@@ -775,7 +779,8 @@ class SimplePie
      *
      * @since 1.0 Preview Release
      * @see set_raw_data()
-     * @param string|array $url This is the URL (or array of URLs) that you want to parse.
+     *
+     * @param  string|array  $url  This is the URL (or array of URLs) that you want to parse.
      */
     public function set_feed_url($url)
     {
@@ -793,7 +798,7 @@ class SimplePie
     /**
      * Set an instance of {@see \SimplePie\File} to use as a feed
      *
-     * @param \SimplePie\File &$file
+     * @param  \SimplePie\File  &$file
      * @return bool True on success, false on failure
      */
     public function set_file(&$file)
@@ -802,8 +807,10 @@ class SimplePie
             $this->feed_url = $file->url;
             $this->permanent_url = $this->feed_url;
             $this->file = &$file;
+
             return true;
         }
+
         return false;
     }
 
@@ -817,7 +824,9 @@ class SimplePie
      * takes precedence.
      *
      * @since 1.0 Beta 3
-     * @param string $data RSS or Atom data as a string.
+     *
+     * @param  string  $data  RSS or Atom data as a string.
+     *
      * @see set_feed_url()
      */
     public function set_raw_data($data)
@@ -832,7 +841,8 @@ class SimplePie
      * and send the feed back.
      *
      * @since 1.0 Beta 3
-     * @param int $timeout The maximum number of seconds to spend waiting to retrieve a feed.
+     *
+     * @param  int  $timeout  The maximum number of seconds to spend waiting to retrieve a feed.
      */
     public function set_timeout($timeout = 10)
     {
@@ -845,7 +855,8 @@ class SimplePie
      * This allows you to change default curl options
      *
      * @since 1.0 Beta 3
-     * @param array $curl_options Curl options to add to default settings
+     *
+     * @param  array  $curl_options  Curl options to add to default settings
      */
     public function set_curl_options(array $curl_options = [])
     {
@@ -856,7 +867,8 @@ class SimplePie
      * Force SimplePie to use fsockopen() instead of cURL
      *
      * @since 1.0 Beta 3
-     * @param bool $enable Force fsockopen() to be used
+     *
+     * @param  bool  $enable  Force fsockopen() to be used
      */
     public function force_fsockopen($enable = false)
     {
@@ -870,7 +882,8 @@ class SimplePie
      * However, disabling the cache can lead to longer load times.
      *
      * @since 1.0 Preview Release
-     * @param bool $enable Enable caching
+     *
+     * @param  bool  $enable  Enable caching
      */
     public function enable_cache($enable = true)
     {
@@ -880,8 +893,7 @@ class SimplePie
     /**
      * Set a PSR-16 implementation as cache
      *
-     * @param CacheInterface $psr16cache The PSR-16 cache implementation
-     *
+     * @param  CacheInterface  $psr16cache  The PSR-16 cache implementation
      * @return void
      */
     public function set_cache(CacheInterface $cache)
@@ -899,7 +911,7 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.8.0, expired cache will not be used anymore.
      *
-     * @param bool $enable Force use of cache on fail.
+     * @param  bool  $enable  Force use of cache on fail.
      */
     public function force_cache_fallback($enable = false)
     {
@@ -911,7 +923,7 @@ class SimplePie
      * Set the length of time (in seconds) that the contents of a feed will be
      * cached
      *
-     * @param int $seconds The feed content cache duration
+     * @param  int  $seconds  The feed content cache duration
      */
     public function set_cache_duration($seconds = 3600)
     {
@@ -922,7 +934,7 @@ class SimplePie
      * Set the length of time (in seconds) that the autodiscovered feed URL will
      * be cached
      *
-     * @param int $seconds The autodiscovered feed URL cache duration.
+     * @param  int  $seconds  The autodiscovered feed URL cache duration.
      */
     public function set_autodiscovery_cache_duration($seconds = 604800)
     {
@@ -934,7 +946,7 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.8.0, use \SimplePie\SimplePie::set_cache() instead.
      *
-     * @param string $location The file system location.
+     * @param  string  $location  The file system location.
      */
     public function set_cache_location($location = './cache')
     {
@@ -945,7 +957,7 @@ class SimplePie
     /**
      * Return the filename (i.e. hash, without path and without extension) of the file to cache a given URL.
      *
-     * @param string $url The URL of the feed to be cached.
+     * @param  string  $url  The URL of the feed to be cached.
      * @return string A filename (i.e. hash, without path and without extension).
      */
     public function get_cache_filename($url)
@@ -959,14 +971,14 @@ class SimplePie
         if ($this->useragent !== \SimplePie\Misc::get_default_useragent()) {
             $options[CURLOPT_USERAGENT] = $this->useragent;
         }
-        if (!empty($this->curl_options)) {
+        if (! empty($this->curl_options)) {
             foreach ($this->curl_options as $k => $v) {
                 $options[$k] = $v;
             }
         }
-        if (!empty($options)) {
+        if (! empty($options)) {
             ksort($options);
-            $url .= '#' . urlencode(var_export($options, true));
+            $url .= '#'.urlencode(var_export($options, true));
         }
 
         return $this->cache_namefilter->filter($url);
@@ -975,7 +987,7 @@ class SimplePie
     /**
      * Set whether feed items should be sorted into reverse chronological order
      *
-     * @param bool $enable Sort as reverse chronological order.
+     * @param  bool  $enable  Sort as reverse chronological order.
      */
     public function enable_order_by_date($enable = true)
     {
@@ -988,7 +1000,7 @@ class SimplePie
      * This overrides the encoding reported by the feed, however it will fall
      * back to the normal encoding detection if the override fails
      *
-     * @param string $encoding Character encoding
+     * @param  string  $encoding  Character encoding
      */
     public function set_input_encoding($encoding = false)
     {
@@ -1009,7 +1021,8 @@ class SimplePie
      * @see \SimplePie\SimplePie::LOCATOR_REMOTE_EXTENSION
      * @see \SimplePie\SimplePie::LOCATOR_REMOTE_BODY
      * @see \SimplePie\SimplePie::LOCATOR_ALL
-     * @param int $level Feed Autodiscovery Level (level can be a combination of the above constants, see bitwise OR operator)
+     *
+     * @param  int  $level  Feed Autodiscovery Level (level can be a combination of the above constants, see bitwise OR operator)
      */
     public function set_autodiscovery_level($level = self::LOCATOR_ALL)
     {
@@ -1020,6 +1033,7 @@ class SimplePie
      * Get the class registry
      *
      * Use this to override SimplePie's default classes
+     *
      * @see \SimplePie\Registry
      *
      * @return Registry
@@ -1034,9 +1048,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see set_cache()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_cache_class($class = Cache::class)
     {
@@ -1050,9 +1063,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_locator_class($class = Locator::class)
     {
@@ -1066,9 +1078,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_parser_class($class = Parser::class)
     {
@@ -1082,9 +1093,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_file_class($class = File::class)
     {
@@ -1098,9 +1108,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_sanitize_class($class = Sanitize::class)
     {
@@ -1114,9 +1123,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_item_class($class = Item::class)
     {
@@ -1130,9 +1138,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_author_class($class = Author::class)
     {
@@ -1146,9 +1153,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_category_class($class = Category::class)
     {
@@ -1162,9 +1168,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_enclosure_class($class = Enclosure::class)
     {
@@ -1178,9 +1183,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_caption_class($class = Caption::class)
     {
@@ -1194,9 +1198,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_copyright_class($class = Copyright::class)
     {
@@ -1210,9 +1213,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_credit_class($class = Credit::class)
     {
@@ -1226,9 +1228,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_rating_class($class = Rating::class)
     {
@@ -1242,9 +1243,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_restriction_class($class = Restriction::class)
     {
@@ -1258,9 +1258,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_content_type_sniffer_class($class = Sniffer::class)
     {
@@ -1274,9 +1273,8 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.3, use {@see get_registry()} instead
      *
-     * @param string $class Name of custom class
-     *
-     * @return boolean True on success, false otherwise
+     * @param  string  $class  Name of custom class
+     * @return bool True on success, false otherwise
      */
     public function set_source_class($class = Source::class)
     {
@@ -1288,7 +1286,7 @@ class SimplePie
     /**
      * Set the user agent string
      *
-     * @param string $ua New user agent string.
+     * @param  string  $ua  New user agent string.
      */
     public function set_useragent($ua = null)
     {
@@ -1301,10 +1299,6 @@ class SimplePie
 
     /**
      * Set a namefilter to modify the cache filename with
-     *
-     * @param NameFilter $filter
-     *
-     * @return void
      */
     public function set_cache_namefilter(NameFilter $filter): void
     {
@@ -1316,7 +1310,7 @@ class SimplePie
      *
      * @deprecated since SimplePie 1.8.0, use {@see set_cache_namefilter()} instead
      *
-     * @param mixed $function Callback function
+     * @param  mixed  $function  Callback function
      */
     public function set_cache_name_function($function = 'md5')
     {
@@ -1335,7 +1329,7 @@ class SimplePie
      * Forgoes a substantial amount of data sanitization in favor of speed. This
      * turns SimplePie into a dumb parser of feeds.
      *
-     * @param bool $set Whether to set them or not
+     * @param  bool  $set  Whether to set them or not
      */
     public function set_stupidly_fast($set = false)
     {
@@ -1354,7 +1348,7 @@ class SimplePie
     /**
      * Set maximum number of feeds to check with autodiscovery
      *
-     * @param int $max Maximum number of feeds to check
+     * @param  int  $max  Maximum number of feeds to check
      */
     public function set_max_checked_feeds($max = 10)
     {
@@ -1426,7 +1420,7 @@ class SimplePie
      * {@link http://simplepie.org/wiki/faq/Supported_Character_Encodings} for
      * more information.
      *
-     * @param string $encoding
+     * @param  string  $encoding
      */
     public function set_output_encoding($encoding = 'UTF-8')
     {
@@ -1447,7 +1441,8 @@ class SimplePie
      * |q|@cite
      *
      * @since 1.0
-     * @param array|null $element_attribute Element/attribute key/value pairs, null for default
+     *
+     * @param  array|null  $element_attribute  Element/attribute key/value pairs, null for default
      */
     public function set_url_replacements($element_attribute = null)
     {
@@ -1456,7 +1451,9 @@ class SimplePie
 
     /**
      * Set the list of domains for which to force HTTPS.
+     *
      * @see \SimplePie\Sanitize::set_https_domains()
+     *
      * @param array List of HTTPS domains. Example array('biz', 'example.com', 'example.org', 'www.example.net').
      */
     public function set_https_domains($domains = [])
@@ -1469,13 +1466,13 @@ class SimplePie
     /**
      * Set the handler to enable the display of cached images.
      *
-     * @param string $page Web-accessible path to the handler_image.php file.
-     * @param string $qs The query string that the value should be passed to.
+     * @param  string  $page  Web-accessible path to the handler_image.php file.
+     * @param  string  $qs  The query string that the value should be passed to.
      */
     public function set_image_handler($page = false, $qs = 'i')
     {
         if ($page !== false) {
-            $this->sanitize->set_image_handler($page . '?' . $qs . '=');
+            $this->sanitize->set_image_handler($page.'?'.$qs.'=');
         } else {
             $this->image_handler = '';
         }
@@ -1484,7 +1481,7 @@ class SimplePie
     /**
      * Set the limit for items returned per-feed with multifeeds
      *
-     * @param integer $limit The maximum number of items to return.
+     * @param  int  $limit  The maximum number of items to return.
      */
     public function set_item_limit($limit = 0)
     {
@@ -1494,7 +1491,7 @@ class SimplePie
     /**
      * Enable throwing exceptions
      *
-     * @param boolean $enable Should we throw exceptions, or use the old-style error property?
+     * @param  bool  $enable  Should we throw exceptions, or use the old-style error property?
      */
     public function enable_exceptions($enable = true)
     {
@@ -1508,17 +1505,18 @@ class SimplePie
      * configuration options get processed, feeds are fetched, cached, and
      * parsed, and all of that other good stuff.
      *
-     * @return boolean True if successful, false otherwise
+     * @return bool True if successful, false otherwise
      */
     public function init()
     {
         // Check absolute bare minimum requirements.
-        if (!extension_loaded('xml') || !extension_loaded('pcre')) {
+        if (! extension_loaded('xml') || ! extension_loaded('pcre')) {
             $this->error = 'XML or PCRE extensions not loaded!';
+
             return false;
         }
         // Then check the xml extension is sane (i.e., libxml 2.7.x issue on PHP < 5.2.9 and libxml 2.7.0 to 2.7.2 on any version) if we don't have xmlreader.
-        elseif (!extension_loaded('xmlreader')) {
+        elseif (! extension_loaded('xmlreader')) {
             static $xml_is_sane = null;
             if ($xml_is_sane === null) {
                 $parser_check = xml_parser_create();
@@ -1526,7 +1524,7 @@ class SimplePie
                 xml_parser_free($parser_check);
                 $xml_is_sane = isset($values[0]['value']);
             }
-            if (!$xml_is_sane) {
+            if (! $xml_is_sane) {
                 return false;
             }
         }
@@ -1551,7 +1549,7 @@ class SimplePie
         );
         $this->sanitize->pass_file_data($this->registry->get_class(File::class), $this->timeout, $this->useragent, $this->force_fsockopen, $this->curl_options);
 
-        if (!empty($this->multifeed_url)) {
+        if (! empty($this->multifeed_url)) {
             $i = 0;
             $success = 0;
             $this->multifeed_objects = [];
@@ -1561,11 +1559,12 @@ class SimplePie
                 $this->multifeed_objects[$i]->set_feed_url($url);
                 $single_success = $this->multifeed_objects[$i]->init();
                 $success |= $single_success;
-                if (!$single_success) {
+                if (! $single_success) {
                     $this->error[$i] = $this->multifeed_objects[$i]->error();
                 }
                 $i++;
             }
+
             return (bool) $success;
         } elseif ($this->feed_url === null && $this->raw_data === null) {
             return false;
@@ -1599,6 +1598,7 @@ class SimplePie
         if (empty($this->raw_data)) {
             $this->error = "A feed could not be found at `$this->feed_url`. Empty body.";
             $this->registry->call(Misc::class, 'error', [$this->error, E_USER_NOTICE, __FILE__, __LINE__]);
+
             return false;
         }
 
@@ -1651,9 +1651,10 @@ class SimplePie
                 // If it's parsed fine
                 if ($parser->parse($utf8_data, 'UTF-8', $this->permanent_url)) {
                     $this->data = $parser->get_data();
-                    if (!($this->get_type() & ~self::TYPE_NONE)) {
+                    if (! ($this->get_type() & ~self::TYPE_NONE)) {
                         $this->error = "A feed could not be found at `$this->feed_url`. This does not appear to be a valid RSS or Atom feed.";
                         $this->registry->call(Misc::class, 'error', [$this->error, E_USER_NOTICE, __FILE__, __LINE__]);
+
                         return false;
                     }
 
@@ -1664,9 +1665,10 @@ class SimplePie
 
                     // Cache the file if caching is enabled
                     $this->data['cache_expiration_time'] = $this->cache_duration + time();
-                    if ($cache && !$cache->set_data($this->get_cache_filename($this->feed_url), $this->data, $this->cache_duration)) {
+                    if ($cache && ! $cache->set_data($this->get_cache_filename($this->feed_url), $this->data, $this->cache_duration)) {
                         trigger_error("$this->cache_location is not writable. Make sure you've set the correct relative or absolute path, and that the location is server-writable.", E_USER_WARNING);
                     }
+
                     return true;
                 }
             }
@@ -1678,20 +1680,20 @@ class SimplePie
             $this->error .= sprintf(' is invalid XML, likely due to invalid characters. XML error: %s at line %d, column %d', $parser->get_error_string(), $parser->get_current_line(), $parser->get_current_column());
         } else {
             $this->error = 'The data could not be converted to UTF-8.';
-            if (!extension_loaded('mbstring') && !extension_loaded('iconv') && !class_exists('\UConverter')) {
+            if (! extension_loaded('mbstring') && ! extension_loaded('iconv') && ! class_exists('\UConverter')) {
                 $this->error .= ' You MUST have either the iconv, mbstring or intl (PHP 5.5+) extension installed and enabled.';
             } else {
                 $missingExtensions = [];
-                if (!extension_loaded('iconv')) {
+                if (! extension_loaded('iconv')) {
                     $missingExtensions[] = 'iconv';
                 }
-                if (!extension_loaded('mbstring')) {
+                if (! extension_loaded('mbstring')) {
                     $missingExtensions[] = 'mbstring';
                 }
-                if (!class_exists('\UConverter')) {
+                if (! class_exists('\UConverter')) {
                     $missingExtensions[] = 'intl (PHP 5.5+)';
                 }
-                $this->error .= ' Try installing/enabling the ' . implode(' or ', $missingExtensions) . ' extension.';
+                $this->error .= ' Try installing/enabling the '.implode(' or ', $missingExtensions).' extension.';
             }
         }
 
@@ -1704,7 +1706,8 @@ class SimplePie
      * Fetch the data via \SimplePie\File
      *
      * If the data is already cached, attempt to fetch it from there instead
-     * @param Base|DataCache|false $cache Cache handler, or false to not load from the cache
+     *
+     * @param  Base|DataCache|false  $cache  Cache handler, or false to not load from the cache
      * @return array|true Returns true if the data was loaded from the cache, or an array of HTTP headers and sniffed type
      */
     protected function fetch_data(&$cache)
@@ -1714,7 +1717,7 @@ class SimplePie
             $cache = new BaseDataCache($cache);
         }
 
-        if ($cache !== false && !$cache instanceof DataCache) {
+        if ($cache !== false && ! $cache instanceof DataCache) {
             throw new InvalidArgumentException(sprintf(
                 '%s(): Argument #1 ($cache) must be of type %s|false',
                 __METHOD__,
@@ -1729,9 +1732,9 @@ class SimplePie
             // Load the Cache
             $this->data = $cache->get_data($cacheKey, []);
 
-            if (!empty($this->data)) {
+            if (! empty($this->data)) {
                 // If the cache is for an outdated build of SimplePie
-                if (!isset($this->data['build']) || $this->data['build'] !== \SimplePie\Misc::get_build()) {
+                if (! isset($this->data['build']) || $this->data['build'] !== \SimplePie\Misc::get_build()) {
                     $cache->delete_data($cacheKey);
                     $this->data = [];
                 }
@@ -1781,12 +1784,14 @@ class SimplePie
                                 // is still valid.
                                 $this->raw_data = false;
                                 $cache->set_data($cacheKey, $this->data, $this->cache_duration);
+
                                 return true;
                             }
                         } else {
                             $this->check_modified = false;
                             if ($this->force_cache_fallback) {
                                 $cache->set_data($cacheKey, $this->data, $this->cache_duration);
+
                                 return true;
                             }
 
@@ -1797,6 +1802,7 @@ class SimplePie
                 // If the cache is still valid, just return true
                 else {
                     $this->raw_data = false;
+
                     return true;
                 }
             }
@@ -1807,7 +1813,7 @@ class SimplePie
         }
 
         // If we don't already have the file (it'll only exist if we've opened it to check if the cache has been modified), open it.
-        if (!isset($file)) {
+        if (! isset($file)) {
             if ($this->file instanceof \SimplePie\File && $this->file->url === $this->feed_url) {
                 $file = &$this->file;
             } else {
@@ -1820,22 +1826,23 @@ class SimplePie
         $this->status_code = $file->status_code;
 
         // If the file connection has an error, set SimplePie::error to that and quit
-        if (!$file->success && !($file->method & self::FILE_SOURCE_REMOTE === 0 || ($file->status_code === 200 || $file->status_code > 206 && $file->status_code < 300))) {
+        if (! $file->success && ! ($file->method & self::FILE_SOURCE_REMOTE === 0 || ($file->status_code === 200 || $file->status_code > 206 && $file->status_code < 300))) {
             $this->error = $file->error;
-            return !empty($this->data);
+
+            return ! empty($this->data);
         }
 
-        if (!$this->force_feed) {
+        if (! $this->force_feed) {
             // Check if the supplied URL is a feed, if it isn't, look for it.
             $locate = $this->registry->create(Locator::class, [&$file, $this->timeout, $this->useragent, $this->max_checked_feeds, $this->force_fsockopen, $this->curl_options]);
 
-            if (!$locate->is_feed($file)) {
+            if (! $locate->is_feed($file)) {
                 $copyStatusCode = $file->status_code;
                 $copyContentType = $file->headers['content-type'];
                 try {
                     $microformats = false;
                     if (class_exists('DOMXpath') && function_exists('Mf2\parse')) {
-                        $doc = new \DOMDocument();
+                        $doc = new \DOMDocument;
                         @$doc->loadHTML($file->body);
                         $xpath = new \DOMXpath($doc);
                         // Check for both h-feed and h-entry, as both a feed with no entries
@@ -1870,6 +1877,7 @@ class SimplePie
                             unset($file);
                             $this->error = "A feed could not be found at `$this->feed_url`; the status code is `$copyStatusCode` and content-type is `$copyContentType`";
                             $this->registry->call(Misc::class, 'error', [$this->error, E_USER_NOTICE, __FILE__, __LINE__]);
+
                             return false;
                         }
                     }
@@ -1879,6 +1887,7 @@ class SimplePie
                     // This is usually because DOMDocument doesn't exist
                     $this->error = $e->getMessage();
                     $this->registry->call(Misc::class, 'error', [$this->error, E_USER_NOTICE, $e->getFile(), $e->getLine()]);
+
                     return false;
                 }
 
@@ -1890,7 +1899,7 @@ class SimplePie
                         'cache_expiration_time' => $this->cache_duration + time(),
                     ];
 
-                    if (!$cache->set_data($cacheKey, $this->data, $this->cache_duration)) {
+                    if (! $cache->set_data($cacheKey, $this->data, $this->cache_duration)) {
                         trigger_error("$this->cache_location is not writable. Make sure you've set the correct relative or absolute path, and that the location is server-writable.", E_USER_WARNING);
                     }
                 }
@@ -1934,7 +1943,7 @@ class SimplePie
      * This is the same as the old `$feed->enable_xml_dump(true)`, but returns
      * the data instead of printing it.
      *
-     * @return string|boolean Raw XML data, false if the cache is used
+     * @return string|bool Raw XML data, false if the cache is used
      */
     public function get_raw_data()
     {
@@ -1945,6 +1954,7 @@ class SimplePie
      * Get the character encoding used for output
      *
      * @since Preview Release
+     *
      * @return string
      */
     public function get_encoding()
@@ -1969,14 +1979,14 @@ class SimplePie
      * of HTTP headers), this should only be used once per page (again, at the
      * top).
      *
-     * @param string $mime MIME type to serve the page as
+     * @param  string  $mime  MIME type to serve the page as
      */
     public function handle_content_type($mime = 'text/html')
     {
-        if (!headers_sent()) {
+        if (! headers_sent()) {
             $header = "Content-type: $mime;";
             if ($this->get_encoding()) {
-                $header .= ' charset=' . $this->get_encoding();
+                $header .= ' charset='.$this->get_encoding();
             } else {
                 $header .= ' charset=UTF-8';
             }
@@ -2008,11 +2018,12 @@ class SimplePie
      * @see \SimplePie\SimplePie::TYPE_ATOM_10 Atom 1.0.
      * @see \SimplePie\SimplePie::TYPE_ATOM_ALL Any version of Atom.
      * @see \SimplePie\SimplePie::TYPE_ALL Any known/supported feed type.
+     *
      * @return int \SimplePie\SimplePie::TYPE_* constant
      */
     public function get_type()
     {
-        if (!isset($this->data['type'])) {
+        if (! isset($this->data['type'])) {
             $this->data['type'] = self::TYPE_ALL;
             if (isset($this->data['child'][self::NAMESPACE_ATOM_10]['feed'])) {
                 $this->data['type'] &= self::TYPE_ATOM_10;
@@ -2071,6 +2082,7 @@ class SimplePie
                 $this->data['type'] = self::TYPE_NONE;
             }
         }
+
         return $this->data['type'];
     }
 
@@ -2087,10 +2099,12 @@ class SimplePie
      * any redirects along the way.
      *
      * @since Preview Release (previously called `get_feed_url()` since SimplePie 0.8.)
+     *
      * @todo Support <itunes:new-feed-url>
      * @todo Also, |atom:link|@rel=self
-     * @param bool $permanent Permanent mode to return only the original URL or the first redirection
-     * iff it is a 301 redirection
+     *
+     * @param  bool  $permanent  Permanent mode to return only the original URL or the first redirection
+     *                           iff it is a 301 redirection
      * @return string|null
      */
     public function subscribe_url($permanent = false)
@@ -2119,6 +2133,7 @@ class SimplePie
                 );
             }
         }
+
         return null;
     }
 
@@ -2149,8 +2164,9 @@ class SimplePie
      *
      * @since 1.0
      * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
-     * @param string $namespace The URL of the XML namespace of the elements you're trying to access
-     * @param string $tag Tag name
+     *
+     * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+     * @param  string  $tag  Tag name
      * @return array
      */
     public function get_feed_tags($namespace, $tag)
@@ -2176,6 +2192,7 @@ class SimplePie
                 return $this->data['child'][self::NAMESPACE_RSS_20]['rss'][0]['child'][$namespace][$tag];
             }
         }
+
         return null;
     }
 
@@ -2189,8 +2206,9 @@ class SimplePie
      *
      * @since 1.0
      * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
-     * @param string $namespace The URL of the XML namespace of the elements you're trying to access
-     * @param string $tag Tag name
+     *
+     * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+     * @param  string  $tag  Tag name
      * @return array
      */
     public function get_channel_tags($namespace, $tag)
@@ -2222,6 +2240,7 @@ class SimplePie
                 }
             }
         }
+
         return null;
     }
 
@@ -2235,8 +2254,9 @@ class SimplePie
      *
      * @since 1.0
      * @see http://simplepie.org/wiki/faq/supported_xml_namespaces
-     * @param string $namespace The URL of the XML namespace of the elements you're trying to access
-     * @param string $tag Tag name
+     *
+     * @param  string  $namespace  The URL of the XML namespace of the elements you're trying to access
+     * @param  string  $tag  Tag name
      * @return array
      */
     public function get_image_tags($namespace, $tag)
@@ -2263,6 +2283,7 @@ class SimplePie
                 }
             }
         }
+
         return null;
     }
 
@@ -2275,12 +2296,12 @@ class SimplePie
      * @see get_link
      * @see subscribe_url
      *
-     * @param array $element
+     * @param  array  $element
      * @return string
      */
     public function get_base($element = [])
     {
-        if (!empty($element['xml_base_explicit']) && isset($element['xml_base'])) {
+        if (! empty($element['xml_base_explicit']) && isset($element['xml_base'])) {
             return $element['xml_base'];
         } elseif ($this->get_link() !== null) {
             return $this->get_link();
@@ -2292,11 +2313,11 @@ class SimplePie
     /**
      * Sanitize feed data
      *
-     * @access private
      * @see \SimplePie\Sanitize::sanitize()
-     * @param string $data Data to sanitize
-     * @param int $type One of the \SimplePie\SimplePie::CONSTRUCT_* constants
-     * @param string $base Base URL to resolve URLs against
+     *
+     * @param  string  $data  Data to sanitize
+     * @param  int  $type  One of the \SimplePie\SimplePie::CONSTRUCT_* constants
+     * @param  string  $base  Base URL to resolve URLs against
      * @return string Sanitized data
      */
     public function sanitize($data, $type, $base = '')
@@ -2304,9 +2325,10 @@ class SimplePie
         try {
             return $this->sanitize->sanitize($data, $type, $base);
         } catch (\SimplePie\Exception $e) {
-            if (!$this->enable_exceptions) {
+            if (! $this->enable_exceptions) {
                 $this->error = $e->getMessage();
                 $this->registry->call(Misc::class, 'error', [$this->error, E_USER_WARNING, $e->getFile(), $e->getLine()]);
+
                 return '';
             }
 
@@ -2320,6 +2342,7 @@ class SimplePie
      * Uses `<atom:title>`, `<title>` or `<dc:title>`
      *
      * @since 1.0 (previously called `get_feed_title` since 0.8)
+     *
      * @return string|null
      */
     public function get_title()
@@ -2347,7 +2370,8 @@ class SimplePie
      * Get a category for the feed
      *
      * @since Unknown
-     * @param int $key The category that you want to return. Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The category that you want to return. Remember that arrays begin with 0, not 1
      * @return \SimplePie\Category|null
      */
     public function get_category($key = 0)
@@ -2366,6 +2390,7 @@ class SimplePie
      * Uses `<atom:category>`, `<category>` or `<dc:subject>`
      *
      * @since Unknown
+     *
      * @return array|null List of {@see \SimplePie\Category} objects
      */
     public function get_categories()
@@ -2405,7 +2430,7 @@ class SimplePie
             $categories[] = $this->registry->create(Category::class, [$this->sanitize($category['data'], self::CONSTRUCT_TEXT), null, null]);
         }
 
-        if (!empty($categories)) {
+        if (! empty($categories)) {
             return array_unique($categories);
         }
 
@@ -2416,7 +2441,8 @@ class SimplePie
      * Get an author for the feed
      *
      * @since 1.1
-     * @param int $key The author that you want to return. Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The author that you want to return. Remember that arrays begin with 0, not 1
      * @return \SimplePie\Author|null
      */
     public function get_author($key = 0)
@@ -2435,6 +2461,7 @@ class SimplePie
      * Uses `<atom:author>`, `<author>`, `<dc:creator>` or `<itunes:author>`
      *
      * @since 1.1
+     *
      * @return array|null List of {@see \SimplePie\Author} objects
      */
     public function get_authors()
@@ -2484,7 +2511,7 @@ class SimplePie
             $authors[] = $this->registry->create(Author::class, [$this->sanitize($author['data'], self::CONSTRUCT_TEXT), null, null]);
         }
 
-        if (!empty($authors)) {
+        if (! empty($authors)) {
             return array_unique($authors);
         }
 
@@ -2495,7 +2522,8 @@ class SimplePie
      * Get a contributor for the feed
      *
      * @since 1.1
-     * @param int $key The contrbutor that you want to return. Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The contrbutor that you want to return. Remember that arrays begin with 0, not 1
      * @return \SimplePie\Author|null
      */
     public function get_contributor($key = 0)
@@ -2514,6 +2542,7 @@ class SimplePie
      * Uses `<atom:contributor>`
      *
      * @since 1.1
+     *
      * @return array|null List of {@see \SimplePie\Author} objects
      */
     public function get_contributors()
@@ -2554,7 +2583,7 @@ class SimplePie
             }
         }
 
-        if (!empty($contributors)) {
+        if (! empty($contributors)) {
             return array_unique($contributors);
         }
 
@@ -2565,8 +2594,9 @@ class SimplePie
      * Get a single link for the feed
      *
      * @since 1.0 (previously called `get_feed_link` since Preview Release, `get_feed_permalink()` since 0.8)
-     * @param int $key The link that you want to return. Remember that arrays begin with 0, not 1
-     * @param string $rel The relationship of the link to return
+     *
+     * @param  int  $key  The link that you want to return. Remember that arrays begin with 0, not 1
+     * @param  string  $rel  The relationship of the link to return
      * @return string|null Link URL
      */
     public function get_link($key = 0, $rel = 'alternate')
@@ -2587,7 +2617,9 @@ class SimplePie
      *
      * @see get_link
      * @since 1.0 (previously called `get_feed_link` since Preview Release, `get_feed_permalink()` since 0.8)
+     *
      * @internal Added for parity between the parent-level and the item/entry-level.
+     *
      * @return string|null Link URL
      */
     public function get_permalink()
@@ -2601,12 +2633,13 @@ class SimplePie
      * Uses `<atom:link>` or `<link>`
      *
      * @since Beta 2
-     * @param string $rel The relationship of links to return
+     *
+     * @param  string  $rel  The relationship of links to return
      * @return array|null Links found for the feed (strings)
      */
     public function get_links($rel = 'alternate')
     {
-        if (!isset($this->data['links'])) {
+        if (! isset($this->data['links'])) {
             $this->data['links'] = [];
             if ($links = $this->get_channel_tags(self::NAMESPACE_ATOM_10, 'link')) {
                 foreach ($links as $link) {
@@ -2637,11 +2670,11 @@ class SimplePie
             $keys = array_keys($this->data['links']);
             foreach ($keys as $key) {
                 if ($this->registry->call(Misc::class, 'is_isegment_nz_nc', [$key])) {
-                    if (isset($this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY . $key])) {
-                        $this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY . $key] = array_merge($this->data['links'][$key], $this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY . $key]);
-                        $this->data['links'][$key] = &$this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY . $key];
+                    if (isset($this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY.$key])) {
+                        $this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY.$key] = array_merge($this->data['links'][$key], $this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY.$key]);
+                        $this->data['links'][$key] = &$this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY.$key];
                     } else {
-                        $this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY . $key] = &$this->data['links'][$key];
+                        $this->data['links'][self::IANA_LINK_RELATIONS_REGISTRY.$key] = &$this->data['links'][$key];
                     }
                 } elseif (substr($key, 0, 41) === self::IANA_LINK_RELATIONS_REGISTRY) {
                     $this->data['links'][substr($key, 41)] = &$this->data['links'][$key];
@@ -2657,7 +2690,7 @@ class SimplePie
             }
             // https://datatracker.ietf.org/doc/html/rfc8288
             if (is_string($link_headers) &&
-                preg_match_all('/<(?P<uri>[^>]+)>\s*;\s*rel\s*=\s*(?P<quote>"?)' . preg_quote($rel) . '(?P=quote)\s*(?=,|$)/i', $link_headers, $matches)) {
+                preg_match_all('/<(?P<uri>[^>]+)>\s*;\s*rel\s*=\s*(?P<quote>"?)'.preg_quote($rel).'(?P=quote)\s*(?=,|$)/i', $link_headers, $matches)) {
                 return $matches['uri'];
             }
         }
@@ -2681,6 +2714,7 @@ class SimplePie
      * `<dc:description>`, `<itunes:summary>` or `<itunes:subtitle>`
      *
      * @since 1.0 (previously called `get_feed_description()` since 0.8)
+     *
      * @return string|null
      */
     public function get_description()
@@ -2714,6 +2748,7 @@ class SimplePie
      * Uses `<atom:rights>`, `<atom:copyright>` or `<dc:rights>`
      *
      * @since 1.0 (previously called `get_feed_copyright()` since 0.8)
+     *
      * @return string|null
      */
     public function get_copyright()
@@ -2739,6 +2774,7 @@ class SimplePie
      * Uses `<language>`, `<dc:language>`, or @xml_lang
      *
      * @since 1.0 (previously called `get_feed_language()` since 0.8)
+     *
      * @return string|null
      */
     public function get_language()
@@ -2772,6 +2808,7 @@ class SimplePie
      * @since 1.0
      * @link http://www.w3.org/2003/01/geo/ W3C WGS84 Basic Geo
      * @link http://www.georss.org/ GeoRSS
+     *
      * @return string|null
      */
     public function get_latitude()
@@ -2795,6 +2832,7 @@ class SimplePie
      * @since 1.0
      * @link http://www.w3.org/2003/01/geo/ W3C WGS84 Basic Geo
      * @link http://www.georss.org/ GeoRSS
+     *
      * @return string|null
      */
     public function get_longitude()
@@ -2865,7 +2903,6 @@ class SimplePie
 
         return null;
     }
-
 
     /**
      * Get the feed logo's link
@@ -2939,7 +2976,7 @@ class SimplePie
      * This is well-suited for {@link http://php.net/for for()} loops with
      * {@see get_item()}
      *
-     * @param int $max Maximum value to return. 0 for no limit
+     * @param  int  $max  Maximum value to return. 0 for no limit
      * @return int Number of items in the feed
      */
     public function get_item_quantity($max = 0)
@@ -2962,7 +2999,8 @@ class SimplePie
      *
      * @see get_item_quantity()
      * @since Beta 2
-     * @param int $key The item that you want to return. Remember that arrays begin with 0, not 1
+     *
+     * @param  int  $key  The item that you want to return. Remember that arrays begin with 0, not 1
      * @return \SimplePie\Item|null
      */
     public function get_item($key = 0)
@@ -2984,18 +3022,20 @@ class SimplePie
      *
      * @see get_item_quantity
      * @since Beta 2
-     * @param int $start Index to start at
-     * @param int $end Number of items to return. 0 for all items after `$start`
+     *
+     * @param  int  $start  Index to start at
+     * @param  int  $end  Number of items to return. 0 for all items after `$start`
      * @return \SimplePie\Item[]|null List of {@see \SimplePie\Item} objects
      */
     public function get_items($start = 0, $end = 0)
     {
-        if (!isset($this->data['items'])) {
-            if (!empty($this->multifeed_objects)) {
+        if (! isset($this->data['items'])) {
+            if (! empty($this->multifeed_objects)) {
                 $this->data['items'] = SimplePie::merge_items($this->multifeed_objects, $start, $end, $this->item_limit);
                 if (empty($this->data['items'])) {
                     return [];
                 }
+
                 return $this->data['items'];
             }
             $this->data['items'] = [];
@@ -3036,7 +3076,7 @@ class SimplePie
         }
 
         if ($this->order_by_date) {
-            if (!isset($this->data['ordered_items'])) {
+            if (! isset($this->data['ordered_items'])) {
                 $this->data['ordered_items'] = $this->data['items'];
                 usort($this->data['ordered_items'], [get_class($this), 'sort_items']);
             }
@@ -3060,6 +3100,7 @@ class SimplePie
     public function set_favicon_handler($page = false, $qs = 'i')
     {
         trigger_error('Favicon handling has been removed, please use your own handling', \E_USER_DEPRECATED);
+
         return false;
     }
 
@@ -3073,7 +3114,7 @@ class SimplePie
         trigger_error('Favicon handling has been removed, please use your own handling', \E_USER_DEPRECATED);
 
         if (($url = $this->get_link()) !== null) {
-            return 'https://www.google.com/s2/favicons?domain=' . urlencode($url);
+            return 'https://www.google.com/s2/favicons?domain='.urlencode($url);
         }
 
         return false;
@@ -3082,18 +3123,20 @@ class SimplePie
     /**
      * Magic method handler
      *
-     * @param string $method Method name
-     * @param array $args Arguments to the method
+     * @param  string  $method  Method name
+     * @param  array  $args  Arguments to the method
      * @return mixed
      */
     public function __call($method, $args)
     {
         if (strpos($method, 'subscribe_') === 0) {
             trigger_error('subscribe_*() has been deprecated, implement the callback yourself', \E_USER_DEPRECATED);
+
             return '';
         }
         if ($method === 'enable_xml_dump') {
             trigger_error('enable_xml_dump() has been deprecated, use get_raw_data() instead', \E_USER_DEPRECATED);
+
             return false;
         }
 
@@ -3107,10 +3150,9 @@ class SimplePie
     /**
      * Sorting callback for items
      *
-     * @access private
-     * @param SimplePie $a
-     * @param SimplePie $b
-     * @return boolean
+     * @param  SimplePie  $a
+     * @param  SimplePie  $b
+     * @return bool
      */
     public static function sort_items($a, $b)
     {
@@ -3126,6 +3168,7 @@ class SimplePie
         if ($b_date) {
             return -1;
         }
+
         return 0;
     }
 
@@ -3136,15 +3179,16 @@ class SimplePie
      * for the items or else SimplePie will refuse to sort them.
      *
      * @link http://simplepie.org/wiki/tutorial/sort_multiple_feeds_by_time_and_date#if_feeds_require_separate_per-feed_settings
-     * @param array $urls List of SimplePie feed objects to merge
-     * @param int $start Starting item
-     * @param int $end Number of items to return
-     * @param int $limit Maximum number of items per feed
+     *
+     * @param  array  $urls  List of SimplePie feed objects to merge
+     * @param  int  $start  Starting item
+     * @param  int  $end  Number of items to return
+     * @param  int  $limit  Maximum number of items per feed
      * @return array
      */
     public static function merge_items($urls, $start = 0, $end = 0, $limit = 0)
     {
-        if (is_array($urls) && sizeof($urls) > 0) {
+        if (is_array($urls) && count($urls) > 0) {
             $items = [];
             foreach ($urls as $arg) {
                 if ($arg instanceof SimplePie) {
@@ -3164,6 +3208,7 @@ class SimplePie
         }
 
         trigger_error('Cannot merge zero SimplePie objects', E_USER_WARNING);
+
         return [];
     }
 
@@ -3172,9 +3217,10 @@ class SimplePie
      *
      * There is no way to find PuSH links in the body of a microformats feed,
      * so they are added to the headers when found, to be used later by get_links.
-     * @param \SimplePie\File $file
-     * @param string $hub
-     * @param string $self
+     *
+     * @param  \SimplePie\File  $file
+     * @param  string  $hub
+     * @param  string  $self
      */
     private function store_links(&$file, $hub, $self)
     {
@@ -3202,8 +3248,7 @@ class SimplePie
     /**
      * Get a DataCache
      *
-     * @param string $feed_url Only needed for BC, can be removed in SimplePie 2.0.0
-     *
+     * @param  string  $feed_url  Only needed for BC, can be removed in SimplePie 2.0.0
      * @return DataCache
      */
     private function get_cache($feed_url = '')
@@ -3213,7 +3258,7 @@ class SimplePie
             $cache = $this->registry->call(Cache::class, 'get_handler', [
                 $this->cache_location,
                 $this->get_cache_filename($feed_url),
-                Base::TYPE_FEED
+                Base::TYPE_FEED,
             ]);
 
             return new BaseDataCache($cache);

@@ -3,31 +3,37 @@
 /**
  * IXR_Client
  *
- * @package IXR
  * @since 1.5.0
- *
  */
 class IXR_Client
 {
-    var $server;
-    var $port;
-    var $path;
-    var $useragent;
-    var $response;
-    var $message = false;
-    var $debug = false;
-    var $timeout;
-    var $headers = array();
+    public $server;
+
+    public $port;
+
+    public $path;
+
+    public $useragent;
+
+    public $response;
+
+    public $message = false;
+
+    public $debug = false;
+
+    public $timeout;
+
+    public $headers = [];
 
     // Storage place for an error message
-    var $error = false;
+    public $error = false;
 
-	/**
-	 * PHP5 constructor.
-	 */
-    function __construct( $server, $path = false, $port = 80, $timeout = 15 )
+    /**
+     * PHP5 constructor.
+     */
+    public function __construct($server, $path = false, $port = 80, $timeout = 15)
     {
-        if (!$path) {
+        if (! $path) {
             // Assume we have been given a URL instead
             $bits = parse_url($server);
             $this->server = $bits['host'];
@@ -35,12 +41,12 @@ class IXR_Client
             $this->path = isset($bits['path']) ? $bits['path'] : '/';
 
             // Make absolutely sure we have a path
-            if (!$this->path) {
+            if (! $this->path) {
                 $this->path = '/';
             }
 
-            if ( ! empty( $bits['query'] ) ) {
-                $this->path .= '?' . $bits['query'];
+            if (! empty($bits['query'])) {
+                $this->path .= '?'.$bits['query'];
             }
         } else {
             $this->server = $server;
@@ -51,36 +57,37 @@ class IXR_Client
         $this->timeout = $timeout;
     }
 
-	/**
-	 * PHP4 constructor.
-	 */
-	public function IXR_Client( $server, $path = false, $port = 80, $timeout = 15 ) {
-		self::__construct( $server, $path, $port, $timeout );
-	}
+    /**
+     * PHP4 constructor.
+     */
+    public function IXR_Client($server, $path = false, $port = 80, $timeout = 15)
+    {
+        self::__construct($server, $path, $port, $timeout);
+    }
 
-	/**
-	 * @since 1.5.0
-	 * @since 5.5.0 Formalized the existing `...$args` parameter by adding it
-	 *              to the function signature.
-	 *
-	 * @return bool
-	 */
-    function query( ...$args )
+    /**
+     * @since 1.5.0
+     * @since 5.5.0 Formalized the existing `...$args` parameter by adding it
+     *              to the function signature.
+     *
+     * @return bool
+     */
+    public function query(...$args)
     {
         $method = array_shift($args);
         $request = new IXR_Request($method, $args);
         $length = $request->getLength();
         $xml = $request->getXml();
         $r = "\r\n";
-        $request  = "POST {$this->path} HTTP/1.0$r";
+        $request = "POST {$this->path} HTTP/1.0$r";
 
         // Merged from WP #8145 - allow custom headers
-        $this->headers['Host']          = $this->server;
-        $this->headers['Content-Type']  = 'text/xml';
-        $this->headers['User-Agent']    = $this->useragent;
-        $this->headers['Content-Length']= $length;
+        $this->headers['Host'] = $this->server;
+        $this->headers['Content-Type'] = 'text/xml';
+        $this->headers['User-Agent'] = $this->useragent;
+        $this->headers['Content-Length'] = $length;
 
-        foreach( $this->headers as $header => $value ) {
+        foreach ($this->headers as $header => $value) {
             $request .= "{$header}: {$value}{$r}";
         }
         $request .= $r;
@@ -97,21 +104,23 @@ class IXR_Client
         } else {
             $fp = @fsockopen($this->server, $this->port, $errno, $errstr);
         }
-        if (!$fp) {
+        if (! $fp) {
             $this->error = new IXR_Error(-32300, 'transport error - could not open socket');
+
             return false;
         }
-        fputs($fp, $request);
+        fwrite($fp, $request);
         $contents = '';
         $debugContents = '';
         $gotFirstLine = false;
         $gettingHeaders = true;
-        while (!feof($fp)) {
+        while (! feof($fp)) {
             $line = fgets($fp, 4096);
-            if (!$gotFirstLine) {
+            if (! $gotFirstLine) {
                 // Check line for '200'
                 if (strstr($line, '200') === false) {
                     $this->error = new IXR_Error(-32300, 'transport error - HTTP status code was not 200');
+
                     return false;
                 }
                 $gotFirstLine = true;
@@ -119,12 +128,12 @@ class IXR_Client
             if (trim($line) == '') {
                 $gettingHeaders = false;
             }
-            if (!$gettingHeaders) {
-            	// merged from WP #12559 - remove trim
+            if (! $gettingHeaders) {
+                // merged from WP #12559 - remove trim
                 $contents .= $line;
             }
             if ($this->debug) {
-            	$debugContents .= $line;
+                $debugContents .= $line;
             }
         }
         if ($this->debug) {
@@ -133,15 +142,17 @@ class IXR_Client
 
         // Now parse what we've got back
         $this->message = new IXR_Message($contents);
-        if (!$this->message->parse()) {
+        if (! $this->message->parse()) {
             // XML error
             $this->error = new IXR_Error(-32700, 'parse error. not well formed');
+
             return false;
         }
 
         // Is the message a fault?
         if ($this->message->messageType == 'fault') {
             $this->error = new IXR_Error($this->message->faultCode, $this->message->faultString);
+
             return false;
         }
 
@@ -149,23 +160,23 @@ class IXR_Client
         return true;
     }
 
-    function getResponse()
+    public function getResponse()
     {
         // methodResponses can only have one param - return that
         return $this->message->params[0];
     }
 
-    function isError()
+    public function isError()
     {
-        return (is_object($this->error));
+        return is_object($this->error);
     }
 
-    function getErrorCode()
+    public function getErrorCode()
     {
         return $this->error->code;
     }
 
-    function getErrorMessage()
+    public function getErrorMessage()
     {
         return $this->error->message;
     }

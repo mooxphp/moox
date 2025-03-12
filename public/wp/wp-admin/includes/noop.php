@@ -1,9 +1,8 @@
 <?php
+
 /**
  * Noop functions for load-scripts.php and load-styles.php.
  *
- * @package WordPress
- * @subpackage Administration
  * @since 4.4.0
  */
 
@@ -25,8 +24,9 @@ function add_filter() {}
 /**
  * @ignore
  */
-function has_filter() {
-	return false;
+function has_filter()
+{
+    return false;
 }
 
 /**
@@ -72,8 +72,9 @@ function get_bloginfo() {}
 /**
  * @ignore
  */
-function is_admin() {
-	return true;
+function is_admin()
+{
+    return true;
 }
 
 /**
@@ -101,13 +102,13 @@ function includes_url() {}
  */
 function wp_guess_url() {}
 
-function get_file( $path ) {
+function get_file($path)
+{
+    $path = realpath($path);
 
-	$path = realpath( $path );
+    if (! $path || ! @is_file($path)) {
+        return '';
+    }
 
-	if ( ! $path || ! @is_file( $path ) ) {
-		return '';
-	}
-
-	return @file_get_contents( $path );
+    return @file_get_contents($path);
 }

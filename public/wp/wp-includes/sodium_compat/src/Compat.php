@@ -20,7 +20,6 @@
  *                                                                               *
  * CAUTION * CAUTION * CAUTION * CAUTION * CAUTION * CAUTION * CAUTION * CAUTION *
  */
-
 if (class_exists('ParagonIE_Sodium_Compat', false)) {
     return;
 }
@@ -45,111 +44,214 @@ class ParagonIE_Sodium_Compat
     public static $fastMult = false;
 
     const LIBRARY_MAJOR_VERSION = 9;
+
     const LIBRARY_MINOR_VERSION = 1;
+
     const LIBRARY_VERSION_MAJOR = 9;
+
     const LIBRARY_VERSION_MINOR = 1;
+
     const VERSION_STRING = 'polyfill-1.0.8';
 
     // From libsodium
     const BASE64_VARIANT_ORIGINAL = 1;
+
     const BASE64_VARIANT_ORIGINAL_NO_PADDING = 3;
+
     const BASE64_VARIANT_URLSAFE = 5;
+
     const BASE64_VARIANT_URLSAFE_NO_PADDING = 7;
+
     const CRYPTO_AEAD_AES256GCM_KEYBYTES = 32;
+
     const CRYPTO_AEAD_AES256GCM_NSECBYTES = 0;
+
     const CRYPTO_AEAD_AES256GCM_NPUBBYTES = 12;
+
     const CRYPTO_AEAD_AES256GCM_ABYTES = 16;
+
     const CRYPTO_AEAD_AEGIS128L_KEYBYTES = 16;
+
     const CRYPTO_AEAD_AEGIS128L_NSECBYTES = 0;
+
     const CRYPTO_AEAD_AEGIS128L_NPUBBYTES = 16;
+
     const CRYPTO_AEAD_AEGIS128L_ABYTES = 32;
+
     const CRYPTO_AEAD_AEGIS256_KEYBYTES = 32;
+
     const CRYPTO_AEAD_AEGIS256_NSECBYTES = 0;
+
     const CRYPTO_AEAD_AEGIS256_NPUBBYTES = 32;
+
     const CRYPTO_AEAD_AEGIS256_ABYTES = 32;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_KEYBYTES = 32;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_NSECBYTES = 0;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_NPUBBYTES = 8;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_ABYTES = 16;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_IETF_KEYBYTES = 32;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_IETF_NSECBYTES = 0;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_IETF_NPUBBYTES = 12;
+
     const CRYPTO_AEAD_CHACHA20POLY1305_IETF_ABYTES = 16;
+
     const CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES = 32;
+
     const CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NSECBYTES = 0;
+
     const CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES = 24;
+
     const CRYPTO_AEAD_XCHACHA20POLY1305_IETF_ABYTES = 16;
+
     const CRYPTO_AUTH_BYTES = 32;
+
     const CRYPTO_AUTH_KEYBYTES = 32;
+
     const CRYPTO_BOX_SEALBYTES = 16;
+
     const CRYPTO_BOX_SECRETKEYBYTES = 32;
+
     const CRYPTO_BOX_PUBLICKEYBYTES = 32;
+
     const CRYPTO_BOX_KEYPAIRBYTES = 64;
+
     const CRYPTO_BOX_MACBYTES = 16;
+
     const CRYPTO_BOX_NONCEBYTES = 24;
+
     const CRYPTO_BOX_SEEDBYTES = 32;
+
     const CRYPTO_CORE_RISTRETTO255_BYTES = 32;
+
     const CRYPTO_CORE_RISTRETTO255_SCALARBYTES = 32;
+
     const CRYPTO_CORE_RISTRETTO255_HASHBYTES = 64;
+
     const CRYPTO_CORE_RISTRETTO255_NONREDUCEDSCALARBYTES = 64;
+
     const CRYPTO_KDF_BYTES_MIN = 16;
+
     const CRYPTO_KDF_BYTES_MAX = 64;
+
     const CRYPTO_KDF_CONTEXTBYTES = 8;
+
     const CRYPTO_KDF_KEYBYTES = 32;
+
     const CRYPTO_KX_BYTES = 32;
+
     const CRYPTO_KX_PRIMITIVE = 'x25519blake2b';
+
     const CRYPTO_KX_SEEDBYTES = 32;
+
     const CRYPTO_KX_KEYPAIRBYTES = 64;
+
     const CRYPTO_KX_PUBLICKEYBYTES = 32;
+
     const CRYPTO_KX_SECRETKEYBYTES = 32;
+
     const CRYPTO_KX_SESSIONKEYBYTES = 32;
+
     const CRYPTO_GENERICHASH_BYTES = 32;
+
     const CRYPTO_GENERICHASH_BYTES_MIN = 16;
+
     const CRYPTO_GENERICHASH_BYTES_MAX = 64;
+
     const CRYPTO_GENERICHASH_KEYBYTES = 32;
+
     const CRYPTO_GENERICHASH_KEYBYTES_MIN = 16;
+
     const CRYPTO_GENERICHASH_KEYBYTES_MAX = 64;
+
     const CRYPTO_PWHASH_SALTBYTES = 16;
+
     const CRYPTO_PWHASH_STRPREFIX = '$argon2id$';
+
     const CRYPTO_PWHASH_ALG_ARGON2I13 = 1;
+
     const CRYPTO_PWHASH_ALG_ARGON2ID13 = 2;
+
     const CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE = 33554432;
+
     const CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE = 4;
+
     const CRYPTO_PWHASH_MEMLIMIT_MODERATE = 134217728;
+
     const CRYPTO_PWHASH_OPSLIMIT_MODERATE = 6;
+
     const CRYPTO_PWHASH_MEMLIMIT_SENSITIVE = 536870912;
+
     const CRYPTO_PWHASH_OPSLIMIT_SENSITIVE = 8;
+
     const CRYPTO_PWHASH_SCRYPTSALSA208SHA256_SALTBYTES = 32;
+
     const CRYPTO_PWHASH_SCRYPTSALSA208SHA256_STRPREFIX = '$7$';
+
     const CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_INTERACTIVE = 534288;
+
     const CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_INTERACTIVE = 16777216;
+
     const CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_SENSITIVE = 33554432;
+
     const CRYPTO_PWHASH_SCRYPTSALSA208SHA256_MEMLIMIT_SENSITIVE = 1073741824;
+
     const CRYPTO_SCALARMULT_BYTES = 32;
+
     const CRYPTO_SCALARMULT_SCALARBYTES = 32;
+
     const CRYPTO_SCALARMULT_RISTRETTO255_BYTES = 32;
+
     const CRYPTO_SCALARMULT_RISTRETTO255_SCALARBYTES = 32;
+
     const CRYPTO_SHORTHASH_BYTES = 8;
+
     const CRYPTO_SHORTHASH_KEYBYTES = 16;
+
     const CRYPTO_SECRETBOX_KEYBYTES = 32;
+
     const CRYPTO_SECRETBOX_MACBYTES = 16;
+
     const CRYPTO_SECRETBOX_NONCEBYTES = 24;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_ABYTES = 17;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_HEADERBYTES = 24;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_KEYBYTES = 32;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PUSH = 0;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_PULL = 1;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_REKEY = 2;
+
     const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_TAG_FINAL = 3;
-    const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_MESSAGEBYTES_MAX = 0x3fffffff80;
+
+    const CRYPTO_SECRETSTREAM_XCHACHA20POLY1305_MESSAGEBYTES_MAX = 0x3FFFFFFF80;
+
     const CRYPTO_SIGN_BYTES = 64;
+
     const CRYPTO_SIGN_SEEDBYTES = 32;
+
     const CRYPTO_SIGN_PUBLICKEYBYTES = 32;
+
     const CRYPTO_SIGN_SECRETKEYBYTES = 64;
+
     const CRYPTO_SIGN_KEYPAIRBYTES = 96;
+
     const CRYPTO_STREAM_KEYBYTES = 32;
+
     const CRYPTO_STREAM_NONCEBYTES = 24;
+
     const CRYPTO_STREAM_XCHACHA20_KEYBYTES = 32;
+
     const CRYPTO_STREAM_XCHACHA20_NONCEBYTES = 24;
 
     /**
@@ -158,9 +260,10 @@ class ParagonIE_Sodium_Compat
      *
      * This mutates $val.
      *
-     * @param string $val
-     * @param string $addv
+     * @param  string  $val
+     * @param  string  $addv
      * @return void
+     *
      * @throws SodiumException
      */
     public static function add(
@@ -180,17 +283,18 @@ class ParagonIE_Sodium_Compat
         $c = 0;
         for ($i = 0; $i < $val_len; $i++) {
             $c += ($A[$i] + $B[$i]);
-            $A[$i] = ($c & 0xff);
+            $A[$i] = ($c & 0xFF);
             $c >>= 8;
         }
         $val = ParagonIE_Sodium_Core_Util::intArrayToString($A);
     }
 
     /**
-     * @param string $encoded
-     * @param int $variant
-     * @param string $ignore
+     * @param  string  $encoded
+     * @param  int  $variant
+     * @param  string  $ignore
      * @return string
+     *
      * @throws SodiumException
      */
     public static function base642bin(
@@ -209,7 +313,7 @@ class ParagonIE_Sodium_Compat
         }
 
         // Just strip before decoding
-        if (!empty($ignore)) {
+        if (! empty($ignore)) {
             $encoded = str_replace($ignore, '', $encoded);
         }
 
@@ -235,9 +339,10 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $decoded
-     * @param int $variant
+     * @param  string  $decoded
+     * @param  int  $variant
      * @return string
+     *
      * @throws SodiumException
      */
     public static function bin2base64(
@@ -270,10 +375,12 @@ class ParagonIE_Sodium_Compat
     /**
      * Cache-timing-safe implementation of bin2hex().
      *
-     * @param string $string A string (probably raw binary)
-     * @return string        A hexadecimal-encoded string
+     * @param  string  $string  A string (probably raw binary)
+     * @return string A hexadecimal-encoded string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function bin2hex(
@@ -289,6 +396,7 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('bin2hex')) {
             return (string) call_user_func('\\Sodium\\bin2hex', $string);
         }
+
         return ParagonIE_Sodium_Core_Util::bin2hex($string);
     }
 
@@ -296,13 +404,15 @@ class ParagonIE_Sodium_Compat
      * Compare two strings, in constant-time.
      * Compared to memcmp(), compare() is more useful for sorting.
      *
-     * @param string $left  The left operand; must be a string
-     * @param string $right The right operand; must be a string
-     * @return int          If < 0 if the left operand is less than the right
-     *                      If = 0 if both strings are equal
-     *                      If > 0 if the right operand is less than the left
+     * @param  string  $left  The left operand; must be a string
+     * @param  string  $right  The right operand; must be a string
+     * @return int If < 0 if the left operand is less than the right
+     *             If = 0 if both strings are equal
+     *             If > 0 if the right operand is less than the left
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function compare(
@@ -321,6 +431,7 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('compare')) {
             return (int) call_user_func('\\Sodium\\compare', $left, $right);
         }
+
         return ParagonIE_Sodium_Core_Util::compare($left, $right);
     }
 
@@ -330,14 +441,15 @@ class ParagonIE_Sodium_Compat
      * Algorithm:
      *     AEGIS-128L
      *
-     * @param string $ciphertext Encrypted message (with MAC appended)
-     * @param string $assocData  Authenticated Associated Data (unencrypted)
-     * @param string $nonce      Number to be used only Once; must be 32 bytes
-     * @param string $key        Encryption key
+     * @param  string  $ciphertext  Encrypted message (with MAC appended)
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 32 bytes
+     * @param  string  $key  Encryption key
+     * @return string The original plaintext message
      *
-     * @return string            The original plaintext message
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -376,6 +488,7 @@ class ParagonIE_Sodium_Compat
             $ct_length - self::CRYPTO_AEAD_AEGIS128L_ABYTES,
             self::CRYPTO_AEAD_AEGIS128L_ABYTES
         );
+
         return ParagonIE_Sodium_Core_AEGIS128L::decrypt($ct, $tag, $assocData, $key, $nonce);
     }
 
@@ -385,14 +498,15 @@ class ParagonIE_Sodium_Compat
      * Algorithm:
      *     AEGIS-128L
      *
-     * @param string $plaintext Message to be encrypted
-     * @param string $assocData Authenticated Associated Data (unencrypted)
-     * @param string $nonce     Number to be used only Once; must be 32 bytes
-     * @param string $key       Encryption key
+     * @param  string  $plaintext  Message to be encrypted
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 32 bytes
+     * @param  string  $key  Encryption key
+     * @return string Ciphertext with 32-byte authentication tag appended
      *
-     * @return string           Ciphertext with 32-byte authentication tag appended
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_aegis128l_encrypt(
@@ -416,8 +530,9 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Key must be CRYPTO_AEAD_AEGIS128L_KEYBYTES long');
         }
 
-        list($ct, $tag) = ParagonIE_Sodium_Core_AEGIS128L::encrypt($plaintext, $assocData, $key, $nonce);
-        return $ct . $tag;
+        [$ct, $tag] = ParagonIE_Sodium_Core_AEGIS128L::encrypt($plaintext, $assocData, $key, $nonce);
+
+        return $ct.$tag;
     }
 
     /**
@@ -425,6 +540,7 @@ class ParagonIE_Sodium_Compat
      * symmetric AEAD interface.
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -439,14 +555,15 @@ class ParagonIE_Sodium_Compat
      * Algorithm:
      *     AEGIS-256
      *
-     * @param string $ciphertext Encrypted message (with MAC appended)
-     * @param string $assocData  Authenticated Associated Data (unencrypted)
-     * @param string $nonce      Number to be used only Once; must be 32 bytes
-     * @param string $key        Encryption key
+     * @param  string  $ciphertext  Encrypted message (with MAC appended)
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 32 bytes
+     * @param  string  $key  Encryption key
+     * @return string The original plaintext message
      *
-     * @return string            The original plaintext message
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -485,6 +602,7 @@ class ParagonIE_Sodium_Compat
             $ct_length - self::CRYPTO_AEAD_AEGIS256_ABYTES,
             self::CRYPTO_AEAD_AEGIS256_ABYTES
         );
+
         return ParagonIE_Sodium_Core_AEGIS256::decrypt($ct, $tag, $assocData, $key, $nonce);
     }
 
@@ -494,14 +612,15 @@ class ParagonIE_Sodium_Compat
      * Algorithm:
      *     AEGIS-256
      *
-     * @param string $plaintext Message to be encrypted
-     * @param string $assocData Authenticated Associated Data (unencrypted)
-     * @param string $nonce Number to be used only Once; must be 32 bytes
-     * @param string $key Encryption key
+     * @param  string  $plaintext  Message to be encrypted
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 32 bytes
+     * @param  string  $key  Encryption key
+     * @return string Ciphertext with 32-byte authentication tag appended
      *
-     * @return string           Ciphertext with 32-byte authentication tag appended
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_aegis256_encrypt(
@@ -525,8 +644,9 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Key must be CRYPTO_AEAD_AEGIS128L_KEYBYTES long');
         }
 
-        list($ct, $tag) = ParagonIE_Sodium_Core_AEGIS256::encrypt($plaintext, $assocData, $key, $nonce);
-        return $ct . $tag;
+        [$ct, $tag] = ParagonIE_Sodium_Core_AEGIS256::encrypt($plaintext, $assocData, $key, $nonce);
+
+        return $ct.$tag;
     }
 
     /**
@@ -534,6 +654,7 @@ class ParagonIE_Sodium_Compat
      * symmetric AEAD interface.
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -546,6 +667,7 @@ class ParagonIE_Sodium_Compat
      * Is AES-256-GCM even available to use?
      *
      * @return bool
+     *
      * @psalm-suppress UndefinedFunction
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -562,10 +684,11 @@ class ParagonIE_Sodium_Compat
             // OpenSSL doesn't support AEAD before 7.1.0
             return false;
         }
-        if (!is_callable('openssl_encrypt') || !is_callable('openssl_decrypt')) {
+        if (! is_callable('openssl_encrypt') || ! is_callable('openssl_decrypt')) {
             // OpenSSL isn't installed
             return false;
         }
+
         return (bool) in_array('aes-256-gcm', openssl_get_cipher_methods());
     }
 
@@ -578,14 +701,15 @@ class ParagonIE_Sodium_Compat
      * This mode uses a 64-bit random nonce with a 64-bit counter.
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      *
-     * @param string $ciphertext Encrypted message (with Poly1305 MAC appended)
-     * @param string $assocData  Authenticated Associated Data (unencrypted)
-     * @param string $nonce      Number to be used only Once; must be 8 bytes
-     * @param string $key        Encryption key
+     * @param  string  $ciphertext  Encrypted message (with Poly1305 MAC appended)
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @return string|bool The original plaintext message
      *
-     * @return string|bool       The original plaintext message
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -597,7 +721,7 @@ class ParagonIE_Sodium_Compat
         #[\SensitiveParameter]
         $key = ''
     ) {
-        if (!self::crypto_aead_aes256gcm_is_available()) {
+        if (! self::crypto_aead_aes256gcm_is_available()) {
             throw new SodiumException('AES-256-GCM is not available');
         }
         ParagonIE_Sodium_Core_Util::declareScalarType($ciphertext, 'string', 1);
@@ -615,7 +739,7 @@ class ParagonIE_Sodium_Compat
         if (ParagonIE_Sodium_Core_Util::strlen($ciphertext) < self::CRYPTO_AEAD_AES256GCM_ABYTES) {
             throw new SodiumException('Message must be at least CRYPTO_AEAD_AES256GCM_ABYTES long');
         }
-        if (!is_callable('openssl_decrypt')) {
+        if (! is_callable('openssl_decrypt')) {
             throw new SodiumException('The OpenSSL extension is not installed, or openssl_decrypt() is not available');
         }
 
@@ -623,6 +747,7 @@ class ParagonIE_Sodium_Compat
         $ctext = ParagonIE_Sodium_Core_Util::substr($ciphertext, 0, -self::CRYPTO_AEAD_AES256GCM_ABYTES);
         /** @var string $authTag */
         $authTag = ParagonIE_Sodium_Core_Util::substr($ciphertext, -self::CRYPTO_AEAD_AES256GCM_ABYTES, 16);
+
         return openssl_decrypt(
             $ctext,
             'aes-256-gcm',
@@ -640,15 +765,16 @@ class ParagonIE_Sodium_Compat
      * Algorithm:
      *     AES-256-GCM
      *
-     * @param string $plaintext Message to be encrypted
-     * @param string $assocData Authenticated Associated Data (unencrypted)
-     * @param string $nonce     Number to be used only Once; must be 8 bytes
-     * @param string $key       Encryption key
+     * @param  string  $plaintext  Message to be encrypted
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @return string Ciphertext with a 16-byte GCM message
+     *                authentication code appended
      *
-     * @return string           Ciphertext with a 16-byte GCM message
-     *                          authentication code appended
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_aes256gcm_encrypt(
@@ -659,7 +785,7 @@ class ParagonIE_Sodium_Compat
         #[\SensitiveParameter]
         $key = ''
     ) {
-        if (!self::crypto_aead_aes256gcm_is_available()) {
+        if (! self::crypto_aead_aes256gcm_is_available()) {
             throw new SodiumException('AES-256-GCM is not available');
         }
         ParagonIE_Sodium_Core_Util::declareScalarType($plaintext, 'string', 1);
@@ -675,7 +801,7 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Key must be CRYPTO_AEAD_AES256GCM_KEYBYTES long');
         }
 
-        if (!is_callable('openssl_encrypt')) {
+        if (! is_callable('openssl_encrypt')) {
             throw new SodiumException('The OpenSSL extension is not installed, or openssl_encrypt() is not available');
         }
 
@@ -689,7 +815,8 @@ class ParagonIE_Sodium_Compat
             $authTag,
             $assocData
         );
-        return $ciphertext . $authTag;
+
+        return $ciphertext.$authTag;
     }
 
     /**
@@ -697,6 +824,7 @@ class ParagonIE_Sodium_Compat
      * symmetric AEAD interface.
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -714,14 +842,15 @@ class ParagonIE_Sodium_Compat
      * This mode uses a 64-bit random nonce with a 64-bit counter.
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      *
-     * @param string $ciphertext Encrypted message (with Poly1305 MAC appended)
-     * @param string $assocData  Authenticated Associated Data (unencrypted)
-     * @param string $nonce      Number to be used only Once; must be 8 bytes
-     * @param string $key        Encryption key
+     * @param  string  $ciphertext  Encrypted message (with Poly1305 MAC appended)
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @return string The original plaintext message
      *
-     * @return string            The original plaintext message
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -779,6 +908,7 @@ class ParagonIE_Sodium_Compat
                 $key
             );
         }
+
         return ParagonIE_Sodium_Crypto::aead_chacha20poly1305_decrypt(
             $ciphertext,
             $assocData,
@@ -796,15 +926,16 @@ class ParagonIE_Sodium_Compat
      * This mode uses a 64-bit random nonce with a 64-bit counter.
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      *
-     * @param string $plaintext Message to be encrypted
-     * @param string $assocData Authenticated Associated Data (unencrypted)
-     * @param string $nonce     Number to be used only Once; must be 8 bytes
-     * @param string $key       Encryption key
+     * @param  string  $plaintext  Message to be encrypted
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @return string Ciphertext with a 16-byte Poly1305 message
+     *                authentication code appended
      *
-     * @return string           Ciphertext with a 16-byte Poly1305 message
-     *                          authentication code appended
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_chacha20poly1305_encrypt(
@@ -854,6 +985,7 @@ class ParagonIE_Sodium_Compat
                 $key
             );
         }
+
         return ParagonIE_Sodium_Crypto::aead_chacha20poly1305_encrypt(
             $plaintext,
             $assocData,
@@ -871,14 +1003,15 @@ class ParagonIE_Sodium_Compat
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      * Regular mode uses a 64-bit random nonce with a 64-bit counter.
      *
-     * @param string $ciphertext Encrypted message (with Poly1305 MAC appended)
-     * @param string $assocData  Authenticated Associated Data (unencrypted)
-     * @param string $nonce      Number to be used only Once; must be 12 bytes
-     * @param string $key        Encryption key
+     * @param  string  $ciphertext  Encrypted message (with Poly1305 MAC appended)
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 12 bytes
+     * @param  string  $key  Encryption key
+     * @return string The original plaintext message
      *
-     * @return string            The original plaintext message
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -936,6 +1069,7 @@ class ParagonIE_Sodium_Compat
                 $key
             );
         }
+
         return ParagonIE_Sodium_Crypto::aead_chacha20poly1305_ietf_decrypt(
             $ciphertext,
             $assocData,
@@ -949,6 +1083,7 @@ class ParagonIE_Sodium_Compat
      * symmetric AEAD interface.
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -966,15 +1101,16 @@ class ParagonIE_Sodium_Compat
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      * Regular mode uses a 64-bit random nonce with a 64-bit counter.
      *
-     * @param string $plaintext Message to be encrypted
-     * @param string $assocData Authenticated Associated Data (unencrypted)
-     * @param string $nonce Number to be used only Once; must be 8 bytes
-     * @param string $key Encryption key
+     * @param  string  $plaintext  Message to be encrypted
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @return string Ciphertext with a 16-byte Poly1305 message
+     *                authentication code appended
      *
-     * @return string           Ciphertext with a 16-byte Poly1305 message
-     *                          authentication code appended
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_chacha20poly1305_ietf_encrypt(
@@ -987,7 +1123,7 @@ class ParagonIE_Sodium_Compat
     ) {
         /* Type checks: */
         ParagonIE_Sodium_Core_Util::declareScalarType($plaintext, 'string', 1);
-        if (!is_null($assocData)) {
+        if (! is_null($assocData)) {
             ParagonIE_Sodium_Core_Util::declareScalarType($assocData, 'string', 2);
         }
         ParagonIE_Sodium_Core_Util::declareScalarType($nonce, 'string', 3);
@@ -1026,6 +1162,7 @@ class ParagonIE_Sodium_Compat
                 $key
             );
         }
+
         return ParagonIE_Sodium_Crypto::aead_chacha20poly1305_ietf_encrypt(
             $plaintext,
             $assocData,
@@ -1039,6 +1176,7 @@ class ParagonIE_Sodium_Compat
      * symmetric AEAD interface. (IETF version)
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -1056,15 +1194,16 @@ class ParagonIE_Sodium_Compat
      * This mode uses a 64-bit random nonce with a 64-bit counter.
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      *
-     * @param string $ciphertext   Encrypted message (with Poly1305 MAC appended)
-     * @param string $assocData    Authenticated Associated Data (unencrypted)
-     * @param string $nonce        Number to be used only Once; must be 8 bytes
-     * @param string $key          Encryption key
-     * @param bool   $dontFallback Don't fallback to ext/sodium
+     * @param  string  $ciphertext  Encrypted message (with Poly1305 MAC appended)
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @param  bool  $dontFallback  Don't fallback to ext/sodium
+     * @return string|bool The original plaintext message
      *
-     * @return string|bool         The original plaintext message
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_xchacha20poly1305_ietf_decrypt(
@@ -1077,7 +1216,7 @@ class ParagonIE_Sodium_Compat
     ) {
         /* Type checks: */
         ParagonIE_Sodium_Core_Util::declareScalarType($ciphertext, 'string', 1);
-        if (!is_null($assocData)) {
+        if (! is_null($assocData)) {
             ParagonIE_Sodium_Core_Util::declareScalarType($assocData, 'string', 2);
         } else {
             $assocData = '';
@@ -1095,7 +1234,7 @@ class ParagonIE_Sodium_Compat
         if (ParagonIE_Sodium_Core_Util::strlen($ciphertext) < self::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_ABYTES) {
             throw new SodiumException('Message must be at least CRYPTO_AEAD_XCHACHA20POLY1305_IETF_ABYTES long');
         }
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             if (is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_decrypt')) {
                 return sodium_crypto_aead_xchacha20poly1305_ietf_decrypt(
                     $ciphertext,
@@ -1114,6 +1253,7 @@ class ParagonIE_Sodium_Compat
                 $key
             );
         }
+
         return ParagonIE_Sodium_Crypto::aead_xchacha20poly1305_ietf_decrypt(
             $ciphertext,
             $assocData,
@@ -1131,16 +1271,17 @@ class ParagonIE_Sodium_Compat
      * This mode uses a 64-bit random nonce with a 64-bit counter.
      * IETF mode uses a 96-bit random nonce with a 32-bit counter.
      *
-     * @param string $plaintext    Message to be encrypted
-     * @param string $assocData    Authenticated Associated Data (unencrypted)
-     * @param string $nonce        Number to be used only Once; must be 8 bytes
-     * @param string $key          Encryption key
-     * @param bool   $dontFallback Don't fallback to ext/sodium
+     * @param  string  $plaintext  Message to be encrypted
+     * @param  string  $assocData  Authenticated Associated Data (unencrypted)
+     * @param  string  $nonce  Number to be used only Once; must be 8 bytes
+     * @param  string  $key  Encryption key
+     * @param  bool  $dontFallback  Don't fallback to ext/sodium
+     * @return string Ciphertext with a 16-byte Poly1305 message
+     *                authentication code appended
      *
-     * @return string           Ciphertext with a 16-byte Poly1305 message
-     *                          authentication code appended
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_aead_xchacha20poly1305_ietf_encrypt(
@@ -1154,7 +1295,7 @@ class ParagonIE_Sodium_Compat
     ) {
         /* Type checks: */
         ParagonIE_Sodium_Core_Util::declareScalarType($plaintext, 'string', 1);
-        if (!is_null($assocData)) {
+        if (! is_null($assocData)) {
             ParagonIE_Sodium_Core_Util::declareScalarType($assocData, 'string', 2);
         } else {
             $assocData = '';
@@ -1169,7 +1310,7 @@ class ParagonIE_Sodium_Compat
         if (ParagonIE_Sodium_Core_Util::strlen($key) !== self::CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES) {
             throw new SodiumException('Key must be CRYPTO_AEAD_XCHACHA20POLY1305_KEYBYTES long');
         }
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             if (is_callable('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt')) {
                 return sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(
                     $plaintext,
@@ -1188,6 +1329,7 @@ class ParagonIE_Sodium_Compat
                 $key
             );
         }
+
         return ParagonIE_Sodium_Crypto::aead_xchacha20poly1305_ietf_encrypt(
             $plaintext,
             $assocData,
@@ -1201,6 +1343,7 @@ class ParagonIE_Sodium_Compat
      * symmetric AEAD interface.
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -1219,11 +1362,13 @@ class ParagonIE_Sodium_Compat
      *     but still truncates to 256 bits to sidestep length-extension
      *     attacks).
      *
-     * @param string $message Message to be authenticated
-     * @param string $key Symmetric authentication key
-     * @return string         Message authentication code
+     * @param  string  $message  Message to be authenticated
+     * @param  string  $key  Symmetric authentication key
+     * @return string Message authentication code
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_auth(
@@ -1249,11 +1394,13 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::auth($message, $key);
         }
+
         return ParagonIE_Sodium_Crypto::auth($message, $key);
     }
 
     /**
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -1265,13 +1412,15 @@ class ParagonIE_Sodium_Compat
     /**
      * Verify the MAC of a message previously authenticated with crypto_auth.
      *
-     * @param string $mac Message authentication code
-     * @param string $message Message whose authenticity you are attempting to
-     *                        verify (with a given MAC and key)
-     * @param string $key Symmetric authentication key
-     * @return bool           TRUE if authenticated, FALSE otherwise
+     * @param  string  $mac  Message authentication code
+     * @param  string  $message  Message whose authenticity you are attempting to
+     *                           verify (with a given MAC and key)
+     * @param  string  $key  Symmetric authentication key
+     * @return bool TRUE if authenticated, FALSE otherwise
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_auth_verify(
@@ -1302,6 +1451,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::auth_verify($mac, $message, $key);
         }
+
         return ParagonIE_Sodium_Crypto::auth_verify($mac, $message, $key);
     }
 
@@ -1314,12 +1464,14 @@ class ParagonIE_Sodium_Compat
      *     XSalsa20: Extended-nonce variant of salsa20.
      *     Poyl1305: Polynomial MAC for one-time message authentication.
      *
-     * @param string $plaintext The message to be encrypted
-     * @param string $nonce A Number to only be used Once; must be 24 bytes
-     * @param string $keypair Your secret key and your recipient's public key
-     * @return string           Ciphertext with 16-byte Poly1305 MAC
+     * @param  string  $plaintext  The message to be encrypted
+     * @param  string  $nonce  A Number to only be used Once; must be 24 bytes
+     * @param  string  $keypair  Your secret key and your recipient's public key
+     * @return string Ciphertext with 16-byte Poly1305 MAC
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box(
@@ -1350,6 +1502,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box($plaintext, $nonce, $keypair);
         }
+
         return ParagonIE_Sodium_Crypto::box($plaintext, $nonce, $keypair);
     }
 
@@ -1362,12 +1515,14 @@ class ParagonIE_Sodium_Compat
      *
      * This provides ciphertext integrity.
      *
-     * @param string $plaintext Message to be sealed
-     * @param string $publicKey Your recipient's public key
-     * @return string           Sealed message that only your recipient can
-     *                          decrypt
+     * @param  string  $plaintext  Message to be sealed
+     * @param  string  $publicKey  Your recipient's public key
+     * @return string Sealed message that only your recipient can
+     *                decrypt
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box_seal(
@@ -1393,6 +1548,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_seal($plaintext, $publicKey);
         }
+
         return ParagonIE_Sodium_Crypto::box_seal($plaintext, $publicKey);
     }
 
@@ -1402,11 +1558,13 @@ class ParagonIE_Sodium_Compat
      *
      * This validates ciphertext integrity.
      *
-     * @param string $ciphertext Sealed message to be opened
-     * @param string $keypair    Your crypto_box keypair
-     * @return string            The original plaintext message
+     * @param  string  $ciphertext  Sealed message to be opened
+     * @param  string  $keypair  Your crypto_box keypair
+     * @return string The original plaintext message
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -1438,6 +1596,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_seal_open($ciphertext, $keypair);
         }
+
         return ParagonIE_Sodium_Crypto::box_seal_open($ciphertext, $keypair);
     }
 
@@ -1448,8 +1607,10 @@ class ParagonIE_Sodium_Compat
      *                the last 32 are your public key. crypto_box_secretkey()
      *                and crypto_box_publickey() exist to separate them so you
      *                don't accidentally get them mixed up!
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box_keypair()
@@ -1463,6 +1624,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_keypair();
         }
+
         return ParagonIE_Sodium_Crypto::box_keypair();
     }
 
@@ -1470,11 +1632,13 @@ class ParagonIE_Sodium_Compat
      * Combine two keys into a keypair for use in library methods that expect
      * a keypair. This doesn't necessarily have to be the same person's keys.
      *
-     * @param string $secretKey Secret key
-     * @param string $publicKey Public key
-     * @return string    Keypair
+     * @param  string  $secretKey  Secret key
+     * @param  string  $publicKey  Public key
+     * @return string Keypair
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box_keypair_from_secretkey_and_publickey(
@@ -1503,18 +1667,21 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_keypair_from_secretkey_and_publickey($secretKey, $publicKey);
         }
+
         return ParagonIE_Sodium_Crypto::box_keypair_from_secretkey_and_publickey($secretKey, $publicKey);
     }
 
     /**
      * Decrypt a message previously encrypted with crypto_box().
      *
-     * @param string $ciphertext Encrypted message
-     * @param string $nonce      Number to only be used Once; must be 24 bytes
-     * @param string $keypair    Your secret key and the sender's public key
-     * @return string            The original plaintext message
+     * @param  string  $ciphertext  Encrypted message
+     * @param  string  $nonce  Number to only be used Once; must be 24 bytes
+     * @param  string  $keypair  Your secret key and the sender's public key
+     * @return string The original plaintext message
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -1554,16 +1721,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_open($ciphertext, $nonce, $keypair);
         }
+
         return ParagonIE_Sodium_Crypto::box_open($ciphertext, $nonce, $keypair);
     }
 
     /**
      * Extract the public key from a crypto_box keypair.
      *
-     * @param string $keypair Keypair containing secret and public key
-     * @return string         Your crypto_box public key
+     * @param  string  $keypair  Keypair containing secret and public key
+     * @return string Your crypto_box public key
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box_publickey(
@@ -1587,16 +1757,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_publickey($keypair);
         }
+
         return ParagonIE_Sodium_Crypto::box_publickey($keypair);
     }
 
     /**
      * Calculate the X25519 public key from a given X25519 secret key.
      *
-     * @param string $secretKey Any X25519 secret key
-     * @return string           The corresponding X25519 public key
+     * @param  string  $secretKey  Any X25519 secret key
+     * @return string The corresponding X25519 public key
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box_publickey_from_secretkey(
@@ -1620,16 +1793,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_publickey_from_secretkey($secretKey);
         }
+
         return ParagonIE_Sodium_Crypto::box_publickey_from_secretkey($secretKey);
     }
 
     /**
      * Extract the secret key from a crypto_box keypair.
      *
-     * @param string $keypair
-     * @return string         Your crypto_box secret key
+     * @param  string  $keypair
+     * @return string Your crypto_box secret key
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_box_secretkey(
@@ -1653,16 +1829,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_secretkey($keypair);
         }
+
         return ParagonIE_Sodium_Crypto::box_secretkey($keypair);
     }
 
     /**
      * Generate an X25519 keypair from a seed.
      *
-     * @param string $seed
+     * @param  string  $seed
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress UndefinedFunction
      */
@@ -1682,20 +1861,23 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::box_seed_keypair($seed);
         }
+
         return ParagonIE_Sodium_Crypto::box_seed_keypair($seed);
     }
 
     /**
      * Calculates a BLAKE2b hash, with an optional key.
      *
-     * @param string      $message The message to be hashed
-     * @param string|null $key     If specified, must be a string between 16
-     *                             and 64 bytes long
-     * @param int         $length  Output length in bytes; must be between 16
-     *                             and 64 (default = 32)
-     * @return string              Raw binary
+     * @param  string  $message  The message to be hashed
+     * @param  string|null  $key  If specified, must be a string between 16
+     *                            and 64 bytes long
+     * @param  int  $length  Output length in bytes; must be between 16
+     *                       and 64 (default = 32)
+     * @return string Raw binary
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_generichash(
@@ -1713,7 +1895,7 @@ class ParagonIE_Sodium_Compat
         ParagonIE_Sodium_Core_Util::declareScalarType($length, 'int', 3);
 
         /* Input validation: */
-        if (!empty($key)) {
+        if (! empty($key)) {
             if (ParagonIE_Sodium_Core_Util::strlen($key) < self::CRYPTO_GENERICHASH_KEYBYTES_MIN) {
                 throw new SodiumException('Unsupported key size. Must be at least CRYPTO_GENERICHASH_KEYBYTES_MIN bytes long.');
             }
@@ -1731,17 +1913,20 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::generichash($message, $key, $length);
         }
+
         return ParagonIE_Sodium_Crypto::generichash($message, $key, $length);
     }
 
     /**
      * Get the final BLAKE2b hash output for a given context.
      *
-     * @param string $ctx BLAKE2 hashing context. Generated by crypto_generichash_init().
-     * @param int $length Hash output size.
-     * @return string     Final BLAKE2b hash.
+     * @param  string  $ctx  BLAKE2 hashing context. Generated by crypto_generichash_init().
+     * @param  int  $length  Hash output size.
+     * @return string Final BLAKE2b hash.
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress ReferenceConstraintViolation
      * @psalm-suppress ConflictingReferenceConstraint
@@ -1760,6 +1945,7 @@ class ParagonIE_Sodium_Compat
         }
         if (self::use_fallback('crypto_generichash_final')) {
             $func = '\\Sodium\\crypto_generichash_final';
+
             return (string) $func($ctx, $length);
         }
         if ($length < 1) {
@@ -1768,6 +1954,7 @@ class ParagonIE_Sodium_Compat
             } catch (SodiumException $ex) {
                 unset($ctx);
             }
+
             return '';
         }
         if (PHP_INT_SIZE === 4) {
@@ -1780,18 +1967,21 @@ class ParagonIE_Sodium_Compat
         } catch (SodiumException $ex) {
             unset($ctx);
         }
+
         return $result;
     }
 
     /**
      * Initialize a BLAKE2b hashing context, for use in a streaming interface.
      *
-     * @param string|null $key If specified must be a string between 16 and 64 bytes
-     * @param int $length      The size of the desired hash output
-     * @return string          A BLAKE2 hashing context, encoded as a string
-     *                         (To be 100% compatible with ext/libsodium)
+     * @param  string|null  $key  If specified must be a string between 16 and 64 bytes
+     * @param  int  $length  The size of the desired hash output
+     * @return string A BLAKE2 hashing context, encoded as a string
+     *                (To be 100% compatible with ext/libsodium)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_generichash_init(
@@ -1807,7 +1997,7 @@ class ParagonIE_Sodium_Compat
         ParagonIE_Sodium_Core_Util::declareScalarType($length, 'int', 2);
 
         /* Input validation: */
-        if (!empty($key)) {
+        if (! empty($key)) {
             if (ParagonIE_Sodium_Core_Util::strlen($key) < self::CRYPTO_GENERICHASH_KEYBYTES_MIN) {
                 throw new SodiumException('Unsupported key size. Must be at least CRYPTO_GENERICHASH_KEYBYTES_MIN bytes long.');
             }
@@ -1825,20 +2015,23 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::generichash_init($key, $length);
         }
+
         return ParagonIE_Sodium_Crypto::generichash_init($key, $length);
     }
 
     /**
      * Initialize a BLAKE2b hashing context, for use in a streaming interface.
      *
-     * @param string|null $key If specified must be a string between 16 and 64 bytes
-     * @param int $length      The size of the desired hash output
-     * @param string $salt     Salt (up to 16 bytes)
-     * @param string $personal Personalization string (up to 16 bytes)
-     * @return string          A BLAKE2 hashing context, encoded as a string
-     *                         (To be 100% compatible with ext/libsodium)
+     * @param  string|null  $key  If specified must be a string between 16 and 64 bytes
+     * @param  int  $length  The size of the desired hash output
+     * @param  string  $salt  Salt (up to 16 bytes)
+     * @param  string  $personal  Personalization string (up to 16 bytes)
+     * @return string A BLAKE2 hashing context, encoded as a string
+     *                (To be 100% compatible with ext/libsodium)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_generichash_init_salt_personal(
@@ -1860,7 +2053,7 @@ class ParagonIE_Sodium_Compat
         $personal = str_pad($personal, 16, "\0", STR_PAD_RIGHT);
 
         /* Input validation: */
-        if (!empty($key)) {
+        if (! empty($key)) {
             /*
             if (ParagonIE_Sodium_Core_Util::strlen($key) < self::CRYPTO_GENERICHASH_KEYBYTES_MIN) {
                 throw new SodiumException('Unsupported key size. Must be at least CRYPTO_GENERICHASH_KEYBYTES_MIN bytes long.');
@@ -1873,19 +2066,24 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::generichash_init_salt_personal($key, $length, $salt, $personal);
         }
+
         return ParagonIE_Sodium_Crypto::generichash_init_salt_personal($key, $length, $salt, $personal);
     }
 
     /**
      * Update a BLAKE2b hashing context with additional data.
      *
-     * @param string $ctx    BLAKE2 hashing context. Generated by crypto_generichash_init().
+     * @param  string  $ctx  BLAKE2 hashing context. Generated by crypto_generichash_init().
      *                       $ctx is passed by reference and gets updated in-place.
+     *
      * @param-out string $ctx
-     * @param string $message The message to append to the existing hash state.
+     *
+     * @param  string  $message  The message to append to the existing hash state.
      * @return void
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress ReferenceConstraintViolation
      */
@@ -1900,11 +2098,13 @@ class ParagonIE_Sodium_Compat
 
         if (self::useNewSodiumAPI()) {
             sodium_crypto_generichash_update($ctx, $message);
+
             return;
         }
         if (self::use_fallback('crypto_generichash_update')) {
             $func = '\\Sodium\\crypto_generichash_update';
             $func($ctx, $message);
+
             return;
         }
         if (PHP_INT_SIZE === 4) {
@@ -1916,6 +2116,7 @@ class ParagonIE_Sodium_Compat
 
     /**
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -1925,11 +2126,12 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param int $subkey_len
-     * @param int $subkey_id
-     * @param string $context
-     * @param string $key
+     * @param  int  $subkey_len
+     * @param  int  $subkey_id
+     * @param  string  $context
+     * @param  string  $key
      * @return string
+     *
      * @throws SodiumException
      */
     public static function crypto_kdf_derive_from_key(
@@ -1971,11 +2173,13 @@ class ParagonIE_Sodium_Compat
             $salt,
             $context
         );
+
         return self::crypto_generichash_final($state, $subkey_len);
     }
 
     /**
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -2004,14 +2208,16 @@ class ParagonIE_Sodium_Compat
      * They are used along with the scalarmult product to generate a 256-bit
      * BLAKE2b hash unique to the client and server keys.
      *
-     * @param string $my_secret
-     * @param string $their_public
-     * @param string $client_public
-     * @param string $server_public
-     * @param bool $dontFallback
+     * @param  string  $my_secret
+     * @param  string  $their_public
+     * @param  string  $client_public
+     * @param  string  $server_public
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_kx(
@@ -2042,7 +2248,7 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Argument 4 must be CRYPTO_BOX_PUBLICKEYBYTES long.');
         }
 
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             if (is_callable('sodium_crypto_kx')) {
                 return (string) sodium_crypto_kx(
                     $my_secret,
@@ -2069,6 +2275,7 @@ class ParagonIE_Sodium_Compat
                 $server_public
             );
         }
+
         return ParagonIE_Sodium_Crypto::keyExchange(
             $my_secret,
             $their_public,
@@ -2078,8 +2285,9 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $seed
+     * @param  string  $seed
      * @return string
+     *
      * @throws SodiumException
      */
     public static function crypto_kx_seed_keypair(
@@ -2096,24 +2304,28 @@ class ParagonIE_Sodium_Compat
 
         $sk = self::crypto_generichash($seed, '', self::CRYPTO_KX_SECRETKEYBYTES);
         $pk = self::crypto_scalarmult_base($sk);
-        return $sk . $pk;
+
+        return $sk.$pk;
     }
 
     /**
      * @return string
+     *
      * @throws Exception
      */
     public static function crypto_kx_keypair()
     {
         $sk = self::randombytes_buf(self::CRYPTO_KX_SECRETKEYBYTES);
         $pk = self::crypto_scalarmult_base($sk);
-        return $sk . $pk;
+
+        return $sk.$pk;
     }
 
     /**
-     * @param string $keypair
-     * @param string $serverPublicKey
+     * @param  string  $keypair
+     * @param  string  $serverPublicKey
      * @return array{0: string, 1: string}
+     *
      * @throws SodiumException
      */
     public static function crypto_kx_client_session_keys(
@@ -2141,7 +2353,8 @@ class ParagonIE_Sodium_Compat
         self::crypto_generichash_update($h, $pk);
         self::crypto_generichash_update($h, $serverPublicKey);
         $sessionKeys = self::crypto_generichash_final($h, self::CRYPTO_KX_SESSIONKEYBYTES * 2);
-        return array(
+
+        return [
             ParagonIE_Sodium_Core_Util::substr(
                 $sessionKeys,
                 0,
@@ -2151,14 +2364,15 @@ class ParagonIE_Sodium_Compat
                 $sessionKeys,
                 self::CRYPTO_KX_SESSIONKEYBYTES,
                 self::CRYPTO_KX_SESSIONKEYBYTES
-            )
-        );
+            ),
+        ];
     }
 
     /**
-     * @param string $keypair
-     * @param string $clientPublicKey
+     * @param  string  $keypair
+     * @param  string  $clientPublicKey
      * @return array{0: string, 1: string}
+     *
      * @throws SodiumException
      */
     public static function crypto_kx_server_session_keys(
@@ -2186,7 +2400,8 @@ class ParagonIE_Sodium_Compat
         self::crypto_generichash_update($h, $clientPublicKey);
         self::crypto_generichash_update($h, $pk);
         $sessionKeys = self::crypto_generichash_final($h, self::CRYPTO_KX_SESSIONKEYBYTES * 2);
-        return array(
+
+        return [
             ParagonIE_Sodium_Core_Util::substr(
                 $sessionKeys,
                 self::CRYPTO_KX_SESSIONKEYBYTES,
@@ -2196,13 +2411,14 @@ class ParagonIE_Sodium_Compat
                 $sessionKeys,
                 0,
                 self::CRYPTO_KX_SESSIONKEYBYTES
-            )
-        );
+            ),
+        ];
     }
 
     /**
-     * @param string $kp
+     * @param  string  $kp
      * @return string
+     *
      * @throws SodiumException
      */
     public static function crypto_kx_secretkey(
@@ -2217,8 +2433,9 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $kp
+     * @param  string  $kp
      * @return string
+     *
      * @throws SodiumException
      */
     public static function crypto_kx_publickey($kp)
@@ -2231,15 +2448,17 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param int $outlen
-     * @param string $passwd
-     * @param string $salt
-     * @param int $opslimit
-     * @param int $memlimit
-     * @param int|null $alg
+     * @param  int  $outlen
+     * @param  string  $passwd
+     * @param  string  $salt
+     * @param  int  $opslimit
+     * @param  int  $memlimit
+     * @param  int|null  $alg
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_pwhash(
@@ -2253,15 +2472,17 @@ class ParagonIE_Sodium_Compat
     ) {
         ParagonIE_Sodium_Core_Util::declareScalarType($outlen, 'int', 1);
         ParagonIE_Sodium_Core_Util::declareScalarType($passwd, 'string', 2);
-        ParagonIE_Sodium_Core_Util::declareScalarType($salt,  'string', 3);
+        ParagonIE_Sodium_Core_Util::declareScalarType($salt, 'string', 3);
         ParagonIE_Sodium_Core_Util::declareScalarType($opslimit, 'int', 4);
         ParagonIE_Sodium_Core_Util::declareScalarType($memlimit, 'int', 5);
 
         if (self::useNewSodiumAPI()) {
-            if (!is_null($alg)) {
+            if (! is_null($alg)) {
                 ParagonIE_Sodium_Core_Util::declareScalarType($alg, 'int', 6);
+
                 return sodium_crypto_pwhash($outlen, $passwd, $salt, $opslimit, $memlimit, $alg);
             }
+
             return sodium_crypto_pwhash($outlen, $passwd, $salt, $opslimit, $memlimit);
         }
         if (self::use_fallback('crypto_pwhash')) {
@@ -2289,16 +2510,19 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('crypto_pwhash')) {
             return true;
         }
+
         return false;
     }
 
     /**
-     * @param string $passwd
-     * @param int $opslimit
-     * @param int $memlimit
+     * @param  string  $passwd
+     * @param  int  $opslimit
+     * @param  int  $memlimit
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_pwhash_str(
@@ -2326,10 +2550,11 @@ class ParagonIE_Sodium_Compat
     /**
      * Do we need to rehash this password?
      *
-     * @param string $hash
-     * @param int $opslimit
-     * @param int $memlimit
+     * @param  string  $hash
+     * @param  int  $opslimit
+     * @param  int  $memlimit
      * @return bool
+     *
      * @throws SodiumException
      */
     public static function crypto_pwhash_str_needs_rehash(
@@ -2351,18 +2576,20 @@ class ParagonIE_Sodium_Compat
         $ops = (int) $opslimit;
         /** @var int $mem */
         $mem = (int) $memlimit >> 10;
-        $encoded = self::CRYPTO_PWHASH_STRPREFIX . 'v=19$m=' . $mem . ',t=' . $ops . ',p=1';
+        $encoded = self::CRYPTO_PWHASH_STRPREFIX.'v=19$m='.$mem.',t='.$ops.',p=1';
 
         // Do they match? If so, we don't need to rehash, so return false.
-        return !ParagonIE_Sodium_Core_Util::hashEquals($encoded, $prefix);
+        return ! ParagonIE_Sodium_Core_Util::hashEquals($encoded, $prefix);
     }
 
     /**
-     * @param string $passwd
-     * @param string $hash
+     * @param  string  $passwd
+     * @param  string  $hash
      * @return bool
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_pwhash_str_verify(
@@ -2387,12 +2614,13 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param int $outlen
-     * @param string $passwd
-     * @param string $salt
-     * @param int $opslimit
-     * @param int $memlimit
+     * @param  int  $outlen
+     * @param  string  $passwd
+     * @param  string  $salt
+     * @param  int  $opslimit
+     * @param  int  $memlimit
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -2406,7 +2634,7 @@ class ParagonIE_Sodium_Compat
     ) {
         ParagonIE_Sodium_Core_Util::declareScalarType($outlen, 'int', 1);
         ParagonIE_Sodium_Core_Util::declareScalarType($passwd, 'string', 2);
-        ParagonIE_Sodium_Core_Util::declareScalarType($salt,  'string', 3);
+        ParagonIE_Sodium_Core_Util::declareScalarType($salt, 'string', 3);
         ParagonIE_Sodium_Core_Util::declareScalarType($opslimit, 'int', 4);
         ParagonIE_Sodium_Core_Util::declareScalarType($memlimit, 'int', 5);
 
@@ -2451,14 +2679,16 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('crypto_pwhash_scryptsalsa208sha256')) {
             return true;
         }
+
         return false;
     }
 
     /**
-     * @param string $passwd
-     * @param int $opslimit
-     * @param int $memlimit
+     * @param  string  $passwd
+     * @param  int  $opslimit
+     * @param  int  $memlimit
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -2494,9 +2724,10 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $passwd
-     * @param string $hash
+     * @param  string  $passwd
+     * @param  string  $hash
      * @return bool
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -2534,11 +2765,13 @@ class ParagonIE_Sodium_Compat
      *
      * Algorithm: X25519 (ECDH over Curve25519)
      *
-     * @param string $secretKey
-     * @param string $publicKey
+     * @param  string  $secretKey
+     * @param  string  $publicKey
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_scalarmult(
@@ -2575,16 +2808,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::scalarmult($secretKey, $publicKey);
         }
+
         return ParagonIE_Sodium_Crypto::scalarmult($secretKey, $publicKey);
     }
 
     /**
      * Calculate an X25519 public key from an X25519 secret key.
      *
-     * @param string $secretKey
+     * @param  string  $secretKey
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress TooFewArguments
      * @psalm-suppress MixedArgument
      */
@@ -2612,6 +2848,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::scalarmult_base($secretKey);
         }
+
         return ParagonIE_Sodium_Crypto::scalarmult_base($secretKey);
     }
 
@@ -2620,12 +2857,14 @@ class ParagonIE_Sodium_Compat
      *
      * Algorithm: XSalsa20-Poly1305
      *
-     * @param string $plaintext The message you're encrypting
-     * @param string $nonce A Number to be used Once; must be 24 bytes
-     * @param string $key Symmetric encryption key
-     * @return string           Ciphertext with Poly1305 MAC
+     * @param  string  $plaintext  The message you're encrypting
+     * @param  string  $nonce  A Number to be used Once; must be 24 bytes
+     * @param  string  $key  Symmetric encryption key
+     * @return string Ciphertext with Poly1305 MAC
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_secretbox(
@@ -2657,18 +2896,21 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::secretbox($plaintext, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Crypto::secretbox($plaintext, $nonce, $key);
     }
 
     /**
      * Decrypts a message previously encrypted with crypto_secretbox().
      *
-     * @param string $ciphertext Ciphertext with Poly1305 MAC
-     * @param string $nonce      A Number to be used Once; must be 24 bytes
-     * @param string $key        Symmetric encryption key
-     * @return string            Original plaintext message
+     * @param  string  $ciphertext  Ciphertext with Poly1305 MAC
+     * @param  string  $nonce  A Number to be used Once; must be 24 bytes
+     * @param  string  $key  Symmetric encryption key
+     * @return string Original plaintext message
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -2705,6 +2947,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::secretbox_open($ciphertext, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Crypto::secretbox_open($ciphertext, $nonce, $key);
     }
 
@@ -2712,6 +2955,7 @@ class ParagonIE_Sodium_Compat
      * Return a secure random key for use with crypto_secretbox
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -2725,12 +2969,14 @@ class ParagonIE_Sodium_Compat
      *
      * Algorithm: XChaCha20-Poly1305
      *
-     * @param string $plaintext The message you're encrypting
-     * @param string $nonce     A Number to be used Once; must be 24 bytes
-     * @param string $key       Symmetric encryption key
-     * @return string           Ciphertext with Poly1305 MAC
+     * @param  string  $plaintext  The message you're encrypting
+     * @param  string  $nonce  A Number to be used Once; must be 24 bytes
+     * @param  string  $key  Symmetric encryption key
+     * @return string Ciphertext with Poly1305 MAC
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_secretbox_xchacha20poly1305($plaintext, $nonce, $key)
@@ -2750,17 +2996,21 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::secretbox_xchacha20poly1305($plaintext, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Crypto::secretbox_xchacha20poly1305($plaintext, $nonce, $key);
     }
+
     /**
      * Decrypts a message previously encrypted with crypto_secretbox_xchacha20poly1305().
      *
-     * @param string $ciphertext Ciphertext with Poly1305 MAC
-     * @param string $nonce      A Number to be used Once; must be 24 bytes
-     * @param string $key        Symmetric encryption key
-     * @return string            Original plaintext message
+     * @param  string  $ciphertext  Ciphertext with Poly1305 MAC
+     * @param  string  $nonce  A Number to be used Once; must be 24 bytes
+     * @param  string  $key  Symmetric encryption key
+     * @return string Original plaintext message
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_secretbox_xchacha20poly1305_open(
@@ -2785,12 +3035,14 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::secretbox_xchacha20poly1305_open($ciphertext, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Crypto::secretbox_xchacha20poly1305_open($ciphertext, $nonce, $key);
     }
 
     /**
-     * @param string $key
+     * @param  string  $key
      * @return array<int, string> Returns a state and a header.
+     *
      * @throws Exception
      * @throws SodiumException
      */
@@ -2801,13 +3053,15 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::secretstream_xchacha20poly1305_init_push($key);
         }
+
         return ParagonIE_Sodium_Crypto::secretstream_xchacha20poly1305_init_push($key);
     }
 
     /**
-     * @param string $header
-     * @param string $key
+     * @param  string  $header
+     * @param  string  $key
      * @return string Returns a state.
+     *
      * @throws Exception
      */
     public static function crypto_secretstream_xchacha20poly1305_init_pull(
@@ -2823,15 +3077,17 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::secretstream_xchacha20poly1305_init_pull($key, $header);
         }
+
         return ParagonIE_Sodium_Crypto::secretstream_xchacha20poly1305_init_pull($key, $header);
     }
 
     /**
-     * @param string $state
-     * @param string $msg
-     * @param string $aad
-     * @param int $tag
+     * @param  string  $state
+     * @param  string  $msg
+     * @param  string  $aad
+     * @param  int  $tag
      * @return string
+     *
      * @throws SodiumException
      */
     public static function crypto_secretstream_xchacha20poly1305_push(
@@ -2850,6 +3106,7 @@ class ParagonIE_Sodium_Compat
                 $tag
             );
         }
+
         return ParagonIE_Sodium_Crypto::secretstream_xchacha20poly1305_push(
             $state,
             $msg,
@@ -2859,10 +3116,11 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $state
-     * @param string $msg
-     * @param string $aad
+     * @param  string  $state
+     * @param  string  $msg
+     * @param  string  $aad
      * @return bool|array{0: string, 1: int}
+     *
      * @throws SodiumException
      */
     public static function crypto_secretstream_xchacha20poly1305_pull(
@@ -2878,6 +3136,7 @@ class ParagonIE_Sodium_Compat
                 $aad
             );
         }
+
         return ParagonIE_Sodium_Crypto::secretstream_xchacha20poly1305_pull(
             $state,
             $msg,
@@ -2887,6 +3146,7 @@ class ParagonIE_Sodium_Compat
 
     /**
      * @return string
+     *
      * @throws Exception
      */
     public static function crypto_secretstream_xchacha20poly1305_keygen()
@@ -2895,8 +3155,9 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $state
+     * @param  string  $state
      * @return void
+     *
      * @throws SodiumException
      */
     public static function crypto_secretstream_xchacha20poly1305_rekey(
@@ -2913,11 +3174,13 @@ class ParagonIE_Sodium_Compat
     /**
      * Calculates a SipHash-2-4 hash of a message for a given key.
      *
-     * @param string $message Input message
-     * @param string $key SipHash-2-4 key
-     * @return string         Hash
+     * @param  string  $message  Input message
+     * @param  string  $key  SipHash-2-4 key
+     * @return string Hash
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -2945,6 +3208,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_SipHash::sipHash24($message, $key);
         }
+
         return ParagonIE_Sodium_Core_SipHash::sipHash24($message, $key);
     }
 
@@ -2952,6 +3216,7 @@ class ParagonIE_Sodium_Compat
      * Return a secure random key for use with crypto_shorthash
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -2966,11 +3231,13 @@ class ParagonIE_Sodium_Compat
      *
      * Algorithm: Ed25519 (EdDSA over Curve25519)
      *
-     * @param string $message Message to be signed.
-     * @param string $secretKey Secret signing key.
-     * @return string           Signed message (signature is prefixed).
+     * @param  string  $message  Message to be signed.
+     * @param  string  $secretKey  Secret signing key.
+     * @return string Signed message (signature is prefixed).
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -2998,18 +3265,21 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::sign($message, $secretKey);
         }
+
         return ParagonIE_Sodium_Crypto::sign($message, $secretKey);
     }
 
     /**
      * Validates a signed message then returns the message.
      *
-     * @param string $signedMessage A signed message
-     * @param string $publicKey A public key
-     * @return string               The original message (if the signature is
-     *                              valid for this public key)
+     * @param  string  $signedMessage  A signed message
+     * @param  string  $publicKey  A public key
+     * @return string The original message (if the signature is
+     *                valid for this public key)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MixedReturnStatement
@@ -3043,6 +3313,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::sign_open($signedMessage, $publicKey);
         }
+
         return ParagonIE_Sodium_Crypto::sign_open($signedMessage, $publicKey);
     }
 
@@ -3050,6 +3321,7 @@ class ParagonIE_Sodium_Compat
      * Generate a new random Ed25519 keypair.
      *
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -3064,20 +3336,22 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_Ed25519::keypair();
         }
+
         return ParagonIE_Sodium_Core_Ed25519::keypair();
     }
 
     /**
-     * @param string $sk
-     * @param string $pk
+     * @param  string  $sk
+     * @param  string  $pk
      * @return string
+     *
      * @throws SodiumException
      */
     public static function crypto_sign_keypair_from_secretkey_and_publickey(
         #[\SensitiveParameter]
         $sk,
         $pk
-    )  {
+    ) {
         ParagonIE_Sodium_Core_Util::declareScalarType($sk, 'string', 1);
         ParagonIE_Sodium_Core_Util::declareScalarType($pk, 'string', 1);
         $sk = (string) $sk;
@@ -3093,16 +3367,19 @@ class ParagonIE_Sodium_Compat
         if (self::useNewSodiumAPI()) {
             return sodium_crypto_sign_keypair_from_secretkey_and_publickey($sk, $pk);
         }
-        return $sk . $pk;
+
+        return $sk.$pk;
     }
 
     /**
      * Generate an Ed25519 keypair from a seed.
      *
-     * @param string $seed Input seed
-     * @return string      Keypair
+     * @param  string  $seed  Input seed
+     * @return string Keypair
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_seed_keypair(
@@ -3124,16 +3401,19 @@ class ParagonIE_Sodium_Compat
         } else {
             ParagonIE_Sodium_Core_Ed25519::seed_keypair($publicKey, $secretKey, $seed);
         }
-        return $secretKey . $publicKey;
+
+        return $secretKey.$publicKey;
     }
 
     /**
      * Extract an Ed25519 public key from an Ed25519 keypair.
      *
-     * @param string $keypair Keypair
-     * @return string         Public key
+     * @param  string  $keypair  Keypair
+     * @return string Public key
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_publickey(
@@ -3157,16 +3437,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_Ed25519::publickey($keypair);
         }
+
         return ParagonIE_Sodium_Core_Ed25519::publickey($keypair);
     }
 
     /**
      * Calculate an Ed25519 public key from an Ed25519 secret key.
      *
-     * @param string $secretKey Your Ed25519 secret key
-     * @return string           The corresponding Ed25519 public key
+     * @param  string  $secretKey  Your Ed25519 secret key
+     * @return string The corresponding Ed25519 public key
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_publickey_from_secretkey(
@@ -3190,16 +3473,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_Ed25519::publickey_from_secretkey($secretKey);
         }
+
         return ParagonIE_Sodium_Core_Ed25519::publickey_from_secretkey($secretKey);
     }
 
     /**
      * Extract an Ed25519 secret key from an Ed25519 keypair.
      *
-     * @param string $keypair Keypair
-     * @return string         Secret key
+     * @param  string  $keypair  Keypair
+     * @return string Secret key
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_secretkey(
@@ -3223,6 +3509,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_Ed25519::secretkey($keypair);
         }
+
         return ParagonIE_Sodium_Core_Ed25519::secretkey($keypair);
     }
 
@@ -3231,11 +3518,13 @@ class ParagonIE_Sodium_Compat
      *
      * Algorithm: Ed25519 (EdDSA over Curve25519)
      *
-     * @param string $message Message to be signed
-     * @param string $secretKey Secret signing key
-     * @return string           Digital signature
+     * @param  string  $message  Message to be signed
+     * @param  string  $secretKey  Secret signing key
+     * @return string Digital signature
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_detached(
@@ -3261,19 +3550,22 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::sign_detached($message, $secretKey);
         }
+
         return ParagonIE_Sodium_Crypto::sign_detached($message, $secretKey);
     }
 
     /**
      * Verify the Ed25519 signature of a message.
      *
-     * @param string $signature Digital sginature
-     * @param string $message Message to be verified
-     * @param string $publicKey Public key
-     * @return bool             TRUE if this signature is good for this public key;
-     *                          FALSE otherwise
+     * @param  string  $signature  Digital sginature
+     * @param  string  $message  Message to be verified
+     * @param  string  $publicKey  Public key
+     * @return bool TRUE if this signature is good for this public key;
+     *              FALSE otherwise
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_verify_detached($signature, $message, $publicKey)
@@ -3305,16 +3597,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Crypto32::sign_verify_detached($signature, $message, $publicKey);
         }
+
         return ParagonIE_Sodium_Crypto::sign_verify_detached($signature, $message, $publicKey);
     }
 
     /**
      * Convert an Ed25519 public key to a Curve25519 public key
      *
-     * @param string $pk
+     * @param  string  $pk
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_ed25519_pk_to_curve25519($pk)
@@ -3337,16 +3632,19 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_Ed25519::pk_to_curve25519($pk);
         }
+
         return ParagonIE_Sodium_Core_Ed25519::pk_to_curve25519($pk);
     }
 
     /**
      * Convert an Ed25519 secret key to a Curve25519 secret key
      *
-     * @param string $sk
+     * @param  string  $sk
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_sign_ed25519_sk_to_curve25519(
@@ -3376,21 +3674,24 @@ class ParagonIE_Sodium_Compat
         $h[31] = ParagonIE_Sodium_Core_Util::intToChr(
             (ParagonIE_Sodium_Core_Util::chrToInt($h[31]) & 127) | 64
         );
+
         return ParagonIE_Sodium_Core_Util::substr($h, 0, 32);
     }
 
     /**
      * Expand a key and nonce into a keystream of pseudorandom bytes.
      *
-     * @param int $len Number of bytes desired
-     * @param string $nonce Number to be used Once; must be 24 bytes
-     * @param string $key XSalsa20 key
-     * @return string       Pseudorandom stream that can be XORed with messages
-     *                      to provide encryption (but not authentication; see
-     *                      Poly1305 or crypto_auth() for that, which is not
-     *                      optional for security)
+     * @param  int  $len  Number of bytes desired
+     * @param  string  $nonce  Number to be used Once; must be 24 bytes
+     * @param  string  $key  XSalsa20 key
+     * @return string Pseudorandom stream that can be XORed with messages
+     *                to provide encryption (but not authentication; see
+     *                Poly1305 or crypto_auth() for that, which is not
+     *                optional for security)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_stream(
@@ -3421,6 +3722,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_XSalsa20::xsalsa20($len, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Core_XSalsa20::xsalsa20($len, $nonce, $key);
     }
 
@@ -3433,15 +3735,17 @@ class ParagonIE_Sodium_Compat
      *
      * This DOES NOT provide ciphertext integrity.
      *
-     * @param string $message Plaintext message
-     * @param string $nonce Number to be used Once; must be 24 bytes
-     * @param string $key Encryption key
-     * @return string         Encrypted text which is vulnerable to chosen-
-     *                        ciphertext attacks unless you implement some
-     *                        other mitigation to the ciphertext (i.e.
-     *                        Encrypt then MAC)
+     * @param  string  $message  Plaintext message
+     * @param  string  $nonce  Number to be used Once; must be 24 bytes
+     * @param  string  $key  Encryption key
+     * @return string Encrypted text which is vulnerable to chosen-
+     *                ciphertext attacks unless you implement some
+     *                other mitigation to the ciphertext (i.e.
+     *                Encrypt then MAC)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_stream_xor(
@@ -3473,6 +3777,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_XSalsa20::xsalsa20_xor($message, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Core_XSalsa20::xsalsa20_xor($message, $nonce, $key);
     }
 
@@ -3480,6 +3785,7 @@ class ParagonIE_Sodium_Compat
      * Return a secure random key for use with crypto_stream
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -3488,20 +3794,21 @@ class ParagonIE_Sodium_Compat
         return random_bytes(self::CRYPTO_STREAM_KEYBYTES);
     }
 
-
     /**
      * Expand a key and nonce into a keystream of pseudorandom bytes.
      *
-     * @param int $len Number of bytes desired
-     * @param string $nonce Number to be used Once; must be 24 bytes
-     * @param string $key XChaCha20 key
-     * @param bool $dontFallback
-     * @return string       Pseudorandom stream that can be XORed with messages
-     *                      to provide encryption (but not authentication; see
-     *                      Poly1305 or crypto_auth() for that, which is not
-     *                      optional for security)
+     * @param  int  $len  Number of bytes desired
+     * @param  string  $nonce  Number to be used Once; must be 24 bytes
+     * @param  string  $key  XChaCha20 key
+     * @param  bool  $dontFallback
+     * @return string Pseudorandom stream that can be XORed with messages
+     *                to provide encryption (but not authentication; see
+     *                Poly1305 or crypto_auth() for that, which is not
+     *                optional for security)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_stream_xchacha20(
@@ -3524,12 +3831,13 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Argument 3 must be CRYPTO_STREAM_XCHACHA20_KEYBYTES long.');
         }
 
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_stream_xchacha20($len, $nonce, $key);
         }
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_XChaCha20::stream($len, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Core_XChaCha20::stream($len, $nonce, $key);
     }
 
@@ -3542,16 +3850,18 @@ class ParagonIE_Sodium_Compat
      *
      * This DOES NOT provide ciphertext integrity.
      *
-     * @param string $message Plaintext message
-     * @param string $nonce Number to be used Once; must be 24 bytes
-     * @param string $key Encryption key
-     * @return string         Encrypted text which is vulnerable to chosen-
-     *                        ciphertext attacks unless you implement some
-     *                        other mitigation to the ciphertext (i.e.
-     *                        Encrypt then MAC)
-     * @param bool $dontFallback
+     * @param  string  $message  Plaintext message
+     * @param  string  $nonce  Number to be used Once; must be 24 bytes
+     * @param  string  $key  Encryption key
+     * @param  bool  $dontFallback
+     * @return string Encrypted text which is vulnerable to chosen-
+     *                ciphertext attacks unless you implement some
+     *                other mitigation to the ciphertext (i.e.
+     *                Encrypt then MAC)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_stream_xchacha20_xor(
@@ -3575,12 +3885,13 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Argument 3 must be CRYPTO_SECRETBOX_XCHACHA20_KEYBYTES long.');
         }
 
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_stream_xchacha20_xor($message, $nonce, $key);
         }
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_XChaCha20::streamXorIc($message, $nonce, $key);
         }
+
         return ParagonIE_Sodium_Core_XChaCha20::streamXorIc($message, $nonce, $key);
     }
 
@@ -3593,17 +3904,19 @@ class ParagonIE_Sodium_Compat
      *
      * This DOES NOT provide ciphertext integrity.
      *
-     * @param string $message Plaintext message
-     * @param string $nonce Number to be used Once; must be 24 bytes
-     * @param int $counter
-     * @param string $key Encryption key
-     * @return string         Encrypted text which is vulnerable to chosen-
-     *                        ciphertext attacks unless you implement some
-     *                        other mitigation to the ciphertext (i.e.
-     *                        Encrypt then MAC)
-     * @param bool $dontFallback
+     * @param  string  $message  Plaintext message
+     * @param  string  $nonce  Number to be used Once; must be 24 bytes
+     * @param  int  $counter
+     * @param  string  $key  Encryption key
+     * @param  bool  $dontFallback
+     * @return string Encrypted text which is vulnerable to chosen-
+     *                ciphertext attacks unless you implement some
+     *                other mitigation to the ciphertext (i.e.
+     *                Encrypt then MAC)
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function crypto_stream_xchacha20_xor_ic(
@@ -3629,7 +3942,7 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('Argument 3 must be CRYPTO_SECRETBOX_XCHACHA20_KEYBYTES long.');
         }
 
-        if (is_callable('sodium_crypto_stream_xchacha20_xor_ic') && !$dontFallback) {
+        if (is_callable('sodium_crypto_stream_xchacha20_xor_ic') && ! $dontFallback) {
             return sodium_crypto_stream_xchacha20_xor_ic($message, $nonce, $counter, $key);
         }
 
@@ -3637,6 +3950,7 @@ class ParagonIE_Sodium_Compat
         if (PHP_INT_SIZE === 4) {
             return ParagonIE_Sodium_Core32_XChaCha20::streamXorIc($message, $nonce, $key, $ic);
         }
+
         return ParagonIE_Sodium_Core_XChaCha20::streamXorIc($message, $nonce, $key, $ic);
     }
 
@@ -3644,6 +3958,7 @@ class ParagonIE_Sodium_Compat
      * Return a secure random key for use with crypto_stream_xchacha20
      *
      * @return string
+     *
      * @throws Exception
      * @throws Error
      */
@@ -3655,11 +3970,13 @@ class ParagonIE_Sodium_Compat
     /**
      * Cache-timing-safe implementation of hex2bin().
      *
-     * @param string $string Hexadecimal string
-     * @param string $ignore List of characters to ignore; useful for whitespace
-     * @return string        Raw binary string
+     * @param  string  $string  Hexadecimal string
+     * @param  string  $ignore  List of characters to ignore; useful for whitespace
+     * @return string Raw binary string
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress TooFewArguments
      * @psalm-suppress MixedArgument
      */
@@ -3680,17 +3997,19 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('hex2bin')) {
             return (string) call_user_func('\\Sodium\\hex2bin', $string, $ignore);
         }
+
         return ParagonIE_Sodium_Core_Util::hex2bin($string, $ignore);
     }
 
     /**
      * Increase a string (little endian)
      *
-     * @param string $var
-     *
+     * @param  string  $var
      * @return void
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function increment(
@@ -3702,18 +4021,20 @@ class ParagonIE_Sodium_Compat
 
         if (self::useNewSodiumAPI()) {
             sodium_increment($var);
+
             return;
         }
         if (self::use_fallback('increment')) {
             $func = '\\Sodium\\increment';
             $func($var);
+
             return;
         }
 
         $len = ParagonIE_Sodium_Core_Util::strlen($var);
         $c = 1;
         $copy = '';
-        for ($i = 0; $i < $len; ++$i) {
+        for ($i = 0; $i < $len; $i++) {
             $c += ParagonIE_Sodium_Core_Util::chrToInt(
                 ParagonIE_Sodium_Core_Util::substr($var, $i, 1)
             );
@@ -3724,7 +4045,7 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $str
+     * @param  string  $str
      * @return bool
      *
      * @throws SodiumException
@@ -3734,9 +4055,10 @@ class ParagonIE_Sodium_Compat
         $str
     ) {
         $d = 0;
-        for ($i = 0; $i < 32; ++$i) {
+        for ($i = 0; $i < 32; $i++) {
             $d |= ParagonIE_Sodium_Core_Util::chrToInt($str[$i]);
         }
+
         return ((($d - 1) >> 31) & 1) === 1;
     }
 
@@ -3755,6 +4077,7 @@ class ParagonIE_Sodium_Compat
             /** @psalm-suppress UndefinedFunction */
             return (int) call_user_func('\\Sodium\\library_version_major');
         }
+
         return self::LIBRARY_VERSION_MAJOR;
     }
 
@@ -3773,17 +4096,20 @@ class ParagonIE_Sodium_Compat
             /** @psalm-suppress UndefinedFunction */
             return (int) call_user_func('\\Sodium\\library_version_minor');
         }
+
         return self::LIBRARY_VERSION_MINOR;
     }
 
     /**
      * Compare two strings.
      *
-     * @param string $left
-     * @param string $right
+     * @param  string  $left
+     * @param  string  $right
      * @return int
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedArgument
      */
     public static function memcmp(
@@ -3802,6 +4128,7 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('memcmp')) {
             return (int) call_user_func('\\Sodium\\memcmp', $left, $right);
         }
+
         /** @var string $left */
         /** @var string $right */
         return ParagonIE_Sodium_Core_Util::memcmp($left, $right);
@@ -3811,12 +4138,15 @@ class ParagonIE_Sodium_Compat
      * It's actually not possible to zero memory buffers in PHP. You need the
      * native library for that.
      *
-     * @param string|null $var
+     * @param  string|null  $var
+     *
      * @param-out string|null $var
      *
      * @return void
+     *
      * @throws SodiumException (Unless libsodium is installed)
      * @throws TypeError
+     *
      * @psalm-suppress TooFewArguments
      */
     public static function memzero(
@@ -3829,6 +4159,7 @@ class ParagonIE_Sodium_Compat
         if (self::useNewSodiumAPI()) {
             /** @psalm-suppress MixedArgument */
             sodium_memzero($var);
+
             return;
         }
         if (self::use_fallback('memzero')) {
@@ -3840,16 +4171,17 @@ class ParagonIE_Sodium_Compat
         }
         // This is the best we can do.
         throw new SodiumException(
-            'This is not implemented in sodium_compat, as it is not possible to securely wipe memory from PHP. ' .
+            'This is not implemented in sodium_compat, as it is not possible to securely wipe memory from PHP. '.
             'To fix this error, make sure libsodium is installed and the PHP extension is enabled.'
         );
     }
 
     /**
-     * @param string $unpadded
-     * @param int $blockSize
-     * @param bool $dontFallback
+     * @param  string  $unpadded
+     * @param  int  $blockSize
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function pad(
@@ -3865,7 +4197,7 @@ class ParagonIE_Sodium_Compat
         $unpadded = (string) $unpadded;
         $blockSize = (int) $blockSize;
 
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return (string) sodium_pad($unpadded, $blockSize);
         }
 
@@ -3888,7 +4220,7 @@ class ParagonIE_Sodium_Compat
             $st = 1;
             $i = 0;
             $k = $unpadded_len;
-            for ($j = 0; $j <= $xpadded_len; ++$j) {
+            for ($j = 0; $j <= $xpadded_len; $j++) {
                 $i = (int) $i;
                 $k = (int) $k;
                 $st = (int) $st;
@@ -3900,46 +4232,48 @@ class ParagonIE_Sodium_Compat
                 /** @var int $k */
                 $k -= $st;
                 $st = (int) (~(
-                            (
-                                (
-                                    ($k >> 48)
-                                        |
-                                    ($k >> 32)
-                                        |
-                                    ($k >> 16)
-                                        |
-                                    $k
-                                ) - 1
-                            ) >> 16
-                        )
-                    ) & 1;
+                    (
+                        (
+                            ($k >> 48)
+                                |
+                            ($k >> 32)
+                                |
+                            ($k >> 16)
+                                |
+                            $k
+                        ) - 1
+                    ) >> 16
+                )
+                ) & 1;
                 $i += $st;
             }
         }
 
         $mask = 0;
         $tail = $xpadded_len;
-        for ($i = 0; $i < $blockSize; ++$i) {
-            # barrier_mask = (unsigned char)
-            #     (((i ^ xpadlen) - 1U) >> ((sizeof(size_t) - 1U) * CHAR_BIT));
-            $barrier_mask = (($i ^ $xpadlen) -1) >> ((PHP_INT_SIZE << 3) - 1);
-            # tail[-i] = (tail[-i] & mask) | (0x80 & barrier_mask);
+        for ($i = 0; $i < $blockSize; $i++) {
+            // barrier_mask = (unsigned char)
+            //     (((i ^ xpadlen) - 1U) >> ((sizeof(size_t) - 1U) * CHAR_BIT));
+            $barrier_mask = (($i ^ $xpadlen) - 1) >> ((PHP_INT_SIZE << 3) - 1);
+            // tail[-i] = (tail[-i] & mask) | (0x80 & barrier_mask);
             $padded[$tail - $i] = ParagonIE_Sodium_Core_Util::intToChr(
                 (ParagonIE_Sodium_Core_Util::chrToInt($padded[$tail - $i]) & $mask)
                     |
                 (0x80 & $barrier_mask)
             );
-            # mask |= barrier_mask;
+            // mask |= barrier_mask;
             $mask |= $barrier_mask;
         }
+
         return $padded;
     }
 
     /**
-     * @param string $padded
-     * @param int $blockSize
-     * @param bool $dontFallback
+     * @param  string  $padded
+     * @param  int  $blockSize
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function unpad(
@@ -3955,7 +4289,7 @@ class ParagonIE_Sodium_Compat
         $padded = (string) $padded;
         $blockSize = (int) $blockSize;
 
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return (string) sodium_unpad($padded, $blockSize);
         }
         if ($blockSize <= 0) {
@@ -3966,7 +4300,7 @@ class ParagonIE_Sodium_Compat
             throw new SodiumException('invalid padding');
         }
 
-        # tail = &padded[padded_len - 1U];
+        // tail = &padded[padded_len - 1U];
         $tail = $padded_len - 1;
 
         $acc = 0;
@@ -3974,12 +4308,12 @@ class ParagonIE_Sodium_Compat
         $pad_len = 0;
 
         $found = 0;
-        for ($i = 0; $i < $blockSize; ++$i) {
-            # c = tail[-i];
+        for ($i = 0; $i < $blockSize; $i++) {
+            // c = tail[-i];
             $c = ParagonIE_Sodium_Core_Util::chrToInt($padded[$tail - $i]);
 
-            # is_barrier =
-            #     (( (acc - 1U) & (pad_len - 1U) & ((c ^ 0x80) - 1U) ) >> 8) & 1U;
+            // is_barrier =
+            //     (( (acc - 1U) & (pad_len - 1U) & ((c ^ 0x80) - 1U) ) >> 8) & 1U;
             $is_barrier = (
                 (
                     ($acc - 1) & ($pad_len - 1) & (($c ^ 80) - 1)
@@ -3988,20 +4322,21 @@ class ParagonIE_Sodium_Compat
             $is_barrier &= ~$found;
             $found |= $is_barrier;
 
-            # acc |= c;
+            // acc |= c;
             $acc |= $c;
 
-            # pad_len |= i & (1U + ~is_barrier);
+            // pad_len |= i & (1U + ~is_barrier);
             $pad_len |= $i & (1 + ~$is_barrier);
 
-            # valid |= (unsigned char) is_barrier;
-            $valid |= ($is_barrier & 0xff);
+            // valid |= (unsigned char) is_barrier;
+            $valid |= ($is_barrier & 0xFF);
         }
-        # unpadded_len = padded_len - 1U - pad_len;
+        // unpadded_len = padded_len - 1U - pad_len;
         $unpadded_len = $padded_len - 1 - $pad_len;
         if ($valid !== 1) {
             throw new SodiumException('invalid padding');
         }
+
         return ParagonIE_Sodium_Core_Util::substr($padded, 0, $unpadded_len);
     }
 
@@ -4018,6 +4353,7 @@ class ParagonIE_Sodium_Compat
         if (extension_loaded('libsodium')) {
             return true;
         }
+
         return PHP_INT_SIZE === 8;
     }
 
@@ -4025,20 +4361,21 @@ class ParagonIE_Sodium_Compat
      * Generate a string of bytes from the kernel's CSPRNG.
      * Proudly uses /dev/urandom (if getrandom(2) is not available).
      *
-     * @param int $numBytes
+     * @param  int  $numBytes
      * @return string
+     *
      * @throws Exception
      * @throws TypeError
      */
     public static function randombytes_buf($numBytes)
     {
         /* Type checks: */
-        if (!is_int($numBytes)) {
+        if (! is_int($numBytes)) {
             if (is_numeric($numBytes)) {
                 $numBytes = (int) $numBytes;
             } else {
                 throw new TypeError(
-                    'Argument 1 must be an integer, ' . gettype($numBytes) . ' given.'
+                    'Argument 1 must be an integer, '.gettype($numBytes).' given.'
                 );
             }
         }
@@ -4047,16 +4384,18 @@ class ParagonIE_Sodium_Compat
             return (string) call_user_func('\\Sodium\\randombytes_buf', $numBytes);
         }
         if ($numBytes < 0) {
-            throw new SodiumException("Number of bytes must be a positive integer");
+            throw new SodiumException('Number of bytes must be a positive integer');
         }
+
         return random_bytes($numBytes);
     }
 
     /**
      * Generate an integer between 0 and $range (non-inclusive).
      *
-     * @param int $range
+     * @param  int  $range
      * @return int
+     *
      * @throws Exception
      * @throws Error
      * @throws TypeError
@@ -4064,18 +4403,19 @@ class ParagonIE_Sodium_Compat
     public static function randombytes_uniform($range)
     {
         /* Type checks: */
-        if (!is_int($range)) {
+        if (! is_int($range)) {
             if (is_numeric($range)) {
                 $range = (int) $range;
             } else {
                 throw new TypeError(
-                    'Argument 1 must be an integer, ' . gettype($range) . ' given.'
+                    'Argument 1 must be an integer, '.gettype($range).' given.'
                 );
             }
         }
         if (self::use_fallback('randombytes_uniform')) {
             return (int) call_user_func('\\Sodium\\randombytes_uniform', $range);
         }
+
         return random_int(0, $range - 1);
     }
 
@@ -4083,6 +4423,7 @@ class ParagonIE_Sodium_Compat
      * Generate a random 16-bit integer.
      *
      * @return int
+     *
      * @throws Exception
      * @throws Error
      * @throws TypeError
@@ -4092,13 +4433,15 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('randombytes_random16')) {
             return (int) call_user_func('\\Sodium\\randombytes_random16');
         }
+
         return random_int(0, 65535);
     }
 
     /**
-     * @param string $p
-     * @param bool $dontFallback
+     * @param  string  $p
+     * @param  bool  $dontFallback
      * @return bool
+     *
      * @throws SodiumException
      */
     public static function ristretto255_is_valid_point(
@@ -4106,11 +4449,12 @@ class ParagonIE_Sodium_Compat
         $p,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_is_valid_point($p);
         }
         try {
             $r = ParagonIE_Sodium_Core_Ristretto255::ristretto255_frombytes($p);
+
             return $r['res'] === 0 &&
                 ParagonIE_Sodium_Core_Ristretto255::ristretto255_point_is_canonical($p) === 1;
         } catch (SodiumException $ex) {
@@ -4122,10 +4466,11 @@ class ParagonIE_Sodium_Compat
     }
 
     /**
-     * @param string $p
-     * @param string $q
-     * @param bool $dontFallback
+     * @param  string  $p
+     * @param  string  $q
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_add(
@@ -4135,17 +4480,19 @@ class ParagonIE_Sodium_Compat
         $q,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_add($p, $q);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_add($p, $q);
     }
 
     /**
-     * @param string $p
-     * @param string $q
-     * @param bool $dontFallback
+     * @param  string  $p
+     * @param  string  $q
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_sub(
@@ -4155,15 +4502,16 @@ class ParagonIE_Sodium_Compat
         $q,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_sub($p, $q);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_sub($p, $q);
     }
 
     /**
-     * @param string $r
-     * @param bool $dontFallback
+     * @param  string  $r
+     * @param  bool  $dontFallback
      * @return string
      *
      * @throws SodiumException
@@ -4173,44 +4521,48 @@ class ParagonIE_Sodium_Compat
         $r,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_from_hash($r);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_from_hash($r);
     }
 
     /**
-     * @param bool $dontFallback
+     * @param  bool  $dontFallback
      * @return string
      *
      * @throws SodiumException
      */
     public static function ristretto255_random($dontFallback = false)
     {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_random();
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_random();
     }
 
     /**
-     * @param bool $dontFallback
+     * @param  bool  $dontFallback
      * @return string
      *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_random($dontFallback = false)
     {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_random();
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_random();
     }
 
     /**
-     * @param string $s
-     * @param bool $dontFallback
+     * @param  string  $s
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_invert(
@@ -4218,15 +4570,18 @@ class ParagonIE_Sodium_Compat
         $s,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_invert($s);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_invert($s);
     }
+
     /**
-     * @param string $s
-     * @param bool $dontFallback
+     * @param  string  $s
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_negate(
@@ -4234,16 +4589,18 @@ class ParagonIE_Sodium_Compat
         $s,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_negate($s);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_negate($s);
     }
 
     /**
-     * @param string $s
-     * @param bool $dontFallback
+     * @param  string  $s
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_complement(
@@ -4251,17 +4608,19 @@ class ParagonIE_Sodium_Compat
         $s,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_complement($s);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_complement($s);
     }
 
     /**
-     * @param string $x
-     * @param string $y
-     * @param bool $dontFallback
+     * @param  string  $x
+     * @param  string  $y
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_add(
@@ -4271,17 +4630,19 @@ class ParagonIE_Sodium_Compat
         $y,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_add($x, $y);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_add($x, $y);
     }
 
     /**
-     * @param string $x
-     * @param string $y
-     * @param bool $dontFallback
+     * @param  string  $x
+     * @param  string  $y
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_sub(
@@ -4291,17 +4652,19 @@ class ParagonIE_Sodium_Compat
         $y,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_sub($x, $y);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_sub($x, $y);
     }
 
     /**
-     * @param string $x
-     * @param string $y
-     * @param bool $dontFallback
+     * @param  string  $x
+     * @param  string  $y
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_mul(
@@ -4311,17 +4674,19 @@ class ParagonIE_Sodium_Compat
         $y,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_mul($x, $y);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::ristretto255_scalar_mul($x, $y);
     }
 
     /**
-     * @param string $n
-     * @param string $p
-     * @param bool $dontFallback
+     * @param  string  $n
+     * @param  string  $p
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function scalarmult_ristretto255(
@@ -4331,17 +4696,19 @@ class ParagonIE_Sodium_Compat
         $p,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_scalarmult_ristretto255($n, $p);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::scalarmult_ristretto255($n, $p);
     }
 
     /**
-     * @param string $n
-     * @param string $p
-     * @param bool $dontFallback
+     * @param  string  $n
+     * @param  string  $p
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function scalarmult_ristretto255_base(
@@ -4349,16 +4716,18 @@ class ParagonIE_Sodium_Compat
         $n,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_scalarmult_ristretto255_base($n);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::scalarmult_ristretto255_base($n);
     }
 
     /**
-     * @param string $s
-     * @param bool $dontFallback
+     * @param  string  $s
+     * @param  bool  $dontFallback
      * @return string
+     *
      * @throws SodiumException
      */
     public static function ristretto255_scalar_reduce(
@@ -4366,9 +4735,10 @@ class ParagonIE_Sodium_Compat
         $s,
         $dontFallback = false
     ) {
-        if (self::useNewSodiumAPI() && !$dontFallback) {
+        if (self::useNewSodiumAPI() && ! $dontFallback) {
             return sodium_crypto_core_ristretto255_scalar_reduce($s);
         }
+
         return ParagonIE_Sodium_Core_Ristretto255::sc_reduce($s);
     }
 
@@ -4380,9 +4750,10 @@ class ParagonIE_Sodium_Compat
      *        If this happens, install sodium from PECL to get acceptable
      *        performance.
      *
-     * @param int $iterations Number of multiplications to attempt
-     * @param int $maxTimeout Milliseconds
-     * @return bool           TRUE if we're fast enough, FALSE is not
+     * @param  int  $iterations  Number of multiplications to attempt
+     * @param  int  $maxTimeout  Milliseconds
+     * @return bool TRUE if we're fast enough, FALSE is not
+     *
      * @throws SodiumException
      */
     public static function runtime_speed_test($iterations, $maxTimeout)
@@ -4396,7 +4767,7 @@ class ParagonIE_Sodium_Compat
         $start = microtime(true);
         /** @var ParagonIE_Sodium_Core32_Int64 $a */
         $a = ParagonIE_Sodium_Core32_Int64::fromInt(random_int(3, 1 << 16));
-        for ($i = 0; $i < $iterations; ++$i) {
+        for ($i = 0; $i < $iterations; $i++) {
             /** @var ParagonIE_Sodium_Core32_Int64 $b */
             $b = ParagonIE_Sodium_Core32_Int64::fromInt(random_int(3, 1 << 16));
             $a->mulInt64($b);
@@ -4405,6 +4776,7 @@ class ParagonIE_Sodium_Compat
         $end = microtime(true);
         /** @var int $diff */
         $diff = (int) ceil(($end - $start) * 1000);
+
         return $diff < $maxTimeout;
     }
 
@@ -4414,9 +4786,10 @@ class ParagonIE_Sodium_Compat
      *
      * This mutates $val.
      *
-     * @param string $val
-     * @param string $addv
+     * @param  string  $val
+     * @param  string  $addv
      * @return void
+     *
      * @throws SodiumException
      */
     public static function sub(
@@ -4436,7 +4809,7 @@ class ParagonIE_Sodium_Compat
         $c = 0;
         for ($i = 0; $i < $val_len; $i++) {
             $c = ($A[$i] - $B[$i] - $c);
-            $A[$i] = ($c & 0xff);
+            $A[$i] = ($c & 0xFF);
             $c = ($c >> 8) & 1;
         }
         $val = ParagonIE_Sodium_Core_Util::intArrayToString($A);
@@ -4447,6 +4820,7 @@ class ParagonIE_Sodium_Compat
      * prefixed with 'polyfill-'.
      *
      * @return string
+     *
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress UndefinedFunction
      */
@@ -4458,6 +4832,7 @@ class ParagonIE_Sodium_Compat
         if (self::use_fallback('version_string')) {
             return (string) call_user_func('\\Sodium\\version_string');
         }
+
         return (string) self::VERSION_STRING;
     }
 
@@ -4469,8 +4844,7 @@ class ParagonIE_Sodium_Compat
      * If ext/libsodium is available, use it. Return TRUE.
      * Otherwise, we have to use the code provided herein. Return FALSE.
      *
-     * @param string $sodium_func_name
-     *
+     * @param  string  $sodium_func_name
      * @return bool
      */
     protected static function use_fallback($sodium_func_name = '')
@@ -4487,9 +4861,10 @@ class ParagonIE_Sodium_Compat
             // Don't fallback. Use the PHP implementation.
             return false;
         }
-        if (!empty($sodium_func_name)) {
-            return is_callable('\\Sodium\\' . $sodium_func_name);
+        if (! empty($sodium_func_name)) {
+            return is_callable('\\Sodium\\'.$sodium_func_name);
         }
+
         return true;
     }
 
@@ -4498,6 +4873,7 @@ class ParagonIE_Sodium_Compat
      * and/or ext/sodium (via PECL)
      *
      * @ref https://wiki.php.net/rfc/libsodium
+     *
      * @return bool
      */
     protected static function useNewSodiumAPI()
@@ -4510,6 +4886,7 @@ class ParagonIE_Sodium_Compat
             // Don't fallback. Use the PHP implementation.
             return false;
         }
+
         return (bool) $res;
     }
 }

@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -46,16 +47,12 @@ namespace SimplePie\Parse;
 
 /**
  * Date Parser
- *
- * @package SimplePie
- * @subpackage Parsing
  */
 class Date
 {
     /**
      * Input data
      *
-     * @access protected
      * @var string
      */
     public $date;
@@ -63,7 +60,6 @@ class Date
     /**
      * List of days, calendar day name => ordinal day number in the week
      *
-     * @access protected
      * @var array
      */
     public $day = [
@@ -168,7 +164,6 @@ class Date
     /**
      * List of months, calendar month name => calendar month number
      *
-     * @access protected
      * @var array
      */
     public $month = [
@@ -350,7 +345,6 @@ class Date
     /**
      * List of timezones, abbreviation => offset from UTC
      *
-     * @access protected
      * @var array
      */
     public $timezone = [
@@ -559,7 +553,6 @@ class Date
     /**
      * Cached PCRE for Date::$day
      *
-     * @access protected
      * @var string
      */
     public $day_pcre;
@@ -567,7 +560,6 @@ class Date
     /**
      * Cached PCRE for Date::$month
      *
-     * @access protected
      * @var string
      */
     public $month_pcre;
@@ -575,7 +567,6 @@ class Date
     /**
      * Array of user-added callback methods
      *
-     * @access private
      * @var array
      */
     public $built_in = [];
@@ -583,7 +574,6 @@ class Date
     /**
      * Array of user-added callback methods
      *
-     * @access private
      * @var array
      */
     public $user = [];
@@ -591,16 +581,14 @@ class Date
     /**
      * Create new Date object, and set self::day_pcre,
      * self::month_pcre, and self::built_in
-     *
-     * @access private
      */
     public function __construct()
     {
-        $this->day_pcre = '(' . implode('|', array_keys($this->day)) . ')';
-        $this->month_pcre = '(' . implode('|', array_keys($this->month)) . ')';
+        $this->day_pcre = '('.implode('|', array_keys($this->day)).')';
+        $this->month_pcre = '('.implode('|', array_keys($this->month)).')';
 
         static $cache;
-        if (!isset($cache[get_class($this)])) {
+        if (! isset($cache[get_class($this)])) {
             $all_methods = get_class_methods($this);
 
             foreach ($all_methods as $method) {
@@ -617,15 +605,14 @@ class Date
 
     /**
      * Get the object
-     *
-     * @access public
      */
     public static function get()
     {
         static $object;
-        if (!$object) {
-            $object = new Date();
+        if (! $object) {
+            $object = new Date;
         }
+
         return $object;
     }
 
@@ -633,8 +620,8 @@ class Date
      * Parse a date
      *
      * @final
-     * @access public
-     * @param string $date Date to parse
+     *
+     * @param  string  $date  Date to parse
      * @return int Timestamp corresponding to date string, or false on failure
      */
     public function parse($date)
@@ -658,8 +645,8 @@ class Date
      * Add a callback method to parse a date
      *
      * @final
-     * @access public
-     * @param callable $callback
+     *
+     * @param  callable  $callback
      */
     public function add_callback($callback)
     {
@@ -675,7 +662,6 @@ class Date
      * well as allowing any of upper or lower case "T", horizontal tabs, or
      * spaces to be used as the time separator (including more than one))
      *
-     * @access protected
      * @return int Timestamp
      */
     public function date_w3cdtf($date)
@@ -748,8 +734,7 @@ PCRE;
     /**
      * Remove RFC822 comments
      *
-     * @access protected
-     * @param string $data Data to strip comments from
+     * @param  string  $data  Data to strip comments from
      * @return string Comment stripped string
      */
     public function remove_rfc2822_comments($string)
@@ -770,6 +755,7 @@ PCRE;
                     $position += strcspn($string, '()', $position);
                     if ($string[$position - 1] === '\\') {
                         $position++;
+
                         continue;
                     } elseif (isset($string[$position])) {
                         switch ($string[$position]) {
@@ -798,16 +784,15 @@ PCRE;
     /**
      * Parse RFC2822's date format
      *
-     * @access protected
      * @return int Timestamp
      */
     public function date_rfc2822($date)
     {
         static $pcre;
-        if (!$pcre) {
+        if (! $pcre) {
             $wsp = '[\x09\x20]';
-            $fws = '(?:' . $wsp . '+|' . $wsp . '*(?:\x0D\x0A' . $wsp . '+)+)';
-            $optional_fws = $fws . '?';
+            $fws = '(?:'.$wsp.'+|'.$wsp.'*(?:\x0D\x0A'.$wsp.'+)+)';
+            $optional_fws = $fws.'?';
             $day_name = $this->day_pcre;
             $month = $this->month_pcre;
             $day = '([0-9]{1,2})';
@@ -815,8 +800,8 @@ PCRE;
             $year = '([0-9]{2,4})';
             $num_zone = '([+\-])([0-9]{2})([0-9]{2})';
             $character_zone = '([A-Z]{1,5})';
-            $zone = '(?:' . $num_zone . '|' . $character_zone . ')';
-            $pcre = '/(?:' . $optional_fws . $day_name . $optional_fws . ',)?' . $optional_fws . $day . $fws . $month . $fws . $year . $fws . $hour . $optional_fws . ':' . $optional_fws . $minute . '(?:' . $optional_fws . ':' . $optional_fws . $second . ')?' . $fws . $zone . '/i';
+            $zone = '(?:'.$num_zone.'|'.$character_zone.')';
+            $pcre = '/(?:'.$optional_fws.$day_name.$optional_fws.',)?'.$optional_fws.$day.$fws.$month.$fws.$year.$fws.$hour.$optional_fws.':'.$optional_fws.$minute.'(?:'.$optional_fws.':'.$optional_fws.$second.')?'.$fws.$zone.'/i';
         }
         if (preg_match($pcre, $this->remove_rfc2822_comments($date), $match)) {
             /*
@@ -877,20 +862,19 @@ PCRE;
     /**
      * Parse RFC850's date format
      *
-     * @access protected
      * @return int Timestamp
      */
     public function date_rfc850($date)
     {
         static $pcre;
-        if (!$pcre) {
+        if (! $pcre) {
             $space = '[\x09\x20]+';
             $day_name = $this->day_pcre;
             $month = $this->month_pcre;
             $day = '([0-9]{1,2})';
             $year = $hour = $minute = $second = '([0-9]{2})';
             $zone = '([A-Z]{1,5})';
-            $pcre = '/^' . $day_name . ',' . $space . $day . '-' . $month . '-' . $year . $space . $hour . ':' . $minute . ':' . $second . $space . $zone . '$/i';
+            $pcre = '/^'.$day_name.','.$space.$day.'-'.$month.'-'.$year.$space.$hour.':'.$minute.':'.$second.$space.$zone.'$/i';
         }
         if (preg_match($pcre, $date, $match)) {
             /*
@@ -933,13 +917,12 @@ PCRE;
     /**
      * Parse C99's asctime()'s date format
      *
-     * @access protected
      * @return int Timestamp
      */
     public function date_asctime($date)
     {
         static $pcre;
-        if (!$pcre) {
+        if (! $pcre) {
             $space = '[\x09\x20]+';
             $wday_name = $this->day_pcre;
             $mon_name = $this->month_pcre;
@@ -947,7 +930,7 @@ PCRE;
             $hour = $sec = $min = '([0-9]{2})';
             $year = '([0-9]{4})';
             $terminator = '\x0A?\x00?';
-            $pcre = '/^' . $wday_name . $space . $mon_name . $space . $day . $space . $hour . ':' . $min . ':' . $sec . $space . $year . $terminator . '$/i';
+            $pcre = '/^'.$wday_name.$space.$mon_name.$space.$day.$space.$hour.':'.$min.':'.$sec.$space.$year.$terminator.'$/i';
         }
         if (preg_match($pcre, $date, $match)) {
             /*
@@ -962,6 +945,7 @@ PCRE;
             */
 
             $month = $this->month[strtolower($match[2])];
+
             return gmmktime((int) $match[4], (int) $match[5], (int) $match[6], $month, (int) $match[3], (int) $match[7]);
         }
 
@@ -971,7 +955,6 @@ PCRE;
     /**
      * Parse dates using strtotime()
      *
-     * @access protected
      * @return int Timestamp
      */
     public function date_strtotime($date)

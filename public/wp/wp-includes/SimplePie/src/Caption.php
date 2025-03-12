@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -50,9 +51,6 @@ namespace SimplePie;
  * Used by {@see \SimplePie\Enclosure::get_caption()} and {@see \SimplePie\Enclosure::get_captions()}
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_caption_class()}
- *
- * @package SimplePie
- * @subpackage API
  */
 class Caption
 {
@@ -60,6 +58,7 @@ class Caption
      * Content type
      *
      * @var string
+     *
      * @see get_type()
      */
     public $type;
@@ -68,6 +67,7 @@ class Caption
      * Language
      *
      * @var string
+     *
      * @see get_language()
      */
     public $lang;
@@ -76,6 +76,7 @@ class Caption
      * Start time
      *
      * @var string
+     *
      * @see get_starttime()
      */
     public $startTime;
@@ -84,6 +85,7 @@ class Caption
      * End time
      *
      * @var string
+     *
      * @see get_endtime()
      */
     public $endTime;
@@ -92,6 +94,7 @@ class Caption
      * Caption text
      *
      * @var string
+     *
      * @see get_text()
      */
     public $text;
@@ -140,6 +143,7 @@ class Caption
      * Get the language
      *
      * @link http://tools.ietf.org/html/rfc3066
+     *
      * @return string|null Language code as per RFC 3066
      */
     public function get_language()

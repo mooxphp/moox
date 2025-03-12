@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -51,27 +52,34 @@ namespace SimplePie;
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_file_class()}
  *
- * @package SimplePie
- * @subpackage HTTP
  * @todo Move to properly supporting RFC2616 (HTTP/1.1)
  */
 class File
 {
     public $url;
+
     public $useragent;
+
     public $success = true;
+
     public $headers = [];
+
     public $body;
+
     public $status_code = 0;
+
     public $redirects = 0;
+
     public $error;
+
     public $method = \SimplePie\SimplePie::FILE_SOURCE_NONE;
+
     public $permanent_url;
 
     public function __construct($url, $timeout = 10, $redirects = 5, $headers = null, $useragent = null, $force_fsockopen = false, $curl_options = [])
     {
         if (class_exists('idna_convert')) {
-            $idn = new \idna_convert();
+            $idn = new \idna_convert;
             $parsed = \SimplePie\Misc::parse_url($url);
             $url = \SimplePie\Misc::compress_parse_url($parsed['scheme'], $idn->encode($parsed['authority']), $parsed['path'], $parsed['query'], null);
         }
@@ -83,10 +91,10 @@ class File
                 $useragent = ini_get('user_agent');
                 $this->useragent = $useragent;
             }
-            if (!is_array($headers)) {
+            if (! is_array($headers)) {
                 $headers = [];
             }
-            if (!$force_fsockopen && function_exists('curl_exec')) {
+            if (! $force_fsockopen && function_exists('curl_exec')) {
                 $this->method = \SimplePie\SimplePie::FILE_SOURCE_REMOTE | \SimplePie\SimplePie::FILE_SOURCE_CURL;
                 $fp = curl_init();
                 $headers2 = [];
@@ -116,7 +124,7 @@ class File
                 }
                 $this->status_code = curl_getinfo($fp, CURLINFO_HTTP_CODE);
                 if (curl_errno($fp)) {
-                    $this->error = 'cURL error ' . curl_errno($fp) . ': ' . curl_error($fp);
+                    $this->error = 'cURL error '.curl_errno($fp).': '.curl_error($fp);
                     $this->success = false;
                 } else {
                     // Use the updated url provided by curl_getinfo after any redirects.
@@ -136,6 +144,7 @@ class File
                             $previousStatusCode = $this->status_code;
                             $this->__construct($location, $timeout, $redirects, $headers, $useragent, $force_fsockopen, $curl_options);
                             $this->permanent_url = ($previousStatusCode == 301) ? $location : $url;
+
                             return;
                         }
                     }
@@ -148,12 +157,12 @@ class File
                     $socket_host = "ssl://$url_parts[host]";
                     $url_parts['port'] = 443;
                 }
-                if (!isset($url_parts['port'])) {
+                if (! isset($url_parts['port'])) {
                     $url_parts['port'] = 80;
                 }
                 $fp = @fsockopen($socket_host, $url_parts['port'], $errno, $errstr, $timeout);
-                if (!$fp) {
-                    $this->error = 'fsockopen error: ' . $errstr;
+                if (! $fp) {
+                    $this->error = 'fsockopen error: '.$errstr;
                     $this->success = false;
                 } else {
                     stream_set_timeout($fp, $timeout);
@@ -174,7 +183,7 @@ class File
                     }
 
                     if (isset($url_parts['user']) && isset($url_parts['pass'])) {
-                        $out .= "Authorization: Basic " . base64_encode("$url_parts[user]:$url_parts[pass]") . "\r\n";
+                        $out .= 'Authorization: Basic '.base64_encode("$url_parts[user]:$url_parts[pass]")."\r\n";
                     }
                     foreach ($headers as $key => $value) {
                         $out .= "$key: $value\r\n";
@@ -185,11 +194,11 @@ class File
                     $info = stream_get_meta_data($fp);
 
                     $this->headers = '';
-                    while (!$info['eof'] && !$info['timed_out']) {
+                    while (! $info['eof'] && ! $info['timed_out']) {
                         $this->headers .= fread($fp, 1160);
                         $info = stream_get_meta_data($fp);
                     }
-                    if (!$info['timed_out']) {
+                    if (! $info['timed_out']) {
                         $parser = new \SimplePie\HTTP\Parser($this->headers);
                         if ($parser->parse()) {
                             $this->headers = $parser->headers;
@@ -201,6 +210,7 @@ class File
                                 $previousStatusCode = $this->status_code;
                                 $this->__construct($location, $timeout, $redirects, $headers, $useragent, $force_fsockopen, $curl_options);
                                 $this->permanent_url = ($previousStatusCode == 301) ? $location : $url;
+
                                 return;
                             }
                             if (isset($this->headers['content-encoding'])) {
@@ -209,7 +219,7 @@ class File
                                     case 'gzip':
                                     case 'x-gzip':
                                         $decoder = new \SimplePie\Gzdecode($this->body);
-                                        if (!$decoder->parse()) {
+                                        if (! $decoder->parse()) {
                                             $this->error = 'Unable to decode HTTP "gzip" stream';
                                             $this->success = false;
                                         } else {
@@ -245,7 +255,7 @@ class File
             }
         } else {
             $this->method = \SimplePie\SimplePie::FILE_SOURCE_LOCAL | \SimplePie\SimplePie::FILE_SOURCE_FILE_GET_CONTENTS;
-            if (empty($url) || !($this->body = trim(file_get_contents($url)))) {
+            if (empty($url) || ! ($this->body = trim(file_get_contents($url)))) {
                 $this->error = 'file_get_contents could not read the file';
                 $this->success = false;
             }

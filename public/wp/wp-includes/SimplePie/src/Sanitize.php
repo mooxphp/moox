@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -57,7 +58,6 @@ use SimplePie\Cache\NameFilter;
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_sanitize_class()}
  *
- * @package SimplePie
  * @todo Move to using an actual HTML parser (this will allow tags to be properly stripped, and to switch between HTML and XHTML), this will also make it easier to shorten a string while preserving HTML tags
  */
 class Sanitize implements RegistryAware
@@ -67,26 +67,42 @@ class Sanitize implements RegistryAware
 
     // Options
     public $remove_div = true;
+
     public $image_handler = '';
+
     public $strip_htmltags = ['base', 'blink', 'body', 'doctype', 'embed', 'font', 'form', 'frame', 'frameset', 'html', 'iframe', 'input', 'marquee', 'meta', 'noscript', 'object', 'param', 'script', 'style'];
+
     public $encode_instead_of_strip = false;
+
     public $strip_attributes = ['bgsound', 'expr', 'id', 'style', 'onclick', 'onerror', 'onfinish', 'onmouseover', 'onmouseout', 'onfocus', 'onblur', 'lowsrc', 'dynsrc'];
+
     public $rename_attributes = [];
+
     public $add_attributes = ['audio' => ['preload' => 'none'], 'iframe' => ['sandbox' => 'allow-scripts allow-same-origin'], 'video' => ['preload' => 'none']];
+
     public $strip_comments = false;
+
     public $output_encoding = 'UTF-8';
+
     public $enable_cache = true;
+
     public $cache_location = './cache';
+
     public $cache_name_function = 'md5';
 
     /**
      * @var NameFilter
      */
     private $cache_namefilter;
+
     public $timeout = 10;
+
     public $useragent = '';
+
     public $force_fsockopen = false;
+
     public $replace_url_attributes = null;
+
     public $registry;
 
     /**
@@ -101,6 +117,7 @@ class Sanitize implements RegistryAware
 
     /**
      * List of domains for which to force HTTPS.
+     *
      * @see \SimplePie\Sanitize::set_https_domains()
      * Array is a tree split at DNS levels. Example:
      * array('biz' => true, 'com' => array('example' => true), 'net' => array('example' => array('www' => true)))
@@ -142,7 +159,7 @@ class Sanitize implements RegistryAware
             $this->cache_location = (string) $cache_location;
         }
 
-        if (!is_string($cache_name_function) && !is_object($cache_name_function) && !$cache_name_function instanceof NameFilter) {
+        if (! is_string($cache_name_function) && ! is_object($cache_name_function) && ! $cache_name_function instanceof NameFilter) {
             throw new InvalidArgumentException(sprintf(
                 '%s(): Argument #3 ($cache_name_function) must be of type %s',
                 __METHOD__,
@@ -256,7 +273,8 @@ class Sanitize implements RegistryAware
      * |ins|@cite, |q|@cite, |source|@src, |video|@src
      *
      * @since 1.0
-     * @param array|null $element_attribute Element/attribute key/value pairs, null for default
+     *
+     * @param  array|null  $element_attribute  Element/attribute key/value pairs, null for default
      */
     public function set_url_replacements($element_attribute = null)
     {
@@ -270,7 +288,7 @@ class Sanitize implements RegistryAware
                 'form' => 'action',
                 'img' => [
                     'longdesc',
-                    'src'
+                    'src',
                 ],
                 'input' => 'src',
                 'ins' => 'cite',
@@ -278,8 +296,8 @@ class Sanitize implements RegistryAware
                 'source' => 'src',
                 'video' => [
                     'poster',
-                    'src'
-                ]
+                    'src',
+                ],
             ];
         }
         $this->replace_url_attributes = (array) $element_attribute;
@@ -287,6 +305,7 @@ class Sanitize implements RegistryAware
 
     /**
      * Set the list of domains for which to force HTTPS.
+     *
      * @see \SimplePie\Misc::https_url()
      * Example array('biz', 'example.com', 'example.org', 'www.example.net');
      */
@@ -297,11 +316,11 @@ class Sanitize implements RegistryAware
             $domain = trim($domain, ". \t\n\r\0\x0B");
             $segments = array_reverse(explode('.', $domain));
             $node = &$this->https_domains;
-            foreach ($segments as $segment) {//Build a tree
+            foreach ($segments as $segment) {// Build a tree
                 if ($node === true) {
                     break;
                 }
-                if (!isset($node[$segment])) {
+                if (! isset($node[$segment])) {
                     $node[$segment] = [];
                 }
                 $node = &$node[$segment];
@@ -318,13 +337,14 @@ class Sanitize implements RegistryAware
         $domain = trim($domain, '. ');
         $segments = array_reverse(explode('.', $domain));
         $node = &$this->https_domains;
-        foreach ($segments as $segment) {//Explore the tree
+        foreach ($segments as $segment) {// Explore the tree
             if (isset($node[$segment])) {
                 $node = &$node[$segment];
             } else {
                 break;
             }
         }
+
         return $node === true;
     }
 
@@ -335,7 +355,7 @@ class Sanitize implements RegistryAware
     {
         return (strtolower(substr($url, 0, 7)) === 'http://') &&
             $this->is_https_domain(parse_url($url, PHP_URL_HOST)) ?
-            substr_replace($url, 's', 4, 0) : //Add the 's' to HTTPS
+            substr_replace($url, 's', 4, 0) : // Add the 's' to HTTPS
             $url;
     }
 
@@ -344,7 +364,7 @@ class Sanitize implements RegistryAware
         $data = trim($data);
         if ($data !== '' || $type & \SimplePie\SimplePie::CONSTRUCT_IRI) {
             if ($type & \SimplePie\SimplePie::CONSTRUCT_MAYBE_HTML) {
-                if (preg_match('/(&(#(x[0-9a-fA-F]+|[0-9]+)|[a-zA-Z0-9]+)|<\/[A-Za-z][^\x09\x0A\x0B\x0C\x0D\x20\x2F\x3E]*' . \SimplePie\SimplePie::PCRE_HTML_ATTRIBUTE . '>)/', $data)) {
+                if (preg_match('/(&(#(x[0-9a-fA-F]+|[0-9]+)|[a-zA-Z0-9]+)|<\/[A-Za-z][^\x09\x0A\x0B\x0C\x0D\x20\x2F\x3E]*'.\SimplePie\SimplePie::PCRE_HTML_ATTRIBUTE.'>)/', $data)) {
                     $type |= \SimplePie\SimplePie::CONSTRUCT_HTML;
                 } else {
                     $type |= \SimplePie\SimplePie::CONSTRUCT_TEXT;
@@ -356,10 +376,10 @@ class Sanitize implements RegistryAware
             }
 
             if ($type & (\SimplePie\SimplePie::CONSTRUCT_HTML | \SimplePie\SimplePie::CONSTRUCT_XHTML)) {
-                if (!class_exists('DOMDocument')) {
+                if (! class_exists('DOMDocument')) {
                     throw new \SimplePie\Exception('DOMDocument not found, unable to use sanitizer');
                 }
-                $document = new \DOMDocument();
+                $document = new \DOMDocument;
                 $document->encoding = 'UTF-8';
 
                 $data = $this->preprocess($data, $type);
@@ -422,14 +442,14 @@ class Sanitize implements RegistryAware
                             $cache = $this->get_cache($image_url);
 
                             if ($cache->get_data($image_url, false)) {
-                                $img->setAttribute('src', $this->image_handler . $image_url);
+                                $img->setAttribute('src', $this->image_handler.$image_url);
                             } else {
                                 $file = $this->registry->create(File::class, [$img->getAttribute('src'), $this->timeout, 5, ['X-FORWARDED-FOR' => $_SERVER['REMOTE_ADDR']], $this->useragent, $this->force_fsockopen]);
                                 $headers = $file->headers;
 
                                 if ($file->success && ($file->method & \SimplePie\SimplePie::FILE_SOURCE_REMOTE === 0 || ($file->status_code === 200 || $file->status_code > 206 && $file->status_code < 300))) {
                                     if ($cache->set_data($image_url, ['headers' => $file->headers, 'body' => $file->body], $this->cache_duration)) {
-                                        $img->setAttribute('src', $this->image_handler . $image_url);
+                                        $img->setAttribute('src', $this->image_handler.$image_url);
                                     } else {
                                         trigger_error("$this->cache_location is not writable. Make sure you've set the correct relative or absolute path, and that the location is server-writable.", E_USER_WARNING);
                                     }
@@ -445,10 +465,10 @@ class Sanitize implements RegistryAware
                 $data = trim($document->saveHTML($div));
 
                 if ($this->remove_div) {
-                    $data = preg_replace('/^<div' . \SimplePie\SimplePie::PCRE_XML_ATTRIBUTE . '>/', '', $data);
+                    $data = preg_replace('/^<div'.\SimplePie\SimplePie::PCRE_XML_ATTRIBUTE.'>/', '', $data);
                     $data = preg_replace('/<\/div>$/', '', $data);
                 } else {
-                    $data = preg_replace('/^<div' . \SimplePie\SimplePie::PCRE_XML_ATTRIBUTE . '>/', '<div>', $data);
+                    $data = preg_replace('/^<div'.\SimplePie\SimplePie::PCRE_XML_ATTRIBUTE.'>/', '<div>', $data);
                 }
 
                 $data = str_replace('</source>', '', $data);
@@ -469,6 +489,7 @@ class Sanitize implements RegistryAware
                 $data = $this->registry->call(Misc::class, 'change_encoding', [$data, 'UTF-8', $this->output_encoding]);
             }
         }
+
         return $data;
     }
 
@@ -479,7 +500,7 @@ class Sanitize implements RegistryAware
         if ($type & ~\SimplePie\SimplePie::CONSTRUCT_XHTML) {
             // Atom XHTML constructs are wrapped with a div by default
             // Note: No protection if $html contains a stray </div>!
-            $html = '<div>' . $html . '</div>';
+            $html = '<div>'.$html.'</div>';
             $ret .= '<!DOCTYPE html>';
             $content_type = 'text/html';
         } else {
@@ -488,18 +509,19 @@ class Sanitize implements RegistryAware
         }
 
         $ret .= '<html><head>';
-        $ret .= '<meta http-equiv="Content-Type" content="' . $content_type . '; charset=utf-8" />';
-        $ret .= '</head><body>' . $html . '</body></html>';
+        $ret .= '<meta http-equiv="Content-Type" content="'.$content_type.'; charset=utf-8" />';
+        $ret .= '</head><body>'.$html.'</body></html>';
+
         return $ret;
     }
 
     public function replace_urls($document, $tag, $attributes)
     {
-        if (!is_array($attributes)) {
+        if (! is_array($attributes)) {
             $attributes = [$attributes];
         }
 
-        if (!is_array($this->strip_htmltags) || !in_array($tag, $this->strip_htmltags)) {
+        if (! is_array($this->strip_htmltags) || ! in_array($tag, $this->strip_htmltags)) {
             $elements = $document->getElementsByTagName($tag);
             foreach ($elements as $element) {
                 foreach ($attributes as $attribute) {
@@ -518,14 +540,15 @@ class Sanitize implements RegistryAware
     public function do_strip_htmltags($match)
     {
         if ($this->encode_instead_of_strip) {
-            if (isset($match[4]) && !in_array(strtolower($match[1]), ['script', 'style'])) {
+            if (isset($match[4]) && ! in_array(strtolower($match[1]), ['script', 'style'])) {
                 $match[1] = htmlspecialchars($match[1], ENT_COMPAT, 'UTF-8');
                 $match[2] = htmlspecialchars($match[2], ENT_COMPAT, 'UTF-8');
+
                 return "&lt;$match[1]$match[2]&gt;$match[3]&lt;/$match[1]&gt;";
             } else {
                 return htmlspecialchars($match[0], ENT_COMPAT, 'UTF-8');
             }
-        } elseif (isset($match[4]) && !in_array(strtolower($match[1]), ['script', 'style'])) {
+        } elseif (isset($match[4]) && ! in_array(strtolower($match[1]), ['script', 'style'])) {
             return $match[4];
         } else {
             return '';
@@ -534,14 +557,14 @@ class Sanitize implements RegistryAware
 
     protected function strip_tag($tag, $document, $xpath, $type)
     {
-        $elements = $xpath->query('body//' . $tag);
+        $elements = $xpath->query('body//'.$tag);
         if ($this->encode_instead_of_strip) {
             foreach ($elements as $element) {
                 $fragment = $document->createDocumentFragment();
 
                 // For elements which aren't script or style, include the tag itself
-                if (!in_array($tag, ['script', 'style'])) {
-                    $text = '<' . $tag;
+                if (! in_array($tag, ['script', 'style'])) {
+                    $text = '<'.$tag;
                     if ($element->hasAttributes()) {
                         $attrs = [];
                         foreach ($element->attributes as $name => $attr) {
@@ -554,13 +577,14 @@ class Sanitize implements RegistryAware
                             // For HTML, empty is fine
                             elseif (empty($value) && ($type & \SimplePie\SimplePie::CONSTRUCT_HTML)) {
                                 $attrs[] = $name;
+
                                 continue;
                             }
 
                             // Standard attribute text
-                            $attrs[] = $name . '="' . $attr->value . '"';
+                            $attrs[] = $name.'="'.$attr->value.'"';
                         }
-                        $text .= ' ' . implode(' ', $attrs);
+                        $text .= ' '.implode(' ', $attrs);
                     }
                     $text .= '>';
                     $fragment->appendChild(new \DOMText($text));
@@ -572,8 +596,8 @@ class Sanitize implements RegistryAware
                     $fragment->appendChild($child);
                 }
 
-                if (!in_array($tag, ['script', 'style'])) {
-                    $fragment->appendChild(new \DOMText('</' . $tag . '>'));
+                if (! in_array($tag, ['script', 'style'])) {
+                    $fragment->appendChild(new \DOMText('</'.$tag.'>'));
                 }
 
                 $element->parentNode->replaceChild($fragment, $element);
@@ -602,7 +626,7 @@ class Sanitize implements RegistryAware
 
     protected function strip_attr($attrib, $xpath)
     {
-        $elements = $xpath->query('//*[@' . $attrib . ']');
+        $elements = $xpath->query('//*[@'.$attrib.']');
 
         foreach ($elements as $element) {
             $element->removeAttribute($attrib);
@@ -611,10 +635,10 @@ class Sanitize implements RegistryAware
 
     protected function rename_attr($attrib, $xpath)
     {
-        $elements = $xpath->query('//*[@' . $attrib . ']');
+        $elements = $xpath->query('//*[@'.$attrib.']');
 
         foreach ($elements as $element) {
-            $element->setAttribute('data-sanitized-' . $attrib, $element->getAttribute($attrib));
+            $element->setAttribute('data-sanitized-'.$attrib, $element->getAttribute($attrib));
             $element->removeAttribute($attrib);
         }
     }
@@ -632,8 +656,7 @@ class Sanitize implements RegistryAware
     /**
      * Get a DataCache
      *
-     * @param string $image_url Only needed for BC, can be removed in SimplePie 2.0.0
-     *
+     * @param  string  $image_url  Only needed for BC, can be removed in SimplePie 2.0.0
      * @return DataCache
      */
     private function get_cache($image_url = '')
@@ -643,7 +666,7 @@ class Sanitize implements RegistryAware
             $cache = $this->registry->call(Cache::class, 'get_handler', [
                 $this->cache_location,
                 $image_url,
-                Base::TYPE_IMAGE
+                Base::TYPE_IMAGE,
             ]);
 
             return new BaseDataCache($cache);

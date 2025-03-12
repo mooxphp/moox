@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -50,7 +51,5 @@ class_exists('SimplePie\Enclosure');
 
 if (\false) {
     /** @deprecated since SimplePie 1.7.0, use "SimplePie\Enclosure" instead */
-    class SimplePie_Enclosure extends Enclosure
-    {
-    }
+    class SimplePie_Enclosure extends Enclosure {}
 }

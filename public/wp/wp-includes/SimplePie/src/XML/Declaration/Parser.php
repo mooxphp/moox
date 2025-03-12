@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -46,16 +47,12 @@ namespace SimplePie\XML\Declaration;
 
 /**
  * Parses the XML Declaration
- *
- * @package SimplePie
- * @subpackage Parsing
  */
 class Parser
 {
     /**
      * XML Version
      *
-     * @access public
      * @var string
      */
     public $version = '1.0';
@@ -63,7 +60,6 @@ class Parser
     /**
      * Encoding
      *
-     * @access public
      * @var string
      */
     public $encoding = 'UTF-8';
@@ -71,7 +67,6 @@ class Parser
     /**
      * Standalone
      *
-     * @access public
      * @var bool
      */
     public $standalone = false;
@@ -103,7 +98,6 @@ class Parser
     /**
      * Current state of the state machine
      *
-     * @access private
      * @var self::STATE_*
      */
     public $state = self::STATE_BEFORE_VERSION_NAME;
@@ -111,7 +105,6 @@ class Parser
     /**
      * Input data
      *
-     * @access private
      * @var string
      */
     public $data = '';
@@ -119,7 +112,6 @@ class Parser
     /**
      * Input data length (to avoid calling strlen() everytime this is needed)
      *
-     * @access private
      * @var int
      */
     public $data_length = 0;
@@ -128,15 +120,13 @@ class Parser
      * Current position of the pointer
      *
      * @var int
-     * @access private
      */
     public $position = 0;
 
     /**
      * Create an instance of the class with the input data
      *
-     * @access public
-     * @param string $data Input data
+     * @param  string  $data  Input data
      */
     public function __construct($data)
     {
@@ -147,7 +137,6 @@ class Parser
     /**
      * Parse the input data
      *
-     * @access public
      * @return bool true on success, false on failure
      */
     public function parse()
@@ -164,13 +153,13 @@ class Parser
         $this->version = '';
         $this->encoding = '';
         $this->standalone = '';
+
         return false;
     }
 
     /**
      * Check whether there is data beyond the pointer
      *
-     * @access private
      * @return bool true if there is further data, false if not
      */
     public function has_data()
@@ -187,6 +176,7 @@ class Parser
     {
         $whitespace = strspn($this->data, "\x09\x0A\x0D\x20", $this->position);
         $this->position += $whitespace;
+
         return $whitespace;
     }
 
@@ -202,9 +192,11 @@ class Parser
             if ($this->has_data()) {
                 $value = substr($this->data, $this->position, $len);
                 $this->position += $len + 1;
+
                 return $value;
             }
         }
+
         return false;
     }
 
@@ -325,6 +317,7 @@ class Parser
 
                 default:
                     $this->state = self::STATE_ERROR;
+
                     return;
             }
 

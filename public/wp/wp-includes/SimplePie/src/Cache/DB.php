@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -47,8 +48,6 @@ namespace SimplePie\Cache;
 /**
  * Base class for database-based caches
  *
- * @package SimplePie
- * @subpackage Caching
  * @deprecated since SimplePie 1.8.0, use implementation of "Psr\SimpleCache\CacheInterface" instead
  */
 abstract class DB implements Base
@@ -58,7 +57,7 @@ abstract class DB implements Base
      *
      * Converts a given {@see SimplePie} object into data to be stored
      *
-     * @param \SimplePie\SimplePie $data
+     * @param  \SimplePie\SimplePie  $data
      * @return array First item is the serialized data for storage, second item is the unique ID for this item
      */
     protected static function prepare_simplepie_object_for_cache($data)
@@ -66,7 +65,7 @@ abstract class DB implements Base
         $items = $data->get_items();
         $items_by_id = [];
 
-        if (!empty($items)) {
+        if (! empty($items)) {
             foreach ($items as $item) {
                 $items_by_id[$item->get_id()] = $item;
             }
@@ -114,6 +113,7 @@ abstract class DB implements Base
                 unset($data->data['ordered_items']);
             }
         }
+
         return [serialize($data->data), $items_by_id];
     }
 }

@@ -9,18 +9,17 @@ if (class_exists('ParagonIE_Sodium_Core_AES_KeySchedule', false)) {
  */
 class ParagonIE_Sodium_Core_AES_KeySchedule
 {
-    /** @var array<int, int> $skey -- has size 120 */
+    /** @var array<int, int> -- has size 120 */
     protected $skey;
 
-    /** @var bool $expanded */
+    /** @var bool */
     protected $expanded = false;
 
-    /** @var int $numRounds */
+    /** @var int */
     private $numRounds;
 
     /**
-     * @param array $skey
-     * @param int $numRounds
+     * @param  int  $numRounds
      */
     public function __construct(array $skey, $numRounds = 10)
     {
@@ -31,7 +30,7 @@ class ParagonIE_Sodium_Core_AES_KeySchedule
     /**
      * Get a value at an arbitrary index. Mostly used for unit testing.
      *
-     * @param int $i
+     * @param  int  $i
      * @return int
      */
     public function get($i)
@@ -48,7 +47,7 @@ class ParagonIE_Sodium_Core_AES_KeySchedule
     }
 
     /**
-     * @param int $offset
+     * @param  int  $offset
      * @return ParagonIE_Sodium_Core_AES_Block
      */
     public function getRoundKey($offset)
@@ -77,6 +76,7 @@ class ParagonIE_Sodium_Core_AES_KeySchedule
             $y &= 0xAAAAAAAA;
             $exp->skey[$v + 1] = ($y | ($y >> 1)) & ParagonIE_Sodium_Core_Util::U32_MAX;
         }
+
         return $exp;
     }
 }

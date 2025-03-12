@@ -18,12 +18,12 @@
 			<div class="wp-block-group" style="min-height:100%">
 				<!-- wp:image {"aspectRatio":"9/16","scale":"cover","sizeSlug":"large","linkDestination":"none","className":"is-style-rounded"} -->
 				<figure class="wp-block-image size-large is-style-rounded">
-					<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/angular-roof.webp" alt="<?php esc_attr_e( 'An empty staircase under an angular roof in Darling Harbour, Sydney, Australia', 'twentytwentyfour' ); ?>" style="aspect-ratio:9/16;object-fit:cover" />
+					<img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/angular-roof.webp" alt="<?php esc_attr_e('An empty staircase under an angular roof in Darling Harbour, Sydney, Australia', 'twentytwentyfour'); ?>" style="aspect-ratio:9/16;object-fit:cover" />
 				</figure>
 				<!-- /wp:image -->
 
 				<!-- wp:paragraph {"fontSize":"medium"} -->
-				<p class="has-medium-font-size"><?php echo esc_html_x( '1. Through Études, we aspire to redefine architectural boundaries and usher in a new era of design excellence that leaves an indelible mark on the built environment.', 'Sample text for the feature area', 'twentytwentyfour' ); ?></p>
+				<p class="has-medium-font-size"><?php echo esc_html_x('1. Through Études, we aspire to redefine architectural boundaries and usher in a new era of design excellence that leaves an indelible mark on the built environment.', 'Sample text for the feature area', 'twentytwentyfour'); ?></p>
 				<!-- /wp:paragraph -->
 			</div>
 			<!-- /wp:group -->
@@ -35,7 +35,7 @@
 			<!-- wp:group {"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group">
 				<!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.2","fontStyle":"normal","fontWeight":"500"}},"fontSize":"large"} -->
-				<p class="has-large-font-size" style="font-style:normal;font-weight:500;line-height:1.2"><?php echo esc_html_x( 'Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers. With a commitment to innovation and sustainability, Études is the bridge that transforms architectural dreams into remarkable built realities.', 'Sample text for the feature area', 'twentytwentyfour' ); ?></p>
+				<p class="has-large-font-size" style="font-style:normal;font-weight:500;line-height:1.2"><?php echo esc_html_x('Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers. With a commitment to innovation and sustainability, Études is the bridge that transforms architectural dreams into remarkable built realities.', 'Sample text for the feature area', 'twentytwentyfour'); ?></p>
 				<!-- /wp:paragraph -->
 
 				<!-- wp:spacer {"height":"var:preset|spacing|40","style":{"layout":{}}} -->
@@ -46,12 +46,12 @@
 				<!-- wp:group {"layout":{"type":"default"}} -->
 				<div class="wp-block-group">
 					<!-- wp:paragraph {"fontSize":"medium"} -->
-					<p class="has-medium-font-size"><?php echo esc_html_x( '2. Case studies that celebrate the artistry can fuel curiosity and ignite inspiration.', 'Sample text for the feature area', 'twentytwentyfour' ); ?></p>
+					<p class="has-medium-font-size"><?php echo esc_html_x('2. Case studies that celebrate the artistry can fuel curiosity and ignite inspiration.', 'Sample text for the feature area', 'twentytwentyfour'); ?></p>
 					<!-- /wp:paragraph -->
 
 					<!-- wp:image {"aspectRatio":"9/16","scale":"cover","sizeSlug":"large","linkDestination":"none","className":"is-style-rounded"} -->
 					<figure class="wp-block-image size-large is-style-rounded">
-						<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/assets/images/art-gallery.webp" alt="<?php esc_attr_e( 'Art Gallery of Ontario, Toronto, Canada', 'twentytwentyfour' ); ?>" style="aspect-ratio:9/16;object-fit:cover" />
+						<img src="<?php echo esc_url(get_template_directory_uri()); ?>/assets/images/art-gallery.webp" alt="<?php esc_attr_e('Art Gallery of Ontario, Toronto, Canada', 'twentytwentyfour'); ?>" style="aspect-ratio:9/16;object-fit:cover" />
 					</figure>
 					<!-- /wp:image -->
 				</div>

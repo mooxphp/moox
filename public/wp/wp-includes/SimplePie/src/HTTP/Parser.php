@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -46,9 +47,6 @@ namespace SimplePie\HTTP;
 
 /**
  * HTTP Response Parser
- *
- * @package SimplePie
- * @subpackage HTTP
  */
 class Parser
 {
@@ -160,7 +158,7 @@ class Parser
     /**
      * Create an instance of the class with the input data
      *
-     * @param string $data Input data
+     * @param  string  $data  Input data
      */
     public function __construct($data)
     {
@@ -189,6 +187,7 @@ class Parser
         $this->reason = '';
         $this->headers = [];
         $this->body = '';
+
         return false;
     }
 
@@ -272,7 +271,7 @@ class Parser
             $this->name = strtolower($this->name);
             // We should only use the last Content-Type header. c.f. issue #1
             if (isset($this->headers[$this->name]) && $this->name !== 'content-type') {
-                $this->headers[$this->name] .= ', ' . $this->value;
+                $this->headers[$this->name] .= ', '.$this->value;
             } else {
                 $this->headers[$this->name] = $this->value;
             }
@@ -429,7 +428,7 @@ class Parser
     protected function body()
     {
         $this->body = substr($this->data, $this->position);
-        if (!empty($this->headers['transfer-encoding'])) {
+        if (! empty($this->headers['transfer-encoding'])) {
             unset($this->headers['transfer-encoding']);
             $this->state = self::STATE_CHUNKED;
         } else {
@@ -442,8 +441,9 @@ class Parser
      */
     protected function chunked()
     {
-        if (!preg_match('/^([0-9a-f]+)[^\r\n]*\r\n/i', trim($this->body))) {
+        if (! preg_match('/^([0-9a-f]+)[^\r\n]*\r\n/i', trim($this->body))) {
             $this->state = self::STATE_EMIT;
+
             return;
         }
 
@@ -452,9 +452,10 @@ class Parser
 
         while (true) {
             $is_chunked = (bool) preg_match('/^([0-9a-f]+)[^\r\n]*\r\n/i', $encoded, $matches);
-            if (!$is_chunked) {
+            if (! $is_chunked) {
                 // Looks like it's not chunked after all
                 $this->state = self::STATE_EMIT;
+
                 return;
             }
 
@@ -463,6 +464,7 @@ class Parser
                 // Ignore trailer headers
                 $this->state = self::STATE_EMIT;
                 $this->body = $decoded;
+
                 return;
             }
 
@@ -476,6 +478,7 @@ class Parser
             if (trim($encoded) === '0' || empty($encoded)) {
                 $this->state = self::STATE_EMIT;
                 $this->body = $decoded;
+
                 return;
             }
         }
@@ -484,23 +487,23 @@ class Parser
     /**
      * Prepare headers (take care of proxies headers)
      *
-     * @param string  $headers Raw headers
-     * @param integer $count   Redirection count. Default to 1.
-     *
+     * @param  string  $headers  Raw headers
+     * @param  int  $count  Redirection count. Default to 1.
      * @return string
      */
     public static function prepareHeaders($headers, $count = 1)
     {
         $data = explode("\r\n\r\n", $headers, $count);
         $data = array_pop($data);
-        if (false !== stripos($data, "HTTP/1.0 200 Connection established\r\n")) {
+        if (stripos($data, "HTTP/1.0 200 Connection established\r\n") !== false) {
             $exploded = explode("\r\n\r\n", $data, 2);
             $data = end($exploded);
         }
-        if (false !== stripos($data, "HTTP/1.1 200 Connection established\r\n")) {
+        if (stripos($data, "HTTP/1.1 200 Connection established\r\n") !== false) {
             $exploded = explode("\r\n\r\n", $data, 2);
             $data = end($exploded);
         }
+
         return $data;
     }
 }

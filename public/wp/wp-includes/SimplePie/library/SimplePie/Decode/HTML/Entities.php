@@ -33,15 +33,15 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
-
 
 /**
  * Decode HTML Entities
@@ -49,14 +49,12 @@
  * This implements HTML5 as of revision 967 (2007-06-28)
  *
  * @deprecated Use DOMDocument instead!
- * @package SimplePie
  */
 class SimplePie_Decode_HTML_Entities
 {
     /**
      * Data to be parsed
      *
-     * @access private
      * @var string
      */
     public $data = '';
@@ -64,7 +62,6 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Currently consumed bytes
      *
-     * @access private
      * @var string
      */
     public $consumed = '';
@@ -72,7 +69,6 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Position of the current byte being parsed
      *
-     * @access private
      * @var int
      */
     public $position = 0;
@@ -80,8 +76,7 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Create an instance of the class with the input data
      *
-     * @access public
-     * @param string $data Input data
+     * @param  string  $data  Input data
      */
     public function __construct($data)
     {
@@ -91,7 +86,6 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Parse the input data
      *
-     * @access public
      * @return string Output data
      */
     public function parse()
@@ -101,19 +95,20 @@ class SimplePie_Decode_HTML_Entities
             $this->entity();
             $this->consumed = '';
         }
+
         return $this->data;
     }
 
     /**
      * Consume the next byte
      *
-     * @access private
      * @return mixed The next byte, or false, if there is no more data
      */
     public function consume()
     {
         if (isset($this->data[$this->position])) {
             $this->consumed .= $this->data[$this->position];
+
             return $this->data[$this->position++];
         }
 
@@ -123,8 +118,7 @@ class SimplePie_Decode_HTML_Entities
     /**
      * Consume a range of characters
      *
-     * @access private
-     * @param string $chars Characters to consume
+     * @param  string  $chars  Characters to consume
      * @return mixed A series of characters that match the range, or false
      */
     public function consume_range($chars)
@@ -133,6 +127,7 @@ class SimplePie_Decode_HTML_Entities
             $data = substr($this->data, $this->position, $len);
             $this->consumed .= $data;
             $this->position += $len;
+
             return $data;
         }
 
@@ -141,8 +136,6 @@ class SimplePie_Decode_HTML_Entities
 
     /**
      * Unconsume one byte
-     *
-     * @access private
      */
     public function unconsume()
     {
@@ -152,8 +145,6 @@ class SimplePie_Decode_HTML_Entities
 
     /**
      * Decode an entity
-     *
-     * @access private
      */
     public function entity()
     {
@@ -198,7 +189,7 @@ class SimplePie_Decode_HTML_Entities
                         $replacement = SimplePie_Misc::codepoint_to_utf8($codepoint);
                     }
 
-                    if (!in_array($this->consume(), [';', false], true)) {
+                    if (! in_array($this->consume(), [';', false], true)) {
                         $this->unconsume();
                     }
 
@@ -575,7 +566,7 @@ class SimplePie_Decode_HTML_Entities
                     'Zeta;' => "\xCE\x96",
                     'zeta;' => "\xCE\xB6",
                     'zwj;' => "\xE2\x80\x8D",
-                    'zwnj;' => "\xE2\x80\x8C"
+                    'zwnj;' => "\xE2\x80\x8C",
                 ];
 
                 for ($i = 0, $match = null; $i < 9 && $this->consume() !== false; $i++) {

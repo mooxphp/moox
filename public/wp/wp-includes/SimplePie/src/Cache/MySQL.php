@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -53,8 +54,6 @@ namespace SimplePie\Cache;
  * connect to the `mydb` database on `localhost` on port 3306, with the user
  * `root` and the password `password`. All tables will be prefixed with `sp_`
  *
- * @package SimplePie
- * @subpackage Caching
  * @deprecated since SimplePie 1.8.0, use implementation of "Psr\SimpleCache\CacheInterface" instead
  */
 class MySQL extends DB
@@ -83,9 +82,9 @@ class MySQL extends DB
     /**
      * Create a new cache object
      *
-     * @param string $location Location string (from SimplePie::$cache_location)
-     * @param string $name Unique ID for the cache
-     * @param Base::TYPE_FEED|Base::TYPE_IMAGE $type Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
+     * @param  string  $location  Location string (from SimplePie::$cache_location)
+     * @param  string  $name  Unique ID for the cache
+     * @param  Base::TYPE_FEED|Base::TYPE_IMAGE  $type  Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
      */
     public function __construct($location, $name, $type)
     {
@@ -97,7 +96,7 @@ class MySQL extends DB
             'path' => '',
             'extras' => [
                 'prefix' => '',
-                'cache_purge_time' => 2592000
+                'cache_purge_time' => 2592000,
             ],
         ];
 
@@ -110,13 +109,15 @@ class MySQL extends DB
             $this->mysql = new \PDO("mysql:dbname={$this->options['dbname']};host={$this->options['host']};port={$this->options['port']}", $this->options['user'], $this->options['pass'], [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
         } catch (\PDOException $e) {
             $this->mysql = null;
+
             return;
         }
 
-        $this->id = $name . $type;
+        $this->id = $name.$type;
 
-        if (!$query = $this->mysql->query('SHOW TABLES')) {
+        if (! $query = $this->mysql->query('SHOW TABLES')) {
             $this->mysql = null;
+
             return;
         }
 
@@ -125,20 +126,22 @@ class MySQL extends DB
             $db[] = $row;
         }
 
-        if (!in_array($this->options['extras']['prefix'] . 'cache_data', $db)) {
-            $query = $this->mysql->exec('CREATE TABLE `' . $this->options['extras']['prefix'] . 'cache_data` (`id` TEXT CHARACTER SET utf8 NOT NULL, `items` SMALLINT NOT NULL DEFAULT 0, `data` BLOB NOT NULL, `mtime` INT UNSIGNED NOT NULL, UNIQUE (`id`(125)))');
+        if (! in_array($this->options['extras']['prefix'].'cache_data', $db)) {
+            $query = $this->mysql->exec('CREATE TABLE `'.$this->options['extras']['prefix'].'cache_data` (`id` TEXT CHARACTER SET utf8 NOT NULL, `items` SMALLINT NOT NULL DEFAULT 0, `data` BLOB NOT NULL, `mtime` INT UNSIGNED NOT NULL, UNIQUE (`id`(125)))');
             if ($query === false) {
-                trigger_error("Can't create " . $this->options['extras']['prefix'] . "cache_data table, check permissions", \E_USER_WARNING);
+                trigger_error("Can't create ".$this->options['extras']['prefix'].'cache_data table, check permissions', \E_USER_WARNING);
                 $this->mysql = null;
+
                 return;
             }
         }
 
-        if (!in_array($this->options['extras']['prefix'] . 'items', $db)) {
-            $query = $this->mysql->exec('CREATE TABLE `' . $this->options['extras']['prefix'] . 'items` (`feed_id` TEXT CHARACTER SET utf8 NOT NULL, `id` TEXT CHARACTER SET utf8 NOT NULL, `data` MEDIUMBLOB NOT NULL, `posted` INT UNSIGNED NOT NULL, INDEX `feed_id` (`feed_id`(125)))');
+        if (! in_array($this->options['extras']['prefix'].'items', $db)) {
+            $query = $this->mysql->exec('CREATE TABLE `'.$this->options['extras']['prefix'].'items` (`feed_id` TEXT CHARACTER SET utf8 NOT NULL, `id` TEXT CHARACTER SET utf8 NOT NULL, `data` MEDIUMBLOB NOT NULL, `posted` INT UNSIGNED NOT NULL, INDEX `feed_id` (`feed_id`(125)))');
             if ($query === false) {
-                trigger_error("Can't create " . $this->options['extras']['prefix'] . "items table, check permissions", \E_USER_WARNING);
+                trigger_error("Can't create ".$this->options['extras']['prefix'].'items table, check permissions', \E_USER_WARNING);
                 $this->mysql = null;
+
                 return;
             }
         }
@@ -147,7 +150,7 @@ class MySQL extends DB
     /**
      * Save data to the cache
      *
-     * @param array|\SimplePie\SimplePie $data Data to store in the cache. If passed a SimplePie object, only cache the $data property
+     * @param  array|\SimplePie\SimplePie  $data  Data to store in the cache. If passed a SimplePie object, only cache the $data property
      * @return bool Successfulness
      */
     public function save($data)
@@ -156,13 +159,13 @@ class MySQL extends DB
             return false;
         }
 
-        $query = $this->mysql->prepare('DELETE i, cd FROM `' . $this->options['extras']['prefix'] . 'cache_data` cd, ' .
-            '`' . $this->options['extras']['prefix'] . 'items` i ' .
-            'WHERE cd.id = i.feed_id ' .
+        $query = $this->mysql->prepare('DELETE i, cd FROM `'.$this->options['extras']['prefix'].'cache_data` cd, '.
+            '`'.$this->options['extras']['prefix'].'items` i '.
+            'WHERE cd.id = i.feed_id '.
             'AND cd.mtime < (unix_timestamp() - :purge_time)');
         $query->bindValue(':purge_time', $this->options['extras']['cache_purge_time']);
 
-        if (!$query->execute()) {
+        if (! $query->execute()) {
             return false;
         }
 
@@ -171,44 +174,44 @@ class MySQL extends DB
 
             $prepared = self::prepare_simplepie_object_for_cache($data);
 
-            $query = $this->mysql->prepare('SELECT COUNT(*) FROM `' . $this->options['extras']['prefix'] . 'cache_data` WHERE `id` = :feed');
+            $query = $this->mysql->prepare('SELECT COUNT(*) FROM `'.$this->options['extras']['prefix'].'cache_data` WHERE `id` = :feed');
             $query->bindValue(':feed', $this->id);
             if ($query->execute()) {
                 if ($query->fetchColumn() > 0) {
                     $items = count($prepared[1]);
                     if ($items) {
-                        $sql = 'UPDATE `' . $this->options['extras']['prefix'] . 'cache_data` SET `items` = :items, `data` = :data, `mtime` = :time WHERE `id` = :feed';
+                        $sql = 'UPDATE `'.$this->options['extras']['prefix'].'cache_data` SET `items` = :items, `data` = :data, `mtime` = :time WHERE `id` = :feed';
                         $query = $this->mysql->prepare($sql);
                         $query->bindValue(':items', $items);
                     } else {
-                        $sql = 'UPDATE `' . $this->options['extras']['prefix'] . 'cache_data` SET `data` = :data, `mtime` = :time WHERE `id` = :feed';
+                        $sql = 'UPDATE `'.$this->options['extras']['prefix'].'cache_data` SET `data` = :data, `mtime` = :time WHERE `id` = :feed';
                         $query = $this->mysql->prepare($sql);
                     }
 
                     $query->bindValue(':data', $prepared[0]);
                     $query->bindValue(':time', time());
                     $query->bindValue(':feed', $this->id);
-                    if (!$query->execute()) {
+                    if (! $query->execute()) {
                         return false;
                     }
                 } else {
-                    $query = $this->mysql->prepare('INSERT INTO `' . $this->options['extras']['prefix'] . 'cache_data` (`id`, `items`, `data`, `mtime`) VALUES(:feed, :count, :data, :time)');
+                    $query = $this->mysql->prepare('INSERT INTO `'.$this->options['extras']['prefix'].'cache_data` (`id`, `items`, `data`, `mtime`) VALUES(:feed, :count, :data, :time)');
                     $query->bindValue(':feed', $this->id);
                     $query->bindValue(':count', count($prepared[1]));
                     $query->bindValue(':data', $prepared[0]);
                     $query->bindValue(':time', time());
-                    if (!$query->execute()) {
+                    if (! $query->execute()) {
                         return false;
                     }
                 }
 
                 $ids = array_keys($prepared[1]);
-                if (!empty($ids)) {
+                if (! empty($ids)) {
                     foreach ($ids as $id) {
                         $database_ids[] = $this->mysql->quote($id);
                     }
 
-                    $query = $this->mysql->prepare('SELECT `id` FROM `' . $this->options['extras']['prefix'] . 'items` WHERE `id` = ' . implode(' OR `id` = ', $database_ids) . ' AND `feed_id` = :feed');
+                    $query = $this->mysql->prepare('SELECT `id` FROM `'.$this->options['extras']['prefix'].'items` WHERE `id` = '.implode(' OR `id` = ', $database_ids).' AND `feed_id` = :feed');
                     $query->bindValue(':feed', $this->id);
 
                     if ($query->execute()) {
@@ -220,19 +223,20 @@ class MySQL extends DB
                         $new_ids = array_diff($ids, $existing_ids);
 
                         foreach ($new_ids as $new_id) {
-                            if (!($date = $prepared[1][$new_id]->get_date('U'))) {
+                            if (! ($date = $prepared[1][$new_id]->get_date('U'))) {
                                 $date = time();
                             }
 
-                            $query = $this->mysql->prepare('INSERT INTO `' . $this->options['extras']['prefix'] . 'items` (`feed_id`, `id`, `data`, `posted`) VALUES(:feed, :id, :data, :date)');
+                            $query = $this->mysql->prepare('INSERT INTO `'.$this->options['extras']['prefix'].'items` (`feed_id`, `id`, `data`, `posted`) VALUES(:feed, :id, :data, :date)');
                             $query->bindValue(':feed', $this->id);
                             $query->bindValue(':id', $new_id);
                             $query->bindValue(':data', serialize($prepared[1][$new_id]->data));
                             $query->bindValue(':date', $date);
-                            if (!$query->execute()) {
+                            if (! $query->execute()) {
                                 return false;
                             }
                         }
+
                         return true;
                     }
                 } else {
@@ -240,11 +244,11 @@ class MySQL extends DB
                 }
             }
         } else {
-            $query = $this->mysql->prepare('SELECT `id` FROM `' . $this->options['extras']['prefix'] . 'cache_data` WHERE `id` = :feed');
+            $query = $this->mysql->prepare('SELECT `id` FROM `'.$this->options['extras']['prefix'].'cache_data` WHERE `id` = :feed');
             $query->bindValue(':feed', $this->id);
             if ($query->execute()) {
                 if ($query->rowCount() > 0) {
-                    $query = $this->mysql->prepare('UPDATE `' . $this->options['extras']['prefix'] . 'cache_data` SET `items` = 0, `data` = :data, `mtime` = :time WHERE `id` = :feed');
+                    $query = $this->mysql->prepare('UPDATE `'.$this->options['extras']['prefix'].'cache_data` SET `items` = 0, `data` = :data, `mtime` = :time WHERE `id` = :feed');
                     $query->bindValue(':data', serialize($data));
                     $query->bindValue(':time', time());
                     $query->bindValue(':feed', $this->id);
@@ -252,7 +256,7 @@ class MySQL extends DB
                         return true;
                     }
                 } else {
-                    $query = $this->mysql->prepare('INSERT INTO `' . $this->options['extras']['prefix'] . 'cache_data` (`id`, `items`, `data`, `mtime`) VALUES(:id, 0, :data, :time)');
+                    $query = $this->mysql->prepare('INSERT INTO `'.$this->options['extras']['prefix'].'cache_data` (`id`, `items`, `data`, `mtime`) VALUES(:id, 0, :data, :time)');
                     $query->bindValue(':id', $this->id);
                     $query->bindValue(':data', serialize($data));
                     $query->bindValue(':time', time());
@@ -262,6 +266,7 @@ class MySQL extends DB
                 }
             }
         }
+
         return false;
     }
 
@@ -276,7 +281,7 @@ class MySQL extends DB
             return false;
         }
 
-        $query = $this->mysql->prepare('SELECT `items`, `data` FROM `' . $this->options['extras']['prefix'] . 'cache_data` WHERE `id` = :id');
+        $query = $this->mysql->prepare('SELECT `items`, `data` FROM `'.$this->options['extras']['prefix'].'cache_data` WHERE `id` = :id');
         $query->bindValue(':id', $this->id);
         if ($query->execute() && ($row = $query->fetch())) {
             $data = unserialize($row[1]);
@@ -301,9 +306,9 @@ class MySQL extends DB
                 }
 
                 if ($feed !== null) {
-                    $sql = 'SELECT `data` FROM `' . $this->options['extras']['prefix'] . 'items` WHERE `feed_id` = :feed ORDER BY `posted` DESC';
+                    $sql = 'SELECT `data` FROM `'.$this->options['extras']['prefix'].'items` WHERE `feed_id` = :feed ORDER BY `posted` DESC';
                     if ($items > 0) {
-                        $sql .= ' LIMIT ' . $items;
+                        $sql .= ' LIMIT '.$items;
                     }
 
                     $query = $this->mysql->prepare($sql);
@@ -317,8 +322,10 @@ class MySQL extends DB
                     }
                 }
             }
+
             return $data;
         }
+
         return false;
     }
 
@@ -333,7 +340,7 @@ class MySQL extends DB
             return false;
         }
 
-        $query = $this->mysql->prepare('SELECT `mtime` FROM `' . $this->options['extras']['prefix'] . 'cache_data` WHERE `id` = :id');
+        $query = $this->mysql->prepare('SELECT `mtime` FROM `'.$this->options['extras']['prefix'].'cache_data` WHERE `id` = :id');
         $query->bindValue(':id', $this->id);
         if ($query->execute() && ($time = $query->fetchColumn())) {
             return $time;
@@ -353,7 +360,7 @@ class MySQL extends DB
             return false;
         }
 
-        $query = $this->mysql->prepare('UPDATE `' . $this->options['extras']['prefix'] . 'cache_data` SET `mtime` = :time WHERE `id` = :id');
+        $query = $this->mysql->prepare('UPDATE `'.$this->options['extras']['prefix'].'cache_data` SET `mtime` = :time WHERE `id` = :id');
         $query->bindValue(':time', time());
         $query->bindValue(':id', $this->id);
 
@@ -371,9 +378,9 @@ class MySQL extends DB
             return false;
         }
 
-        $query = $this->mysql->prepare('DELETE FROM `' . $this->options['extras']['prefix'] . 'cache_data` WHERE `id` = :id');
+        $query = $this->mysql->prepare('DELETE FROM `'.$this->options['extras']['prefix'].'cache_data` WHERE `id` = :id');
         $query->bindValue(':id', $this->id);
-        $query2 = $this->mysql->prepare('DELETE FROM `' . $this->options['extras']['prefix'] . 'items` WHERE `feed_id` = :id');
+        $query2 = $this->mysql->prepare('DELETE FROM `'.$this->options['extras']['prefix'].'items` WHERE `feed_id` = :id');
         $query2->bindValue(':id', $this->id);
 
         return $query->execute() && $query2->execute();

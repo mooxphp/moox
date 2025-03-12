@@ -3,10 +3,12 @@
 /**
  * SimplePie Redis Cache Extension
  *
- * @package SimplePie
  * @author Jan Kozak <galvani78@gmail.com>
+ *
  * @link http://galvani.cz/
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
+ *
  * @version 0.2.9
  */
 
@@ -18,7 +20,5 @@ class_exists('SimplePie\Cache\Redis');
 
 if (\false) {
     /** @deprecated since SimplePie 1.7.0, use "SimplePie\Cache\Redis" instead */
-    class SimplePie_Cache_Redis extends Redis
-    {
-    }
+    class SimplePie_Cache_Redis extends Redis {}
 }

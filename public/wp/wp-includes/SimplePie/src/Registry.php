@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -52,8 +53,6 @@ use SimplePie\XML\Declaration\Parser as DeclarationParser;
  * Handles creating objects and calling methods
  *
  * Access this via {@see \SimplePie\SimplePie::get_registry()}
- *
- * @package SimplePie
  */
 class Registry
 {
@@ -90,6 +89,7 @@ class Registry
      * Class mapping
      *
      * @see register()
+     *
      * @var array
      */
     protected $classes = [];
@@ -98,6 +98,7 @@ class Registry
      * Legacy classes
      *
      * @see register()
+     *
      * @var array<class-string>
      */
     protected $legacy = [];
@@ -106,6 +107,7 @@ class Registry
      * Legacy types
      *
      * @see register()
+     *
      * @var array<string, class-string>
      */
     private $legacyTypes = [
@@ -135,16 +137,14 @@ class Registry
      *
      * No-op
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Register a class
      *
-     * @param string $type See {@see $default} for names
-     * @param class-string $class Class name, must subclass the corresponding default
-     * @param bool $legacy Whether to enable legacy support for this class
+     * @param  string  $type  See {@see $default} for names
+     * @param  class-string  $class  Class name, must subclass the corresponding default
+     * @param  bool  $legacy  Whether to enable legacy support for this class
      * @return bool Successfulness
      */
     public function register($type, $class, $legacy = false)
@@ -155,18 +155,18 @@ class Registry
             $type = $this->legacyTypes[$type];
         }
 
-        if (!array_key_exists($type, $this->default)) {
+        if (! array_key_exists($type, $this->default)) {
             return false;
         }
 
-        if (!class_exists($class)) {
+        if (! class_exists($class)) {
             return false;
         }
 
         /** @var string */
         $base_class = $this->default[$type];
 
-        if (!is_subclass_of($class, $base_class)) {
+        if (! is_subclass_of($class, $base_class)) {
             return false;
         }
 
@@ -185,7 +185,8 @@ class Registry
      * Where possible, use {@see create()} or {@see call()} instead
      *
      * @template T
-     * @param class-string<T> $type
+     *
+     * @param  class-string<T>  $type
      * @return class-string<T>|null
      */
     public function get_class($type)
@@ -196,7 +197,7 @@ class Registry
             $type = $this->legacyTypes[$type];
         }
 
-        if (!array_key_exists($type, $this->default)) {
+        if (! array_key_exists($type, $this->default)) {
             return null;
         }
 
@@ -213,16 +214,17 @@ class Registry
      * Create a new instance of a given type
      *
      * @template T class-string $type
-     * @param class-string<T> $type
-     * @param array $parameters Parameters to pass to the constructor
+     *
+     * @param  class-string<T>  $type
+     * @param  array  $parameters  Parameters to pass to the constructor
      * @return T Instance of class
      */
     public function &create($type, $parameters = [])
     {
         $class = $this->get_class($type);
 
-        if (!method_exists($class, '__construct')) {
-            $instance = new $class();
+        if (! method_exists($class, '__construct')) {
+            $instance = new $class;
         } else {
             $reflector = new \ReflectionClass($class);
             $instance = $reflector->newInstanceArgs($parameters);
@@ -234,15 +236,16 @@ class Registry
             trigger_error(sprintf('Using the method "set_registry()" without implementing "%s" is deprecated since SimplePie 1.8.0, implement "%s" in "%s".', RegistryAware::class, RegistryAware::class, $class), \E_USER_DEPRECATED);
             $instance->set_registry($this);
         }
+
         return $instance;
     }
 
     /**
      * Call a static method for a type
      *
-     * @param class-string $type
-     * @param string $method
-     * @param array $parameters
+     * @param  class-string  $type
+     * @param  string  $method
+     * @param  array  $parameters
      * @return mixed
      */
     public function &call($type, $method, $parameters = [])
@@ -257,6 +260,7 @@ class Registry
                     // No longer supported as of PHP 8.0.
                     if ($method === 'get_handler') {
                         $result = @call_user_func_array([$class, 'create'], $parameters);
+
                         return $result;
                     }
                     break;
@@ -264,6 +268,7 @@ class Registry
         }
 
         $result = call_user_func_array([$class, $method], $parameters);
+
         return $result;
     }
 }

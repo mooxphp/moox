@@ -14,12 +14,12 @@ abstract class ParagonIE_Sodium_Core32_X25519 extends ParagonIE_Sodium_Core32_Cu
      *
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe $f
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe $g
-     * @param int $b
+     * @param  int  $b
      * @return void
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedMethodCall
      */
     public static function fe_cswap(
@@ -93,18 +93,19 @@ abstract class ParagonIE_Sodium_Core32_X25519 extends ParagonIE_Sodium_Core32_Cu
     /**
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe $f
      * @return ParagonIE_Sodium_Core32_Curve25519_Fe
+     *
      * @throws SodiumException
      * @throws TypeError
+     *
      * @psalm-suppress MixedAssignment
      * @psalm-suppress MixedMethodCall
      */
     public static function fe_mul121666(ParagonIE_Sodium_Core32_Curve25519_Fe $f)
     {
         /** @var array<int, ParagonIE_Sodium_Core32_Int64> $h */
-        $h = array();
-        for ($i = 0; $i < 10; ++$i) {
+        $h = [];
+        for ($i = 0; $i < 10; $i++) {
             $h[$i] = $f[$i]->toInt64()->mulInt(121666, 17);
         }
 
@@ -148,11 +149,12 @@ abstract class ParagonIE_Sodium_Core32_X25519 extends ParagonIE_Sodium_Core32_Cu
         $h[9] = $h[9]->addInt64($carry8);
         $h[8] = $h[8]->subInt64($carry8->shiftLeft(26));
 
-        for ($i = 0; $i < 10; ++$i) {
+        for ($i = 0; $i < 10; $i++) {
             $h[$i] = $h[$i]->toInt32();
         }
         /** @var array<int, ParagonIE_Sodium_Core32_Int32> $h2 */
         $h2 = $h;
+
         return ParagonIE_Sodium_Core32_Curve25519_Fe::fromArray($h2);
     }
 
@@ -161,139 +163,140 @@ abstract class ParagonIE_Sodium_Core32_X25519 extends ParagonIE_Sodium_Core32_Cu
      *
      * Inline comments preceded by # are from libsodium's ref10 code.
      *
-     * @param string $n
-     * @param string $p
+     * @param  string  $n
+     * @param  string  $p
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
     public static function crypto_scalarmult_curve25519_ref10($n, $p)
     {
-        # for (i = 0;i < 32;++i) e[i] = n[i];
-        $e = '' . $n;
-        # e[0] &= 248;
+        // for (i = 0;i < 32;++i) e[i] = n[i];
+        $e = ''.$n;
+        // e[0] &= 248;
         $e[0] = self::intToChr(
             self::chrToInt($e[0]) & 248
         );
-        # e[31] &= 127;
-        # e[31] |= 64;
+        // e[31] &= 127;
+        // e[31] |= 64;
         $e[31] = self::intToChr(
             (self::chrToInt($e[31]) & 127) | 64
         );
-        # fe_frombytes(x1,p);
+        // fe_frombytes(x1,p);
         $x1 = self::fe_frombytes($p);
-        # fe_1(x2);
+        // fe_1(x2);
         $x2 = self::fe_1();
-        # fe_0(z2);
+        // fe_0(z2);
         $z2 = self::fe_0();
-        # fe_copy(x3,x1);
+        // fe_copy(x3,x1);
         $x3 = self::fe_copy($x1);
-        # fe_1(z3);
+        // fe_1(z3);
         $z3 = self::fe_1();
 
-        # swap = 0;
+        // swap = 0;
         /** @var int $swap */
         $swap = 0;
 
-        # for (pos = 254;pos >= 0;--pos) {
-        for ($pos = 254; $pos >= 0; --$pos) {
-            # b = e[pos / 8] >> (pos & 7);
+        // for (pos = 254;pos >= 0;--pos) {
+        for ($pos = 254; $pos >= 0; $pos--) {
+            // b = e[pos / 8] >> (pos & 7);
             /** @var int $b */
             $b = self::chrToInt(
-                    $e[(int) floor($pos / 8)]
-                ) >> ($pos & 7);
-            # b &= 1;
+                $e[(int) floor($pos / 8)]
+            ) >> ($pos & 7);
+            // b &= 1;
             $b &= 1;
 
-            # swap ^= b;
+            // swap ^= b;
             $swap ^= $b;
 
-            # fe_cswap(x2,x3,swap);
+            // fe_cswap(x2,x3,swap);
             self::fe_cswap($x2, $x3, $swap);
 
-            # fe_cswap(z2,z3,swap);
+            // fe_cswap(z2,z3,swap);
             self::fe_cswap($z2, $z3, $swap);
 
-            # swap = b;
+            // swap = b;
             /** @var int $swap */
             $swap = $b;
 
-            # fe_sub(tmp0,x3,z3);
+            // fe_sub(tmp0,x3,z3);
             $tmp0 = self::fe_sub($x3, $z3);
 
-            # fe_sub(tmp1,x2,z2);
+            // fe_sub(tmp1,x2,z2);
             $tmp1 = self::fe_sub($x2, $z2);
 
-            # fe_add(x2,x2,z2);
+            // fe_add(x2,x2,z2);
             $x2 = self::fe_add($x2, $z2);
 
-            # fe_add(z2,x3,z3);
+            // fe_add(z2,x3,z3);
             $z2 = self::fe_add($x3, $z3);
 
-            # fe_mul(z3,tmp0,x2);
+            // fe_mul(z3,tmp0,x2);
             $z3 = self::fe_mul($tmp0, $x2);
 
-            # fe_mul(z2,z2,tmp1);
+            // fe_mul(z2,z2,tmp1);
             $z2 = self::fe_mul($z2, $tmp1);
 
-            # fe_sq(tmp0,tmp1);
+            // fe_sq(tmp0,tmp1);
             $tmp0 = self::fe_sq($tmp1);
 
-            # fe_sq(tmp1,x2);
+            // fe_sq(tmp1,x2);
             $tmp1 = self::fe_sq($x2);
 
-            # fe_add(x3,z3,z2);
+            // fe_add(x3,z3,z2);
             $x3 = self::fe_add($z3, $z2);
 
-            # fe_sub(z2,z3,z2);
+            // fe_sub(z2,z3,z2);
             $z2 = self::fe_sub($z3, $z2);
 
-            # fe_mul(x2,tmp1,tmp0);
+            // fe_mul(x2,tmp1,tmp0);
             $x2 = self::fe_mul($tmp1, $tmp0);
 
-            # fe_sub(tmp1,tmp1,tmp0);
+            // fe_sub(tmp1,tmp1,tmp0);
             $tmp1 = self::fe_sub($tmp1, $tmp0);
 
-            # fe_sq(z2,z2);
+            // fe_sq(z2,z2);
             $z2 = self::fe_sq($z2);
 
-            # fe_mul121666(z3,tmp1);
+            // fe_mul121666(z3,tmp1);
             $z3 = self::fe_mul121666($tmp1);
 
-            # fe_sq(x3,x3);
+            // fe_sq(x3,x3);
             $x3 = self::fe_sq($x3);
 
-            # fe_add(tmp0,tmp0,z3);
+            // fe_add(tmp0,tmp0,z3);
             $tmp0 = self::fe_add($tmp0, $z3);
 
-            # fe_mul(z3,x1,z2);
+            // fe_mul(z3,x1,z2);
             $z3 = self::fe_mul($x1, $z2);
 
-            # fe_mul(z2,tmp1,tmp0);
+            // fe_mul(z2,tmp1,tmp0);
             $z2 = self::fe_mul($tmp1, $tmp0);
         }
 
-        # fe_cswap(x2,x3,swap);
+        // fe_cswap(x2,x3,swap);
         self::fe_cswap($x2, $x3, $swap);
 
-        # fe_cswap(z2,z3,swap);
+        // fe_cswap(z2,z3,swap);
         self::fe_cswap($z2, $z3, $swap);
 
-        # fe_invert(z2,z2);
+        // fe_invert(z2,z2);
         $z2 = self::fe_invert($z2);
 
-        # fe_mul(x2,x2,z2);
+        // fe_mul(x2,x2,z2);
         $x2 = self::fe_mul($x2, $z2);
-        # fe_tobytes(q,x2);
+
+        // fe_tobytes(q,x2);
         return (string) self::fe_tobytes($x2);
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe $edwardsY
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe $edwardsZ
      * @return ParagonIE_Sodium_Core32_Curve25519_Fe
+     *
      * @throws SodiumException
      * @throws TypeError
      */
@@ -304,42 +307,45 @@ abstract class ParagonIE_Sodium_Core32_X25519 extends ParagonIE_Sodium_Core32_Cu
         $tempX = self::fe_add($edwardsZ, $edwardsY);
         $tempZ = self::fe_sub($edwardsZ, $edwardsY);
         $tempZ = self::fe_invert($tempZ);
+
         return self::fe_mul($tempX, $tempZ);
     }
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param string $n
+     * @param  string  $n
      * @return string
+     *
      * @throws SodiumException
      * @throws TypeError
      */
     public static function crypto_scalarmult_curve25519_ref10_base($n)
     {
-        # for (i = 0;i < 32;++i) e[i] = n[i];
-        $e = '' . $n;
+        // for (i = 0;i < 32;++i) e[i] = n[i];
+        $e = ''.$n;
 
-        # e[0] &= 248;
+        // e[0] &= 248;
         $e[0] = self::intToChr(
             self::chrToInt($e[0]) & 248
         );
 
-        # e[31] &= 127;
-        # e[31] |= 64;
+        // e[31] &= 127;
+        // e[31] |= 64;
         $e[31] = self::intToChr(
             (self::chrToInt($e[31]) & 127) | 64
         );
 
         $A = self::ge_scalarmult_base($e);
         if (
-            !($A->Y instanceof ParagonIE_Sodium_Core32_Curve25519_Fe)
+            ! ($A->Y instanceof ParagonIE_Sodium_Core32_Curve25519_Fe)
                 ||
-            !($A->Z instanceof ParagonIE_Sodium_Core32_Curve25519_Fe)
+            ! ($A->Z instanceof ParagonIE_Sodium_Core32_Curve25519_Fe)
         ) {
             throw new TypeError('Null points encountered');
         }
         $pk = self::edwards_to_montgomery($A->Y, $A->Z);
+
         return self::fe_tobytes($pk);
     }
 }

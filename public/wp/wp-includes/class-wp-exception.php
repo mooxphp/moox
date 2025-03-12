@@ -1,8 +1,8 @@
 <?php
+
 /**
  * WP_Exception class
  *
- * @package WordPress
  * @since 6.7.0
  */
 

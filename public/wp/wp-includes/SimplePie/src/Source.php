@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -50,14 +51,13 @@ namespace SimplePie;
  * Used by {@see \SimplePie\Item::get_source()}
  *
  * This class can be overloaded with {@see \SimplePie::set_source_class()}
- *
- * @package SimplePie
- * @subpackage API
  */
 class Source implements RegistryAware
 {
     public $item;
+
     public $data = [];
+
     protected $registry;
 
     public function __construct($item, $data)
@@ -168,7 +168,7 @@ class Source implements RegistryAware
             $categories[] = $this->registry->create(Category::class, [$this->sanitize($category['data'], \SimplePie\SimplePie::CONSTRUCT_TEXT), null, null]);
         }
 
-        if (!empty($categories)) {
+        if (! empty($categories)) {
             return array_unique($categories);
         }
 
@@ -232,7 +232,7 @@ class Source implements RegistryAware
             $authors[] = $this->registry->create(Author::class, [$this->sanitize($author['data'], \SimplePie\SimplePie::CONSTRUCT_TEXT), null, null]);
         }
 
-        if (!empty($authors)) {
+        if (! empty($authors)) {
             return array_unique($authors);
         }
 
@@ -287,7 +287,7 @@ class Source implements RegistryAware
             }
         }
 
-        if (!empty($contributors)) {
+        if (! empty($contributors)) {
             return array_unique($contributors);
         }
 
@@ -314,7 +314,7 @@ class Source implements RegistryAware
 
     public function get_links($rel = 'alternate')
     {
-        if (!isset($this->data['links'])) {
+        if (! isset($this->data['links'])) {
             $this->data['links'] = [];
             if ($links = $this->get_source_tags(\SimplePie\SimplePie::NAMESPACE_ATOM_10, 'link')) {
                 foreach ($links as $link) {
@@ -345,11 +345,11 @@ class Source implements RegistryAware
             $keys = array_keys($this->data['links']);
             foreach ($keys as $key) {
                 if ($this->registry->call(Misc::class, 'is_isegment_nz_nc', [$key])) {
-                    if (isset($this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key])) {
-                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key] = array_merge($this->data['links'][$key], $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key]);
-                        $this->data['links'][$key] = &$this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key];
+                    if (isset($this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key])) {
+                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key] = array_merge($this->data['links'][$key], $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key]);
+                        $this->data['links'][$key] = &$this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key];
                     } else {
-                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY . $key] = &$this->data['links'][$key];
+                        $this->data['links'][\SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY.$key] = &$this->data['links'][$key];
                     }
                 } elseif (substr($key, 0, 41) === \SimplePie\SimplePie::IANA_LINK_RELATIONS_REGISTRY) {
                     $this->data['links'][substr($key, 41)] = &$this->data['links'][$key];

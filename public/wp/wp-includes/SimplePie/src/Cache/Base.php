@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -50,8 +51,6 @@ namespace SimplePie\Cache;
  * Classes to be used with {@see \SimplePie\Cache::register()} are expected
  * to implement this interface.
  *
- * @package SimplePie
- * @subpackage Caching
  * @deprecated since SimplePie 1.8.0, use "Psr\SimpleCache\CacheInterface" instead
  */
 interface Base
@@ -73,16 +72,16 @@ interface Base
     /**
      * Create a new cache object
      *
-     * @param string $location Location string (from SimplePie::$cache_location)
-     * @param string $name Unique ID for the cache
-     * @param Base::TYPE_FEED|Base::TYPE_IMAGE $type Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
+     * @param  string  $location  Location string (from SimplePie::$cache_location)
+     * @param  string  $name  Unique ID for the cache
+     * @param  Base::TYPE_FEED|Base::TYPE_IMAGE  $type  Either TYPE_FEED for SimplePie data, or TYPE_IMAGE for image data
      */
     public function __construct($location, $name, $type);
 
     /**
      * Save data to the cache
      *
-     * @param array|\SimplePie\SimplePie $data Data to store in the cache. If passed a SimplePie object, only cache the $data property
+     * @param  array|\SimplePie\SimplePie  $data  Data to store in the cache. If passed a SimplePie object, only cache the $data property
      * @return bool Successfulness
      */
     public function save($data);

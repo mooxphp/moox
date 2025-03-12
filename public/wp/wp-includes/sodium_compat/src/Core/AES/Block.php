@@ -12,7 +12,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     /**
      * @var array<int, int>
      */
-    protected $values = array();
+    protected $values = [];
 
     /**
      * @var int
@@ -20,7 +20,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     protected $size;
 
     /**
-     * @param int $size
+     * @param  int  $size
      */
     public function __construct($size = 8)
     {
@@ -40,8 +40,8 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     /**
      * @internal You should not use this directly from another application
      *
-     * @param array<int, int> $array
-     * @param bool $save_indexes
+     * @param  array<int, int>  $array
+     * @param  bool  $save_indexes
      * @return self
      *
      * @psalm-suppress MethodSignatureMismatch
@@ -57,26 +57,25 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
         }
         $array = array_values($array);
         /** @var array<int, int> $keys */
-
-        $obj = new ParagonIE_Sodium_Core_AES_Block();
+        $obj = new ParagonIE_Sodium_Core_AES_Block;
         if ($save_indexes) {
-            for ($i = 0; $i < $count; ++$i) {
+            for ($i = 0; $i < $count; $i++) {
                 $obj->offsetSet($keys[$i], $array[$i]);
             }
         } else {
-            for ($i = 0; $i < $count; ++$i) {
+            for ($i = 0; $i < $count; $i++) {
                 $obj->offsetSet($i, $array[$i]);
             }
         }
+
         return $obj;
     }
-
 
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int|null $offset
-     * @param int $value
+     * @param  int|null  $offset
+     * @param  int  $value
      * @return void
      *
      * @psalm-suppress MethodSignatureMismatch
@@ -85,7 +84,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        if (!is_int($value)) {
+        if (! is_int($value)) {
             throw new InvalidArgumentException('Expected an integer');
         }
         if (is_null($offset)) {
@@ -98,7 +97,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
+     * @param  int  $offset
      * @return bool
      *
      * @psalm-suppress MethodSignatureMismatch
@@ -113,7 +112,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
+     * @param  int  $offset
      * @return void
      *
      * @psalm-suppress MethodSignatureMismatch
@@ -128,7 +127,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     /**
      * @internal You should not use this directly from another application
      *
-     * @param int $offset
+     * @param  int  $offset
      * @return int
      *
      * @psalm-suppress MethodSignatureMismatch
@@ -137,9 +136,10 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        if (!isset($this->values[$offset])) {
+        if (! isset($this->values[$offset])) {
             $this->values[$offset] = 0;
         }
+
         return (int) ($this->values[$offset]);
     }
 
@@ -150,22 +150,23 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
      */
     public function __debugInfo()
     {
-        $out = array();
+        $out = [];
         foreach ($this->values as $v) {
             $out[] = str_pad(dechex($v), 8, '0', STR_PAD_LEFT);
         }
-        return array(implode(', ', $out));
+
+        return [implode(', ', $out)];
         /*
          return array(implode(', ', $this->values));
          */
     }
 
     /**
-     * @param int $cl low bit mask
-     * @param int $ch high bit mask
-     * @param int $s shift
-     * @param int $x index 1
-     * @param int $y index 2
+     * @param  int  $cl  low bit mask
+     * @param  int  $ch  high bit mask
+     * @param  int  $s  shift
+     * @param  int  $x  index 1
+     * @param  int  $y  index 2
      * @return self
      */
     public function swapN($cl, $ch, $s, $x, $y)
@@ -177,12 +178,13 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
         $this->values[$x] = ($a & $cl) | ((($b & $cl) << $s) & $u32mask);
         // (y) = ((a & ch) >> (s)) | (b & ch);
         $this->values[$y] = ((($a & $ch) & $u32mask) >> $s) | ($b & $ch);
+
         return $this;
     }
 
     /**
-     * @param int $x index 1
-     * @param int $y index 2
+     * @param  int  $x  index 1
+     * @param  int  $y  index 2
      * @return self
      */
     public function swap2($x, $y)
@@ -191,8 +193,8 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     }
 
     /**
-     * @param int $x index 1
-     * @param int $y index 2
+     * @param  int  $x  index 1
+     * @param  int  $y  index 2
      * @return self
      */
     public function swap4($x, $y)
@@ -201,8 +203,8 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
     }
 
     /**
-     * @param int $x index 1
-     * @param int $y index 2
+     * @param  int  $x  index 1
+     * @param  int  $y  index 2
      * @return self
      */
     public function swap8($x, $y)
@@ -237,7 +239,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
      */
     public function shiftRows()
     {
-        for ($i = 0; $i < 8; ++$i) {
+        for ($i = 0; $i < 8; $i++) {
             $x = $this->values[$i] & ParagonIE_Sodium_Core_Util::U32_MAX;
             $this->values[$i] = (
                 ($x & 0x000000FF)
@@ -246,11 +248,12 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
                     | (($x & 0xC0000000) >> 6) | (($x & 0x3F000000) << 2)
             ) & ParagonIE_Sodium_Core_Util::U32_MAX;
         }
+
         return $this;
     }
 
     /**
-     * @param int $x
+     * @param  int  $x
      * @return int
      */
     public static function rotr16($x)
@@ -288,6 +291,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
         $this->values[5] = $q4 ^ $r4 ^ $r5 ^ self::rotr16($q5 ^ $r5);
         $this->values[6] = $q5 ^ $r5 ^ $r6 ^ self::rotr16($q6 ^ $r6);
         $this->values[7] = $q6 ^ $r6 ^ $r7 ^ self::rotr16($q7 ^ $r7);
+
         return $this;
     }
 
@@ -321,6 +325,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
         $this->values[5] = $q2 ^ $q3 ^ $q4 ^ $q6 ^ $r2 ^ $r4 ^ $r5 ^ $r6 ^ $r7 ^ self::rotr16($q2 ^ $q3 ^ $q5 ^ $q6 ^ $r2 ^ $r5 ^ $r6 ^ $r7);
         $this->values[6] = $q3 ^ $q4 ^ $q5 ^ $q7 ^ $r3 ^ $r5 ^ $r6 ^ $r7 ^ self::rotr16($q3 ^ $q4 ^ $q6 ^ $q7 ^ $r3 ^ $r6 ^ $r7);
         $this->values[7] = $q4 ^ $q5 ^ $q6 ^ $r4 ^ $r6 ^ $r7 ^ self::rotr16($q4 ^ $q5 ^ $q7 ^ $r4 ^ $r7);
+
         return $this;
     }
 
@@ -329,7 +334,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
      */
     public function inverseShiftRows()
     {
-        for ($i = 0; $i < 8; ++$i) {
+        for ($i = 0; $i < 8; $i++) {
             $x = $this->values[$i];
             $this->values[$i] = ParagonIE_Sodium_Core_Util::U32_MAX & (
                 ($x & 0x000000FF)
@@ -338,6 +343,7 @@ class ParagonIE_Sodium_Core_AES_Block extends SplFixedArray
                     | (($x & 0x03000000) << 6) | (($x & 0xFC000000) >> 2)
             );
         }
+
         return $this;
     }
 }

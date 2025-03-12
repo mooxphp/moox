@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SimplePie
  *
@@ -32,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2022 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -45,9 +47,6 @@ namespace SimplePie\Cache;
 
 /**
  * Interface for creating a cache filename
- *
- * @package SimplePie
- * @subpackage Caching
  */
 interface NameFilter
 {
@@ -68,8 +67,7 @@ interface NameFilter
      * and encodings or longer lengths, but MUST support at least that
      * minimum.
      *
-     * @param string $name The name for the cache will be most likly an url with query string
-     *
+     * @param  string  $name  The name for the cache will be most likly an url with query string
      * @return string the new cache name
      */
     public function filter(string $name): string;

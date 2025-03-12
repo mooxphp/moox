@@ -33,19 +33,14 @@ class ParagonIE_Sodium_Core32_Curve25519_Ge_P1p1
      *
      * @internal You should not use this directly from another application
      *
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe|null $x
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe|null $y
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe|null $z
-     * @param ParagonIE_Sodium_Core32_Curve25519_Fe|null $t
-     *
      * @throws SodiumException
      * @throws TypeError
      */
     public function __construct(
-        ParagonIE_Sodium_Core32_Curve25519_Fe $x = null,
-        ParagonIE_Sodium_Core32_Curve25519_Fe $y = null,
-        ParagonIE_Sodium_Core32_Curve25519_Fe $z = null,
-        ParagonIE_Sodium_Core32_Curve25519_Fe $t = null
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $x = null,
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $y = null,
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $z = null,
+        ?ParagonIE_Sodium_Core32_Curve25519_Fe $t = null
     ) {
         if ($x === null) {
             $x = ParagonIE_Sodium_Core32_Curve25519::fe_0();

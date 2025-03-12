@@ -1,8 +1,7 @@
 <?php
+
 /**
  * Server-side rendering of the `core/button` block.
- *
- * @package WordPress
  */
 
 /**
@@ -10,58 +9,58 @@
  *
  * @since 6.6.0
  *
- * @param array    $attributes The block attributes.
- * @param string   $content    The block content.
- * @param WP_Block $block      The block object.
- *
+ * @param  array  $attributes  The block attributes.
+ * @param  string  $content  The block content.
+ * @param  WP_Block  $block  The block object.
  * @return string The block content.
  */
-function render_block_core_button( $attributes, $content ) {
-	$p = new WP_HTML_Tag_Processor( $content );
+function render_block_core_button($attributes, $content)
+{
+    $p = new WP_HTML_Tag_Processor($content);
 
-	/*
-	 * The button block can render an `<a>` or `<button>` and also has a
-	 * `<div>` wrapper. Find the a or button tag.
-	 */
-	$tag = null;
-	while ( $p->next_tag() ) {
-		$tag = $p->get_tag();
-		if ( 'A' === $tag || 'BUTTON' === $tag ) {
-			break;
-		}
-	}
+    /*
+     * The button block can render an `<a>` or `<button>` and also has a
+     * `<div>` wrapper. Find the a or button tag.
+     */
+    $tag = null;
+    while ($p->next_tag()) {
+        $tag = $p->get_tag();
+        if ($tag === 'A' || $tag === 'BUTTON') {
+            break;
+        }
+    }
 
-	/*
-	 * If this happens, the likelihood is there's no block content,
-	 * or the block has been modified by a plugin.
-	 */
-	if ( null === $tag ) {
-		return $content;
-	}
+    /*
+     * If this happens, the likelihood is there's no block content,
+     * or the block has been modified by a plugin.
+     */
+    if ($tag === null) {
+        return $content;
+    }
 
-	// If the next token is the closing tag, the button is empty.
-	$is_empty = true;
-	while ( $p->next_token() && $tag !== $p->get_token_name() && $is_empty ) {
-		if ( '#comment' !== $p->get_token_type() ) {
-			/**
-			 * Anything else implies this is not empty.
-			 * This might include any text content (including a space),
-			 * inline images or other HTML.
-			 */
-			$is_empty = false;
-		}
-	}
+    // If the next token is the closing tag, the button is empty.
+    $is_empty = true;
+    while ($p->next_token() && $tag !== $p->get_token_name() && $is_empty) {
+        if ($p->get_token_type() !== '#comment') {
+            /**
+             * Anything else implies this is not empty.
+             * This might include any text content (including a space),
+             * inline images or other HTML.
+             */
+            $is_empty = false;
+        }
+    }
 
-	/*
-	 * When there's no text, render nothing for the block.
-	 * See https://github.com/WordPress/gutenberg/issues/17221 for the
-	 * reasoning behind this.
-	 */
-	if ( $is_empty ) {
-		return '';
-	}
+    /*
+     * When there's no text, render nothing for the block.
+     * See https://github.com/WordPress/gutenberg/issues/17221 for the
+     * reasoning behind this.
+     */
+    if ($is_empty) {
+        return '';
+    }
 
-	return $content;
+    return $content;
 }
 
 /**
@@ -69,12 +68,13 @@ function render_block_core_button( $attributes, $content ) {
  *
  * @since 6.6.0
  */
-function register_block_core_button() {
-	register_block_type_from_metadata(
-		__DIR__ . '/button',
-		array(
-			'render_callback' => 'render_block_core_button',
-		)
-	);
+function register_block_core_button()
+{
+    register_block_type_from_metadata(
+        __DIR__.'/button',
+        [
+            'render_callback' => 'render_block_core_button',
+        ]
+    );
 }
-add_action( 'init', 'register_block_core_button' );
+add_action('init', 'register_block_core_button');

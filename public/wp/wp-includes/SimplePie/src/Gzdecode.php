@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -47,8 +48,6 @@ namespace SimplePie;
 /**
  * Decode 'gzip' encoded HTTP data
  *
- * @package SimplePie
- * @subpackage HTTP
  * @link http://www.gzip.org/format.txt
  */
 class Gzdecode
@@ -56,8 +55,8 @@ class Gzdecode
     /**
      * Compressed data
      *
-     * @access private
      * @var string
+     *
      * @see gzdecode::$data
      */
     public $compressed_data;
@@ -65,7 +64,6 @@ class Gzdecode
     /**
      * Size of compressed data
      *
-     * @access private
      * @var int
      */
     public $compressed_size;
@@ -73,7 +71,6 @@ class Gzdecode
     /**
      * Minimum size of a valid gzip string
      *
-     * @access private
      * @var int
      */
     public $min_compressed_size = 18;
@@ -81,7 +78,6 @@ class Gzdecode
     /**
      * Current position of pointer
      *
-     * @access private
      * @var int
      */
     public $position = 0;
@@ -89,7 +85,6 @@ class Gzdecode
     /**
      * Flags (FLG)
      *
-     * @access private
      * @var int
      */
     public $flags;
@@ -97,8 +92,8 @@ class Gzdecode
     /**
      * Uncompressed data
      *
-     * @access public
      * @see gzdecode::$compressed_data
+     *
      * @var string
      */
     public $data;
@@ -106,7 +101,6 @@ class Gzdecode
     /**
      * Modified time
      *
-     * @access public
      * @var int
      */
     public $MTIME;
@@ -114,7 +108,6 @@ class Gzdecode
     /**
      * Extra Flags
      *
-     * @access public
      * @var int
      */
     public $XFL;
@@ -122,7 +115,6 @@ class Gzdecode
     /**
      * Operating System
      *
-     * @access public
      * @var int
      */
     public $OS;
@@ -130,9 +122,9 @@ class Gzdecode
     /**
      * Subfield ID 1
      *
-     * @access public
      * @see gzdecode::$extra_field
      * @see gzdecode::$SI2
+     *
      * @var string
      */
     public $SI1;
@@ -140,9 +132,9 @@ class Gzdecode
     /**
      * Subfield ID 2
      *
-     * @access public
      * @see gzdecode::$extra_field
      * @see gzdecode::$SI1
+     *
      * @var string
      */
     public $SI2;
@@ -150,9 +142,9 @@ class Gzdecode
     /**
      * Extra field content
      *
-     * @access public
      * @see gzdecode::$SI1
      * @see gzdecode::$SI2
+     *
      * @var string
      */
     public $extra_field;
@@ -160,7 +152,6 @@ class Gzdecode
     /**
      * Original filename
      *
-     * @access public
      * @var string
      */
     public $filename;
@@ -168,7 +159,6 @@ class Gzdecode
     /**
      * Human readable comment
      *
-     * @access public
      * @var string
      */
     public $comment;
@@ -176,8 +166,8 @@ class Gzdecode
     /**
      * Don't allow anything to be set
      *
-     * @param string $name
-     * @param mixed $value
+     * @param  string  $name
+     * @param  mixed  $value
      */
     public function __set($name, $value)
     {
@@ -187,7 +177,7 @@ class Gzdecode
     /**
      * Set the compressed string and related properties
      *
-     * @param string $data
+     * @param  string  $data
      */
     public function __construct($data)
     {

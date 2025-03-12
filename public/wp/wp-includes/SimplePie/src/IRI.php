@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -47,8 +48,6 @@ namespace SimplePie;
 /**
  * IRI parser/serialiser/normaliser
  *
- * @package SimplePie
- * @subpackage HTTP
  * @author Sam Sneddon
  * @author Steve Minutillo
  * @author Ryan McCue
@@ -114,21 +113,21 @@ class IRI
      */
     protected $normalization = [
         'acap' => [
-            'port' => 674
+            'port' => 674,
         ],
         'dict' => [
-            'port' => 2628
+            'port' => 2628,
         ],
         'file' => [
-            'ihost' => 'localhost'
+            'ihost' => 'localhost',
         ],
         'http' => [
             'port' => 80,
-            'ipath' => '/'
+            'ipath' => '/',
         ],
         'https' => [
             'port' => 443,
-            'ipath' => '/'
+            'ipath' => '/',
         ],
     ];
 
@@ -145,13 +144,13 @@ class IRI
     /**
      * Overload __set() to provide access via properties
      *
-     * @param string $name Property name
-     * @param mixed $value Property value
+     * @param  string  $name  Property name
+     * @param  mixed  $value  Property value
      */
     public function __set($name, $value)
     {
-        if (method_exists($this, 'set_' . $name)) {
-            call_user_func([$this, 'set_' . $name], $value);
+        if (method_exists($this, 'set_'.$name)) {
+            call_user_func([$this, 'set_'.$name], $value);
         } elseif (
             $name === 'iauthority'
             || $name === 'iuserinfo'
@@ -160,14 +159,14 @@ class IRI
             || $name === 'iquery'
             || $name === 'ifragment'
         ) {
-            call_user_func([$this, 'set_' . substr($name, 1)], $value);
+            call_user_func([$this, 'set_'.substr($name, 1)], $value);
         }
     }
 
     /**
      * Overload __get() to provide access via properties
      *
-     * @param string $name Property name
+     * @param  string  $name  Property name
      * @return mixed
      */
     public function __get($name)
@@ -187,7 +186,7 @@ class IRI
             $return = $this->$name;
         }
         // host -> ihost
-        elseif (($prop = 'i' . $name) && array_key_exists($prop, $props)) {
+        elseif (($prop = 'i'.$name) && array_key_exists($prop, $props)) {
             $name = $prop;
             $return = $this->$prop;
         }
@@ -196,7 +195,7 @@ class IRI
             $name = $prop;
             $return = $this->$prop;
         } else {
-            trigger_error('Undefined property: ' . get_class($this) . '::' . $name, E_USER_NOTICE);
+            trigger_error('Undefined property: '.get_class($this).'::'.$name, E_USER_NOTICE);
             $return = null;
         }
 
@@ -210,30 +209,30 @@ class IRI
     /**
      * Overload __isset() to provide access via properties
      *
-     * @param string $name Property name
+     * @param  string  $name  Property name
      * @return bool
      */
     public function __isset($name)
     {
-        return method_exists($this, 'get_' . $name) || isset($this->$name);
+        return method_exists($this, 'get_'.$name) || isset($this->$name);
     }
 
     /**
      * Overload __unset() to provide access via properties
      *
-     * @param string $name Property name
+     * @param  string  $name  Property name
      */
     public function __unset($name)
     {
-        if (method_exists($this, 'set_' . $name)) {
-            call_user_func([$this, 'set_' . $name], '');
+        if (method_exists($this, 'set_'.$name)) {
+            call_user_func([$this, 'set_'.$name], '');
         }
     }
 
     /**
      * Create a new IRI object, from a specified string
      *
-     * @param string $iri
+     * @param  string  $iri
      */
     public function __construct($iri = null)
     {
@@ -255,21 +254,21 @@ class IRI
      *
      * Returns false if $base is not absolute, otherwise an IRI.
      *
-     * @param IRI|string $base (Absolute) Base IRI
-     * @param IRI|string $relative Relative IRI
+     * @param  IRI|string  $base  (Absolute) Base IRI
+     * @param  IRI|string  $relative  Relative IRI
      * @return IRI|false
      */
     public static function absolutize($base, $relative)
     {
-        if (!($relative instanceof IRI)) {
+        if (! ($relative instanceof IRI)) {
             $relative = new IRI($relative);
         }
-        if (!$relative->is_valid()) {
+        if (! $relative->is_valid()) {
             return false;
         } elseif ($relative->scheme !== null) {
             return clone $relative;
         } else {
-            if (!($base instanceof IRI)) {
+            if (! ($base instanceof IRI)) {
                 $base = new IRI($base);
             }
             if ($base->scheme !== null && $base->is_valid()) {
@@ -278,7 +277,7 @@ class IRI
                         $target = clone $relative;
                         $target->scheme = $base->scheme;
                     } else {
-                        $target = new IRI();
+                        $target = new IRI;
                         $target->scheme = $base->scheme;
                         $target->iuserinfo = $base->iuserinfo;
                         $target->ihost = $base->ihost;
@@ -287,9 +286,9 @@ class IRI
                             if ($relative->ipath[0] === '/') {
                                 $target->ipath = $relative->ipath;
                             } elseif (($base->iuserinfo !== null || $base->ihost !== null || $base->port !== null) && $base->ipath === '') {
-                                $target->ipath = '/' . $relative->ipath;
+                                $target->ipath = '/'.$relative->ipath;
                             } elseif (($last_segment = strrpos($base->ipath, '/')) !== false) {
-                                $target->ipath = substr($base->ipath, 0, $last_segment + 1) . $relative->ipath;
+                                $target->ipath = substr($base->ipath, 0, $last_segment + 1).$relative->ipath;
                             } else {
                                 $target->ipath = $relative->ipath;
                             }
@@ -310,6 +309,7 @@ class IRI
                     $target->ifragment = null;
                 }
                 $target->scheme_normalization();
+
                 return $target;
             }
 
@@ -320,7 +320,7 @@ class IRI
     /**
      * Parse an IRI into scheme/authority/path/query/fragment segments
      *
-     * @param string $iri
+     * @param  string  $iri
      * @return array
      */
     protected function parse_iri($iri)
@@ -330,18 +330,19 @@ class IRI
             if ($match[1] === '') {
                 $match['scheme'] = null;
             }
-            if (!isset($match[3]) || $match[3] === '') {
+            if (! isset($match[3]) || $match[3] === '') {
                 $match['authority'] = null;
             }
-            if (!isset($match[5])) {
+            if (! isset($match[5])) {
                 $match['path'] = '';
             }
-            if (!isset($match[6]) || $match[6] === '') {
+            if (! isset($match[6]) || $match[6] === '') {
                 $match['query'] = null;
             }
-            if (!isset($match[8]) || $match[8] === '') {
+            if (! isset($match[8]) || $match[8] === '') {
                 $match['fragment'] = null;
             }
+
             return $match;
         }
 
@@ -352,7 +353,7 @@ class IRI
     /**
      * Remove dot segments from a path
      *
-     * @param string $input
+     * @param  string  $input
      * @return string
      */
     protected function remove_dot_segments($input)
@@ -392,16 +393,17 @@ class IRI
                 $input = '';
             }
         }
-        return $output . $input;
+
+        return $output.$input;
     }
 
     /**
      * Replace invalid character with percent encoding
      *
-     * @param string $string Input string
-     * @param string $extra_chars Valid characters not in iunreserved or
-     *                            iprivate (this is ASCII-only)
-     * @param bool $iprivate Allow iprivate
+     * @param  string  $string  Input string
+     * @param  string  $extra_chars  Valid characters not in iunreserved or
+     *                               iprivate (this is ASCII-only)
+     * @param  bool  $iprivate  Allow iprivate
      * @return string
      */
     protected function replace_invalid_with_pct_encoding($string, $extra_chars, $iprivate = false)
@@ -480,7 +482,7 @@ class IRI
             // Percent encode anything invalid or not in ucschar
             if (
                 // Invalid sequences
-                !$valid
+                ! $valid
                 // Non-shortest form sequences are invalid
                 || $length > 1 && $character <= 0x7F
                 || $length > 2 && $character <= 0x7FF
@@ -497,7 +499,7 @@ class IRI
                 )
                 && (
                     // Everything not in iprivate, if it applies
-                    !$iprivate
+                    ! $iprivate
                     || $character < 0xE000
                     || $character > 0x10FFFD
                 )
@@ -525,7 +527,7 @@ class IRI
      * Removes sequences of percent encoded bytes that represent UTF-8
      * encoded characters in iunreserved
      *
-     * @param array $match PCRE match
+     * @param  array  $match  PCRE match
      * @return string Replacement
      */
     protected function remove_iunreserved_percent_encoded($match)
@@ -551,7 +553,7 @@ class IRI
             $value = hexdec($bytes[$i]);
 
             // If we're the first byte of sequence:
-            if (!$remaining) {
+            if (! $remaining) {
                 // Start position
                 $start = $i;
 
@@ -603,11 +605,11 @@ class IRI
             }
 
             // If we've reached the end of the current byte sequence, append it to Unicode::$data
-            if (!$remaining) {
+            if (! $remaining) {
                 // Percent encode anything invalid or not in iunreserved
                 if (
                     // Invalid sequences
-                    !$valid
+                    ! $valid
                     // Non-shortest form sequences are invalid
                     || $length > 1 && $character <= 0x7F
                     || $length > 2 && $character <= 0x7FF
@@ -627,7 +629,7 @@ class IRI
                     || $character > 0xD7FF && $character < 0xF900
                 ) {
                     for ($j = $start; $j <= $i; $j++) {
-                        $string .= '%' . strtoupper($bytes[$j]);
+                        $string .= '%'.strtoupper($bytes[$j]);
                     }
                 } else {
                     for ($j = $start; $j <= $i; $j++) {
@@ -641,7 +643,7 @@ class IRI
         // mid-way through a multi-byte sequence)
         if ($remaining) {
             for ($j = $start; $j < $len; $j++) {
-                $string .= '%' . strtoupper($bytes[$j]);
+                $string .= '%'.strtoupper($bytes[$j]);
             }
         }
 
@@ -688,13 +690,13 @@ class IRI
             return true;
         }
 
-        if (!$isauthority && (substr($this->ipath, 0, 2) === '//')) {
+        if (! $isauthority && (substr($this->ipath, 0, 2) === '//')) {
             return false;
         }
 
         // Relative urls cannot have a colon in the first path segment (and the
         // slashes themselves are not included so skip the first character).
-        if (!$this->scheme && !$isauthority &&
+        if (! $this->scheme && ! $isauthority &&
             strpos($this->ipath, ':') !== false &&
             strpos($this->ipath, '/', 1) !== false &&
             strpos($this->ipath, ':') < strpos($this->ipath, '/', 1)) {
@@ -708,7 +710,7 @@ class IRI
      * Set the entire IRI. Returns true on success, false on failure (if there
      * are any invalid characters).
      *
-     * @param string $iri
+     * @param  string  $iri
      * @return bool
      */
     public function set_iri($iri, $clear_cache = false)
@@ -716,9 +718,10 @@ class IRI
         static $cache;
         if ($clear_cache) {
             $cache = null;
+
             return;
         }
-        if (!$cache) {
+        if (! $cache) {
             $cache = [];
         }
 
@@ -740,7 +743,7 @@ class IRI
         }
 
         $parsed = $this->parse_iri((string) $iri);
-        if (!$parsed) {
+        if (! $parsed) {
             return false;
         }
 
@@ -758,7 +761,7 @@ class IRI
             $this->ipath,
             $this->iquery,
             $this->ifragment,
-            $return
+            $return,
         ];
 
         return $return;
@@ -768,19 +771,21 @@ class IRI
      * Set the scheme. Returns true on success, false on failure (if there are
      * any invalid characters).
      *
-     * @param string $scheme
+     * @param  string  $scheme
      * @return bool
      */
     public function set_scheme($scheme)
     {
         if ($scheme === null) {
             $this->scheme = null;
-        } elseif (!preg_match('/^[A-Za-z][0-9A-Za-z+\-.]*$/', $scheme)) {
+        } elseif (! preg_match('/^[A-Za-z][0-9A-Za-z+\-.]*$/', $scheme)) {
             $this->scheme = null;
+
             return false;
         } else {
             $this->scheme = strtolower($scheme);
         }
+
         return true;
     }
 
@@ -788,7 +793,7 @@ class IRI
      * Set the authority. Returns true on success, false on failure (if there are
      * any invalid characters).
      *
-     * @param string $authority
+     * @param  string  $authority
      * @return bool
      */
     public function set_authority($authority, $clear_cache = false)
@@ -796,9 +801,10 @@ class IRI
         static $cache;
         if ($clear_cache) {
             $cache = null;
+
             return;
         }
-        if (!$cache) {
+        if (! $cache) {
             $cache = [];
         }
 
@@ -806,6 +812,7 @@ class IRI
             $this->iuserinfo = null;
             $this->ihost = null;
             $this->port = null;
+
             return true;
         } elseif (isset($cache[$authority])) {
             [
@@ -842,7 +849,7 @@ class IRI
             $this->iuserinfo,
             $this->ihost,
             $this->port,
-            $return
+            $return,
         ];
 
         return $return;
@@ -851,7 +858,7 @@ class IRI
     /**
      * Set the iuserinfo.
      *
-     * @param string $iuserinfo
+     * @param  string  $iuserinfo
      * @return bool
      */
     public function set_userinfo($iuserinfo)
@@ -870,19 +877,21 @@ class IRI
      * Set the ihost. Returns true on success, false on failure (if there are
      * any invalid characters).
      *
-     * @param string $ihost
+     * @param  string  $ihost
      * @return bool
      */
     public function set_host($ihost)
     {
         if ($ihost === null) {
             $this->ihost = null;
+
             return true;
         } elseif (substr($ihost, 0, 1) === '[' && substr($ihost, -1) === ']') {
             if (\SimplePie\Net\IPv6::check_ipv6(substr($ihost, 1, -1))) {
-                $this->ihost = '[' . \SimplePie\Net\IPv6::compress(substr($ihost, 1, -1)) . ']';
+                $this->ihost = '['.\SimplePie\Net\IPv6::compress(substr($ihost, 1, -1)).']';
             } else {
                 $this->ihost = null;
+
                 return false;
             }
         } else {
@@ -914,28 +923,31 @@ class IRI
      * Set the port. Returns true on success, false on failure (if there are
      * any invalid characters).
      *
-     * @param string $port
+     * @param  string  $port
      * @return bool
      */
     public function set_port($port)
     {
         if ($port === null) {
             $this->port = null;
+
             return true;
         } elseif (strspn($port, '0123456789') === strlen($port)) {
             $this->port = (int) $port;
             $this->scheme_normalization();
+
             return true;
         }
 
         $this->port = null;
+
         return false;
     }
 
     /**
      * Set the ipath.
      *
-     * @param string $ipath
+     * @param  string  $ipath
      * @return bool
      */
     public function set_path($ipath, $clear_cache = false)
@@ -943,9 +955,10 @@ class IRI
         static $cache;
         if ($clear_cache) {
             $cache = null;
+
             return;
         }
-        if (!$cache) {
+        if (! $cache) {
             $cache = [];
         }
 
@@ -958,17 +971,18 @@ class IRI
             $removed = $this->remove_dot_segments($valid);
 
             $cache[$ipath] = [$valid, $removed];
-            $this->ipath =  ($this->scheme !== null) ? $removed : $valid;
+            $this->ipath = ($this->scheme !== null) ? $removed : $valid;
         }
 
         $this->scheme_normalization();
+
         return true;
     }
 
     /**
      * Set the iquery.
      *
-     * @param string $iquery
+     * @param  string  $iquery
      * @return bool
      */
     public function set_query($iquery)
@@ -979,13 +993,14 @@ class IRI
             $this->iquery = $this->replace_invalid_with_pct_encoding($iquery, '!$&\'()*+,;=:@/?', true);
             $this->scheme_normalization();
         }
+
         return true;
     }
 
     /**
      * Set the ifragment.
      *
-     * @param string $ifragment
+     * @param  string  $ifragment
      * @return bool
      */
     public function set_fragment($ifragment)
@@ -996,6 +1011,7 @@ class IRI
             $this->ifragment = $this->replace_invalid_with_pct_encoding($ifragment, '!$&\'()*+,;=:@/?');
             $this->scheme_normalization();
         }
+
         return true;
     }
 
@@ -1007,7 +1023,7 @@ class IRI
     public function to_uri($string)
     {
         static $non_ascii;
-        if (!$non_ascii) {
+        if (! $non_ascii) {
             $non_ascii = implode('', range("\x80", "\xFF"));
         }
 
@@ -1029,27 +1045,27 @@ class IRI
      */
     public function get_iri()
     {
-        if (!$this->is_valid()) {
+        if (! $this->is_valid()) {
             return false;
         }
 
         $iri = '';
         if ($this->scheme !== null) {
-            $iri .= $this->scheme . ':';
+            $iri .= $this->scheme.':';
         }
         if (($iauthority = $this->get_iauthority()) !== null) {
-            $iri .= '//' . $iauthority;
+            $iri .= '//'.$iauthority;
         }
         if ($this->ipath !== '') {
             $iri .= $this->ipath;
-        } elseif (!empty($this->normalization[$this->scheme]['ipath']) && $iauthority !== null && $iauthority !== '') {
+        } elseif (! empty($this->normalization[$this->scheme]['ipath']) && $iauthority !== null && $iauthority !== '') {
             $iri .= $this->normalization[$this->scheme]['ipath'];
         }
         if ($this->iquery !== null) {
-            $iri .= '?' . $this->iquery;
+            $iri .= '?'.$this->iquery;
         }
         if ($this->ifragment !== null) {
-            $iri .= '#' . $this->ifragment;
+            $iri .= '#'.$this->ifragment;
         }
 
         return $iri;
@@ -1075,14 +1091,15 @@ class IRI
         if ($this->iuserinfo !== null || $this->ihost !== null || $this->port !== null) {
             $iauthority = '';
             if ($this->iuserinfo !== null) {
-                $iauthority .= $this->iuserinfo . '@';
+                $iauthority .= $this->iuserinfo.'@';
             }
             if ($this->ihost !== null) {
                 $iauthority .= $this->ihost;
             }
             if ($this->port !== null && $this->port !== 0) {
-                $iauthority .= ':' . $this->port;
+                $iauthority .= ':'.$this->port;
             }
+
             return $iauthority;
         }
 

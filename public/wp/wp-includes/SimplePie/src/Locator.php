@@ -33,12 +33,13 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @package SimplePie
  * @copyright 2004-2016 Ryan Parman, Sam Sneddon, Ryan McCue
  * @author Ryan Parman
  * @author Sam Sneddon
  * @author Ryan McCue
+ *
  * @link http://simplepie.org/ SimplePie
+ *
  * @license http://www.opensource.org/licenses/bsd-license.php BSD License
  */
 
@@ -49,25 +50,37 @@ namespace SimplePie;
  *
  *
  * This class can be overloaded with {@see \SimplePie\SimplePie::set_locator_class()}
- *
- * @package SimplePie
  */
 class Locator implements RegistryAware
 {
     public $useragent;
+
     public $timeout;
+
     public $file;
+
     public $local = [];
+
     public $elsewhere = [];
+
     public $cached_entities = [];
+
     public $http_base;
+
     public $base;
+
     public $base_location = 0;
+
     public $checked_feeds = 0;
+
     public $max_checked_feeds = 10;
+
     public $force_fsockopen = false;
+
     public $curl_options = [];
+
     public $dom;
+
     protected $registry;
 
     public function __construct(\SimplePie\File $file, $timeout = 10, $useragent = null, $max_checked_feeds = 10, $force_fsockopen = false, $curl_options = [])
@@ -80,7 +93,7 @@ class Locator implements RegistryAware
         $this->curl_options = $curl_options;
 
         if (class_exists('DOMDocument') && $this->file->body != '') {
-            $this->dom = new \DOMDocument();
+            $this->dom = new \DOMDocument;
 
             set_error_handler(['SimplePie\Misc', 'silence_errors']);
             try {
@@ -137,6 +150,7 @@ class Locator implements RegistryAware
                 return $working[0];
             }
         }
+
         return null;
     }
 
@@ -146,8 +160,8 @@ class Locator implements RegistryAware
             $sniffer = $this->registry->create(Content\Type\Sniffer::class, [$file]);
             $sniffed = $sniffer->get_type();
             $mime_types = ['application/rss+xml', 'application/rdf+xml',
-                                'text/rdf', 'application/atom+xml', 'text/xml',
-                                'application/xml', 'application/x-rss+xml'];
+                'text/rdf', 'application/atom+xml', 'text/xml',
+                'application/xml', 'application/x-rss+xml'];
             if ($check_html) {
                 $mime_types[] = 'text/html';
             }
@@ -189,7 +203,7 @@ class Locator implements RegistryAware
         $feeds = array_merge($feeds, $this->search_elements_by_tag('a', $done, $feeds));
         $feeds = array_merge($feeds, $this->search_elements_by_tag('area', $done, $feeds));
 
-        if (!empty($feeds)) {
+        if (! empty($feeds)) {
             return array_values($feeds);
         }
 
@@ -220,7 +234,7 @@ class Locator implements RegistryAware
                     continue;
                 }
 
-                if (!in_array($href, $done) && in_array('feed', $rel) || (in_array('alternate', $rel) && !in_array('stylesheet', $rel) && $link->hasAttribute('type') && in_array(strtolower($this->registry->call(Misc::class, 'parse_mime', [$link->getAttribute('type')])), ['text/html', 'application/rss+xml', 'application/atom+xml'])) && !isset($feeds[$href])) {
+                if (! in_array($href, $done) && in_array('feed', $rel) || (in_array('alternate', $rel) && ! in_array('stylesheet', $rel) && $link->hasAttribute('type') && in_array(strtolower($this->registry->call(Misc::class, 'parse_mime', [$link->getAttribute('type')])), ['text/html', 'application/rss+xml', 'application/atom+xml'])) && ! isset($feeds[$href])) {
                     $this->checked_feeds++;
                     $headers = [
                         'Accept' => 'application/atom+xml, application/rss+xml, application/rdf+xml;q=0.9, application/xml;q=0.8, text/xml;q=0.8, text/html;q=0.7, unknown/unknown;q=0.1, application/unknown;q=0.1, */*;q=0.1',
@@ -270,9 +284,10 @@ class Locator implements RegistryAware
         }
         $this->local = array_unique($this->local);
         $this->elsewhere = array_unique($this->elsewhere);
-        if (!empty($this->local) || !empty($this->elsewhere)) {
+        if (! empty($this->local) || ! empty($this->elsewhere)) {
             return true;
         }
+
         return null;
     }
 
@@ -282,7 +297,7 @@ class Locator implements RegistryAware
             throw new \SimplePie\Exception('DOMDocument not found, unable to use '.
                                           'locator');
         }
-        if (!class_exists('DOMXpath')) {
+        if (! class_exists('DOMXpath')) {
             throw new \SimplePie\Exception('DOMXpath not found, unable to use '.
                                           'get_rel_link');
         }
@@ -317,6 +332,7 @@ class Locator implements RegistryAware
                 }
             }
         }
+
         return null;
     }
 
@@ -340,6 +356,7 @@ class Locator implements RegistryAware
                 }
             }
         }
+
         return null;
     }
 
@@ -362,6 +379,7 @@ class Locator implements RegistryAware
                 }
             }
         }
+
         return null;
     }
 }

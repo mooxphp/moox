@@ -16,14 +16,14 @@
 	<h1 class="wp-block-heading has-text-align-center has-x-large-font-size">
 		<em>
 		<?php
-		/* Translators: About link placeholder */
-			$about_link = '<a href="#" rel="nofollow">' . esc_html__( 'Money Studies', 'twentytwentyfour' ) . '</a>';
-			echo sprintf(
-				/* Translators: About text placeholder */
-				esc_html__( 'I write about finance, management and economy, my book “%1$s” is out now.', 'twentytwentyfour' ),
-				$about_link
-			);
-			?>
+        /* Translators: About link placeholder */
+            $about_link = '<a href="#" rel="nofollow">'.esc_html__('Money Studies', 'twentytwentyfour').'</a>';
+echo sprintf(
+    /* Translators: About text placeholder */
+    esc_html__('I write about finance, management and economy, my book “%1$s” is out now.', 'twentytwentyfour'),
+    $about_link
+);
+?>
 		</em>
 	</h1>
 	<!-- /wp:heading -->
