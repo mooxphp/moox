@@ -11,6 +11,8 @@ parameters:
         - 'packages/*/vendor/*'
         - 'packages/press/wordpress/*'
         - 'packages/*/tests/*'
+        - 'packages/expiry/*'
+        - 'packages/restore/*'
     tmpDir: build/phpstan
     ignoreErrors:
         -
