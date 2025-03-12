@@ -23,16 +23,33 @@ class ListMedia extends ListRecords
                 ->form([
                     FileUpload::make('file')
                         ->label('Datei auswählen')
-                        ->image()
-                        ->imageEditor()
-                        ->multiple()
-                        ->maxParallelUploads(1)
-                        ->acceptedFileTypes(['image/*', 'video/*', 'application/pdf'])
-                        ->preserveFilenames()
-                        ->maxSize(10240)
-                        ->required()
+                        ->multiple(config('media.upload.resource.multiple'))
+                        ->disk(config('media.upload.resource.disk'))
+                        ->directory(config('media.upload.resource.directory'))
+                        ->visibility(config('media.upload.resource.visibility'))
+                        ->maxSize(config('media.upload.resource.max_file_size'))
+                        ->minSize(config('media.upload.resource.min_file_size'))
+                        ->maxFiles(config('media.upload.resource.max_files'))
+                        ->minFiles(config('media.upload.resource.min_files'))
+                        ->acceptedFileTypes(config('media.upload.resource.accepted_file_types'))
+                        ->imageResizeMode(config('media.upload.resource.image_resize_mode'))
+                        ->imageCropAspectRatio(config('media.upload.resource.image_crop_aspect_ratio'))
+                        ->imageResizeTargetWidth(config('media.upload.resource.image_resize_target_width'))
+                        ->imageResizeTargetHeight(config('media.upload.resource.image_resize_target_height'))
+                        ->imageEditor(config('media.upload.resource.image_editor.enabled'))
+                        ->imageEditorAspectRatios(config('media.upload.resource.image_editor.aspect_ratios'))
+                        ->imageEditorViewportWidth(config('media.upload.resource.image_editor.viewport_width'))
+                        ->imageEditorViewportHeight(config('media.upload.resource.image_editor.viewport_height'))
+                        ->imageEditorMode(config('media.upload.resource.image_editor.mode'))
+                        ->imageEditorEmptyFillColor(config('media.upload.resource.image_editor.empty_fill_color'))
+                        ->panelLayout(config('media.upload.resource.panel_layout'))
+                        ->downloadable(config('media.upload.resource.show_download_button'))
+                        ->openable(config('media.upload.resource.show_open_button'))
+                        ->previewable(config('media.upload.resource.show_preview'))
+                        ->reorderable(config('media.upload.resource.reorderable'))
+                        ->appendFiles(config('media.upload.resource.append_files'))
                         ->afterStateUpdated(function ($state) {
-                            if (! $state) {
+                            if (!$state) {
                                 return;
                             }
 

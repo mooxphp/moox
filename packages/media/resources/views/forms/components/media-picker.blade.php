@@ -41,12 +41,12 @@
         @if ($this instanceof \Filament\Resources\Pages\EditRecord || $this instanceof \Filament\Resources\Pages\CreateRecord)
             <x-filament::button color="primary" size="sm" class="w-full flex items-center justify-center space-x-2"
                 x-on:click="
-                                        $dispatch('set-media-picker-model', {
-                                            modelId: {{ $getRecord()?->id ?? 0 }},
-                                            modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
-                                        });
-                                        $dispatch('open-modal', { id: 'mediaPickerModal' });
-                                    ">
+                                                                        $dispatch('set-media-picker-model', {
+                                                                            modelId: {{ $getRecord()?->id ?? 0 }},
+                                                                            modelClass: '{{ $getRecord() ? addslashes($getRecord()::class) : addslashes($this->getResource()::getModel()) }}'
+                                                                        });
+                                                                        $dispatch('open-modal', { id: 'mediaPickerModal' });
+                                                                    ">
                 <span>Bild auswählen</span>
             </x-filament::button>
         @endif
@@ -83,6 +83,7 @@
             Kein Bild ausgewählt.
         </div>
 
-        <livewire:media-picker-modal id="media-picker-modal" :multiple="$field->isMultiple()" />
+        <livewire:media-picker-modal id="media-picker-modal" :multiple="$field->isMultiple()"
+            :upload-config="$field->getUploadConfig()" />
     </div>
 </x-dynamic-component>

@@ -4,21 +4,29 @@ namespace Moox\Media\Http\Livewire;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Moox\Media\Models\Media;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Forms\Components\FileUpload;
+use Spatie\MediaLibrary\MediaCollections\FileAdderFactory;
 
-class MediaPickerModal extends Component
+class MediaPickerModal extends Component implements HasForms
 {
     use WithPagination;
+    use WithFileUploads;
+    use InteractsWithForms;
 
     public ?int $modelId = null;
-
     public ?string $modelClass = null;
-
     public $media;
-
     public array $selectedMediaIds = [];
-
     public bool $multiple = false;
+    public $files = [];
+    public ?array $data = [];
+
+    public array $uploadConfig = [];
 
     public array $selectedMediaMeta = [
         'id' => null,
@@ -31,15 +39,146 @@ class MediaPickerModal extends Component
     ];
 
     public string $searchQuery = '';
-
     public string $fileTypeFilter = '';
-
     public string $dateFilter = '';
 
     protected $listeners = [
         'set-media-picker-model' => 'setModel',
         'mediaUploaded' => 'refreshMedia',
     ];
+
+    public function mount(): void
+    {
+        $this->files = [];
+        $this->form->fill();
+    }
+
+    public function form(Form $form): Form
+    {
+        $upload = FileUpload::make('files')
+            ->afterStateUpdated(function ($state) {
+                if (!$state) {
+                    return;
+                }
+
+                $processedFiles = session('processed_files', []);
+
+                if (!is_array($state)) {
+                    $model = new Media;
+                    $model->exists = true;
+
+                    $fileAdder = app(FileAdderFactory::class)->create($model, $state);
+                    $media = $fileAdder->preservingOriginal()->toMediaCollection('default');
+
+                    $title = pathinfo($state->getClientOriginalName(), PATHINFO_FILENAME);
+
+                    $media->title = $title;
+                    $media->alt = $title;
+                    $media->original_model_type = Media::class;
+                    $media->original_model_id = $media->id;
+                    $media->model_id = $media->id;
+                    $media->model_type = Media::class;
+
+                    if (str_starts_with($media->mime_type, 'image/')) {
+                        [$width, $height] = getimagesize($media->getPath());
+                        $media->setCustomProperty('dimensions', [
+                            'width' => $width,
+                            'height' => $height,
+                        ]);
+                    }
+
+                    $media->save();
+                } else {
+                    foreach ($state as $key => $tempFile) {
+                        if (in_array($key, $processedFiles)) {
+                            continue;
+                        }
+
+                        $model = new Media;
+                        $model->exists = true;
+
+                        $fileAdder = app(FileAdderFactory::class)->create($model, $tempFile);
+                        $media = $fileAdder->preservingOriginal()->toMediaCollection('default');
+
+                        $title = pathinfo($tempFile->getClientOriginalName(), PATHINFO_FILENAME);
+
+                        $media->title = $title;
+                        $media->alt = $title;
+                        $media->original_model_type = Media::class;
+                        $media->original_model_id = $media->id;
+                        $media->model_id = $media->id;
+                        $media->model_type = Media::class;
+
+                        if (str_starts_with($media->mime_type, 'image/')) {
+                            [$width, $height] = getimagesize($media->getPath());
+                            $media->setCustomProperty('dimensions', [
+                                'width' => $width,
+                                'height' => $height,
+                            ]);
+                        }
+
+                        $media->save();
+                        $processedFiles[] = $key;
+                    }
+
+                    session(['processed_files' => $processedFiles]);
+                }
+            });
+
+        if (isset($this->uploadConfig['multiple'])) {
+            $upload->multiple($this->uploadConfig['multiple']);
+        }
+        if (isset($this->uploadConfig['accepted_file_types'])) {
+            $upload->acceptedFileTypes($this->uploadConfig['accepted_file_types']);
+        }
+        if (isset($this->uploadConfig['max_files'])) {
+            $upload->maxFiles($this->uploadConfig['max_files']);
+        }
+        if (isset($this->uploadConfig['min_files'])) {
+            $upload->minFiles($this->uploadConfig['min_files']);
+        }
+        if (isset($this->uploadConfig['max_size'])) {
+            $upload->maxSize($this->uploadConfig['max_size']);
+        }
+        if (isset($this->uploadConfig['min_size'])) {
+            $upload->minSize($this->uploadConfig['min_size']);
+        }
+        if (isset($this->uploadConfig['image_editor'])) {
+            $upload->imageEditor($this->uploadConfig['image_editor']);
+        }
+        if (isset($this->uploadConfig['image_editor_mode'])) {
+            $upload->imageEditorMode($this->uploadConfig['image_editor_mode']);
+        }
+        if (isset($this->uploadConfig['image_editor_viewport_width'])) {
+            $upload->imageEditorViewportWidth($this->uploadConfig['image_editor_viewport_width']);
+        }
+        if (isset($this->uploadConfig['image_editor_viewport_height'])) {
+            $upload->imageEditorViewportHeight($this->uploadConfig['image_editor_viewport_height']);
+        }
+        if (isset($this->uploadConfig['image_editor_aspect_ratios'])) {
+            $upload->imageEditorAspectRatios($this->uploadConfig['image_editor_aspect_ratios']);
+        }
+        if (isset($this->uploadConfig['placeholder'])) {
+            $upload->placeholder($this->uploadConfig['placeholder']);
+        }
+        if (isset($this->uploadConfig['panel_layout'])) {
+            $upload->panelLayout($this->uploadConfig['panel_layout']);
+        }
+        if (isset($this->uploadConfig['show_download_button'])) {
+            $upload->showDownloadButton($this->uploadConfig['show_download_button']);
+        }
+        if (isset($this->uploadConfig['disk'])) {
+            $upload->disk($this->uploadConfig['disk']);
+        }
+        if (isset($this->uploadConfig['directory'])) {
+            $upload->directory($this->uploadConfig['directory']);
+        }
+        if (isset($this->uploadConfig['visibility'])) {
+            $upload->visibility($this->uploadConfig['visibility']);
+        }
+
+        return $form->schema([$upload]);
+    }
 
     public function setModel(?int $modelId, string $modelClass): void
     {
@@ -62,7 +201,7 @@ class MediaPickerModal extends Component
                 $this->selectedMediaIds[] = $mediaId;
             }
         } else {
-            if (! empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
+            if (!empty($this->selectedMediaIds) && $this->selectedMediaIds[0] === $mediaId) {
                 $this->selectedMediaIds = [];
             } else {
                 $this->selectedMediaIds = [$mediaId];
@@ -99,7 +238,7 @@ class MediaPickerModal extends Component
         $selectedMedia = Media::whereIn('id', $this->selectedMediaIds)->get();
 
         if ($selectedMedia->isNotEmpty()) {
-            if (! $this->multiple) {
+            if (!$this->multiple) {
                 $media = $selectedMedia->first();
                 $this->dispatch('mediaSelected', [
                     'id' => $media->id,
@@ -107,7 +246,7 @@ class MediaPickerModal extends Component
                     'file_name' => $media->file_name,
                 ]);
             } else {
-                $selectedMediaData = $selectedMedia->map(fn ($media) => [
+                $selectedMediaData = $selectedMedia->map(fn($media) => [
                     'id' => $media->id,
                     'url' => $media->getUrl(),
                     'file_name' => $media->file_name,
@@ -154,10 +293,10 @@ class MediaPickerModal extends Component
         $media = Media::query()
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($subQuery) {
-                    $subQuery->where('file_name', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('title', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%')
-                        ->orWhere('alt', 'like', '%'.$this->searchQuery.'%');
+                    $subQuery->where('file_name', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('title', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('description', 'like', '%' . $this->searchQuery . '%')
+                        ->orWhere('alt', 'like', '%' . $this->searchQuery . '%');
                 });
             })
             ->when($this->fileTypeFilter, function ($query) {
