@@ -9,12 +9,13 @@
 -   [ ] Media uploaded by user
 -   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
 -   [ ] Restore and Expire are not phpstan'ed
--   [ ] Theoretically Laravel 12, but Translatable and Backup-Server are not ready
+-   [ ] Theoretically Laravel 12, but [Translatable](https://github.com/Astrotomic/laravel-translatable) and [Backup-Server](https://github.com/spatie/laravel-backup-server) are not ready
 
 ## Todo
 
 -   [ ] remove boilerplate code taxonomy
 -   [ ] finish core implementation docs
+-   [ ] Publish and Unpublish docs
 -   [ ] Progress Column and copyable docs
 -   [ ] Implement Item Entity
     -   [x] Item Model
