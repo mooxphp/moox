@@ -62,12 +62,6 @@ Thumbs.db
 /routes/custom_*.php
 !/routes/custom_example.php
 
-# Moox Press
+# Moox Press - need to be removed for the demo
 /public/vendor/*
 /public/wp/*
-
-# Moox Builder
-/app/Builder/*/*
-/config/previews/*
-/lang/*/previews/*
-/resources/lang/*/previews/*

@@ -14,7 +14,7 @@ class ListItems extends BaseListItems
     public function mount(): void
     {
         parent::mount();
-        $this->mountHasListPageTabs();
+        $this->mountTabsInListPage();
     }
 
     public function getTabs(): array

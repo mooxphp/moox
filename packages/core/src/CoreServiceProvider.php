@@ -9,8 +9,8 @@ use Moox\Core\Console\Commands\MooxInstaller;
 use Moox\Core\Console\Commands\PackageServiceCommand;
 use Moox\Core\Services\TabStateManager;
 use Moox\Core\Services\TaxonomyService;
-use Moox\Core\Traits\GoogleIcons;
-use Moox\Core\Traits\TranslatableConfig;
+use Moox\Core\Traits\HasGoogleIcons;
+use Moox\Core\Traits\HasTranslatableConfig;
 use Moox\Permission\Policies\DefaultPolicy;
 use Override;
 use Spatie\LaravelPackageTools\Package;
@@ -18,8 +18,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class CoreServiceProvider extends PackageServiceProvider
 {
-    use GoogleIcons;
-    use TranslatableConfig;
+    use HasGoogleIcons;
+    use HasTranslatableConfig;
 
     #[Override]
     public function boot(): void

@@ -2,27 +2,30 @@
 
 # Moox Draft
 
-Draft is a simple Moox Entity, that can be used to create and manage simple entries, like logs.
+Draft is a publishable Moox Entity that can be used to create and manage Pages, Posts, etc.
 
 ## Features
 
 <!--features-->
 
--   Title with Slug
--   Active (Toggle)
--   Description (Editor)
--   Content (Markdown)
--   Data (Key-Value)
--   Image (Media)
--   Author (User)
--   Type (Select)
--   Due (DateTime)
--   Color
--   UUID
--   ULID
--   Taxonomies
--   Relation
--   Section
+-   Publish (or schedule)
+-   Unpublish (or schedule)
+-   Soft Delete
+-   Supports Taxonomies
+-   Supports Relations
+-   Supports Modules
+-   Title with Slug fields
+-   Active field (Toggle)
+-   Description field (Editor)
+-   Content field (Markdown)
+-   Data field (Key-Value)
+-   Image field (Media)
+-   Author field (User)
+-   Type field (Select)
+-   Due field (DateTime)
+-   Color field (Color)
+-   UUID field (UUID)
+-   ULID field (ULID)
 
 <!--/features-->
 

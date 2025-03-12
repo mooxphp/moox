@@ -116,10 +116,10 @@ class BackupLogItemResource extends Resource
                 IconColumn::make('backup.status')
                     ->label('Status')
                     ->icon(fn (string $state): string => match ($state) {
-                        'heroicon-o-question-mark-circle',
                         'failed' => 'heroicon-o-x-circle',
                         'completed' => 'heroicon-o-check-circle',
                         'pending' => 'heroicon-o-play',
+                        default => 'heroicon-o-question-mark-circle',
                     })
                     ->colors([
                         'secondary',
@@ -148,6 +148,7 @@ class BackupLogItemResource extends Resource
                         'error' => 'heroicon-o-exclamation-circle',
                         'warning' => 'heroicon-o-question-mark-circle',
                         'info' => 'heroicon-o-information-circle',
+                        default => 'heroicon-o-question-mark-circle',
                     })
                     ->colors([
                         'secondary',

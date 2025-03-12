@@ -17,7 +17,8 @@
         }
     ],
     "require": {
-        "moox/core": "^3.0.3"
+        "moox/core": "*",
+        "spatie/laravel-backup-server": "^4.0.2"
     },
     "autoload": {
         "psr-4": {

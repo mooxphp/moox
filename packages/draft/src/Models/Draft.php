@@ -3,19 +3,19 @@
 namespace Moox\Draft\Models;
 
 use App\Models\User;
-use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
-use Astrotomic\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Moox\Core\Entities\Items\Draft\BaseDraftModel;
+use Moox\Core\Traits\HasScheduledPublish;
 use Moox\Core\Traits\Taxonomy\HasModelTaxonomy;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Draft extends BaseDraftModel implements HasMedia, TranslatableContract
+class Draft extends BaseDraftModel implements HasMedia
 {
-    use HasModelTaxonomy, InteractsWithMedia, Translatable;
+    use HasModelTaxonomy, HasScheduledPublish, InteractsWithMedia, SoftDeletes;
 
     public $translatedAttributes = ['title', 'slug', 'description', 'content'];
 
@@ -75,8 +75,7 @@ class Draft extends BaseDraftModel implements HasMedia, TranslatableContract
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300)
-            ->nonQueued();
+            ->fit(Fit::Contain, 300, 300);
     }
 
     public function mediaThroughUsables()

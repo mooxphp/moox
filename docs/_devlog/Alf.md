@@ -1,9 +1,16 @@
 # Devlog
 
+## Team
+
+-   [x] https://moox.heco.si/ - deployed version
+-   [ ] Write protected fields, images
+-   [ ] Hierarchy (Collection?)
+-   [ ] Media localization
+-   [ ] Media uploaded by user
+-   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
+
 ## Todo
 
--   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
--   [ ] remove debug code
 -   [ ] remove boilerplate code taxonomy
 -   [ ] finish core implementation docs
 -   [ ] Implement Item Entity
@@ -27,11 +34,17 @@
     -   [ ] Base Record with SoftDeletes
     -   [ ] Generate package
     -   [ ] Add fields
--   [ ] Implement Publish Entity
+-   [ ] Implement Draft Entity
     -   [ ] Base Publish with SoftDeletes and Publishable
     -   [ ] Generate package
     -   [ ] Add fields
+    -   [ ] Taxonomies
+        -   [ ] Category - Does not save, dissapears
+        -   [ ] Tag - Error not title, localization
     -   [ ] Localization
+    -   [ ] Media
+    -   [ ] Implement HasScheduledPublish including fields in Draft
+    -   [ ] HasScheduledPublish Trait docs
 -   [ ] Build should replace with variables, not the placeholders
 -   [ ] Build must use the entity files for entity generation
 -   [ ] Implement Frontend class, abstract? See Frontend/Idea.md
@@ -106,6 +119,7 @@
     -   [ ] moox:release or UI - auto release, see notes
         -   [ ] We need to see if we use moox.json, DB or both.
     -   [ ] Website: add https://creativecommons.org/licenses/by-sa/4.0/ for our graphics, assets, docs, website and themes.
+    -   [ ] Cache Clear, see [this](https://github.com/cms-multi/filament-clear-cache) or Full (paoc), Frontend (views), Static Cache (html)
 
 ## Relations
 

@@ -39,6 +39,8 @@ class SendEscalatedExpiriesJob implements ShouldQueue
             return;
         }
 
+        $escalatedEntries = [];
+
         $escalatedEntries = $escalatedExpiries->filter(fn ($entry): bool => $entry->escalated_at !== null);
 
         $data = [

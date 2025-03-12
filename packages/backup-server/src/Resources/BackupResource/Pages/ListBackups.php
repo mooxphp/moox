@@ -11,7 +11,7 @@ use Moox\BackupServerUi\Resources\BackupResource;
 use Spatie\BackupServer\Models\Backup;
 use Spatie\BackupServer\Models\BackupLogItem;
 use Spatie\BackupServer\Models\Source;
-use Spatie\BackupServer\Support\Helpers\Enums\LogLevel;
+use Spatie\BackupServer\Support\Helpers\Enums\HasLogLevel;
 use Spatie\BackupServer\Tasks\Backup\Actions\CreateBackupAction;
 
 class ListBackups extends ListRecords
@@ -22,8 +22,8 @@ class ListBackups extends ListRecords
     {
         return [
             Action::make('backup')
-                ->label(__('Manual Backup'))
-                ->modalHeading(__('Create Manual Backup'))
+                ->label('Manual Backup')
+                ->modalHeading('Create Manual Backup')
                 ->form([
                     Select::make('source_id')
                         ->rules(['exists:backup_server_sources,id'])
@@ -32,7 +32,7 @@ class ListBackups extends ListRecords
                         ->placeholder('Source'),
                 ])
                 ->action(function (array $data): void {
-                    $sourceName = Source::where('id', $data['source_id'])->pluck('name')->first();
+                    $sourceName = Source::where('id', $data['source_id'])->value('name');
 
                     $this->manualBackup($sourceName);
                 }),
@@ -51,14 +51,14 @@ class ListBackups extends ListRecords
 
         Log::info('Manual Backup on sourceName: '.$sourceName.' created.');
 
-        /* Logging needs to be fixed.
+        /* TODO: Logging needs to be fixed.
         $writeLogItemsToConsole = function (Backup $backup) {
             Event::listen('eloquent.saving: '.BackupLogItem::class, function (BackupLogItem $backupLogItem) use ($backup) {
                 if ($backupLogItem->backup_id !== $backup->id) {
                     return;
                 }
 
-                $outputMethod = $backupLogItem->level === LogLevel::ERROR
+                $outputMethod = $backupLogItem->level === HasLogLevel::ERROR
                     ? 'error'
                     : 'comment';
 

@@ -2,7 +2,6 @@
 
 namespace Moox\Core\Services;
 
-use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -37,10 +36,7 @@ class TaxonomyService
             return $this->cachedTaxonomies[$resourceName];
         }
 
-        Log::info("Getting taxonomies for resource: {$resourceName}");
-
         $taxonomies = config("{$resourceName}.taxonomies", []);
-        Log::info('Taxonomies found: '.json_encode($taxonomies));
 
         $this->cachedTaxonomies[$resourceName] = $taxonomies;
 

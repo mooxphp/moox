@@ -1,9 +1,14 @@
 <?php
 
+/**
+ * @deprecated Use Base classes in Entities instead.
+ */
+
 declare(strict_types=1);
 
 namespace Moox\Core\Traits\Publish;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 trait SinglePublishInModel
@@ -32,5 +37,20 @@ trait SinglePublishInModel
                 ? 'scheduled'
                 : 'published')
             : 'draft';
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('publish->status', 'published');
+    }
+
+    public function scopeScheduled(Builder $query): Builder
+    {
+        return $query->where('publish->status', 'scheduled');
+    }
+
+    public function scopeDraft(Builder $query): Builder
+    {
+        return $query->where('publish->status', 'draft');
     }
 }

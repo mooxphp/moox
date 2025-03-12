@@ -14,28 +14,32 @@ use Moox\Core\Services\TaxonomyService;
 
 trait HasResourceTaxonomy
 {
-    protected static function getTaxonomyService(): TaxonomyService
-    {
-        $service = app(TaxonomyService::class);
-        $service->setCurrentResource(static::getResourceName());
+    use HasTaxonomyService;
 
-        return $service;
+    /**
+     * Get the model class for taxonomy relationships.
+     */
+    protected static function getTaxonomyModel(): string
+    {
+        return static::getModel();
     }
 
-    protected static function getResourceName(): string
-    {
-        return static::getModel()::getResourceName();
-    }
-
+    /**
+     * Get the taxonomy fields.
+     */
     public static function getTaxonomyFields(): array
     {
-        $taxonomyService = static::getTaxonomyService();
+        $taxonomyService = static::getTaxonomyServiceStatic();
+        $taxonomyService->setCurrentResource(class_basename(static::getTaxonomyModel()));
 
         return collect($taxonomyService->getTaxonomies())
             ->map(fn ($settings, $taxonomy): Select|SelectTree => static::createTaxonomyField($taxonomy, $settings, $taxonomyService))
             ->toArray();
     }
 
+    /**
+     * Create a taxonomy field.
+     */
     protected static function createTaxonomyField(string $taxonomy, array $settings, TaxonomyService $taxonomyService): Select|SelectTree
     {
         $modelClass = $taxonomyService->getTaxonomyModel($taxonomy);
@@ -92,9 +96,12 @@ trait HasResourceTaxonomy
             ->label($commonConfig['label']);
     }
 
+    /**
+     * Get the taxonomy filters.
+     */
     public static function getTaxonomyFilters(): array
     {
-        $taxonomyService = static::getTaxonomyService();
+        $taxonomyService = static::getTaxonomyServiceStatic();
         $taxonomies = $taxonomyService->getTaxonomies();
         $resourceModel = static::getModel();
         $resourceTable = app($resourceModel)->getTable();
@@ -124,9 +131,12 @@ trait HasResourceTaxonomy
         })->toArray();
     }
 
+    /**
+     * Get the taxonomy columns.
+     */
     protected static function getTaxonomyColumns(): array
     {
-        $taxonomyService = static::getTaxonomyService();
+        $taxonomyService = static::getTaxonomyServiceStatic();
         $taxonomies = $taxonomyService->getTaxonomies();
 
         return collect($taxonomies)->map(fn ($settings, $taxonomy): TagsColumn => TagsColumn::make($taxonomy)
@@ -152,9 +162,12 @@ trait HasResourceTaxonomy
             ->searchable())->toArray();
     }
 
+    /**
+     * Handle the taxonomies.
+     */
     protected static function handleTaxonomies(Model $record, array $data): void
     {
-        $taxonomyService = static::getTaxonomyService();
+        $taxonomyService = static::getTaxonomyServiceStatic();
         foreach (array_keys($taxonomyService->getTaxonomies()) as $taxonomy) {
             if (isset($data[$taxonomy])) {
                 $record->$taxonomy()->sync($data[$taxonomy]);
@@ -162,9 +175,12 @@ trait HasResourceTaxonomy
         }
     }
 
+    /**
+     * Add the taxonomy relations to the query.
+     */
     protected static function addTaxonomyRelationsToQuery(Builder $query): Builder
     {
-        $taxonomyService = static::getTaxonomyService();
+        $taxonomyService = static::getTaxonomyServiceStatic();
         $taxonomies = $taxonomyService->getTaxonomies();
 
         foreach (array_keys($taxonomies) as $taxonomy) {

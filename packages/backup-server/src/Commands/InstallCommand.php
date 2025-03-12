@@ -130,7 +130,7 @@ class InstallCommand extends Command
 
     public function getPanelProviderPath(): string
     {
-        $providerPath = app_path('Providers\Filament');
+        $providerPath = app_path('Providers/Filament');
         $providers = File::allFiles($providerPath);
         if (count($providers) > 1) {
             $providerNames = [];

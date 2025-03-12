@@ -5,27 +5,14 @@ namespace Moox\Core\Traits\Taxonomy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Log;
-use Moox\Core\Services\TaxonomyService;
 
 trait HasModelTaxonomy
 {
-    protected ?TaxonomyService $taxonomyService = null;
+    use HasTaxonomyService;
 
-    protected function getTaxonomyService(): TaxonomyService
-    {
-        if ($this->taxonomyService === null) {
-            $this->taxonomyService = app(TaxonomyService::class);
-            $this->taxonomyService->setCurrentResource($this->getResourceName());
-        }
-
-        return $this->taxonomyService;
-    }
-
-    public static function getResourceName(): string
-    {
-        return static::getModel()::getResourceName();
-    }
-
+    /**
+     * Get the taxonomy relation.
+     */
     public function taxonomy(string $taxonomy): MorphToMany
     {
         $taxonomies = $this->getTaxonomyService()->getTaxonomies();
@@ -50,6 +37,9 @@ trait HasModelTaxonomy
         return $this->morphToMany(Model::class, 'taggable', 'taggables')->whereRaw('1 = 0');
     }
 
+    /**
+     * Handle dynamic method calls to the taxonomy relation.
+     */
     public function __call($method, $parameters)
     {
         $taxonomies = $this->getTaxonomyService()->getTaxonomies();
@@ -60,6 +50,9 @@ trait HasModelTaxonomy
         return parent::__call($method, $parameters);
     }
 
+    /**
+     * Sync the taxonomy.
+     */
     public function syncTaxonomy(string $taxonomy, array $ids): void
     {
         $taxonomies = $this->getTaxonomyService()->getTaxonomies();
