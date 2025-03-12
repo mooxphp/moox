@@ -227,7 +227,6 @@ class PclZip
         $this->magic_quotes_status = -1;
 
         // ----- Return
-
     }
 
     public function PclZip($p_zipname)

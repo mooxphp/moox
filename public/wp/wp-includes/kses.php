@@ -2125,7 +2125,7 @@ function valid_unicode($i)
 {
     $i = (int) $i;
 
-    return  $i === 0x9 || $i === 0xA || $i === 0xD ||
+    return $i === 0x9 || $i === 0xA || $i === 0xD ||
         ($i >= 0x20 && $i <= 0xD7FF) ||
         ($i >= 0xE000 && $i <= 0xFFFD) ||
         ($i >= 0x10000 && $i <= 0x10FFFF);

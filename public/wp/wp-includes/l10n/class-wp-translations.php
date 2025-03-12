@@ -129,7 +129,7 @@ class WP_Translations
         }
 
         // Fall back to the original with English grammar rules.
-        return  $count === 1 ? $singular : $plural;
+        return $count === 1 ? $singular : $plural;
     }
 
     /**

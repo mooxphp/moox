@@ -900,16 +900,16 @@ if ($locations_screen) {
 								<span class="locations-add-menu-link">
 									<a href="
 									<?php
-                                    echo esc_url(
-                                        add_query_arg(
-                                            [
-                                                'action' => 'edit',
-                                                'menu' => 0,
-                                                'use-location' => $_location,
-                                            ],
-                                            admin_url('nav-menus.php')
-                                        )
-                                    );
+								    echo esc_url(
+								        add_query_arg(
+								            [
+								                'action' => 'edit',
+								                'menu' => 0,
+								                'use-location' => $_location,
+								            ],
+								            admin_url('nav-menus.php')
+								        )
+								    );
 				    ?>
 									">
 										<?php _ex('Use new menu', 'menu'); ?>
@@ -949,19 +949,19 @@ if ($locations_screen) {
 		<?php } elseif ($menu_count < 2) { ?>
 		<span class="add-edit-menu-action">
 			<?php
-            printf(
-                /* translators: %s: URL to create a new menu. */
-                __('Edit your menu below, or <a href="%s">create a new menu</a>. Do not forget to save your changes!'),
-                esc_url(
-                    add_query_arg(
-                        [
-                            'action' => 'edit',
-                            'menu' => 0,
-                        ],
-                        admin_url('nav-menus.php')
-                    )
-                )
-            );
+		    printf(
+		        /* translators: %s: URL to create a new menu. */
+		        __('Edit your menu below, or <a href="%s">create a new menu</a>. Do not forget to save your changes!'),
+		        esc_url(
+		            add_query_arg(
+		                [
+		                    'action' => 'edit',
+		                    'menu' => 0,
+		                ],
+		                admin_url('nav-menus.php')
+		            )
+		        )
+		    );
 		    ?>
 			<span class="screen-reader-text">
 				<?php

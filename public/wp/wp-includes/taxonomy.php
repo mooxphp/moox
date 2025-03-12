@@ -4958,7 +4958,7 @@ function is_object_in_term($object_id, $taxonomy, $terms = null)
         return false;
     }
     if (empty($terms)) {
-        return  ! empty($object_terms);
+        return ! empty($object_terms);
     }
 
     $terms = (array) $terms;

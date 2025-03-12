@@ -3978,7 +3978,7 @@ class wpdb
      */
     public function timer_stop()
     {
-        return  microtime(true) - $this->time_start;
+        return microtime(true) - $this->time_start;
     }
 
     /**

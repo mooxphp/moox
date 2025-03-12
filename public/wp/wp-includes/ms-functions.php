@@ -2372,7 +2372,7 @@ function users_can_register_signup_filter()
 {
     $registration = get_site_option('registration');
 
-    return  $registration === 'all' || $registration === 'user';
+    return $registration === 'all' || $registration === 'user';
 }
 
 /**

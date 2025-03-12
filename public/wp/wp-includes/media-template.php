@@ -311,8 +311,8 @@ function wp_print_media_templates()
 				<# } #>
 
 				<?php
-                /** This action is documented in wp-admin/includes/media.php */
-                do_action('post-upload-ui'); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+		        /** This action is documented in wp-admin/includes/media.php */
+		        do_action('post-upload-ui'); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
 		    ?>
 			</div>
 		<?php } ?>

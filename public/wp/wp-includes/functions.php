@@ -1620,7 +1620,7 @@ function get_num_queries()
  */
 function bool_from_yn($yn)
 {
-    return  strtolower($yn) === 'y';
+    return strtolower($yn) === 'y';
 }
 
 /**
@@ -2188,7 +2188,7 @@ function path_is_absolute($path)
     }
 
     // A path starting with / or \ is absolute; anything else is relative.
-    return  $path[0] === '/' || $path[0] === '\\';
+    return $path[0] === '/' || $path[0] === '\\';
 }
 
 /**
@@ -6222,7 +6222,7 @@ function is_lighttpd_before_150()
     $server_parts = explode('/', isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '');
     $server_parts[1] = isset($server_parts[1]) ? $server_parts[1] : '';
 
-    return  $server_parts[0] === 'lighttpd' && version_compare($server_parts[1], '1.5.0') === -1;
+    return $server_parts[0] === 'lighttpd' && version_compare($server_parts[1], '1.5.0') === -1;
 }
 
 /**
@@ -6553,7 +6553,7 @@ function is_main_network($network_id = null)
 
     $network_id = (int) $network_id;
 
-    return  get_main_network_id() === $network_id;
+    return get_main_network_id() === $network_id;
 }
 
 /**

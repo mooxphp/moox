@@ -457,7 +457,7 @@ function has_excerpt($post = 0)
 {
     $post = get_post($post);
 
-    return  ! empty($post->post_excerpt);
+    return ! empty($post->post_excerpt);
 }
 
 /**
@@ -1855,7 +1855,7 @@ function is_page_template($template = '')
         }
     }
 
-    return  $template === 'default' && ! $page_template;
+    return $template === 'default' && ! $page_template;
 }
 
 /**

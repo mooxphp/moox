@@ -1095,7 +1095,7 @@ function _wp_object_name_sort_cb($a, $b)
  */
 function _wp_object_count_sort_cb($a, $b)
 {
-    return  $a->count - $b->count;
+    return $a->count - $b->count;
 }
 
 //

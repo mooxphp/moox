@@ -2249,7 +2249,7 @@ function calendar_week_mod($num)
 {
     $base = 7;
 
-    return  $num - $base * floor($num / $base);
+    return $num - $base * floor($num / $base);
 }
 
 /**

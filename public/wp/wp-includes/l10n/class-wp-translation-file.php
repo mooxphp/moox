@@ -252,7 +252,7 @@ abstract class WP_Translation_File
         }
 
         // Default plural form matches English, only "One" is considered singular.
-        return  $number === 1 ? 0 : 1;
+        return $number === 1 ? 0 : 1;
     }
 
     /**

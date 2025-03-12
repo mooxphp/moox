@@ -3282,7 +3282,7 @@ function current_theme_supports($feature, ...$args)
         case 'custom-header':
         case 'custom-background':
             // Specific capabilities can be registered by passing an array to add_theme_support().
-            return  isset($_wp_theme_features[$feature][0][$args[0]]) && $_wp_theme_features[$feature][0][$args[0]];
+            return isset($_wp_theme_features[$feature][0][$args[0]]) && $_wp_theme_features[$feature][0][$args[0]];
     }
 
     /**

@@ -314,7 +314,7 @@ class WP_Customize_Setting
             return false;
         }
 
-        return  get_current_blog_id() === $this->_previewed_blog_id;
+        return get_current_blog_id() === $this->_previewed_blog_id;
     }
 
     /**

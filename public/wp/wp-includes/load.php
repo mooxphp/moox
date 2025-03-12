@@ -1308,7 +1308,7 @@ function shutdown_action_hook()
 function wp_clone($input_object)
 {
     // Use parens for clone to accommodate PHP 4. See #17880.
-    return clone  $input_object;
+    return clone $input_object;
 }
 
 /**
