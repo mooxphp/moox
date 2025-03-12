@@ -1,10 +1,10 @@
 <?php
 
-namespace Moox\Core\Entities\Items\Item;
+namespace Moox\Core\Entities\Items\Record;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BaseItemModel extends Model
+class BaseRecordModel extends Model
 {
     // nothing for now
 }
