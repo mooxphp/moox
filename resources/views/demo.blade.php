@@ -13,7 +13,7 @@
                 Check out our online demos for Moox CMS, Moox Press using WordPress and Moox DevOps, our central management platform.
             </p>
 
-            <div class="flex gap-6 mt-8">
+            <div class="flex gap-6 mt-8 justify-center">
                 <a href="/moox"
                    class="relative px-4 py-2 rounded flex items-center gap-2 group">
                     <div class="absolute inset-0 rounded bg-gradient-to-r from-pink-600 via-purple-600 to-violet-600"></div>

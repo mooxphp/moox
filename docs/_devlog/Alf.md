@@ -8,7 +8,8 @@
 -   [ ] Media localization
 -   [ ] Media uploaded by user
 -   [ ] static-locales:280 - GET https://moox.test/storage/%7B%221%22:%7B%22file_name%22:%22Alf-Hamburg-Profil-High.jpg%22,%22title%22:%22Alf-Hamburg-Profil-High%22,%22description%22:null,%22internal_note%22:null,%22alt%22:%22Alf-Hamburg-Profil-High%22%7D%7D 404 (Not Found)
--   [ ] Restore und Expire are not phpstan'ed
+-   [ ] Restore and Expire are not phpstan'ed
+-   [ ] Theoretically Laravel 12, but Translatable and Backup-Server are not ready
 
 ## Todo
 
