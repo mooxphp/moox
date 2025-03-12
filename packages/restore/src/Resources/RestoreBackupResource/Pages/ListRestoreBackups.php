@@ -28,12 +28,12 @@ class ListRestoreBackups extends ListRecords
     {
         return [
             Action::make('restore_backup')
-                ->label(__('Manual Restore Backup'))
-                ->modalHeading(__('Manual Restore'))
+                ->label('Manual Restore Backup')
+                ->modalHeading('Manual Restore')
                 ->form([
                     Select::make('restoreDestinationId')
-                        ->label(__('Select Restore Destination'))
-                        ->options(RestoreDestination::all()->pluck('host', 'id'))
+                        ->label('Select Restore Destination')
+                        ->options(RestoreDestination::query()->pluck('host', 'id'))
                         ->required()
                         ->placeholder(__('Select a destination'))
                         ->afterStateUpdated(fn (Set $set) => $set('backupId', null))
@@ -43,13 +43,17 @@ class ListRestoreBackups extends ListRecords
                         ->label(__('Select Backup to restore'))
                         ->options(function (Get $get) {
                             if ($get('restoreDestinationId')) {
-                                $sourceId = RestoreDestination::find($get('restoreDestinationId'))->source->id;
-                                $backups = Backup::where('source_id', $sourceId)->whereNotNull('completed_at')->orderBy('completed_at', 'desc')->pluck('completed_at', 'id');
-                                $formattedBackups = $backups->mapWithKeys(function ($date, $id) {
-                                    return [$id => \Carbon\Carbon::parse($date)->format('d.m.Y H:i:s')];
-                                });
+                                $restoreDestination = RestoreDestination::find($get('restoreDestinationId'));
 
-                                return $formattedBackups;
+                                if ($restoreDestination && $restoreDestination->source) {
+                                    $sourceId = $restoreDestination->source->id;
+                                    $backups = Backup::where('source_id', $sourceId)->whereNotNull('completed_at')->orderBy('completed_at', 'desc')->pluck('completed_at', 'id');
+                                    $formattedBackups = $backups->mapWithKeys(function ($date, $id) {
+                                        return [$id => \Carbon\Carbon::parse($date)->format('d.m.Y H:i:s')];
+                                    });
+
+                                    return $formattedBackups;
+                                }
                             }
 
                             return [];
@@ -65,13 +69,11 @@ class ListRestoreBackups extends ListRecords
                 ->action(function (array $data): void {
                     $restoreDestination = RestoreDestination::findOrFail($data['restoreDestinationId']);
                     $backup = Backup::findOrFail($data['backupId']);
-                    if ($restoreDestination && $backup) {
-                        $restoreBackup = RestoreBackup::create([
-                            'backup_id' => $backup->id,
-                            'restore_destination_id' => $restoreDestination->id,
-                            'status' => 'created',
-                        ]);
-                    }
+                    $restoreBackup = RestoreBackup::create([
+                        'backup_id' => $backup->id,
+                        'restore_destination_id' => $restoreDestination->id,
+                        'status' => 'created',
+                    ]);
                     Artisan::call('moox-restore:restore', [
                         'restoreBackup' => $restoreBackup->id,
                     ]);

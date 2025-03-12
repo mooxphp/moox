@@ -117,7 +117,7 @@ class CoreServiceProvider extends PackageServiceProvider
     {
         $this->app->bind($commandClassName, function () use ($commandClassName) {
             $command = new $commandClassName;
-            $command->setVerbosity(env('VERBOSITY_LEVEL', 'v'));
+            $command->setVerbosity(config('core.verbosity_level', 'v'));
 
             return $command;
         });

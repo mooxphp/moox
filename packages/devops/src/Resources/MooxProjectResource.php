@@ -159,7 +159,7 @@ class MooxProjectResource extends Resource
                     ->requiresConfirmation()
                     ->action(
                         fn (Collection $records) => $records->each(
-                            fn ($record) => DeployProjectJob::dispatch($record, auth()->user()))),
+                            fn ($record) => DeployProjectJob::dispatch(MooxProject::find($record->getKey()), auth()->user()))),
             ]);
     }
 
