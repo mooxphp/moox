@@ -7,6 +7,7 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
+use Illuminate\Support\Facades\DB;
 
 class Media extends BaseMedia implements HasMedia
 {
@@ -62,5 +63,51 @@ class Media extends BaseMedia implements HasMedia
         ];
 
         return $mimeMap[$this->mime_type] ?? strtoupper(str_replace('application/', '', $this->mime_type));
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function (Media $media) {
+            $usables = DB::table('media_usables')
+                ->where('media_id', $media->id)
+                ->get();
+
+            foreach ($usables as $usable) {
+                $modelClass = $usable->media_usable_type;
+                $model = $modelClass::find($usable->media_usable_id);
+
+                if (!$model) {
+                    continue;
+                }
+
+                foreach ($model->getAttributes() as $field => $value) {
+                    $jsonData = json_decode($value, true);
+
+                    if (!is_array($jsonData)) {
+                        continue;
+                    }
+
+                    if (isset($jsonData['file_name']) && $jsonData['file_name'] === $media->file_name) {
+                        $model->{$field} = null;
+                        continue;
+                    }
+
+                    $changed = false;
+                    foreach ($jsonData as $key => $item) {
+                        if (is_array($item) && isset($item['file_name']) && $item['file_name'] === $media->file_name) {
+                            unset($jsonData[$key]);
+                            $changed = true;
+                        }
+                    }
+
+                    if ($changed) {
+                        $jsonData = array_values($jsonData);
+                        $model->{$field} = empty($jsonData) ? null : json_encode($jsonData);
+                    }
+                }
+
+                $model->save();
+            }
+        });
     }
 }
