@@ -16,9 +16,7 @@
 */
 
 return [
-    'draft' => [
-        'writeProtected' => true,
-    ],
+    'readonly' => false,
 
     'single' => 'trans//draft::draft.draft',
     'plural' => 'trans//draft::draft.drafts',
