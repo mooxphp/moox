@@ -11,13 +11,33 @@ class BaseDraftResource extends BaseResource
 {
     use HasResourceTabs;
 
+    protected static function getReadonlyConfig(): bool
+    {
+        $entityType = static::getEntityType();
+
+        return config("{$entityType}.readonly", false);
+    }
+
+    protected static function getEntityType(): string
+    {
+        return 'draft';
+    }
+
     public static function enableCreate(): bool
     {
+        if (static::getReadonlyConfig()) {
+            return false;
+        }
+
         return true;
     }
 
     public static function enableEdit(): bool
     {
+        if (static::getReadonlyConfig()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -28,7 +48,7 @@ class BaseDraftResource extends BaseResource
 
     public static function enableDelete(): bool
     {
-        if (config('draft.single')) {
+        if (static::getReadonlyConfig()) {
             return false;
         }
 

@@ -297,24 +297,6 @@ The command will then guide you through the process of building an empty **Moox 
 
 ![Moox](../../art/video/test-cli-video.gif?raw=true)
 
-## Moox Commands
-
-### Moox Core
-
--   `php artisan moox:install` to install or update Moox packages
--   `php artisan moox:status` to show the status of Moox
--   `php artisan moox:wire` to wire Moox Entities, Taxonomies and Modules
--   `php artisan moox:wire` to wire Moox Entities
-
-### Moox Build
-
--   `php artisan moox:build` to build a Moox package or Entity
-
-### Moox Devlink
-
--   `php artisan moox:link` to symlink packages into a project
--   `php artisan moox:unlink` remove all symlinks and deploy
-
 ## Moox Service Provider
 
 The **Moox Service Provider** is the central service provider for all Moox packages. It is responsible for loading all Moox packages and entities.

@@ -1,29 +1,13 @@
 # Devlog
 
-## Team
-
--   [ ] https://moox.test/components
-    -   [ ] Auto-rendering of all components
-    -   [ ] Theme switcher implementation
-    -   [ ] Responsive concept and implementation
-    -   [ ] Where do I get the contents?
-    -   [ ] Playground link, see Pines UI
--   [ ] Write protected fields, images
--   [ ] Hierarchy (Collection?)
--   [ ] Media localization
--   [ ] Media uploaded by user
--   [ ] storage/app/livewire-tmp/... check if empty
--   [ ] but has nothing to do with the 404 media issue
--   [ ] Restore and Expiry are not phpstan'ed
--   [ ] Theoretically Laravel 12, but [Translatable](https://github.com/adrolli/laravel-translatable), [Eloquent-Mutators](https://github.com/adrolli/eloquent-mutators) and [Backup-Server](https://github.com/spatie/laravel-backup-server) are not ready
-
 ## Todo
 
--   [ ] Write protected items - config?
+-   [ ] Write protected items - docs, item
 -   [ ] remove boilerplate code taxonomy
 -   [ ] finish core implementation docs
 -   [ ] Publish and Unpublish docs
 -   [ ] Progress Column and copyable docs
+
 -   [ ] Implement Item Entity
     -   [x] Item Model
     -   [x] Item migration
@@ -58,6 +42,12 @@
     -   [ ] HasScheduledPublish Trait docs
 -   [ ] Build should replace with variables, not the placeholders
 -   [ ] Build must use the entity files for entity generation
+-   [ ] https://moox.test/components
+    -   [ ] Auto-rendering of all components
+    -   [ ] Theme switcher implementation
+    -   [ ] Responsive concept and implementation
+    -   [ ] Where do I get the contents?
+    -   [ ] Playground link, see Pines UI
 -   [ ] Implement Frontend class, abstract? See Frontend/Idea.md
 -   [ ] Build Skeleton -> Item
 -   [ ] Refactor core traits to base classes
